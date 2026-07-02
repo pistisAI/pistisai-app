@@ -13,6 +13,15 @@ on:
         required: false
         default: "linux,windows,macos"
         type: string
+  push:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "pubspec.yaml"
+      - "windows/**"
+      - "linux/**"
+      - "macos/**"
+      - ".github/workflows/build-desktop.yml"
 
 concurrency:
   group: desktop-build-${{ github.ref }}
@@ -121,11 +130,13 @@ jobs:
     needs: set_version
     if: contains(inputs.platforms, 'windows')
     runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
       - name: Set Version
-        shell: bash
         run: |
           VERSION=${{ needs.set_version.outputs.version }}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -137,41 +148,49 @@ jobs:
           channel: "stable"
           cache: true
 
-      - name: Install Windows Dependencies
-        shell: pwsh
-        timeout-minutes: 30
-        run: |
-          vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
-          "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
-
       - name: Flutter Build Windows
         run: |
           flutter pub get
           flutter build windows --release
 
-      - name: Build Windows Installer
-        shell: pwsh
+      - name: Package Portable ZIP
         run: |
-          if (Test-Path "scripts/packaging/build_windows_installer.ps1") {
-            ./scripts/packaging/build_windows_installer.ps1
-          } else {
-            Write-Host "No installer script found, using ISCC directly"
-            $iscc = "${env:LOCALAPPDATA}\Programs\Inno Setup 6\ISCC.exe"
-            if (Test-Path $iscc) {
-              cd windows/installer
-              & $iscc Pistisai.iss
-            } else {
-              Write-Host "ISCC not found, installer build skipped"
-            }
-          }
+          mkdir -p dist/windows
+          cd build/windows/x64/runner/Release
+          7z a -tzip ${{ github.workspace }}/dist/windows/Pistisai-Windows-x64-portable.zip *
+          echo "✅ Portable zip created"
+
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup --no-progress -y
+          echo "ISCC_PATH=/c/ProgramData/chocolatey/lib/innosetup/tools/ISCC.exe" >> $GITHUB_ENV
+          echo "✅ Inno Setup installed"
+
+      - name: Build Windows Installer
+        run: |
+          if [ -f "windows/installer/Pistisai.iss" ]; then
+            ISCC="/c/ProgramData/chocolatey/lib/innosetup/tools/ISCC.exe"
+            if [ ! -f "$ISCC" ]; then
+              ISCC=$(find /c/ProgramData/chocolatey -name "ISCC.exe" 2>/dev/null | head -1)
+            fi
+            if [ -f "$ISCC" ]; then
+              "$ISCC" windows/installer/Pistisai.iss
+              echo "✅ Installer built"
+            else
+              echo "ISCC not found" >&2
+            fi
+          else
+            echo "No Pistisai.iss found" >&2
+          fi
 
       - name: Upload Windows Bundles
         uses: actions/upload-artifact@v5
         with:
           name: windows-bundles
           path: |
-            build/windows/x64/runner/Release/*.msix
             dist/windows/*.exe
+            dist/windows/*.zip
+            build/windows/x64/runner/Release/Pistisai.exe
           retention-days: 7
 
   build_macos:
@@ -216,7 +235,7 @@ jobs:
 
   create_release:
     needs: [set_version, build_linux, build_windows, build_macos]
-    if: always() && (needs.build_linux.result == 'success' || needs.build_windows.result == 'success' || needs.build_macos.result == 'success')
+    if: always() && github.event_name == 'workflow_dispatch' && (needs.build_linux.result == 'success' || needs.build_windows.result == 'success' || needs.build_macos.result == 'success')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -239,13 +258,21 @@ jobs:
           fi
           echo "tag=v${{ env.VERSION }}" >> $GITHUB_ENV
 
+      - name: Organize artifacts for release
+        run: |
+          mkdir -p release-assets
+          # Copy from each artifact dir, flattening
+          for dir in linux-bundles windows-bundles macos-bundles; do
+            if [ -d "$dir" ]; then
+              cp "$dir"/* release-assets/ 2>/dev/null || true
+            fi
+          done
+          ls -lh release-assets/
+
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: |
-            linux-bundles/*,
-            windows-bundles/*,
-            macos-bundles/*
+          artifacts: release-assets/*
           tag: "v${{ env.VERSION }}"
           name: "PistisAI v${{ env.VERSION }}"
           artifactErrorsFailBuild: false
@@ -259,12 +286,11 @@ jobs:
             - **AppImage**: `Pistisai-Linux-${{ env.VERSION }}-x86_64.AppImage`
             - **Debian/Ubuntu**: `Pistisai-Linux_${{ env.VERSION }}_amd64.deb`
             - **Portable**: `Pistisai-Linux-x64.tar.gz`
-            - Install script: `curl -fsSL https://pistisai.app/install.sh | bash`
 
             ### Windows
             - **Installer**: `Pistisai-Windows-x64-Setup.exe`
-            - **Portable ZIP**: `Pistisai-Windows-${{ env.VERSION }}-portable.zip`
+            - **Portable ZIP**: `Pistisai-Windows-x64-portable.zip`
 
             ### macOS
-            - **DMG**: `Pistisai-macOS-${{ env.VERSION }}.dmg`
+            - **ZIP**: `Pistisai-macOS-x64.zip`
           token: ${{ secrets.GITHUB_TOKEN }}
