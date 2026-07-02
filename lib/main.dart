@@ -409,8 +409,8 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
   debugPrint('[Main] Handling command-line arguments: $args');
   String? callbackUrl;
   for (final arg in args) {
-    if (arg.startsWith('com.cloudtolocalllm.app://') ||
-        arg.startsWith('cloudtolocalllm://')) {
+    if (arg.startsWith('com.pistisai.app://') ||
+        arg.startsWith('pistisai://')) {
       callbackUrl = arg;
       break;
     }

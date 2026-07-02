@@ -1,1 +1,1 @@
-#include "..\..\..\windows\installer\CloudToLocalLLM.iss"
+#include "..\..\..\windows\installer\Pistisai.iss"
