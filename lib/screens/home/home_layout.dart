@@ -341,33 +341,29 @@ class _ChatPaneState extends State<_ChatPane> {
                         conversation: conversation,
                         controller: widget.scrollController,
                       )
-                    : (!connectionManager.isConnected
-                        ? _buildStandaloneWarning(context)
-                        : WelcomeScreen(
-                            onNewChat: () => chatService.resetContext(),
-                            onAction: (message) =>
-                                widget.onSendMessage(chatService, message),
-                          )),
+                    : WelcomeScreen(
+                        onNewChat: () => chatService.resetContext(),
+                        onAction: (message) =>
+                            widget.onSendMessage(chatService, message),
+                      ),
               ),
-              if (connectionManager.isConnected || hasMessages) ...[
-                // 5-pillar action bar
-                _ActionBar(isConnected: connectionManager.isConnected),
-                GlassContainer(
-                  margin: EdgeInsets.only(
-                    bottom: widget.isCompact ? spacing.m : spacing.l,
-                    left: spacing.m,
-                    right: spacing.m,
-                  ),
-                  borderRadius: 24,
-                  blur: 20,
-                  child: msg_input.MessageInput(
-                    onSendMessage: (message) =>
-                        widget.onSendMessage(chatService, message),
-                    isLoading: chatService.isLoading,
-                    placeholder: 'Message Zoid... (/new to reset)',
-                  ),
+              // 5-pillar action bar — always visible
+              _ActionBar(isConnected: connectionManager.isConnected),
+              GlassContainer(
+                margin: EdgeInsets.only(
+                  bottom: widget.isCompact ? spacing.m : spacing.l,
+                  left: spacing.m,
+                  right: spacing.m,
                 ),
-              ],
+                borderRadius: 24,
+                blur: 20,
+                child: msg_input.MessageInput(
+                  onSendMessage: (message) =>
+                      widget.onSendMessage(chatService, message),
+                  isLoading: chatService.isLoading,
+                  placeholder: 'Message Zoid... (/new to reset)',
+                ),
+              ),
             ],
           );
         },
