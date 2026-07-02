@@ -148,6 +148,11 @@ jobs:
           channel: "stable"
           cache: true
 
+      - name: Install vcpkg dependencies (auth0_flutter)
+        run: |
+          vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
+          echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $GITHUB_ENV
+
       - name: Flutter Build Windows
         run: |
           flutter pub get
