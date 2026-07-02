@@ -64,12 +64,17 @@ void main([List<String> args = const []]) async {
   // WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Sentry IMMEDIATELY after Flutter binding (before all other services)
-  debugPrint('[Main] Initializing Sentry (FIRST after Flutter binding)...');
+  debugPrint('[Main] Initializing Sentry...');
 
-  // TEMPORARY: Skip Sentry to test app loading
-  debugPrint('[Main] Skipping Sentry for testing');
-  unawaited(_registerWindowsUrlScheme());
-  _runAppWithoutSentry();
+  // Sentry DSN is empty by default; set via --dart-define=SENTRY_DSN=...
+  if (AppConfig.sentryDsn.isNotEmpty) {
+    _runAppWithSentry();
+  } else {
+    debugPrint('[Main] Sentry DSN not configured, running without Sentry');
+    unawaited(_registerWindowsUrlScheme());
+    _initializeClientLogBuffer();
+    _runAppCommon();
+  }
 }
 
 Future<void> _registerWindowsUrlScheme() async {
@@ -81,8 +86,10 @@ Future<void> _registerWindowsUrlScheme() async {
   }
 }
 
-void _runAppWithoutSentry() {
-  debugPrint('Running app without Sentry');
+/// Run the app with Sentry error tracking enabled.
+/// Sentry DSN is configured via --dart-define=SENTRY_DSN=... at build time.
+void _runAppWithSentry() {
+  debugPrint('[Main] Running app with Sentry');
   _initializeClientLogBuffer();
   _runAppCommon();
 }
