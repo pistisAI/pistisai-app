@@ -177,53 +177,6 @@ bool _hasCallbackParameters(Uri uri) {
       uri.queryParameters.containsKey('error_description');
 }
 
-/// Wrapper widget that checks if setup wizard is needed
-/// and redirects to /setup if no providers are configured
-class _HomeWithSetupCheck extends StatefulWidget {
-  final Widget child;
-
-  const _HomeWithSetupCheck({
-    required this.child,
-  });
-
-  @override
-  State<_HomeWithSetupCheck> createState() => _HomeWithSetupCheckState();
-}
-
-class _HomeWithSetupCheckState extends State<_HomeWithSetupCheck> {
-  bool _checking = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkSetupNeeded();
-  }
-
-  Future<void> _checkSetupNeeded() async {
-    if (kIsWeb) {
-      // Setup wizard is desktop-only, skip check on web
-      if (mounted) setState(() => _checking = false);
-      return;
-    }
-    // Offline-first: never force the setup wizard. The user configures
-    // an agent runtime via Settings when they want to connect.
-    if (mounted) setState(() => _checking = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Block rendering the child until the setup check completes.
-    // Prevents flash of "No Agent Connected" home screen while the async
-    // check determines the wizard redirect is needed.
-    if (_checking) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-    return widget.child;
-  }
-}
-
 /// Application router configuration using GoRouter
 class AppRouter {
   static GoRouter createRouter({
@@ -270,9 +223,7 @@ class AppRouter {
         // Main app with StatefulShellRoute for indexed navigation
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
-            return _HomeWithSetupCheck(
-              child: OpenClawNavigationShell(navigationShell: navigationShell),
-            );
+            return OpenClawNavigationShell(navigationShell: navigationShell);
           },
           branches: [
             // Chat (branch index 0)

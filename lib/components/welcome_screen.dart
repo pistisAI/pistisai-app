@@ -59,7 +59,7 @@ class WelcomeScreen extends StatelessWidget {
               const SizedBox(height: 12),
               // Subtitle — offline-first positioning
               Text(
-                'Your agent companion. Fully offline until you choose to connect.',
+                'Your agent companion.\nFully offline until you choose to connect.',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: colors.textColorLight,
                   height: 1.4,
@@ -67,7 +67,7 @@ class WelcomeScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-              // Offline-friendly suggestion
+              // Offline-first info card
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -78,91 +78,34 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: colors.primary,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Icon(
+                        Icons.info_outline,
+                        size: 18,
+                        color: colors.primary,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Type a message or tap /new to start. Connect an agent runtime in Settings for AI responses and desktop control.',
+                        'Type a message below or tap /new to start fresh. '
+                        'Connect an agent runtime in Settings for AI responses '
+                        'and agent features.',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colors.textColorLight,
-                          height: 1.4,
+                          height: 1.5,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              // Quick actions that work offline
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _QuickAction(
-                    icon: Icons.face_6,
-                    label: 'Avatar',
-                    onTap: onNewChat,
-                  ),
-                  const SizedBox(width: 16),
-                  _QuickAction(
-                    icon: Icons.settings_outlined,
-                    label: 'Settings',
-                    onTap: () {},
-                    // Settings navigation handled externally via context.go
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 48),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _QuickAction({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsTheme>()!;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: 120,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.backgroundCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colors.secondary.withValues(alpha: 0.2),
-          ),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: colors.primary, size: 24),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
-            ),
-          ],
         ),
       ),
     );
