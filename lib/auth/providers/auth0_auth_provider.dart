@@ -465,6 +465,7 @@ class Auth0AuthProvider implements AuthProvider {
 
   @override
   Future<void> loginMockDeveloper() async {
+    if (kReleaseMode) return;
     _currentUser = UserModel(
       id: 'google-oauth2|102509433531341542550',
       email: 'dev@pistisai.app',

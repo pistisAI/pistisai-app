@@ -17,6 +17,16 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Pistisai - Your private AI companion with one-line Linux installer. Auto-updates, evolving avatar, desktop control, and vision. Privacy-first, locally-powered.">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.auth0.com;
+    worker-src 'self' blob:;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob: https:;
+    connect-src 'self' https://*.pistisai.app http://127.0.0.1:* ws://127.0.0.1:* wss://*.pistisai.app https://*.sentry.io https://*.auth0.com;
+    font-src 'self' data:;
+    frame-src 'self' https://*.auth0.com;
+  ">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
