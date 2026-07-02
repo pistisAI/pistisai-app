@@ -4,10 +4,10 @@ project(runner LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "cloudtolocalllm")
+set(BINARY_NAME "pistisai")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "online.cloudtolocalllm.app")
+set(APPLICATION_ID "app.pistisai.pistisai")
 
 # Add preprocessor definitions for the application ID globally
 # This ensures all targets, including plugins, have access to APPLICATION_ID
@@ -138,9 +138,9 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 endif()
 
 # Install desktop file
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/online.zoidbot.Zoidbot.desktop"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/app.pistisai.desktop"
   DESTINATION "share/applications"
-  RENAME "cloudtolocalllm.desktop"
+  RENAME "pistisai.desktop"
   COMPONENT Runtime)
 
 # Install icons to standard icon theme locations

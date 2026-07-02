@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "online.cloudtolocalllm.app"
+    namespace "app.pistisai.app"
     compileSdk 36
     ndkVersion flutter.ndkVersion
 
@@ -48,7 +48,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "online.cloudtolocalllm.app"
+        applicationId "app.pistisai.app"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         try {

@@ -1,15 +1,15 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_CURRENT_USER\Software\Classes\online.cloudtolocalllm.app]
+[HKEY_CURRENT_USER\Software\Classes\app.pistisai]
 "URL Protocol"=""
 @="URL:Pistisai Protocol"
 
-[HKEY_CURRENT_USER\Software\Classes\online.cloudtolocalllm.app\DefaultIcon]
+[HKEY_CURRENT_USER\Software\Classes\app.pistisai\DefaultIcon]
 @="Pistisai.exe,0"
 
-[HKEY_CURRENT_USER\Software\Classes\online.cloudtolocalllm.app\shell]
+[HKEY_CURRENT_USER\Software\Classes\app.pistisai\shell]
 
-[HKEY_CURRENT_USER\Software\Classes\online.cloudtolocalllm.app\shell\open]
+[HKEY_CURRENT_USER\Software\Classes\app.pistisai\shell\open]
 
-[HKEY_CURRENT_USER\Software\Classes\online.cloudtolocalllm.app\shell\open\command]
+[HKEY_CURRENT_USER\Software\Classes\app.pistisai\shell\open\command]
 @="\"C:\\Path\\To\\Your\\Pistisai.exe\" \"%1\""

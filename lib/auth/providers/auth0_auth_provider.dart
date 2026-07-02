@@ -23,7 +23,7 @@ class Auth0AuthProvider implements AuthProvider {
   static const String _domain = 'dev-vivn1fcgzi0c2czy.us.auth0.com';
   static const String _clientId = 'mm7lIRm33LGyoQ0FKCy04x88fsgnbvr1';
   static const String _audience = 'https://api.pistisai.app';
-  static const String _scheme = 'cloudtolocalllm';
+  static const String _scheme = 'pistisai';
 
   final Auth0 _auth0 = Auth0(_domain, _clientId);
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
