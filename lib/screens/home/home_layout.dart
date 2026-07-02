@@ -87,7 +87,7 @@ class _ChatPaneState extends State<_ChatPane> {
     try {
       final chatService = context.read<StreamingChatService>();
       if (chatService.currentConversation == null) {
-        chatService.createConversation();
+        chatService.resetContext();
       }
     } catch (_) {
       // StreamingChatService not registered on this platform (web).
@@ -344,7 +344,7 @@ class _ChatPaneState extends State<_ChatPane> {
                     : (!connectionManager.isConnected
                         ? _buildStandaloneWarning(context)
                         : WelcomeScreen(
-                            onNewChat: () => chatService.createConversation(),
+                            onNewChat: () => chatService.resetContext(),
                             onAction: (message) =>
                                 widget.onSendMessage(chatService, message),
                           )),

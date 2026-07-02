@@ -30,8 +30,20 @@ class StreamingChatService extends ChangeNotifier {
     _initializeService();
   }
 
-  List<Conversation> _conversations = [];
-  Conversation? _currentConversation;
+  /// The main channel — a single persistent conversation with Zoid.
+  Conversation? _mainChannel;
+
+  // Backward-compatible aliases so legacy code continues to work.
+  List<Conversation> get _conversations =>
+      _mainChannel != null ? [_mainChannel!] : [];
+  set _conversations(List<Conversation> v) {
+    if (v.isNotEmpty) _mainChannel = v.first;
+  }
+  Conversation? get _currentConversation => _mainChannel;
+  set _currentConversation(Conversation? v) {
+    if (v != null) _mainChannel = v;
+  }
+
   String? _selectedModel;
   bool _isLoading = false;
   bool _isStreaming = false;
@@ -55,12 +67,11 @@ class StreamingChatService extends ChangeNotifier {
   bool _isAgentRunning = false;
 
   // Getters
-  List<Conversation> get conversations => List.unmodifiable(_conversations);
-  Conversation? get currentConversation => _currentConversation;
+  Conversation? get currentConversation => _mainChannel;
   String? get selectedModel => _selectedModel;
   bool get isLoading => _isLoading;
   bool get isStreaming => _isStreaming;
-  bool get hasConversations => _conversations.isNotEmpty;
+  bool get hasConversations => _mainChannel != null;
 
   /// Stream of current streaming content for real-time UI updates
   Stream<String> get streamingContentStream => _streamingContentSubject.stream;
@@ -121,25 +132,26 @@ class StreamingChatService extends ChangeNotifier {
     }
   }
 
-  /// Load conversations from storage
+  /// Load the main channel from storage
   Future<void> _loadConversations() async {
     try {
-      final loadedConversations = await _storageService.loadConversations();
+      final loaded = await _storageService.loadConversations();
 
-      if (loadedConversations.isNotEmpty) {
-        _conversations = loadedConversations;
-        // Don't auto-select on startup to show Pistisai Ready screen
-        _currentConversation = null;
+      if (loaded.isNotEmpty) {
+        // Find or create the main channel
+        final existing = loaded.firstWhere(
+          (c) => c.id == 'main-channel',
+          orElse: () => Conversation.mainChannel(model: _selectedModel),
+        );
+        _mainChannel = existing;
         appLogger.info(
-          '[StreamingChat] Loaded ${_conversations.length} conversations from storage',
+          '[StreamingChat] Loaded main channel with ${existing.messages.length} messages',
         );
       } else {
-        // Create a sample conversation if none exist
         _createWelcomeConversation();
       }
     } catch (e) {
       appLogger.error('[StreamingChat] Error loading conversations', error: e);
-      // Fall back to creating a welcome conversation
       _createWelcomeConversation();
     }
 
@@ -161,54 +173,41 @@ class StreamingChatService extends ChangeNotifier {
       );
     }
 
-    final sampleConversation = Conversation.create(
-      title: 'Welcome Chat',
-      model: modelToUse,
-    );
+    _mainChannel = Conversation.mainChannel(model: modelToUse);
 
     final welcomeMessage = Message.system(
       content:
           'Welcome to Pistisai! I\'m ready to help you with any questions or tasks. What would you like to talk about?',
     );
 
-    _conversations = [sampleConversation.addMessage(welcomeMessage)];
-    // Don't auto-select to show Pistisai Ready screen
-    _currentConversation = null;
+    _mainChannel = _mainChannel!.addMessage(welcomeMessage);
 
     // Save the welcome conversation
     _saveConversations();
   }
 
-  /// Save conversations to storage
+  /// Save main channel to storage
   void _saveConversations() {
-    // Save asynchronously without blocking the UI
     _saveConversationsAsync().catchError((e) {
       appLogger.error('[StreamingChat] Error saving conversations', error: e);
     });
   }
 
-  /// Save conversations to storage asynchronously
   Future<void> _saveConversationsAsync() async {
-    try {
-      await _storageService.saveConversations(_conversations);
-      appLogger.debug(
-        '[StreamingChat] Saved ${_conversations.length} conversations to storage',
-      );
-    } catch (e) {
-      appLogger.error('[StreamingChat] Failed to save conversations', error: e);
-      rethrow;
-    }
+    if (_mainChannel == null) return;
+    await _storageService.saveConversations([_mainChannel!]);
+    appLogger.info(
+      '[StreamingChat] Saved main channel with ${_mainChannel!.messages.length} messages',
+    );
   }
 
-  /// Create a new conversation
-  void createConversation() {
-    final newConversation = Conversation.create(
-      title: 'New Chat',
-      model: _selectedModel,
-    );
-
-    _conversations.insert(0, newConversation);
-    _currentConversation = newConversation;
+  /// Reset the main channel context
+  void resetContext() {
+    if (_mainChannel == null) {
+      _mainChannel = Conversation.mainChannel(model: _selectedModel);
+    } else {
+      _mainChannel = Conversation.mainChannel(model: _selectedModel);
+    }
     _saveConversations();
     notifyListeners();
   }
@@ -281,9 +280,18 @@ class StreamingChatService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Send a message with streaming support
+  /// Send a message with streaming support.
+  /// /new or /reset clears context without sending.
   Future<void> sendMessage(String content) async {
-    if (_currentConversation == null || content.trim().isEmpty) return;
+    final trimmed = content.trim();
+    if (trimmed.isEmpty || _mainChannel == null) return;
+
+    // Handle /new and /reset commands — same as Telegram DM
+    if (trimmed == '/new' || trimmed == '/reset') {
+      resetContext();
+      return;
+    }
+
     if (_selectedModel == null) {
       // Use gateway default model - don't require model selection
       appLogger
@@ -594,11 +602,18 @@ class StreamingChatService extends ChangeNotifier {
     _updateStreamingMessageWithToolCalls();
   }
 
+  /// Update the streaming message content.
+  void _updateStreamingMessage(String content, String? reasoning) {
+    _updateMessageInConversation(
+      _currentStreamingMessageId,
+      (msg) => msg.copyWith(content: content, reasoning: reasoning),
+    );
+  }
+
   /// Update the streaming message's metadata with tool calls for live UI.
   void _updateStreamingMessageWithToolCalls() {
     final toolCallsMeta = _serializeToolCalls(includeLive: true);
     if (toolCallsMeta.isEmpty) return;
-
     _updateMessageInConversation(
       _currentStreamingMessageId,
       (msg) => msg.copyWith(
@@ -611,56 +626,37 @@ class StreamingChatService extends ChangeNotifier {
     );
   }
 
+  void _addMessageToCurrentConversation(Message message) {
+    if (_mainChannel == null) return;
+    _mainChannel = _mainChannel!.addMessage(message);
+    _saveConversations();
+    notifyListeners();
+  }
+
   /// Find a message in the current conversation and update it.
-  /// Returns true if the message was found and updated.
   bool _updateMessageInConversation(
     String messageId,
     Message Function(Message) updater,
   ) {
-    if (_currentConversation == null || messageId.isEmpty) return false;
-
-    final index =
-        _conversations.indexWhere((c) => c.id == _currentConversation!.id);
-    if (index == -1) return false;
-
-    final conversation = _conversations[index];
-    final msgIndex = conversation.messages.indexWhere((m) => m.id == messageId);
+    if (_mainChannel == null || messageId.isEmpty) return false;
+    final msgIndex = _mainChannel!.messages.indexWhere((m) => m.id == messageId);
     if (msgIndex == -1) return false;
-
-    final updatedMessage = updater(conversation.messages[msgIndex]);
-    final updatedMessages = List<Message>.from(conversation.messages);
+    final updatedMessage = updater(_mainChannel!.messages[msgIndex]);
+    final updatedMessages = List<Message>.from(_mainChannel!.messages);
     updatedMessages[msgIndex] = updatedMessage;
-
-    final updatedConversation = conversation.copyWith(
+    _mainChannel = _mainChannel!.copyWith(
       messages: updatedMessages,
       updatedAt: DateTime.now(),
     );
-
-    _conversations[index] = updatedConversation;
-    _currentConversation = updatedConversation;
     notifyListeners();
     return true;
   }
 
-  /// Update the streaming message content
-  void _updateStreamingMessage(String content, String? reasoning) {
-    _updateMessageInConversation(
-      _currentStreamingMessageId,
-      (msg) => msg.copyWith(content: content, reasoning: reasoning),
-    );
-  }
-
   /// Auto-rename the conversation if it's the first message
   Future<void> _autoRenameConversation() async {
-    final conversation = _currentConversation;
-    if (conversation == null || conversation.title != 'New Chat') {
-      return;
-    }
-
-    // Only rename after the first user message and its assistant response
-    if (conversation.userMessageCount != 1) {
-      return;
-    }
+    final conversation = _mainChannel;
+    if (conversation == null || conversation.title != 'New Chat') return;
+    if (conversation.userMessageCount != 1) return;
 
     final firstUserMessage =
         conversation.messages.firstWhere((m) => m.isUser).content;
@@ -787,62 +783,17 @@ class StreamingChatService extends ChangeNotifier {
     _streamingReasoningSubject.add('');
   }
 
-  /// Add message to current conversation
-  void _addMessageToCurrentConversation(Message message) {
-    try {
-      if (_currentConversation == null) {
-        appLogger.warning('Attempted to add message to null conversation');
-        return;
-      }
-
-      final conversationId = _currentConversation!.id;
-      final index = _conversations.indexWhere((c) => c.id == conversationId);
-
-      if (index != -1) {
-        final updatedConversation = _conversations[index].addMessage(message);
-        _conversations[index] = updatedConversation;
-        _currentConversation = updatedConversation;
-        _saveConversations();
-        notifyListeners();
-      } else {
-        appLogger.warning(
-          'Current conversation not found in conversations list',
-        );
-      }
-    } catch (e) {
-      appLogger.error('Error adding message to conversation', error: e);
-    }
-  }
-
   /// Remove the last message from current conversation
   void _removeLastMessage() {
     try {
-      if (_currentConversation == null ||
-          _currentConversation!.messages.isEmpty) {
-        return;
-      }
-
-      final conversationId = _currentConversation!.id;
-      final index = _conversations.indexWhere((c) => c.id == conversationId);
-
-      if (index != -1) {
-        final updatedMessages =
-            List<Message>.from(_conversations[index].messages);
-        if (updatedMessages.isNotEmpty) {
-          updatedMessages.removeLast();
-
-          final updatedConversation = _conversations[index].copyWith(
-            messages: updatedMessages,
-            updatedAt: DateTime.now(),
-          );
-
-          _conversations[index] = updatedConversation;
-          _currentConversation = updatedConversation;
-
-          _saveConversations();
-          notifyListeners();
-        }
-      }
+      if (_mainChannel == null || _mainChannel!.messages.isEmpty) return;
+      final updated = _mainChannel!.copyWith(
+        messages: _mainChannel!.messages.sublist(0, _mainChannel!.messages.length - 1),
+        updatedAt: DateTime.now(),
+      );
+      _mainChannel = updated;
+      _saveConversations();
+      notifyListeners();
     } catch (e) {
       appLogger.error('Error removing last message', error: e);
     }
@@ -850,9 +801,8 @@ class StreamingChatService extends ChangeNotifier {
 
   /// Build message history for API
   List<Map<String, String>> _buildMessageHistory() {
-    if (_currentConversation == null) return [];
-
-    return _currentConversation!.messages
+    if (_mainChannel == null) return [];
+    return _mainChannel!.messages
         .where(
           (m) =>
               m.role != MessageRole.system &&
@@ -880,20 +830,16 @@ class StreamingChatService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Clear all conversations
+  /// Clear all conversations (same as reset)
   void clearAllConversations() {
     _cancelCurrentStream();
-    _conversations.clear();
-    _currentConversation = null;
-
-    // Clear from storage asynchronously
+    resetContext();
     _storageService.clearAllConversations().catchError((e) {
       appLogger.error(
         '[StreamingChat] Error clearing conversations from storage',
         error: e,
       );
     });
-
     notifyListeners();
   }
 

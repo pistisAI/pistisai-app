@@ -29,8 +29,20 @@ class Conversation {
       messages: [],
       createdAt: now,
       updatedAt: now,
-      model: model ??
-          'default', // Ensure model is never null for database constraints
+      model: model ?? 'default',
+    );
+  }
+
+  /// Create the main channel (persistent, fixed ID)
+  factory Conversation.mainChannel({String? model}) {
+    final now = DateTime.now();
+    return Conversation(
+      id: 'main-channel',
+      title: 'Zoid Maltek',
+      messages: [],
+      createdAt: now,
+      updatedAt: now,
+      model: model ?? 'default',
     );
   }
 
@@ -127,7 +139,7 @@ class Conversation {
     try {
       return messages.lastWhere((m) => m.isUser);
     } catch (e) {
-      return null; // Return null instead of throwing error
+      return null;
     }
   }
 
@@ -148,24 +160,15 @@ class Conversation {
       if (content.length <= 50) return content;
       return '${content.substring(0, 50)}...';
     } catch (e) {
-      // Return default preview when no user messages exist
       return 'New conversation';
     }
   }
 
   /// Check if conversation is empty
   bool get isEmpty => messages.isEmpty;
-
-  /// Check if conversation has any user messages
   bool get hasUserMessages => messages.any((m) => m.isUser);
-
-  /// Get message count
   int get messageCount => messages.length;
-
-  /// Get user message count
   int get userMessageCount => messages.where((m) => m.isUser).length;
-
-  /// Get assistant message count
   int get assistantMessageCount => messages.where((m) => m.isAssistant).length;
 
   /// Check if the conversation is currently waiting for a response
@@ -201,11 +204,8 @@ class Conversation {
   /// Generate title from the first user message
   String _generateTitleFromMessage(Message message) {
     if (!message.isUser) return title;
-
     final content = message.content.trim();
     if (content.isEmpty) return title;
-
-    // Take first 30 characters and add ellipsis if needed
     if (content.length <= 30) return content;
     return '${content.substring(0, 30)}...';
   }
