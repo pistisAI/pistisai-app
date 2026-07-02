@@ -430,6 +430,12 @@ class StreamingChatService extends ChangeNotifier {
 
   /// Handle streaming completion
   void _handleStreamingComplete() {
+    // Guard against re-entrant calls (isComplete + onDone double-fire)
+    if (_currentStreamingMessageId.isEmpty) {
+      appLogger.debug('[StreamingChat] Skipping duplicate _handleStreamingComplete');
+      return;
+    }
+
     appLogger.debug('[StreamingChat] Streaming completed');
 
     _setStreaming(false);

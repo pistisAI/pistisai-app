@@ -321,10 +321,10 @@ sudo snap connect Pistisai:system-observe''',
       child: _buildInstallationSection(
         'Installation',
         '''# Download from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm_${AppConfig.appVersion}_amd64.deb
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux_${AppConfig.appVersion}_amd64.deb
 
 # Install with dpkg
-sudo dpkg -i cloudtolocalllm_${AppConfig.appVersion}_amd64.deb
+sudo dpkg -i Pistisai-Linux_${AppConfig.appVersion}_amd64.deb
 
 # Install dependencies if needed
 sudo apt-get install -f''',
@@ -341,13 +341,13 @@ sudo apt-get install -f''',
       child: _buildInstallationSection(
         'Download and Run',
         '''# Download AppImage from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-${AppConfig.appVersion}-x86_64.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
 
 # Make executable
 chmod +x Pistisai-${AppConfig.appVersion}-x86_64.AppImage
 
 # Run directly
-./cloudtolocalllm-${AppConfig.appVersion}-x86_64.AppImage''',
+./Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage''',
       ),
     );
   }
@@ -381,7 +381,7 @@ pamac install Pistisai''',
       child: _buildInstallationSection(
         'Download and Install',
         '''# Download pre-built binary from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-${AppConfig.appVersion}-x86_64.tar.gz
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.tar.gz
 
 # Extract to local directory
 tar -xzf Pistisai-${AppConfig.appVersion}-x86_64.tar.gz

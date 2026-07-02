@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
@@ -60,8 +60,8 @@ jobs:
           grep -q "setTimeout(removeSplashFromWeb" "$INDEX" || { echo "❌ 8s splash timeout missing"; exit 1; }
           echo "✅ Splash fix bindings present in build output"
 
-      - name: "📦 npm ci (Playwright + helpers)"
-        run: npm ci --no-audit --no-fund
+      - name: "📦 npm install (Playwright + helpers)"
+        run: npm install --no-audit --no-fund
 
       - name: "🎭 Install Playwright browsers"
         run: npx playwright install --with-deps chromium

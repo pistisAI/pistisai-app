@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
@@ -72,12 +72,12 @@ jobs:
           path: build/web/
           retention-days: 1
 
-      - name: Deploy to Simon VPS
+      - name: Deploy to VPS
         if: github.ref_name == 'main'
         env:
           VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          SIMON_HOST: 31.97.140.7
-          SIMON_USER: zoidbot
+          VPS_HOST: ${{ secrets.VPS_HOST || '31.97.140.7' }}
+          VPS_USER: ${{ secrets.VPS_USER || 'zoidbot' }}
         run: |
           set -euo pipefail
           if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then
@@ -89,9 +89,9 @@ jobs:
           printf '%s\n' "$VM_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           cat > ~/.ssh/config <<EOF
-          Host simon-vps
-            HostName ${SIMON_HOST}
-            User ${SIMON_USER}
+          Host pistisai-vps
+            HostName ${VPS_HOST}
+            User ${VPS_USER}
             IdentityFile ~/.ssh/id_ed25519
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
@@ -100,13 +100,13 @@ jobs:
 
           tar -czf /tmp/web_build.tar.gz -C build/web .
           echo "Upload size: $(wc -c < /tmp/web_build.tar.gz) bytes"
-          scp /tmp/web_build.tar.gz simon-vps:/tmp/web_build.tar.gz
+          scp /tmp/web_build.tar.gz pistisai-vps:/tmp/web_build.tar.gz
 
-          ssh simon-vps "sudo mkdir -p /opt/cloudtolocalllm/build/web && sudo rm -rf /opt/cloudtolocalllm/build/web/* && sudo tar -xzf /tmp/web_build.tar.gz -C /opt/cloudtolocalllm/build/web/ && sudo rm /tmp/web_build.tar.gz && cd /opt/cloudtolocalllm/deploy/simon-vps && sudo docker compose --env-file .env build web && sudo docker compose --env-file .env up -d --no-deps web"
+          ssh pistisai-vps "sudo mkdir -p /opt/pistisai/build/web && sudo rm -rf /opt/pistisai/build/web/* && sudo tar -xzf /tmp/web_build.tar.gz -C /opt/pistisai/build/web/ && sudo rm /tmp/web_build.tar.gz && cd /opt/pistisai/deploy && sudo docker compose --env-file .env build web && sudo docker compose --env-file .env up -d --no-deps web"
 
           sleep 5
           for i in {1..20}; do
-            if curl -sf "http://${SIMON_HOST}:3100/health" > /dev/null 2>&1 || curl -sf "https://app.cloudtolocalllm.online/health" > /dev/null 2>&1; then
+            if curl -sf "http://${VPS_HOST}:3100/health" > /dev/null 2>&1 || curl -sf "https://app.pistisai.app/health" > /dev/null 2>&1; then
               echo "✅ VPS web service healthy"
               exit 0
             fi
