@@ -11,6 +11,10 @@ import '../../components/message_input.dart' as msg_input;
 import '../../components/glass_container.dart';
 import '../../components/welcome_screen.dart';
 import '../../components/animated_background.dart';
+import '../../features/avatar/avatar_widget.dart';
+import '../../models/avatar/personality_models.dart';
+import '../../di/locator.dart' as di;
+import '../../services/avatar/personality_engine.dart';
 
 /// Main layout — clean chat interface, nothing else.
 class HomeLayout extends StatefulWidget {
@@ -481,10 +485,25 @@ class _ActionBar extends StatelessWidget {
   }
 
   void _openAvatar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('\u{1F3AD} Avatar window coming soon'),
-        duration: Duration(seconds: 1),
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        content: Center(
+          child: AgentAvatar(
+            state: AgentState.idle,
+            size: 200,
+          ),
+        ),
+        actions: [
+          Center(
+            child: TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Close'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -497,21 +516,103 @@ class _ActionBar extends StatelessWidget {
   }
 
   void _showMood(BuildContext context) {
+    final engine = di.serviceLocator<PersonalityEngine>();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.favorite, size: 24),
-            SizedBox(width: 8),
-            Text("Zoid's Mood"),
-          ],
-        ),
-        content: const Text('Personality engine coming soon.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Close'),
+      builder: (ctx) => FutureBuilder<ExtendedAvatarProfile>(
+        future: engine.getPersonality(),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const AlertDialog(
+              content: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.favorite, size: 24),
+                  SizedBox(width: 8),
+                  Text("Zoid's Mood"),
+                ],
+              ),
+              content: const Text('Personality engine not ready yet.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          }
+          final profile = snapshot.data!;
+          final traits = profile.traits;
+          return AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.favorite, size: 24),
+                SizedBox(width: 8),
+                Text("Zoid's Mood"),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Agent: ${profile.agentName}',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                _TraitBar('Formality', traits.formality),
+                _TraitBar('Humor', traits.humor),
+                _TraitBar('Enthusiasm', traits.enthusiasm),
+                _TraitBar('Empathy', traits.empathy),
+                const SizedBox(height: 8),
+                Text('Evolution: ${profile.evolutionStage}',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _TraitBar extends StatelessWidget {
+  final String label;
+  final double value;
+
+  const _TraitBar(this.label, this.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(label, style: const TextStyle(fontSize: 13)),
+              Text('${(value * 100).round()}%',
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+            ],
+          ),
+          const SizedBox(height: 2),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: value,
+              minHeight: 6,
+              backgroundColor: Colors.grey.shade200,
+            ),
           ),
         ],
       ),
