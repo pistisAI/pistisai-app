@@ -13,7 +13,7 @@ set -euo pipefail
 
 # Configuration
 # Update these if your repo or branch differs
-GITHUB_REPO="Pistisai-online/Pistisai"
+GITHUB_REPO="pistisAI/pistisai-app"
 BRANCH="main"
 CREDENTIAL_NAME="github-actions-main"
 

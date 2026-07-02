@@ -64,7 +64,7 @@ echo "Updated control file with version $DEB_VERSION and size $INSTALLED_SIZE KB
 chmod 755 "$BUILD_DIR/DEBIAN/postinst"
 chmod 755 "$BUILD_DIR/DEBIAN/postrm"
 chmod 755 "$BUILD_DIR/usr/bin/Pistisai"
-chmod 755 "$BUILD_DIR/usr/lib/Pistisai/Pistisai"
+chmod 755 "$BUILD_DIR/usr/lib/pistisAI/pistisai-app"
 find "$BUILD_DIR/usr/lib/Pistisai/data" -type f -exec chmod 644 {} \; 2>/dev/null || true
 find "$BUILD_DIR/usr/lib/Pistisai/data" -type d -exec chmod 755 {} \; 2>/dev/null || true
 find "$BUILD_DIR/usr/lib/Pistisai/lib" -type f -exec chmod 644 {} \; 2>/dev/null || true

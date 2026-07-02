@@ -19,7 +19,7 @@ Core orientation: secure agent channel, avatar/voice companion, desktop control,
 
 ## GitHub issues are the work-tracking source of truth
 
-- Canonical issue tracker: `https://github.com/Pistisai-online/Pistisai/issues`
+- Canonical issue tracker: `https://github.com/pistisAI/pistisai-app/issues`
 - Treat GitHub issues, issue comments, labels, milestones, and linked PRs as the authoritative source of truth for active bugs, feature requests, prioritization, and execution status.
 - Do not treat ad hoc chat requests, stale plans, local TODO notes, or archived docs as authoritative if they conflict with the current GitHub issue state.
 - Before starting or changing substantive work, check for an existing issue, linked discussion, or open PR and align your work to that record.

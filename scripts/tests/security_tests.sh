@@ -52,7 +52,7 @@ setup_test_environment() {
     cat > "$TEST_README" << 'EOF'
 # Pistisai
 
-[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/Pistisai-online/Pistisai)
+[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/pistisAI/pistisai-app)
 
 A sophisticated Flutter-based application that bridges cloud-based AI services with local AI models.
 

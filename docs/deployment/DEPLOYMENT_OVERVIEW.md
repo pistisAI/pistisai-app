@@ -221,4 +221,4 @@ For detailed information, see [Versioning Strategy](VERSIONING_STRATEGY.md).
 
 ---
 
-_For questions about deployment, please see our [troubleshooting guide](../user-guide/TROUBLESHOOTING.md) or [open an issue](https://github.com/Pistisai-online/Pistisai/issues)._
+_For questions about deployment, please see our [troubleshooting guide](../user-guide/TROUBLESHOOTING.md) or [open an issue](https://github.com/pistisAI/pistisai-app/issues)._

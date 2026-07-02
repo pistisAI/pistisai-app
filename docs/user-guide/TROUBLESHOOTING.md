@@ -106,7 +106,7 @@ That is expected unless the target device granted desktop permissions. Conversat
 Linux:
 
 ```bash
-ldd /opt/Pistisai/Pistisai
+ldd /opt/pistisai-app
 ./cloudtolocalllm --verbose
 ```
 
@@ -274,4 +274,4 @@ rmdir /s "%LOCALAPPDATA%\Pistisai"
 - [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
 - [Agent Runtime Contract](../architecture/AGENT_RUNTIME_CONTRACT.md)
 - [Secure Device Mesh](../architecture/SECURE_DEVICE_MESH.md)
-- [GitHub Issues](https://github.com/Pistisai-online/Pistisai/issues)
+- [GitHub Issues](https://github.com/pistisAI/pistisai-app/issues)

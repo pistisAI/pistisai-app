@@ -69,7 +69,7 @@ Before starting tunnel system development, ensure you have the following install
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/Pistisai/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai
 ```
 
@@ -731,8 +731,8 @@ cat test-results.log
 - **API Documentation**: `docs/API/TUNNEL_CLIENT_API.md`, `docs/API/TUNNEL_SERVER_API.md`
 - **Architecture Documentation**: `docs/ARCHITECTURE/TUNNEL_SYSTEM.md`
 - **Troubleshooting Guide**: `docs/OPERATIONS/TUNNEL_TROUBLESHOOTING.md`
-- **GitHub Repository**: https://github.com/Pistisai/Pistisai
-- **Issue Tracker**: https://github.com/Pistisai/Pistisai/issues
+- **GitHub Repository**: https://github.com/pistisAI/pistisai-app
+- **Issue Tracker**: https://github.com/pistisAI/pistisai-app/issues
 
 ## Getting Help
 

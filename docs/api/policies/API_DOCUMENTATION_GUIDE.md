@@ -380,9 +380,9 @@ X-Webhook-Signature: sha256=abcdef123456...
 
 Official SDKs are available for:
 
-- **JavaScript/TypeScript**: `@Pistisai/api-client`
+- **JavaScript/TypeScript**: `@pistisAI/pistisai-app`
 - **Python**: `cloudtolocalllm-api`
-- **Go**: `github.com/Pistisai/api-go`
+- **Go**: `github.com/pistisAI/pistisai-app`
 
 ## API Versioning
 
@@ -407,7 +407,7 @@ The API uses URL-based versioning:
 For API support:
 
 - **Documentation**: https://docs.pistisai.app
-- **Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
+- **Issues**: https://github.com/pistisAI/pistisai-app/issues
 - **Email**: support@pistisai.app
 - **Discord**: https://discord.gg/Pistisai
 

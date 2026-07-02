@@ -8,7 +8,7 @@ set -e
 
 # Configuration
 AWS_ACCOUNT_ID="422017356244"
-GITHUB_REPO="Pistisai/Pistisai"
+GITHUB_REPO="pistisAI/pistisai-app"
 OIDC_PROVIDER_URL="token.actions.githubusercontent.com"
 OIDC_AUDIENCE="sts.amazonaws.com"
 

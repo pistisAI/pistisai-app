@@ -497,7 +497,7 @@ class HomepageScreen extends StatelessWidget {
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () async {
-              final uri = Uri.parse('https://github.com/Pistisai-online/Pistisai/releases');
+              final uri = Uri.parse('https://github.com/pistisAI/pistisai-app/releases');
               if (await canLaunchUrl(uri)) {
                 await launchUrl(uri);
               }

@@ -27,13 +27,13 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main application window</caption>
-      <image>https://raw.githubusercontent.com/Pistisai-online/Pistisai/main/docs/app_screenshots/main-window.png</image>
+      <image>https://raw.githubusercontent.com/pistisAI/pistisai-app/main/docs/app_screenshots/main-window.png</image>
     </screenshot>
   </screenshots>
   
-  <url type="homepage">https://github.com/Pistisai-online/Pistisai</url>
-  <url type="bugtracker">https://github.com/Pistisai-online/Pistisai/issues</url>
-  <url type="help">https://github.com/Pistisai-online/Pistisai/blob/main/README.md</url>
+  <url type="homepage">https://github.com/pistisAI/pistisai-app</url>
+  <url type="bugtracker">https://github.com/pistisAI/pistisai-app/issues</url>
+  <url type="help">https://github.com/pistisAI/pistisai-app/blob/main/README.md</url>
   
   <developer_name>Pistisai Contributors</developer_name>
   

@@ -1,6 +1,6 @@
 # GitHub Secrets à ajouter pour Android Build
 
-Aller sur https://github.com/Pistisai-online/Pistisai/settings/secrets/actions
+Aller sur https://github.com/pistisAI/pistisai-app/settings/secrets/actions
 
 Ajouter ces 4 secrets:
 

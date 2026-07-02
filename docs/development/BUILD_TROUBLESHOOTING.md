@@ -792,7 +792,7 @@ When reporting build issues, include:
 
 **Where to report:**
 
-- GitHub Issues: https://github.com/Pistisai-online/Pistisai/issues
+- GitHub Issues: https://github.com/pistisAI/pistisai-app/issues
 - Include label: `ci/cd` or `build`
 
 ### Additional Resources

@@ -57,10 +57,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Pistisai/Pistisai.git"
+    "url": "https://github.com/pistisAI/pistisai-app.git"
   },
   "bugs": {
-    "url": "https://github.com/Pistisai/Pistisai/issues"
+    "url": "https://github.com/pistisAI/pistisai-app/issues"
   },
   "homepage": "https://pistisai.app"
 }

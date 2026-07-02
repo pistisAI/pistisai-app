@@ -11,9 +11,9 @@
         "redis": {}
     },
     "manifestVersion": 2,
-    "website": "https://github.com/Pistisai-online/Pistisai",
+    "website": "https://github.com/pistisAI/pistisai-app",
     "contactEmail": "support@pistisai.app",
-    "icon": "https://raw.githubusercontent.com/Pistisai-online/Pistisai/main/assets/brand_logo.png",
+    "icon": "https://raw.githubusercontent.com/pistisAI/pistisai-app/main/assets/brand_logo.png",
     "tags": [
         "ai",
         "agent",

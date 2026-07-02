@@ -27,7 +27,7 @@ Get-Content C:\actions-runner\_diag\Runner_*.log -Tail 20
 
 ## 📍 Verify in GitHub
 
-Visit: `https://github.com/Pistisai-online/Pistisai/settings/actions/runners`
+Visit: `https://github.com/pistisAI/pistisai-app/settings/actions/runners`
 
 Your runner should appear with:
 

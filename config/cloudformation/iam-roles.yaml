@@ -10,7 +10,7 @@ Parameters:
   GitHubRepository:
     Type: String
     Description: GitHub repository in format owner/repo
-    Default: 'Pistisai/Pistisai'
+    Default: 'pistisAI/pistisai-app'
 
 Resources:
   # EKS Service Role

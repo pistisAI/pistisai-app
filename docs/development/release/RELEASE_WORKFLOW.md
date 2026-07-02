@@ -106,7 +106,7 @@ git status
 2. **Get Release ID** (if using API):
 
    ```bash
-   gh api repos/Pistisai-online/Pistisai/releases/latest | jq '.id'
+   gh api repos/pistisAI/pistisai-app/releases/latest | jq '.id'
    ```
 
 ### Step 5: Upload Assets to GitHub Release

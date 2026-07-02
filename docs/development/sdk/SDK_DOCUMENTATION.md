@@ -567,7 +567,7 @@ console.log(`Total deliveries: ${deliveries.pagination.total}`);
 
 For issues, questions, or contributions:
 
-- GitHub: https://github.com/Pistisai/Pistisai
+- GitHub: https://github.com/pistisAI/pistisai-app
 - Documentation: https://pistisai.app/docs
 - API Docs: https://api.pistisai.app/api/docs
 

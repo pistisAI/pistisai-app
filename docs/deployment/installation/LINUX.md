@@ -64,7 +64,7 @@ sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
 ## DEB Package
 
 ```bash
-wget https://github.com/Pistisai-online/Pistisai/releases/latest/download/cloudtolocalllm_amd64.deb
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm_amd64.deb
 sudo dpkg -i cloudtolocalllm_amd64.deb
 sudo apt-get install -f
 ```
@@ -93,7 +93,7 @@ sudo apt-get remove cloudtolocalllm
 ## AppImage
 
 ```bash
-wget https://github.com/Pistisai-online/Pistisai/releases/latest/download/Pistisai-x86_64.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-x86_64.AppImage
 chmod +x Pistisai-x86_64.AppImage
 ./Pistisai-x86_64.AppImage
 ```
@@ -123,7 +123,7 @@ Categories=Development;Network;
 
 ```bash
 sudo snap install flutter --classic
-git clone https://github.com/Pistisai-online/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai
 flutter pub get
 flutter config --enable-linux-desktop
@@ -168,9 +168,9 @@ Web and mobile access should use the Tailscale-first cloud connector design. The
 ### Application Will Not Start
 
 ```bash
-ldd /opt/Pistisai/Pistisai
+ldd /opt/pistisai-app
 sudo apt-get install -y libgtk-3-0 libglib2.0-0
-chmod +x /opt/Pistisai/Pistisai
+chmod +x /opt/pistisai-app
 ```
 
 ### Agent Runtime Not Found

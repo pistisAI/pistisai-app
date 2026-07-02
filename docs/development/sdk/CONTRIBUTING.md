@@ -17,7 +17,7 @@ Please be respectful and constructive in all interactions.
 
 ```bash
 # Clone the repository
-git clone https://github.com/Pistisai/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai/services/sdk
 
 # Install dependencies

@@ -157,7 +157,7 @@ class AutoUpdateService extends ChangeNotifier {
 
     try {
       final request = await client.getUrl(Uri.parse(
-          'https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest'));
+          'https://api.github.com/repos/pistisAI/pistisai-app/releases/latest'));
       final response = await request.close();
 
       if (response.statusCode != 200) {

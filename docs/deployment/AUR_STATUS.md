@@ -88,7 +88,7 @@ AUR (Arch User Repository) support for Pistisai has been temporarily removed fro
 
 ```bash
 # Download latest AppImage
-wget https://github.com/Pistisai-online/Pistisai/releases/latest/download/cloudtolocalllm-4.0.78-x86_64.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-4.0.78-x86_64.AppImage
 
 # Make executable and run
 chmod +x Pistisai-4.0.78-x86_64.AppImage
@@ -102,7 +102,7 @@ chmod +x Pistisai-4.0.78-x86_64.AppImage
 
 ```bash
 # Clone repository
-git clone https://github.com/Pistisai-online/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai
 
 # Build using unified package script

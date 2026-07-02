@@ -263,8 +263,8 @@ docker-compose up -d --force-recreate api-backend
 
 ```bash
 # Download from GitHub releases
-wget https://github.com/Pistisai-online/Pistisai/releases/download/v3.10.2/cloudtolocalllm-linux.AppImage
-wget https://github.com/Pistisai-online/Pistisai/releases/download/v3.10.2/cloudtolocalllm-windows.exe
+wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/cloudtolocalllm-linux.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/cloudtolocalllm-windows.exe
 
 # Verify checksums
 sha256sum Pistisai-linux.AppImage

@@ -50,7 +50,7 @@ For a runtime on another machine, install Tailscale on both devices and confirm 
 
 ## Windows Installer
 
-1. Open the [latest release](https://github.com/Pistisai-online/Pistisai/releases/latest).
+1. Open the [latest release](https://github.com/pistisAI/pistisai-app/releases/latest).
 2. Download the Windows installer.
 3. Run the installer.
 4. Follow the installation wizard.
@@ -75,7 +75,7 @@ Use "Add or Remove Programs" in Windows Settings, or run the uninstaller from th
 
 ## Portable Build
 
-1. Download the portable zip from the [latest release](https://github.com/Pistisai-online/Pistisai/releases/latest).
+1. Download the portable zip from the [latest release](https://github.com/pistisAI/pistisai-app/releases/latest).
 2. Extract it to a folder such as `C:\Tools\Pistisai`.
 3. Run `Pistisai.exe`.
 
@@ -94,7 +94,7 @@ Install:
 Build:
 
 ```powershell
-git clone https://github.com/Pistisai-online/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai
 flutter pub get
 flutter config --enable-windows-desktop

@@ -469,4 +469,4 @@ flutter doctor -v
 
 ---
 
-*For build issues or questions, please check our [troubleshooting guide](../USER_DOCUMENTATION/USER_TROUBLESHOOTING_GUIDE.md) or [open an issue](https://github.com/Pistisai-online/Pistisai/issues).*
+*For build issues or questions, please check our [troubleshooting guide](../USER_DOCUMENTATION/USER_TROUBLESHOOTING_GUIDE.md) or [open an issue](https://github.com/pistisAI/pistisai-app/issues).*

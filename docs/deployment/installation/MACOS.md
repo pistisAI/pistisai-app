@@ -45,7 +45,7 @@ flutter config --enable-macos-desktop
 ### Build From Source
 
 ```bash
-git clone https://github.com/Pistisai-online/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai
 flutter pub get
 flutter build macos --release
@@ -124,7 +124,7 @@ These permissions are granted on the local Mac only. Syncing an account does not
 Homebrew distribution is planned after packaging is stable.
 
 ```bash
-brew tap Pistisai-online/Pistisai
+brew tap pistisAI/pistisai-app
 brew install cloudtolocalllm
 ```
 

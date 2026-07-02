@@ -192,6 +192,6 @@ await client.logout();
 
 ## Support
 
-- GitHub: https://github.com/Pistisai/Pistisai
+- GitHub: https://github.com/pistisAI/pistisai-app
 - Documentation: https://pistisai.app/docs
 - API Docs: https://api.pistisai.app/api/docs

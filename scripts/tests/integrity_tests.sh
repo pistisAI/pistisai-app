@@ -63,7 +63,7 @@ create_test_files() {
     cat > "$TEST_DIR/readme_lf.md" << 'EOF'
 # Pistisai
 
-[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/Pistisai-online/Pistisai)
+[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/pistisAI/pistisai-app)
 
 Test file with LF line endings.
 EOF
@@ -72,7 +72,7 @@ EOF
     cat > "$TEST_DIR/readme_crlf.md" << 'EOF'
 # Pistisai
 
-[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/Pistisai-online/Pistisai)
+[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/pistisAI/pistisai-app)
 
 Test file with CRLF line endings.
 EOF
@@ -80,13 +80,13 @@ EOF
     sed -i 's/$/\r/' "$TEST_DIR/readme_crlf.md"
 
     # File without final newline
-    printf "# Pistisai\n\n[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/Pistisai-online/Pistisai)\n\nTest file without final newline." > "$TEST_DIR/readme_no_final_newline.md"
+    printf "# Pistisai\n\n[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/pistisAI/pistisai-app)\n\nTest file without final newline." > "$TEST_DIR/readme_no_final_newline.md"
 
     # File with Unicode characters
     cat > "$TEST_DIR/readme_unicode.md" << 'EOF'
 # Pistisai 🚀
 
-[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/Pistisai-online/Pistisai)
+[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/pistisAI/pistisai-app)
 
 Test file with Unicode: ✅ 🔒 📝 🌟
 Special characters: àáâãäåæçèéêë
@@ -97,7 +97,7 @@ EOF
     {
         echo "# Pistisai"
         echo ""
-        echo "[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/Pistisai-online/Pistisai)"
+        echo "[![Version](https://img.shields.io/badge/version-4.0.32-blue.svg)](https://github.com/pistisAI/pistisai-app)"
         echo ""
         for i in {1..1000}; do
             echo "Line $i: This is a test line with some content to make the file larger."

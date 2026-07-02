@@ -176,7 +176,7 @@ class ConstructionScreen extends StatelessWidget {
               context,
               title: 'GitHub Repository',
               description: 'View code, report issues, contribute',
-              url: 'https://github.com/Pistisai-online/Pistisai',
+              url: 'https://github.com/pistisAI/pistisai-app',
               icon: Icons.code,
             ),
             const SizedBox(height: 12),

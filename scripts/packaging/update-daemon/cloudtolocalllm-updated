@@ -127,7 +127,7 @@ should_auto_install() {
 check_for_updates() {
     log "Checking for updates..."
 
-    local api_url="https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest"
+    local api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases/latest"
     local latest_version=""
 
     if command -v curl &> /dev/null; then
@@ -170,7 +170,7 @@ APPIMAGE_TARGET="$INSTALL_DIR/cloudtolocalllm"
 
 get_release_asset_url() {
     local version="$1"
-    local api_url="https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/tags/v${version}"
+    local api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases/tags/v${version}"
     local asset_name="cloudtolocalllm-${version}-x86_64.AppImage"
     local response_file
 

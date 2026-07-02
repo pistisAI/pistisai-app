@@ -125,8 +125,8 @@ The main window opens as the secure channel to the selected agent runtime. Agent
 - [Troubleshooting](../../user-guide/TROUBLESHOOTING.md)
 - [Agent Runtime Contract](../../architecture/AGENT_RUNTIME_CONTRACT.md)
 - [Secure Device Mesh](../../architecture/SECURE_DEVICE_MESH.md)
-- [GitHub Issues](https://github.com/Pistisai-online/Pistisai/issues)
-- [GitHub Discussions](https://github.com/Pistisai-online/Pistisai/discussions)
+- [GitHub Issues](https://github.com/pistisAI/pistisai-app/issues)
+- [GitHub Discussions](https://github.com/pistisAI/pistisai-app/discussions)
 
 ---
 

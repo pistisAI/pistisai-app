@@ -4,7 +4,7 @@
 
 - Searched the repository for live issue-state mutation paths such as `PATCH /api/issues`, `issue update`, `setIssueStatus`, and `close issue`.
 - Searched for a repo-local helper like `paperclip-issue-update.sh`.
-- Re-checked the canonical GitHub issue at `https://github.com/Pistisai-online/Pistisai/issues/322`.
+- Re-checked the canonical GitHub issue at `https://github.com/pistisAI/pistisai-app/issues/322`.
 
 ## Evidence
 

@@ -98,10 +98,10 @@ log_error() {
 # Detect latest version from GitHub releases
 detect_latest_version() {
     local channel="${1:-stable}"
-    local api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest"
+    local api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases/latest"
 
     if [ "$channel" != "stable" ]; then
-        api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases?per_page=1"
+        api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases?per_page=1"
     fi
 
     if command -v curl &> /dev/null; then
@@ -152,7 +152,7 @@ download_appimage() {
     local channel="$2"
     local output_dir="$3"
 
-    local base_url="https://github.com/Pistisai-online/Pistisai/releases/download/v${version}"
+    local base_url="https://github.com/pistisAI/pistisai-app/releases/download/v${version}"
     local appimage_name="Pistisai-${version}-x86_64.AppImage"
     local download_url="${base_url}/${appimage_name}"
 

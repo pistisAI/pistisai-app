@@ -178,7 +178,7 @@ fi
     cat > dist/linux/install.sh << 'INSTALLER_EOF'
     #!/bin/bash
     INSTALL_VERSION="${VERSION}"
-    INSTALL_BASE_URL="https://github.com/Pistisai-online/Pistisai/releases/download"
+    INSTALL_BASE_URL="https://github.com/pistisAI/pistisai-app/releases/download"
 
     # ... rest of installer script ...
     INSTALLER_EOF

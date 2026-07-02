@@ -111,7 +111,7 @@ Not allowed:
 
 Get the latest release for your platform:
 
-- [Pistisai releases](https://github.com/Pistisai-online/Pistisai/releases)
+- [Pistisai releases](https://github.com/pistisAI/pistisai-app/releases)
 
 ### Windows
 

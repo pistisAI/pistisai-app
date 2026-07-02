@@ -506,7 +506,7 @@ class SetupConfig {
   
   static const String downloadBaseUrl = String.fromEnvironment(
     'DOWNLOAD_BASE_URL',
-    defaultValue: 'https://github.com/Pistisai/releases',
+    defaultValue: 'https://github.com/pistisAI/pistisai-app/releases',
   );
   
   static const int containerCreationTimeoutSeconds = int.fromEnvironment(
@@ -643,7 +643,7 @@ VALIDATION_TESTS_ENABLED=true
 
 # API Configuration
 CONTAINER_API_URL=https://pistisai.app/api
-DOWNLOAD_BASE_URL=https://github.com/Pistisai/releases
+DOWNLOAD_BASE_URL=https://github.com/pistisAI/pistisai-app/releases
 SETUP_API_TIMEOUT=120
 
 # Feature Flags

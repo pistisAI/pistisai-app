@@ -48,7 +48,7 @@ If you prefer to set up manually or the script fails, see the [Manual Setup](#ma
 
 ### Step 1: Get Runner Registration Token
 
-1. Go to your GitHub repository: `https://github.com/Pistisai-online/Pistisai`
+1. Go to your GitHub repository: `https://github.com/pistisAI/pistisai-app`
 2. Navigate to: **Settings** → **Actions** → **Runners**
 3. Click **New runner**
 4. Select **Windows** and **x64**
@@ -83,7 +83,7 @@ Get-Service actions.runner.*
 
 ### Step 4: Verify Runner in GitHub
 
-1. Go to: `https://github.com/Pistisai-online/Pistisai/settings/actions/runners`
+1. Go to: `https://github.com/pistisAI/pistisai-app/settings/actions/runners`
 2. You should see your runner listed with a green status
 3. It should have labels: `windows`, `self-hosted`
 
@@ -153,7 +153,7 @@ Expand-Archive -Path "actions-runner.zip" -DestinationPath "." -Force
 Remove-Item "actions-runner.zip" -Force
 
 # Configure (replace YOUR_TOKEN with token from GitHub)
-.\config.cmd --url https://github.com/Pistisai-online/Pistisai --token YOUR_TOKEN --labels windows,self-hosted --name YOUR_RUNNER_NAME --unattended
+.\config.cmd --url https://github.com/pistisAI/pistisai-app --token YOUR_TOKEN --labels windows,self-hosted --name YOUR_RUNNER_NAME --unattended
 
 # Install as service
 .\svc.exe install
@@ -271,7 +271,7 @@ Remove-Item -Recurse -Force C:\actions-runner
    ```powershell
    cd C:\actions-runner
    .\config.cmd remove --token YOUR_TOKEN
-   .\config.cmd --url https://github.com/Pistisai-online/Pistisai --token YOUR_TOKEN --labels windows,self-hosted
+   .\config.cmd --url https://github.com/pistisAI/pistisai-app --token YOUR_TOKEN --labels windows,self-hosted
    ```
 
 ### Flutter Build Fails
@@ -330,7 +330,7 @@ Remove-Item -Recurse -Force C:\actions-runner
 
 ### View Runner Activity
 
-1. GitHub UI: `https://github.com/Pistisai-online/Pistisai/settings/actions/runners`
+1. GitHub UI: `https://github.com/pistisAI/pistisai-app/settings/actions/runners`
 2. Runner logs: `C:\actions-runner\_diag\Runner_*.log`
 3. Windows Event Viewer: Applications and Services Logs
 

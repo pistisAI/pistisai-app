@@ -1,6 +1,6 @@
 site_name: Pistisai Docs
 site_description: Documentation for Pistisai — a local-first companion and desktop capability layer for agent runtimes
-repo_url: https://github.com/Pistisai-online/Pistisai
+repo_url: https://github.com/pistisAI/pistisai-app
 edit_uri: edit/main/docs/
 
 theme:

@@ -19,7 +19,7 @@ if (!(Test-Path $installDir)) {
 Write-Host "Installing to $installDir..."
 
 # Mocking the download
-# Invoke-WebRequest -Uri "https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest/download/cloudtolocalllm-windows.exe" -OutFile (Join-Path $installDir "cloudtolocalllm.exe")
+# Invoke-WebRequest -Uri "https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-windows.exe" -OutFile (Join-Path $installDir "cloudtolocalllm.exe")
 
 # OpenClaw Gateway Install
 $openclaw = Get-Command openclaw -ErrorAction SilentlyContinue

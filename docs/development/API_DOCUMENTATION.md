@@ -654,7 +654,7 @@ Download the complete API collection:
 
 ```bash
 curl -o cloudtolocalllm-api.json \
-  https://raw.githubusercontent.com/Pistisai-online/Pistisai/main/docs/api/postman-collection.json
+  https://raw.githubusercontent.com/pistisAI/pistisai-app/main/docs/api/postman-collection.json
 ```
 
 #### **OpenAPI Specification**
@@ -708,4 +708,4 @@ X-RateLimit-Reset: 1640995200
 
 ---
 
-**For additional API details, examples, and SDKs, visit the [GitHub repository](https://github.com/Pistisai-online/Pistisai) or check the interactive API documentation at `/api/docs`.**
+**For additional API details, examples, and SDKs, visit the [GitHub repository](https://github.com/pistisAI/pistisai-app) or check the interactive API documentation at `/api/docs`.**

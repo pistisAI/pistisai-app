@@ -12,7 +12,7 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (coming soon)
 
-📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/Pistisai-online/Pistisai/releases/latest).
+📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/pistisAI/pistisai-app/releases/latest).
 
 **You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work.
 
@@ -77,7 +77,7 @@ Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECT
 ## Development
 
 ```bash
-git clone https://github.com/Pistisai-online/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai
 flutter pub get
 

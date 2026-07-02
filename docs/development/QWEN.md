@@ -51,7 +51,7 @@ The project uses an agent-runtime-first architecture. Ollama, LM Studio, and sim
 
 ```bash
 # Clone the repository
-git clone https://github.com/Pistisai-online/Pistisai.git
+git clone https://github.com/pistisAI/pistisai-app.git
 cd Pistisai
 
 # Install dependencies

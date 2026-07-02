@@ -15,7 +15,7 @@ import { describe, test, expect } from "@jest/globals";
 // Mock AWS and GitHub OIDC configuration
 const GITHUB_OIDC_PROVIDER = "token.actions.githubusercontent.com";
 const AWS_ACCOUNT_ID = "422017356244";
-const GITHUB_REPO = "Pistisai/Pistisai";
+const GITHUB_REPO = "pistisAI/pistisai-app";
 const GITHUB_BRANCH = "main";
 
 /**

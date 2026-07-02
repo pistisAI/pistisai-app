@@ -151,12 +151,12 @@ class _DownloadTestScreenState extends State<DownloadTestScreen> {
                     const SizedBox(height: 12),
                     _buildManualLink(
                       'GitHub Releases Page',
-                      'https://github.com/Pistisai-online/Pistisai/releases',
+                      'https://github.com/pistisAI/pistisai-app/releases',
                       Icons.open_in_new,
                     ),
                     _buildManualLink(
                       'Latest Release (Direct)',
-                      'https://github.com/Pistisai-online/Pistisai/releases/latest',
+                      'https://github.com/pistisAI/pistisai-app/releases/latest',
                       Icons.download,
                     ),
                   ],

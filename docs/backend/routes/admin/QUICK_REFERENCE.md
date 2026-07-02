@@ -408,5 +408,5 @@ LIMIT 10;
 
 For questions or issues:
 
-- GitHub Issues: https://github.com/Pistisai-online/Pistisai/issues
+- GitHub Issues: https://github.com/pistisAI/pistisai-app/issues
 - Email: support@pistisai.app

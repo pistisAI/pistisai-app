@@ -184,10 +184,10 @@ Add to `scripts/packaging/installer-template.sh`:
 # Detect latest version from GitHub releases
 detect_latest_version() {
     local channel="${1:-stable}"
-    local api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest"
+    local api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases/latest"
 
     if [ "$channel" != "stable" ]; then
-        api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases?per_page=1"
+        api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases?per_page=1"
     fi
 
     if command -v curl &> /dev/null; then
@@ -236,7 +236,7 @@ download_appimage() {
     local channel="$2"
     local output_dir="$3"
 
-    local base_url="https://github.com/Pistisai-online/Pistisai/releases/download/v${version}"
+    local base_url="https://github.com/pistisAI/pistisai-app/releases/download/v${version}"
     local appimage_name="Pistisai-${version}-x86_64.AppImage"
     local download_url="${base_url}/${appimage_name}"
 
@@ -513,7 +513,7 @@ should_auto_install() {
 check_for_updates() {
     log "Checking for updates..."
 
-    local api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest"
+    local api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases/latest"
     local latest_version=""
 
     if command -v curl &> /dev/null; then
@@ -877,7 +877,7 @@ class AutoUpdateService extends ChangeNotifier {
 
     try {
       final request = await client.getUrl(
-        Uri.parse('https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest')
+        Uri.parse('https://api.github.com/repos/pistisAI/pistisai-app/releases/latest')
       );
       final response = await request.close();
 
@@ -1387,10 +1387,10 @@ curl -fsSL https://pistisai.app/install.sh | bash -s -- --dir /opt/myapp
 
 ### Manual Installation
 
-Download the AppImage from [releases](https://github.com/Pistisai-online/Pistisai/releases):
+Download the AppImage from [releases](https://github.com/pistisAI/pistisai-app/releases):
 
 ```bash
-wget https://github.com/Pistisai-online/Pistisai/releases/latest/download/Pistisai-x86_64.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-x86_64.AppImage
 chmod +x Pistisai-x86_64.AppImage
 ./Pistisai-x86_64.AppImage
 ```
