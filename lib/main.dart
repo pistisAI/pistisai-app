@@ -28,7 +28,6 @@ import 'package:cloudtolocalllm/services/web_download_prompt_service.dart'
 import 'package:cloudtolocalllm/services/log_buffer_service.dart';
 import 'package:cloudtolocalllm/services/theme_provider.dart';
 import 'package:cloudtolocalllm/services/platform_detection_service.dart';
-import 'package:cloudtolocalllm/services/google_workspace_service.dart';
 import 'package:cloudtolocalllm/services/url_scheme_registration_service.dart'
     if (dart.library.html) 'package:cloudtolocalllm/services/url_scheme_registration_service_stub.dart';
 import 'web_plugins_stub.dart'
@@ -297,11 +296,7 @@ class _PistisaiAppState extends State<PistisaiApp> {
       _addProviderIfAvailable<PlatformDetectionService>(
           providersList, 'PlatformDetectionService');
 
-      // Add Google Workspace Service
-      _addProviderIfAvailable<GoogleWorkspaceService>(
-          providersList, 'GoogleWorkspaceService');
-
-      // Add Setup Wizard Service
+        // Add Setup Wizard Service
       _addProviderIfAvailable<SetupWizardService>(
           providersList, 'SetupWizardService');
 

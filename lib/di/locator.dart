@@ -20,7 +20,6 @@ import 'package:cloudtolocalllm/services/langchain_integration_service.dart';
 import 'package:cloudtolocalllm/services/langchain_prompt_service.dart';
 import 'package:cloudtolocalllm/services/langchain_rag_service.dart'
     if (dart.library.html) 'package:cloudtolocalllm/services/langchain_rag_service_stub.dart';
-import 'package:cloudtolocalllm/services/llm_audit_service.dart';
 import 'package:cloudtolocalllm/services/llm_error_handler.dart';
 import 'package:cloudtolocalllm/services/llm_provider_manager.dart';
 import 'package:cloudtolocalllm/services/provider_discovery_service.dart';
@@ -36,7 +35,6 @@ import 'package:cloudtolocalllm/services/settings_preference_service.dart';
 import 'package:cloudtolocalllm/services/settings_import_export_service.dart';
 import 'package:cloudtolocalllm/services/provider_configuration_manager.dart';
 import 'package:cloudtolocalllm/services/admin_center_service.dart';
-import 'package:cloudtolocalllm/services/google_workspace_service.dart';
 import 'package:cloudtolocalllm/services/theme_provider.dart';
 import 'package:cloudtolocalllm/services/platform_detection_service.dart';
 import 'package:cloudtolocalllm/services/platform_adapter.dart';
@@ -817,16 +815,6 @@ Future<void> setupAuthenticatedServices() async {
     }
     serviceLocator.registerSingleton<LangChainRAGService>(langchainRagService);
 
-    // LLM Audit service - requires authentication
-    final llmAuditService = LLMAuditService(authService: authService);
-    try {
-      await llmAuditService.initialize().timeout(const Duration(seconds: 10));
-    } catch (e) {
-      debugPrint(
-          '[ServiceLocator] Warning: LLMAuditService initialization failed: $e');
-    }
-    serviceLocator.registerSingleton<LLMAuditService>(llmAuditService);
-
     // Streaming chat service - requires connection manager
     final streamingChatService = StreamingChatService(
       connectionManager,
@@ -892,13 +880,6 @@ Future<void> setupAuthenticatedServices() async {
     // Admin center service - requires authentication
     final adminCenterService = AdminCenterService(authService: authService);
     serviceLocator.registerSingleton<AdminCenterService>(adminCenterService);
-
-    // Google Workspace service - handles personal Gmail/Calendar integrations
-    final googleWorkspaceService = GoogleWorkspaceService(
-      tokenStorage: serviceLocator.get<TokenStorageService>(),
-    );
-    serviceLocator
-        .registerSingleton<GoogleWorkspaceService>(googleWorkspaceService);
 
     // Vision services - screen capture, camera input, and OCR
     debugPrint('[ServiceLocator] Initializing Vision services...');
