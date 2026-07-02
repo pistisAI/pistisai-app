@@ -11,6 +11,7 @@ import '../utils/logger.dart';
 /// Local storage service for conversations using encrypted JSON files
 class LocalConversationStorage {
   static const String _fileName = 'conversations.json.enc';
+  static const String _legacyFileName = 'conversations.json';
   static const String _keyStorageKey = 'local_conversation_encryption_key';
   static final FlutterSecureStorage _secureStorage =
       const FlutterSecureStorage();
@@ -66,6 +67,12 @@ class LocalConversationStorage {
     return file;
   }
 
+  /// Get the legacy plaintext file path (for migration from old format)
+  Future<File> _getLegacyFile() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return File(p.join(directory.path, 'Pistisai', _legacyFileName));
+  }
+
   /// Save all conversations to encrypted local storage
   Future<void> saveConversations(List<Conversation> conversations) async {
     try {
@@ -86,13 +93,15 @@ class LocalConversationStorage {
     }
   }
 
-  /// Load all conversations from encrypted local storage
+  /// Load all conversations from encrypted local storage,
+  /// with automatic migration from legacy plaintext format.
   Future<List<Conversation>> loadConversations() async {
     try {
       final key = await _getKey();
       final file = await _getLocalFile();
       if (!await file.exists()) {
-        return [];
+        // Check for legacy plaintext file and migrate
+        return _migrateFromLegacy(key);
       }
 
       final content = await file.readAsString();
@@ -106,6 +115,34 @@ class LocalConversationStorage {
         '[LocalChatStorage] Error loading conversations',
         error: e,
       );
+      return [];
+    }
+  }
+
+  /// Migrate from legacy plaintext conversations.json to encrypted format.
+  /// Reads the old file, saves it encrypted, then deletes the legacy file.
+  Future<List<Conversation>> _migrateFromLegacy(encrypt.Key key) async {
+    try {
+      final legacyFile = await _getLegacyFile();
+      if (!await legacyFile.exists()) return [];
+
+      appLogger.info('[LocalChatStorage] Migrating legacy conversations.json → encrypted format');
+      final content = await legacyFile.readAsString();
+      if (content.isEmpty) return [];
+
+      final List<dynamic> jsonData = jsonDecode(content);
+      final conversations =
+          jsonData.map((data) => Conversation.fromJson(data)).toList();
+
+      // Save in new encrypted format
+      await saveConversations(conversations);
+
+      // Delete legacy file
+      await legacyFile.delete();
+      appLogger.info('[LocalChatStorage] Migration complete, legacy file deleted');
+      return conversations;
+    } catch (e) {
+      appLogger.error('[LocalChatStorage] Migration from legacy failed', error: e);
       return [];
     }
   }
