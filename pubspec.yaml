@@ -1,5 +1,5 @@
 name: cloudtolocalllm
-description: Manage and run powerful Large Language Models locally, orchestrated via a cloud interface.
+description: Local-first agent companion for Hermes, OpenClaw, and compatible agent runtimes.
 publish_to: none
 homepage: https://pistisai.app
 repository: https://github.com/pistisAI/pistisai-app
