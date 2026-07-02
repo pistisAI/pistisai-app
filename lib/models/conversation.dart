@@ -210,9 +210,11 @@ class Conversation {
     return '${content.substring(0, 30)}...';
   }
 
-  /// Generate a unique ID for the conversation
+  /// Generate a unique ID for the conversation using timestamp + counter
+  static int _convIdCounter = 0;
   static String _generateId() {
-    return 'conv_${DateTime.now().millisecondsSinceEpoch}';
+    _convIdCounter++;
+    return 'conv_${DateTime.now().millisecondsSinceEpoch}_$_convIdCounter';
   }
 
   @override

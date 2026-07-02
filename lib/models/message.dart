@@ -198,9 +198,11 @@ class Message {
     }
   }
 
-  /// Generate a unique ID for the message
+  /// Generate a unique ID for the message using timestamp + counter
+  static int _idCounter = 0;
   static String _generateId() {
-    return DateTime.now().millisecondsSinceEpoch.toString();
+    _idCounter++;
+    return '${DateTime.now().millisecondsSinceEpoch}_$_idCounter';
   }
 
   @override

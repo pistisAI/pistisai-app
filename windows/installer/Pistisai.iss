@@ -2,17 +2,17 @@
   #define MyAppVersion "0.0.0"
 #endif
 #ifndef MyAppSourceDir
-  #define MyAppSourceDir "build\\windows\\x64\\runner\\Release"
+  #define MyAppSourceDir "..\\..\\build\\windows\\x64\\runner\\Release"
 #endif
 #ifndef MyOutputDir
-  #define MyOutputDir "dist\\windows"
+  #define MyOutputDir "..\\..\\dist\\windows"
 #endif
 
 #define MyAppName "Pistisai"
 #define MyAppPublisher "Pistisai"
-#define MyAppURL "https://cloudtolocalllm.online"
+#define MyAppURL "https://pistisai.app"
 #define MyAppExeName "Pistisai.exe"
-#define MyAppProtocol "online.cloudtolocalllm.app"
+#define MyAppProtocol "app.pistisai"
 #define MyAppAssocName MyAppName + " Protocol"
 
 [Setup]

@@ -246,7 +246,7 @@ class PlatformDetectionService extends ChangeNotifier {
           name: 'Portable ZIP',
           description: 'No installation required. Extract and run directly.',
           downloadUrl:
-              'https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-${AppConfig.appVersion}-portable.zip',
+              'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Windows-${AppConfig.appVersion}-portable.zip',
           fileSize: '~12 MB',
           installationType: 'zip',
           requirements: ['Windows 10 or later'],
@@ -324,7 +324,7 @@ class PlatformDetectionService extends ChangeNotifier {
           description:
               'Portable application that runs on any Linux distribution. No installation required.',
           downloadUrl:
-              'https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-${AppConfig.appVersion}-x86_64.AppImage',
+              'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage',
           fileSize: '~48 MB',
           installationType: 'appimage',
           isRecommended: true,
@@ -335,7 +335,7 @@ class PlatformDetectionService extends ChangeNotifier {
           description:
               'Native package for Ubuntu, Debian, and derivatives with proper dependency management.',
           downloadUrl:
-              'https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm_${AppConfig.appVersion}_amd64.deb',
+              'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux_${AppConfig.appVersion}_amd64.deb',
           fileSize: '~44 MB',
           installationType: 'deb',
           requirements: [
@@ -376,7 +376,7 @@ class PlatformDetectionService extends ChangeNotifier {
           title: 'Run the application',
           description: 'Double-click the AppImage or run it from terminal.',
           commands: [
-            './cloudtolocalllm-${AppConfig.appVersion}-x86_64.AppImage',
+            './Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage',
           ],
           applicableTypes: ['appimage'],
           order: 2,
@@ -395,7 +395,7 @@ class PlatformDetectionService extends ChangeNotifier {
           title: 'Install package',
           description: 'Install using dpkg or your package manager.',
           commands: [
-            'sudo dpkg -i cloudtolocalllm_${AppConfig.appVersion}_amd64.deb',
+            'sudo dpkg -i Pistisai-Linux_${AppConfig.appVersion}_amd64.deb',
             'sudo apt-get install -f  # Fix dependencies if needed',
           ],
           applicableTypes: ['deb'],
@@ -442,7 +442,7 @@ class PlatformDetectionService extends ChangeNotifier {
           description:
               'Standard macOS installer with drag-and-drop installation.',
           downloadUrl:
-              'https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-${AppConfig.appVersion}-macos.dmg',
+              'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-macOS-${AppConfig.appVersion}.dmg',
           fileSize: '~50 MB',
           installationType: 'dmg',
           isRecommended: true,

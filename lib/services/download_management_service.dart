@@ -145,27 +145,27 @@ class DownloadManagementService extends ChangeNotifier {
           case 'msi':
             return '$baseUrl/Pistisai-Windows-$version-Setup.exe';
           case 'zip':
-            return '$baseUrl/cloudtolocalllm-$version-portable.zip';
+            return '$baseUrl/Pistisai-Windows-$version-portable.zip';
           default:
             return '$baseUrl/Pistisai-Windows-$version-Setup.exe';
         }
       case 'linux':
         switch (packageType.toLowerCase()) {
           case 'appimage':
-            return '$baseUrl/cloudtolocalllm-$version-x86_64.AppImage';
+            return '$baseUrl/Pistisai-Linux-$version-x86_64.AppImage';
           case 'deb':
-            return '$baseUrl/cloudtolocalllm_${version}_amd64.deb';
+            return '$baseUrl/Pistisai-Linux_${version}_amd64.deb';
           case 'tar.gz':
-            return '$baseUrl/cloudtolocalllm-$version-x86_64.tar.gz';
+            return '$baseUrl/Pistisai-Linux-$version-x86_64.tar.gz';
           default:
-            return '$baseUrl/cloudtolocalllm-$version-x86_64.AppImage';
+            return '$baseUrl/Pistisai-Linux-$version-x86_64.AppImage';
         }
       case 'macos':
         switch (packageType.toLowerCase()) {
           case 'dmg':
-            return '$baseUrl/cloudtolocalllm-$version-macos.dmg';
+            return '$baseUrl/Pistisai-macOS-$version.dmg';
           default:
-            return '$baseUrl/cloudtolocalllm-$version-macos.dmg';
+            return '$baseUrl/Pistisai-macOS-$version.dmg';
         }
       default:
         return AppConfig.githubReleasesUrl;
@@ -249,15 +249,15 @@ class DownloadManagementService extends ChangeNotifier {
           alternatives.add(
             '$baseUrl/Pistisai-Windows-$version-Setup.exe',
           );
-          alternatives.add('$baseUrl/cloudtolocalllm-$version-portable.zip');
+          alternatives.add('$baseUrl/Pistisai-Windows-$version-portable.zip');
           break;
         case 'linux':
-          alternatives.add('$baseUrl/cloudtolocalllm-$version-x86_64.AppImage');
-          alternatives.add('$baseUrl/cloudtolocalllm_${version}_amd64.deb');
-          alternatives.add('$baseUrl/cloudtolocalllm-$version-x86_64.tar.gz');
+          alternatives.add('$baseUrl/Pistisai-Linux-$version-x86_64.AppImage');
+          alternatives.add('$baseUrl/Pistisai-Linux_${version}_amd64.deb');
+          alternatives.add('$baseUrl/Pistisai-Linux-$version-x86_64.tar.gz');
           break;
         case 'macos':
-          alternatives.add('$baseUrl/cloudtolocalllm-$version-macos.dmg');
+          alternatives.add('$baseUrl/Pistisai-macOS-$version.dmg');
           break;
       }
 
