@@ -39,21 +39,21 @@ void main() async {
   final platformManager = PlatformServiceManager();
   await platformManager.initialize();
 
-  runApp(CloudToLocalLLMPrivacyApp(platformManager: platformManager));
+  runApp(PistisaiPrivacyApp(platformManager: platformManager));
 }
 
 /// Privacy-enhanced main application widget with comprehensive data protection
-class CloudToLocalLLMPrivacyApp extends StatefulWidget {
+class PistisaiPrivacyApp extends StatefulWidget {
   final PlatformServiceManager platformManager;
 
-  const CloudToLocalLLMPrivacyApp({super.key, required this.platformManager});
+  const PistisaiPrivacyApp({super.key, required this.platformManager});
 
   @override
-  State<CloudToLocalLLMPrivacyApp> createState() =>
-      _CloudToLocalLLMPrivacyAppState();
+  State<PistisaiPrivacyApp> createState() =>
+      _PistisaiPrivacyAppState();
 }
 
-class _CloudToLocalLLMPrivacyAppState extends State<CloudToLocalLLMPrivacyApp> {
+class _PistisaiPrivacyAppState extends State<PistisaiPrivacyApp> {
   bool _isInitialized = false;
   String _initializationStatus = 'Initializing privacy-first architecture...';
 

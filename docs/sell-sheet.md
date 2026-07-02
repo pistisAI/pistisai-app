@@ -1,4 +1,4 @@
-# CloudToLocalLLM — Votre IA privée, chez vous.
+# Pistisai — Votre IA privée, chez vous.
 
 **Une AI qui tourne sur VOTRE ordinateur. Vos données restent chez vous. $0/mois.**
 
@@ -17,7 +17,7 @@ Les AI comme ChatGPT, Claude et Gemini sont pratiques, mais :
 
 **On installe une AI sur votre ordinateur.** Pas de cloud, pas de SaaS, pas de données qui sortent de chez vous.
 
-| Ce que vous avez | Avec CloudToLocalLLM |
+| Ce que vous avez | Avec Pistisai |
 |-----------------|---------------------|
 | 🤖 ChatGPT/Claude | 🖥️ Votre AI, sur votre machine |
 | 📤 Vos données partent au US | 🔒 Zéro donnée quitte votre réseau |

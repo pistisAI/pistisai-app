@@ -66,7 +66,7 @@ class _TitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Welcome to CloudToLocalLLM',
+      'Welcome to Pistisai',
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),

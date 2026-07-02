@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM Let's Encrypt Certificate Setup Script
+# Pistisai Let's Encrypt Certificate Setup Script
 # This script sets up and manages Let's Encrypt certificates for cloudtolocalllm.online
 
 set -euo pipefail
@@ -47,7 +47,7 @@ check_docker() {
 
 # Function to check if the webapp container is running
 check_webapp_running() {
-    if ! docker compose ps | grep -q "CloudToLocalLLM-webapp.*Up"; then
+    if ! docker compose ps | grep -q "Pistisai-webapp.*Up"; then
         echo_color "$YELLOW" "Starting webapp container for certificate validation..."
         docker compose up -d webapp
         sleep 10
@@ -56,11 +56,11 @@ check_webapp_running() {
 
 # Function to test ACME challenge accessibility for all domains
 precheck_acme_challenge() {
-    local testfile="/opt/CloudToLocalLLM/certbot/www/.well-known/acme-challenge/testfile"
+    local testfile="/opt/Pistisai/certbot/www/.well-known/acme-challenge/testfile"
     local teststr="test-$(date +%s)"
     
     # Create directory if it doesn't exist
-    mkdir -p "/opt/CloudToLocalLLM/certbot/www/.well-known/acme-challenge"
+    mkdir -p "/opt/Pistisai/certbot/www/.well-known/acme-challenge"
     
     echo "$teststr" > "$testfile"
     chmod 644 "$testfile"
@@ -105,7 +105,7 @@ obtain_certificate() {
     echo_color "$BLUE" "Obtaining Let's Encrypt certificate for $DOMAIN..."
 
     # Check if containers are running
-    if ! docker compose ps | grep -q "CloudToLocalLLM-webapp.*Up"; then
+    if ! docker compose ps | grep -q "Pistisai-webapp.*Up"; then
         echo_color "$RED" "Webapp container is not running. Cannot obtain certificates."
         echo_color "$YELLOW" "Starting webapp container..."
         docker compose up -d webapp
@@ -114,8 +114,8 @@ obtain_certificate() {
 
     # Ensure webroot directory exists
     echo_color "$BLUE" "Creating webroot directory..."
-    mkdir -p "/opt/CloudToLocalLLM/certbot/www/.well-known/acme-challenge"
-    chmod -R 755 "/opt/CloudToLocalLLM/certbot/www"
+    mkdir -p "/opt/Pistisai/certbot/www/.well-known/acme-challenge"
+    chmod -R 755 "/opt/Pistisai/certbot/www"
 
     echo_color "$BLUE" "Attempting initial certificate acquisition..."
     echo_color "$YELLOW" "This may take a few minutes..."
@@ -197,14 +197,14 @@ setup_renewal() {
     # Create renewal script
     cat > /tmp/renew_certs.sh << 'EOF'
 #!/bin/bash
-cd /opt/CloudToLocalLLM
+cd /opt/Pistisai
 docker compose run --rm certbot renew --quiet
 docker compose restart webapp
 EOF
 
     # Move to proper location and set permissions
-    sudo mv /tmp/renew_certs.sh /etc/cron.daily/renew-CloudToLocalLLM-certs
-    sudo chmod +x /etc/cron.daily/renew-CloudToLocalLLM-certs
+    sudo mv /tmp/renew_certs.sh /etc/cron.daily/renew-Pistisai-certs
+    sudo chmod +x /etc/cron.daily/renew-Pistisai-certs
 
     echo_color "$GREEN" "Automatic renewal setup complete!"
     echo_color "$YELLOW" "Certificates will be renewed daily if needed."
@@ -212,7 +212,7 @@ EOF
 
 # Main function
 main() {
-    echo_color "$BLUE" "CloudToLocalLLM Let's Encrypt Certificate Setup"
+    echo_color "$BLUE" "Pistisai Let's Encrypt Certificate Setup"
     echo_color "$BLUE" "=============================================="
 
     check_root

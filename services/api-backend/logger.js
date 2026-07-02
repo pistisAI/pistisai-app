@@ -1,5 +1,5 @@
 /**
- * Centralized Logger for CloudToLocalLLM API Backend
+ * Centralized Logger for Pistisai API Backend
  *
  * Provides structured logging with different levels and formats
  * for development and production environments.

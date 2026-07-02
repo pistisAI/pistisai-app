@@ -1,10 +1,10 @@
 #!/bin/bash
-# CloudToLocalLLM Installer for Linux/macOS
-# Installs CloudToLocalLLM Agent Manager and OpenClaw Gateway
+# Pistisai Installer for Linux/macOS
+# Installs Pistisai Agent Manager and OpenClaw Gateway
 
 set -e
 
-echo "🦞 Welcome to the CloudToLocalLLM Installer!"
+echo "🦞 Welcome to the Pistisai Installer!"
 
 # Detect OS
 OS_TYPE=$(uname -s)
@@ -23,7 +23,7 @@ if ! command -v node &> /dev/null; then
 fi
 
 # Download latest release (Placeholder for real download logic)
-echo "Downloading CloudToLocalLLM for ${OS}..."
+echo "Downloading Pistisai for ${OS}..."
 # In a real scenario, we would curl the GitHub API to find the latest asset.
 # For now, we simulate the install process.
 
@@ -33,7 +33,7 @@ mkdir -p "$BIN_DIR"
 
 echo "Installing to $BIN_DIR..."
 # Mocking the binary placement
-# curl -L https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest/download/cloudtolocalllm-${OS} -o "$BIN_DIR/cloudtolocalllm"
+# curl -L https://github.com/Pistisai-online/Pistisai/releases/latest/download/cloudtolocalllm-${OS} -o "$BIN_DIR/cloudtolocalllm"
 # chmod +x "$BIN_DIR/cloudtolocalllm"
 
 # OpenClaw Gateway Install
@@ -57,5 +57,5 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     esac
 fi
 
-echo "✅ CloudToLocalLLM installed successfully!"
+echo "✅ Pistisai installed successfully!"
 echo "Run 'cloudtolocalllm' to get started."

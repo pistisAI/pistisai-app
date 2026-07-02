@@ -29,8 +29,8 @@ EOF
 for file in \
   "dist/windows/cloudtolocalllm-2.3.4-portable.zip" \
   "dist/windows/cloudtolocalllm-2.3.4-portable.zip.sha256" \
-  "dist/windows/CloudToLocalLLM-Windows-2.3.4-Setup.exe" \
-  "dist/windows/CloudToLocalLLM-Windows-2.3.4-Setup.exe.sha256" \
+  "dist/windows/Pistisai-Windows-2.3.4-Setup.exe" \
+  "dist/windows/Pistisai-Windows-2.3.4-Setup.exe.sha256" \
   "dist/linux/cloudtolocalllm_2.3.4_amd64.deb" \
   "dist/linux/cloudtolocalllm_2.3.4_amd64.deb.sha256" \
   "dist/linux/cloudtolocalllm-2.3.4-amd64.deb" \

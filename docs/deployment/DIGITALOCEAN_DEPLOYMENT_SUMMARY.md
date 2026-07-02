@@ -4,7 +4,7 @@
 
 ## ✅ What's Been Configured
 
-Your CloudToLocalLLM project is now fully configured for DigitalOcean Kubernetes deployment with:
+Your Pistisai project is now fully configured for DigitalOcean Kubernetes deployment with:
 
 ### Infrastructure
 
@@ -201,7 +201,7 @@ Wait 5-15 minutes for:
 Check status:
 
 ```bash
-kubectl get certificate -n CloudToLocalLLM
+kubectl get certificate -n Pistisai
 ```
 
 Should show: `READY=True`
@@ -210,7 +210,7 @@ Should show: `READY=True`
 
 ```bash
 # Check pods
-kubectl get pods -n CloudToLocalLLM
+kubectl get pods -n Pistisai
 
 # Test web app
 curl -I https://pistisai.app
@@ -303,14 +303,14 @@ All documentation is organized and ready:
 **Pods not starting?**
 
 ```bash
-kubectl describe pod <pod-name> -n CloudToLocalLLM
-kubectl logs <pod-name> -n CloudToLocalLLM
+kubectl describe pod <pod-name> -n Pistisai
+kubectl logs <pod-name> -n Pistisai
 ```
 
 **SSL certificate issues?**
 
 ```bash
-kubectl describe certificate -n CloudToLocalLLM CloudToLocalLLM-tls
+kubectl describe certificate -n Pistisai Pistisai-tls
 kubectl logs -n cert-manager -l app=cert-manager -f
 ```
 
@@ -385,7 +385,7 @@ dig pistisai.app +short
 
 ## 🎉 You're Ready to Deploy
 
-Everything is configured and ready. Your CloudToLocalLLM deployment to DigitalOcean Kubernetes is just a few commands away!
+Everything is configured and ready. Your Pistisai deployment to DigitalOcean Kubernetes is just a few commands away!
 
 **Start here:**
 

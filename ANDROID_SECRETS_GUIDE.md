@@ -1,6 +1,6 @@
 # GitHub Secrets à ajouter pour Android Build
 
-Aller sur https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/settings/secrets/actions
+Aller sur https://github.com/Pistisai-online/Pistisai/settings/secrets/actions
 
 Ajouter ces 4 secrets:
 
@@ -15,7 +15,7 @@ Ajouter ces 4 secrets:
 
 Sur RIGHT-PC:
 ```bash
-base64 -w0 ~/CloudToLocalLLM/android/release-keystore.jks | wl-copy  # ou xclip
+base64 -w0 ~/Pistisai/android/release-keystore.jks | wl-copy  # ou xclip
 ```
 
 Puis coller dans le champ GitHub.

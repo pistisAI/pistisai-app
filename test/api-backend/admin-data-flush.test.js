@@ -150,8 +150,8 @@ describe("AdminDataFlushService", () => {
           Names: ["/cloudtolocalllm-proxy-user123"],
           State: "running",
           Labels: {
-            "CloudToLocalLLM.user": "user123",
-            "CloudToLocalLLM.type": "streaming-proxy",
+            "Pistisai.user": "user123",
+            "Pistisai.type": "streaming-proxy",
           },
         },
         {
@@ -159,8 +159,8 @@ describe("AdminDataFlushService", () => {
           Names: ["/cloudtolocalllm-proxy-user456"],
           State: "exited",
           Labels: {
-            "CloudToLocalLLM.user": "user456",
-            "CloudToLocalLLM.type": "streaming-proxy",
+            "Pistisai.user": "user456",
+            "Pistisai.type": "streaming-proxy",
           },
         },
       ]);
@@ -169,10 +169,10 @@ describe("AdminDataFlushService", () => {
       mockDocker.listNetworks.mockResolvedValue([
         {
           Id: "network1",
-          Name: "CloudToLocalLLM-user-user123",
+          Name: "Pistisai-user-user123",
           Labels: {
-            "CloudToLocalLLM.user": "user123",
-            "CloudToLocalLLM.type": "user-network",
+            "Pistisai.user": "user123",
+            "Pistisai.type": "user-network",
           },
         },
       ]);
@@ -203,11 +203,11 @@ describe("AdminDataFlushService", () => {
 
       expect(mockDocker.listContainers).toHaveBeenCalledWith({
         all: true,
-        filters: { label: ["CloudToLocalLLM.type"] },
+        filters: { label: ["Pistisai.type"] },
       });
 
       expect(mockDocker.listNetworks).toHaveBeenCalledWith({
-        filters: { label: ["CloudToLocalLLM.type=user-network"] },
+        filters: { label: ["Pistisai.type=user-network"] },
       });
 
       // Should have processed one container for user123
@@ -378,32 +378,32 @@ describe("AdminDataFlushService", () => {
       mockDocker.listContainers.mockResolvedValue([
         {
           Labels: {
-            "CloudToLocalLLM.type": "streaming-proxy",
-            "CloudToLocalLLM.user": "user1",
+            "Pistisai.type": "streaming-proxy",
+            "Pistisai.user": "user1",
           },
         },
         {
           Labels: {
-            "CloudToLocalLLM.type": "streaming-proxy",
-            "CloudToLocalLLM.user": "user2",
+            "Pistisai.type": "streaming-proxy",
+            "Pistisai.user": "user2",
           },
         },
         {
-          Labels: { "CloudToLocalLLM.type": "api-backend" },
+          Labels: { "Pistisai.type": "api-backend" },
         },
       ]);
 
       mockDocker.listNetworks.mockResolvedValue([
         {
           Labels: {
-            "CloudToLocalLLM.type": "user-network",
-            "CloudToLocalLLM.user": "user1",
+            "Pistisai.type": "user-network",
+            "Pistisai.user": "user1",
           },
         },
         {
           Labels: {
-            "CloudToLocalLLM.type": "user-network",
-            "CloudToLocalLLM.user": "user2",
+            "Pistisai.type": "user-network",
+            "Pistisai.user": "user2",
           },
         },
       ]);

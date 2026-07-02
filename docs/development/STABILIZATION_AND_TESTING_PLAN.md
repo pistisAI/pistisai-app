@@ -1,4 +1,4 @@
-# CloudToLocalLLM - Stabilization & Testing Plan
+# Pistisai - Stabilization & Testing Plan
 
 > **Last Updated**: 2026-02-28 | **Status**: Phase 2 In Progress
 > **Purpose**: Comprehensive plan to stabilize Phase 0-2 features and ensure comprehensive test coverage
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-The CloudToLocalLLM app is approximately **60% complete** with Phase 0 (Setup Wizard) and Phase 1 (Foundation) fully implemented, and Phase 2 (Core Features) at ~55% completion. This plan focuses on:
+The Pistisai app is approximately **60% complete** with Phase 0 (Setup Wizard) and Phase 1 (Foundation) fully implemented, and Phase 2 (Core Features) at ~55% completion. This plan focuses on:
 
 1. **Stabilizing existing features** (Phase 0-1, Phase 2 completed items)
 2. **Fixing failing tests** (Backend: 293 failures / 1940 total tests)

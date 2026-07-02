@@ -2,7 +2,7 @@
 
 > This replaces the generic ingress plan. The intended setup is Cloudflare Tunnel. Treat any direct-80/443 plan as wrong for this deployment.
 
-**Goal:** Restore the public CloudToLocalLLM website on Simon's VPS by wiring the existing local compose stack to a dedicated Cloudflare Tunnel and correcting stale DNS/tunnel ownership drift.
+**Goal:** Restore the public Pistisai website on Simon's VPS by wiring the existing local compose stack to a dedicated Cloudflare Tunnel and correcting stale DNS/tunnel ownership drift.
 
 **Verified current state:**
 - Simon VPS: `31.97.140.7`
@@ -13,7 +13,7 @@
   - `app.pistisai.app` → resolves to `208.110.72.50`, returns `500`
   - `api.pistisai.app` → resolves to `208.110.72.50`, returns `500`
   - `pistisai.app` → does not resolve
-- Simon VPS `cloudflared` is not serving CloudToLocalLLM:
+- Simon VPS `cloudflared` is not serving Pistisai:
   - current service is for ImmoGestion
   - `/etc/cloudflared/config.yml` is effectively disabled and ends in `http_status:404`
 - Raw public port is not the intended path and is not reliably reachable from outside.
@@ -106,7 +106,7 @@ curl -sS "https://api.cloudflare.com/client/v4/zones?name=pistisai.app" \
 **Success criteria:** one auth shape returns `success: true` and the actual zone/account.
 
 ### Task 2.2: List existing tunnel and DNS records for the zone
-**Objective:** determine whether a CloudToLocalLLM tunnel already exists or whether DNS is just stale.
+**Objective:** determine whether a Pistisai tunnel already exists or whether DNS is just stale.
 
 **Required queries:**
 - list DNS records for:
@@ -119,9 +119,9 @@ curl -sS "https://api.cloudflare.com/client/v4/zones?name=pistisai.app" \
 
 ---
 
-## Phase 3: Create a dedicated CloudToLocalLLM tunnel on Simon VPS
+## Phase 3: Create a dedicated Pistisai tunnel on Simon VPS
 
-### Task 3.1: Create a CloudToLocalLLM-specific cloudflared config
+### Task 3.1: Create a Pistisai-specific cloudflared config
 **Objective:** separate this from ImmoGestion completely.
 
 **Create:** `/etc/cloudflared/cloudtolocalllm.yml`
@@ -153,7 +153,7 @@ ingress:
 **Minimal unit:**
 ```ini
 [Unit]
-Description=cloudflared CloudToLocalLLM tunnel
+Description=cloudflared Pistisai tunnel
 After=network-online.target
 Wants=network-online.target
 
@@ -263,7 +263,7 @@ Record in notes:
 ## Fastest execution order
 1. snapshot current state
 2. recover valid Cloudflare auth for the correct zone
-3. create Simon-VPS-specific CloudToLocalLLM tunnel config and service
+3. create Simon-VPS-specific Pistisai tunnel config and service
 4. verify tunnel process is healthy on the VPS
 5. repoint `app.` and `api.` through that tunnel
 6. verify externally with curl and browser
@@ -275,7 +275,7 @@ Record in notes:
 When the work is executed, report in this structure only:
 - **Tunnel auth recovered:** yes/no
 - **Zone/account confirmed:** yes/no + zone name
-- **Dedicated CloudToLocalLLM cloudflared service:** active/inactive
+- **Dedicated Pistisai cloudflared service:** active/inactive
 - **Old public target removed:** yes/no
 - **App URL external check:** pass/fail
 - **API health external check:** pass/fail

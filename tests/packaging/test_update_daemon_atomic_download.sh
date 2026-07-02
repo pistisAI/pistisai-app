@@ -21,7 +21,7 @@ for needle in checks:
         raise SystemExit(f'missing hardening string: {needle}')
 
 for stale in [
-    'CloudToLocalLLM-${version}-x86_64.AppImage',
+    'Pistisai-${version}-x86_64.AppImage',
     'curl -fL "$url" -o "$output_file"',
     'chmod +x "$output_file"',
 ]:

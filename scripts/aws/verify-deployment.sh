@@ -3,7 +3,7 @@
 ##############################################################################
 # AWS EKS Deployment Verification Script
 #
-# This script verifies that all components of the CloudToLocalLLM deployment
+# This script verifies that all components of the Pistisai deployment
 # on AWS EKS are running correctly and accessible.
 #
 # Usage: ./verify-deployment.sh [environment]
@@ -13,7 +13,7 @@
 set -e
 
 # Configuration
-NAMESPACE="${NAMESPACE:-CloudToLocalLLM}"
+NAMESPACE="${NAMESPACE:-Pistisai}"
 ENVIRONMENT="${1:-development}"
 CLUSTER_NAME="cloudtolocalllm-eks"
 REGION="${AWS_REGION:-us-east-1}"

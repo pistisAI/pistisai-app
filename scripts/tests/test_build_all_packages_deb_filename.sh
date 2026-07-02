@@ -14,7 +14,7 @@ expected = 'cloudtolocalllm_${version}_amd64.deb'
 if expected not in script:
     raise SystemExit(f'missing Debian filename hardening string: {expected}')
 
-if 'CloudToLocalLLM-${version}-amd64.deb' in script:
+if 'Pistisai-${version}-amd64.deb' in script:
     raise SystemExit('stale Debian filename string still present')
 
 print('[test_build_all_packages_deb_filename] Passed')

@@ -1,6 +1,6 @@
 # Settings Screens
 
-This directory contains the settings-related screens for CloudToLocalLLM.
+This directory contains the settings-related screens for Pistisai.
 
 > **Current orientation**: Local LLM/provider settings are support model provider settings. They are separate from primary agent runtime settings and must not present Ollama or LM Studio as the main app runtime unless wrapped by a compatible agent gateway.
 

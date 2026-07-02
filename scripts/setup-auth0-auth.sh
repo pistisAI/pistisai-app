@@ -3,10 +3,10 @@ set -e
 
 # Configuration
 REPO_OWNER="imrightguy"
-REPO_NAME="CloudToLocalLLM"
+REPO_NAME="Pistisai"
 ENV_FILE=".env.auth0"
 
-echo "Setting up Auth0 authentication for CloudToLocalLLM..."
+echo "Setting up Auth0 authentication for Pistisai..."
 echo ""
 
 # Prompt for Auth0 configuration

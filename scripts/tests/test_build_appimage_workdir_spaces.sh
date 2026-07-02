@@ -9,7 +9,7 @@ FAKE_TOOLS="$WORK_DIR/bin"
 APPIMAGE_WORKDIR="$WORK_DIR/appimage work dir with spaces"
 APPIMAGE_OUTPUT="$WORK_DIR/output/cloudtolocalllm-workdir-spaces.AppImage"
 APPIMAGETOOL_LOG="$WORK_DIR/appimagetool.log"
-mkdir -p "$FAKE_ROOT/scripts" "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$FAKE_ROOT/build-tools/packaging/appimage/CloudToLocalLLM.AppDir"
+mkdir -p "$FAKE_ROOT/scripts" "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir"
 export APPIMAGETOOL_LOG
 
 cleanup() {
@@ -35,9 +35,9 @@ exit 0
 EOF
 chmod +x "$FAKE_ROOT/scripts/flutter_with_cleanup.sh"
 
-cat > "$FAKE_ROOT/build-tools/packaging/appimage/CloudToLocalLLM.AppDir/cloudtolocalllm.desktop" <<'EOF'
+cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/cloudtolocalllm.desktop" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

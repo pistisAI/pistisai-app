@@ -28,8 +28,8 @@ EOF
 for file in \
   "dist/windows/cloudtolocalllm-2.3.4-portable.zip" \
   "dist/windows/cloudtolocalllm-2.3.4-portable.zip.sha256" \
-  "dist/windows/CloudToLocalLLM-Windows-2.3.4-Setup.exe" \
-  "dist/windows/CloudToLocalLLM-Windows-2.3.4-Setup.exe.sha256" \
+  "dist/windows/Pistisai-Windows-2.3.4-Setup.exe" \
+  "dist/windows/Pistisai-Windows-2.3.4-Setup.exe.sha256" \
   "dist/linux/cloudtolocalllm_2.3.4_amd64.deb" \
   "dist/linux/cloudtolocalllm_2.3.4_amd64.deb.sha256" \
   "dist/linux/cloudtolocalllm-2.3.4-x86_64.AppImage" \
@@ -98,8 +98,8 @@ fi
 for asset in \
   'dist/windows/cloudtolocalllm-2.3.4-portable.zip' \
   'dist/windows/cloudtolocalllm-2.3.4-portable.zip.sha256' \
-  'dist/windows/CloudToLocalLLM-Windows-2.3.4-Setup.exe' \
-  'dist/windows/CloudToLocalLLM-Windows-2.3.4-Setup.exe.sha256' \
+  'dist/windows/Pistisai-Windows-2.3.4-Setup.exe' \
+  'dist/windows/Pistisai-Windows-2.3.4-Setup.exe.sha256' \
   'dist/linux/cloudtolocalllm_2.3.4_amd64.deb' \
   'dist/linux/cloudtolocalllm_2.3.4_amd64.deb.sha256' \
   'dist/linux/cloudtolocalllm-2.3.4-x86_64.AppImage' \
@@ -111,7 +111,7 @@ for asset in \
   fi
 done
 
-if ! grep -Fq 'git:tag -a v2.3.4 -m CloudToLocalLLM v2.3.4' "$LOG_FILE"; then
+if ! grep -Fq 'git:tag -a v2.3.4 -m Pistisai v2.3.4' "$LOG_FILE"; then
   echo "Expected git override to create the tag" >&2
   cat "$LOG_FILE" >&2
   exit 1

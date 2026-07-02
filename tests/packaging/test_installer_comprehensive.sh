@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../scripts/packaging/installer-template.sh"
 
 echo "=========================================="
-echo "CloudToLocalLLM Installer Tests"
+echo "Pistisai Installer Tests"
 echo "=========================================="
 echo ""
 
@@ -104,8 +104,8 @@ if [ -f "$DESKTOP_DIR/cloudtolocalllm.desktop" ]; then
     echo "✅ PASS: Desktop file created"
 
     # Check content
-    if grep -q "Name=CloudToLocalLLM" "$DESKTOP_DIR/cloudtolocalllm.desktop" && \
-       grep -q "Exec=$TEST_INSTALL_DIR/CloudToLocalLLM" "$DESKTOP_DIR/cloudtolocalllm.desktop"; then
+    if grep -q "Name=Pistisai" "$DESKTOP_DIR/cloudtolocalllm.desktop" && \
+       grep -q "Exec=$TEST_INSTALL_DIR/Pistisai" "$DESKTOP_DIR/cloudtolocalllm.desktop"; then
         echo "✅ PASS: Desktop file content is correct"
     else
         echo "❌ FAIL: Desktop file content is incorrect"

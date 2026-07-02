@@ -11,9 +11,9 @@
 # Options:
 #   --check-secrets-only     Only validate GitHub secrets (skip Azure resources)
 #   --check-azure-only       Only validate Azure resources (skip secrets)
-#   --resource-group NAME    Resource group name (default: CloudToLocalLLM-rg)
-#   --acr-name NAME          ACR name (default: CloudToLocalLLM)
-#   --keyvault-name NAME     Key Vault name (default: CloudToLocalLLM-kv)
+#   --resource-group NAME    Resource group name (default: Pistisai-rg)
+#   --acr-name NAME          ACR name (default: Pistisai)
+#   --keyvault-name NAME     Key Vault name (default: Pistisai-kv)
 #   --verbose                Show detailed output
 #   --help                   Show this help message
 #
@@ -35,9 +35,9 @@ NC='\033[0m' # No Color
 # Default values
 CHECK_SECRETS_ONLY="false"
 CHECK_AZURE_ONLY="false"
-RESOURCE_GROUP="${AZURE_RESOURCE_GROUP:-CloudToLocalLLM-rg}"
-ACR_NAME="${ACR_NAME:-CloudToLocalLLM}"
-KEYVAULT_NAME="${AZURE_KEY_VAULT_NAME:-CloudToLocalLLM-kv}"
+RESOURCE_GROUP="${AZURE_RESOURCE_GROUP:-Pistisai-rg}"
+ACR_NAME="${ACR_NAME:-Pistisai}"
+KEYVAULT_NAME="${AZURE_KEY_VAULT_NAME:-Pistisai-kv}"
 VERBOSE="false"
 
 # Track validation status
@@ -481,7 +481,7 @@ generate_summary() {
 main() {
     echo ""
     echo -e "${BLUE}AKS Deployment Prerequisites Validation${NC}"
-    echo -e "${BLUE}CloudToLocalLLM${NC}"
+    echo -e "${BLUE}Pistisai${NC}"
     echo ""
     
     # Always check CLI tools

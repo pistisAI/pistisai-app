@@ -19,7 +19,7 @@
 
 ```bash
 #!/bin/bash
-# CloudToLocalLLM Linux Installer
+# Pistisai Linux Installer
 set -e
 
 INSTALL_VERSION=""
@@ -31,7 +31,7 @@ SILENT=false
 
 show_help() {
     cat << EOF
-CloudToLocalLLM Linux Installer
+Pistisai Linux Installer
 
 Usage: curl -fsSL https://pistisai.app/install.sh | bash [OPTIONS]
 
@@ -184,10 +184,10 @@ Add to `scripts/packaging/installer-template.sh`:
 # Detect latest version from GitHub releases
 detect_latest_version() {
     local channel="${1:-stable}"
-    local api_url="https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest"
+    local api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest"
 
     if [ "$channel" != "stable" ]; then
-        api_url="https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases?per_page=1"
+        api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases?per_page=1"
     fi
 
     if command -v curl &> /dev/null; then
@@ -236,11 +236,11 @@ download_appimage() {
     local channel="$2"
     local output_dir="$3"
 
-    local base_url="https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/download/v${version}"
-    local appimage_name="CloudToLocalLLM-${version}-x86_64.AppImage"
+    local base_url="https://github.com/Pistisai-online/Pistisai/releases/download/v${version}"
+    local appimage_name="Pistisai-${version}-x86_64.AppImage"
     local download_url="${base_url}/${appimage_name}"
 
-    log_info "Downloading CloudToLocalLLM v${version}..."
+    log_info "Downloading Pistisai v${version}..."
 
     mkdir -p "$output_dir"
 
@@ -318,16 +318,16 @@ create_desktop_entry() {
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=CloudToLocalLLM
+Name=Pistisai
 GenericName=AI Model Bridge
 Comment=Manage and run powerful Large Language Models locally
 Icon=cloudtolocalllm
-Exec=${install_dir}/CloudToLocalLLM %u
+Exec=${install_dir}/Pistisai %u
 Terminal=false
 Categories=Development;Utility;Network;
 Keywords=AI;LLM;Machine Learning;Ollama;Local;
 StartupNotify=true
-StartupWMClass=CloudToLocalLLM
+StartupWMClass=Pistisai
 MimeType=x-scheme-handler/cloudtolocalllm;
 EOF
 
@@ -373,7 +373,7 @@ git commit -m "feat: add AppImage download and installation logic"
 
 ```bash
 #!/bin/bash
-# CloudToLocalLLM Update Daemon
+# Pistisai Update Daemon
 # Background service that checks for updates and handles installation
 
 set -e
@@ -513,7 +513,7 @@ should_auto_install() {
 check_for_updates() {
     log "Checking for updates..."
 
-    local api_url="https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest"
+    local api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest"
     local latest_version=""
 
     if command -v curl &> /dev/null; then
@@ -576,7 +576,7 @@ Create `scripts/packaging/update-daemon/cloudtolocalllm-updated.service`:
 
 ```ini
 [Unit]
-Description=CloudToLocalLLM Update Daemon
+Description=Pistisai Update Daemon
 Documentation=https://pistisai.app
 After=network-online.target
 
@@ -607,7 +607,7 @@ Create `scripts/packaging/update-daemon/cloudtolocalllm-updated.timer`:
 
 ```ini
 [Unit]
-Description=CloudToLocalLLM Update Checker
+Description=Pistisai Update Checker
 Documentation=https://pistisai.app
 Requires=cloudtolocalllm-updated.service
 
@@ -779,7 +779,7 @@ class UpdateInfo {
   });
 }
 
-/// Auto-update service for CloudToLocalLLM
+/// Auto-update service for Pistisai
 class AutoUpdateService extends ChangeNotifier {
   // Singleton pattern
   static final AutoUpdateService _instance = AutoUpdateService._internal();
@@ -877,7 +877,7 @@ class AutoUpdateService extends ChangeNotifier {
 
     try {
       final request = await client.getUrl(
-        Uri.parse('https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest')
+        Uri.parse('https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest')
       );
       final response = await request.close();
 
@@ -1265,12 +1265,12 @@ Modify the `ncipollo/release-action` step:
       ## Downloads
 
       ### Linux
-      - **AppImage** (Recommended): `CloudToLocalLLM-x86_64.AppImage`
+      - **AppImage** (Recommended): `Pistisai-x86_64.AppImage`
       - **Debian/Ubuntu**: `.deb` package
       - **Portable**: `.tar.gz` bundle
 
       ### Windows
-      - Portable ZIP: `CloudToLocalLLM-Windows-x64.zip`
+      - Portable ZIP: `Pistisai-Windows-x64.zip`
 
       ## What's New
       See the changelog for details.
@@ -1315,7 +1315,7 @@ void main() {
 
     testWidgets('AutoUpdateService can check for updates', (WidgetTester tester) async {
       // Build app
-      await tester.pumpWidget(app.CloudToLocalLLMApp());
+      await tester.pumpWidget(app.PistisaiApp());
 
       // Get service
       final updateService = di.serviceLocator<AutoUpdateService>();
@@ -1332,7 +1332,7 @@ void main() {
     });
 
     testWidgets('AutoUpdateService parses versions correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(app.CloudToLocalLLMApp());
+      await tester.pumpWidget(app.PistisaiApp());
 
       final updateService = di.serviceLocator<AutoUpdateService>();
 
@@ -1387,17 +1387,17 @@ curl -fsSL https://pistisai.app/install.sh | bash -s -- --dir /opt/myapp
 
 ### Manual Installation
 
-Download the AppImage from [releases](https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases):
+Download the AppImage from [releases](https://github.com/Pistisai-online/Pistisai/releases):
 
 ```bash
-wget https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest/download/CloudToLocalLLM-x86_64.AppImage
-chmod +x CloudToLocalLLM-x86_64.AppImage
-./CloudToLocalLLM-x86_64.AppImage
+wget https://github.com/Pistisai-online/Pistisai/releases/latest/download/Pistisai-x86_64.AppImage
+chmod +x Pistisai-x86_64.AppImage
+./Pistisai-x86_64.AppImage
 ```
 
 ### Auto-Updates
 
-CloudToLocalLLM includes an automatic update daemon that:
+Pistisai includes an automatic update daemon that:
 - Checks for updates every 6 hours
 - Automatically installs patch updates (bug fixes, security fixes)
 - Prompts you for major/minor updates

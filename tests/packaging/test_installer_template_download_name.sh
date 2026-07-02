@@ -24,13 +24,13 @@ for needle in checks:
     if needle not in script:
         raise SystemExit(f'missing hardening string: {needle}')
 
-if 'CloudToLocalLLM-${version}-x86_64.AppImage' in script:
+if 'Pistisai-${version}-x86_64.AppImage' in script:
     raise SystemExit('stale AppImage download name still present')
 if 'curl -L -o "${output_dir}/${appimage_name}"' in script:
     raise SystemExit('installer still downloads directly to the final AppImage path')
-if 'Exec=${install_dir}/CloudToLocalLLM %u' in script:
+if 'Exec=${install_dir}/Pistisai %u' in script:
     raise SystemExit('stale desktop launcher path still present')
-if 'cp "$downloaded_appimage" "$INSTALL_DIR/CloudToLocalLLM"' in script:
+if 'cp "$downloaded_appimage" "$INSTALL_DIR/Pistisai"' in script:
     raise SystemExit('stale installed launcher name still present')
 
 print('[test_installer_template_download_name] Passed')

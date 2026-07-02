@@ -186,7 +186,7 @@ class _SharedWebSocket {
         },
         'device': deviceAuth.toJson(),
         'locale': 'en-US',
-        'userAgent': 'CloudToLocalLLM/10.1.200',
+        'userAgent': 'Pistisai/10.1.200',
       }
     };
 
@@ -218,7 +218,7 @@ class _SharedWebSocket {
         'caps': [],
         'auth': {'token': isLocalConnection ? _gatewayToken : _authToken},
         'locale': 'en-US',
-        'userAgent': 'CloudToLocalLLM/10.1.200',
+        'userAgent': 'Pistisai/10.1.200',
       }
     };
 

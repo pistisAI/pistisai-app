@@ -14,7 +14,7 @@ expected = 'cloudtolocalllm-${version}-x86_64.AppImage'
 if expected not in script:
     raise SystemExit(f'missing AppImage filename hardening string: {expected}')
 
-if 'CloudToLocalLLM-${version}-x86_64.AppImage' in script:
+if 'Pistisai-${version}-x86_64.AppImage' in script:
     raise SystemExit('stale AppImage filename string still present')
 
 print('[test_build_all_packages_appimage_filename] Passed')

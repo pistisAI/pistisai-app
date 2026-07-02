@@ -310,7 +310,7 @@ verify_cache_purge() {
 # Main execution
 main() {
     echo "â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” "
-    echo "Cloudflare Cache Purge for CloudToLocalLLM"
+    echo "Cloudflare Cache Purge for Pistisai"
     echo "â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” â” "
     echo ""
 

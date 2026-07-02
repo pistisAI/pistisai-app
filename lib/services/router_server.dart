@@ -261,7 +261,7 @@ class RouterServer {
         headers: {
           'Content-Type': result.contentType,
           'Content-Length': (await file.length()).toString(),
-          'X-CloudToLocalLLM-TTS': 'edge-tts',
+          'X-Pistisai-TTS': 'edge-tts',
         },
       );
     } on FormatException catch (e) {

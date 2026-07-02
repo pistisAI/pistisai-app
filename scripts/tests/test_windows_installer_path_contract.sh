@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-CANONICAL_SCRIPT="$PROJECT_ROOT/windows/installer/CloudToLocalLLM.iss"
+CANONICAL_SCRIPT="$PROJECT_ROOT/windows/installer/Pistisai.iss"
 LEGACY_SCRIPT="$PROJECT_ROOT/build-tools/installers/windows/Basic.iss"
 
 for file in "$CANONICAL_SCRIPT" "$LEGACY_SCRIPT"; do
@@ -21,7 +21,7 @@ legacy = Path(sys.argv[2]).read_text()
 
 required_canonical = [
     'MyOutputDir',
-    'OutputBaseFilename=CloudToLocalLLM-Windows-x64-Setup',
+    'OutputBaseFilename=Pistisai-Windows-x64-Setup',
     'MyAppSourceDir',
     'Source:',
     'DestDir: "{app}"',
@@ -30,7 +30,7 @@ for needle in required_canonical:
     if needle not in canonical:
         raise SystemExit(f'missing canonical installer string: {needle}')
 
-if 'CloudToLocalLLM.iss' not in legacy and 'include' not in legacy:
+if 'Pistisai.iss' not in legacy and 'include' not in legacy:
     raise SystemExit('legacy installer wrapper does not reference canonical installer script')
 
 print('[test_windows_installer_path_contract] Passed')

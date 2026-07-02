@@ -27,7 +27,7 @@ class UrlSchemeRegistrationService {
         'HKEY_CURRENT_USER\\Software\\Classes\\$_customScheme',
         '/ve',
         '/d',
-        'URL:CloudToLocalLLM Protocol',
+        'URL:Pistisai Protocol',
         '/f'
       ]);
 

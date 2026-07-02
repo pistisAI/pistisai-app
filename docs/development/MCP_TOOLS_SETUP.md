@@ -1,6 +1,6 @@
 # MCP Tools Setup and Configuration
 
-This document describes the Model Context Protocol (MCP) tools configured for efficient development of CloudToLocalLLM (CloudToLocalLLM).
+This document describes the Model Context Protocol (MCP) tools configured for efficient development of Pistisai (Pistisai).
 
 ## Overview
 
@@ -49,7 +49,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 - **Purpose**: Structured file system operations for reading, writing, and searching files
 - **Package**: `@modelcontextprotocol/server-filesystem`
-- **Scope**: `/mnt/data/projects/CloudToLocalLLM`
+- **Scope**: `/mnt/data/projects/Pistisai`
 - **Use Cases**:
   - Reading project files
   - Writing new files
@@ -71,7 +71,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 - **Purpose**: Git operations for version control, commits, branches, and history
 - **Package**: `@modelcontextprotocol/server-git`
-- **Scope**: `/mnt/data/projects/CloudToLocalLLM`
+- **Scope**: `/mnt/data/projects/Pistisai`
 - **Use Cases**:
   - Creating commits
   - Managing branches
@@ -96,11 +96,11 @@ MCP tools provide specialized capabilities for interacting with external service
 
 - **Purpose**: PostgreSQL database operations for migrations, queries, and schema management
 - **Package**: `@modelcontextprotocol/server-postgres`
-- **Connection**: `postgresql://appuser:changeme@localhost:5432/CloudToLocalLLM`
+- **Connection**: `postgresql://appuser:changeme@localhost:5432/Pistisai`
 - **Environment Variables**:
   - `POSTGRES_HOST` (default: `localhost`)
   - `POSTGRES_PORT` (default: `5432`)
-  - `POSTGRES_DB` (default: `CloudToLocalLLM`)
+  - `POSTGRES_DB` (default: `Pistisai`)
   - `POSTGRES_USER` (default: `appuser`)
   - `POSTGRES_PASSWORD` (default: `changeme`)
 - **Use Cases**:
@@ -210,7 +210,7 @@ export BRAVE_API_KEY="BSxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 **Note**: PostgreSQL uses default values if environment variables are not set:
 - Host: `localhost`
 - Port: `5432`
-- Database: `CloudToLocalLLM`
+- Database: `Pistisai`
 - User: `appuser`
 - Password: `changeme`
 
@@ -293,7 +293,7 @@ If PostgreSQL MCP server fails:
 
 2. **Test connection**:
    ```bash
-   psql postgresql://appuser:changeme@localhost:5432/CloudToLocalLLM
+   psql postgresql://appuser:changeme@localhost:5432/Pistisai
    ```
 
 3. **Check credentials**: Ensure `POSTGRES_USER` and `POSTGRES_PASSWORD` match your database configuration

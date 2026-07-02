@@ -1,5 +1,5 @@
 /**
- * Global Teardown for CloudToLocalLLM E2E Tests
+ * Global Teardown for Pistisai E2E Tests
  * Cleans up ephemeral Auth0 test users.
  */
 import fs from "fs";
@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function globalTeardown(_config) {
-  console.log("\n CloudToLocalLLM Global Teardown");
+  console.log("\n Pistisai Global Teardown");
   console.log("=================================");
 
   let auth0Manager = null;

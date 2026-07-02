@@ -1,5 +1,5 @@
 #!/bin/bash
-# Domain Routing Fix Script for CloudToLocalLLM
+# Domain Routing Fix Script for Pistisai
 # Automatically fixes common domain routing issues
 # Addresses service mismatches, tunnel configuration, and connectivity problems
 # Usage: ./fix-domain-routing.sh [options]
@@ -8,7 +8,7 @@ set -e
 
 # Configuration
 ARGOCD_NAMESPACE="argocd"
-CLOUDTOLOCLLM_NAMESPACE="CloudToLocalLLM"
+CLOUDTOLOCLLM_NAMESPACE="Pistisai"
 LOG_FILE="./fix-domain-routing.log"
 BACKUP_DIR="./backup/domain-routing-$(date +%Y%m%d_%H%M%S)"
 DATE=$(date '+%Y-%m-%d %H:%M:%S')
@@ -452,7 +452,7 @@ EOF
 
 # Main execution function
 main() {
-    log "=== CloudToLocalLLM Domain Routing Fix Started ==="
+    log "=== Pistisai Domain Routing Fix Started ==="
 
     # Parse command line arguments
     local create_backup=true
@@ -509,7 +509,7 @@ main() {
     done
 
     # Initialize log file
-    echo "=== CloudToLocalLLM Domain Routing Fix Started at $DATE ===" > $LOG_FILE
+    echo "=== Pistisai Domain Routing Fix Started at $DATE ===" > $LOG_FILE
 
     # Create backup if requested
     if [ "$create_backup" = true ]; then

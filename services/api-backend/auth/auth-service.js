@@ -1,5 +1,5 @@
 /**
- * @fileoverview Authentication Service for CloudToLocalLLM Tunnel
+ * @fileoverview Authentication Service for Pistisai Tunnel
  * Handles JWT JWT validation, session management, and role-based access control
  */
 
@@ -227,7 +227,7 @@ export class AuthService {
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           'https://pistisai.app/roles': ['admin'],
-          'https://CloudToLocalLLM.com/app_metadata': { role: 'admin' },
+          'https://Pistisai.com/app_metadata': { role: 'admin' },
           scope: 'openid profile email admin',
         };
       } else {
@@ -319,7 +319,7 @@ export class AuthService {
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           'https://pistisai.app/roles': ['admin'],
-          'https://CloudToLocalLLM.com/app_metadata': { role: 'admin' },
+          'https://Pistisai.com/app_metadata': { role: 'admin' },
           scope: 'openid profile email admin',
         };
       }

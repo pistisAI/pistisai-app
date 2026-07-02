@@ -13,10 +13,10 @@ for needle in \
   'Upload all release assets, including the Windows installer.' \
   'cloudtolocalllm-$Version-portable.zip' \
   'cloudtolocalllm-$Version-portable.zip.sha256' \
-  'CloudToLocalLLM-Windows-$Version-Setup.exe' \
-  'CloudToLocalLLM-Windows-$Version-Setup.exe.sha256' \
+  'Pistisai-Windows-$Version-Setup.exe' \
+  'Pistisai-Windows-$Version-Setup.exe.sha256' \
   'Missing release assets:' \
-  'CloudToLocalLLM-Windows-3.7.0-Setup.exe'; do
+  'Pistisai-Windows-3.7.0-Setup.exe'; do
   if ! grep -Fq "$needle" "$SCRIPT_FILE"; then
     echo "Upload script missing expected installer publishing string: $needle" >&2
     exit 1

@@ -13,7 +13,7 @@ enum TrayConnectionStatus {
   disconnected,
 }
 
-/// Native Flutter system tray service for CloudToLocalLLM
+/// Native Flutter system tray service for Pistisai
 ///
 /// Note: Ollama integration removed. Uses ConnectionManagerService only.
 class NativeTrayService with TrayListener {
@@ -151,7 +151,7 @@ class NativeTrayService with TrayListener {
         items: [
           MenuItem(
             key: 'show',
-            label: 'Show CloudToLocalLLM',
+            label: 'Show Pistisai',
           ),
           MenuItem(
             key: 'hide',
@@ -181,7 +181,7 @@ class NativeTrayService with TrayListener {
       // setToolTip not implemented on Linux, wrap in try-catch
       try {
         await trayManager
-            .setToolTip('CloudToLocalLLM - ${_getStatusLabel(status)}');
+            .setToolTip('Pistisai - ${_getStatusLabel(status)}');
       } catch (e) {
         // setToolTip not supported on this platform, ignore
         appLogger.debug('[NativeTray] setToolTip not supported: $e');

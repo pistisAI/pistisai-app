@@ -1,10 +1,10 @@
-# CloudToLocalLLM Deploy, Viability, and Revenue Plan
+# Pistisai Deploy, Viability, and Revenue Plan
 
 > **For Hermes:** Use subagent-driven-development skill to execute this plan in bounded slices. Do not widen scope without re-checking the launch gate at the end of each phase.
 
-**Goal:** Ship CloudToLocalLLM as a Linux-first, tester-usable, sellable early product with a unified cockpit, usable voice companion, permissioned vision/desktop control, and a credible path to pilot revenue.
+**Goal:** Ship Pistisai as a Linux-first, tester-usable, sellable early product with a unified cockpit, usable voice companion, permissioned vision/desktop control, and a credible path to pilot revenue.
 
-**Architecture:** Treat CloudToLocalLLM as a local-first operator cockpit, not a generic chat app. The launchable wedge is: secure runtime channel + single main chat/timeline + reopenable setup wizard + visible background work + low-latency voice sidecar + explicit vision/desktop permissions. Linux-first is the fastest viable release path; Windows remains important but must not block first revenue.
+**Architecture:** Treat Pistisai as a local-first operator cockpit, not a generic chat app. The launchable wedge is: secure runtime channel + single main chat/timeline + reopenable setup wizard + visible background work + low-latency voice sidecar + explicit vision/desktop permissions. Linux-first is the fastest viable release path; Windows remains important but must not block first revenue.
 
 **Tech Stack:** Flutter desktop/web, Node backend services, GitHub Actions releases, packaging scripts for Linux (.tar.gz/.deb/AppImage + installer), Hermes/OpenClaw runtime integration, Tailscale-first private mesh.
 
@@ -13,7 +13,7 @@
 ## 0. Grounded current state
 
 ### Verified now
-- Repo path: `/mnt/data/projects/CloudToLocalLLM`
+- Repo path: `/mnt/data/projects/Pistisai`
 - Product source-of-truth docs exist:
   - `SPEC.md`
   - `README.md`
@@ -46,7 +46,7 @@
     - `build/linux/x64/debug/bundle/cloudtolocalllm`
 
 ### What this means
-CloudToLocalLLM is **close enough to product-shape that the bottleneck is now launch discipline**, not raw invention. The repo already smells like a near-product, but it is still carrying too many parallel surfaces and unclosed launch gaps.
+Pistisai is **close enough to product-shape that the bottleneck is now launch discipline**, not raw invention. The repo already smells like a near-product, but it is still carrying too many parallel surfaces and unclosed launch gaps.
 
 ### Current launch blockers
 1. No explicit release gate for a **tester-safe Linux-first build**.
@@ -498,7 +498,7 @@ If any of those feel broken, the app is still pre-pilot.
 
 For every task, ask:
 
-**Does this make CloudToLocalLLM easier to deploy, easier to trust, easier to demo, or easier to pay for in the next 30 days?**
+**Does this make Pistisai easier to deploy, easier to trust, easier to demo, or easier to pay for in the next 30 days?**
 
 If yes, it stays.
 If no, it waits.
@@ -507,7 +507,7 @@ If no, it waits.
 
 ## 12. Blunt conclusion
 
-CloudToLocalLLM is close enough that the next win is **not more concept expansion**.
+Pistisai is close enough that the next win is **not more concept expansion**.
 The next win is:
 - freeze the launch wedge
 - make Linux early access real

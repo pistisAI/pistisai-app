@@ -14,7 +14,7 @@ RIGHT-PC now has a local detached background lane:
 - SQLite ledger: `~/.hermes/local-think/jobs.db`
 - artifacts: `~/.hermes/local-think/<task-id>.*`
 
-CloudToLocalLLM can make that lane visible as a "thought train": a local companion panel showing what Hermes is doing in the background, what finished, what was skipped by wake gates, and which jobs are chained together.
+Pistisai can make that lane visible as a "thought train": a local companion panel showing what Hermes is doing in the background, what finished, what was skipped by wake gates, and which jobs are chained together.
 
 Christopher's stronger product direction: the main window should not hide this in a secondary diagnostics page. It should become the primary cockpit: a permanent direct chat channel synced across devices through the Tailscale/private mesh, with the Hermes thought-train/activity stream and verbose tool/event log mixed into the same timeline in a controlled way.
 
@@ -24,7 +24,7 @@ Christopher's stronger product direction: the main window should not hide this i
 - Hermes foreground turn: immediate request/response tool use.
 - `hermes-local-think`: bounded detached background reasoning or verification.
 - Cron/webhooks/startup recovery: recurring/event-driven wake sources.
-- CloudToLocalLLM: best candidate for a persistent visible desktop surface.
+- Pistisai: best candidate for a persistent visible desktop surface.
 
 ## What the thought train should show
 
@@ -137,7 +137,7 @@ Service behavior:
 Safer MVP bridge:
 
 ```text
-CloudToLocalLLM -> hermes-local-think-ledger list --json -> LocalThinkJobService -> LocalThinkTrainCard
+Pistisai -> hermes-local-think-ledger list --json -> LocalThinkJobService -> LocalThinkTrainCard
 ```
 
 This avoids adding a second SQLite implementation path in Flutter before the UI is proven useful.
@@ -164,7 +164,7 @@ Recommended sync model:
 - local append-only event log for chat messages, assistant replies, tool summaries, local-think job events, and delivery acknowledgements
 - device sync over Tailscale/private mesh first
 - each device keeps a local copy and reconciles by monotonic event ids / timestamps
-- Hermes gateway/Telegram remains the external text bridge; CloudToLocalLLM is the local desktop/mobile cockpit
+- Hermes gateway/Telegram remains the external text bridge; Pistisai is the local desktop/mobile cockpit
 - message/event payloads should be encrypted at rest and in transit when leaving localhost
 - if Tailscale is offline, queue locally and reconcile later
 
@@ -200,4 +200,4 @@ Do not make public cloud the required path for private chat continuity. Cloud ca
 
 ## Bottom line
 
-Yes: CloudToLocalLLM is probably the better place for the visible "train of thoughts" surface, as long as "thoughts" means durable job/status summaries, not raw hidden chain-of-thought. Hermes should keep doing background work through explicit durable lanes; CloudToLocalLLM should make that work visible, inspectable, and controllable on the desktop.
+Yes: Pistisai is probably the better place for the visible "train of thoughts" surface, as long as "thoughts" means durable job/status summaries, not raw hidden chain-of-thought. Hermes should keep doing background work through explicit durable lanes; Pistisai should make that work visible, inspectable, and controllable on the desktop.

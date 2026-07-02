@@ -23,7 +23,7 @@ const deploymentManifestArbitrary = () => {
     kind: fc.constant("Deployment"),
     metadata: fc.record({
       name: fc.stringMatching(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/),
-      namespace: fc.constant("CloudToLocalLLM"),
+      namespace: fc.constant("Pistisai"),
       labels: fc.record({
         app: fc.stringMatching(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/),
         environment: fc.constantFrom("development", "staging", "production"),
@@ -256,7 +256,7 @@ describe("Kubernetes Deployment Idempotency Property Test", () => {
             kind: "Deployment",
             metadata: {
               name: "test-deployment",
-              namespace: "CloudToLocalLLM",
+              namespace: "Pistisai",
             },
             spec: {
               replicas: 2,
@@ -308,7 +308,7 @@ describe("Kubernetes Deployment Idempotency Property Test", () => {
             kind: "Service",
             metadata: {
               name: data.name,
-              namespace: "CloudToLocalLLM",
+              namespace: "Pistisai",
             },
             spec: {
               type: "ClusterIP",
@@ -351,7 +351,7 @@ describe("Kubernetes Deployment Idempotency Property Test", () => {
             kind: "StatefulSet",
             metadata: {
               name: data.name,
-              namespace: "CloudToLocalLLM",
+              namespace: "Pistisai",
             },
             spec: {
               serviceName: "postgres",

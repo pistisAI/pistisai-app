@@ -18,7 +18,7 @@ set -euo pipefail # Exit on error, unset variable, or pipe failure
 # --- Configuration ---
 EMAIL="christopher.maltais@gmail.com" # Email for Let's Encrypt account
 DOMAIN_NAME="cloudtolocalllm.online"    # The domain to issue the certificate for
-PROJECT_DIR="/opt/CloudToLocalLLM"    # Absolute path to your project's root on the host machine
+PROJECT_DIR="/opt/Pistisai"    # Absolute path to your project's root on the host machine
 
 # Certbot related paths
 CERTBOT_CONFIG_SUBDIR="certbot/conf"
@@ -164,8 +164,8 @@ main() {
 
     # Reload nginx to apply the new certificates
     echo "Reloading nginx to apply the new certificates..."
-    sed -i 's|ssl_certificate /etc/nginx/ssl/default.pem;|ssl_certificate /etc/letsencrypt/live/cloudtolocalllm.online/fullchain.pem;|g' /opt/CloudToLocalLLM/config/nginx/nginx-webapp-internal.conf
-    sed -i 's|ssl_certificate_key /etc/nginx/ssl/default.key;|ssl_certificate_key /etc/letsencrypt/live/cloudtolocalllm.online/privkey.pem;|g' /opt/CloudToLocalLLM/config/nginx/nginx-webapp-internal.conf
+    sed -i 's|ssl_certificate /etc/nginx/ssl/default.pem;|ssl_certificate /etc/letsencrypt/live/cloudtolocalllm.online/fullchain.pem;|g' /opt/Pistisai/config/nginx/nginx-webapp-internal.conf
+    sed -i 's|ssl_certificate_key /etc/nginx/ssl/default.key;|ssl_certificate_key /etc/letsencrypt/live/cloudtolocalllm.online/privkey.pem;|g' /opt/Pistisai/config/nginx/nginx-webapp-internal.conf
     docker compose restart webapp
     echo "Nginx reloaded successfully."
 }

@@ -15,7 +15,7 @@ envelope. Local persistence comes first; transport comes last.
 **Grounding inputs:**
 - `docs/plans/HERMES_MAIN_CHAT_COCKPIT_PLAN.md`
 - `docs/plans/HERMES_MAIN_CHAT_COCKPIT_PASS_3_PLAN.md`
-- `/tmp/codex-security-scans/CloudToLocalLLM/3e80a2e3a49a_20260502T125942Z/report.md`
+- `/tmp/codex-security-scans/Pistisai/3e80a2e3a49a_20260502T125942Z/report.md`
 - `lib/models/main_chat_timeline_event.dart`
 - `lib/services/hermes_manager/main_chat_event_log.dart`
 - `lib/services/hermes_manager/main_chat_timeline_composer.dart`

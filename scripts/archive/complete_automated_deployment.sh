@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM Complete Automated Deployment Script v3.5.5+
+# Pistisai Complete Automated Deployment Script v3.5.5+
 # Implements the six-phase deployment workflow with full automation
 # Zero manual operations principle with comprehensive error handling
 # Enhanced with robust network operations and timeout handling
@@ -73,7 +73,7 @@ log_phase() {
 # Usage information
 show_usage() {
     cat << EOF
-CloudToLocalLLM Complete Automated Deployment Script
+Pistisai Complete Automated Deployment Script
 
 USAGE:
     $0 [OPTIONS]
@@ -624,7 +624,7 @@ phase4_distribution_execution() {
             fi
         else
             log_error "Invalid remote URL format: $current_remote"
-            log_error "Expected SSH format: git@github.com:CloudToLocalLLM-online/CloudToLocalLLM.git"
+            log_error "Expected SSH format: git@github.com:Pistisai-online/Pistisai.git"
             exit 4
         fi
 
@@ -646,7 +646,7 @@ phase4_distribution_execution() {
         # Verify GitHub raw URL accessibility with retry logic
         log_verbose "Verifying GitHub raw URL accessibility..."
         local semantic_version=$(echo "$current_version" | cut -d'+' -f1)
-        local github_url="https://raw.githubusercontent.com/CloudToLocalLLM-online/CloudToLocalLLM/master/dist/cloudtolocalllm-${semantic_version}-x86_64.tar.gz"
+        local github_url="https://raw.githubusercontent.com/Pistisai-online/Pistisai/master/dist/cloudtolocalllm-${semantic_version}-x86_64.tar.gz"
         local max_attempts=5
         local attempt=1
         local github_accessible=false
@@ -705,14 +705,14 @@ phase4_distribution_execution() {
     fi
 
     log_verbose "Deploying to VPS with enhanced error handling..."
-    local vps_deploy_cmd="cd /opt/CloudToLocalLLM && git stash && git pull origin master && ./scripts/deploy/update_and_deploy.sh $vps_flags"
+    local vps_deploy_cmd="cd /opt/Pistisai && git stash && git pull origin master && ./scripts/deploy/update_and_deploy.sh $vps_flags"
 
     if ! ssh_execute "cloudllm@cloudtolocalllm.online" "$vps_deploy_cmd" 300 3; then
         log_error "VPS deployment failed after multiple attempts"
         log_error "Attempting recovery with force reset..."
 
         # Try recovery with force reset
-        local recovery_cmd="cd /opt/CloudToLocalLLM && git reset --hard HEAD && git clean -fd && git pull origin master && ./scripts/deploy/update_and_deploy.sh $vps_flags"
+        local recovery_cmd="cd /opt/Pistisai && git reset --hard HEAD && git clean -fd && git pull origin master && ./scripts/deploy/update_and_deploy.sh $vps_flags"
 
         if ! ssh_execute "cloudllm@cloudtolocalllm.online" "$recovery_cmd" 300 1; then
             log_error "VPS deployment recovery failed"
@@ -831,7 +831,7 @@ phase6_operational_readiness() {
     local deployed_build_number="${deployed_version#*+}"
 
     echo ""
-    echo -e "${GREEN}🎉 CloudToLocalLLM v${deployed_version} Deployment Completed Successfully!${NC}"
+    echo -e "${GREEN}🎉 Pistisai v${deployed_version} Deployment Completed Successfully!${NC}"
     echo -e "${GREEN}================================================================${NC}"
     echo ""
     echo -e "${BLUE}📋 Deployment Summary:${NC}"
@@ -906,9 +906,9 @@ phase6_operational_readiness() {
 main() {
     # Header
     local target_version=$(grep '^version:' pubspec.yaml | sed 's/version: *\([0-9.+]*\).*/\1/')
-    echo -e "${BLUE}CloudToLocalLLM Complete Automated Deployment v${target_version%+*}+${NC}"
+    echo -e "${BLUE}Pistisai Complete Automated Deployment v${target_version%+*}+${NC}"
     echo -e "${BLUE}======================================================${NC}"
-    echo "Target: CloudToLocalLLM v${target_version} Production Deployment"
+    echo "Target: Pistisai v${target_version} Production Deployment"
     echo "Strategy: Six-Phase Automated Workflow"
     echo "Distribution: Static Download + VPS"
     echo ""

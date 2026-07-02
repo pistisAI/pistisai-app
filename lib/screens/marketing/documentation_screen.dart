@@ -274,7 +274,7 @@ class DocumentationScreen extends StatelessWidget {
             icon: Icons.code,
             title: 'GitHub Repository',
             description: 'View source code, issues, and contribute',
-            url: 'https://github.com/CloudToLocalLLM-online/CloudToLocalLLM',
+            url: 'https://github.com/Pistisai-online/Pistisai',
             textColor: textColor,
             bodyFontSize: bodyFontSize,
             verticalSpacing: verticalSpacing,
@@ -290,7 +290,7 @@ class DocumentationScreen extends StatelessWidget {
             title: 'Release Notes',
             description: 'Latest updates and changelog',
             url:
-                'https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases',
+                'https://github.com/Pistisai-online/Pistisai/releases',
             textColor: textColor,
             bodyFontSize: bodyFontSize,
             verticalSpacing: verticalSpacing,

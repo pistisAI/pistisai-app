@@ -60,7 +60,7 @@ const checkJwt = (req, res, next) => {
       name: 'Christopher (Dev)',
       nickname: 'rightguy',
       'https://pistisai.app/roles': ['admin'],
-      'https://CloudToLocalLLM.com/app_metadata': { role: 'admin' },
+      'https://Pistisai.com/app_metadata': { role: 'admin' },
       scope: 'openid profile email admin',
     };
     return next();

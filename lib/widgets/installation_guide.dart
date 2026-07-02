@@ -515,7 +515,7 @@ class _InstallationGuideState extends State<InstallationGuide> {
             const SizedBox(height: 8),
             Text(
               _installationValidated
-                  ? 'Your CloudToLocalLLM installation has been validated and is ready to use.'
+                  ? 'Your Pistisai installation has been validated and is ready to use.'
                   : 'Click "Validate Installation" to verify your installation is working correctly.',
             ),
             if (_validationError != null) ...[

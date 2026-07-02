@@ -25,7 +25,7 @@ for needle in \
   'GITHUB_API_BASE_URL: https://api.github.com' \
   'RETRY_ATTEMPTS: 6' \
   'RETRY_DELAY_SECONDS: 10' \
-  'artifacts: "dist/linux/*,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip.sha256,dist/windows/CloudToLocalLLM-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe,dist/windows/CloudToLocalLLM-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe.sha256,dist/aur/*"'; do
+  'artifacts: "dist/linux/*,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip.sha256,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe.sha256,dist/aur/*"'; do
   if ! grep -Fq "$needle" "$WORKFLOW_FILE"; then
     echo "Deployment workflow missing expected script invocation string: $needle" >&2
     exit 1
@@ -36,8 +36,8 @@ for needle in \
   'required_assets = {' \
   'cloudtolocalllm-{version}-portable.zip' \
   'cloudtolocalllm-{version}-portable.zip.sha256' \
-  'CloudToLocalLLM-Windows-{version}-Setup.exe' \
-  'CloudToLocalLLM-Windows-{version}-Setup.exe.sha256' \
+  'Pistisai-Windows-{version}-Setup.exe' \
+  'Pistisai-Windows-{version}-Setup.exe.sha256' \
   'cloudtolocalllm_{version}_amd64.deb' \
   'cloudtolocalllm_{version}_amd64.deb.sha256' \
   'cloudtolocalllm-{version}-x86_64.AppImage' \

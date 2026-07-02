@@ -5,7 +5,7 @@ set -e
 STACK_NAME="github-actions-oidc-role"
 TEMPLATE_FILE="config/cloudformation/github-actions-oidc-role.yaml"
 AWS_REGION="${AWS_REGION:-us-east-1}"
-GITHUB_ORG_REPO="${GITHUB_ORG_REPO:-CloudToLocalLLM/CloudToLocalLLM}"
+GITHUB_ORG_REPO="${GITHUB_ORG_REPO:-Pistisai/Pistisai}"
 GITHUB_BRANCH="${GITHUB_BRANCH:-main}"
 
 echo "Deploying GitHub Actions OIDC Role"

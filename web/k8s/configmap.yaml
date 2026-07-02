@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: web-config
-  namespace: CloudToLocalLLM
+  namespace: Pistisai
 data:
   API_BASE_URL: "https://api.pistisai.app"
   STREAMING_BASE_URL: "https://streaming.pistisai.app"

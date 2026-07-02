@@ -89,7 +89,7 @@ class _AgentStatusScreenState extends State<AgentStatusScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CloudToLocalLLM Agent Monitor',
+                    'Pistisai Agent Monitor',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

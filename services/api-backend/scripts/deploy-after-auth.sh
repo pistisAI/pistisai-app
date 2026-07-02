@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# CloudToLocalLLM Deployment Script (Post-Authentication)
+# Pistisai Deployment Script (Post-Authentication)
 # Run this after: gcloud auth login
 
 set -e
 
-PROJECT_ID="CloudToLocalLLM-468303"
-INSTANCE_NAME="CloudToLocalLLM-db"
+PROJECT_ID="Pistisai-468303"
+INSTANCE_NAME="Pistisai-db"
 REGION="us-central1"
 SERVICE_NAME="cloudtolocalllm-api"
 
-echo " CloudToLocalLLM Deployment (Post-Authentication)"
+echo " Pistisai Deployment (Post-Authentication)"
 echo "=================================================="
 
 # Verify authentication

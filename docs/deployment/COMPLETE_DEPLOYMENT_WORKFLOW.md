@@ -1,6 +1,6 @@
-# CloudToLocalLLM Complete Deployment Workflow
+# Pistisai Complete Deployment Workflow
 
-This is the **ONE AND ONLY** deployment document for CloudToLocalLLM. Follow this exactly to ensure a smooth and successful deployment.
+This is the **ONE AND ONLY** deployment document for Pistisai. Follow this exactly to ensure a smooth and successful deployment.
 
 **Estimated Total Time:** 45-90 minutes
 
@@ -24,7 +24,7 @@ This is the **ONE AND ONLY** deployment document for CloudToLocalLLM. Follow thi
 ```bash
 # 1. Verify you're in the correct directory
 pwd
-# Expected: /path/to/CloudToLocalLLM
+# Expected: /path/to/Pistisai
 
 # 2. Check Git status
 git status
@@ -76,7 +76,7 @@ For full sequence, see [k3s on Proxmox Deployment Workflow](./K3S_PROXMOX_DEPLOY
 
 ### **Build and Push Images to Container Registry**
 
-CloudToLocalLLM uses Dockerfiles for container builds. Build and push images to your registry:
+Pistisai uses Dockerfiles for container builds. Build and push images to your registry:
 
 ```bash
 # Authenticate with your container registry
@@ -125,7 +125,7 @@ kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/postgres-statefulset.yaml
 
 # Wait for database to be ready
-kubectl wait --for=condition=ready pod -l app=postgres -n CloudToLocalLLM --timeout=300s
+kubectl wait --for=condition=ready pod -l app=postgres -n Pistisai --timeout=300s
 ```
 
 ### **Step 3.3: Deploy Applications**
@@ -145,10 +145,10 @@ kubectl apply -f k8s/ingress-nginx.yaml
 
 ```bash
 # Check pod status
-kubectl get pods -n CloudToLocalLLM
+kubectl get pods -n Pistisai
 
 # Check services
-kubectl get svc -n CloudToLocalLLM
+kubectl get svc -n Pistisai
 
 # Test main application
 curl -I https://app.pistisai.app
@@ -166,14 +166,14 @@ curl -s https://app.pistisai.app/version.json
 
 ```bash
 # Check all pods are running
-kubectl get pods -n CloudToLocalLLM
+kubectl get pods -n Pistisai
 
 # View pod logs
-kubectl logs -f deployment/api-backend -n CloudToLocalLLM
-kubectl logs -f deployment/web -n CloudToLocalLLM
+kubectl logs -f deployment/api-backend -n Pistisai
+kubectl logs -f deployment/web -n Pistisai
 
 # Check ingress status
-kubectl get ingress -n CloudToLocalLLM
+kubectl get ingress -n Pistisai
 ```
 
 ### **Manual Verification**
@@ -194,7 +194,7 @@ kubectl get ingress -n CloudToLocalLLM
 
 ## 🔧 **Troubleshooting**
 
-- **Pod Not Starting:** Check pod logs with `kubectl logs <pod-name> -n CloudToLocalLLM`
+- **Pod Not Starting:** Check pod logs with `kubectl logs <pod-name> -n Pistisai`
 - **Image Pull Errors:** Verify image registry credentials and image tags
 - **Database Connection Issues:** Check PostgreSQL pod logs and verify secrets
 - **Ingress Issues:** Check ingress controller and DNS configuration

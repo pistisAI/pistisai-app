@@ -1,6 +1,6 @@
-# CloudToLocalLLM Documentation
+# Pistisai Documentation
 
-This is the canonical documentation hub for CloudToLocalLLM. Prefer linking here from new docs instead of adding another top-level index.
+This is the canonical documentation hub for Pistisai. Prefer linking here from new docs instead of adding another top-level index.
 
 For project-wide agent instructions, see [AGENTS.md](../AGENTS.md). For the product specification, see [SPEC.md](../SPEC.md).
 

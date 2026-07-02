@@ -1,6 +1,6 @@
 # Windows Installation Guide
 
-This guide covers installing CloudToLocalLLM on Windows 10 and Windows 11. Agent runtime selection happens in the setup wizard after installation. CloudToLocalLLM can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
+This guide covers installing Pistisai on Windows 10 and Windows 11. Agent runtime selection happens in the setup wizard after installation. Pistisai can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
 
 Ollama and LM Studio are optional support model providers for memory/background features, not primary app runtimes.
 
@@ -25,7 +25,7 @@ Prepare one agent runtime before or during first launch:
 | Hermes | Configured in wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `http://localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private server, VPS, or compatible agent runtime API |
-| Hosted agent runtime | CloudToLocalLLM managed | Optional paid compute |
+| Hosted agent runtime | Pistisai managed | Optional paid compute |
 
 For a runtime on another machine, install Tailscale on both devices and confirm they can reach each other.
 
@@ -50,11 +50,11 @@ For a runtime on another machine, install Tailscale on both devices and confirm 
 
 ## Windows Installer
 
-1. Open the [latest release](https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest).
+1. Open the [latest release](https://github.com/Pistisai-online/Pistisai/releases/latest).
 2. Download the Windows installer.
 3. Run the installer.
 4. Follow the installation wizard.
-5. Launch CloudToLocalLLM from the Start Menu or desktop shortcut.
+5. Launch Pistisai from the Start Menu or desktop shortcut.
 
 Typical installer options:
 
@@ -75,9 +75,9 @@ Use "Add or Remove Programs" in Windows Settings, or run the uninstaller from th
 
 ## Portable Build
 
-1. Download the portable zip from the [latest release](https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest).
-2. Extract it to a folder such as `C:\Tools\CloudToLocalLLM`.
-3. Run `CloudToLocalLLM.exe`.
+1. Download the portable zip from the [latest release](https://github.com/Pistisai-online/Pistisai/releases/latest).
+2. Extract it to a folder such as `C:\Tools\Pistisai`.
+3. Run `Pistisai.exe`.
 
 Portable builds store app data beside the executable when packaged that way. Move the data folder with the app if you relocate it.
 
@@ -94,8 +94,8 @@ Install:
 Build:
 
 ```powershell
-git clone https://github.com/CloudToLocalLLM-online/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://github.com/Pistisai-online/Pistisai.git
+cd Pistisai
 flutter pub get
 flutter config --enable-windows-desktop
 flutter build windows --release
@@ -112,7 +112,7 @@ build\windows\runner\Release\
 ## First Launch
 
 1. Start your selected agent runtime or confirm the remote runtime is reachable.
-2. Launch CloudToLocalLLM.
+2. Launch Pistisai.
 3. Complete the setup wizard.
 4. Select the agent runtime and endpoint.
 5. Optionally configure a support model provider for memory/background features.
@@ -138,7 +138,7 @@ tailscale ping <runtime-device-name>
 Firewall rule example:
 
 ```powershell
-New-NetFirewallRule -DisplayName "CloudToLocalLLM" -Direction Inbound -Program "C:\Program Files\CloudToLocalLLM\CloudToLocalLLM.exe" -Action Allow
+New-NetFirewallRule -DisplayName "Pistisai" -Direction Inbound -Program "C:\Program Files\Pistisai\Pistisai.exe" -Action Allow
 ```
 
 Only allow inbound access when a feature actually needs it. Prefer Tailscale for remote access instead of opening broad network exposure.
@@ -188,13 +188,13 @@ Confirm both devices are in the same tailnet and that Windows Defender Firewall 
 
 1. Open the hidden tray icons menu.
 2. Check Windows taskbar notification settings.
-3. Restart CloudToLocalLLM.
+3. Restart Pistisai.
 
 ### Logs
 
 ```powershell
-Get-Content "$env:LOCALAPPDATA\CloudToLocalLLM\logs\app.log" -Tail 50
-Get-WinEvent -LogName Application | Where-Object {$_.ProviderName -eq "CloudToLocalLLM"}
+Get-Content "$env:LOCALAPPDATA\Pistisai\logs\app.log" -Tail 50
+Get-WinEvent -LogName Application | Where-Object {$_.ProviderName -eq "Pistisai"}
 ```
 
 ---

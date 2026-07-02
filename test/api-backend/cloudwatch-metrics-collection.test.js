@@ -21,7 +21,7 @@ const NODE_STATES = ["Ready", "NotReady", "Unknown"];
 
 // Valid namespaces
 const VALID_NAMESPACES = [
-  "CloudToLocalLLM",
+  "Pistisai",
   "monitoring",
   "kube-system",
   "ingress-nginx",
@@ -34,7 +34,7 @@ function generatePodMetric(options = {}) {
   return {
     podName: options.podName !== undefined ? options.podName : "test-pod",
     namespace:
-      options.namespace !== undefined ? options.namespace : "CloudToLocalLLM",
+      options.namespace !== undefined ? options.namespace : "Pistisai",
     containerName:
       options.containerName !== undefined ? options.containerName : "app",
     cpuUsage:
@@ -268,8 +268,8 @@ describe("CloudWatch Metrics Collection - Property Tests", () => {
 
     test("should collect metrics from multiple pods", () => {
       const pods = [
-        { podName: "pod-1", namespace: "CloudToLocalLLM" },
-        { podName: "pod-2", namespace: "CloudToLocalLLM" },
+        { podName: "pod-1", namespace: "Pistisai" },
+        { podName: "pod-2", namespace: "Pistisai" },
         { podName: "pod-3", namespace: "monitoring" },
       ];
 
@@ -293,15 +293,15 @@ describe("CloudWatch Metrics Collection - Property Tests", () => {
 
     test("should aggregate pod metrics by namespace", () => {
       const metrics = [
-        generatePodMetric({ namespace: "CloudToLocalLLM" }),
-        generatePodMetric({ namespace: "CloudToLocalLLM" }),
+        generatePodMetric({ namespace: "Pistisai" }),
+        generatePodMetric({ namespace: "Pistisai" }),
         generatePodMetric({ namespace: "monitoring" }),
       ];
 
       const aggregated = aggregatePodMetricsByNamespace(metrics);
 
       expect(Object.keys(aggregated).length).toBe(2);
-      expect(aggregated["CloudToLocalLLM"].length).toBe(2);
+      expect(aggregated["Pistisai"].length).toBe(2);
       expect(aggregated["monitoring"].length).toBe(1);
     });
 
@@ -342,7 +342,7 @@ describe("CloudWatch Metrics Collection - Property Tests", () => {
     });
 
     test("should validate pod is in valid namespace", () => {
-      const metric = generatePodMetric({ namespace: "CloudToLocalLLM" });
+      const metric = generatePodMetric({ namespace: "Pistisai" });
 
       expect(validatePodNamespace(metric)).toBe(true);
     });

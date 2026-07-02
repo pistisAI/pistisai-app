@@ -34,7 +34,7 @@ class _HermesGatewayFAQStepState extends State<HermesGatewayFAQStep> {
           title: const Text('Can I use both Hermes and OpenClaw?'),
           children: const [
             Text(
-                'Yes! CloudToLocalLLM supports multiple backends. You can switch between OpenClaw and Hermes in settings.'),
+                'Yes! Pistisai supports multiple backends. You can switch between OpenClaw and Hermes in settings.'),
           ],
         ),
         ExpansionTile(

@@ -132,7 +132,7 @@ curl -X GET "https://api.pistisai.app/api/admin/email/config" \
         "id": "config-uuid",
         "provider": "google_workspace",
         "from_address": "noreply@pistisai.app",
-        "from_name": "CloudToLocalLLM",
+        "from_name": "Pistisai",
         "reply_to_address": "support@pistisai.app",
         "is_active": true,
         "created_at": "2025-01-16T10:30:00.000Z",
@@ -200,7 +200,7 @@ curl -X DELETE "https://api.pistisai.app/api/admin/email/config?provider=google_
 ```json
 {
   "recipientEmail": "test@example.com",
-  "subject": "Test Email from CloudToLocalLLM"
+  "subject": "Test Email from Pistisai"
 }
 ```
 
@@ -224,7 +224,7 @@ curl -X POST "https://api.pistisai.app/api/admin/email/test" \
   "data": {
     "messageId": "gmail-message-id",
     "recipientEmail": "test@example.com",
-    "subject": "Test Email from CloudToLocalLLM",
+    "subject": "Test Email from Pistisai",
     "sentAt": "2025-01-16T10:30:00.000Z"
   },
   "message": "Test email sent successfully",

@@ -49,7 +49,7 @@ const TEST_USERS = {
       iat: Math.floor(Date.now() / 1000),
       email: "admin@test.com",
       scope: "read:profile write:profile",
-      "https://CloudToLocalLLM.com/app_metadata": { role: "admin" },
+      "https://Pistisai.com/app_metadata": { role: "admin" },
     },
   },
 };
@@ -107,7 +107,7 @@ describe("Authentication Security Tests", () => {
 
     app.get("/admin", (req, res) => {
       const isAdmin =
-        req.user["https://CloudToLocalLLM.com/app_metadata"]?.role === "admin";
+        req.user["https://Pistisai.com/app_metadata"]?.role === "admin";
       if (!isAdmin) {
         return res.status(403).json({ error: "Admin access required" });
       }

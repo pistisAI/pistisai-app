@@ -7,7 +7,7 @@ desktop registrations in `lib/di/locator.dart`.
 
 Source base:
 
-- `/tmp/codex-security-scans/CloudToLocalLLM/3e80a2e3a49a_20260502T125942Z/report.md`  
+- `/tmp/codex-security-scans/Pistisai/3e80a2e3a49a_20260502T125942Z/report.md`  
   (deferred desktop-local follow-up prompt)
 - Current repository code reviewed above.
 

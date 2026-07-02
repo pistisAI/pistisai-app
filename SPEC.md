@@ -1,8 +1,8 @@
-# CloudToLocalLLM Specification
+# Pistisai Specification
 
 ## Project Vision
 
-**CloudToLocalLLM** is a local-first companion and desktop capability layer for user-selected agent runtimes. It gives Hermes, OpenClaw, and compatible agent gateways a secure channel to the user and permissioned hands and eyes on the user's desktops.
+**Pistisai** is a local-first companion and desktop capability layer for user-selected agent runtimes. It gives Hermes, OpenClaw, and compatible agent gateways a secure channel to the user and permissioned hands and eyes on the user's desktops.
 
 The primary audience is personal users — individuals who want a private, capable AI companion on their own hardware. Business and team usage is a secondary path that follows the personal foundation.
 
@@ -12,12 +12,12 @@ Hermes is the current first test path. OpenClaw remains a supported agent runtim
 
 ## Product Model
 
-CloudToLocalLLM has four product layers:
+Pistisai has four product layers:
 
 1. **User-owned agent runtime**: the normal path. The user runs Hermes, OpenClaw, or a compatible agent gateway on hardware they control.
 2. **Support model provider**: optional local model infrastructure such as Ollama or LM Studio for memory and other app-owned background features.
 3. **Cloud connector and sync**: optional per-user cloud connector container that can join the user's Tailscale tailnet for secure channel sync, presence, and web/mobile access.
-4. **Hosted agent runtime**: optional paid compute add-on for users who want CloudToLocalLLM to run an isolated agent runtime for them.
+4. **Hosted agent runtime**: optional paid compute add-on for users who want Pistisai to run an isolated agent runtime for them.
 
 Cloud services coordinate identity, sync, presence, and optional hosted compute. They are not required for the core single-device local experience.
 
@@ -43,7 +43,7 @@ Cloud services coordinate identity, sync, presence, and optional hosted compute.
 
 - Desktop control is a core feature.
 - The active agent runtime can request permissioned hands-on access to a selected device.
-- The local CloudToLocalLLM device node approves, executes, and audits the action through a capability broker.
+- The local Pistisai device node approves, executes, and audits the action through a capability broker.
 - Capabilities include app launch, window control, click/type/keyboard actions, clipboard, file operations, system state, and command execution where supported.
 - Risky actions must remain explicit, device-scoped, auditable, and user-controlled.
 
@@ -67,7 +67,7 @@ Cloud services coordinate identity, sync, presence, and optional hosted compute.
 
 ### 7. Multi-Device Sync And Secure Mesh
 
-- CloudToLocalLLM can be installed on all of a user's devices.
+- Pistisai can be installed on all of a user's devices.
 - Tailscale is the preferred private transport for device-to-device and cloud-connector communication.
 - Conversation/channel state can sync globally.
 - Desktop actions, vision, files, clipboard, and commands are always targeted to a specific authorized device.
@@ -82,7 +82,7 @@ Agent runtime setup paths:
 2. **Another private device**: agent runtime running on another desktop, workstation, or server.
 3. **Tailscale device**: agent runtime discovered through the user's tailnet.
 4. **Manual/private URL**: custom LAN, VPN, tailnet DNS, or private compatible agent gateway.
-5. **Cloud-hosted agent runtime**: optional paid CloudToLocalLLM-managed runtime.
+5. **Cloud-hosted agent runtime**: optional paid Pistisai-managed runtime.
 6. **No runtime yet**: guide the user through installing or configuring Hermes, OpenClaw, or another compatible agent gateway.
 
 Optional support model setup paths:
@@ -150,11 +150,11 @@ Primary private transport should be Tailscale:
 ```text
 Client UI / Web / Phone
         |
-Optional per-user CloudToLocalLLM cloud connector
+Optional per-user Pistisai cloud connector
         |
 User's Tailscale tailnet
         |
-CloudToLocalLLM desktop apps and user-selected agent runtimes
+Pistisai desktop apps and user-selected agent runtimes
 ```
 
 Rules:
@@ -162,7 +162,7 @@ Rules:
 - Use one isolated cloud connector container per user.
 - The connector joins only that user's tailnet.
 - The connector should use a narrow service identity such as a Tailscale tag.
-- ACLs should allow only the device APIs needed by CloudToLocalLLM.
+- ACLs should allow only the device APIs needed by Pistisai.
 - The cloud connector coordinates channel sync and presence; it does not bypass local desktop permissions.
 - Custom SSH/WebSocket tunnel infrastructure should be treated as legacy or fallback unless a specific use case still requires it.
 

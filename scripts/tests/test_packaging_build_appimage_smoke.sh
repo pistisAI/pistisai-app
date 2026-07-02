@@ -26,7 +26,7 @@ chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

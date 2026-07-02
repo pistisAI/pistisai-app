@@ -43,7 +43,7 @@ class HomepageScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, {required bool isMobile}) {
-    // Welcome message with CloudToLocalLLM persona
+    // Welcome message with Pistisai persona
     final theme = Theme.of(context);
 
     // Responsive sizing
@@ -111,7 +111,7 @@ class HomepageScreen extends StatelessWidget {
             children: [
               // Logo with semantic label for accessibility
               Semantics(
-                label: 'CloudToLocalLLM Logo',
+                label: 'Pistisai Logo',
                 child: Container(
                   width: logoSize,
                   height: logoSize,
@@ -148,7 +148,7 @@ class HomepageScreen extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: 'CloudToLocalLLM\n',
+                      text: 'Pistisai\n',
                       style: theme.textTheme.displayLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -261,7 +261,7 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Install CloudToLocalLLM and your Aiman with a single command.',
+            'Install Pistisai and your Aiman with a single command.',
             style: TextStyle(
               color: Theme.of(context)
                   .colorScheme
@@ -497,7 +497,7 @@ class HomepageScreen extends StatelessWidget {
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () async {
-              final uri = Uri.parse('https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases');
+              final uri = Uri.parse('https://github.com/Pistisai-online/Pistisai/releases');
               if (await canLaunchUrl(uri)) {
                 await launchUrl(uri);
               }
@@ -586,7 +586,7 @@ class HomepageScreen extends StatelessWidget {
           const Text('🦞', style: TextStyle(fontSize: 48)),
           const SizedBox(height: 16),
           Text(
-            'CloudToLocalLLM',
+            'Pistisai',
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: ThemeConfig.primaryColor,
@@ -594,7 +594,7 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            '© 2025-2026 CloudToLocalLLM. Licensed under MIT.',
+            '© 2025-2026 Pistisai. Licensed under MIT.',
             style: TextStyle(color: Colors.grey, fontSize: 12),
           ),
         ],

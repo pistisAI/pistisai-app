@@ -1,7 +1,7 @@
 {
-  "name": "@CloudToLocalLLM/sdk",
+  "name": "@Pistisai/sdk",
   "version": "2.0.0",
-  "description": "Official JavaScript/TypeScript SDK for CloudToLocalLLM API",
+  "description": "Official JavaScript/TypeScript SDK for Pistisai API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -29,13 +29,13 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "CloudToLocalLLM",
+    "Pistisai",
     "sdk",
     "api",
     "typescript",
     "javascript"
   ],
-  "author": "CloudToLocalLLM Team",
+  "author": "Pistisai Team",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.15.0",
@@ -57,10 +57,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/CloudToLocalLLM/CloudToLocalLLM.git"
+    "url": "https://github.com/Pistisai/Pistisai.git"
   },
   "bugs": {
-    "url": "https://github.com/CloudToLocalLLM/CloudToLocalLLM/issues"
+    "url": "https://github.com/Pistisai/Pistisai/issues"
   },
   "homepage": "https://pistisai.app"
 }

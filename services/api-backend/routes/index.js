@@ -3,10 +3,10 @@ import swaggerUi from 'swagger-ui-express';
 const specs = {
   openapi: '3.0.0',
   info: {
-    title: 'CloudToLocalLLM API Backend',
+    title: 'Pistisai API Backend',
     version: '2.0.0',
     description:
-      'Comprehensive API for CloudToLocalLLM - Bridge cloud AI services with local models',
+      'Comprehensive API for Pistisai - Bridge cloud AI services with local models',
   },
   paths: {},
 };
@@ -103,7 +103,7 @@ export function setupRoutes(
         deepLinking: true,
       },
       customCss: '.swagger-ui .topbar { display: none }',
-      customSiteTitle: 'CloudToLocalLLM API Documentation',
+      customSiteTitle: 'Pistisai API Documentation',
     }),
   );
 
@@ -125,7 +125,7 @@ export function setupRoutes(
         deepLinking: true,
       },
       customCss: '.swagger-ui .topbar { display: none }',
-      customSiteTitle: 'CloudToLocalLLM API Documentation',
+      customSiteTitle: 'Pistisai API Documentation',
     }),
   );
 

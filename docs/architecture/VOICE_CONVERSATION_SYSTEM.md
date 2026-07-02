@@ -6,7 +6,7 @@ Voice is part of the avatar companion, not a standalone app feature. This docume
 
 ## Goal
 
-Make the CloudToLocalLLM avatar feel like a natural local voice companion instead of a push-to-talk tool or delayed assistant loop.
+Make the Pistisai avatar feel like a natural local voice companion instead of a push-to-talk tool or delayed assistant loop.
 
 The target experience is:
 - always listening locally
@@ -152,7 +152,7 @@ This is intentionally dependency-light so it can be wired into the avatar compan
 
 ## Practical recommendation
 
-Yes: CloudToLocalLLM as the avatar/voice sidecar makes this easier.
+Yes: Pistisai as the avatar/voice sidecar makes this easier.
 
 Best split:
 - Avatar companion = natural voice shell and side presence

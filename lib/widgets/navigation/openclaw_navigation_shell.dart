@@ -132,7 +132,7 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CloudToLocalLLM',
+                    'Pistisai',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

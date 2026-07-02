@@ -1,6 +1,6 @@
 # Linux Build Guide
 
-This guide explains the Linux build system for CloudToLocalLLM, which creates both Flatpak and .deb packages.
+This guide explains the Linux build system for Pistisai, which creates both Flatpak and .deb packages.
 
 ## Overview
 
@@ -15,7 +15,7 @@ Linux builds are **ENABLED** and fully integrated into the CI/CD pipeline. The b
 
 Linux builds produce two package formats:
 
-1. **Flatpak** (`CloudToLocalLLM-{version}.flatpak`)
+1. **Flatpak** (`Pistisai-{version}.flatpak`)
    - Universal package for all Linux distributions
    - Sandboxed environment with controlled permissions
    - Works on Ubuntu, Fedora, Arch, Debian, openSUSE, etc.
@@ -93,7 +93,7 @@ flutter build linux --release
 ### 4. Test the Build
 
 ```bash
-./build/linux/x64/release/bundle/CloudToLocalLLM
+./build/linux/x64/release/bundle/Pistisai
 ```
 
 ### 5. Build Flatpak (Optional)
@@ -106,21 +106,21 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 flatpak install -y flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08
 
 # Build Flatpak
-flatpak-builder --force-clean --repo=repo build-dir com.CloudToLocalLLM.CloudToLocalLLM.yml
+flatpak-builder --force-clean --repo=repo build-dir com.Pistisai.Pistisai.yml
 
 # Create bundle
-flatpak build-bundle repo CloudToLocalLLM.flatpak com.CloudToLocalLLM.CloudToLocalLLM
+flatpak build-bundle repo Pistisai.flatpak com.Pistisai.Pistisai
 
 # Test installation
-flatpak install --user CloudToLocalLLM.flatpak
+flatpak install --user Pistisai.flatpak
 
 # Run the app
-flatpak run com.CloudToLocalLLM.CloudToLocalLLM
+flatpak run com.Pistisai.Pistisai
 ```
 
 ## Flatpak Manifest Configuration
 
-The Flatpak manifest (`com.CloudToLocalLLM.CloudToLocalLLM.yml`) defines:
+The Flatpak manifest (`com.Pistisai.Pistisai.yml`) defines:
 
 ### Runtime and SDK
 
@@ -155,13 +155,13 @@ The manifest copies the Flutter build output and installs:
 ### Option 1: GitHub Releases (Current)
 
 - Users download `.flatpak` file from GitHub releases
-- Manual installation: `flatpak install CloudToLocalLLM-*.flatpak`
+- Manual installation: `flatpak install Pistisai-*.flatpak`
 - Simple but requires manual updates
 
 ### Option 2: Flathub (Recommended for Future)
 
 - Submit to Flathub for centralized distribution
-- Users can install via: `flatpak install flathub com.CloudToLocalLLM.CloudToLocalLLM`
+- Users can install via: `flatpak install flathub com.Pistisai.Pistisai`
 - Automatic updates through Flatpak
 - Better discoverability in software centers
 
@@ -201,15 +201,15 @@ flatpak install flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.
 
 # Clear build cache and retry
 rm -rf build-dir repo
-flatpak-builder --force-clean --repo=repo build-dir com.CloudToLocalLLM.CloudToLocalLLM.yml
+flatpak-builder --force-clean --repo=repo build-dir com.Pistisai.Pistisai.yml
 ```
 
 ### Application Won't Start
 
 ```bash
 # Check Flatpak logs
-flatpak run --command=sh com.CloudToLocalLLM.CloudToLocalLLM
-journalctl --user -xe | grep CloudToLocalLLM
+flatpak run --command=sh com.Pistisai.Pistisai
+journalctl --user -xe | grep Pistisai
 ```
 
 ### Missing Dependencies
@@ -249,7 +249,7 @@ Expected cache hit rate: >80% for subsequent builds
 - Public repositories: **FREE unlimited minutes**
 - Private repositories: 2,000 free minutes/month
 
-**CloudToLocalLLM Status**: Public repository
+**Pistisai Status**: Public repository
 **Monthly Cost**: **$0** (completely free)
 
 ## Next Steps

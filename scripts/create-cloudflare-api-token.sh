@@ -56,7 +56,7 @@ echo ""
 
 TOKEN_REQUEST=$(cat <<EOF
 {
-  "name": "CloudToLocalLLM Deployment - Cache Purge (No IP Restrictions)",
+  "name": "Pistisai Deployment - Cache Purge (No IP Restrictions)",
   "policies": [
     {
       "effect": "allow",

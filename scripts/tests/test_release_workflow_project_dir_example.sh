@@ -4,12 +4,12 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 FILE="$PROJECT_ROOT/docs/development/release/RELEASE_WORKFLOW.md"
 
-if ! grep -Fq 'cd \${PROJECT_DIR:-/opt/CloudToLocalLLM}' "$FILE"; then
+if ! grep -Fq 'cd \${PROJECT_DIR:-/opt/Pistisai}' "$FILE"; then
   echo "missing project-dir-aware SSH deployment example" >&2
   exit 1
 fi
 
-if grep -Fq 'cd /opt/CloudToLocalLLM && git pull origin master && flutter build web --release' "$FILE"; then
+if grep -Fq 'cd /opt/Pistisai && git pull origin master && flutter build web --release' "$FILE"; then
   echo "found legacy hardcoded deployment SSH example" >&2
   exit 1
 fi

@@ -397,7 +397,7 @@ refresh_dart_package_config_if_needed() {
   fi
 
   if [[ "$package_config_needs_refresh" -eq 0 ]]; then
-    if grep -q '/paperclip/.pub-cache' "$package_config" ||        grep -q '/mnt/data/projects/CloudToLocalLLM/.pub-cache' "$package_config" ||        grep -q '/paperclip/CloudToLocalLLM/.pub-cache' "$package_config" ||        grep -q '/workspace/.pub-cache' "$package_config"; then
+    if grep -q '/paperclip/.pub-cache' "$package_config" ||        grep -q '/mnt/data/projects/Pistisai/.pub-cache' "$package_config" ||        grep -q '/paperclip/Pistisai/.pub-cache' "$package_config" ||        grep -q '/workspace/.pub-cache' "$package_config"; then
       package_config_needs_refresh=1
     fi
   fi

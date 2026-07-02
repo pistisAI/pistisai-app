@@ -2,7 +2,7 @@
 
 > Status: legacy/fallback architecture.
 >
-> CloudToLocalLLM's current product direction is Tailscale-first secure device mesh with one isolated cloud connector container per user. New multi-device and cloud-connector work should start with [Secure Device Mesh](SECURE_DEVICE_MESH.md). Keep this document for historical context and for any fallback path that still explicitly requires custom SSH/WebSocket tunneling.
+> Pistisai's current product direction is Tailscale-first secure device mesh with one isolated cloud connector container per user. New multi-device and cloud-connector work should start with [Secure Device Mesh](SECURE_DEVICE_MESH.md). Keep this document for historical context and for any fallback path that still explicitly requires custom SSH/WebSocket tunneling.
 
 ## System Overview
 

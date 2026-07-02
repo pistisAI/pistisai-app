@@ -128,7 +128,7 @@ class StreamingChatService extends ChangeNotifier {
 
       if (loadedConversations.isNotEmpty) {
         _conversations = loadedConversations;
-        // Don't auto-select on startup to show CloudToLocalLLM Ready screen
+        // Don't auto-select on startup to show Pistisai Ready screen
         _currentConversation = null;
         appLogger.info(
           '[StreamingChat] Loaded ${_conversations.length} conversations from storage',
@@ -168,11 +168,11 @@ class StreamingChatService extends ChangeNotifier {
 
     final welcomeMessage = Message.system(
       content:
-          'Welcome to CloudToLocalLLM! I\'m ready to help you with any questions or tasks. What would you like to talk about?',
+          'Welcome to Pistisai! I\'m ready to help you with any questions or tasks. What would you like to talk about?',
     );
 
     _conversations = [sampleConversation.addMessage(welcomeMessage)];
-    // Don't auto-select to show CloudToLocalLLM Ready screen
+    // Don't auto-select to show Pistisai Ready screen
     _currentConversation = null;
 
     // Save the welcome conversation

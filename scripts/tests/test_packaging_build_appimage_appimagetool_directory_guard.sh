@@ -6,7 +6,7 @@ TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/build_appimage.sh"
 WORK_DIR="$(mktemp -d)"
 BUILD_DIR="$WORK_DIR/bundle"
 APPIMAGE_WORKDIR="$WORK_DIR/work"
-OUTPUT_FILE="$WORK_DIR/out/CloudToLocalLLM-x86_64.AppImage"
+OUTPUT_FILE="$WORK_DIR/out/Pistisai-x86_64.AppImage"
 DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
 APPIMAGETOOL_DIR="$WORK_DIR/appimagetool-dir"
 PUBSPEC_FILE="$WORK_DIR/pubspec.yaml"
@@ -30,7 +30,7 @@ chmod +x "$BUILD_DIR/cloudtolocalllm"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

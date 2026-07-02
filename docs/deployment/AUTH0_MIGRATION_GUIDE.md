@@ -1,6 +1,6 @@
 # Auth0 Migration Guide
 
-This guide documents the migration from Entra ID (Azure AD B2C) to Auth0 authentication for the CloudToLocalLLM application.
+This guide documents the migration from Entra ID (Azure AD B2C) to Auth0 authentication for the Pistisai application.
 
 ## Overview
 
@@ -11,14 +11,14 @@ The application has been migrated from Entra ID to Auth0 for improved authentica
 ### 1. Create Auth0 Tenant
 
 ```bash
-auth0 tenants create --name "CloudToLocalLLM"
+auth0 tenants create --name "Pistisai"
 auth0 tenants list
 ```
 
 ### 2. Create Single Page Application
 
 ```bash
-auth0 apps create --type spa --name "CloudToLocalLLM Frontend"
+auth0 apps create --type spa --name "Pistisai Frontend"
 auth0 apps list
 ```
 
@@ -33,7 +33,7 @@ auth0 apps update <app-id> --origins "http://localhost:3000,https://yourapp.com"
 ### 4. Create API Resource
 
 ```bash
-auth0 apis create --name "CloudToLocalLLM API" --identifier "https://api.CloudToLocalLLM.com"
+auth0 apis create --name "Pistisai API" --identifier "https://api.Pistisai.com"
 auth0 apis list
 ```
 
@@ -63,7 +63,7 @@ Replace the Entra ID variables with Auth0 equivalents:
 ```bash
 # Auth0 Configuration (replace Entra variables)
 AUTH0_JWKS_URI=https://your-tenant.auth0.com/.well-known/jwks.json
-AUTH0_AUDIENCE=https://api.CloudToLocalLLM.com
+AUTH0_AUDIENCE=https://api.Pistisai.com
 
 # Remove old Entra variables
 # ENTRA_JWKS_URI=...
@@ -79,8 +79,8 @@ Add these to your Flutter environment configuration:
 class AuthConfig {
   static const String domain = 'your-tenant.auth0.com';
   static const String clientId = 'your-spa-client-id';
-  static const String audience = 'https://api.CloudToLocalLLM.com';
-  static const String scheme = 'CloudToLocalLLM';
+  static const String audience = 'https://api.Pistisai.com';
+  static const String scheme = 'Pistisai';
 }
 ```
 

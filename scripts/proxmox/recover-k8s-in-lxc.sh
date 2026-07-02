@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Recover Kubernetes (k3s) in a Proxmox LXC that previously hosted CloudToLocalLLM.
+# Recover Kubernetes (k3s) in a Proxmox LXC that previously hosted Pistisai.
 # This script configures /dev/kmsg passthrough required by kubelet in user namespaces,
 # reinstalls k3s with KubeletInUserNamespace feature gate, and verifies cluster health.
 

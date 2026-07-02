@@ -32,7 +32,7 @@ describe("Tier Detection Logic", () => {
 
     it("should return free tier for user without sub field", () => {
       const user = {
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+        "https://Pistisai.com/user_metadata": { tier: "premium" },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.FREE);
     });
@@ -40,7 +40,7 @@ describe("Tier Detection Logic", () => {
     it("should detect free tier from user metadata", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "free" },
+        "https://Pistisai.com/user_metadata": { tier: "free" },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.FREE);
     });
@@ -48,7 +48,7 @@ describe("Tier Detection Logic", () => {
     it("should detect premium tier from user metadata", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+        "https://Pistisai.com/user_metadata": { tier: "premium" },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.PREMIUM);
     });
@@ -56,7 +56,7 @@ describe("Tier Detection Logic", () => {
     it("should detect enterprise tier from user metadata", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "enterprise" },
+        "https://Pistisai.com/user_metadata": { tier: "enterprise" },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.ENTERPRISE);
     });
@@ -64,8 +64,8 @@ describe("Tier Detection Logic", () => {
     it("should fallback to app metadata when user metadata is empty", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": {},
-        "https://CloudToLocalLLM.com/app_metadata": { tier: "premium" },
+        "https://Pistisai.com/user_metadata": {},
+        "https://Pistisai.com/app_metadata": { tier: "premium" },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.PREMIUM);
     });
@@ -73,7 +73,7 @@ describe("Tier Detection Logic", () => {
     it("should fallback to subscription field", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           subscription: "enterprise",
         },
       };
@@ -83,7 +83,7 @@ describe("Tier Detection Logic", () => {
     it("should handle case insensitive tier values", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "PREMIUM" },
+        "https://Pistisai.com/user_metadata": { tier: "PREMIUM" },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.PREMIUM);
     });
@@ -91,7 +91,7 @@ describe("Tier Detection Logic", () => {
     it("should handle tier values with whitespace", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "  enterprise  " },
+        "https://Pistisai.com/user_metadata": { tier: "  enterprise  " },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.ENTERPRISE);
     });
@@ -99,7 +99,7 @@ describe("Tier Detection Logic", () => {
     it("should default to free for unknown tier values", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "unknown_tier" },
+        "https://Pistisai.com/user_metadata": { tier: "unknown_tier" },
       };
       expect(getUserTier(user)).toBe(USER_TIERS.FREE);
     });
@@ -107,7 +107,7 @@ describe("Tier Detection Logic", () => {
     it("should handle malformed metadata gracefully", () => {
       const user = {
         sub: "jwt|user123",
-        "https://CloudToLocalLLM.com/user_metadata": "invalid_metadata",
+        "https://Pistisai.com/user_metadata": "invalid_metadata",
       };
       expect(getUserTier(user)).toBe(USER_TIERS.FREE);
     });
@@ -157,12 +157,12 @@ describe("Tier Detection Logic", () => {
   describe("hasFeature", () => {
     const freeUser = {
       sub: "jwt|free123",
-      "https://CloudToLocalLLM.com/user_metadata": { tier: "free" },
+      "https://Pistisai.com/user_metadata": { tier: "free" },
     };
 
     const premiumUser = {
       sub: "jwt|premium123",
-      "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+      "https://Pistisai.com/user_metadata": { tier: "premium" },
     };
 
     it("should return false for container orchestration for free user", () => {
@@ -193,7 +193,7 @@ describe("Tier Detection Logic", () => {
     it("should return true for free tier users", () => {
       const user = {
         sub: "jwt|free123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "free" },
+        "https://Pistisai.com/user_metadata": { tier: "free" },
       };
       expect(shouldUseDirectTunnel(user)).toBe(true);
     });
@@ -201,7 +201,7 @@ describe("Tier Detection Logic", () => {
     it("should return false for premium tier users", () => {
       const user = {
         sub: "jwt|premium123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+        "https://Pistisai.com/user_metadata": { tier: "premium" },
       };
       expect(shouldUseDirectTunnel(user)).toBe(false);
     });
@@ -209,7 +209,7 @@ describe("Tier Detection Logic", () => {
     it("should return false for enterprise tier users", () => {
       const user = {
         sub: "jwt|enterprise123",
-        "https://CloudToLocalLLM.com/user_metadata": { tier: "enterprise" },
+        "https://Pistisai.com/user_metadata": { tier: "enterprise" },
       };
       expect(shouldUseDirectTunnel(user)).toBe(false);
     });
@@ -217,7 +217,7 @@ describe("Tier Detection Logic", () => {
     it("should return true for users with no tier (defaults to free)", () => {
       const user = {
         sub: "jwt|notier123",
-        "https://CloudToLocalLLM.com/user_metadata": {},
+        "https://Pistisai.com/user_metadata": {},
       };
       expect(shouldUseDirectTunnel(user)).toBe(true);
     });
@@ -233,7 +233,7 @@ describe("Tier Detection Logic", () => {
         {
           user: {
             sub: "jwt|test1",
-            "https://CloudToLocalLLM.com/user_metadata": { tier: "free" },
+            "https://Pistisai.com/user_metadata": { tier: "free" },
           },
           expectedTier: USER_TIERS.FREE,
           expectedDirectTunnel: true,
@@ -242,7 +242,7 @@ describe("Tier Detection Logic", () => {
         {
           user: {
             sub: "jwt|test2",
-            "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+            "https://Pistisai.com/user_metadata": { tier: "premium" },
           },
           expectedTier: USER_TIERS.PREMIUM,
           expectedDirectTunnel: false,
@@ -251,7 +251,7 @@ describe("Tier Detection Logic", () => {
         {
           user: {
             sub: "jwt|test3",
-            "https://CloudToLocalLLM.com/user_metadata": { tier: "enterprise" },
+            "https://Pistisai.com/user_metadata": { tier: "enterprise" },
           },
           expectedTier: USER_TIERS.ENTERPRISE,
           expectedDirectTunnel: false,

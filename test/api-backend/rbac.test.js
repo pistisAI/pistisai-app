@@ -193,7 +193,7 @@ describe("RBAC Middleware", () => {
       const req = {
         user: {
           sub: "user123",
-          "https://CloudToLocalLLM.com/user_metadata": {
+          "https://Pistisai.com/user_metadata": {
             role: "super_admin",
           },
         },
@@ -211,7 +211,7 @@ describe("RBAC Middleware", () => {
       const req = {
         user: {
           sub: "user123",
-          "https://CloudToLocalLLM.com/tier": "premium",
+          "https://Pistisai.com/tier": "premium",
         },
       };
       const res = {};

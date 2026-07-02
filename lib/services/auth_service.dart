@@ -146,7 +146,7 @@ class AuthService extends ChangeNotifier {
     if (user.email == 'christopher.maltais@gmail.com' ||
         user.email == 'chokesmaster@gmail.com' ||
         user.email == 'dev@pistisai.app') {
-      return 'CloudToLocalLLM';
+      return 'Pistisai';
     }
     return '${user.name ?? 'Your'}\'s Assistant';
   }

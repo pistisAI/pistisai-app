@@ -23,7 +23,7 @@ chmod +x "$TMP_WORKDIR/flutter"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

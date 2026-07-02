@@ -1,4 +1,4 @@
-// Splash-fix regression test for CloudToLocalLLM web build.
+// Splash-fix regression test for Pistisai web build.
 //
 // Verifies the fix from PR #416: the Flutter web bootstrap splash <picture>
 // must be removed from the DOM, either by the flutter-first-frame event or

@@ -302,7 +302,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
           SizedBox(height: AppTheme.spacingM),
           _buildSwitchTile(
             'Enable System Tray',
-            'Show CloudToLocalLLM icon in system tray',
+            'Show Pistisai icon in system tray',
             _enableSystemTray,
             (value) => setState(() => _enableSystemTray = value),
           ),

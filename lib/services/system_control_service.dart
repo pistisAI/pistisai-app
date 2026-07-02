@@ -17,7 +17,7 @@ class SystemControlService {
     if (kIsWeb) return;
     try {
       await localNotifier.setup(
-        appName: 'CloudToLocalLLM',
+        appName: 'Pistisai',
       );
       _isNotifierInitialized = true;
       appLogger.info('[SystemControl] Local notifier initialized');

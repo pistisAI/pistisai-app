@@ -2,9 +2,9 @@
 set -e
 
 # Configuration
-APP_NAME="CloudToLocalLLM-Auth"
+APP_NAME="Pistisai-Auth"
 REPO_OWNER="imrightguy"
-REPO_NAME="CloudToLocalLLM"
+REPO_NAME="Pistisai"
 ENV_FILE=".env.entra"
 
 echo "Checking Azure CLI login status..."

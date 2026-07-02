@@ -63,7 +63,7 @@ export const MIGRATION_GUIDES = {
   MIGRATION_V1_TO_V2: {
     title: 'Migrating from API v1 to v2',
     description:
-      'Complete guide for migrating from CloudToLocalLLM API v1 to v2',
+      'Complete guide for migrating from Pistisai API v1 to v2',
     steps: [
       {
         step: 1,

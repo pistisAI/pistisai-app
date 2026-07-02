@@ -3,7 +3,7 @@
 ##############################################################################
 # AWS EKS Final Deployment Verification Script
 #
-# This script performs comprehensive final verification of the CloudToLocalLLM
+# This script performs comprehensive final verification of the Pistisai
 # deployment on AWS EKS, including:
 # - All services running on AWS EKS
 # - Smoke tests on all endpoints
@@ -18,7 +18,7 @@
 set -e
 
 # Configuration
-NAMESPACE="${NAMESPACE:-CloudToLocalLLM}"
+NAMESPACE="${NAMESPACE:-Pistisai}"
 ENVIRONMENT="${1:-development}"
 CLUSTER_NAME="cloudtolocalllm-eks"
 REGION="${AWS_REGION:-us-east-1}"

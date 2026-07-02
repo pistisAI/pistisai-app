@@ -2,7 +2,7 @@
 set -euo pipefail
 
 WORK_DIR="$(mktemp -d)"
-WEBROOT="$WORK_DIR/opt/CloudToLocalLLM/certbot/www"
+WEBROOT="$WORK_DIR/opt/Pistisai/certbot/www"
 
 cleanup() {
   rm -rf "$WORK_DIR"

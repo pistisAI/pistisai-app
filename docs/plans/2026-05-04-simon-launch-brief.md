@@ -1,10 +1,10 @@
-# CloudToLocalLLM — Release + Money Plan (Simon Brief)
+# Pistisai — Release + Money Plan (Simon Brief)
 
-**Purpose:** Get CloudToLocalLLM into a viable testable release fast, then convert that into early pilot revenue.
+**Purpose:** Get Pistisai into a viable testable release fast, then convert that into early pilot revenue.
 
 ## 1) What we are shipping first
 
-A **Linux-first early-access version** of CloudToLocalLLM that is good enough for real testers to install, connect, use, and trust.
+A **Linux-first early-access version** of Pistisai that is good enough for real testers to install, connect, use, and trust.
 
 ### First release must do these well
 - **Main cockpit timeline**
@@ -36,7 +36,7 @@ That stuff can come after the product is already testable and near-paying.
 
 ## 3) Current status
 
-CloudToLocalLLM is already close enough that this is now a **launch-discipline problem**, not an idea problem.
+Pistisai is already close enough that this is now a **launch-discipline problem**, not an idea problem.
 
 ### Verified now
 - core product docs exist
@@ -210,7 +210,7 @@ Turn early tester use into paid pilot conversations fast.
 
 ## 10) Blunt conclusion
 
-CloudToLocalLLM is close.
+Pistisai is close.
 
 The next step is **not more broad ideation**.
 The next step is:

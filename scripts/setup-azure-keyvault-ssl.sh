@@ -5,8 +5,8 @@
 
 set -e
 
-RESOURCE_GROUP="CloudToLocalLLM-rg"
-KEY_VAULT_NAME="CloudToLocalLLM-kv"
+RESOURCE_GROUP="Pistisai-rg"
+KEY_VAULT_NAME="Pistisai-kv"
 DOMAIN="cloudtolocalllm.online"
 SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"
 

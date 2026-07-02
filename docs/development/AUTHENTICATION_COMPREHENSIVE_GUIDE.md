@@ -1,4 +1,4 @@
-# CloudToLocalLLM Authentication Comprehensive Guide
+# Pistisai Authentication Comprehensive Guide
 
 **Last Updated**: December 15, 2025  
 **Status**: ✅ ALL AUTHENTICATION SYSTEMS OPERATIONAL

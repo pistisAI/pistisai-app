@@ -2,7 +2,7 @@
 
 ## Overview
 
-CloudToLocalLLM v3.10.3+ implements a unified Flutter-based web architecture that consolidates both marketing content and application functionality into a single codebase. This eliminates the need for separate static site containers while maintaining clear separation between marketing and application routes.
+Pistisai v3.10.3+ implements a unified Flutter-based web architecture that consolidates both marketing content and application functionality into a single codebase. This eliminates the need for separate static site containers while maintaining clear separation between marketing and application routes.
 
 ## Architecture Changes
 

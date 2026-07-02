@@ -696,7 +696,7 @@ jobs:
     
     services:
       api:
-        image: ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/api:latest
+        image: ghcr.io/cloudtolocalllm-online/Pistisai/api:latest
         env:
           SANDBOX_MODE: true
           NODE_ENV: sandbox

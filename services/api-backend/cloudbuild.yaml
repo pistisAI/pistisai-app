@@ -1,4 +1,4 @@
-# Cloud Build configuration for CloudToLocalLLM API Backend
+# Cloud Build configuration for Pistisai API Backend
 # Builds and deploys the Node.js backend with PostgreSQL support
 
 steps:
@@ -51,7 +51,7 @@ steps:
       - '--set-env-vars'
       - 'NODE_ENV=production,PORT=8080,DB_TYPE=postgresql'
       - '--add-cloudsql-instances'
-      - '$PROJECT_ID:us-central1:CloudToLocalLLM-db'
+      - '$PROJECT_ID:us-central1:Pistisai-db'
 
   # Test the deployment
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'

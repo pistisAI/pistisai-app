@@ -1,8 +1,8 @@
-# CloudToLocalLLM
+# Pistisai
 
 **A local-first companion and desktop capability layer for agent runtimes.**
 
-CloudToLocalLLM is a Flutter desktop/web application with optional Node.js backend services. It provides a secure agent channel, avatar/voice companion, desktop control, vision system, agent runtime management, and multi-device sync through a Tailscale-first secure device mesh.
+Pistisai is a Flutter desktop/web application with optional Node.js backend services. It provides a secure agent channel, avatar/voice companion, desktop control, vision system, agent runtime management, and multi-device sync through a Tailscale-first secure device mesh.
 
 ## What It Does
 
@@ -24,7 +24,7 @@ CloudToLocalLLM is a Flutter desktop/web application with optional Node.js backe
 | Streaming proxy | ESM service, Node `>=22 <25`, port `3001` |
 | Tailscale relay | Express 4 ESM, port `3002` |
 | Auth backend | Express 5 CommonJS, port `3000` |
-| SDK | `@CloudToLocalLLM/sdk` v2, ESM |
+| SDK | `@Pistisai/sdk` v2, ESM |
 
 ## Quick Links
 
@@ -36,4 +36,4 @@ CloudToLocalLLM is a Flutter desktop/web application with optional Node.js backe
 
 ---
 
-**Open source** — [GitHub repo](https://github.com/CloudToLocalLLM-online/CloudToLocalLLM)
+**Open source** — [GitHub repo](https://github.com/Pistisai-online/Pistisai)

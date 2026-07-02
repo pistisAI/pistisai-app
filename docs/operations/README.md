@@ -1,6 +1,6 @@
 # Operations Documentation
 
-Operational documentation covers running, monitoring, recovering, and securing CloudToLocalLLM infrastructure.
+Operational documentation covers running, monitoring, recovering, and securing Pistisai infrastructure.
 
 ## Primary Operations
 
@@ -31,4 +31,4 @@ Operational documentation covers running, monitoring, recovering, and securing C
 
 ## Current Baseline
 
-CloudToLocalLLM supports local desktop operation first. Cloud deployment paths currently include Docker Compose for self-hosting and Kubernetes manifests under `k8s/` and `config/kubernetes/`; provider-specific deployment notes should be treated as runbooks, not universal architecture.
+Pistisai supports local desktop operation first. Cloud deployment paths currently include Docker Compose for self-hosting and Kubernetes manifests under `k8s/` and `config/kubernetes/`; provider-specific deployment notes should be treated as runbooks, not universal architecture.

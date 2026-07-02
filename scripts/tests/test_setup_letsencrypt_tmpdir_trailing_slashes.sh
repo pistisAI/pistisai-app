@@ -28,16 +28,16 @@ sudo() {
   case "$1" in
     mv)
       shift
-      if [[ "$2" == /etc/cron.daily/renew-CloudToLocalLLM-certs ]]; then
-        command mv "$1" "$FAKE_ETC/cron.daily/renew-CloudToLocalLLM-certs"
+      if [[ "$2" == /etc/cron.daily/renew-Pistisai-certs ]]; then
+        command mv "$1" "$FAKE_ETC/cron.daily/renew-Pistisai-certs"
       else
         command mv "$@"
       fi
       ;;
     chmod)
       shift
-      if [[ "$2" == /etc/cron.daily/renew-CloudToLocalLLM-certs ]]; then
-        command chmod "$1" "$FAKE_ETC/cron.daily/renew-CloudToLocalLLM-certs"
+      if [[ "$2" == /etc/cron.daily/renew-Pistisai-certs ]]; then
+        command chmod "$1" "$FAKE_ETC/cron.daily/renew-Pistisai-certs"
       else
         command chmod "$@"
       fi
@@ -66,7 +66,7 @@ if ! grep -Fq "$TMPDIR_EXPECTED/renew_certs." "$TMP_LOG"; then
   exit 1
 fi
 
-if [[ ! -x "$FAKE_ETC/cron.daily/renew-CloudToLocalLLM-certs" ]]; then
+if [[ ! -x "$FAKE_ETC/cron.daily/renew-Pistisai-certs" ]]; then
   echo "Expected renewal script to be installed in the fake cron.daily directory" >&2
   ls -l "$FAKE_ETC/cron.daily" >&2 || true
   exit 1

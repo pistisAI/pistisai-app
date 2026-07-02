@@ -73,7 +73,7 @@ void main() {
 
             // Verify filename format and timing
             if (stopwatch.elapsedMilliseconds <= 100 &&
-                filename.contains('CloudToLocalLLM-settings') &&
+                filename.contains('Pistisai-settings') &&
                 filename.endsWith('.json')) {
               passCount++;
             }

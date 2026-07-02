@@ -1,6 +1,6 @@
-# CloudToLocalLLM User Guide
+# Pistisai User Guide
 
-CloudToLocalLLM is a privacy-first companion shell for Hermes, OpenClaw, and compatible private agent runtimes. It gives the selected agent runtime a secure channel to you, plus controlled access to desktop, vision, voice, avatar, and multi-device sync features.
+Pistisai is a privacy-first companion shell for Hermes, OpenClaw, and compatible private agent runtimes. It gives the selected agent runtime a secure channel to you, plus controlled access to desktop, vision, voice, avatar, and multi-device sync features.
 
 The setup wizard decides which agent runtime and device path to use. There is no universal default runtime. Hermes is the first agent runtime path used for current testing, while OpenClaw remains a supported agent runtime and the original integration target.
 
@@ -10,7 +10,7 @@ Ollama, LM Studio, and similar local model servers are optional support model pr
 
 ## Overview
 
-CloudToLocalLLM is organized around seven core pillars:
+Pistisai is organized around seven core pillars:
 
 1. **Secure Agent Channel** - The main window is a direct, low-friction channel to the selected agent runtime.
 2. **Avatar And Voice Companion** - A sidecar companion window for avatar presence and voice interaction.
@@ -28,19 +28,19 @@ Agent management is still available, but it is not the first thing in the interf
 
 ### First Run
 
-When you first launch CloudToLocalLLM, the setup wizard guides you through the decisions that matter:
+When you first launch Pistisai, the setup wizard guides you through the decisions that matter:
 
 1. **Choose an agent runtime**
    - Hermes on this machine or another device
    - OpenClaw Gateway
    - Compatible custom agent gateway
-   - Optional CloudToLocalLLM-hosted agent runtime
+   - Optional Pistisai-hosted agent runtime
 
 2. **Choose where the agent runtime lives**
    - This computer
    - Another device on your Tailscale tailnet
    - A private server or VPS in your tailnet
-   - Optional CloudToLocalLLM-hosted agent runtime container
+   - Optional Pistisai-hosted agent runtime container
 
 3. **Test the agent connection**
    - The wizard checks health, sessions, tools, streaming, and exposed capabilities.
@@ -67,7 +67,7 @@ The app can discover or configure agent runtimes:
 | Hermes | Configured by wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private compatible agent runtime |
-| Hosted agent runtime | CloudToLocalLLM managed | Optional paid compute |
+| Hosted agent runtime | Pistisai managed | Optional paid compute |
 
 ### Support Model Discovery
 
@@ -116,7 +116,7 @@ The avatar and voice companion are one feature surface. The companion can appear
 - Avatar state: idle, listening, thinking, speaking, working, error
 - Voice conversation mode
 - Push-to-talk and planned wake/listening flows
-- Text-to-speech through the selected agent runtime or CloudToLocalLLM fallback services
+- Text-to-speech through the selected agent runtime or Pistisai fallback services
 - Personality, memory, and evolution features as they mature
 
 The companion should not replace the main secure channel. It provides presence, voice, and side conversation while the main window remains focused on the active agent runtime conversation.
@@ -166,9 +166,9 @@ Vision permissions are per device and should be visible while active.
 
 ## Secure Device Mesh
 
-CloudToLocalLLM is designed to be installed on all your devices and kept in sync.
+Pistisai is designed to be installed on all your devices and kept in sync.
 
-Tailscale is the preferred secure transport. Instead of maintaining a separate custom tunnel stack as the main path, CloudToLocalLLM should use the user's tailnet wherever possible.
+Tailscale is the preferred secure transport. Instead of maintaining a separate custom tunnel stack as the main path, Pistisai should use the user's tailnet wherever possible.
 
 ### Typical Layouts
 

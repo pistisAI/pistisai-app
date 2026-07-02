@@ -14,9 +14,9 @@ class AppConfig {
   static const String appUrl = 'https://app.pistisai.app';
   static const String adminCenterUrl = 'https://admin.pistisai.app';
   static const String githubUrl =
-      'https://github.com/CloudToLocalLLM-online/CloudToLocalLLM';
+      'https://github.com/Pistisai-online/Pistisai';
   static const String githubReleasesUrl =
-      'https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest';
+      'https://github.com/Pistisai-online/Pistisai/releases/latest';
 
   // Configured Authentication Provider
   static const AuthProviderType authProvider = AuthProviderType.auth0;

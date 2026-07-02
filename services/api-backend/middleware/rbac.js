@@ -293,9 +293,9 @@ export function authorizeRBAC(req, res, next) {
 
     // Check for admin roles from JWT metadata
     const userMetadata =
-      req.user['https://CloudToLocalLLM.com/user_metadata'] || {};
+      req.user['https://Pistisai.com/user_metadata'] || {};
     const appMetadata =
-      req.user['https://CloudToLocalLLM.com/app_metadata'] || {};
+      req.user['https://Pistisai.com/app_metadata'] || {};
     const jwtRoles = req.user['https://pistisai.app/roles'] || [];
 
     // Add admin roles if present
@@ -327,7 +327,7 @@ export function authorizeRBAC(req, res, next) {
 
     // Add user tier-based roles if not admin
     if (userRoles.length === 0) {
-      const userTier = req.user['https://CloudToLocalLLM.com/tier'] || 'free';
+      const userTier = req.user['https://Pistisai.com/tier'] || 'free';
 
       if (userTier === 'premium') {
         userRoles.push(ROLES.PREMIUM_USER);

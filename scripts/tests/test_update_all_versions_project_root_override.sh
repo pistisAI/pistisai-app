@@ -87,7 +87,7 @@ cat > "$TMP_ROOT/package.json" <<'EOF'
 EOF
 
 cat > "$TMP_ROOT/config/.env.production.template" <<'EOF'
-CloudToLocalLLM v0.0.0
+Pistisai v0.0.0
 APP_VERSION=0.0.0
 EOF
 
@@ -206,7 +206,7 @@ if ! grep -Fq "static const String appVersion = '9.8.7';" "$TMP_ROOT/lib/config/
   exit 1
 fi
 
-if ! grep -Fq 'CloudToLocalLLM v9.8.7' "$TMP_ROOT/config/.env.production.template"; then
+if ! grep -Fq 'Pistisai v9.8.7' "$TMP_ROOT/config/.env.production.template"; then
   echo "env template did not update" >&2
   cat /tmp/test_update_all_versions_project_root_override.log >&2
   exit 1

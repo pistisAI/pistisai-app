@@ -4,11 +4,11 @@
  * Demonstrates basic SDK usage for authentication and user management
  */
 
-import { CloudToLocalLLMClient } from '../src/index';
+import { PistisaiClient } from '../src/index';
 
 async function main() {
   // Initialize the client
-  const client = new CloudToLocalLLMClient({
+  const client = new PistisaiClient({
     baseURL: 'https://api.pistisai.app',
     apiVersion: 'v2',
   });

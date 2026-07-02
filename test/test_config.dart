@@ -1,4 +1,4 @@
-// Test configuration for CloudToLocalLLM
+// Test configuration for Pistisai
 // Provides mock implementations and test setup utilities
 
 import 'package:flutter/services.dart';
@@ -85,7 +85,7 @@ class TestConfig {
         switch (methodCall.method) {
           case 'getAll':
             return {
-              'appName': 'CloudToLocalLLM',
+              'appName': 'Pistisai',
               'packageName': 'online.cloudtolocalllm.app',
               'version': '3.6.1',
               'buildNumber': '202506192205',

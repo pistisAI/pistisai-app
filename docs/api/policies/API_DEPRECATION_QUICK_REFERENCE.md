@@ -2,7 +2,7 @@
 
 ## Overview
 
-CloudToLocalLLM API implements structured deprecation with migration guides. This quick reference shows how to use deprecation features.
+Pistisai API implements structured deprecation with migration guides. This quick reference shows how to use deprecation features.
 
 **Requirements: 12.5**
 
@@ -240,6 +240,6 @@ curl "https://api.pistisai.app/api/deprecation/endpoint-info?path=/v1/users" | \
 - **Documentation**: https://docs.pistisai.app/api/deprecation
 - **API Docs**: https://api.pistisai.app/api/docs
 - **Support**: support@pistisai.app
-- **Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/api/issues
+- **Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
 
 </content>

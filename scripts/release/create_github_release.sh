@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM GitHub Release Creator
+# Pistisai GitHub Release Creator
 # Creates GitHub releases with binary artifacts for AUR distribution
 
 set -e
@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 REPO_OWNER="imrightguy"
-REPO_NAME="CloudToLocalLLM"
+REPO_NAME="Pistisai"
 
 # Functions
 print_status() {
@@ -105,7 +105,7 @@ verify_packages() {
         missing_packages+=("Windows portable ZIP")
     fi
 
-    if [[ ! -f "$PROJECT_ROOT/dist/windows/CloudToLocalLLM-Windows-$version-Setup.exe" ]]; then
+    if [[ ! -f "$PROJECT_ROOT/dist/windows/Pistisai-Windows-$version-Setup.exe" ]]; then
         missing_packages+=("Windows installer")
     fi
 
@@ -136,7 +136,7 @@ generate_release_notes() {
     local notes_file="/tmp/release_notes_$version.md"
     
     cat > "$notes_file" << EOF
-# CloudToLocalLLM v$version
+# Pistisai v$version
 
 ## 🚀 New Features & Improvements
 
@@ -169,17 +169,17 @@ generate_release_notes() {
 ### Linux (AUR Package)
 \`\`\`bash
 # Install from AUR (recommended)
-yay -S CloudToLocalLLM
+yay -S Pistisai
 
 # Or build manually
-git clone https://aur.archlinux.org/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://aur.archlinux.org/Pistisai.git
+cd Pistisai
 makepkg -si
 \`\`\`
 
 ### Manual Installation
-1. Download the binary package: \`CloudToLocalLLM-$version-x86_64.tar.gz\`
-2. Verify integrity: \`sha256sum -c CloudToLocalLLM-$version-x86_64.tar.gz.sha256\`
+1. Download the binary package: \`Pistisai-$version-x86_64.tar.gz\`
+2. Verify integrity: \`sha256sum -c Pistisai-$version-x86_64.tar.gz.sha256\`
 3. Extract and install according to included instructions
 
 ### System Requirements
@@ -222,10 +222,10 @@ create_release() {
         if [[ "$FORCE_RECREATE" == "true" ]]; then
             print_status "Deleting existing local tag due to force flag"
             git tag -d "$tag"
-            git tag -a "$tag" -m "CloudToLocalLLM v$version"
+            git tag -a "$tag" -m "Pistisai v$version"
         fi
     else
-        git tag -a "$tag" -m "CloudToLocalLLM v$version"
+        git tag -a "$tag" -m "Pistisai v$version"
     fi
 
     # Push tag (force push if recreating)
@@ -244,9 +244,9 @@ create_release() {
         assets+=("$PROJECT_ROOT/dist/windows/cloudtolocalllm-$version-portable.zip.sha256")
     fi
 
-    if [[ -f "$PROJECT_ROOT/dist/windows/CloudToLocalLLM-Windows-$version-Setup.exe" ]]; then
-        assets+=("$PROJECT_ROOT/dist/windows/CloudToLocalLLM-Windows-$version-Setup.exe")
-        assets+=("$PROJECT_ROOT/dist/windows/CloudToLocalLLM-Windows-$version-Setup.exe.sha256")
+    if [[ -f "$PROJECT_ROOT/dist/windows/Pistisai-Windows-$version-Setup.exe" ]]; then
+        assets+=("$PROJECT_ROOT/dist/windows/Pistisai-Windows-$version-Setup.exe")
+        assets+=("$PROJECT_ROOT/dist/windows/Pistisai-Windows-$version-Setup.exe.sha256")
     fi
 
     # Linux packages
@@ -264,7 +264,7 @@ create_release() {
     print_status "Creating GitHub release with multi-platform assets..."
     gh release create "$tag" \
         --repo "$REPO_OWNER/$REPO_NAME" \
-        --title "CloudToLocalLLM v$version" \
+        --title "Pistisai v$version" \
         --notes-file "$notes_file" \
         "${assets[@]}"
 
@@ -287,7 +287,7 @@ parse_arguments() {
                 shift
                 ;;
             --help|-h)
-                echo "CloudToLocalLLM GitHub Release Creator"
+                echo "Pistisai GitHub Release Creator"
                 echo "Usage: $0 [OPTIONS]"
                 echo ""
                 echo "Options:"
@@ -308,7 +308,7 @@ main() {
     # Parse arguments
     parse_arguments "$@"
 
-    print_status "CloudToLocalLLM GitHub Release Creator"
+    print_status "Pistisai GitHub Release Creator"
     print_status "======================================"
 
     # Change to project root

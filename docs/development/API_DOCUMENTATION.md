@@ -1,8 +1,8 @@
-# CloudToLocalLLM API Documentation
+# Pistisai API Documentation
 
 ## 📋 Overview
 
-CloudToLocalLLM v3.6.2+ provides APIs for bridge communication, legacy streaming proxy management, and service integration. Current main-channel work should use the selected agent runtime, Tailscale secure device mesh, and per-user cloud connector model rather than assuming a streaming proxy is the default path.
+Pistisai v3.6.2+ provides APIs for bridge communication, legacy streaming proxy management, and service integration. Current main-channel work should use the selected agent runtime, Tailscale secure device mesh, and per-user cloud connector model rather than assuming a streaming proxy is the default path.
 
 **API Base URLs:**
 
@@ -26,7 +26,7 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 #### **Token Validation**
 
 - **Algorithm**: RS256
-- **Issuer**: `https://CloudToLocalLLM.auth0.com/`
+- **Issuer**: `https://Pistisai.auth0.com/`
 - **Audience**: `cloudtolocalllm-api`
 - **Expiry**: 24 hours
 
@@ -654,7 +654,7 @@ Download the complete API collection:
 
 ```bash
 curl -o cloudtolocalllm-api.json \
-  https://raw.githubusercontent.com/CloudToLocalLLM-online/CloudToLocalLLM/main/docs/api/postman-collection.json
+  https://raw.githubusercontent.com/Pistisai-online/Pistisai/main/docs/api/postman-collection.json
 ```
 
 #### **OpenAPI Specification**
@@ -708,4 +708,4 @@ X-RateLimit-Reset: 1640995200
 
 ---
 
-**For additional API details, examples, and SDKs, visit the [GitHub repository](https://github.com/CloudToLocalLLM-online/CloudToLocalLLM) or check the interactive API documentation at `/api/docs`.**
+**For additional API details, examples, and SDKs, visit the [GitHub repository](https://github.com/Pistisai-online/Pistisai) or check the interactive API documentation at `/api/docs`.**

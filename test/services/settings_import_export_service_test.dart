@@ -107,7 +107,7 @@ void main() {
         final filename = service.generateExportFilename();
 
         // Assert
-        expect(filename, startsWith('CloudToLocalLLM-settings-'));
+        expect(filename, startsWith('Pistisai-settings-'));
         expect(filename, endsWith('.json'));
       });
     });

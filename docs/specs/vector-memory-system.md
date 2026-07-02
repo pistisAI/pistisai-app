@@ -1,7 +1,7 @@
 # Specification: Vector Memory System
 
 ## 1. Overview
-The Vector Memory System is designed to provide high-performance semantic search and long-term memory retrieval for the CloudToLocalLLM ecosystem. This system replaces the legacy SQLite FTS5 (Full-Text Search) implementation with a modern PostgreSQL-based solution utilizing the `pgvector` extension.
+The Vector Memory System is designed to provide high-performance semantic search and long-term memory retrieval for the Pistisai ecosystem. This system replaces the legacy SQLite FTS5 (Full-Text Search) implementation with a modern PostgreSQL-based solution utilizing the `pgvector` extension.
 
 ## 2. Goals
 - **Semantic Retrieval**: Enable search by meaning rather than just keyword matches.

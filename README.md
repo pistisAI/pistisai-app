@@ -1,4 +1,4 @@
-# CloudToLocalLLM 🦞
+# Pistisai 🦞
 
 **A local-first companion and desktop capability layer for your AI agent. Private, secure, yours.**
 
@@ -12,7 +12,7 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (coming soon)
 
-📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest).
+📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/Pistisai-online/Pistisai/releases/latest).
 
 **You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work.
 
@@ -35,7 +35,7 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│                  CloudToLocalLLM App                     │
+│                  Pistisai App                     │
 │  ┌──────────┐  ┌──────────┐  ┌────────────────────┐    │
 │  │  Agent   │  │  Avatar  │  │  Desktop Control   │    │
 │  │  Channel │  │  Voice   │  │  Vision            │    │
@@ -77,8 +77,8 @@ Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECT
 ## Development
 
 ```bash
-git clone https://github.com/CloudToLocalLLM-online/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://github.com/Pistisai-online/Pistisai.git
+cd Pistisai
 flutter pub get
 
 # Run

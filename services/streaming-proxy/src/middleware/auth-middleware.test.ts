@@ -122,8 +122,8 @@ describe('JWTValidationMiddleware', () => {
   describe('getUserContext', () => {
     it('should extract user context from token', async () => {
       const token = createValidMockToken({
-        'https://CloudToLocalLLM.com/tier': 'premium',
-        'https://CloudToLocalLLM.com/permissions': ['read', 'write'],
+        'https://Pistisai.com/tier': 'premium',
+        'https://Pistisai.com/permissions': ['read', 'write'],
       });
 
       const context = await middleware.getUserContext(token);
@@ -187,8 +187,8 @@ describe('UserContextManager', () => {
     it('should extract context from JWT payload', () => {
       const payload = {
         sub: 'user123',
-        'https://CloudToLocalLLM.com/tier': 'enterprise',
-        'https://CloudToLocalLLM.com/permissions': ['admin:read', 'admin:write'],
+        'https://Pistisai.com/tier': 'enterprise',
+        'https://Pistisai.com/permissions': ['admin:read', 'admin:write'],
       };
 
       const context = manager.extractUserContext(payload);
@@ -202,7 +202,7 @@ describe('UserContextManager', () => {
     it('should cache extracted contexts', () => {
       const payload = {
         sub: 'user123',
-        'https://CloudToLocalLLM.com/tier': 'premium',
+        'https://Pistisai.com/tier': 'premium',
       };
 
       const context1 = manager.extractUserContext(payload);

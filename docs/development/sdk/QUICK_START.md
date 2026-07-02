@@ -1,17 +1,17 @@
-# CloudToLocalLLM SDK - Quick Start Guide
+# Pistisai SDK - Quick Start Guide
 
 ## Installation
 
 ```bash
-npm install @CloudToLocalLLM/sdk
+npm install @Pistisai/sdk
 ```
 
 ## Basic Setup
 
 ```typescript
-import { CloudToLocalLLMClient } from '@CloudToLocalLLM/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
   apiVersion: 'v2',
 });
@@ -129,7 +129,7 @@ try {
 ## Configuration Options
 
 ```typescript
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',  // Required
   apiVersion: 'v2',                               // Optional: 'v1' or 'v2'
   timeout: 30000,                                 // Optional: milliseconds
@@ -145,13 +145,13 @@ const client = new CloudToLocalLLMClient({
 
 ```typescript
 import {
-  CloudToLocalLLMClient,
+  PistisaiClient,
   Tunnel,
   User,
   Webhook,
-} from '@CloudToLocalLLM/sdk';
+} from '@Pistisai/sdk';
 
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
 });
 
@@ -192,6 +192,6 @@ await client.logout();
 
 ## Support
 
-- GitHub: https://github.com/CloudToLocalLLM/CloudToLocalLLM
+- GitHub: https://github.com/Pistisai/Pistisai
 - Documentation: https://pistisai.app/docs
 - API Docs: https://api.pistisai.app/api/docs

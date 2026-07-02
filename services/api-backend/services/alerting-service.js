@@ -105,7 +105,7 @@ async function sendEmailAlert(subject, message, metadata = {}) {
           : ''
       }
       <hr>
-      <p><small>CloudToLocalLLM Alerting System</small></p>
+      <p><small>Pistisai Alerting System</small></p>
     `;
 
     const info = await emailTransporter.sendMail({
@@ -149,7 +149,7 @@ async function sendSlackAlert(title, message, metadata = {}) {
           color: 'danger',
           text: message,
           fields: fields.length > 0 ? fields : undefined,
-          footer: 'CloudToLocalLLM Alerting System',
+          footer: 'Pistisai Alerting System',
           ts: Math.floor(Date.now() / 1000),
         },
       ],

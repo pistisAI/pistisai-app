@@ -48,7 +48,7 @@ chmod +x "$FAKE_TOOLS_DIR/dpkg-deb"
 if PATH="$FAKE_TOOLS_DIR:$PATH" \
   BUILD_DIR="$FAKE_BUILD_DIR" \
   DIST_DIR="$DIST_DIR" \
-  APP_NAME="CloudToLocalLLM" \
+  APP_NAME="Pistisai" \
   PACKAGE_NAME="cloudtolocalllm" \
   bash "$TARGET_SCRIPT" >/dev/null 2>&1; then
   echo "build_deb.sh unexpectedly succeeded in failure-path harness" >&2

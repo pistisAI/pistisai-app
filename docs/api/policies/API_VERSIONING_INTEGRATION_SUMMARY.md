@@ -8,7 +8,7 @@
 
 ## Implementation Overview
 
-API versioning has been successfully integrated into the CloudToLocalLLM API backend with URL-based versioning strategy supporting multiple API versions with backward compatibility.
+API versioning has been successfully integrated into the Pistisai API backend with URL-based versioning strategy supporting multiple API versions with backward compatibility.
 
 ## Components Implemented
 

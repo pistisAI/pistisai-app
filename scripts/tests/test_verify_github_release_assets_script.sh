@@ -22,8 +22,8 @@ cat > "$SERVER_STATE" <<'EOF'
 {"assets": [
   {"name": "cloudtolocalllm-9.9.9-portable.zip"},
   {"name": "cloudtolocalllm-9.9.9-portable.zip.sha256"},
-  {"name": "CloudToLocalLLM-Windows-9.9.9-Setup.exe"},
-  {"name": "CloudToLocalLLM-Windows-9.9.9-Setup.exe.sha256"},
+  {"name": "Pistisai-Windows-9.9.9-Setup.exe"},
+  {"name": "Pistisai-Windows-9.9.9-Setup.exe.sha256"},
   {"name": "cloudtolocalllm_9.9.9_amd64.deb"},
   {"name": "cloudtolocalllm_9.9.9_amd64.deb.sha256"},
   {"name": "cloudtolocalllm-9.9.9-x86_64.AppImage"},
@@ -97,7 +97,7 @@ if ! grep -Fq 'Verified GitHub release assets:' "$WORK_DIR/script.log"; then
   exit 1
 fi
 
-if ! grep -Fq 'CloudToLocalLLM-Windows-9.9.9-Setup.exe' "$WORK_DIR/script.log"; then
+if ! grep -Fq 'Pistisai-Windows-9.9.9-Setup.exe' "$WORK_DIR/script.log"; then
   echo "Expected installer name in verifier output" >&2
   cat "$WORK_DIR/script.log" >&2
   exit 1

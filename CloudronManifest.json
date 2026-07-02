@@ -1,8 +1,8 @@
 {
     "id": "online.cloudtolocalllm.app",
-    "title": "CloudToLocalLLM",
-    "author": "CloudToLocalLLM Team",
-    "description": "CloudToLocalLLM - The OpenClaw Agent Manager connecting Cloud AI to local computing via WebRTC and websockets.",
+    "title": "Pistisai",
+    "author": "Pistisai Team",
+    "description": "Pistisai - The OpenClaw Agent Manager connecting Cloud AI to local computing via WebRTC and websockets.",
     "version": "1.0.0",
     "healthCheckPath": "/",
     "httpPort": 3000,
@@ -11,9 +11,9 @@
         "redis": {}
     },
     "manifestVersion": 2,
-    "website": "https://github.com/CloudToLocalLLM-online/CloudToLocalLLM",
+    "website": "https://github.com/Pistisai-online/Pistisai",
     "contactEmail": "support@pistisai.app",
-    "icon": "https://raw.githubusercontent.com/CloudToLocalLLM-online/CloudToLocalLLM/main/assets/brand_logo.png",
+    "icon": "https://raw.githubusercontent.com/Pistisai-online/Pistisai/main/assets/brand_logo.png",
     "tags": [
         "ai",
         "agent",

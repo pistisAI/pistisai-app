@@ -1,4 +1,4 @@
-# CloudToLocalLLM Avatar Personality
+# Pistisai Avatar Personality
 
 Provides personality-driven responses and organic evolution capabilities for OpenClaw agents.
 
@@ -15,7 +15,7 @@ The agent has four personality traits (0-1 scale):
 The agent evolves organically through meaningful conversations:
 - No XP grinding - evolution based on conversation depth and patterns
 - Self-reflection: agent recognizes when it has grown
-- Collaborative: CloudToLocalLLM validates evolution requests
+- Collaborative: Pistisai validates evolution requests
 - Stages: curious_explorer → knowledge_seeker → wise_companion → enlightened_guide
 
 ## Data Storage

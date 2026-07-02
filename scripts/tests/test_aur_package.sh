@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM AUR Package Local Test Script
+# Pistisai AUR Package Local Test Script
 # This script simulates the AUR installation process using local build artifacts.
 
 set -e
@@ -57,4 +57,4 @@ cd "$AUR_TEST_DIR"
 makepkg -si --noconfirm
 
 log_success "AUR package installed successfully!"
-log_info "You can now run the app using: CloudToLocalLLM"
+log_info "You can now run the app using: Pistisai"

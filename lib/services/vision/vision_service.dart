@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 /// Base vision service providing screen capture and OCR capabilities
 ///
 /// This abstract class defines the contract for all vision services
-/// in the CloudToLocalLLM application. Vision services enable the AI
+/// in the Pistisai application. Vision services enable the AI
 /// assistant to see and understand visual content through screen capture,
 /// region selection, camera input, and OCR text extraction.
 abstract class VisionService {

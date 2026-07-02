@@ -67,8 +67,8 @@ function buildAndTagImage(repository, commitSHA) {
 
   // Create image reference with both latest and commit SHA tags
   return {
-    latest: `CloudToLocalLLM/${repository}:latest`,
-    commit: `CloudToLocalLLM/${repository}:${commitSHA}`,
+    latest: `Pistisai/${repository}:latest`,
+    commit: `Pistisai/${repository}:${commitSHA}`,
     commitSHA: commitSHA,
     repository: repository,
     timestamp: Date.now(),
@@ -87,7 +87,7 @@ function pushImageToRegistry(imageRef) {
   return {
     ...imageRef,
     pushed: true,
-    registryURL: "https://hub.docker.com/r/CloudToLocalLLM",
+    registryURL: "https://hub.docker.com/r/Pistisai",
     pullCommands: {
       latest: `docker pull ${imageRef.latest}`,
       commit: `docker pull ${imageRef.commit}`,
@@ -117,7 +117,7 @@ function pullImageFromRegistry(imageRef, tag = "commit") {
  * Simulate Kubernetes deployment with image
  * Returns deployment metadata
  */
-function deployImageToKubernetes(imageRef, namespace = "CloudToLocalLLM") {
+function deployImageToKubernetes(imageRef, namespace = "Pistisai") {
   assert(imageRef.commit, "Image reference must have commit tag");
   assert(namespace, "Namespace must be provided");
 
@@ -160,7 +160,7 @@ function isValidImageReference(ref) {
   const [registry, repoName] = imageParts;
 
   return (
-    registry === "CloudToLocalLLM" &&
+    registry === "Pistisai" &&
     /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(repoName) &&
     isValidImageTag(tag)
   );
@@ -412,7 +412,7 @@ describe("Image Tag Consistency Property Tests", () => {
             // Latest tag should always reflect the last build
             const lastBuild = builds[builds.length - 1];
             expect(lastBuild.latest).toBe(
-              `CloudToLocalLLM/${repository}:latest`,
+              `Pistisai/${repository}:latest`,
             );
             expect(builds.every((b) => b.latest === lastBuild.latest)).toBe(
               true,
@@ -437,8 +437,8 @@ describe("Image Tag Consistency Property Tests", () => {
             const imageRef = buildAndTagImage(repository, commitSHA);
 
             // Both tags should have registry prefix
-            expect(imageRef.latest).toMatch(/^CloudToLocalLLM\//);
-            expect(imageRef.commit).toMatch(/^CloudToLocalLLM\//);
+            expect(imageRef.latest).toMatch(/^Pistisai\//);
+            expect(imageRef.commit).toMatch(/^Pistisai\//);
           },
         ),
         { numRuns: 100 },
@@ -471,7 +471,7 @@ describe("Image Tag Consistency Property Tests", () => {
             const imageParts = imagePart.split("/");
             expect(imageParts.length).toBe(2);
 
-            expect(imageParts[0]).toBe("CloudToLocalLLM");
+            expect(imageParts[0]).toBe("Pistisai");
             expect(imageParts[1]).toBe(repository);
             expect(tag).toBe(commitSHA);
           },

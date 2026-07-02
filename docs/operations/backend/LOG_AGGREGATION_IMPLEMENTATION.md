@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the log aggregation support implementation for the CloudToLocalLLM API backend. The implementation provides comprehensive support for log aggregation systems like Loki and ELK (Elasticsearch, Logstash, Kibana).
+This document describes the log aggregation support implementation for the Pistisai API backend. The implementation provides comprehensive support for log aggregation systems like Loki and ELK (Elasticsearch, Logstash, Kibana).
 
 **Requirement:** 8.9 - THE API SHALL implement log aggregation support (Loki, ELK)
 

@@ -6,7 +6,7 @@ WORK_DIR="$(mktemp -d)"
 TMP_HOME="$WORK_DIR/home"
 TMP_BUILD_DIR="$WORK_DIR/build/linux/x64/release/bundle"
 TMP_TOOLS_DIR="$WORK_DIR/bin"
-TMP_OUTPUT="$WORK_DIR/output/CloudToLocalLLM-x86_64.AppImage"
+TMP_OUTPUT="$WORK_DIR/output/Pistisai-x86_64.AppImage"
 TMP_DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
 TMP_LOG="$WORK_DIR/mktemp.log"
 mkdir -p "$TMP_HOME" "$TMP_BUILD_DIR" "$TMP_TOOLS_DIR" "$(dirname "$TMP_OUTPUT")"
@@ -25,7 +25,7 @@ chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

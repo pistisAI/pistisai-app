@@ -1,6 +1,6 @@
-// CloudToLocalLLM Widget Tests
+// Pistisai Widget Tests
 //
-// Basic widget tests for the CloudToLocalLLM application.
+// Basic widget tests for the Pistisai application.
 // Tests the main app initialization and basic functionality.
 
 import 'package:flutter/material.dart';
@@ -14,10 +14,10 @@ void main() {
 
   tearDownAll(TestConfig.cleanup);
 
-  testWidgets('CloudToLocalLLM app initialization test', (
+  testWidgets('Pistisai app initialization test', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const CloudToLocalLLMApp());
+    await tester.pumpWidget(const PistisaiApp());
 
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
@@ -30,7 +30,7 @@ void main() {
   testWidgets('App handles plugin initialization gracefully', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const CloudToLocalLLMApp());
+    await tester.pumpWidget(const PistisaiApp());
 
     for (int i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 100));

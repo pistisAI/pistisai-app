@@ -118,7 +118,7 @@ class _AboutSettingsCategoryContentState
                   ),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow(context, 'Name', 'CloudToLocalLLM'),
+            _buildInfoRow(context, 'Name', 'Pistisai'),
             _buildInfoRow(
                 context, 'Version', _versionInfo?['version'] ?? 'Unknown'),
             _buildInfoRow(

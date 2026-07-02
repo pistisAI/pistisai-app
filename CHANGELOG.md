@@ -4,12 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [10.2.0] - 2026-02-04
 * feat: Phase 3 Performance & Security improvements
-* chore: Rebranded project to 'CloudToLocalLLM' across all platforms and documentation
-* chore: Updated all Dart imports to use 'package:CloudToLocalLLM'
+* chore: Rebranded project to 'Pistisai' across all platforms and documentation
+* chore: Updated all Dart imports to use 'package:Pistisai'
 * chore: Audited and updated dependencies in pubspec.yaml and package.json
 * feat: Implemented Zod-based schema validation middleware for the backend
 * feat: Added input validation for user tier check endpoint
-* chore: Renamed various configuration files and directories to match CloudToLocalLLM branding
+* chore: Renamed various configuration files and directories to match Pistisai branding
 
 ## [10.1.187] - 2026-01-21
 * ai(OpenCode): chore: bump version to 10.1.188 [skip tests] to fix deployment with direct VM ID targeting (3f58e9b5)
@@ -142,7 +142,7 @@ All notable changes to this project will be documented in this file.
 * chore: automated version bump to 10.1.130 [skip ci] (2e5d963c)
 * fix: move open-port inside creation block to avoid conflict on existing vm (48c8ef97)
 * chore: automated version bump to 10.1.129 [skip ci] (809cc3c1)
-* fix: use existing CloudToLocalLLM-swarm VM in centralus as requested (ce3d562d)
+* fix: use existing Pistisai-swarm VM in centralus as requested (ce3d562d)
 * chore: automated version bump to 10.1.128 [skip ci] (5de225a3)
 * fix: implement low-resource best practices and fix skipping logic for global changes (6a5ded7f)
 * fix: stabilize deployment for 4GB VM in westus2 with unique naming and resource limits (0c3583cf)
@@ -151,9 +151,9 @@ All notable changes to this project will be documented in this file.
 * chore: automated version bump to 10.1.126 [skip ci] (b9dd2b64)
 * fix: relocate to eastus2 with unique naming to resolve capacity and resource conflicts (273c7aa8)
 * chore: automated version bump to 10.1.125 [skip ci] (ac27bdac)
-* fix: correctly update vm name to CloudToLocalLLM-swarm-eastus to resolve nic collision (9f61f984)
+* fix: correctly update vm name to Pistisai-swarm-eastus to resolve nic collision (9f61f984)
 * chore: automated version bump to 10.1.124 [skip ci] (547a9b30)
-* fix: rename vm to CloudToLocalLLM-swarm-eastus to resolve nic location conflict and update workflow references (3ccfd69b)
+* fix: rename vm to Pistisai-swarm-eastus to resolve nic location conflict and update workflow references (3ccfd69b)
 * chore: automated version bump to 10.1.123 [skip ci] (3b406b03)
 * fix: explicit resource naming to avoid location conflict with centralus resources (e967d39a)
 * chore: automated version bump to 10.1.122 [skip ci] (ab392e77)
@@ -202,7 +202,7 @@ All notable changes to this project will be documented in this file.
 * chore: automated version bump to 10.1.101 [skip ci] (32c03d6c)
 * chore: ai(OpenCode): reduce aws footprint (5612ef7d)
 * chore: automated version bump to 10.1.100 [skip ci] (c901c2e4)
-* fix: inject CloudToLocalLLM-secrets into cluster from github secrets (cb152ba5)
+* fix: inject Pistisai-secrets into cluster from github secrets (cb152ba5)
 * chore: automated version bump to 10.1.99 [skip ci] (45561dc9)
 * fix: increase postgres rollout timeout to 10m to handle image pull time (29e3d438)
 * chore: automated version bump to 10.1.98 [skip ci] (074020fe)

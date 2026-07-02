@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide documents the security enhancements and best practices for the CloudToLocalLLM API backend. It covers input sanitization, CORS configuration, and HTTPS enforcement.
+This guide documents the security enhancements and best practices for the Pistisai API backend. It covers input sanitization, CORS configuration, and HTTPS enforcement.
 
 ---
 

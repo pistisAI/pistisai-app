@@ -141,7 +141,7 @@ class _ChatPaneState extends State<_ChatPane> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'CloudToLocalLLM',
+                  'Pistisai',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
@@ -272,7 +272,7 @@ class _ChatPaneState extends State<_ChatPane> {
               ),
               const SizedBox(height: 12),
               Text(
-                'CloudToLocalLLM requires the desktop companion app to connect to your local agent runtimes (Hermes, OpenClaw, etc.) and orchestrate secure desktop capabilities.',
+                'Pistisai requires the desktop companion app to connect to your local agent runtimes (Hermes, OpenClaw, etc.) and orchestrate secure desktop capabilities.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurface.withValues(alpha: 0.7),
                   height: 1.4,

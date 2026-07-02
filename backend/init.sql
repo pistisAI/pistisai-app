@@ -1,4 +1,4 @@
--- init.sql - Database schema for CloudToLocalLLM
+-- init.sql - Database schema for Pistisai
 
 -- Rate limit tracking table
 CREATE TABLE IF NOT EXISTS model_capacity (

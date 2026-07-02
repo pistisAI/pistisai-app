@@ -1,4 +1,4 @@
-# Prometheus configuration for CloudToLocalLLM
+# Prometheus configuration for Pistisai
 global:
   scrape_interval: 15s
   evaluation_interval: 15s

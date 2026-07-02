@@ -97,7 +97,7 @@ docker-compose stop streaming-proxy
 
 ```bash
 # Navigate to deployment directory
-cd /opt/CloudToLocalLLM
+cd /opt/Pistisai
 
 # Stop current services
 docker-compose down api-backend
@@ -122,7 +122,7 @@ docker-compose logs api-backend
 sudo systemctl stop cloudtolocalllm-api
 
 # Revert code to previous version
-cd /opt/CloudToLocalLLM
+cd /opt/Pistisai
 git stash
 git checkout <previous_stable_commit>
 
@@ -139,8 +139,8 @@ sudo systemctl status cloudtolocalllm-api
 
 ```bash
 # Restore previous nginx configuration
-sudo cp /etc/nginx/sites-available/CloudToLocalLLM.backup \
-       /etc/nginx/sites-available/CloudToLocalLLM
+sudo cp /etc/nginx/sites-available/Pistisai.backup \
+       /etc/nginx/sites-available/Pistisai
 
 # Test configuration
 sudo nginx -t
@@ -179,20 +179,20 @@ docker-compose logs -f api-backend
 
 ```bash
 # Create snapshot of current database state
-pg_dump CloudToLocalLLM > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
+pg_dump Pistisai > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
 
 # Or for other databases
-mysqldump CloudToLocalLLM > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
+mysqldump Pistisai > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
 ```
 
 **Restore Previous State:**
 
 ```bash
 # Restore from pre-deployment backup
-psql CloudToLocalLLM < /backup/pre-deployment-$(date +%Y%m%d).sql
+psql Pistisai < /backup/pre-deployment-$(date +%Y%m%d).sql
 
 # Verify database integrity
-psql -c "SELECT version();" CloudToLocalLLM
+psql -c "SELECT version();" Pistisai
 ```
 
 #### 2.2 Configuration Rollback
@@ -201,7 +201,7 @@ psql -c "SELECT version();" CloudToLocalLLM
 
 ```bash
 # Restore previous environment configuration
-sudo cp /opt/CloudToLocalLLM/.env.backup /opt/CloudToLocalLLM/.env
+sudo cp /opt/Pistisai/.env.backup /opt/Pistisai/.env
 
 # Restart services to pick up changes
 docker-compose restart api-backend
@@ -227,7 +227,7 @@ sudo systemctl reload nginx
 
 ```bash
 # List available images
-docker images | grep CloudToLocalLLM
+docker images | grep Pistisai
 
 # Tag previous stable image
 docker tag cloudtolocalllm-api:previous cloudtolocalllm-api:latest
@@ -263,11 +263,11 @@ docker-compose up -d --force-recreate api-backend
 
 ```bash
 # Download from GitHub releases
-wget https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/download/v3.10.2/cloudtolocalllm-linux.AppImage
-wget https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/download/v3.10.2/cloudtolocalllm-windows.exe
+wget https://github.com/Pistisai-online/Pistisai/releases/download/v3.10.2/cloudtolocalllm-linux.AppImage
+wget https://github.com/Pistisai-online/Pistisai/releases/download/v3.10.2/cloudtolocalllm-windows.exe
 
 # Verify checksums
-sha256sum CloudToLocalLLM-linux.AppImage
+sha256sum Pistisai-linux.AppImage
 ```
 
 #### 3.2 Update Distribution Channels
@@ -291,11 +291,11 @@ EOF
 
 ```bash
 # Update DEB repository
-reprepro -b /var/www/apt remove stable CloudToLocalLLM
+reprepro -b /var/www/apt remove stable Pistisai
 reprepro -b /var/www/apt includedeb stable cloudtolocalllm_3.10.2_amd64.deb
 
 # Update AppImage repository
-cp CloudToLocalLLM-3.10.2.AppImage /var/www/releases/latest/CloudToLocalLLM.AppImage
+cp Pistisai-3.10.2.AppImage /var/www/releases/latest/Pistisai.AppImage
 ```
 
 #### 3.3 User Communication
@@ -343,7 +343,7 @@ timeout 10 wscat -c "wss://api.pistisai.app/ws/bridge" || echo "WebSocket test f
 
 # Test database connectivity
 echo "Testing database..."
-psql -c "SELECT 1;" CloudToLocalLLM || echo "Database test failed"
+psql -c "SELECT 1;" Pistisai || echo "Database test failed"
 
 # Check service status
 echo "Checking services..."
@@ -483,7 +483,7 @@ curl https://api.pistisai.app/api/metrics | jq '.activeConnections'
 
 ```bash
 # Analyze logs from failed deployment
-grep -i error /var/log/CloudToLocalLLM/*.log
+grep -i error /var/log/Pistisai/*.log
 
 # Check system metrics during incident
 # Review performance data

@@ -1,5 +1,5 @@
 /**
- * Authentication Audit Logging Middleware for CloudToLocalLLM API Backend
+ * Authentication Audit Logging Middleware for Pistisai API Backend
  *
  * Automatically logs all authentication attempts, successes, and failures
  * with full context including IP address, user agent, and timestamp.

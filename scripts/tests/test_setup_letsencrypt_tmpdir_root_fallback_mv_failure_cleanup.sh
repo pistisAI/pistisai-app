@@ -15,7 +15,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$BIN_DIR" "$WORK_DIR/opt/CloudToLocalLLM/certbot/www/.well-known/acme-challenge" "$ETC_DIR/cron.daily"
+mkdir -p "$BIN_DIR" "$WORK_DIR/opt/Pistisai/certbot/www/.well-known/acme-challenge" "$ETC_DIR/cron.daily"
 
 cat > "$BIN_DIR/docker" <<'EOF'
 #!/bin/bash
@@ -85,7 +85,7 @@ chmod +x "$BIN_DIR/sudo"
 export SUDO_LOG ETC_DIR
 set +e
 HOME="$WORK_DIR/home" \
-CERTBOT_WEBROOT_ROOT="$WORK_DIR/opt/CloudToLocalLLM/certbot/www" \
+CERTBOT_WEBROOT_ROOT="$WORK_DIR/opt/Pistisai/certbot/www" \
 DOCKER_CMD="$BIN_DIR/docker" \
 PATH="$BIN_DIR:$PATH" \
 TMPDIR='/' \
@@ -99,13 +99,13 @@ if [[ $status -eq 0 ]]; then
   exit 1
 fi
 
-if ! grep -Eq '^mv /tmp/renew_certs\.[A-Za-z0-9]+\.sh /etc/cron.daily/renew-CloudToLocalLLM-certs$' "$SUDO_LOG"; then
+if ! grep -Eq '^mv /tmp/renew_certs\.[A-Za-z0-9]+\.sh /etc/cron.daily/renew-Pistisai-certs$' "$SUDO_LOG"; then
   echo "Expected renewal script to use a temp path under /tmp" >&2
   cat "$SUDO_LOG" >&2
   exit 1
 fi
 
-temp_script="$(sed -n 's#^mv \(/tmp/renew_certs\.[A-Za-z0-9]*\.sh\) /etc/cron.daily/renew-CloudToLocalLLM-certs$#\1#p' "$SUDO_LOG" | head -n 1)"
+temp_script="$(sed -n 's#^mv \(/tmp/renew_certs\.[A-Za-z0-9]*\.sh\) /etc/cron.daily/renew-Pistisai-certs$#\1#p' "$SUDO_LOG" | head -n 1)"
 if [[ -z "$temp_script" ]]; then
   echo "Failed to capture temp renewal script path" >&2
   cat "$SUDO_LOG" >&2
@@ -118,7 +118,7 @@ if [[ -e "$temp_script" ]]; then
   exit 1
 fi
 
-if [[ -e "$ETC_DIR/cron.daily/renew-CloudToLocalLLM-certs" ]]; then
+if [[ -e "$ETC_DIR/cron.daily/renew-Pistisai-certs" ]]; then
   echo "Expected no installed renewal script after mv failure" >&2
   ls -l "$ETC_DIR/cron.daily" >&2
   exit 1

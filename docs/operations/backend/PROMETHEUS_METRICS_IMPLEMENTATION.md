@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the implementation of the Prometheus metrics endpoint for the CloudToLocalLLM API Backend. The implementation provides comprehensive metrics collection for monitoring API performance, throughput, errors, and custom application metrics.
+This document describes the implementation of the Prometheus metrics endpoint for the Pistisai API Backend. The implementation provides comprehensive metrics collection for monitoring API performance, throughput, errors, and custom application metrics.
 
 ## Implementation Summary
 

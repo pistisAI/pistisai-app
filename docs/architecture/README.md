@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-This directory contains current architecture references for CloudToLocalLLM.
+This directory contains current architecture references for Pistisai.
 
 ## Canonical Architecture
 

@@ -149,13 +149,13 @@ if [[ ! -f "$RUNNER_DIR/config.sh" || ! -f "$RUNNER_DIR/svc.sh" || ! -f "$RUNNER
   exit 1
 fi
 
-if ! grep -Fq 'config.sh --url https://github.com/CloudToLocalLLM-online/CloudToLocalLLM --token RUNNER_TOKEN_1' "$RUNNER_DIR/config.log"; then
+if ! grep -Fq 'config.sh --url https://github.com/Pistisai-online/Pistisai --token RUNNER_TOKEN_1' "$RUNNER_DIR/config.log"; then
   echo "Expected first configuration run to record the runner token" >&2
   cat "$RUNNER_DIR/config.log" >&2
   exit 1
 fi
 
-if ! grep -Fq 'config.sh --url https://github.com/CloudToLocalLLM-online/CloudToLocalLLM --token RUNNER_TOKEN_2' "$RUNNER_DIR/config.log"; then
+if ! grep -Fq 'config.sh --url https://github.com/Pistisai-online/Pistisai --token RUNNER_TOKEN_2' "$RUNNER_DIR/config.log"; then
   echo "Expected second configuration run to record the runner token" >&2
   cat "$RUNNER_DIR/config.log" >&2
   exit 1

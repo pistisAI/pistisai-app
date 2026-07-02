@@ -1,4 +1,4 @@
--- PostgreSQL Schema for CloudToLocalLLM
+-- PostgreSQL Schema for Pistisai
 -- This is the PostgreSQL-optimized version of schema.sql
 
 -- Enable required extensions

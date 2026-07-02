@@ -1,6 +1,6 @@
 # Avatar Personality Engine Design
 
-**Project**: CloudToLocalLLM (secure agent companion)
+**Project**: Pistisai (secure agent companion)
 **Author**: Brainstorming Session
 **Date**: 2026-02-22
 **Status**: Historical design; update implementation against the current agent-runtime-first orientation in [SPEC.md](../../SPEC.md) and [Agent Runtime Contract](../architecture/AGENT_RUNTIME_CONTRACT.md)
@@ -23,7 +23,7 @@ The Avatar Personality Engine enables the selected agent runtime to develop a co
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    CloudToLocalLLM (Flutter App)                    │
+│                    Pistisai (Flutter App)                    │
 │  ┌──────────────────────────────────────────────────────────────┐  │
 │  │  Personality Services (lib/services/avatar/)                 │  │
 │  │  - PersonalityEngine: read/write traits, sync to markdown    │  │
@@ -53,7 +53,7 @@ The Avatar Personality Engine enables the selected agent runtime to develop a co
 │  │  - evolution_history: stage transitions, triggers            │  │
 │  │  - achievements: unlocked milestones                         │  │
 │  ├──────────────────────────────────────────────────────────────┤  │
-│  │  Memory & Context (CloudToLocalLLM-owned)                   │  │
+│  │  Memory & Context (Pistisai-owned)                   │  │
 │  │  - conversations, messages (with embeddings)                 │  │
 │  │  - conversation_depth_metrics: complexity, emotional, novelty│  │
 │  │  - user_context: behavior patterns, preferences              │  │
@@ -70,7 +70,7 @@ The Avatar Personality Engine enables the selected agent runtime to develop a co
 ┌─────────────────────────────────────────────────────────────────────┐
 │                  OpenClaw Gateway (localhost:18789)                │
 │  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  CloudToLocalLLM Skill (~/.openclaw/skills/cloudtolocallm/) │  │
+│  │  Pistisai Skill (~/.openclaw/skills/cloudtolocallm/) │  │
 │  │  - SKILL.md: skill descriptor                                │  │
 │  │  - index.ts: personality logic, self-reflection              │  │
 │  │  - personality.md: backup (agent_name, traits, evolution)    │  │
@@ -151,11 +151,11 @@ Evolution happens through **meaningful experiences**, not grinding points.
 1. Self-Reflection (OpenClaw)
    └─> "I feel ready to evolve - I've grown through our conversations"
 
-2. Evolution Request (OpenClaw → CloudToLocalLLM)
+2. Evolution Request (OpenClaw → Pistisai)
    └─> POST /avatar/evolution/request
        { requestedStage: "stage1", reason: "self_reflection", context: "..." }
 
-3. Validation (CloudToLocalLLM)
+3. Validation (Pistisai)
    └─> Analyze conversation_depth_metrics
    └─> Check interaction patterns
    └─> Assess evolution readiness
@@ -169,7 +169,7 @@ Evolution happens through **meaningful experiences**, not grinding points.
 
 5. Notification
    └─> OpenClaw notified of new stage
-   └─> CloudToLocalLLM animates avatar evolution
+   └─> Pistisai animates avatar evolution
 ```
 
 ### Evolution Stages
@@ -221,7 +221,7 @@ CREATE TABLE achievements (
 );
 ```
 
-### Memory & Context Tables (CloudToLocalLLM-owned)
+### Memory & Context Tables (Pistisai-owned)
 
 ```sql
 -- Conversation depth metrics (for evolution tracking)
@@ -258,7 +258,7 @@ CREATE TABLE visual_context (
 
 ### File Locations
 
-Located in OpenClaw skills directory (not CloudToLocalLLM app data):
+Located in OpenClaw skills directory (not Pistisai app data):
 ```
 ~/.openclaw/skills/cloudtolocallm/
 ├── SKILL.md
@@ -272,7 +272,7 @@ Located in OpenClaw skills directory (not CloudToLocalLLM app data):
 
 ```markdown
 ---
-agent_name: CloudToLocalLLM
+agent_name: Pistisai
 formality: 0.7
 humor: 0.4
 enthusiasm: 0.8
@@ -283,7 +283,7 @@ depth_score: 0.65
 last_updated: 2026-02-22T10:30:00Z
 ---
 
-# CloudToLocalLLM Personality
+# Pistisai Personality
 
 ## Evolution History
 - **Base → Stage 1** (2026-02-15): Self-reflection after 20 meaningful conversations
@@ -298,7 +298,7 @@ last_updated: 2026-02-22T10:30:00Z
 ### memory.md
 
 ```markdown
-# CloudToLocalLLM Memory Log
+# Pistisai Memory Log
 
 ## 2026-02-22
 ### Conversation: Phase 2 Implementation
@@ -315,7 +315,7 @@ last_updated: 2026-02-22T10:30:00Z
 ### context.md
 
 ```markdown
-# CloudToLocalLLM Context Awareness
+# Pistisai Context Awareness
 
 ## User Patterns
 - Prefers formal explanations for technical topics
@@ -473,7 +473,7 @@ POST /avatar/evolution/request
 1. **First Evolution**
    - Have 5-10 deep conversations
    - Verify evolution request triggers
-   - Confirm CloudToLocalLLM approves
+   - Confirm Pistisai approves
    - Watch avatar transformation animation
 
 2. **Connection Loss**

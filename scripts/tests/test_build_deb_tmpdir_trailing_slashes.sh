@@ -46,7 +46,7 @@ PATH="$WORK_DIR:/usr/bin:/bin" \
 BUILD_DIR="$FAKE_BUILD_DIR" \
 DIST_DIR="$DIST_DIR" \
 DPKG_DEB_CMD="$FAKE_DPKG_DEB" \
-APP_NAME="CloudToLocalLLM" \
+APP_NAME="Pistisai" \
 PACKAGE_NAME="cloudtolocalllm" \
 "$TARGET_SCRIPT"
 

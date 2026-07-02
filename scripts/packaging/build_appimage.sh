@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# CloudToLocalLLM AppImage Package Builder
+# Pistisai AppImage Package Builder
 # Builds AppImage packages for Linux distribution
 # Version: 1.0.0
 
@@ -110,16 +110,16 @@ copy_appimage_files() {
     log_info "Copying AppImage structure..."
     
     # Create AppDir if missing
-    if [[ ! -d "$PROJECT_ROOT/build-tools/packaging/appimage/CloudToLocalLLM.AppDir" ]]; then
+    if [[ ! -d "$PROJECT_ROOT/build-tools/packaging/appimage/Pistisai.AppDir" ]]; then
         log_warning "AppDir template missing, creating basic structure..."
-        mkdir -p "$BUILD_DIR/CloudToLocalLLM.AppDir/usr/bin"
-        mkdir -p "$BUILD_DIR/CloudToLocalLLM.AppDir/usr/share/applications"
-        mkdir -p "$BUILD_DIR/CloudToLocalLLM.AppDir/usr/share/icons/hicolor/128x128/apps"
+        mkdir -p "$BUILD_DIR/Pistisai.AppDir/usr/bin"
+        mkdir -p "$BUILD_DIR/Pistisai.AppDir/usr/share/applications"
+        mkdir -p "$BUILD_DIR/Pistisai.AppDir/usr/share/icons/hicolor/128x128/apps"
         
         # Create a basic desktop file if template missing
-        cat > "$BUILD_DIR/CloudToLocalLLM.AppDir/cloudtolocalllm.desktop" << EOF
+        cat > "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.desktop" << EOF
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application
@@ -127,16 +127,16 @@ Categories=Utility;
 EOF
     else
         # Copy AppImage directory structure
-        cp -r "$PROJECT_ROOT/build-tools/packaging/appimage/CloudToLocalLLM.AppDir" "$BUILD_DIR/"
+        cp -r "$PROJECT_ROOT/build-tools/packaging/appimage/Pistisai.AppDir" "$BUILD_DIR/"
     fi
     log_success "Copied AppImage structure"
     
     log_info "Copying Flutter Linux build artifacts..."
     
     # Copy Flutter Linux build to AppImage structure
-    cp "$PROJECT_ROOT/build/linux/x64/release/bundle/cloudtolocalllm" "$BUILD_DIR/CloudToLocalLLM.AppDir/"
-    cp -r "$PROJECT_ROOT/build/linux/x64/release/bundle/data" "$BUILD_DIR/CloudToLocalLLM.AppDir/"
-    cp -r "$PROJECT_ROOT/build/linux/x64/release/bundle/lib" "$BUILD_DIR/CloudToLocalLLM.AppDir/"
+    cp "$PROJECT_ROOT/build/linux/x64/release/bundle/cloudtolocalllm" "$BUILD_DIR/Pistisai.AppDir/"
+    cp -r "$PROJECT_ROOT/build/linux/x64/release/bundle/data" "$BUILD_DIR/Pistisai.AppDir/"
+    cp -r "$PROJECT_ROOT/build/linux/x64/release/bundle/lib" "$BUILD_DIR/Pistisai.AppDir/"
     
     log_success "Copied Flutter build files"
 }
@@ -146,10 +146,10 @@ update_appimage_metadata() {
     log_info "Updating AppImage metadata..."
 
     # Remove Version line from desktop file (it's optional and causes validation issues)
-    sed -i '/^Version=/d' "$BUILD_DIR/CloudToLocalLLM.AppDir/cloudtolocalllm.desktop"
+    sed -i '/^Version=/d' "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.desktop"
 
     # Update AppRun script to use current Flutter build structure
-    cat > "$BUILD_DIR/CloudToLocalLLM.AppDir/AppRun" << 'EOF'
+    cat > "$BUILD_DIR/Pistisai.AppDir/AppRun" << 'EOF'
 #!/bin/bash
 HERE="$(dirname "$(readlink -f "${0}")")"
 export LD_LIBRARY_PATH="${HERE}/lib:${LD_LIBRARY_PATH}"
@@ -166,10 +166,10 @@ copy_assets() {
     
     # Copy icon if available
     if [[ -f "$PROJECT_ROOT/assets/images/app_icon.png" ]]; then
-        cp "$PROJECT_ROOT/assets/images/app_icon.png" "$BUILD_DIR/CloudToLocalLLM.AppDir/cloudtolocalllm.png"
+        cp "$PROJECT_ROOT/assets/images/app_icon.png" "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.png"
         log_success "Updated app icon from assets/images/"
     elif [[ -f "$PROJECT_ROOT/assets/images/icon.png" ]]; then
-        cp "$PROJECT_ROOT/assets/icons/app_icon.png" "$BUILD_DIR/CloudToLocalLLM.AppDir/cloudtolocalllm.png"
+        cp "$PROJECT_ROOT/assets/icons/app_icon.png" "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.png"
         log_success "Updated app icon from assets/icons/"
     else
         log_warning "Using existing icon from AppImage structure"
@@ -181,18 +181,18 @@ set_permissions() {
     log_info "Setting file permissions..."
     
     # Set executable permissions
-    chmod +x "$BUILD_DIR/CloudToLocalLLM.AppDir/AppRun"
-    chmod +x "$BUILD_DIR/CloudToLocalLLM.AppDir/cloudtolocalllm"
+    chmod +x "$BUILD_DIR/Pistisai.AppDir/AppRun"
+    chmod +x "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm"
     
     # Set data and lib permissions
-    find "$BUILD_DIR/CloudToLocalLLM.AppDir/data" -type f -exec chmod 644 {} \; 2>/dev/null || true
-    find "$BUILD_DIR/CloudToLocalLLM.AppDir/data" -type d -exec chmod 755 {} \; 2>/dev/null || true
-    find "$BUILD_DIR/CloudToLocalLLM.AppDir/lib" -type f -exec chmod 644 {} \; 2>/dev/null || true
-    find "$BUILD_DIR/CloudToLocalLLM.AppDir/lib" -type d -exec chmod 755 {} \; 2>/dev/null || true
+    find "$BUILD_DIR/Pistisai.AppDir/data" -type f -exec chmod 644 {} \; 2>/dev/null || true
+    find "$BUILD_DIR/Pistisai.AppDir/data" -type d -exec chmod 755 {} \; 2>/dev/null || true
+    find "$BUILD_DIR/Pistisai.AppDir/lib" -type f -exec chmod 644 {} \; 2>/dev/null || true
+    find "$BUILD_DIR/Pistisai.AppDir/lib" -type d -exec chmod 755 {} \; 2>/dev/null || true
     
     # Set desktop file permissions
-    chmod 644 "$BUILD_DIR/CloudToLocalLLM.AppDir/cloudtolocalllm.desktop"
-    chmod 644 "$BUILD_DIR/CloudToLocalLLM.AppDir/cloudtolocalllm.png"
+    chmod 644 "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.desktop"
+    chmod 644 "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.png"
     
     log_success "Set correct permissions"
 }
@@ -204,7 +204,7 @@ build_appimage_package() {
     cd "$BUILD_DIR"
     
     # Build the AppImage
-    if appimagetool CloudToLocalLLM.AppDir "$OUTPUT_PATH"; then
+    if appimagetool Pistisai.AppDir "$OUTPUT_PATH"; then
         log_success "AppImage package built successfully"
     else
         log_error "Failed to build AppImage package"
@@ -255,7 +255,7 @@ cleanup_build() {
 
 # Main execution function
 main() {
-    log_info "Starting CloudToLocalLLM AppImage package build..."
+    log_info "Starting Pistisai AppImage package build..."
     log_info "Version: $VERSION"
     log_info "Package: $PACKAGE_NAME"
     

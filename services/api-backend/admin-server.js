@@ -1,5 +1,5 @@
 /**
- * CloudToLocalLLM Administrative Server
+ * Pistisai Administrative Server
  *
  * Dedicated administrative interface running on separate port for:
  * - Secure admin-only operations
@@ -40,7 +40,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json(),
   ),
-  defaultMeta: { service: 'CloudToLocalLLM-admin' },
+  defaultMeta: { service: 'Pistisai-admin' },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
@@ -148,7 +148,7 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
-    service: 'CloudToLocalLLM-admin',
+    service: 'Pistisai-admin',
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || '1.0.0',
   });
@@ -199,22 +199,22 @@ app.get(
       const containers = await docker.listContainers({
         all: true,
         filters: {
-          label: ['CloudToLocalLLM.type'],
+          label: ['Pistisai.type'],
         },
       });
 
       const networks = await docker.listNetworks({
         filters: {
-          label: ['CloudToLocalLLM.type=user-network'],
+          label: ['Pistisai.type=user-network'],
         },
       });
 
       const userContainers = containers.filter(
-        (c) => c.Labels['CloudToLocalLLM.type'] === 'streaming-proxy',
+        (c) => c.Labels['Pistisai.type'] === 'streaming-proxy',
       );
 
       const activeUsers = new Set(
-        userContainers.map((c) => c.Labels['CloudToLocalLLM.user']),
+        userContainers.map((c) => c.Labels['Pistisai.user']),
       ).size;
 
       const stats = {
@@ -326,7 +326,7 @@ app.get(
       const containers = await docker.listContainers({
         all: true,
         filters: {
-          label: ['CloudToLocalLLM.type'],
+          label: ['Pistisai.type'],
         },
       });
 
@@ -424,7 +424,7 @@ app.get(
 
       const networks = await docker.listNetworks({
         filters: {
-          label: ['CloudToLocalLLM.type'],
+          label: ['Pistisai.type'],
         },
       });
 
@@ -471,14 +471,14 @@ app.get(
       // Get streaming proxy containers (active sessions)
       const containers = await docker.listContainers({
         filters: {
-          label: ['CloudToLocalLLM.type=streaming-proxy'],
+          label: ['Pistisai.type=streaming-proxy'],
           status: ['running'],
         },
       });
 
       const sessions = containers.map((container) => ({
-        userId: container.Labels['CloudToLocalLLM.user'],
-        proxyId: container.Labels['CloudToLocalLLM.proxy-id'],
+        userId: container.Labels['Pistisai.user'],
+        proxyId: container.Labels['Pistisai.proxy-id'],
         containerId: container.Id,
         containerName: container.Names[0],
         status: container.Status,
@@ -593,7 +593,7 @@ app.get('/api/admin/users', authenticateJWT, requireAdmin, async (req, res) => {
     const containers = await docker.listContainers({
       all: true,
       filters: {
-        label: ['CloudToLocalLLM.type=streaming-proxy'],
+        label: ['Pistisai.type=streaming-proxy'],
       },
     });
 
@@ -601,7 +601,7 @@ app.get('/api/admin/users', authenticateJWT, requireAdmin, async (req, res) => {
     const userMap = new Map();
 
     containers.forEach((container) => {
-      const userId = container.Labels['CloudToLocalLLM.user'];
+      const userId = container.Labels['Pistisai.user'];
       if (userId) {
         if (!userMap.has(userId)) {
           userMap.set(userId, {
@@ -683,7 +683,7 @@ app.get(
       const containers = await docker.listContainers({
         all: true,
         filters: {
-          label: [`CloudToLocalLLM.user=${userId}`],
+          label: [`Pistisai.user=${userId}`],
         },
       });
 
@@ -767,7 +767,7 @@ app.post(
       // Verify container belongs to user
       const containerInfo = await docker.getContainer(containerId).inspect();
 
-      if (containerInfo.Config.Labels['CloudToLocalLLM.user'] !== userId) {
+      if (containerInfo.Config.Labels['Pistisai.user'] !== userId) {
         return res.status(403).json({
           error: 'Container does not belong to specified user',
           code: 'CONTAINER_USER_MISMATCH',
@@ -1062,11 +1062,11 @@ app.get(
 
       const container = docker.getContainer(containerId);
 
-      // Verify container exists and belongs to CloudToLocalLLM
+      // Verify container exists and belongs to Pistisai
       const inspect = await container.inspect();
-      if (!inspect.Config.Labels['CloudToLocalLLM.type']) {
+      if (!inspect.Config.Labels['Pistisai.type']) {
         return res.status(403).json({
-          error: 'Container is not managed by CloudToLocalLLM',
+          error: 'Container is not managed by Pistisai',
           code: 'CONTAINER_NOT_MANAGED',
         });
       }
@@ -1216,18 +1216,18 @@ app.get(
         adminUserId: req.user.sub,
       });
 
-      // Get all CloudToLocalLLM networks
+      // Get all Pistisai networks
       const networks = await docker.listNetworks({
         filters: {
-          label: ['CloudToLocalLLM.type'],
+          label: ['Pistisai.type'],
         },
       });
 
-      // Get all CloudToLocalLLM containers
+      // Get all Pistisai containers
       const containers = await docker.listContainers({
         all: true,
         filters: {
-          label: ['CloudToLocalLLM.type'],
+          label: ['Pistisai.type'],
         },
       });
 
@@ -1334,7 +1334,7 @@ app.use((req, res) => {
 
 // Start admin server
 server.listen(ADMIN_PORT, () => {
-  logger.info(' [AdminPanel] CloudToLocalLLM Admin Server started', {
+  logger.info(' [AdminPanel] Pistisai Admin Server started', {
     port: ADMIN_PORT,
     environment: process.env.NODE_ENV || 'development',
     jwtDomain: JWT_ISSUER_DOMAIN,

@@ -1,6 +1,6 @@
 # Comprehensive Testing Guide
 
-This guide describes the current test entry points for CloudToLocalLLM.
+This guide describes the current test entry points for Pistisai.
 
 ## Test Layout
 

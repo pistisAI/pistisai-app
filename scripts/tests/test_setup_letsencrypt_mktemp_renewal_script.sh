@@ -15,7 +15,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$BIN_DIR" "$WORK_DIR/opt/CloudToLocalLLM/certbot/www/.well-known/acme-challenge" "$ETC_DIR/cron.daily"
+mkdir -p "$BIN_DIR" "$WORK_DIR/opt/Pistisai/certbot/www/.well-known/acme-challenge" "$ETC_DIR/cron.daily"
 
 cat > "$BIN_DIR/docker" <<'EOF'
 #!/bin/bash
@@ -84,7 +84,7 @@ chmod +x "$BIN_DIR/sudo"
 
 export SUDO_LOG ETC_DIR
 HOME="$WORK_DIR/home" \
-CERTBOT_WEBROOT_ROOT="$WORK_DIR/opt/CloudToLocalLLM/certbot/www" \
+CERTBOT_WEBROOT_ROOT="$WORK_DIR/opt/Pistisai/certbot/www" \
 DOCKER_CMD="$BIN_DIR/docker" \
 PATH="$BIN_DIR:$PATH" \
 bash "$TARGET_SCRIPT" setup >"$LOG_FILE" 2>&1
@@ -94,13 +94,13 @@ if [[ -f /tmp/renew_certs.sh ]]; then
   exit 1
 fi
 
-if ! grep -Eq '^mv /tmp/renew_certs\.[A-Za-z0-9]+\.sh /etc/cron.daily/renew-CloudToLocalLLM-certs$' "$SUDO_LOG"; then
+if ! grep -Eq '^mv /tmp/renew_certs\.[A-Za-z0-9]+\.sh /etc/cron.daily/renew-Pistisai-certs$' "$SUDO_LOG"; then
   echo "Expected renewal script to be created with a mktemp path" >&2
   cat "$SUDO_LOG" >&2
   exit 1
 fi
 
-if [[ ! -f "$ETC_DIR/cron.daily/renew-CloudToLocalLLM-certs" ]]; then
+if [[ ! -f "$ETC_DIR/cron.daily/renew-Pistisai-certs" ]]; then
   echo "Expected cron.daily renewal script to be installed in sandbox" >&2
   exit 1
 fi

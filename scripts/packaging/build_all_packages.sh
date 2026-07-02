@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM Unified Package Build Script
+# Pistisai Unified Package Build Script
 # Builds all package formats with unified version management
 
 set -euo pipefail
@@ -188,9 +188,9 @@ validate_packages() {
     local validation_errors=0
 
     # Check Debian package
-    if [[ -f "$dist_dir/CloudToLocalLLM_${version}_amd64.deb" ]]; then
-        log_success "Debian package found: CloudToLocalLLM_${version}_amd64.deb"
-        if [[ -f "$dist_dir/CloudToLocalLLM_${version}_amd64.deb.sha256" ]]; then
+    if [[ -f "$dist_dir/Pistisai_${version}_amd64.deb" ]]; then
+        log_success "Debian package found: Pistisai_${version}_amd64.deb"
+        if [[ -f "$dist_dir/Pistisai_${version}_amd64.deb.sha256" ]]; then
             log_success "Debian package checksum found"
         else
             log_error "Debian package checksum missing"
@@ -202,7 +202,7 @@ validate_packages() {
 
     # Check AppImage package
     if [[ -f "$dist_dir/cloudtolocalllm-${version}-x86_64.AppImage" ]]; then
-        log_success "AppImage package found: CloudToLocalLLM-${version}-x86_64.AppImage"
+        log_success "AppImage package found: Pistisai-${version}-x86_64.AppImage"
         if [[ -f "$dist_dir/cloudtolocalllm-${version}-x86_64.AppImage.sha256" ]]; then
             log_success "AppImage package checksum found"
         else
@@ -232,7 +232,7 @@ generate_summary() {
     local dist_dir="$PROJECT_ROOT/dist/linux"
 
     echo
-    echo "=== CloudToLocalLLM Build Summary ==="
+    echo "=== Pistisai Build Summary ==="
     echo "Semantic Version: $version"
     echo "Full Version: $full_version"
     echo "Build Number: $build_number"
@@ -241,14 +241,14 @@ generate_summary() {
     echo "Generated Packages:"
 
     # List all generated packages with sizes
-    if [[ -f "$dist_dir/CloudToLocalLLM_${version}_amd64.deb" ]]; then
-        local size=$(du -h "$dist_dir/CloudToLocalLLM_${version}_amd64.deb" | cut -f1)
-        echo "  Debian: CloudToLocalLLM_${version}_amd64.deb ($size)"
+    if [[ -f "$dist_dir/Pistisai_${version}_amd64.deb" ]]; then
+        local size=$(du -h "$dist_dir/Pistisai_${version}_amd64.deb" | cut -f1)
+        echo "  Debian: Pistisai_${version}_amd64.deb ($size)"
     fi
 
     if [[ -f "$dist_dir/cloudtolocalllm-${version}-x86_64.AppImage" ]]; then
         local size=$(du -h "$dist_dir/cloudtolocalllm-${version}-x86_64.AppImage" | cut -f1)
-        echo "  AppImage: CloudToLocalLLM-${version}-x86_64.AppImage ($size)"
+        echo "  AppImage: Pistisai-${version}-x86_64.AppImage ($size)"
     fi
 
     echo
@@ -278,7 +278,7 @@ main() {
                 shift 2
                 ;;
             --help|-h)
-                echo "CloudToLocalLLM Unified Package Build Script"
+                echo "Pistisai Unified Package Build Script"
                 echo
                 echo "Usage: $0 [options]"
                 echo
@@ -297,7 +297,7 @@ main() {
         esac
     done
     
-    log_info "Starting CloudToLocalLLM unified package build..."
+    log_info "Starting Pistisai unified package build..."
     
     # Increment version if requested
     if [[ -n "$increment_type" ]] && [[ "$skip_version_increment" == false ]]; then

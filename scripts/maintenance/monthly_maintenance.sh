@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM Monthly Maintenance Script
+# Pistisai Monthly Maintenance Script
 # Performs monthly maintenance tasks including full system backup, security updates,
 # disk space analysis, and performance optimization for long-term system health
 
@@ -13,7 +13,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # VPS configuration
 VPS_HOST="cloudtolocalllm.online"
 VPS_USER="cloudllm"
-VPS_PROJECT_DIR="/opt/CloudToLocalLLM"
+VPS_PROJECT_DIR="/opt/Pistisai"
 
 # Maintenance configuration
 BACKUP_RETENTION_MONTHS=6
@@ -56,14 +56,14 @@ log_phase() {
 
 # Create maintenance log entry
 log_maintenance() {
-    local log_file="/var/log/CloudToLocalLLM/maintenance.log"
+    local log_file="/var/log/Pistisai/maintenance.log"
     local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
     echo "[$timestamp] MONTHLY_MAINTENANCE: $1" >> "$log_file" 2>/dev/null || true
 }
 
 # Check if running on VPS or locally
 is_vps_environment() {
-    [[ "$(hostname)" == *"CloudToLocalLLM"* ]] || [[ -f "/opt/CloudToLocalLLM/docker-compose.yml" ]]
+    [[ "$(hostname)" == *"Pistisai"* ]] || [[ -f "/opt/Pistisai/docker-compose.yml" ]]
 }
 
 # Execute command on VPS or locally
@@ -82,7 +82,7 @@ full_system_backup() {
     log_phase 1 "FULL SYSTEM BACKUP"
     
     local backup_date=$(date +%Y%m%d)
-    local backup_dir="/var/backups/CloudToLocalLLM"
+    local backup_dir="/var/backups/Pistisai"
     local backup_file="cloudtolocalllm_full_backup_${backup_date}.tar.gz"
     
     log_step 1.1 "Creating full system backup..."
@@ -104,8 +104,8 @@ full_system_backup() {
     execute_command "tar -czf $backup_dir/system_config_${backup_date}.tar.gz \
         /etc/nginx/ \
         /etc/ssl/ \
-        /etc/systemd/system/CloudToLocalLLM* \
-        /var/log/CloudToLocalLLM/ \
+        /etc/systemd/system/Pistisai* \
+        /var/log/Pistisai/ \
         2>/dev/null || true"
     
     # Verify backup integrity
@@ -132,7 +132,7 @@ full_system_backup() {
 clean_old_backups() {
     log_step 1.2 "Cleaning old backups..."
     
-    local backup_dir="/var/backups/CloudToLocalLLM"
+    local backup_dir="/var/backups/Pistisai"
     
     if execute_command "test -d $backup_dir"; then
         # Remove backups older than retention period
@@ -214,12 +214,12 @@ disk_space_analysis() {
     echo "$disk_info"
     
     # Directory size analysis
-    log_info "Largest directories in /opt/CloudToLocalLLM:"
+    log_info "Largest directories in /opt/Pistisai:"
     execute_command "du -sh $VPS_PROJECT_DIR/* 2>/dev/null | sort -hr | head -10" || true
     
     # Log file analysis
     log_step 3.2 "Analyzing log files..."
-    local log_dirs=("/var/log" "/var/log/CloudToLocalLLM")
+    local log_dirs=("/var/log" "/var/log/Pistisai")
     
     for log_dir in "${log_dirs[@]}"; do
         if execute_command "test -d $log_dir"; then
@@ -269,10 +269,10 @@ performance_optimization() {
     
     # Generate performance report
     log_step 4.2 "Generating performance report..."
-    local perf_report="/var/log/CloudToLocalLLM/monthly_performance_$(date +%Y%m).log"
+    local perf_report="/var/log/Pistisai/monthly_performance_$(date +%Y%m).log"
     
     execute_command "cat > $perf_report << EOF
-CloudToLocalLLM Monthly Performance Report
+Pistisai Monthly Performance Report
 Date: $(date -u +%Y-%m-%d)
 Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
@@ -358,7 +358,7 @@ generate_monthly_report() {
     local status="$1"
     
     echo
-    echo "=== CloudToLocalLLM Monthly Maintenance Report ==="
+    echo "=== Pistisai Monthly Maintenance Report ==="
     echo "Month: $(date +%B\ %Y)"
     echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
     echo "Status: $status"
@@ -382,7 +382,7 @@ generate_monthly_report() {
     local disk_usage=$(execute_command "df -h / | tail -1 | awk '{print \$5}'" || echo "unknown")
     local memory_usage=$(execute_command "free | grep Mem | awk '{printf \"%.1f%%\", \$3/\$2 * 100.0}'" || echo "unknown")
     local uptime=$(execute_command "uptime | awk '{print \$3, \$4}' | sed 's/,//'" || echo "unknown")
-    local backup_count=$(execute_command "ls -1 /var/backups/CloudToLocalLLM/*.tar.gz 2>/dev/null | wc -l" || echo "0")
+    local backup_count=$(execute_command "ls -1 /var/backups/Pistisai/*.tar.gz 2>/dev/null | wc -l" || echo "0")
     
     echo "  Disk Usage: $disk_usage"
     echo "  Memory Usage: $memory_usage"
@@ -395,14 +395,14 @@ generate_monthly_report() {
 
 # Main execution function
 main() {
-    log_info "Starting CloudToLocalLLM monthly maintenance..."
+    log_info "Starting Pistisai monthly maintenance..."
     log_maintenance "Monthly maintenance started"
     echo
     
     local maintenance_status="COMPLETED"
     
     # Create log directory if it doesn't exist
-    execute_command "mkdir -p /var/log/CloudToLocalLLM" 2>/dev/null || true
+    execute_command "mkdir -p /var/log/Pistisai" 2>/dev/null || true
     
     # Execute maintenance phases
     full_system_backup || maintenance_status="ISSUES"
@@ -438,7 +438,7 @@ main() {
 # Handle script arguments
 case "${1:-}" in
     --help|-h)
-        echo "CloudToLocalLLM Monthly Maintenance Script"
+        echo "Pistisai Monthly Maintenance Script"
         echo
         echo "Usage: $0 [options]"
         echo

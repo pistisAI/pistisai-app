@@ -1,4 +1,4 @@
-# CloudToLocalLLM Production Docker Compose Stack
+# Pistisai Production Docker Compose Stack
 # Deploy with: docker stack deploy -c docker-compose.prod.yml cloudtolocalllm
 #
 # Services:

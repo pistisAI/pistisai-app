@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.CloudToLocalLLM.tray</string>
+    <string>com.Pistisai.tray</string>
     
     <key>ProgramArguments</key>
     <array>
-        <string>/Applications/CloudToLocalLLM.app/Contents/MacOS/cloudtolocalllm-tray</string>
+        <string>/Applications/Pistisai.app/Contents/MacOS/cloudtolocalllm-tray</string>
     </array>
     
     <key>RunAtLoad</key>

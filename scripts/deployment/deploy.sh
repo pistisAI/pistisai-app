@@ -1,5 +1,5 @@
 #!/bin/bash
-# CloudToLocalLLM Deployment Script
+# Pistisai Deployment Script
 # Usage: ./scripts/deployment/deploy.sh [environment]
 # Environment: prod (default) or dev
 
@@ -18,7 +18,7 @@ STACK_NAME="cloudtolocalllm"
 ENV_FILE=".env"
 
 echo -e "${GREEN}======================================${NC}"
-echo -e "${GREEN}CloudToLocalLLM Deployment${NC}"
+echo -e "${GREEN}Pistisai Deployment${NC}"
 echo -e "${GREEN}Environment: ${ENVIRONMENT}${NC}"
 echo -e "${GREEN}======================================${NC}"
 

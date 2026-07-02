@@ -378,7 +378,7 @@ Potential improvements:
 
 ## Documentation
 
-- Error codes are documented at: `https://docs.CloudToLocalLLM.com/errors/{code}`
+- Error codes are documented at: `https://docs.Pistisai.com/errors/{code}`
 - Each error includes a link to relevant documentation
 - Diagnostic reports can be exported for support tickets
 - Recovery strategies are logged for debugging

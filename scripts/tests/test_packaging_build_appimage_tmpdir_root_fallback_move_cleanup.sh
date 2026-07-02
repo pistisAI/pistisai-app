@@ -11,7 +11,7 @@ OUTPUT_DIR="$WORK_DIR/out"
 DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
 LOG_FILE="$WORK_DIR/mv.log"
 TMP_LOG="$WORK_DIR/mktemp.log"
-APPIMAGE_OUTPUT="$WORK_DIR/out/nested/CloudToLocalLLM.AppImage"
+APPIMAGE_OUTPUT="$WORK_DIR/out/nested/Pistisai.AppImage"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS_DIR" "$OUTPUT_DIR" "$(dirname "$APPIMAGE_OUTPUT")"
 export LOG_FILE TMP_LOG
 
@@ -28,7 +28,7 @@ chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

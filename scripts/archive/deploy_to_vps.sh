@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM VPS Deployment Script - Enhanced Version
+# Pistisai VPS Deployment Script - Enhanced Version
 # Deploy the latest changes to the VPS with automated error handling
 # Version: 3.6.4 - Fully Automated Deployment
 
@@ -36,9 +36,9 @@ log_step() {
 }
 
 # Configuration
-PROJECT_DIR="/opt/CloudToLocalLLM"
+PROJECT_DIR="/opt/Pistisai"
 COMPOSE_FILE="docker-compose.multi.yml"
-BACKUP_DIR="/opt/CloudToLocalLLM/backups"
+BACKUP_DIR="/opt/Pistisai/backups"
 MAX_RETRIES=3
 RETRY_DELAY=5
 
@@ -149,9 +149,9 @@ cleanup_all_containers() {
         docker-compose -f "$COMPOSE_FILE" down --timeout 30 --remove-orphans 2>/dev/null || true
     fi
 
-    # Stop all CloudToLocalLLM related containers
-    log_info "Stopping all CloudToLocalLLM containers..."
-    local containers_to_stop=$(docker ps -a --format "{{.Names}}" | grep -E "(CloudToLocalLLM|cloudllm)" || true)
+    # Stop all Pistisai related containers
+    log_info "Stopping all Pistisai containers..."
+    local containers_to_stop=$(docker ps -a --format "{{.Names}}" | grep -E "(Pistisai|cloudllm)" || true)
     if [[ -n "$containers_to_stop" ]]; then
         echo "$containers_to_stop" | while IFS= read -r container; do
             if [[ -n "$container" ]]; then
@@ -353,7 +353,7 @@ verify_deployment() {
 
     # Test main app page
     log_info "Testing main application page..."
-    if curl -s --max-time 10 https://app.cloudtolocalllm.online/ | grep -q "CloudToLocalLLM\|flutter\|main.dart.js" 2>/dev/null; then
+    if curl -s --max-time 10 https://app.cloudtolocalllm.online/ | grep -q "Pistisai\|flutter\|main.dart.js" 2>/dev/null; then
         log_success "Main application page is loading correctly"
     else
         log_warning "Main application page may not be loading correctly"
@@ -396,9 +396,9 @@ show_summary() {
 
 # Main deployment function
 main() {
-    log_step "Starting CloudToLocalLLM VPS deployment v3.6.4..."
+    log_step "Starting Pistisai VPS deployment v3.6.4..."
     echo "================================================================"
-    echo "CloudToLocalLLM Automated VPS Deployment"
+    echo "Pistisai Automated VPS Deployment"
     echo "Version: 3.6.4 - Enhanced with automated error handling"
     echo "Time: $(date)"
     echo "================================================================"
@@ -433,21 +433,21 @@ main() {
 
     echo
     echo "================================================================"
-    log_success "CloudToLocalLLM v3.6.4 deployment completed successfully!"
+    log_success "Pistisai v3.6.4 deployment completed successfully!"
     echo "================================================================"
 }
 
 # Handle command line arguments
 case "${1:-}" in
     "--help"|"-h")
-        echo "CloudToLocalLLM VPS Deployment Script"
+        echo "Pistisai VPS Deployment Script"
         echo
         echo "Usage: $0 [options]"
         echo
         echo "Options:"
         echo "  --help, -h    Show this help message"
         echo
-        echo "This script deploys the latest CloudToLocalLLM changes to the VPS."
+        echo "This script deploys the latest Pistisai changes to the VPS."
         echo "It should be run as the cloudllm user on the VPS."
         exit 0
         ;;

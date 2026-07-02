@@ -1,4 +1,4 @@
-// CloudToLocalLLM - Production Subdomain Configuration
+// Pistisai - Production Subdomain Configuration
 // This file configures the Flutter web app to use production subdomains
 
 window.cloudToLocalLLMConfig = {
@@ -51,7 +51,7 @@ window.cloudToLocalLLMConfig = {
   },
 };
 
-console.log("CloudToLocalLLM: Production subdomain configuration loaded");
+console.log("Pistisai: Production subdomain configuration loaded");
 console.log("API URL:", window.cloudToLocalLLMConfig.services.api.baseUrl);
 console.log(
   "Streaming URL:",

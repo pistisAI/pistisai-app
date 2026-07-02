@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Admin Center API provides secure administrative endpoints for managing CloudToLocalLLM users, subscriptions, payments, and system operations. All endpoints require admin authentication with role-based permissions.
+The Admin Center API provides secure administrative endpoints for managing Pistisai users, subscriptions, payments, and system operations. All endpoints require admin authentication with role-based permissions.
 
 **Version:** 1.0.0
 **Last Updated:** November 2025

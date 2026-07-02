@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CloudToLocalLLM'),
+        title: const Text('Pistisai'),
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(

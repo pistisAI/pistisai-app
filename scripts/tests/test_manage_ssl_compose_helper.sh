@@ -7,7 +7,7 @@ FILE="$PROJECT_ROOT/scripts/ssl/manage_ssl.sh"
 for needle in \
   'DOCKER_CMD="${DOCKER_CMD:-docker}"' \
   'compose() {' \
-  'PROJECT_DIR="${PROJECT_DIR:-/opt/CloudToLocalLLM}"' \
+  'PROJECT_DIR="${PROJECT_DIR:-/opt/Pistisai}"' \
   'compose restart webapp' \
   'sed -i '\''s|ssl_certificate /etc/nginx/ssl/default.pem;|ssl_certificate /etc/letsencrypt/live/cloudtolocalllm.online/fullchain.pem;|g'\'' "$PROJECT_DIR/config/nginx/nginx-webapp-internal.conf"' \
   'sed -i '\''s|ssl_certificate_key /etc/nginx/ssl/default.key;|ssl_certificate_key /etc/letsencrypt/live/cloudtolocalllm.online/privkey.pem;|g'\'' "$PROJECT_DIR/config/nginx/nginx-webapp-internal.conf"'; do

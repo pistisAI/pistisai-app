@@ -1,6 +1,6 @@
 #!/bin/bash
-# CloudToLocalLLM Development Environment Setup Script
-# This script installs all required tools and dependencies for CloudToLocalLLM development
+# Pistisai Development Environment Setup Script
+# This script installs all required tools and dependencies for Pistisai development
 # on CachyOS / Manjaro Linux with all green checkmarks in flutter doctor (except VSCode)
 
 set -e  # Exit on any error
@@ -45,8 +45,8 @@ check_command() {
     fi
 }
 
-REPO_ROOT="/home/rightguy/CloudToLocalLLM"
-log_info "Starting CloudToLocalLLM development environment setup..."
+REPO_ROOT="/home/rightguy/Pistisai"
+log_info "Starting Pistisai development environment setup..."
 log_info "Target directory: $REPO_ROOT"
 
 # Ensure repository ownership

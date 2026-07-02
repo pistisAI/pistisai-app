@@ -2,7 +2,7 @@
 
 ## App Status: Running ✓
 
-The CloudToLocalLLM app is running with MaterialPage navigation fixes applied.
+The Pistisai app is running with MaterialPage navigation fixes applied.
 
 ## What to Check
 

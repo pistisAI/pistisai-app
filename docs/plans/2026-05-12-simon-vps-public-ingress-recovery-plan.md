@@ -2,7 +2,7 @@
 
 > For Hermes: treat this as an operator recovery plan. Do not call the site fixed until external checks pass from outside the VPS.
 
-**Goal:** Make CloudToLocalLLM publicly reachable on Simon's VPS using a real domain path, not just a localhost-only compose deployment.
+**Goal:** Make Pistisai publicly reachable on Simon's VPS using a real domain path, not just a localhost-only compose deployment.
 
 **Current verified state:**
 - App stack is running on Simon's VPS (`31.97.140.7`) via Docker Compose.
@@ -14,7 +14,7 @@
   - `pistisai.app` does not resolve
   - Simon VPS does not expose 80/443
   - raw `31.97.140.7:3100` is not reachable from outside
-  - `cloudflared` on Simon VPS is for a different service and CloudToLocalLLM has no active public ingress
+  - `cloudflared` on Simon VPS is for a different service and Pistisai has no active public ingress
 
 **Architecture choice:**
 Pick one public ingress path and finish it fully. Do not keep two half-configured paths alive. The realistic options are:
@@ -86,9 +86,9 @@ ssh root@31.97.140.7 '
 ssh root@31.97.140.7 'sed -n "1,200p" /etc/cloudflared/config.yml; systemctl cat cloudflared'
 ```
 
-**Expected now:** current service is unrelated and disabled for CloudToLocalLLM.
+**Expected now:** current service is unrelated and disabled for Pistisai.
 
-### Task 2A.2: Define CloudToLocalLLM tunnel ingress
+### Task 2A.2: Define Pistisai tunnel ingress
 **Target mapping:**
 - `app.pistisai.app` → `http://127.0.0.1:3100`
 - `api.pistisai.app` → either:
@@ -109,7 +109,7 @@ ingress:
   - service: http_status:404
 ```
 
-### Task 2A.3: Run Cloudflared as a CloudToLocalLLM-specific service
+### Task 2A.3: Run Cloudflared as a Pistisai-specific service
 Do not overload the ImmoGestion service unit.
 
 **Files:**
@@ -223,7 +223,7 @@ Use a real browser or browser automation and verify:
 ## Most likely fastest fix
 Based on current evidence, the fastest realistic recovery is:
 1. **use Cloudflare Tunnel**, not raw port exposure
-2. create a **CloudToLocalLLM-specific cloudflared service** on Simon VPS
+2. create a **Pistisai-specific cloudflared service** on Simon VPS
 3. point `app.pistisai.app` and `api.pistisai.app` at that tunnel
 4. stop relying on `208.110.72.50`
 

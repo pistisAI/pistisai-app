@@ -1,6 +1,6 @@
-# CloudToLocalLLM System Architecture
+# Pistisai System Architecture
 
-CloudToLocalLLM is a Flutter desktop/web application with optional Node.js backend services. It is a local-first companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, and compatible custom agent gateways.
+Pistisai is a Flutter desktop/web application with optional Node.js backend services. It is a local-first companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, and compatible custom agent gateways.
 
 Ollama, LM Studio, and similar local model servers are support model providers. They can power memory, embeddings, summarization, semantic search, OCR cleanup, speech helpers, and other app-owned background intelligence, but they are not primary app runtimes.
 
@@ -154,16 +154,16 @@ Minimum runtime capabilities include health, session lifecycle, chat streaming, 
 
 ## Secure Device Mesh
 
-Tailscale is the preferred private transport for multi-device CloudToLocalLLM.
+Tailscale is the preferred private transport for multi-device Pistisai.
 
 ```text
 Client UI / web / phone
         |
-Optional per-user CloudToLocalLLM cloud connector
+Optional per-user Pistisai cloud connector
         |
 User's Tailscale tailnet
         |
-CloudToLocalLLM desktop apps and user-selected agent runtimes
+Pistisai desktop apps and user-selected agent runtimes
 ```
 
 The intended cloud connector shape is one isolated container per user. The connector joins only that user's tailnet, coordinates secure channel sync and device presence, and must not bypass local desktop permissions.

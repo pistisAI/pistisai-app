@@ -7,7 +7,7 @@ import 'auth_logger.dart';
 import '../utils/web_interop_stub.dart'
     if (dart.library.html) '../utils/web_interop.dart';
 
-/// Simple user data management service for CloudToLocalLLM
+/// Simple user data management service for Pistisai
 ///
 /// Provides straightforward functionality to clear all user data
 /// when needed for privacy, troubleshooting, or starting fresh.
@@ -119,7 +119,7 @@ class UserDataService extends ChangeNotifier {
     }
 
     try {
-      // Clear CloudToLocalLLM-specific localStorage keys
+      // Clear Pistisai-specific localStorage keys
       final keysToRemove = [
         'cloudtolocalllm_access_token',
         'cloudtolocalllm_id_token',

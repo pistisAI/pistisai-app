@@ -90,7 +90,7 @@ app.post(
         checksum,
         verified: false,
         error: null,
-        database: "CloudToLocalLLM",
+        database: "Pistisai",
         host: "localhost",
         port: "5432",
         filePath: backupFile,
@@ -212,7 +212,7 @@ app.post(
         endTime: new Date().toISOString(),
         duration: 1000,
         error: null,
-        database: "CloudToLocalLLM",
+        database: "Pistisai",
         pointInTime: null,
       };
 

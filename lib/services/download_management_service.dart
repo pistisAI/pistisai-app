@@ -7,7 +7,7 @@ import '../config/app_config.dart';
 /// Service for managing download links, tracking, and validation
 class DownloadManagementService extends ChangeNotifier {
   static const String _githubApiUrl =
-      'https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM';
+      'https://api.github.com/repos/Pistisai-online/Pistisai';
   static const String _githubReleasesUrl = '$_githubApiUrl/releases';
 
   // Cache for GitHub release data
@@ -73,7 +73,7 @@ class DownloadManagementService extends ChangeNotifier {
         '$_githubReleasesUrl/latest',
         options: Options(headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'CloudToLocalLLM/${AppConfig.appVersion}',
+          'User-Agent': 'Pistisai/${AppConfig.appVersion}',
         }),
       );
 
@@ -104,9 +104,9 @@ class DownloadManagementService extends ChangeNotifier {
         switch (packageType.toLowerCase()) {
           case 'exe':
           case 'msi':
-            return 'CloudToLocalLLM-Windows-';
+            return 'Pistisai-Windows-';
           case 'zip':
-            return 'CloudToLocalLLM-';
+            return 'Pistisai-';
           default:
             return 'Windows';
         }
@@ -143,11 +143,11 @@ class DownloadManagementService extends ChangeNotifier {
         switch (packageType.toLowerCase()) {
           case 'exe':
           case 'msi':
-            return '$baseUrl/CloudToLocalLLM-Windows-$version-Setup.exe';
+            return '$baseUrl/Pistisai-Windows-$version-Setup.exe';
           case 'zip':
             return '$baseUrl/cloudtolocalllm-$version-portable.zip';
           default:
-            return '$baseUrl/CloudToLocalLLM-Windows-$version-Setup.exe';
+            return '$baseUrl/Pistisai-Windows-$version-Setup.exe';
         }
       case 'linux':
         switch (packageType.toLowerCase()) {
@@ -247,7 +247,7 @@ class DownloadManagementService extends ChangeNotifier {
       switch (platform.toLowerCase()) {
         case 'windows':
           alternatives.add(
-            '$baseUrl/CloudToLocalLLM-Windows-$version-Setup.exe',
+            '$baseUrl/Pistisai-Windows-$version-Setup.exe',
           );
           alternatives.add('$baseUrl/cloudtolocalllm-$version-portable.zip');
           break;

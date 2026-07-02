@@ -1,6 +1,6 @@
 # Avatar Personality System
 
-The Avatar Personality System is a core component of CloudToLocalLLM that enables the AI companion (CloudToLocalLLM) to evolve its personality based on conversation patterns and depth of interaction.
+The Avatar Personality System is a core component of Pistisai that enables the AI companion (Pistisai) to evolve its personality based on conversation patterns and depth of interaction.
 
 ## Overview
 
@@ -143,7 +143,7 @@ curl http://localhost:1337/avatar/state
 Response:
 ```json
 {
-  "agent_name": "CloudToLocalLLM",
+  "agent_name": "Pistisai",
   "traits": {
     "formality": 0.5,
     "humor": 0.5,
@@ -274,7 +274,7 @@ The skill maintains a `personality.md` file with current state:
 
 ```yaml
 ---
-agent_name: CloudToLocalLLM
+agent_name: Pistisai
 formality: 0.5
 humor: 0.5
 enthusiasm: 0.5
@@ -285,7 +285,7 @@ depth_score: 0.67
 last_updated: 2025-02-22T06:00:00Z
 ---
 
-# CloudToLocalLLM Personality
+# Pistisai Personality
 
 ## Traits
 - Formality: 50%
@@ -305,7 +305,7 @@ Depth Score: 0.67
 ```sql
 CREATE TABLE avatar_profiles (
   id TEXT PRIMARY KEY,
-  agent_name TEXT NOT NULL DEFAULT 'CloudToLocalLLM',
+  agent_name TEXT NOT NULL DEFAULT 'Pistisai',
   personality_traits TEXT NOT NULL, -- JSON: {formality, humor, enthusiasm, empathy}
   evolution_stage TEXT NOT NULL DEFAULT 'curious_explorer',
   conversation_count INTEGER NOT NULL DEFAULT 0,

@@ -16,7 +16,7 @@ The pipeline has been optimized to leverage GitOps principles:
 Located in `.github/workflows/ci-cd.yml`.
 
 - **Trigger**: Push to `main`.
-- **Registry**: Azure Container Registry (ACR) - `ghcr.io/cloudtolocalllm-online/CloudToLocalLLM`
+- **Registry**: Azure Container Registry (ACR) - `ghcr.io/cloudtolocalllm-online/Pistisai`
 - **Steps**:
     1. **Build**: Creates Docker images for `api-backend` and `web-frontend`.
     2. **Push**: Uploads images to ACR.
@@ -49,7 +49,7 @@ kubectl apply -f k8s/argocd-rbac/argocd-rbac-cm.yaml
 ### Roles
 
 - **admin**: Full access.
-- **developer**: Can view and sync applications in the `CloudToLocalLLM` project/namespace, and view logs.
+- **developer**: Can view and sync applications in the `Pistisai` project/namespace, and view logs.
 
 ## Deployment Strategy
 
@@ -75,5 +75,5 @@ strategy:
 If you need immediate synchronization:
 
 ```bash
-argocd app sync CloudToLocalLLM-services
+argocd app sync Pistisai-services
 ```

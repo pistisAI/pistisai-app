@@ -55,7 +55,7 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_definitions(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")
 endfunction()
 
-# CloudToLocalLLM v10.1+ - Unified Flutter-native architecture with integrated system tray
+# Pistisai v10.1+ - Unified Flutter-native architecture with integrated system tray
 # Deprecation warnings are suppressed to allow tray_manager functionality on older systems
 
 # Flutter library and tool build rules.

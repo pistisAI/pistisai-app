@@ -2,11 +2,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: api-backend-ingress
-  namespace: CloudToLocalLLM
+  namespace: Pistisai
   annotations:
     kubernetes.io/ingress.class: 'gce'
-    kubernetes.io/ingress.global-static-ip-name: 'CloudToLocalLLM-static-ip'
-    networking.gke.io/managed-certificates: 'CloudToLocalLLM-certificate'
+    kubernetes.io/ingress.global-static-ip-name: 'Pistisai-static-ip'
+    networking.gke.io/managed-certificates: 'Pistisai-certificate'
 spec:
   rules:
     - host: api.pistisai.app

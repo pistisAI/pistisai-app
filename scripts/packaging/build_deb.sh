@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM Debian Package Build Script
+# Pistisai Debian Package Build Script
 # Packages the Flutter Linux bundle into a .deb file
 
 set -e
@@ -10,8 +10,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BUILD_DIR="$PROJECT_ROOT/build/linux/x64/release/bundle"
 VERSION=$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)
-PACKAGE_NAME="CloudToLocalLLM"
-MAINTAINER="CloudToLocalLLM Team <team@cloudtolocalllm.online>"
+PACKAGE_NAME="Pistisai"
+MAINTAINER="Pistisai Team <team@cloudtolocalllm.online>"
 DESCRIPTION="Manage and run powerful Large Language Models locally, orchestrated via a cloud interface."
 
 # Output Directory
@@ -44,7 +44,7 @@ cat > "$PKG_ROOT/usr/share/applications/$PACKAGE_NAME.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=CloudToLocalLLM
+Name=Pistisai
 GenericName=AI Model Bridge
 Comment=$DESCRIPTION
 Icon=$PACKAGE_NAME
@@ -53,7 +53,7 @@ Terminal=false
 Categories=Development;Utility;Network;
 Keywords=AI;LLM;Ollama;OpenAI;Machine Learning;
 StartupNotify=true
-StartupWMClass=CloudToLocalLLM
+StartupWMClass=Pistisai
 MimeType=x-scheme-handler/$PACKAGE_NAME;
 EOF
 

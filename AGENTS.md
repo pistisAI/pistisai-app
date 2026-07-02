@@ -1,4 +1,4 @@
-# CloudToLocalLLM Agent Guide
+# Pistisai Agent Guide
 
 ## What this is
 
@@ -8,7 +8,7 @@ Ollama, LM Studio, and similar local model servers are support model providers f
 
 Core orientation: secure agent channel, avatar/voice companion, desktop control, vision, agent runtime management, and multi-device sync through a Tailscale-first secure device mesh.
 
-- Do not assume a universal default runtime. The setup wizard decides whether the active agent runtime is on this device, another private device, a Tailscale device, a manual/private URL, or optional paid CloudToLocalLLM-hosted compute.
+- Do not assume a universal default runtime. The setup wizard decides whether the active agent runtime is on this device, another private device, a Tailscale device, a manual/private URL, or optional paid Pistisai-hosted compute.
 - The main secure channel connects to an agent runtime, not a raw local model provider.
 - Hermes is the current first test path.
 - OpenClaw remains a supported agent runtime and original integration, but it is not the universal default.
@@ -19,7 +19,7 @@ Core orientation: secure agent channel, avatar/voice companion, desktop control,
 
 ## GitHub issues are the work-tracking source of truth
 
-- Canonical issue tracker: `https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/issues`
+- Canonical issue tracker: `https://github.com/Pistisai-online/Pistisai/issues`
 - Treat GitHub issues, issue comments, labels, milestones, and linked PRs as the authoritative source of truth for active bugs, feature requests, prioritization, and execution status.
 - Do not treat ad hoc chat requests, stale plans, local TODO notes, or archived docs as authoritative if they conflict with the current GitHub issue state.
 - Before starting or changing substantive work, check for an existing issue, linked discussion, or open PR and align your work to that record.
@@ -187,7 +187,7 @@ npm run lint
 npm run format
 ```
 
-- Package: `@CloudToLocalLLM/sdk`, version `2.0.0`.
+- Package: `@Pistisai/sdk`, version `2.0.0`.
 - Node engine: `>=18.0.0`.
 - Module type: ESM (`"type": "module"`).
 - Source is in `services/sdk/src/`; build output is `services/sdk/dist/`.
@@ -324,8 +324,8 @@ import 'thing.dart'
 
 ### Secure device mesh and cloud connector
 
-- Tailscale is the preferred private transport for multi-device CloudToLocalLLM.
-- The intended cloud connector shape is one isolated CloudToLocalLLM container per user.
+- Tailscale is the preferred private transport for multi-device Pistisai.
+- The intended cloud connector shape is one isolated Pistisai container per user.
 - A cloud connector joins only that user's Tailscale tailnet, ideally through a narrow service identity/tag.
 - The connector coordinates secure channel sync, device presence, and web/mobile access. It must not bypass local desktop permissions.
 - Cloud-hosted agent runtime is optional paid compute. Most users are expected to run Hermes/OpenClaw/etc. on their own device, server, or tailnet.
@@ -343,7 +343,7 @@ import 'thing.dart'
 
 ## Conventions
 
-- Branding: preserve `CloudToLocalLLM`, `OpenClaw`, `Zoidbot`, and the lobster branding exactly.
+- Branding: preserve `Pistisai`, `OpenClaw`, `Zoidbot`, and the lobster branding exactly.
 - Dart files use `snake_case.dart`; classes use `PascalCase`; prefer single quotes.
 - JS/TS files generally use `kebab-case.js` or `kebab-case.ts`; classes use `PascalCase`.
 - Flutter tests use `*_test.dart`.

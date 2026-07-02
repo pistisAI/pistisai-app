@@ -6,7 +6,7 @@
 
 ## Goal
 
-Create a seamless installation experience for CloudToLocalLLM on Linux with automatic background updates, similar to [OpenClaw.ai](https://openclaw.ai), using an intelligent hybrid update approach.
+Create a seamless installation experience for Pistisai on Linux with automatic background updates, similar to [OpenClaw.ai](https://openclaw.ai), using an intelligent hybrid update approach.
 
 ## Overview
 
@@ -178,7 +178,7 @@ fi
     cat > dist/linux/install.sh << 'INSTALLER_EOF'
     #!/bin/bash
     INSTALL_VERSION="${VERSION}"
-    INSTALL_BASE_URL="https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/download"
+    INSTALL_BASE_URL="https://github.com/Pistisai-online/Pistisai/releases/download"
 
     # ... rest of installer script ...
     INSTALLER_EOF
@@ -199,9 +199,9 @@ fi
 ### Build Artifacts
 
 Each release will include:
-- `CloudToLocalLLM-x86_64.AppImage` - Main application
+- `Pistisai-x86_64.AppImage` - Main application
 - `install.sh` - Installer script
-- `CloudToLocalLLM-x86_64.tar.gz` - Portable bundle
+- `Pistisai-x86_64.tar.gz` - Portable bundle
 - `cloudtolocalllm_${VERSION}_amd64.deb` - Debian package
 - `cloudtolocalllm.sha256` - Checksums
 
@@ -233,14 +233,14 @@ cloudtolocalllm/
 ```bash
 $ curl -fsSL https://pistisai.app/install.sh | bash
 
-🦞 Installing CloudToLocalLLM v10.1.200...
+🦞 Installing Pistisai v10.1.200...
 ✓ Downloaded AppImage to ~/.local/share/cloudtolocalllm/
 ✓ Created desktop entry
 ✓ Installed icon to ~/.local/share/icons/
 ✓ Set up update daemon
 ✓ Started background update service
 
-🎉 CloudToLocalLLM installed successfully!
+🎉 Pistisai installed successfully!
 Run 'cloudtolocalllm' or find it in your application menu.
 
 💡 The update daemon will check for updates every 6 hours.
@@ -272,7 +272,7 @@ Run 'cloudtolocalllm' or find it in your application menu.
 2. Queries GitHub Releases API
 3. Compares v10.1.200 → v11.0.0
 4. Determines: MAJOR version → PROMPT USER
-5. Shows persistent notification: "CloudToLocalLLM 11.0.0 available!"
+5. Shows persistent notification: "Pistisai 11.0.0 available!"
 6. Downloads changelog in background
 7. [User clicks notification OR opens app]
 8. App shows dialog:

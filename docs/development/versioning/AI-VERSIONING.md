@@ -2,7 +2,7 @@
 
 ## Overview
 
-CloudToLocalLLM uses an intelligent, AI-powered versioning system powered by Gemini to analyze commits and automatically determine appropriate version bumps across all platforms.
+Pistisai uses an intelligent, AI-powered versioning system powered by Gemini to analyze commits and automatically determine appropriate version bumps across all platforms.
 
 ## Architecture
 
@@ -194,8 +194,8 @@ git tag -l "*-cloud-*" | sort -V | tail -5
 gh workflow run deploy-aks.yml -f version_tag=4.4.0-cloud-xyz789
 
 # OR manually update Kubernetes
-kubectl set image deployment/web web=registry/web:4.4.0 -n CloudToLocalLLM
-kubectl set image deployment/api-backend api-backend=registry/api-backend:4.4.0-api -n CloudToLocalLLM
+kubectl set image deployment/web web=registry/web:4.4.0 -n Pistisai
+kubectl set image deployment/api-backend api-backend=registry/api-backend:4.4.0-api -n Pistisai
 ```
 
 ## Benefits

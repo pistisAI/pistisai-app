@@ -45,7 +45,7 @@ chmod +x "$FAKE_DPKG_DEB"
 PATH="$WORK_DIR:/usr/bin:/bin" \
 BUILD_DIR="$FAKE_BUILD_DIR" \
 DIST_DIR="$DIST_DIR" \
-APP_NAME="CloudToLocalLLM" \
+APP_NAME="Pistisai" \
 PACKAGE_NAME="cloudtolocalllm" \
 FAKE_LOG="$FAKE_LOG" \
 "$TARGET_SCRIPT"
@@ -55,7 +55,7 @@ PACKAGE_FILE="$DIST_DIR/cloudtolocalllm_$(grep '^version:' "$PROJECT_ROOT/pubspe
 [[ -f "$PACKAGE_FILE" ]]
 [[ -x "$PACKAGE_FILE" ]]
 grep -Fq 'Package: cloudtolocalllm|' "$FAKE_LOG"
-grep -Fq 'Name=CloudToLocalLLM|' "$FAKE_LOG"
+grep -Fq 'Name=Pistisai|' "$FAKE_LOG"
 grep -Fq 'Exec=cloudtolocalllm %u|' "$FAKE_LOG"
 grep -Fq 'MimeType=x-scheme-handler/cloudtolocalllm;|' "$FAKE_LOG"
 

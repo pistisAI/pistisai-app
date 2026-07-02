@@ -115,7 +115,7 @@ void _runAppCommon() {
   debugPrint('[Main] Starting runApp...');
   runApp(
     SentryWidget(
-      child: CloudToLocalLLMApp(bootstrapFuture: appLoadFuture),
+      child: PistisaiApp(bootstrapFuture: appLoadFuture),
     ),
   );
   debugPrint('[Main] runApp completed');
@@ -136,16 +136,16 @@ void _initializeClientLogBuffer() {
 }
 
 /// Main application widget with comprehensive loading screen
-class CloudToLocalLLMApp extends StatefulWidget {
+class PistisaiApp extends StatefulWidget {
   final Future<AppBootstrapData>? bootstrapFuture;
 
-  const CloudToLocalLLMApp({super.key, this.bootstrapFuture});
+  const PistisaiApp({super.key, this.bootstrapFuture});
 
   @override
-  State<CloudToLocalLLMApp> createState() => _CloudToLocalLLMAppState();
+  State<PistisaiApp> createState() => _PistisaiAppState();
 }
 
-class _CloudToLocalLLMAppState extends State<CloudToLocalLLMApp> {
+class _PistisaiAppState extends State<PistisaiApp> {
   bool _authListenerAttached = false;
   AuthService? _attachedAuthService;
 
@@ -177,7 +177,7 @@ class _CloudToLocalLLMAppState extends State<CloudToLocalLLMApp> {
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
         home: const Scaffold(
-          body: Center(child: Text('CloudToLocalLLM')),
+          body: Center(child: Text('Pistisai')),
         ),
       );
     }

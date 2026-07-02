@@ -71,7 +71,7 @@ EXPECTED_OUTPUT="$HOME_DIR/.local/share/cloudtolocalllm/cache/cloudtolocalllm-1.
 [[ -f "$EXPECTED_OUTPUT" ]]
 grep -Fqx 'appimage-binary' "$EXPECTED_OUTPUT"
 [[ $(wc -l < "$CURL_LOG") -eq 2 ]]
-grep -Fq 'api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/tags/v1.2.3' "$CURL_LOG"
+grep -Fq 'api.github.com/repos/Pistisai-online/Pistisai/releases/tags/v1.2.3' "$CURL_LOG"
 grep -Fq 'https://example.com/cloudtolocalllm-1.2.3.AppImage' "$CURL_LOG"
 [[ $(wc -l < "$MKTEMP_LOG") -eq 2 ]]
 grep -Fq "${TMPDIR_ROOT%/}/cloudtolocalllm-1.2.3.AppImage" "$MKTEMP_LOG"

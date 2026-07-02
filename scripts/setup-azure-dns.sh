@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Setup Azure DNS for CloudToLocalLLM
+# Setup Azure DNS for Pistisai
 # This script creates an Azure DNS zone and all required DNS records
 
 set -e
 
 # Configuration
-RESOURCE_GROUP="CloudToLocalLLM-rg"
+RESOURCE_GROUP="Pistisai-rg"
 DNS_ZONE_NAME="cloudtolocalllm.online"
-AKS_CLUSTER_NAME="CloudToLocalLLM-aks"
+AKS_CLUSTER_NAME="Pistisai-aks"
 TTL=300
 
 # DNS records to create
@@ -78,7 +78,7 @@ for domain in "${DOMAINS[@]}"; do
     if [ "$domain" = "cloudtolocalllm.online" ]; then
         record_name="@"
     else
-        record_name=$(echo "$domain" | sed 's/\.CloudToLocalLLM\.online//')
+        record_name=$(echo "$domain" | sed 's/\.Pistisai\.online//')
     fi
     
     echo "Creating/updating: $domain â†’ $LB_IP"

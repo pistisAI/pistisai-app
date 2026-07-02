@@ -17,7 +17,7 @@ const VALID_ENVIRONMENTS = ["development", "staging", "production"];
 // Environment-specific configurations
 const ENVIRONMENT_CONFIGS = {
   development: {
-    namespace: "CloudToLocalLLM-dev",
+    namespace: "Pistisai-dev",
     replicas: 1,
     webResources: {
       requests: { memory: "128Mi", cpu: "50m" },
@@ -38,7 +38,7 @@ const ENVIRONMENT_CONFIGS = {
     estimatedMonthlyCost: 30,
   },
   staging: {
-    namespace: "CloudToLocalLLM-staging",
+    namespace: "Pistisai-staging",
     replicas: 2,
     webResources: {
       requests: { memory: "256Mi", cpu: "100m" },
@@ -59,7 +59,7 @@ const ENVIRONMENT_CONFIGS = {
     estimatedMonthlyCost: 60,
   },
   production: {
-    namespace: "CloudToLocalLLM",
+    namespace: "Pistisai",
     replicas: 3,
     webResources: {
       requests: { memory: "512Mi", cpu: "250m" },
@@ -203,7 +203,7 @@ describe("Environment Configuration - Property Tests", () => {
     test("should use development configuration for development environment", () => {
       const config = ENVIRONMENT_CONFIGS.development;
 
-      expect(config.namespace).toBe("CloudToLocalLLM-dev");
+      expect(config.namespace).toBe("Pistisai-dev");
       expect(config.replicas).toBe(1);
       expect(config.logLevel).toBe("debug");
       expect(config.nodeEnv).toBe("development");
@@ -213,7 +213,7 @@ describe("Environment Configuration - Property Tests", () => {
     test("should use staging configuration for staging environment", () => {
       const config = ENVIRONMENT_CONFIGS.staging;
 
-      expect(config.namespace).toBe("CloudToLocalLLM-staging");
+      expect(config.namespace).toBe("Pistisai-staging");
       expect(config.replicas).toBe(2);
       expect(config.logLevel).toBe("info");
       expect(config.nodeEnv).toBe("staging");
@@ -223,7 +223,7 @@ describe("Environment Configuration - Property Tests", () => {
     test("should use production configuration for production environment", () => {
       const config = ENVIRONMENT_CONFIGS.production;
 
-      expect(config.namespace).toBe("CloudToLocalLLM");
+      expect(config.namespace).toBe("Pistisai");
       expect(config.replicas).toBe(3);
       expect(config.logLevel).toBe("warn");
       expect(config.nodeEnv).toBe("production");

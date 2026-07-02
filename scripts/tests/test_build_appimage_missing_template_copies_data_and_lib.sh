@@ -26,7 +26,7 @@ printf '%s\n' 'lib-file' > "$TMP_BUILD_DIR/lib/subdir/example.txt"
 printf '%s\n' 'name: cloudtolocalllm' 'version: 1.2.3+4' > "$TMP_PUBSPEC"
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

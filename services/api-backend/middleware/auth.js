@@ -1,5 +1,5 @@
 /**
- * Authentication Middleware for CloudToLocalLLM API Backend
+ * Authentication Middleware for Pistisai API Backend
  *
  * Provides JWT authentication and authorization for API endpoints
  * with user ID extraction utilities.
@@ -49,7 +49,7 @@ export const checkJwt = (req, res, next) => {
         exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
         iat: Math.floor(Date.now() / 1000),
         'https://pistisai.app/roles': ['admin'],
-        'https://CloudToLocalLLM.com/app_metadata': { role: 'admin' },
+        'https://Pistisai.com/app_metadata': { role: 'admin' },
         scope: 'openid profile email admin',
       }
     };
@@ -207,7 +207,7 @@ export async function optionalAuth(req, res, next) {
         exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
         iat: Math.floor(Date.now() / 1000),
         'https://pistisai.app/roles': ['admin'],
-        'https://CloudToLocalLLM.com/app_metadata': { role: 'admin' },
+        'https://Pistisai.com/app_metadata': { role: 'admin' },
         scope: 'openid profile email admin',
       }
     };
@@ -378,8 +378,8 @@ export function requireAdmin(req, res, next) {
     }
 
     const userMetadata =
-      user['https://CloudToLocalLLM.com/user_metadata'] || {};
-    const appMetadata = user['https://CloudToLocalLLM.com/app_metadata'] || {};
+      user['https://Pistisai.com/user_metadata'] || {};
+    const appMetadata = user['https://Pistisai.com/app_metadata'] || {};
     const userRoles = user['https://pistisai.app/roles'] || [];
     const userScopes = user.scope ? user.scope.split(' ') : [];
 

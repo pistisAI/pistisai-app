@@ -1,6 +1,6 @@
-# CloudToLocalLLM Development Workflow
+# Pistisai Development Workflow
 
-This document describes the development workflow for the CloudToLocalLLM project. It is designed to ensure consistent code quality and streamline the development process.
+This document describes the development workflow for the Pistisai project. It is designed to ensure consistent code quality and streamline the development process.
 
 ## Collaborative Workflow with Gemini
 

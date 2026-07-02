@@ -55,7 +55,7 @@ MCP servers for Crush CLI need to be configured in the appropriate configuration
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/mnt/data/projects/CloudToLocalLLM"],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/mnt/data/projects/Pistisai"],
       "description": "File system operations for the project directory"
     },
     "github": {
@@ -68,7 +68,7 @@ MCP servers for Crush CLI need to be configured in the appropriate configuration
     },
     "postgres": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://appuser:changeme@localhost:5432/CloudToLocalLLM"],
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://appuser:changeme@localhost:5432/Pistisai"],
       "description": "PostgreSQL database operations",
       "env": {
         "POSTGRES_HOST": "localhost",
@@ -108,7 +108,7 @@ export GITHUB_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxx"
 # PostgreSQL (required for PostgreSQL MCP server)
 export POSTGRES_HOST="localhost"
 export POSTGRES_PORT="5432"
-export POSTGRES_DB="CloudToLocalLLM"
+export POSTGRES_DB="Pistisai"
 export POSTGRES_USER="appuser"
 export POSTGRES_PASSWORD="changeme"
 ```
@@ -184,7 +184,7 @@ npx -y @modelcontextprotocol/server-sequential-thinking
 npx -y @modelcontextprotocol/server-memory
 
 # Test filesystem
-npx -y @modelcontextprotocol/server-filesystem /mnt/data/projects/CloudToLocalLLM
+npx -y @modelcontextprotocol/server-filesystem /mnt/data/projects/Pistisai
 
 # Test GitHub (requires token)
 npx -y @modelcontextprotocol/server-github
@@ -227,9 +227,9 @@ If an MCP server shows as "not available":
 
 ## Project-Specific Notes
 
-For the CloudToLocalLLM project:
+For the Pistisai project:
 
-- The Filesystem server should point to `/mnt/data/projects/CloudToLocalLLM`
+- The Filesystem server should point to `/mnt/data/projects/Pistisai`
 - The PostgreSQL server should use the project database connection string
 - GitHub tokens can be generated at https://github.com/settings/tokens
 

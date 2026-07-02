@@ -408,9 +408,9 @@ describe("End-to-End Deployment Verification", () => {
   describe("Complete Deployment Flow", () => {
     it("should successfully deploy application and verify accessibility", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
         services: ["web-service"],
         domains: ["pistisai.app", "app.pistisai.app"],
@@ -445,7 +445,7 @@ describe("End-to-End Deployment Verification", () => {
           async (config) => {
             const fullConfig = {
               ...config,
-              image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+              image: "Pistisai/cloudtolocalllm-web:latest",
               domains: ["pistisai.app", "app.pistisai.app"],
               healthEndpoints: ["https://api.pistisai.app/health"],
             };
@@ -470,9 +470,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify health checks pass after deployment", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "api-backend",
-        image: "CloudToLocalLLM/cloudtolocalllm-api:latest",
+        image: "Pistisai/cloudtolocalllm-api:latest",
         replicas: 2,
         healthEndpoints: [
           "https://api.pistisai.app/health",
@@ -492,9 +492,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify no errors in logs after deployment", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
       };
 
@@ -509,9 +509,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should handle deployment failures gracefully", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "failing-app",
-        image: "CloudToLocalLLM/failing-image:latest",
+        image: "Pistisai/failing-image:latest",
         replicas: 2,
         domains: ["pistisai.app"],
       };
@@ -531,9 +531,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify deployment timeline is sequential", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
       };
 
@@ -562,7 +562,7 @@ describe("End-to-End Deployment Verification", () => {
           async (config) => {
             const fullConfig = {
               ...config,
-              image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+              image: "Pistisai/cloudtolocalllm-web:latest",
               replicas: config.replicaCount,
             };
 
@@ -586,9 +586,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify services are created and accessible", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
         services: ["web-service", "api-service"],
       };
@@ -604,9 +604,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify ingress is configured for domains", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
         domains: ["pistisai.app", "app.pistisai.app"],
       };
@@ -622,9 +622,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify deployment is idempotent", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
       };
 
@@ -649,9 +649,9 @@ describe("End-to-End Deployment Verification", () => {
             k8sClient.reset();
 
             const config = {
-              namespace: "CloudToLocalLLM",
+              namespace: "Pistisai",
               deploymentName: `web-app-${replicaCount}`,
-              image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+              image: "Pistisai/cloudtolocalllm-web:latest",
               replicas: replicaCount,
             };
 
@@ -671,14 +671,14 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify deployment with different image versions", async () => {
       const imageVersions = [
-        "CloudToLocalLLM/cloudtolocalllm-web:latest",
-        "CloudToLocalLLM/cloudtolocalllm-web:v1.0.0",
-        "CloudToLocalLLM/cloudtolocalllm-web:sha-abc123",
+        "Pistisai/cloudtolocalllm-web:latest",
+        "Pistisai/cloudtolocalllm-web:v1.0.0",
+        "Pistisai/cloudtolocalllm-web:sha-abc123",
       ];
 
       for (const image of imageVersions) {
         const config = {
-          namespace: "CloudToLocalLLM",
+          namespace: "Pistisai",
           deploymentName: "web-app",
           image,
           replicas: 2,
@@ -690,13 +690,13 @@ describe("End-to-End Deployment Verification", () => {
     });
 
     it("should verify deployment across multiple namespaces", async () => {
-      const namespaces = ["CloudToLocalLLM", "staging", "production"];
+      const namespaces = ["Pistisai", "staging", "production"];
 
       for (const namespace of namespaces) {
         const config = {
           namespace,
           deploymentName: "web-app",
-          image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+          image: "Pistisai/cloudtolocalllm-web:latest",
           replicas: 2,
         };
 
@@ -712,9 +712,9 @@ describe("End-to-End Deployment Verification", () => {
       k8sClient.clearEvents();
 
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
       };
 
@@ -738,9 +738,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should handle deployment with no replicas", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app-no-replicas",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 0,
       };
 
@@ -753,9 +753,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should handle deployment with missing DNS records", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
         domains: ["nonexistent.example.com"],
       };
@@ -770,9 +770,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should handle deployment with unreachable health endpoints", async () => {
       const config = {
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "CloudToLocalLLM/cloudtolocalllm-web:latest",
+        image: "Pistisai/cloudtolocalllm-web:latest",
         replicas: 2,
         healthEndpoints: ["https://unreachable.example.com/health"],
       };

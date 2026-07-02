@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "==> CloudToLocalLLM Docker Swarm Start Script <=="
+echo "==> Pistisai Docker Swarm Start Script <=="
 
 # Map environment variables for Docker Swarm deployment
 # These can be set as Docker Swarm service config or environment variables

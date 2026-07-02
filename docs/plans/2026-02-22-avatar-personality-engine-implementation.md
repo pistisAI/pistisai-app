@@ -2,9 +2,9 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Implement a personality and evolution system for OpenClaw agents that grows organically through meaningful conversations, with shared state between OpenClaw Gateway and CloudToLocalLLM.
+**Goal:** Implement a personality and evolution system for OpenClaw agents that grows organically through meaningful conversations, with shared state between OpenClaw Gateway and Pistisai.
 
-**Architecture:** Hybrid shared state where OpenClaw owns personality/evolution, CloudToLocalLLM provides expanded awareness. Drift database (VPS via Tailscale) as primary storage, markdown files in OpenClaw skills directory as backup/portable storage. Collaborative evolution: OpenClaw self-reflects and requests evolution, CloudToLocalLLM validates before approving.
+**Architecture:** Hybrid shared state where OpenClaw owns personality/evolution, Pistisai provides expanded awareness. Drift database (VPS via Tailscale) as primary storage, markdown files in OpenClaw skills directory as backup/portable storage. Collaborative evolution: OpenClaw self-reflects and requests evolution, Pistisai validates before approving.
 
 **Tech Stack:** Flutter 3.5+, Drift (SQLite), TypeScript (OpenClaw skills), Rive animations, markdown backup sync.
 
@@ -1291,7 +1291,7 @@ mkdir -p ~/.openclaw/skills/cloudtolocallm
 
 ```bash
 cat > ~/.openclaw/skills/cloudtolocallm/SKILL.md << 'EOF'
-# CloudToLocalLLM Avatar Personality
+# Pistisai Avatar Personality
 
 Provides personality-driven responses and organic evolution capabilities for OpenClaw agents.
 
@@ -1308,7 +1308,7 @@ The agent has four personality traits (0-1 scale):
 The agent evolves organically through meaningful conversations:
 - No XP grinding - evolution based on conversation depth and patterns
 - Self-reflection: agent recognizes when it has grown
-- Collaborative: CloudToLocalLLM validates evolution requests
+- Collaborative: Pistisai validates evolution requests
 - Stages: base → stage1 → stage2 → final
 
 ## Data Storage
@@ -1436,7 +1436,7 @@ export class DriftAdapter {
   private db: Database.Database | null = null;
   private dbPath: string;
 
-  constructor(dbPath: string = '~/.local/share/CloudToLocalLLM/local_brain.db') {
+  constructor(dbPath: string = '~/.local/share/Pistisai/local_brain.db') {
     this.dbPath = dbPath.replace('~', process.env.HOME || '');
   }
 
@@ -1745,7 +1745,7 @@ git commit -m "feat: add OpenClaw personality skill
 - Add personality injection into prompts
 - Add self-reflection for evolution triggers
 - Add markdown fallback for offline mode
-- Add evolution request to CloudToLocalLLM API
+- Add evolution request to Pistisai API
 "
 ```
 
@@ -1985,14 +1985,14 @@ git commit -m "test: add evolution flow integration test
 
 **Step 1: Add avatar system documentation to CLAUDE.md**
 
-Add under "Avatar System (CloudToLocalLLM)" section:
+Add under "Avatar System (Pistisai)" section:
 
 ```dart
 ### Avatar Personality System
 
 **Architecture**: Hybrid shared state with OpenClaw Gateway
 - OpenClaw owns personality & evolution (traits, evolution stages)
-- CloudToLocalLLM provides expanded awareness (memory, context, visual data)
+- Pistisai provides expanded awareness (memory, context, visual data)
 - Drift database (VPS via Tailscale) = primary storage
 - Markdown files (~/.openclaw/skills/cloudtolocallm/) = backup storage
 
@@ -2001,7 +2001,7 @@ Add under "Avatar System (CloudToLocalLLM)" section:
 
 **Evolution System** (no XP):
 - Triggers: Conversation depth, user patterns, agent self-reflection
-- Collaborative: OpenClaw requests, CloudToLocalLLM validates
+- Collaborative: OpenClaw requests, Pistisai validates
 - Stages: base → stage1 → stage2 → final
 
 **Services**:
@@ -2051,7 +2051,7 @@ git commit -m "docs: add Avatar Personality Engine to CLAUDE.md
 cat > scripts/install-openclaw-skill.sh << 'EOF'
 #!/bin/bash
 
-# Install CloudToLocalLLM personality skill to OpenClaw
+# Install Pistisai personality skill to OpenClaw
 
 SKILL_NAME="cloudtolocallm"
 SOURCE_DIR="services/openclaw-skills/$SKILL_NAME"
@@ -2120,7 +2120,7 @@ The Avatar Personality Engine enables OpenClaw agents to develop unique personal
    openclaw gateway restart
    ```
 
-3. **Adjust personality** (via CloudToLocalLLM UI or API):
+3. **Adjust personality** (via Pistisai UI or API):
    ```bash
    curl -X POST http://localhost:1337/avatar/traits \
      -H "Content-Type: application/json" \
@@ -2142,12 +2142,12 @@ No XP grinding - evolution happens through:
 - **Conversation Depth**: 5+ deep conversations (complexity > 0.7)
 - **Novelty**: Average novelty score > 0.5
 - **Self-Reflection**: Agent recognizes growth
-- **Collaborative**: OpenClaw requests, CloudToLocalLLM validates
+- **Collaborative**: OpenClaw requests, Pistisai validates
 
 ## Architecture
 
 ```
-OpenClaw Gateway              Drift Database              CloudToLocalLLM
+OpenClaw Gateway              Drift Database              Pistisai
      │                              │                              │
      ├─── owns personality ─────────┤                              │
      │                              │                              │
@@ -2184,7 +2184,7 @@ Content-Type: application/json
 }
 ```
 
-### Request Evolution (OpenClaw → CloudToLocalLLM)
+### Request Evolution (OpenClaw → Pistisai)
 ```bash
 POST http://localhost:1337/avatar/evolution/request
 Content-Type: application/json
@@ -2223,7 +2223,7 @@ flutter test
 
 **Database connection failed**:
 - Verify Tailscale connection: `tailscale status`
-- Check database path: `~/.local/share/CloudToLocalLLM/local_brain.db`
+- Check database path: `~/.local/share/Pistisai/local_brain.db`
 
 **Evolution not triggering**:
 - Check depth metrics in database

@@ -1,10 +1,10 @@
 /**
- * CloudToLocalLLM Personality Skill
+ * Pistisai Personality Skill
  *
  * OpenClaw skill that provides:
  * - Personality-driven responses
  * - Self-reflection for growth recognition
- * - Evolution requests to CloudToLocalLLM
+ * - Evolution requests to Pistisai
  * - Markdown fallback for offline mode
  */
 
@@ -188,7 +188,7 @@ export class PersonalitySkill {
   }
 
   /**
-   * Request evolution from CloudToLocalLLM
+   * Request evolution from Pistisai
    */
   async requestEvolution(proposedStage: string): Promise<{ approved: boolean; reason?: string }> {
     if (!this.currentProfile) {
@@ -220,7 +220,7 @@ export class PersonalitySkill {
       timestamp: new Date().toISOString(),
     };
 
-    // Send to CloudToLocalLLM API
+    // Send to Pistisai API
     if (!this.config.cloudToLocalApiUrl) {
       console.warn('[PersonalitySkill] No API URL configured, auto-approving');
       return { approved: true };

@@ -10,7 +10,7 @@ Parameters:
   GitHubRepository:
     Type: String
     Description: GitHub repository in format owner/repo
-    Default: 'CloudToLocalLLM/CloudToLocalLLM'
+    Default: 'Pistisai/Pistisai'
 
 Resources:
   # EKS Service Role
@@ -147,7 +147,7 @@ Resources:
   PodExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: CloudToLocalLLM-pod-execution-role
+      RoleName: Pistisai-pod-execution-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -157,12 +157,12 @@ Resources:
             Action: 'sts:AssumeRoleWithWebIdentity'
             Condition:
               StringEquals:
-                "oidc.eks.${AWS::Region}.amazonaws.com/id/EXAMPLEID:sub": 'system:serviceaccount:CloudToLocalLLM:default'
+                "oidc.eks.${AWS::Region}.amazonaws.com/id/EXAMPLEID:sub": 'system:serviceaccount:Pistisai:default'
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy'
       Tags:
         - Key: Name
-          Value: CloudToLocalLLM-pod-execution-role
+          Value: Pistisai-pod-execution-role
         - Key: Environment
           Value: production
 
@@ -178,7 +178,7 @@ Resources:
             Action:
               - 'secretsmanager:GetSecretValue'
               - 'secretsmanager:DescribeSecret'
-            Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:CloudToLocalLLM/*'
+            Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Pistisai/*'
           - Effect: Allow
             Action:
               - 'kms:Decrypt'
@@ -217,13 +217,13 @@ Outputs:
     Description: ARN of Node Instance Role
     Value: !GetAtt NodeInstanceRole.Arn
     Export:
-      Name: CloudToLocalLLM-node-instance-role-arn
+      Name: Pistisai-node-instance-role-arn
 
   NodeInstanceProfileArn:
     Description: ARN of Node Instance Profile
     Value: !GetAtt NodeInstanceProfile.Arn
     Export:
-      Name: CloudToLocalLLM-node-instance-profile-arn
+      Name: Pistisai-node-instance-profile-arn
 
   GitHubActionsRoleArn:
     Description: ARN of GitHub Actions Role
@@ -235,7 +235,7 @@ Outputs:
     Description: ARN of Pod Execution Role
     Value: !GetAtt PodExecutionRole.Arn
     Export:
-      Name: CloudToLocalLLM-pod-execution-role-arn
+      Name: Pistisai-pod-execution-role-arn
 
   EKSCloudWatchLogsRoleArn:
     Description: ARN of EKS CloudWatch Logs Role

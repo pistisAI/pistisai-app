@@ -8,7 +8,7 @@ The OpenClaw logo (`openclaw_logo.png`) is not currently included in this reposi
 
 The `OpenClawNavigationShell` widget has been implemented with a graceful fallback mechanism. When the logo file is missing, it automatically displays `Icons.smart_toy` instead.
 
-See: `/run/media/rightguy/data_storage/dev/CloudToLocalLLM/lib/widgets/navigation/openclaw_navigation_shell.dart` line 94
+See: `/run/media/rightguy/data_storage/dev/Pistisai/lib/widgets/navigation/openclaw_navigation_shell.dart` line 94
 
 ```dart
 Image.asset(
@@ -32,7 +32,7 @@ To add the official OpenClaw logo:
 
 This directory contains various application assets:
 - `app_icon.png` - Main application icon
-- `lobster_avatar.png` - Avatar images for CloudToLocalLLM character
+- `lobster_avatar.png` - Avatar images for Pistisai character
 - `tray_icon_*.png` - System tray icons (connected, disconnected, connecting, etc.)
 - Various themed tray icons (dark, contrast, mono)
 

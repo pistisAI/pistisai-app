@@ -10,7 +10,7 @@ for needle in \
   'DOCKER_CMD="${DOCKER_CMD:-docker}"' \
   'compose() {' \
   'compose exec webapp test -f "$CERT_PATH/$file"' \
-  'compose ps | grep -q "CloudToLocalLLM-webapp.*Up"'; do
+  'compose ps | grep -q "Pistisai-webapp.*Up"'; do
   if ! grep -Fq "$needle" "$FILE"; then
     echo "missing hardening string: $needle" >&2
     exit 1

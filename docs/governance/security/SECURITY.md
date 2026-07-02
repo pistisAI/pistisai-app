@@ -1,6 +1,6 @@
 # Security Policy
 
-The following versions of the CloudToLocalLLM project are currently supported with security updates:
+The following versions of the Pistisai project are currently supported with security updates:
 
 | Version | Supported          |
 | ------- | ------------------ |

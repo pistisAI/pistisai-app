@@ -1,8 +1,8 @@
-# CloudToLocalLLM Troubleshooting Guide
+# Pistisai Troubleshooting Guide
 
 This guide helps diagnose setup, agent runtime, support model, mesh, desktop-control, voice, and sync problems.
 
-CloudToLocalLLM does not require one default runtime. Confirm which agent runtime the setup wizard selected before troubleshooting. Ollama and LM Studio are support model providers, not primary agent runtime targets.
+Pistisai does not require one default runtime. Confirm which agent runtime the setup wizard selected before troubleshooting. Ollama and LM Studio are support model providers, not primary agent runtime targets.
 
 ---
 
@@ -81,7 +81,7 @@ If the support model provider works but chat is disconnected, troubleshoot the a
 
 ### Device Does Not Appear
 
-- Confirm CloudToLocalLLM is installed and signed in where sync is expected.
+- Confirm Pistisai is installed and signed in where sync is expected.
 - Confirm Tailscale is running on the device.
 - Check account sync settings.
 - Re-open the app after network changes.
@@ -106,7 +106,7 @@ That is expected unless the target device granted desktop permissions. Conversat
 Linux:
 
 ```bash
-ldd /opt/CloudToLocalLLM/CloudToLocalLLM
+ldd /opt/Pistisai/Pistisai
 ./cloudtolocalllm --verbose
 ```
 
@@ -254,14 +254,14 @@ This removes local app configuration and local app data.
 Linux:
 
 ```bash
-rm -rf ~/.config/CloudToLocalLLM/ ~/.local/share/cloudtolocalllm/
+rm -rf ~/.config/Pistisai/ ~/.local/share/cloudtolocalllm/
 ```
 
 Windows:
 
 ```cmd
-rmdir /s "%APPDATA%\CloudToLocalLLM"
-rmdir /s "%LOCALAPPDATA%\CloudToLocalLLM"
+rmdir /s "%APPDATA%\Pistisai"
+rmdir /s "%LOCALAPPDATA%\Pistisai"
 ```
 
 ---
@@ -274,4 +274,4 @@ rmdir /s "%LOCALAPPDATA%\CloudToLocalLLM"
 - [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
 - [Agent Runtime Contract](../architecture/AGENT_RUNTIME_CONTRACT.md)
 - [Secure Device Mesh](../architecture/SECURE_DEVICE_MESH.md)
-- [GitHub Issues](https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/issues)
+- [GitHub Issues](https://github.com/Pistisai-online/Pistisai/issues)

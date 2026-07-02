@@ -1,6 +1,6 @@
 # Linux Installation Guide
 
-This guide covers installing CloudToLocalLLM on Linux. Agent runtime selection happens in the setup wizard after installation. CloudToLocalLLM can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
+This guide covers installing Pistisai on Linux. Agent runtime selection happens in the setup wizard after installation. Pistisai can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
 
 Ollama and LM Studio are optional support model providers for memory/background features, not primary app runtimes.
 
@@ -24,7 +24,7 @@ Prepare one agent runtime before or during first launch:
 | Hermes | Configured in wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `http://localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private server, VPS, or compatible agent runtime API |
-| Hosted agent runtime | CloudToLocalLLM managed | Optional paid compute |
+| Hosted agent runtime | Pistisai managed | Optional paid compute |
 
 For a runtime on another machine, install Tailscale on both devices and confirm they can reach each other.
 
@@ -64,7 +64,7 @@ sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
 ## DEB Package
 
 ```bash
-wget https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest/download/cloudtolocalllm_amd64.deb
+wget https://github.com/Pistisai-online/Pistisai/releases/latest/download/cloudtolocalllm_amd64.deb
 sudo dpkg -i cloudtolocalllm_amd64.deb
 sudo apt-get install -f
 ```
@@ -93,25 +93,25 @@ sudo apt-get remove cloudtolocalllm
 ## AppImage
 
 ```bash
-wget https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest/download/CloudToLocalLLM-x86_64.AppImage
-chmod +x CloudToLocalLLM-x86_64.AppImage
-./CloudToLocalLLM-x86_64.AppImage
+wget https://github.com/Pistisai-online/Pistisai/releases/latest/download/Pistisai-x86_64.AppImage
+chmod +x Pistisai-x86_64.AppImage
+./Pistisai-x86_64.AppImage
 ```
 
 Optional desktop integration:
 
 ```bash
 mkdir -p ~/.local/bin ~/.local/share/applications
-mv CloudToLocalLLM-x86_64.AppImage ~/.local/bin/CloudToLocalLLM.AppImage
+mv Pistisai-x86_64.AppImage ~/.local/bin/Pistisai.AppImage
 ```
 
-Create `~/.local/share/applications/CloudToLocalLLM.desktop`:
+Create `~/.local/share/applications/Pistisai.desktop`:
 
 ```ini
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Comment=Secure agent companion
-Exec=/home/YOUR_USER/.local/bin/CloudToLocalLLM.AppImage
+Exec=/home/YOUR_USER/.local/bin/Pistisai.AppImage
 Terminal=false
 Type=Application
 Categories=Development;Network;
@@ -123,8 +123,8 @@ Categories=Development;Network;
 
 ```bash
 sudo snap install flutter --classic
-git clone https://github.com/CloudToLocalLLM-online/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://github.com/Pistisai-online/Pistisai.git
+cd Pistisai
 flutter pub get
 flutter config --enable-linux-desktop
 flutter build linux --release
@@ -133,7 +133,7 @@ flutter build linux --release
 Run the built app:
 
 ```bash
-build/linux/x64/release/bundle/CloudToLocalLLM
+build/linux/x64/release/bundle/Pistisai
 ```
 
 ---
@@ -141,7 +141,7 @@ build/linux/x64/release/bundle/CloudToLocalLLM
 ## First Launch
 
 1. Start your selected agent runtime or confirm the remote runtime is reachable.
-2. Launch CloudToLocalLLM.
+2. Launch Pistisai.
 3. Complete the setup wizard.
 4. Select the agent runtime and endpoint.
 5. Optionally configure a support model provider for memory/background features.
@@ -168,9 +168,9 @@ Web and mobile access should use the Tailscale-first cloud connector design. The
 ### Application Will Not Start
 
 ```bash
-ldd /opt/CloudToLocalLLM/CloudToLocalLLM
+ldd /opt/Pistisai/Pistisai
 sudo apt-get install -y libgtk-3-0 libglib2.0-0
-chmod +x /opt/CloudToLocalLLM/CloudToLocalLLM
+chmod +x /opt/Pistisai/Pistisai
 ```
 
 ### Agent Runtime Not Found

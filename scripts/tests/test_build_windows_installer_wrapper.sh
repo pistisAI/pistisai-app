@@ -13,7 +13,7 @@ script = Path(sys.argv[1]).read_text()
 checks = [
     'iscc.exe',
     'ISCC.exe',
-    'CloudToLocalLLM.iss',
+    'Pistisai.iss',
     'MyAppVersion',
     'MyAppSourceDir',
 ]

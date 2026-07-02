@@ -11,10 +11,10 @@
 #
 # Options:
 #   --backup-type full|incremental  Type of backup (default: full)
-#   --s3-bucket BUCKET              S3 bucket for backups (default: CloudToLocalLLM-backups)
-#   --namespace NAMESPACE           Kubernetes namespace (default: CloudToLocalLLM)
+#   --s3-bucket BUCKET              S3 bucket for backups (default: Pistisai-backups)
+#   --namespace NAMESPACE           Kubernetes namespace (default: Pistisai)
 #   --pod-name POD_NAME             PostgreSQL pod name (default: postgres-0)
-#   --db-name DB_NAME               Database name (default: CloudToLocalLLM)
+#   --db-name DB_NAME               Database name (default: Pistisai)
 #   --db-user DB_USER               Database user (default: cloud_admin)
 #   --retention-days DAYS           Backup retention in days (default: 30)
 #   --help                          Show this help message
@@ -41,10 +41,10 @@ NC='\033[0m' # No Color
 
 # Default values
 BACKUP_TYPE="full"
-S3_BUCKET="CloudToLocalLLM-backups"
-NAMESPACE="CloudToLocalLLM"
+S3_BUCKET="Pistisai-backups"
+NAMESPACE="Pistisai"
 POD_NAME="postgres-0"
-DB_NAME="CloudToLocalLLM"
+DB_NAME="Pistisai"
 DB_USER="cloud_admin"
 RETENTION_DAYS=30
 AWS_REGION="${AWS_REGION:-us-east-1}"

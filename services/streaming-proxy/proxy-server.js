@@ -107,7 +107,7 @@ class TunnelHttpClient {
         method: options.method || 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'CloudToLocalLLM-Container/1.0',
+          'User-Agent': 'Pistisai-Container/1.0',
           ...options.headers,
         },
         timeout: 30000,

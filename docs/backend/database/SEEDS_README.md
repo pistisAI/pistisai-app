@@ -50,7 +50,7 @@ Creates comprehensive test data for the admin center:
    # OR
    export PGHOST=localhost
    export PGPORT=5432
-   export PGDATABASE=CloudToLocalLLM
+   export PGDATABASE=Pistisai
    export PGUSER=postgres
    export PGPASSWORD=yourpassword
    ```
@@ -92,7 +92,7 @@ This will:
 You can also run seed scripts manually using `psql`:
 
 ```bash
-psql -h localhost -U postgres -d CloudToLocalLLM -f services/api-backend/database/seeds/001_admin_center_dev_data.sql
+psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/seeds/001_admin_center_dev_data.sql
 ```
 
 ## Test Data Details
@@ -134,16 +134,16 @@ After applying seed data, verify the results:
 
 ```bash
 # Check test users
-psql -h localhost -U postgres -d CloudToLocalLLM -c "SELECT email, name FROM users WHERE email LIKE 'test.%@example.com';"
+psql -h localhost -U postgres -d Pistisai -c "SELECT email, name FROM users WHERE email LIKE 'test.%@example.com';"
 
 # Check subscriptions
-psql -h localhost -U postgres -d CloudToLocalLLM -c "SELECT u.email, s.tier, s.status FROM subscriptions s JOIN users u ON s.user_id = u.id WHERE u.email LIKE 'test.%@example.com';"
+psql -h localhost -U postgres -d Pistisai -c "SELECT u.email, s.tier, s.status FROM subscriptions s JOIN users u ON s.user_id = u.id WHERE u.email LIKE 'test.%@example.com';"
 
 # Check transactions
-psql -h localhost -U postgres -d CloudToLocalLLM -c "SELECT u.email, pt.amount, pt.status FROM payment_transactions pt JOIN users u ON pt.user_id = u.id WHERE u.email LIKE 'test.%@example.com';"
+psql -h localhost -U postgres -d Pistisai -c "SELECT u.email, pt.amount, pt.status FROM payment_transactions pt JOIN users u ON pt.user_id = u.id WHERE u.email LIKE 'test.%@example.com';"
 
 # Check admin roles
-psql -h localhost -U postgres -d CloudToLocalLLM -c "SELECT u.email, ar.role, ar.is_active FROM admin_roles ar JOIN users u ON ar.user_id = u.id;"
+psql -h localhost -U postgres -d Pistisai -c "SELECT u.email, ar.role, ar.is_active FROM admin_roles ar JOIN users u ON ar.user_id = u.id;"
 ```
 
 ## Development Workflow

@@ -1,4 +1,4 @@
-# CloudToLocalLLM SDK - Deployment Guide
+# Pistisai SDK - Deployment Guide
 
 ## Publishing to npm
 
@@ -60,16 +60,16 @@ npm pack
 npm publish
 ```
 
-This will publish the package as `@CloudToLocalLLM/sdk` to the npm registry.
+This will publish the package as `@Pistisai/sdk` to the npm registry.
 
 ### Verify Publication
 
 ```bash
 # Check npm registry
-npm view @CloudToLocalLLM/sdk
+npm view @Pistisai/sdk
 
 # Install from npm
-npm install @CloudToLocalLLM/sdk
+npm install @Pistisai/sdk
 ```
 
 ## Version Management
@@ -153,7 +153,7 @@ jobs:
 ### npm Registry
 
 ```bash
-npm install @CloudToLocalLLM/sdk
+npm install @Pistisai/sdk
 ```
 
 ### GitHub Releases
@@ -167,7 +167,7 @@ npm install @CloudToLocalLLM/sdk
 For browser usage:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@CloudToLocalLLM/sdk@2.0.0/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@Pistisai/sdk@2.0.0/dist/index.js"></script>
 ```
 
 ## Post-Publication
@@ -203,7 +203,7 @@ npm login
 
 ```bash
 # Check published versions
-npm view @CloudToLocalLLM/sdk versions
+npm view @Pistisai/sdk versions
 
 # Use different version number
 ```
@@ -253,7 +253,7 @@ npm audit fix
 ```bash
 # Check bundle size
 npm pack
-tar -tzf CloudToLocalLLM-sdk-*.tgz | wc -l
+tar -tzf Pistisai-sdk-*.tgz | wc -l
 
 # Analyze dependencies
 npm ls

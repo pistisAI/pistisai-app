@@ -1,4 +1,4 @@
-// CloudToLocalLLM Runtime Configuration
+// Pistisai Runtime Configuration
 window.cloudToLocalLLMConfig = {
   apiEndpoint: "https://api.pistisai.app",
   wsEndpoint: "wss://api.pistisai.app/ws",

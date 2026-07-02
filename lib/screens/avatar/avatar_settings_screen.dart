@@ -86,7 +86,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       _selectedEvolutionStage = profile.evolutionStage;
     } else {
       // Default values
-      _nameController = TextEditingController(text: 'CloudToLocalLLM');
+      _nameController = TextEditingController(text: 'Pistisai');
       _formality = PersonalityTraits.defaultTraits.formality;
       _humor = PersonalityTraits.defaultTraits.humor;
       _enthusiasm = PersonalityTraits.defaultTraits.enthusiasm;

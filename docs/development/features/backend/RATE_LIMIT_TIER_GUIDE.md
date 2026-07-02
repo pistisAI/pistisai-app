@@ -2,7 +2,7 @@
 
 ## Overview
 
-CloudToLocalLLM implements tier-based rate limiting to ensure fair resource allocation and protect the service from abuse. Each tier has different rate limits tailored to different use cases.
+Pistisai implements tier-based rate limiting to ensure fair resource allocation and protect the service from abuse. Each tier has different rate limits tailored to different use cases.
 
 **Requirement:** 12.7 - THE API SHALL implement API rate limit documentation
 

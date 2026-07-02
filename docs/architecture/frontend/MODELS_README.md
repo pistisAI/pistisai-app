@@ -1,6 +1,6 @@
 # Data Models
 
-This directory contains all data models used throughout the CloudToLocalLLM application.
+This directory contains all data models used throughout the Pistisai application.
 
 > **Current orientation**: Tunnel-related models are legacy/fallback unless a task explicitly targets old tunnel paths. Ollama-specific models describe support model provider errors, not primary agent runtime readiness.
 

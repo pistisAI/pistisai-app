@@ -1,4 +1,4 @@
-# CloudToLocalLLM API Backend Deployment Guide
+# Pistisai API Backend Deployment Guide
 
 ## PostgreSQL Migration & Cloud Run Deployment
 
@@ -7,7 +7,7 @@ This guide covers the complete deployment process for migrating from SQLite to P
 ## Prerequisites
 
 - Google Cloud SDK installed and authenticated
-- Project ID: `CloudToLocalLLM-468303`
+- Project ID: `Pistisai-468303`
 - Required APIs enabled:
   - Cloud SQL Admin API
   - Cloud Run API
@@ -30,8 +30,8 @@ npm run db:setup-cloud-sql
 
 This will:
 
-- Create a PostgreSQL 15 instance named `CloudToLocalLLM-db`
-- Create the `CloudToLocalLLM` database
+- Create a PostgreSQL 15 instance named `Pistisai-db`
+- Create the `Pistisai` database
 - Create an `appuser` with a secure password
 - Generate `cloud-sql-config.env` with connection details
 
@@ -68,10 +68,10 @@ curl https://your-service-url/api/db/health
 
 ```bash
 # Set project
-gcloud config set project CloudToLocalLLM-468303
+gcloud config set project Pistisai-468303
 
 # Create PostgreSQL instance
-gcloud sql instances create CloudToLocalLLM-db \
+gcloud sql instances create Pistisai-db \
     --database-version=POSTGRES_15 \
     --tier=db-f1-micro \
     --region=us-central1 \
@@ -80,11 +80,11 @@ gcloud sql instances create CloudToLocalLLM-db \
     --backup-start-time=03:00
 
 # Create database
-gcloud sql databases create CloudToLocalLLM --instance=CloudToLocalLLM-db
+gcloud sql databases create Pistisai --instance=Pistisai-db
 
 # Create user
 gcloud sql users create appuser \
-    --instance=CloudToLocalLLM-db \
+    --instance=Pistisai-db \
     --password=<SECURE_PASSWORD>
 ```
 
@@ -100,10 +100,10 @@ cp .env.production.template .env.production
 Required environment variables:
 
 - `DB_TYPE=postgresql`
-- `DB_NAME=CloudToLocalLLM`
+- `DB_NAME=Pistisai`
 - `DB_USER=appuser`
 - `DB_PASSWORD=<your-password>`
-- `DB_HOST=/cloudsql/cloudtolocalllm-468303:us-central1:CloudToLocalLLM-db`
+- `DB_HOST=/cloudsql/cloudtolocalllm-468303:us-central1:Pistisai-db`
 - `SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com`
 - `SUPABASE_AUTH_AUDIENCE=https://api.pistisai.app`
 
@@ -121,7 +121,7 @@ gcloud run deploy cloudtolocalllm-api \
     --allow-unauthenticated \
     --memory 1Gi \
     --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com,SUPABASE_AUTH_AUDIENCE=https://api.pistisai.app" \
-    --add-cloudsql-instances CloudToLocalLLM-468303:us-central1:CloudToLocalLLM-db
+    --add-cloudsql-instances Pistisai-468303:us-central1:Pistisai-db
 ```
 
 ## Testing
@@ -183,7 +183,7 @@ gcloud logs tail --service=cloudtolocalllm-api --filter="auth"
 
 ```bash
 # Check Cloud SQL instance status
-gcloud sql instances describe CloudToLocalLLM-db
+gcloud sql instances describe Pistisai-db
 
 # View Cloud SQL logs
 gcloud logging read "resource.type=cloudsql_database"

@@ -1,4 +1,4 @@
-# CloudToLocalLLM Docker Development Environment
+# Pistisai Docker Development Environment
 
 > **Current orientation**: Docker development can include optional support model providers for testing memory/background features, but the main app channel still requires an agent runtime such as Hermes, OpenClaw, or a compatible agent gateway. Do not treat Ollama/LM Studio containers as primary app runtimes unless wrapped by a compatible agent runtime.
 
@@ -24,7 +24,7 @@ docker compose -f docker-compose.dev.yml exec flutter bash
 flutter-health
 ```
 
-### 3. Develop CloudToLocalLLM
+### 3. Develop Pistisai
 
 ```bash
 # Get dependencies
@@ -72,7 +72,7 @@ flutter test
 
 ## Updated Package Support
 
-The Docker environment fully supports CloudToLocalLLM v3.5.0+ with updated packages:
+The Docker environment fully supports Pistisai v3.5.0+ with updated packages:
 
 - ✅ `tray_manager: ^0.5.0` - System tray functionality
 - ✅ `connectivity_plus: ^6.1.4` - Network connectivity monitoring  
@@ -136,7 +136,7 @@ docker run -it --rm \
   -v $(pwd):/workspace \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -e DISPLAY=$DISPLAY \
-  CloudToLocalLLM:dev
+  Pistisai:dev
 ```
 
 ### macOS
@@ -202,7 +202,7 @@ This will:
 - ✅ Build the Docker image
 - ✅ Test Flutter configuration
 - ✅ Verify system dependencies
-- ✅ Test CloudToLocalLLM build
+- ✅ Test Pistisai build
 - ✅ Validate Docker Compose setup
 - ✅ Generate validation report
 
@@ -238,7 +238,7 @@ This will:
 ## Documentation
 
 - [Docker Deployment Guide](DOCKER_DEPLOYMENT.md)
-- [CloudToLocalLLM Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
+- [Pistisai Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
 - [Development Workflow](../development/DEVELOPMENT_WORKFLOW.md)
 - [Docker Scripts](../development/scripts/docker/README.md)
 

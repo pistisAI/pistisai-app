@@ -1,4 +1,4 @@
-# CloudToLocalLLM Web Deployment Design
+# Pistisai Web Deployment Design
 
 **Date:** 2026-03-07  
 **Status:** Approved design baseline  
@@ -7,7 +7,7 @@
 
 ## Goal
 
-Deploy CloudToLocalLLM web stack with production reliability on current Proxmox infrastructure, using template-based provisioning, GitOps operations, and private-origin networking through Cloudflare Tunnel only.
+Deploy Pistisai web stack with production reliability on current Proxmox infrastructure, using template-based provisioning, GitOps operations, and private-origin networking through Cloudflare Tunnel only.
 
 ## Constraints and Context
 

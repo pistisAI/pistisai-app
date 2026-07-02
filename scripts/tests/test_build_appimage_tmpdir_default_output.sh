@@ -7,7 +7,7 @@ TMP_BUILD_DIR="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
 TMPDIR_BASE="$(mktemp -d)"
 TMPDIR_ROOT="$TMPDIR_BASE/nested/tmp/dir"
-TMP_OUTPUT="$TMPDIR_ROOT/CloudToLocalLLM-x86_64.AppImage"
+TMP_OUTPUT="$TMPDIR_ROOT/Pistisai-x86_64.AppImage"
 TMP_DESKTOP_TEMPLATE="$(mktemp)"
 TMP_INVOKE_LOG="$(mktemp /tmp/appimage-tmpdir-default-invoke.XXXXXX.log)"
 export TMP_INVOKE_LOG
@@ -24,7 +24,7 @@ chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

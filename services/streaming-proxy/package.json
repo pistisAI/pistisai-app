@@ -1,7 +1,7 @@
 {
-  "name": "CloudToLocalLLM-tunnel-container",
+  "name": "Pistisai-tunnel-container",
   "version": "10.1.187",
-  "description": "Simplified tunnel-aware container for CloudToLocalLLM using standard HTTP libraries",
+  "description": "Simplified tunnel-aware container for Pistisai using standard HTTP libraries",
   "main": "proxy-server.js",
   "type": "module",
   "scripts": {
@@ -19,9 +19,9 @@
     "container",
     "http-client",
     "multi-tenant",
-    "CloudToLocalLLM"
+    "Pistisai"
   ],
-  "author": "CloudToLocalLLM",
+  "author": "Pistisai",
   "license": "MIT",
   "dependencies": {
     "@opentelemetry/api": "^1.9.1",

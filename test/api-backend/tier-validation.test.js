@@ -37,7 +37,7 @@ describe("User Tier System Validation", () => {
     it("should extract tier from user metadata", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "premium",
         },
       };
@@ -48,7 +48,7 @@ describe("User Tier System Validation", () => {
     it("should extract tier from app metadata", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/app_metadata": {
+        "https://Pistisai.com/app_metadata": {
           tier: "enterprise",
         },
       };
@@ -59,7 +59,7 @@ describe("User Tier System Validation", () => {
     it("should normalize tier to lowercase", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "PREMIUM",
         },
       };
@@ -70,7 +70,7 @@ describe("User Tier System Validation", () => {
     it("should handle invalid tier by returning free", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "invalid_tier",
         },
       };
@@ -81,10 +81,10 @@ describe("User Tier System Validation", () => {
     it("should prioritize user_metadata over app_metadata", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "premium",
         },
-        "https://CloudToLocalLLM.com/app_metadata": {
+        "https://Pistisai.com/app_metadata": {
           tier: "enterprise",
         },
       };
@@ -95,7 +95,7 @@ describe("User Tier System Validation", () => {
     it("should handle subscription field as fallback", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           subscription: "premium",
         },
       };
@@ -154,7 +154,7 @@ describe("User Tier System Validation", () => {
     it("should return true for premium tier user with premium feature", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "premium",
         },
       };
@@ -165,7 +165,7 @@ describe("User Tier System Validation", () => {
     it("should return true for enterprise tier user with all features", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "enterprise",
         },
       };
@@ -190,7 +190,7 @@ describe("User Tier System Validation", () => {
     it("should return false for premium tier users", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "premium",
         },
       };
@@ -201,7 +201,7 @@ describe("User Tier System Validation", () => {
     it("should return false for enterprise tier users", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "enterprise",
         },
       };
@@ -297,7 +297,7 @@ describe("User Tier System Validation", () => {
         const freeUser = { sub: "user1" };
         const premiumUser = {
           sub: "user2",
-          "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+          "https://Pistisai.com/user_metadata": { tier: "premium" },
         };
 
         const freeHasAccess = hasFeature(freeUser, feature);
@@ -341,7 +341,7 @@ describe("User Tier System Validation", () => {
     it("should handle user with empty metadata object", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {},
+        "https://Pistisai.com/user_metadata": {},
       };
       const tier = getUserTier(user);
       expect(tier).toBe(USER_TIERS.FREE);
@@ -350,7 +350,7 @@ describe("User Tier System Validation", () => {
     it("should handle user with null metadata", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": null,
+        "https://Pistisai.com/user_metadata": null,
       };
       const tier = getUserTier(user);
       expect(tier).toBe(USER_TIERS.FREE);
@@ -359,7 +359,7 @@ describe("User Tier System Validation", () => {
     it("should handle user with whitespace-only tier", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "   ",
         },
       };
@@ -369,7 +369,7 @@ describe("User Tier System Validation", () => {
 
     it("should handle missing sub field", () => {
       const user = {
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: "premium",
         },
       };
@@ -380,7 +380,7 @@ describe("User Tier System Validation", () => {
     it("should handle non-string tier value", () => {
       const user = {
         sub: "user123",
-        "https://CloudToLocalLLM.com/user_metadata": {
+        "https://Pistisai.com/user_metadata": {
           tier: 123,
         },
       };
@@ -401,15 +401,15 @@ describe("User Tier System Validation", () => {
         { sub: "user1" },
         {
           sub: "user2",
-          "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+          "https://Pistisai.com/user_metadata": { tier: "premium" },
         },
         {
           sub: "user3",
-          "https://CloudToLocalLLM.com/user_metadata": { tier: "ENTERPRISE" },
+          "https://Pistisai.com/user_metadata": { tier: "ENTERPRISE" },
         },
         {
           sub: "user4",
-          "https://CloudToLocalLLM.com/user_metadata": { tier: "invalid" },
+          "https://Pistisai.com/user_metadata": { tier: "invalid" },
         },
       ];
 
@@ -441,11 +441,11 @@ describe("User Tier System Validation", () => {
         { sub: "user1" },
         {
           sub: "user2",
-          "https://CloudToLocalLLM.com/user_metadata": { tier: "premium" },
+          "https://Pistisai.com/user_metadata": { tier: "premium" },
         },
         {
           sub: "user3",
-          "https://CloudToLocalLLM.com/user_metadata": { tier: "enterprise" },
+          "https://Pistisai.com/user_metadata": { tier: "enterprise" },
         },
       ];
 

@@ -1,25 +1,25 @@
-# CloudToLocalLLM SDK
+# Pistisai SDK
 
-Official JavaScript/TypeScript SDK for the CloudToLocalLLM API.
+Official JavaScript/TypeScript SDK for the Pistisai API.
 
 ## Installation
 
 ### npm
 
 ```bash
-npm install @CloudToLocalLLM/sdk
+npm install @Pistisai/sdk
 ```
 
 ### yarn
 
 ```bash
-yarn add @CloudToLocalLLM/sdk
+yarn add @Pistisai/sdk
 ```
 
 ### pnpm
 
 ```bash
-pnpm add @CloudToLocalLLM/sdk
+pnpm add @Pistisai/sdk
 ```
 
 ## Quick Start
@@ -27,10 +27,10 @@ pnpm add @CloudToLocalLLM/sdk
 ### Basic Usage
 
 ```typescript
-import { CloudToLocalLLMClient } from '@CloudToLocalLLM/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
 // Initialize the client
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
   apiVersion: 'v2',
 });
@@ -396,7 +396,7 @@ interface SDKConfig {
 ### Example Configuration
 
 ```typescript
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
   apiVersion: 'v2',
   timeout: 60000,
@@ -463,9 +463,9 @@ console.log(response.pagination.pages);  // Total pages
 The SDK is fully typed with TypeScript:
 
 ```typescript
-import { CloudToLocalLLMClient, Tunnel, User } from '@CloudToLocalLLM/sdk';
+import { PistisaiClient, Tunnel, User } from '@Pistisai/sdk';
 
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
 });
 
@@ -479,9 +479,9 @@ const tunnel: Tunnel = await client.getTunnel('tunnel-id');
 ### Complete Authentication Flow
 
 ```typescript
-import { CloudToLocalLLMClient } from '@CloudToLocalLLM/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
 });
 
@@ -565,7 +565,7 @@ console.log(`Total deliveries: ${deliveries.pagination.total}`);
 
 For issues, questions, or contributions, visit:
 
-- GitHub: https://github.com/CloudToLocalLLM/CloudToLocalLLM
+- GitHub: https://github.com/Pistisai/Pistisai
 - Documentation: https://pistisai.app/docs
 - API Docs: https://api.pistisai.app/api/docs
 

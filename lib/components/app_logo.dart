@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
 
-/// Custom app logo widget that matches the CloudToLocalLLM branding
+/// Custom app logo widget that matches the Pistisai branding
 class AppLogo extends StatelessWidget {
   final double size;
   final bool showBorder;
@@ -64,7 +64,7 @@ class AppLogo extends StatelessWidget {
     final effectiveBorderColor = borderColor ?? AppTheme.primaryColor;
     final borderWidth = size * 0.04;
 
-    // CloudToLocalLLM lobster avatar
+    // Pistisai lobster avatar
     String assetPath = 'assets/images/lobster_avatar_64.png';
     if (size >= 128) {
       assetPath = 'assets/images/lobster_avatar_128.png';
@@ -194,7 +194,7 @@ class _AnimatedAppLogoState extends State<AnimatedAppLogo>
   }
 }
 
-/// Logo with gradient background matching the CloudToLocalLLM branding
+/// Logo with gradient background matching the Pistisai branding
 class GradientAppLogo extends StatelessWidget {
   final double size;
   final bool showBorder;
@@ -214,7 +214,7 @@ class GradientAppLogo extends StatelessWidget {
     final effectiveBorderColor = borderColor ?? AppTheme.primaryColor;
     final borderWidth = size * 0.04;
 
-    // CloudToLocalLLM lobster avatar
+    // Pistisai lobster avatar
     String assetPath = 'assets/images/lobster_avatar_64.png';
     if (size >= 128) {
       assetPath = 'assets/images/lobster_avatar_128.png';

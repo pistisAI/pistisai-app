@@ -4,7 +4,7 @@
 
 ## Overview
 
-The First-Time Setup Wizard is a comprehensive onboarding experience that guides new CloudToLocalLLM users through downloading, installing, and configuring the desktop client, then selecting the runtime and secure connectivity path for the device.
+The First-Time Setup Wizard is a comprehensive onboarding experience that guides new Pistisai users through downloading, installing, and configuring the desktop client, then selecting the runtime and secure connectivity path for the device.
 
 ## Table of Contents
 
@@ -133,7 +133,7 @@ sequenceDiagram
 ### Setup Flow Overview
 
 1. **Welcome & Overview** (30 seconds)
-   - Introduction to CloudToLocalLLM
+   - Introduction to Pistisai
    - Explanation of why desktop client is needed
    - Overview of setup process
 
@@ -434,4 +434,4 @@ For issues related to the setup wizard:
 
 ---
 
-The First-Time Setup Wizard represents the authority for onboarding CloudToLocalLLM users into a selected agent runtime, optional support model provider, device permissions, optional avatar/voice companion, and secure Tailscale-backed sync path.
+The First-Time Setup Wizard represents the authority for onboarding Pistisai users into a selected agent runtime, optional support model provider, device permissions, optional avatar/voice companion, and secure Tailscale-backed sync path.

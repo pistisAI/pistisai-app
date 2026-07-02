@@ -1,6 +1,6 @@
 # Admin API Quick Reference
 
-Quick reference guide for CloudToLocalLLM Admin Center API endpoints.
+Quick reference guide for Pistisai Admin Center API endpoints.
 
 ## Base URL
 
@@ -327,7 +327,7 @@ node services/api-backend/database/migrations/run-migration.js status
 # Database
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=CloudToLocalLLM
+DB_NAME=Pistisai
 DB_USER=postgres
 DB_PASSWORD=yourpassword
 DB_SSL=false
@@ -408,5 +408,5 @@ LIMIT 10;
 
 For questions or issues:
 
-- GitHub Issues: https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/issues
+- GitHub Issues: https://github.com/Pistisai-online/Pistisai/issues
 - Email: support@pistisai.app

@@ -26,15 +26,15 @@ for needle in \
   'Verify Windows Release Assets' \
   'test -f "dist/windows/cloudtolocalllm-${VERSION}-portable.zip"' \
   'test -f "dist/windows/cloudtolocalllm-${VERSION}-portable.zip.sha256"' \
-  'test -f "dist/windows/CloudToLocalLLM-Windows-${VERSION}-Setup.exe"' \
+  'test -f "dist/windows/Pistisai-Windows-${VERSION}-Setup.exe"' \
   'Verify GitHub Release Assets Published' \
   'run: python3 scripts/release/verify_github_release_assets.py' \
-  'test -f "dist/windows/CloudToLocalLLM-Windows-${VERSION}-Setup.exe.sha256"' \
+  'test -f "dist/windows/Pistisai-Windows-${VERSION}-Setup.exe.sha256"' \
   'cloudtolocalllm-x86_64.AppImage' \
-  'artifacts: "dist/linux/*,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip.sha256,dist/windows/CloudToLocalLLM-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe,dist/windows/CloudToLocalLLM-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe.sha256,dist/aur/*"' \
+  'artifacts: "dist/linux/*,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip.sha256,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe.sha256,dist/aur/*"' \
   '### Windows' \
   '- `cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip`' \
-  '- `CloudToLocalLLM-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe`'; do
+  '- `Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe`'; do
   if ! grep -Fq -- "$needle" "$WORKFLOW_FILE"; then
     echo "Deployment workflow missing expected release artifact hardening string: $needle" >&2
     exit 1
@@ -45,8 +45,8 @@ for needle in \
   'required_assets = {' \
   'cloudtolocalllm-{version}-portable.zip' \
   'cloudtolocalllm-{version}-portable.zip.sha256' \
-  'CloudToLocalLLM-Windows-{version}-Setup.exe' \
-  'CloudToLocalLLM-Windows-{version}-Setup.exe.sha256' \
+  'Pistisai-Windows-{version}-Setup.exe' \
+  'Pistisai-Windows-{version}-Setup.exe.sha256' \
   'cloudtolocalllm_{version}_amd64.deb' \
   'cloudtolocalllm_{version}_amd64.deb.sha256' \
   'cloudtolocalllm-{version}-x86_64.AppImage' \

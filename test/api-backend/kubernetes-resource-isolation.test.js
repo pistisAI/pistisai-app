@@ -13,7 +13,7 @@ import { describe, test, expect } from "@jest/globals";
 
 // Valid namespaces in the cluster
 const VALID_NAMESPACES = [
-  "CloudToLocalLLM",
+  "Pistisai",
   "monitoring",
   "kube-system",
   "ingress-nginx",
@@ -26,35 +26,35 @@ const VALID_NAMESPACES = [
 // Network policy rules
 const NETWORK_POLICIES = {
   "default-deny-ingress": {
-    namespace: "CloudToLocalLLM",
+    namespace: "Pistisai",
     policyType: "Ingress",
     effect: "deny",
   },
   "default-deny-egress": {
-    namespace: "CloudToLocalLLM",
+    namespace: "Pistisai",
     policyType: "Egress",
     effect: "deny",
   },
   "allow-web-app-ingress": {
-    namespace: "CloudToLocalLLM",
+    namespace: "Pistisai",
     podSelector: { app: "web-app" },
     policyType: "Ingress",
     effect: "allow",
   },
   "allow-api-backend-ingress": {
-    namespace: "CloudToLocalLLM",
+    namespace: "Pistisai",
     podSelector: { app: "api-backend" },
     policyType: "Ingress",
     effect: "allow",
   },
   "allow-web-to-api": {
-    namespace: "CloudToLocalLLM",
+    namespace: "Pistisai",
     podSelector: { app: "web-app" },
     policyType: "Egress",
     effect: "allow",
   },
   "allow-api-to-postgres": {
-    namespace: "CloudToLocalLLM",
+    namespace: "Pistisai",
     podSelector: { app: "api-backend" },
     policyType: "Egress",
     effect: "allow",
@@ -67,7 +67,7 @@ const NETWORK_POLICIES = {
 function generatePodConfig(options = {}) {
   return {
     name: options.name || "test-pod",
-    namespace: options.namespace || "CloudToLocalLLM",
+    namespace: options.namespace || "Pistisai",
     labels: options.labels || { app: "test-app" },
     serviceAccount: options.serviceAccount || "default",
     containers: options.containers || [
@@ -86,7 +86,7 @@ function generatePodConfig(options = {}) {
 function generateServiceAccountConfig(options = {}) {
   return {
     name: options.name || "test-sa",
-    namespace: options.namespace || "CloudToLocalLLM",
+    namespace: options.namespace || "Pistisai",
     automountServiceAccountToken:
       options.automountServiceAccountToken !== undefined
         ? options.automountServiceAccountToken
@@ -100,7 +100,7 @@ function generateServiceAccountConfig(options = {}) {
 function generateNetworkPolicyConfig(options = {}) {
   return {
     name: options.name || "test-policy",
-    namespace: options.namespace || "CloudToLocalLLM",
+    namespace: options.namespace || "Pistisai",
     podSelector: options.podSelector || {},
     policyTypes: options.policyTypes || ["Ingress", "Egress"],
     ingress: options.ingress || [],
@@ -206,11 +206,11 @@ function canAccessResource(sourcePod, targetPod, networkPolicies) {
 describe("Kubernetes Resource Isolation - Property Tests", () => {
   describe("Property 7: Resource Isolation", () => {
     test("should isolate pods in different namespaces", () => {
-      const pod1 = generatePodConfig({ namespace: "CloudToLocalLLM" });
+      const pod1 = generatePodConfig({ namespace: "Pistisai" });
       const pod2 = generatePodConfig({ namespace: "monitoring" });
 
       expect(pod1.namespace).not.toBe(pod2.namespace);
-      expect(validatePodNamespace(pod1, "CloudToLocalLLM")).toBe(true);
+      expect(validatePodNamespace(pod1, "Pistisai")).toBe(true);
       expect(validatePodNamespace(pod2, "monitoring")).toBe(true);
     });
 
@@ -232,11 +232,11 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
 
     test("should isolate service accounts by namespace", () => {
       const sa1 = generateServiceAccountConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
       });
       const sa2 = generateServiceAccountConfig({ namespace: "monitoring" });
 
-      expect(validateServiceAccountNamespace(sa1, "CloudToLocalLLM")).toBe(
+      expect(validateServiceAccountNamespace(sa1, "Pistisai")).toBe(
         true,
       );
       expect(validateServiceAccountNamespace(sa2, "monitoring")).toBe(true);
@@ -245,11 +245,11 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
 
     test("should enforce network policies in namespace", () => {
       const policy = generateNetworkPolicyConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         podSelector: { app: "web-app" },
       });
 
-      expect(validateNetworkPolicyNamespace(policy, "CloudToLocalLLM")).toBe(
+      expect(validateNetworkPolicyNamespace(policy, "Pistisai")).toBe(
         true,
       );
       expect(validateNetworkPolicyPodSelector(policy)).toBe(true);
@@ -257,7 +257,7 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
 
     test("should deny cross-namespace pod communication by default", () => {
       const sourcePod = generatePodConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         labels: { app: "web-app" },
       });
       const targetPod = generatePodConfig({
@@ -276,11 +276,11 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
 
     test("should allow same-namespace pod communication with policies", () => {
       const sourcePod = generatePodConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         labels: { app: "web-app" },
       });
       const targetPod = generatePodConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         labels: { app: "api-backend" },
       });
 
@@ -343,19 +343,19 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
     });
 
     test("should enforce namespace isolation for service accounts", () => {
-      const sa = generateServiceAccountConfig({ namespace: "CloudToLocalLLM" });
+      const sa = generateServiceAccountConfig({ namespace: "Pistisai" });
 
-      expect(sa.namespace).toBe("CloudToLocalLLM");
-      expect(validateServiceAccountNamespace(sa, "CloudToLocalLLM")).toBe(true);
+      expect(sa.namespace).toBe("Pistisai");
+      expect(validateServiceAccountNamespace(sa, "Pistisai")).toBe(true);
     });
 
     test("should prevent unauthorized pod access to secrets", () => {
       const pod1 = generatePodConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         serviceAccount: "web-app-sa",
       });
       const pod2 = generatePodConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
         serviceAccount: "api-backend-sa",
       });
 
@@ -396,25 +396,25 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
     });
 
     test("should validate pod has correct namespace", () => {
-      const pod = generatePodConfig({ namespace: "CloudToLocalLLM" });
+      const pod = generatePodConfig({ namespace: "Pistisai" });
 
-      expect(validatePodNamespace(pod, "CloudToLocalLLM")).toBe(true);
+      expect(validatePodNamespace(pod, "Pistisai")).toBe(true);
       expect(validatePodNamespace(pod, "monitoring")).toBe(false);
     });
 
     test("should validate service account has correct namespace", () => {
-      const sa = generateServiceAccountConfig({ namespace: "CloudToLocalLLM" });
+      const sa = generateServiceAccountConfig({ namespace: "Pistisai" });
 
-      expect(validateServiceAccountNamespace(sa, "CloudToLocalLLM")).toBe(true);
+      expect(validateServiceAccountNamespace(sa, "Pistisai")).toBe(true);
       expect(validateServiceAccountNamespace(sa, "monitoring")).toBe(false);
     });
 
     test("should validate network policy has correct namespace", () => {
       const policy = generateNetworkPolicyConfig({
-        namespace: "CloudToLocalLLM",
+        namespace: "Pistisai",
       });
 
-      expect(validateNetworkPolicyNamespace(policy, "CloudToLocalLLM")).toBe(
+      expect(validateNetworkPolicyNamespace(policy, "Pistisai")).toBe(
         true,
       );
       expect(validateNetworkPolicyNamespace(policy, "monitoring")).toBe(false);

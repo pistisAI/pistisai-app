@@ -1,5 +1,5 @@
 #!/bin/bash
-# Domain Routing Diagnostic Script for CloudToLocalLLM
+# Domain Routing Diagnostic Script for Pistisai
 # Diagnoses and fixes domain routing issues with Cloudflare tunnel
 # Tests DNS resolution, service connectivity, and tunnel configuration
 # Usage: ./domain-routing-diagnostic.sh [options]
@@ -8,7 +8,7 @@ set -e
 
 # Configuration
 ARGOCD_NAMESPACE="argocd"
-CLOUDTOLOCLLM_NAMESPACE="CloudToLocalLLM"
+CLOUDTOLOCLLM_NAMESPACE="Pistisai"
 LOG_FILE="./domain-routing-diagnostic.log"
 REPORT_FILE="./domain-routing-report.json"
 DATE=$(date '+%Y-%m-%d %H:%M:%S')
@@ -335,36 +335,36 @@ generate_routing_fixes() {
 
     cat > $fixes_file << 'EOF'
 #!/bin/bash
-# Auto-generated routing fixes for CloudToLocalLLM
+# Auto-generated routing fixes for Pistisai
 # Run this script to apply fixes for identified routing issues
 
 set -e
 
-echo "Applying CloudToLocalLLM routing fixes..."
+echo "Applying Pistisai routing fixes..."
 
 # Fix 1: Ensure services are running
 echo "1. Checking service status..."
-kubectl get pods -n CloudToLocalLLM --no-headers | head -10
+kubectl get pods -n Pistisai --no-headers | head -10
 
 # Fix 2: Restart cloudflared tunnel if needed
 echo "2. Checking tunnel status..."
-if [ "$(kubectl get pods -n CloudToLocalLLM -l app=cloudflared --field-selector=status.phase=Running --no-headers | wc -l)" -eq 0 ]; then
+if [ "$(kubectl get pods -n Pistisai -l app=cloudflared --field-selector=status.phase=Running --no-headers | wc -l)" -eq 0 ]; then
     echo "Restarting cloudflared tunnel..."
-    kubectl rollout restart deployment/cloudflared -n CloudToLocalLLM
+    kubectl rollout restart deployment/cloudflared -n Pistisai
     sleep 30
 fi
 
 # Fix 3: Verify service endpoints
 echo "3. Testing service endpoints..."
-kubectl run test-connectivity --image=busybox --rm -i --restart=Never -- nslookup web.CloudToLocalLLM.svc.cluster.local || echo "DNS lookup failed"
+kubectl run test-connectivity --image=busybox --rm -i --restart=Never -- nslookup web.Pistisai.svc.cluster.local || echo "DNS lookup failed"
 
 # Fix 4: Check tunnel logs
 echo "4. Checking tunnel logs for errors..."
-kubectl logs -n CloudToLocalLLM -l app=cloudflared --tail=20 | grep -i error || echo "No errors found in recent logs"
+kubectl logs -n Pistisai -l app=cloudflared --tail=20 | grep -i error || echo "No errors found in recent logs"
 
 # Fix 5: Validate tunnel configuration
 echo "5. Validating tunnel configuration..."
-kubectl get configmap cloudflared-config -n CloudToLocalLLM -o yaml
+kubectl get configmap cloudflared-config -n Pistisai -o yaml
 
 echo "Routing fixes applied. Monitor the system and check domain connectivity."
 EOF
@@ -429,7 +429,7 @@ EOF
 
 # Main execution function
 main() {
-    log "=== CloudToLocalLLM Domain Routing Diagnostic Started ==="
+    log "=== Pistisai Domain Routing Diagnostic Started ==="
 
     # Parse command line arguments
     local run_dns_test=false
@@ -502,7 +502,7 @@ main() {
     done
 
     # Initialize log file
-    echo "=== CloudToLocalLLM Domain Routing Diagnostic Started at $DATE ===" > $LOG_FILE
+    echo "=== Pistisai Domain Routing Diagnostic Started at $DATE ===" > $LOG_FILE
 
     # Determine what to run
     if [ $# -eq 0 ]; then

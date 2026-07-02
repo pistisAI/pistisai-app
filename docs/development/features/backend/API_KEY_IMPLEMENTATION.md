@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the API key authentication system for CloudToLocalLLM API Backend. API keys enable service-to-service communication with secure, scoped access control.
+This document describes the API key authentication system for Pistisai API Backend. API keys enable service-to-service communication with secure, scoped access control.
 
 **Requirements: 2.8**
 
@@ -52,7 +52,7 @@ ctll_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2
 
 ### Key Components
 
-- **Prefix**: `ctll_` (identifies CloudToLocalLLM API keys)
+- **Prefix**: `ctll_` (identifies Pistisai API keys)
 - **Random Bytes**: 32 bytes (256 bits) of cryptographically secure random data
 - **Encoding**: Hexadecimal (64 characters)
 

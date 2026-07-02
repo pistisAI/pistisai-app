@@ -13,7 +13,7 @@ class LocalConversationStorage {
   /// Get the local file for storing conversations
   Future<File> _getLocalFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    final path = p.join(directory.path, 'CloudToLocalLLM', _fileName);
+    final path = p.join(directory.path, 'Pistisai', _fileName);
     final file = File(path);
 
     // Ensure directory exists

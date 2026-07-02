@@ -1,7 +1,7 @@
 /**
  * Cloudflare Infrastructure Tunnel Service
  *
- * Manages the infrastructure Cloudflare tunnel for the CloudToLocalLLM deployment.
+ * Manages the infrastructure Cloudflare tunnel for the Pistisai deployment.
  * Provides operations for:
  * - Tunnel status and health monitoring
  * - Connector management

@@ -298,7 +298,7 @@ app.listen(PORT, () => {
 ```bash
 # Auth0 Configuration
 SUPABASE_AUTH_DOMAIN=your-tenant.auth0.com
-SUPABASE_AUTH_AUDIENCE=https://api.CloudToLocalLLM.com
+SUPABASE_AUTH_AUDIENCE=https://api.Pistisai.com
 SUPABASE_AUTH_ISSUER=https://your-tenant.auth0.com/
 
 # Server Configuration
@@ -309,16 +309,16 @@ LOG_LEVEL=info
 ### Auth0 Setup
 
 1. Create an API in Auth0 dashboard
-2. Configure the audience (e.g., `https://api.CloudToLocalLLM.com`)
+2. Configure the audience (e.g., `https://api.Pistisai.com`)
 3. Add custom claims to tokens:
-   - `https://CloudToLocalLLM.com/tier` - User tier (free/premium/enterprise)
-   - `https://CloudToLocalLLM.com/permissions` - Array of permissions
+   - `https://Pistisai.com/tier` - User tier (free/premium/enterprise)
+   - `https://Pistisai.com/permissions` - Array of permissions
 
 Example Auth0 Rule:
 
 ```javascript
 function addCustomClaims(user, context, callback) {
-  const namespace = 'https://CloudToLocalLLM.com/';
+  const namespace = 'https://Pistisai.com/';
   
   context.accessToken[namespace + 'tier'] = user.app_metadata?.tier || 'free';
   context.accessToken[namespace + 'permissions'] = user.app_metadata?.permissions || [];

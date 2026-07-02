@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the implementation of comprehensive authentication audit logging for the CloudToLocalLLM API Backend. The implementation provides complete logging of all authentication attempts, successes, and failures with full context including IP address, user agent, and timestamp.
+This document describes the implementation of comprehensive authentication audit logging for the Pistisai API Backend. The implementation provides complete logging of all authentication attempts, successes, and failures with full context including IP address, user agent, and timestamp.
 
 **Validates: Requirements 2.6, 11.10**
 

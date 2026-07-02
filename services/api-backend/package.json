@@ -1,7 +1,7 @@
 {
   "name": "cloudtolocalllm-api-backend",
   "version": "10.1.187",
-  "description": "CloudToLocalLLM API Backend for Bridge Communication",
+  "description": "Pistisai API Backend for Bridge Communication",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -97,13 +97,13 @@
     "minimatch": "^10.2.1"
   },
   "keywords": [
-    "CloudToLocalLLM",
+    "Pistisai",
     "api",
     "bridge",
     "websocket",
     "ollama",
     "trigger-ci"
   ],
-  "author": "CloudToLocalLLM Team",
+  "author": "Pistisai Team",
   "license": "MIT"
 }

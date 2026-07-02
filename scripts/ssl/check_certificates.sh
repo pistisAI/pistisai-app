@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM Certificate Status Check Script
+# Pistisai Certificate Status Check Script
 # This script checks the status of Let's Encrypt certificates
 
 set -euo pipefail
@@ -142,14 +142,14 @@ show_cert_details() {
 
 # Main function
 main() {
-    echo_color "$BLUE" "CloudToLocalLLM Certificate Status Check"
+    echo_color "$BLUE" "Pistisai Certificate Status Check"
     echo_color "$BLUE" "======================================="
     echo ""
     
     local overall_status=0
     
     # Check if webapp container is running
-    if ! docker compose ps | grep -q "CloudToLocalLLM-webapp.*Up"; then
+    if ! docker compose ps | grep -q "Pistisai-webapp.*Up"; then
         echo_color "$RED" "✗ Webapp container is not running"
         echo_color "$YELLOW" "Please start the webapp container first: docker compose up -d webapp"
         exit 1

@@ -1,6 +1,6 @@
-# Contributing to CloudToLocalLLM SDK
+# Contributing to Pistisai SDK
 
-Thank you for your interest in contributing to the CloudToLocalLLM SDK! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to the Pistisai SDK! This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct
 
@@ -17,8 +17,8 @@ Please be respectful and constructive in all interactions.
 
 ```bash
 # Clone the repository
-git clone https://github.com/CloudToLocalLLM/CloudToLocalLLM.git
-cd CloudToLocalLLM/services/sdk
+git clone https://github.com/Pistisai/Pistisai.git
+cd Pistisai/services/sdk
 
 # Install dependencies
 npm install

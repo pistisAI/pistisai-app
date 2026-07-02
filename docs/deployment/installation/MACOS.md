@@ -2,7 +2,7 @@
 
 macOS support is planned but not the primary packaged desktop target yet. This guide covers the current development build path and the intended setup direction.
 
-Agent runtime selection belongs to the setup wizard. CloudToLocalLLM can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
+Agent runtime selection belongs to the setup wizard. Pistisai can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
 
 Ollama and LM Studio are optional support model providers for memory/background features, not primary app runtimes.
 
@@ -45,8 +45,8 @@ flutter config --enable-macos-desktop
 ### Build From Source
 
 ```bash
-git clone https://github.com/CloudToLocalLLM-online/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://github.com/Pistisai-online/Pistisai.git
+cd Pistisai
 flutter pub get
 flutter build macos --release
 ```
@@ -68,7 +68,7 @@ Prepare one agent runtime before or during first launch:
 | Hermes | Configured in wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `http://localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private server, VPS, or compatible agent runtime API |
-| Hosted agent runtime | CloudToLocalLLM managed | Optional paid compute |
+| Hosted agent runtime | Pistisai managed | Optional paid compute |
 
 For a runtime on another machine, install Tailscale on both devices and confirm they can reach each other:
 
@@ -115,7 +115,7 @@ These permissions are granted on the local Mac only. Syncing an account does not
 ### App Bundle
 
 1. Download a signed `.dmg` or `.zip` release when available.
-2. Move CloudToLocalLLM to Applications.
+2. Move Pistisai to Applications.
 3. Launch from Applications or Spotlight.
 4. Complete the setup wizard.
 
@@ -124,7 +124,7 @@ These permissions are granted on the local Mac only. Syncing an account does not
 Homebrew distribution is planned after packaging is stable.
 
 ```bash
-brew tap CloudToLocalLLM-online/CloudToLocalLLM
+brew tap Pistisai-online/Pistisai
 brew install cloudtolocalllm
 ```
 
@@ -156,7 +156,7 @@ Web and mobile access should use the Tailscale-first cloud connector design. The
 
 - Open System Settings.
 - Review Privacy & Security permissions.
-- Confirm Accessibility and Screen Recording are granted to CloudToLocalLLM.
+- Confirm Accessibility and Screen Recording are granted to Pistisai.
 - Restart the app after permission changes.
 
 ### Build Fails

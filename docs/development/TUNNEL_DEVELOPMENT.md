@@ -69,8 +69,8 @@ Before starting tunnel system development, ensure you have the following install
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/CloudToLocalLLM/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://github.com/Pistisai/Pistisai.git
+cd Pistisai
 ```
 
 ### 2. Install Dependencies
@@ -731,8 +731,8 @@ cat test-results.log
 - **API Documentation**: `docs/API/TUNNEL_CLIENT_API.md`, `docs/API/TUNNEL_SERVER_API.md`
 - **Architecture Documentation**: `docs/ARCHITECTURE/TUNNEL_SYSTEM.md`
 - **Troubleshooting Guide**: `docs/OPERATIONS/TUNNEL_TROUBLESHOOTING.md`
-- **GitHub Repository**: https://github.com/CloudToLocalLLM/CloudToLocalLLM
-- **Issue Tracker**: https://github.com/CloudToLocalLLM/CloudToLocalLLM/issues
+- **GitHub Repository**: https://github.com/Pistisai/Pistisai
+- **Issue Tracker**: https://github.com/Pistisai/Pistisai/issues
 
 ## Getting Help
 

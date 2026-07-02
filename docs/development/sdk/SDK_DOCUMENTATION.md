@@ -1,8 +1,8 @@
-# CloudToLocalLLM SDK Documentation
+# Pistisai SDK Documentation
 
 ## Overview
 
-The CloudToLocalLLM SDK is an official JavaScript/TypeScript client library for the CloudToLocalLLM API. It provides a simple, type-safe interface for interacting with all API endpoints.
+The Pistisai SDK is an official JavaScript/TypeScript client library for the Pistisai API. It provides a simple, type-safe interface for interacting with all API endpoints.
 
 **Requirements: 12.6**
 
@@ -24,19 +24,19 @@ The CloudToLocalLLM SDK is an official JavaScript/TypeScript client library for 
 ### npm
 
 ```bash
-npm install @CloudToLocalLLM/sdk
+npm install @Pistisai/sdk
 ```
 
 ### yarn
 
 ```bash
-yarn add @CloudToLocalLLM/sdk
+yarn add @Pistisai/sdk
 ```
 
 ### pnpm
 
 ```bash
-pnpm add @CloudToLocalLLM/sdk
+pnpm add @Pistisai/sdk
 ```
 
 ## Quick Start
@@ -44,9 +44,9 @@ pnpm add @CloudToLocalLLM/sdk
 ### Basic Setup
 
 ```typescript
-import { CloudToLocalLLMClient } from '@CloudToLocalLLM/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
   apiVersion: 'v2',
 });
@@ -393,7 +393,7 @@ interface SDKConfig {
 ### Example Configuration
 
 ```typescript
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
   apiVersion: 'v2',
   timeout: 60000,
@@ -460,13 +460,13 @@ Full TypeScript support with comprehensive types:
 
 ```typescript
 import {
-  CloudToLocalLLMClient,
+  PistisaiClient,
   Tunnel,
   User,
   Webhook,
-} from '@CloudToLocalLLM/sdk';
+} from '@Pistisai/sdk';
 
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
 });
 
@@ -481,9 +481,9 @@ const webhook: Webhook = await client.getWebhook('webhook-id');
 ### Complete Authentication Flow
 
 ```typescript
-import { CloudToLocalLLMClient } from '@CloudToLocalLLM/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
-const client = new CloudToLocalLLMClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.pistisai.app',
 });
 
@@ -567,7 +567,7 @@ console.log(`Total deliveries: ${deliveries.pagination.total}`);
 
 For issues, questions, or contributions:
 
-- GitHub: https://github.com/CloudToLocalLLM/CloudToLocalLLM
+- GitHub: https://github.com/Pistisai/Pistisai
 - Documentation: https://pistisai.app/docs
 - API Docs: https://api.pistisai.app/api/docs
 

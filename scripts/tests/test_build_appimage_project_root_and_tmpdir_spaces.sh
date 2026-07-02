@@ -11,7 +11,7 @@ APPIMAGETOOL_DIR="$WORK_DIR/appimage tools"
 APPIMAGE_LOG="$WORK_DIR/appimage.log"
 TMP_OUTPUT="$WORK_DIR/output dir with spaces/cloudtolocalllm-appimage-project-root-tmpdir-spaces.AppImage"
 TMP_DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
-mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$APPIMAGETOOL_DIR" "$TMPDIR_ROOT" "$(dirname "$TMP_OUTPUT")" "$FAKE_ROOT/build-tools/packaging/appimage/CloudToLocalLLM.AppDir" "$FAKE_ROOT/scripts"
+mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$APPIMAGETOOL_DIR" "$TMPDIR_ROOT" "$(dirname "$TMP_OUTPUT")" "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir" "$FAKE_ROOT/scripts"
 export APPIMAGE_LOG
 
 cleanup() {
@@ -32,7 +32,7 @@ chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application
@@ -49,9 +49,9 @@ exit 0
 EOF
 chmod +x "$FAKE_ROOT/scripts/flutter_with_cleanup.sh"
 
-cat > "$FAKE_ROOT/build-tools/packaging/appimage/CloudToLocalLLM.AppDir/cloudtolocalllm.desktop" <<'EOF'
+cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/cloudtolocalllm.desktop" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

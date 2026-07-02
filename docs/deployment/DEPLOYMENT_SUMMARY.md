@@ -86,8 +86,8 @@ kubectl get pods -n argocd
 ### Step 2: Check Ingress Configuration
 
 ```bash
-kubectl get ingress -n CloudToLocalLLM
-kubectl describe svc -n CloudToLocalLLM
+kubectl get ingress -n Pistisai
+kubectl describe svc -n Pistisai
 ```
 
 **Expected**: Ingress shows pistisai.app with TLS annotations

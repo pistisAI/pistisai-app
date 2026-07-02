@@ -1,8 +1,8 @@
-# CloudToLocalLLM Release Workflow
+# Pistisai Release Workflow
 
 ## Overview
 
-This document provides the complete, tested workflow for creating CloudToLocalLLM releases. Follow these steps exactly to ensure successful releases with all assets properly uploaded.
+This document provides the complete, tested workflow for creating Pistisai releases. Follow these steps exactly to ensure successful releases with all assets properly uploaded.
 
 ## Prerequisites
 
@@ -87,7 +87,7 @@ git status
 2. **Verify Build Output**:
 
    ```powershell
-   Get-ChildItem dist\windows\CloudToLocalLLM-*.zip*
+   Get-ChildItem dist\windows\Pistisai-*.zip*
    # Should show both .zip and .sha256 files
    ```
 
@@ -97,16 +97,16 @@ git status
 
    ```bash
    # Create draft release
-   gh release create v3.8.0 --draft --title "CloudToLocalLLM v3.8.0 - [Feature Name]" --notes-file release-notes.md
+   gh release create v3.8.0 --draft --title "Pistisai v3.8.0 - [Feature Name]" --notes-file release-notes.md
    
    # Or create release directly
-   gh release create v3.8.0 --title "CloudToLocalLLM v3.8.0 - [Feature Name]" --notes "Release notes here"
+   gh release create v3.8.0 --title "Pistisai v3.8.0 - [Feature Name]" --notes "Release notes here"
    ```
 
 2. **Get Release ID** (if using API):
 
    ```bash
-   gh api repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest | jq '.id'
+   gh api repos/Pistisai-online/Pistisai/releases/latest | jq '.id'
    ```
 
 ### Step 5: Upload Assets to GitHub Release
@@ -157,7 +157,7 @@ gh release upload v3.8.0 dist/windows/cloudtolocalllm-3.8.0-portable.zip.sha256
 1. **Deploy via SSH from Windows PowerShell**:
 
    ```powershell
-   ssh cloudllm@pistisai.app "cd /opt/CloudToLocalLLM && git pull origin master && flutter build web --release && docker-compose -f docker-compose.multi.yml down && docker-compose -f docker-compose.multi.yml up -d"
+   ssh cloudllm@pistisai.app "cd /opt/Pistisai && git pull origin master && flutter build web --release && docker-compose -f docker-compose.multi.yml down && docker-compose -f docker-compose.multi.yml up -d"
    ```
 
 2. **Verify Deployment**:
@@ -238,7 +238,7 @@ gh release edit v3.8.0 --prerelease
 
 ```bash
 # Revert to previous version
-wsl -d Ubuntu-24.04 -- ssh cloudllm@pistisai.app "cd /opt/CloudToLocalLLM && git reset --hard HEAD~1 && flutter build web --release && docker-compose -f docker-compose.multi.yml restart"
+wsl -d Ubuntu-24.04 -- ssh cloudllm@pistisai.app "cd /opt/Pistisai && git reset --hard HEAD~1 && flutter build web --release && docker-compose -f docker-compose.multi.yml restart"
 ```
 
 ## Quality Checklist

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM - Complete Cloud Run Deployment Script
+# Pistisai - Complete Cloud Run Deployment Script
 # This script performs a complete deployment including environment setup,
 # database migration, service deployment, and post-deployment configuration
 
@@ -51,7 +51,7 @@ log_header() {
 # Help function
 show_help() {
     cat << EOF
-CloudToLocalLLM - Complete Cloud Run Deployment Script
+Pistisai - Complete Cloud Run Deployment Script
 
 USAGE:
     $0 [OPTIONS]
@@ -244,9 +244,9 @@ phase_config() {
     log_info "Configuring service URLs and environment..."
     
     # Get service URLs
-    local web_url=$(gcloud run services describe CloudToLocalLLM-web --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
+    local web_url=$(gcloud run services describe Pistisai-web --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
     local api_url=$(gcloud run services describe cloudtolocalllm-api --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
-    local streaming_url=$(gcloud run services describe CloudToLocalLLM-streaming --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
+    local streaming_url=$(gcloud run services describe Pistisai-streaming --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
     
     # Update services with cross-service URLs
     if [ -n "$api_url" ] && [ -n "$web_url" ]; then
@@ -260,7 +260,7 @@ phase_config() {
     
     if [ -n "$streaming_url" ] && [ -n "$api_url" ]; then
         log_info "Updating streaming service with API URL..."
-        gcloud run services update CloudToLocalLLM-streaming \
+        gcloud run services update Pistisai-streaming \
             --platform=managed \
             --region="$GOOGLE_CLOUD_REGION" \
             --set-env-vars="OLLAMA_BASE_URL=$api_url" \
@@ -273,7 +273,7 @@ phase_config() {
 {
   "services": {
     "web": {
-      "name": "CloudToLocalLLM-web",
+      "name": "Pistisai-web",
       "url": "$web_url",
       "description": "Flutter web application"
     },
@@ -283,7 +283,7 @@ phase_config() {
       "description": "Node.js API backend"
     },
     "streaming": {
-      "name": "CloudToLocalLLM-streaming",
+      "name": "Pistisai-streaming",
       "url": "$streaming_url", 
       "description": "WebSocket streaming proxy"
     }
@@ -331,12 +331,12 @@ show_summary() {
     log_header "=== Deployment Summary ==="
     
     # Get service URLs
-    local web_url=$(gcloud run services describe CloudToLocalLLM-web --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
+    local web_url=$(gcloud run services describe Pistisai-web --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
     local api_url=$(gcloud run services describe cloudtolocalllm-api --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
-    local streaming_url=$(gcloud run services describe CloudToLocalLLM-streaming --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
+    local streaming_url=$(gcloud run services describe Pistisai-streaming --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
     
     echo
-    log_info "CloudToLocalLLM Cloud Run Deployment Complete!"
+    log_info "Pistisai Cloud Run Deployment Complete!"
     echo
     echo "Service URLs:"
     echo "  Web Application: $web_url"
@@ -360,7 +360,7 @@ show_summary() {
 main() {
     parse_args "$@"
     
-    log_header "=== CloudToLocalLLM Complete Cloud Run Deployment ==="
+    log_header "=== Pistisai Complete Cloud Run Deployment ==="
     log_info "Starting complete deployment process..."
     
     if [ "$DRY_RUN" = true ]; then

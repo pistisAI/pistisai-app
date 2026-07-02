@@ -4,10 +4,10 @@
  * Demonstrates how to create, manage, and monitor tunnels
  */
 
-import { CloudToLocalLLMClient } from '../src/index';
+import { PistisaiClient } from '../src/index';
 
 async function main() {
-  const client = new CloudToLocalLLMClient({
+  const client = new PistisaiClient({
     baseURL: 'https://api.pistisai.app',
     apiVersion: 'v2',
   });

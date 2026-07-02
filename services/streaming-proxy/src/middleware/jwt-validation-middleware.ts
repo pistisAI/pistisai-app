@@ -171,7 +171,7 @@ export class JWTValidationMiddleware implements AuthMiddleware {
   private extractUserTier(payload: JWTPayload): UserTier {
     // Check for tier in custom claims
     const tier =
-      payload['https://CloudToLocalLLM.com/tier'] ||
+      payload['https://Pistisai.com/tier'] ||
       payload.tier ||
       payload['app_metadata']?.tier;
 
@@ -191,7 +191,7 @@ export class JWTValidationMiddleware implements AuthMiddleware {
   private extractPermissions(payload: JWTPayload): string[] {
     const permissions =
       payload.permissions ||
-      payload['https://CloudToLocalLLM.com/permissions'] ||
+      payload['https://Pistisai.com/permissions'] ||
       [];
 
     return Array.isArray(permissions) ? permissions : [];

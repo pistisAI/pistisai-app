@@ -1,6 +1,6 @@
 # API Documentation
 
-This directory contains API documentation for CloudToLocalLLM services.
+This directory contains API documentation for Pistisai services.
 
 ## Core References
 

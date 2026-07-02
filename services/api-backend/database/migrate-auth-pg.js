@@ -1,5 +1,5 @@
 /**
- * Authentication Database Migration System (PostgreSQL) for CloudToLocalLLM
+ * Authentication Database Migration System (PostgreSQL) for Pistisai
  * Separate database instance for authentication data only
  */
 

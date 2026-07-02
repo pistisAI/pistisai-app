@@ -1,8 +1,8 @@
-# CloudToLocalLLM - Qwen Context
+# Pistisai - Qwen Context
 
 ## Project Overview
 
-CloudToLocalLLM is a Flutter-based, privacy-first companion and desktop control plane for user-owned agent runtimes. The main app channel connects to an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime while maintaining user control over data and device permissions.
+Pistisai is a Flutter-based, privacy-first companion and desktop control plane for user-owned agent runtimes. The main app channel connects to an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime while maintaining user control over data and device permissions.
 
 The project uses an agent-runtime-first architecture. Ollama, LM Studio, and similar local model servers are optional support model providers for memory/background features, not primary app runtimes. It's built with Flutter for cross-platform support (Windows, Linux, Web) and incorporates secure authentication, real-time communication, and encrypted local storage.
 
@@ -51,8 +51,8 @@ The project uses an agent-runtime-first architecture. Ollama, LM Studio, and sim
 
 ```bash
 # Clone the repository
-git clone https://github.com/CloudToLocalLLM-online/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://github.com/Pistisai-online/Pistisai.git
+cd Pistisai
 
 # Install dependencies
 flutter pub get
@@ -97,7 +97,7 @@ npm test
 
 ### Version Management
 
-CloudToLocalLLM uses a sophisticated version management system with automated updates across all relevant files:
+Pistisai uses a sophisticated version management system with automated updates across all relevant files:
 
 - **Version Format**: `MAJOR.MINOR.PATCH+BUILD_NUMBER` (e.g., `4.1.1+202508071645`)
 - **Build Numbers**: Timestamp format `YYYYMMDDHHMM`

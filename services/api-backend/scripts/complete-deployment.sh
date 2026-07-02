@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# Complete CloudToLocalLLM Deployment Script
+# Complete Pistisai Deployment Script
 # This script performs the full deployment after authentication is complete
 
 set -e
 
 # Configuration
-PROJECT_ID="CloudToLocalLLM-468303"
-INSTANCE_NAME="CloudToLocalLLM-db"
+PROJECT_ID="Pistisai-468303"
+INSTANCE_NAME="Pistisai-db"
 REGION="us-central1"
 SERVICE_NAME="cloudtolocalllm-api"
-DATABASE_NAME="CloudToLocalLLM"
+DATABASE_NAME="Pistisai"
 DB_USER="appuser"
 
-echo " CloudToLocalLLM Complete Deployment Script"
+echo " Pistisai Complete Deployment Script"
 echo "=============================================="
 echo ""
 
@@ -74,7 +74,7 @@ else
     
     # Save configuration
     cat > cloud-sql-config.env << EOF
-# Cloud SQL Configuration for CloudToLocalLLM
+# Cloud SQL Configuration for Pistisai
 # Generated on $(date)
 
 DB_TYPE=postgresql

@@ -1,6 +1,6 @@
 # Android Build Guide
 
-This guide explains the Android build system for CloudToLocalLLM, which creates multi-architecture APKs.
+This guide explains the Android build system for Pistisai, which creates multi-architecture APKs.
 
 ## Overview
 
@@ -15,17 +15,17 @@ Android builds are **ENABLED** and fully integrated into the CI/CD pipeline. The
 
 Android builds produce three APK files optimized for different architectures:
 
-1. **arm64-v8a** (`CloudToLocalLLM-{version}-arm64-v8a.apk`)
+1. **arm64-v8a** (`Pistisai-{version}-arm64-v8a.apk`)
    - 64-bit ARM architecture
    - For most modern Android devices (2015+)
    - Recommended for most users
 
-2. **armeabi-v7a** (`CloudToLocalLLM-{version}-armeabi-v7a.apk`)
+2. **armeabi-v7a** (`Pistisai-{version}-armeabi-v7a.apk`)
    - 32-bit ARM architecture
    - For older Android devices
    - Wider compatibility
 
-3. **x86_64** (`CloudToLocalLLM-{version}-x86_64.apk`)
+3. **x86_64** (`Pistisai-{version}-x86_64.apk`)
    - 64-bit x86 architecture
    - For Android emulators and some tablets
    - Testing and development
@@ -48,7 +48,7 @@ The Android build system requires:
 # Generate a new keystore (run this locally, not in CI)
 keytool -genkey -v -keystore release-keystore.jks \
   -keyalg RSA -keysize 2048 -validity 10000 \
-  -alias CloudToLocalLLM-release
+  -alias Pistisai-release
 
 # You will be prompted for:
 # - Keystore password (save this securely!)
@@ -84,7 +84,7 @@ The following secrets are now available for CI/CD builds:
 | `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore file | ✓ Configured |
 | `ANDROID_KEYSTORE_PASSWORD` | Keystore password | ✓ Configured |
 | `ANDROID_KEY_PASSWORD` | Key password | ✓ Configured |
-| `ANDROID_KEY_ALIAS` | Key alias (`CloudToLocalLLM-release`) | ✓ Configured |
+| `ANDROID_KEY_ALIAS` | Key alias (`Pistisai-release`) | ✓ Configured |
 
 ### Automated Setup Scripts
 
@@ -143,7 +143,7 @@ If you prefer to configure secrets manually:
    ```bash
    keytool -genkey -v -keystore android/release-keystore.jks \
      -keyalg RSA -keysize 2048 -validity 10000 \
-     -alias CloudToLocalLLM-release
+     -alias Pistisai-release
    ```
 
 2. **Convert to base64**:
@@ -163,7 +163,7 @@ If you prefer to configure secrets manually:
    gh secret set ANDROID_KEYSTORE_BASE64 < android/release-keystore.base64.txt
    gh secret set ANDROID_KEYSTORE_PASSWORD
    gh secret set ANDROID_KEY_PASSWORD
-   gh secret set ANDROID_KEY_ALIAS -b "CloudToLocalLLM-release"
+   gh secret set ANDROID_KEY_ALIAS -b "Pistisai-release"
    ```
 
 ### Security Best Practices
@@ -366,29 +366,29 @@ After successful build:
 
    ```bash
    # Using apksigner (part of Android SDK build-tools)
-   $ANDROID_HOME/build-tools/33.0.2/apksigner verify --verbose CloudToLocalLLM-*-arm64-v8a.apk
+   $ANDROID_HOME/build-tools/33.0.2/apksigner verify --verbose Pistisai-*-arm64-v8a.apk
    ```
 
 3. **Test on Android device**:
 
    ```bash
    # Install via ADB
-   adb install CloudToLocalLLM-*-arm64-v8a.apk
+   adb install Pistisai-*-arm64-v8a.apk
    
    # Launch app
-   adb shell am start -n com.CloudToLocalLLM.CloudToLocalLLM/.MainActivity
+   adb shell am start -n com.Pistisai.Pistisai/.MainActivity
    
    # Check logs
-   adb logcat | grep CloudToLocalLLM
+   adb logcat | grep Pistisai
    ```
 
 4. **Verify checksums**:
 
    ```bash
    # Verify SHA256 checksum for each APK
-   sha256sum -c CloudToLocalLLM-*-arm64-v8a.apk.sha256
-   sha256sum -c CloudToLocalLLM-*-armeabi-v7a.apk.sha256
-   sha256sum -c CloudToLocalLLM-*-x86_64.apk.sha256
+   sha256sum -c Pistisai-*-arm64-v8a.apk.sha256
+   sha256sum -c Pistisai-*-armeabi-v7a.apk.sha256
+   sha256sum -c Pistisai-*-x86_64.apk.sha256
    ```
 
 ### Testing on Different Architectures

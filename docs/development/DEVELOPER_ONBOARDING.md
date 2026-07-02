@@ -1,6 +1,6 @@
 # Developer Onboarding
 
-This guide is the current entry point for working on CloudToLocalLLM.
+This guide is the current entry point for working on Pistisai.
 
 ## Repository Shape
 

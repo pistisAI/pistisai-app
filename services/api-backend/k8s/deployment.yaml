@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-backend
-  namespace: CloudToLocalLLM
+  namespace: Pistisai
 spec:
   replicas: 2
   strategy:
@@ -33,11 +33,11 @@ spec:
             - name: DB_TYPE
               value: 'postgresql'
             - name: DB_HOST
-              value: 'postgres.CloudToLocalLLM.svc.cluster.local'
+              value: 'postgres.Pistisai.svc.cluster.local'
             - name: DB_PORT
               value: '5432'
             - name: DB_NAME
-              value: 'CloudToLocalLLM'
+              value: 'Pistisai'
             - name: DB_USER
               value: 'appuser'
             - name: DB_PASSWORD

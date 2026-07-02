@@ -10,7 +10,7 @@ import 'auth_logger.dart';
 import '../utils/web_interop_stub.dart'
     if (dart.library.html) '../utils/web_interop.dart';
 
-/// Administrative data flush service for CloudToLocalLLM
+/// Administrative data flush service for Pistisai
 ///
 /// Provides secure administrative functionality to clear all user data
 /// when needed for maintenance, testing, or emergency scenarios.
@@ -383,7 +383,7 @@ class AdminDataFlushService extends ChangeNotifier {
     if (!kIsWeb) return;
 
     try {
-      // Clear CloudToLocalLLM-specific localStorage keys
+      // Clear Pistisai-specific localStorage keys
       final keysToRemove = [
         'cloudtolocalllm_access_token',
         'cloudtolocalllm_id_token',

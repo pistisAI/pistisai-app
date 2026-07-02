@@ -1,6 +1,6 @@
 # Configuration and UI Components Guide
 
-This guide provides comprehensive documentation for the enhanced configuration management and UI components in CloudToLocalLLM.
+This guide provides comprehensive documentation for the enhanced configuration management and UI components in Pistisai.
 
 > **Current orientation**: Provider configuration here describes support model providers for app-owned features. The primary app channel connects to an agent runtime through setup and the Agent Runtime Contract.
 

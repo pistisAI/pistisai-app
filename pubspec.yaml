@@ -2,7 +2,7 @@ name: cloudtolocalllm
 description: Manage and run powerful Large Language Models locally, orchestrated via a cloud interface.
 publish_to: none
 homepage: https://pistisai.app
-repository: https://github.com/CloudToLocalLLM-online/CloudToLocalLLM
+repository: https://github.com/pistisAI/pistisai-app
 version: 10.1.205+4205
 
 environment:

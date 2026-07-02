@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:test/test.dart';
 
-/// Integration tests for the CloudToLocalLLM demo stack.
+/// Integration tests for the Pistisai demo stack.
 /// 1. Hermes gateway is reachable
 /// 2. Backend API is healthy  
 /// 3. Embedded app router works

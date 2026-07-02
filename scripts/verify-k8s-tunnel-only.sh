@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NAMESPACE="CloudToLocalLLM"
+NAMESPACE="Pistisai"
 CLOUDFLARED_NAME="cloudflared"
 CONFIGMAP_NAME="cloudflared-config"
 FORBIDDEN_HOST="argocd.cloudtolocalllm.online"

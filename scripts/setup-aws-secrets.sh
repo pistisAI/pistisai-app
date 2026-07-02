@@ -143,7 +143,7 @@ load_aws_config() {
     fi
 
     AWS_REGION=$(jq -r '.AWS_REGION // "us-east-1"' "$CONFIG_FILE")
-    AWS_SECRETS_MANAGER_SECRET_ID=$(jq -r '.AWS_SECRETS_MANAGER_SECRET_ID // "CloudToLocalLLM/production"' "$CONFIG_FILE")
+    AWS_SECRETS_MANAGER_SECRET_ID=$(jq -r '.AWS_SECRETS_MANAGER_SECRET_ID // "Pistisai/production"' "$CONFIG_FILE")
 
     if [[ -z "${GITHUB_REPO:-}" ]]; then
         GITHUB_REPO=$(jq -r '.GITHUB_REPO // ""' "$CONFIG_FILE")
@@ -493,7 +493,7 @@ EOF
 
 main() {
     log_section "GitHub Secrets Setup for AWS EKS Deployment"
-    log_info "CloudToLocalLLM - AWS EKS Configuration"
+    log_info "Pistisai - AWS EKS Configuration"
 
     validate_aws_cli
     load_aws_config

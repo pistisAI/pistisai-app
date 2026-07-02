@@ -1,8 +1,8 @@
-# CloudToLocalLLM Tier-Based API Documentation
+# Pistisai Tier-Based API Documentation
 
 ## Overview
 
-The CloudToLocalLLM API supports tier-aware behavior for cloud features, per-user connectors, optional hosted agent runtimes, and legacy proxy paths.
+The Pistisai API supports tier-aware behavior for cloud features, per-user connectors, optional hosted agent runtimes, and legacy proxy paths.
 
 > **Status**: This document still contains older Ollama/direct-proxy endpoint examples. Current product direction is agent-runtime-first and Tailscale-first. New tier policy should apply to selected agent runtimes, optional cloud connectors, optional support model providers, and optional paid hosted agent runtime containers. Do not design new primary app flows around direct Ollama proxy endpoints.
 
@@ -36,9 +36,9 @@ All API endpoints require authentication via Auth0 JWT tokens. User tier informa
 
 ```javascript
 // Tier information locations (in priority order)
-user['https://CloudToLocalLLM.com/user_metadata'].tier
-user['https://CloudToLocalLLM.com/app_metadata'].tier
-user['https://CloudToLocalLLM.com/user_metadata'].subscription
+user['https://Pistisai.com/user_metadata'].tier
+user['https://Pistisai.com/app_metadata'].tier
+user['https://Pistisai.com/user_metadata'].subscription
 ```
 
 ## API Endpoints
@@ -125,7 +125,7 @@ Content-Type: application/json
 {
   "error": "Desktop client not connected",
   "code": "DESKTOP_CLIENT_DISCONNECTED",
-  "message": "Please ensure your CloudToLocalLLM desktop client is running and connected.",
+  "message": "Please ensure your Pistisai desktop client is running and connected.",
   "requestId": "dp-1642234567890-abc123"
 }
 

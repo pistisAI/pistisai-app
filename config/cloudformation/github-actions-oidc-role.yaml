@@ -4,7 +4,7 @@ Description: 'GitHub Actions OIDC Role for EKS Deployment'
 Parameters:
   GitHubOrgRepo:
     Type: String
-    Default: CloudToLocalLLM/CloudToLocalLLM
+    Default: Pistisai/Pistisai
     Description: GitHub organization/repository
   
   GitHubBranch:

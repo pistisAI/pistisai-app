@@ -1,4 +1,4 @@
-// Playwright config for CloudToLocalLLM web E2E tests.
+// Playwright config for Pistisai web E2E tests.
 //
 // Serves the local Flutter web build at build/web/ on port 4173 (Vite-style
 // convention) and runs the splash-fix regression test plus the existing

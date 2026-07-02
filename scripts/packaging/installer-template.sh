@@ -1,5 +1,5 @@
 #!/bin/bash
-# CloudToLocalLLM Linux Installer
+# Pistisai Linux Installer
 set -e
 
 INSTALL_VERSION=""
@@ -11,7 +11,7 @@ SILENT=false
 
 show_help() {
     cat << EOF
-CloudToLocalLLM Linux Installer
+Pistisai Linux Installer
 
 Usage: curl -fsSL https://cloudtolocalllm.online/install.sh | bash [OPTIONS]
 
@@ -98,10 +98,10 @@ log_error() {
 # Detect latest version from GitHub releases
 detect_latest_version() {
     local channel="${1:-stable}"
-    local api_url="https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest"
+    local api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest"
 
     if [ "$channel" != "stable" ]; then
-        api_url="https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases?per_page=1"
+        api_url="https://api.github.com/repos/Pistisai-online/Pistisai/releases?per_page=1"
     fi
 
     if command -v curl &> /dev/null; then
@@ -152,11 +152,11 @@ download_appimage() {
     local channel="$2"
     local output_dir="$3"
 
-    local base_url="https://github.com/CloudToLocalLLM-online/CloudToLocalLLM/releases/download/v${version}"
-    local appimage_name="CloudToLocalLLM-${version}-x86_64.AppImage"
+    local base_url="https://github.com/Pistisai-online/Pistisai/releases/download/v${version}"
+    local appimage_name="Pistisai-${version}-x86_64.AppImage"
     local download_url="${base_url}/${appimage_name}"
 
-    echo "📦 Downloading CloudToLocalLLM v${version}..." >&2
+    echo "📦 Downloading Pistisai v${version}..." >&2
 
     mkdir -p "$output_dir"
 
@@ -204,16 +204,16 @@ create_desktop_entry() {
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=CloudToLocalLLM
+Name=Pistisai
 GenericName=AI Model Bridge
 Comment=Manage and run powerful Large Language Models locally
 Icon=cloudtolocalllm
-Exec=${install_dir}/CloudToLocalLLM %u
+Exec=${install_dir}/Pistisai %u
 Terminal=false
 Categories=Development;Utility;Network;
 Keywords=AI;LLM;Machine Learning;Ollama;Local;
 StartupNotify=true
-StartupWMClass=CloudToLocalLLM
+StartupWMClass=Pistisai
 MimeType=x-scheme-handler/cloudtolocalllm;
 EOF
 
@@ -300,8 +300,8 @@ main() {
     downloaded_appimage="$(download_appimage "$version" "$INSTALL_CHANNEL" "$INSTALL_DIR")"
 
     # Create stable launcher name expected by the desktop file
-    cp "$downloaded_appimage" "$INSTALL_DIR/CloudToLocalLLM"
-    chmod +x "$INSTALL_DIR/CloudToLocalLLM"
+    cp "$downloaded_appimage" "$INSTALL_DIR/Pistisai"
+    chmod +x "$INSTALL_DIR/Pistisai"
 
     create_desktop_entry "$INSTALL_DIR" "$SYSTEM_WIDE"
     update_desktop_database
@@ -310,9 +310,9 @@ main() {
         install_daemon "$INSTALL_DIR" "$SYSTEM_WIDE"
     fi
 
-    log_success "CloudToLocalLLM installed successfully"
+    log_success "Pistisai installed successfully"
     echo "Installed version: $version"
-    echo "Location: $INSTALL_DIR/CloudToLocalLLM"
+    echo "Location: $INSTALL_DIR/Pistisai"
 }
 
 main "$@"

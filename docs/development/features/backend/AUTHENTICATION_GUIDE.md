@@ -1,8 +1,8 @@
-# CloudToLocalLLM Authentication Guide
+# Pistisai Authentication Guide
 
 ## Overview
 
-This guide provides comprehensive documentation for authenticating with the CloudToLocalLLM API. The API uses OAuth2 with Auth0 for user authentication and JWT tokens for API access.
+This guide provides comprehensive documentation for authenticating with the Pistisai API. The API uses OAuth2 with Auth0 for user authentication and JWT tokens for API access.
 
 **Validates: Requirements 12.8**
 
@@ -21,7 +21,7 @@ This guide provides comprehensive documentation for authenticating with the Clou
 
 ## Authentication Methods
 
-The CloudToLocalLLM API supports two authentication methods:
+The Pistisai API supports two authentication methods:
 
 ### 1. JWT Bearer Token (User Authentication)
 
@@ -43,7 +43,7 @@ X-API-Key: <API_KEY>
 
 ### Overview
 
-CloudToLocalLLM uses Auth0 for OAuth2 authentication. The flow follows the standard OAuth2 Authorization Code flow with PKCE (Proof Key for Code Exchange) for enhanced security.
+Pistisai uses Auth0 for OAuth2 authentication. The flow follows the standard OAuth2 Authorization Code flow with PKCE (Proof Key for Code Exchange) for enhanced security.
 
 ### OAuth2 Configuration
 
@@ -393,7 +393,7 @@ const _secureStorage = FlutterSecureStorage();
 
 const _auth0Domain = 'dev-v2f2p008x3dr74ww.us.auth0.com';
 const _clientId = 'YOUR_CLIENT_ID';
-const _redirectUrl = 'com.CloudToLocalLLM://callback';
+const _redirectUrl = 'com.Pistisai://callback';
 const _audience = 'https://api.pistisai.app';
 ```
 
@@ -534,7 +534,7 @@ import * as AppAuth from 'expo-app-auth';
 const config = {
   issuer: 'https://dev-v2f2p008x3dr74ww.us.auth0.com',
   clientId: 'YOUR_CLIENT_ID',
-  redirectUrl: 'com.CloudToLocalLLM://callback',
+  redirectUrl: 'com.Pistisai://callback',
   scopes: ['openid', 'profile', 'email'],
   audience: 'https://api.pistisai.app',
 };

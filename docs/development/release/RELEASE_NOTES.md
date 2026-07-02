@@ -1,8 +1,8 @@
-# CloudToLocalLLM Release Notes
+# Pistisai Release Notes
 
 ## 📋 Overview
 
-This document consolidates all release information, version history, and release management processes for CloudToLocalLLM into a single authoritative reference.
+This document consolidates all release information, version history, and release management processes for Pistisai into a single authoritative reference.
 
 ---
 
@@ -75,9 +75,9 @@ The most significant architectural improvement since the project's inception, fe
 
 **New Components**:
 
-- **Enhanced Tray Daemon** (`CloudToLocalLLM-enhanced-tray`): Independent Python daemon
+- **Enhanced Tray Daemon** (`Pistisai-enhanced-tray`): Independent Python daemon
 - **Connection Broker**: Universal connection management service
-- **Settings Application** (`CloudToLocalLLM-settings`): Dedicated configuration interface
+- **Settings Application** (`Pistisai-settings`): Dedicated configuration interface
 - **Health Monitor**: Continuous connection health monitoring
 - **Token Manager**: Secure authentication token handling
 

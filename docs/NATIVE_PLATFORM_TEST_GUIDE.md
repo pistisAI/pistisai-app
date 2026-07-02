@@ -2,7 +2,7 @@
 
 ## App Status: Running ✓
 
-The CloudToLocalLLM app is currently running with native platform channels registered.
+The Pistisai app is currently running with native platform channels registered.
 
 ## What to Test
 

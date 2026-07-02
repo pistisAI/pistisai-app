@@ -7,7 +7,7 @@ import { getUserTier, shouldUseDirectTunnel } from './middleware/tier-check.js';
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
 const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
-const namespace = process.env.K8S_NAMESPACE || 'CloudToLocalLLM';
+const namespace = process.env.K8S_NAMESPACE || 'Pistisai';
 
 // Logger for proxy management
 const logger = winston.createLogger({
@@ -118,8 +118,8 @@ export class StreamingProxyManager {
           namespace: namespace,
           labels: {
             app: 'streaming-proxy',
-            'CloudToLocalLLM.user': userId,
-            'CloudToLocalLLM.type': 'streaming-proxy',
+            'Pistisai.user': userId,
+            'Pistisai.type': 'streaming-proxy',
           },
         },
         spec: {
@@ -127,7 +127,7 @@ export class StreamingProxyManager {
             {
               name: 'proxy',
               image:
-                'ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/streaming:latest',
+                'ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest',
               env: [
                 { name: 'USER_ID', value: userId },
                 { name: 'PROXY_ID', value: proxyId },

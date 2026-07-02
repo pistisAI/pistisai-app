@@ -1,7 +1,7 @@
 {
   "name": "tailscale-relay",
   "version": "1.0.0",
-  "description": "Tailscale Tunnel Relay for CloudToLocalLLM",
+  "description": "Tailscale Tunnel Relay for Pistisai",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

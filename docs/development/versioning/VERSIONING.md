@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CloudToLocalLLM project uses semantic versioning for all Docker images. The **web deployment is the source of truth** for the application version.
+The Pistisai project uses semantic versioning for all Docker images. The **web deployment is the source of truth** for the application version.
 
 ## Version Format
 
@@ -120,9 +120,9 @@ metadata:
 Images are stored with multiple tags:
 
 ```
-ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/web:latest
-ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/web:latest
-ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/web:latest
+ghcr.io/cloudtolocalllm-online/Pistisai/web:latest
+ghcr.io/cloudtolocalllm-online/Pistisai/web:latest
+ghcr.io/cloudtolocalllm-online/Pistisai/web:latest
 ```
 
 ## Release Process
@@ -143,7 +143,7 @@ To rollback to a previous version:
 az acr repository show-tags --name imrightguycloudtolocalllm --repository web --orderby time_desc
 
 # Update deployment to use specific version
-kubectl set image deployment/web web=ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/web:latest -n CloudToLocalLLM
+kubectl set image deployment/web web=ghcr.io/cloudtolocalllm-online/Pistisai/web:latest -n Pistisai
 ```
 
 ## Benefits

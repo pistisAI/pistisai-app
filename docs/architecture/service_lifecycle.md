@@ -1,6 +1,6 @@
 # Service Lifecycle & Dependency Graph
 
-CloudToLocalLLM uses a centralized service locator (`lib/di/locator.dart`) to ensure that long-lived services are constructed once during bootstrap and disposed in a predictable order.
+Pistisai uses a centralized service locator (`lib/di/locator.dart`) to ensure that long-lived services are constructed once during bootstrap and disposed in a predictable order.
 
 ## Boot Sequence
 

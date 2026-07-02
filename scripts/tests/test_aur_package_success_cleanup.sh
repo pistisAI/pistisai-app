@@ -8,7 +8,7 @@ WORK_DIR="$(mktemp -d)"
 OUTPUT_FILE="$WORK_DIR/stderr.txt"
 BIN_DIR="$WORK_DIR/bin"
 AUR_TEST_DIR="$WORK_DIR/dist/aur_test"
-AUR_TARBALL="$WORK_DIR/dist/linux/CloudToLocalLLM-Linux-x64.tar.gz"
+AUR_TARBALL="$WORK_DIR/dist/linux/Pistisai-Linux-x64.tar.gz"
 
 cleanup() {
   rm -rf "$WORK_DIR"

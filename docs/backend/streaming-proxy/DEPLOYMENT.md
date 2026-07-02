@@ -4,7 +4,7 @@
 
 ## Overview
 
-The streaming-proxy service is a Node.js application that provides WebSocket connection management, SSH tunneling, rate limiting, circuit breaking, and authentication for the CloudToLocalLLM system.
+The streaming-proxy service is a Node.js application that provides WebSocket connection management, SSH tunneling, rate limiting, circuit breaking, and authentication for the Pistisai system.
 
 ## Architecture
 
@@ -89,10 +89,10 @@ Add streaming-proxy build and deployment to `.github/workflows/deploy-aks.yml`:
 
 ```yaml
 env:
-  REGISTRY: CloudToLocalLLM
-  API_IMAGE: CloudToLocalLLM/cloudtolocalllm-api
-  WEB_IMAGE: CloudToLocalLLM/cloudtolocalllm-web
-  STREAMING_PROXY_IMAGE: ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/streaming  # Add this
+  REGISTRY: Pistisai
+  API_IMAGE: Pistisai/cloudtolocalllm-api
+  WEB_IMAGE: Pistisai/cloudtolocalllm-web
+  STREAMING_PROXY_IMAGE: ghcr.io/cloudtolocalllm-online/Pistisai/streaming  # Add this
 
 jobs:
   deploy:
@@ -115,13 +115,13 @@ jobs:
         COMMIT_SHA=$(echo ${{ github.sha }} | cut -c1-8)
         kubectl set image deployment/streaming-proxy \
           streaming-proxy=${{ env.STREAMING_PROXY_IMAGE }}:$COMMIT_SHA \
-          -n CloudToLocalLLM
+          -n Pistisai
 
     - name: Wait for rollout to complete
       run: |
-        kubectl rollout status deployment/api-backend -n CloudToLocalLLM --timeout=300s
-        kubectl rollout status deployment/web -n CloudToLocalLLM --timeout=300s
-        kubectl rollout status deployment/streaming-proxy -n CloudToLocalLLM --timeout=300s  # Add this
+        kubectl rollout status deployment/api-backend -n Pistisai --timeout=300s
+        kubectl rollout status deployment/web -n Pistisai --timeout=300s
+        kubectl rollout status deployment/streaming-proxy -n Pistisai --timeout=300s  # Add this
 ```
 
 #### 2. Create Kubernetes Deployment
@@ -133,7 +133,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: streaming-proxy
-  namespace: CloudToLocalLLM
+  namespace: Pistisai
 spec:
   replicas: 2
   selector:
@@ -146,7 +146,7 @@ spec:
     spec:
       containers:
       - name: streaming-proxy
-        image: ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/streaming:latest
+        image: ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest
         ports:
         - containerPort: 3001
           name: websocket
@@ -158,17 +158,17 @@ spec:
         - name: SUPABASE_AUTH_DOMAIN
           valueFrom:
             secretKeyRef:
-              name: CloudToLocalLLM-secrets
+              name: Pistisai-secrets
               key: auth0-domain
         - name: SUPABASE_AUTH_AUDIENCE
           valueFrom:
             secretKeyRef:
-              name: CloudToLocalLLM-secrets
+              name: Pistisai-secrets
               key: auth0-audience
         - name: SUPABASE_AUTH_ISSUER
           valueFrom:
             secretKeyRef:
-              name: CloudToLocalLLM-secrets
+              name: Pistisai-secrets
               key: auth0-issuer
         - name: PING_INTERVAL
           value: "30000"
@@ -206,7 +206,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: streaming-proxy
-  namespace: CloudToLocalLLM
+  namespace: Pistisai
 spec:
   selector:
     app: streaming-proxy
@@ -225,8 +225,8 @@ Update `k8s/ingress-nginx.yaml` to include streaming-proxy routes:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: CloudToLocalLLM-ingress
-  namespace: CloudToLocalLLM
+  name: Pistisai-ingress
+  namespace: Pistisai
   annotations:
     # ... existing annotations ...
     nginx.ingress.kubernetes.io/websocket-services: "streaming-proxy"
@@ -293,7 +293,7 @@ Required environment variables for streaming-proxy:
 ```bash
 # Auth0 Configuration
 SUPABASE_AUTH_DOMAIN=your-domain.auth0.com
-SUPABASE_AUTH_AUDIENCE=https://api.CloudToLocalLLM.com
+SUPABASE_AUTH_AUDIENCE=https://api.Pistisai.com
 SUPABASE_AUTH_ISSUER=https://your-domain.auth0.com/
 
 # WebSocket Configuration
@@ -334,12 +334,12 @@ Add to `k8s/secrets.yaml`:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: CloudToLocalLLM-secrets
-  namespace: CloudToLocalLLM
+  name: Pistisai-secrets
+  namespace: Pistisai
 type: Opaque
 stringData:
   auth0-domain: "your-domain.auth0.com"
-  auth0-audience: "https://api.CloudToLocalLLM.com"
+  auth0-audience: "https://api.Pistisai.com"
   auth0-issuer: "https://your-domain.auth0.com/"
 ```
 
@@ -355,13 +355,13 @@ npm install
 ### 2. Build Docker Image Locally (Optional)
 
 ```bash
-docker build -f services/streaming-proxy/Dockerfile.prod -t ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/streaming:latest .
+docker build -f services/streaming-proxy/Dockerfile.prod -t ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest .
 ```
 
 ### 3. Push to Docker Hub (Optional)
 
 ```bash
-docker push ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/streaming:latest
+docker push ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest
 ```
 
 ### 4. Deploy to Kubernetes
@@ -371,9 +371,9 @@ docker push ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/streaming:latest
 kubectl apply -f k8s/streaming-proxy-deployment.yaml
 
 # Verify deployment
-kubectl get pods -n CloudToLocalLLM
-kubectl get svc -n CloudToLocalLLM
-kubectl logs -f deployment/streaming-proxy -n CloudToLocalLLM
+kubectl get pods -n Pistisai
+kubectl get svc -n Pistisai
+kubectl logs -f deployment/streaming-proxy -n Pistisai
 ```
 
 ### 5. Update Ingress
@@ -401,20 +401,20 @@ curl https://ws.pistisai.app/health
 
 ```bash
 # View logs
-kubectl logs -f deployment/streaming-proxy -n CloudToLocalLLM
+kubectl logs -f deployment/streaming-proxy -n Pistisai
 
 # View logs for specific pod
-kubectl logs -f streaming-proxy-xxxxx-xxxxx -n CloudToLocalLLM
+kubectl logs -f streaming-proxy-xxxxx-xxxxx -n Pistisai
 ```
 
 ### Metrics
 
 ```bash
 # Get pod metrics
-kubectl top pods -n CloudToLocalLLM
+kubectl top pods -n Pistisai
 
 # Get deployment status
-kubectl get deployment streaming-proxy -n CloudToLocalLLM
+kubectl get deployment streaming-proxy -n Pistisai
 ```
 
 ## Scaling
@@ -422,7 +422,7 @@ kubectl get deployment streaming-proxy -n CloudToLocalLLM
 ### Manual Scaling
 
 ```bash
-kubectl scale deployment streaming-proxy --replicas=3 -n CloudToLocalLLM
+kubectl scale deployment streaming-proxy --replicas=3 -n Pistisai
 ```
 
 ### Auto-scaling (HPA)
@@ -432,7 +432,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: streaming-proxy-hpa
-  namespace: CloudToLocalLLM
+  namespace: Pistisai
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -461,35 +461,35 @@ spec:
 
 ```bash
 # Check pod status
-kubectl describe pod streaming-proxy-xxxxx -n CloudToLocalLLM
+kubectl describe pod streaming-proxy-xxxxx -n Pistisai
 
 # Check logs
-kubectl logs streaming-proxy-xxxxx -n CloudToLocalLLM
+kubectl logs streaming-proxy-xxxxx -n Pistisai
 ```
 
 ### Issue: WebSocket connection fails
 
 ```bash
 # Check service
-kubectl get svc streaming-proxy -n CloudToLocalLLM
+kubectl get svc streaming-proxy -n Pistisai
 
 # Check ingress
-kubectl get ingress -n CloudToLocalLLM
+kubectl get ingress -n Pistisai
 
 # Test from inside cluster
 kubectl run -it --rm debug --image=alpine --restart=Never -- sh
 apk add curl
-curl http://streaming-proxy.CloudToLocalLLM.svc.cluster.local:3001/health
+curl http://streaming-proxy.Pistisai.svc.cluster.local:3001/health
 ```
 
 ### Issue: Authentication fails
 
 ```bash
 # Check secrets
-kubectl get secret CloudToLocalLLM-secrets -n CloudToLocalLLM -o yaml
+kubectl get secret Pistisai-secrets -n Pistisai -o yaml
 
 # Verify Auth0 configuration
-kubectl exec -it streaming-proxy-xxxxx -n CloudToLocalLLM -- env | grep SUPABASE_AUTH
+kubectl exec -it streaming-proxy-xxxxx -n Pistisai -- env | grep SUPABASE_AUTH
 ```
 
 ## Summary

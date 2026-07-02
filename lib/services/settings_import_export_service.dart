@@ -19,7 +19,7 @@ class SettingsImportExportService {
   static const String fileExtension = '.json';
 
   /// Export file prefix
-  static const String filePrefix = 'CloudToLocalLLM-settings';
+  static const String filePrefix = 'Pistisai-settings';
 
   SettingsImportExportService({
     required SettingsPreferenceService preferencesService,

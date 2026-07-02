@@ -66,10 +66,10 @@ kustomize build --load-restrictor LoadRestrictionsNone k8s/deployments/overlays/
 log_success "Generated full-manifest.yaml"
 
 log_info "Updating image tags..."
-sed -i "s|ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/web:latest|$WEB_IMAGE|g" full-manifest.yaml
-sed -i "s|ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/api:latest|$API_IMAGE|g" full-manifest.yaml
-sed -i "s|ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/streaming:latest|$STREAMING_IMAGE|g" full-manifest.yaml
-sed -i "s|CloudToLocalLLM/postgres:latest|$POSTGRES_IMAGE|g" full-manifest.yaml
+sed -i "s|ghcr.io/cloudtolocalllm-online/Pistisai/web:latest|$WEB_IMAGE|g" full-manifest.yaml
+sed -i "s|ghcr.io/cloudtolocalllm-online/Pistisai/api:latest|$API_IMAGE|g" full-manifest.yaml
+sed -i "s|ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest|$STREAMING_IMAGE|g" full-manifest.yaml
+sed -i "s|Pistisai/postgres:latest|$POSTGRES_IMAGE|g" full-manifest.yaml
 
 log_info "Injecting configuration..."
 # Hardcoded ID from health check - ideally should be dynamic but fixing for immediate stability

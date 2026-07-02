@@ -62,7 +62,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                         children: [
                           _buildSection(
                             'Voice Companion',
-                            'Natural conversation state, backend switching, and agent control for the CloudToLocalLLM voice shell layered around Hermes.',
+                            'Natural conversation state, backend switching, and agent control for the Pistisai voice shell layered around Hermes.',
                             di.serviceLocator
                                     .isRegistered<VoiceConversationService>()
                                 ? Column(

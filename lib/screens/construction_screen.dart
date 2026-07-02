@@ -176,7 +176,7 @@ class ConstructionScreen extends StatelessWidget {
               context,
               title: 'GitHub Repository',
               description: 'View code, report issues, contribute',
-              url: 'https://github.com/CloudToLocalLLM-online/CloudToLocalLLM',
+              url: 'https://github.com/Pistisai-online/Pistisai',
               icon: Icons.code,
             ),
             const SizedBox(height: 12),
@@ -184,7 +184,7 @@ class ConstructionScreen extends StatelessWidget {
             _buildLinkCard(
               context,
               title: 'Documentation',
-              description: 'Learn how to use CloudToLocalLLM',
+              description: 'Learn how to use Pistisai',
               url: 'https://docs.pistisai.app',
               icon: Icons.book,
             ),

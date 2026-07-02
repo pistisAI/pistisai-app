@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CloudToLocalLLM API implements comprehensive rate limiting to protect the service from abuse and ensure fair resource allocation across all users. Rate limiting is applied at multiple levels: per-user, per-IP, and per-endpoint.
+The Pistisai API implements comprehensive rate limiting to protect the service from abuse and ensure fair resource allocation across all users. Rate limiting is applied at multiple levels: per-user, per-IP, and per-endpoint.
 
 **Requirement: 12.7** - THE API SHALL implement API rate limit documentation
 

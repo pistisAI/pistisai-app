@@ -1,6 +1,6 @@
 # Deployment Documentation
 
-This directory documents supported deployment paths for CloudToLocalLLM.
+This directory documents supported deployment paths for Pistisai.
 
 ## Start Here
 

@@ -1,7 +1,7 @@
 {
-    "name": "CloudToLocalLLM-aks",
+    "name": "Pistisai-aks",
     "location": "centralus",
-    "resourceGroup": "CloudToLocalLLM-rg",
+    "resourceGroup": "Pistisai-rg",
     "kubernetesVersion": "1.29",
     "nodePools": [
         {

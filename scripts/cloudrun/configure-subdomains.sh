@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# CloudToLocalLLM - Subdomain Configuration Script
+# Pistisai - Subdomain Configuration Script
 # This script configures all subdomains and updates service configurations
 # for production deployment with custom domains
 
@@ -67,7 +67,7 @@ check_domain_mappings() {
     log_header "=== Checking Domain Mappings ==="
     
     local domains=("$APP_DOMAIN" "$API_DOMAIN" "$STREAMING_DOMAIN")
-    local services=("CloudToLocalLLM-web" "cloudtolocalllm-api" "CloudToLocalLLM-streaming")
+    local services=("Pistisai-web" "cloudtolocalllm-api" "Pistisai-streaming")
     
     for i in "${!domains[@]}"; do
         local domain="${domains[$i]}"
@@ -101,7 +101,7 @@ update_service_cors() {
         --quiet
     
     log_info "Updating streaming service configuration..."
-    gcloud run services update CloudToLocalLLM-streaming \
+    gcloud run services update Pistisai-streaming \
         --platform=managed \
         --region=us-east4 \
         --set-env-vars="OLLAMA_BASE_URL=https://$API_DOMAIN" \
@@ -117,7 +117,7 @@ generate_dns_records() {
     local dns_file="$PROJECT_ROOT/config/cloudrun/dns-records.txt"
     
     cat > "$dns_file" << EOF
-# CloudToLocalLLM DNS Records Configuration
+# Pistisai DNS Records Configuration
 # Add these CNAME records to your domain registrar
 
 # Main domain (redirects to app)
@@ -185,7 +185,7 @@ create_web_config() {
     local web_config_file="$PROJECT_ROOT/web/subdomain-config.js"
     
     cat > "$web_config_file" << EOF
-// CloudToLocalLLM - Production Subdomain Configuration
+// Pistisai - Production Subdomain Configuration
 // This file configures the Flutter web app to use production subdomains
 
 window.cloudToLocalLLMConfig = {
@@ -238,7 +238,7 @@ window.cloudToLocalLLMConfig = {
   }
 };
 
-console.log('CloudToLocalLLM: Production subdomain configuration loaded');
+console.log('Pistisai: Production subdomain configuration loaded');
 console.log('API URL:', window.cloudToLocalLLMConfig.services.api.baseUrl);
 console.log('Streaming URL:', window.cloudToLocalLLMConfig.services.streaming.baseUrl);
 EOF
@@ -248,8 +248,8 @@ EOF
 
 # Main function
 main() {
-    log_header "=== CloudToLocalLLM Subdomain Configuration ==="
-    log_info "Configuring production subdomains for CloudToLocalLLM..."
+    log_header "=== Pistisai Subdomain Configuration ==="
+    log_info "Configuring production subdomains for Pistisai..."
     
     load_config
     check_domain_mappings

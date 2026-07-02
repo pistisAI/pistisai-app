@@ -240,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           // App name with theme-aware colors (Requirement 7.1, 7.5)
                           Text(
-                            'I\'m CloudToLocalLLM, your AI assistant.',
+                            'I\'m Pistisai, your AI assistant.',
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color:
                                   colorScheme.onSurface.withValues(alpha: 0.8),

@@ -1,6 +1,6 @@
 # Desktop Control Architecture
 
-Pillar 4, Desktop Control, lets CloudToLocalLLM inspect and operate the local desktop through explicit services and user-controlled actions.
+Pillar 4, Desktop Control, lets Pistisai inspect and operate the local desktop through explicit services and user-controlled actions.
 
 ## Current Status
 

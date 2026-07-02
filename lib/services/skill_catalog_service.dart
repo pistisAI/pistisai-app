@@ -87,7 +87,7 @@ class SkillCatalogService {
 
     // Development workspace fallback so the cockpit can surface the in-repo
     // skill package when launched from source.
-    roots.add('/paperclip/CloudToLocalLLM/services/openclaw-skills');
+    roots.add('/paperclip/Pistisai/services/openclaw-skills');
 
     return roots.toSet().toList(growable: false);
   }

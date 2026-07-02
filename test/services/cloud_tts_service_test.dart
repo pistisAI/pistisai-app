@@ -62,7 +62,7 @@ void main() {
       );
 
       final result = await service.synthesize(
-        const CloudTtsRequest(input: 'CloudToLocalLLM voice works.'),
+        const CloudTtsRequest(input: 'Pistisai voice works.'),
       );
 
       expect(result.contentType, 'audio/mpeg');

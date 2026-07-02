@@ -2,7 +2,7 @@
 
 ## Overview
 
-CloudToLocalLLM API implements a structured deprecation process to ensure smooth transitions between API versions. This guide explains how deprecation works, how to identify deprecated endpoints, and how to migrate to newer versions.
+Pistisai API implements a structured deprecation process to ensure smooth transitions between API versions. This guide explains how deprecation works, how to identify deprecated endpoints, and how to migrate to newer versions.
 
 **Requirements: 12.5**
 
@@ -155,7 +155,7 @@ Response:
 ```json
 {
   "title": "Migrating from API v1 to v2",
-  "description": "Complete guide for migrating from CloudToLocalLLM API v1 to v2",
+  "description": "Complete guide for migrating from Pistisai API v1 to v2",
   "steps": [
     {
       "step": 1,
@@ -350,7 +350,7 @@ For questions about API deprecation or migration help:
 - **Email**: support@pistisai.app
 - **Documentation**: https://docs.pistisai.app
 - **API Docs**: https://api.pistisai.app/api/docs
-- **GitHub Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/api/issues
+- **GitHub Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
 
 ## Implementation Details
 

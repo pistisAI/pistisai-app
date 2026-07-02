@@ -1,14 +1,14 @@
 #!/bin/bash
-# Build and install CloudToLocalLLM AppImage locally
+# Build and install Pistisai AppImage locally
 
 set -e
 
-PROJECT_DIR="/mnt/data/projects/CloudToLocalLLM"
+PROJECT_DIR="/mnt/data/projects/Pistisai"
 BUILD_DIR="$PROJECT_DIR/build/linux/x64/release/bundle"
 APPIMAGE_DIR="/tmp/appimage-build"
-APPIMAGE_OUTPUT="/tmp/CloudToLocalLLM-x86_64.AppImage"
+APPIMAGE_OUTPUT="/tmp/Pistisai-x86_64.AppImage"
 
-echo "🚀 Building CloudToLocalLLM AppImage..."
+echo "🚀 Building Pistisai AppImage..."
 
 # Step 1: Build Flutter Linux release
 echo "📦 Building Flutter Linux release..."
@@ -93,7 +93,7 @@ chmod +x "$INSTALL_DIR/cloudtolocalllm"
 mkdir -p "$HOME/.local/share/applications"
 cat > "$HOME/.local/share/applications/cloudtolocalllm-appimage.desktop" << EOF
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=$INSTALL_DIR/cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

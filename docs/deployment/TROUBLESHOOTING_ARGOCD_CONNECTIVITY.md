@@ -13,8 +13,8 @@ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server
 # Verify the service is correct
 kubectl get svc argocd-server -n argocd
 
-# Test connectivity from a pod in the CloudToLocalLLM namespace
-kubectl run curl-test --image=curlimages/curl -n CloudToLocalLLM -it --rm -- \
+# Test connectivity from a pod in the Pistisai namespace
+kubectl run curl-test --image=curlimages/curl -n Pistisai -it --rm -- \
   curl -v http://argocd-server.argocd.svc.cluster.local:80/healthz
 ```
 

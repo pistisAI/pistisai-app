@@ -1,10 +1,10 @@
 #!/bin/bash
-# CloudToLocalLLM Avatar Personality Skill Installation Script
+# Pistisai Avatar Personality Skill Installation Script
 # This script installs the avatar personality skill into OpenClaw Gateway
 
 set -e
 
-echo "🤖 Installing CloudToLocalLLM Avatar Personality Skill for OpenClaw Gateway..."
+echo "🤖 Installing Pistisai Avatar Personality Skill for OpenClaw Gateway..."
 echo ""
 
 # Colors for output
@@ -69,8 +69,8 @@ else
   cat > "$SKILL_DIR/skill.yaml" << 'EOF'
 name: avatar_personality
 version: 1.0.0
-description: Avatar Personality Engine for CloudToLocalLLM - Manages evolving personality traits and evolution stages
-author: CloudToLocalLLM
+description: Avatar Personality Engine for Pistisai - Manages evolving personality traits and evolution stages
+author: Pistisai
 license: MIT
 
 triggers:
@@ -94,7 +94,7 @@ EOF
   # Create personality.md template
   cat > "$SKILL_DIR/personality.md" << 'EOF'
 ---
-agent_name: CloudToLocalLLM
+agent_name: Pistisai
 formality: 0.5
 humor: 0.5
 enthusiasm: 0.5
@@ -105,7 +105,7 @@ depth_score: 0.0
 last_updated: 2025-02-22T00:00:00Z
 ---
 
-# CloudToLocalLLM Personality
+# Pistisai Personality
 
 ## Traits
 - Formality: 50%
@@ -148,7 +148,7 @@ else
   echo "Start OpenClaw Gateway to use the avatar personality skill:"
   echo "  openclaw-gateway"
   echo ""
-  echo "Or via CloudToLocalLLM app:"
+  echo "Or via Pistisai app:"
   echo "  Settings > OpenClaw Manager > Start Gateway"
 fi
 

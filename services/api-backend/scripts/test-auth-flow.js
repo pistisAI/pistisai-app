@@ -17,7 +17,7 @@ const SERVICE_URL =
 const TEST_TOKEN = process.env.TEST_TOKEN; // Valid JWT JWT token for testing
 
 async function testAuthFlow() {
-  console.log(' CloudToLocalLLM Authentication Flow Testing');
+  console.log(' Pistisai Authentication Flow Testing');
   console.log('==============================================\n');
 
   console.log(` Testing service: ${SERVICE_URL}`);

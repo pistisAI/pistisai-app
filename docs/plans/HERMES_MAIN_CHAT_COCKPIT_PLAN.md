@@ -1,11 +1,11 @@
 # Hermes Main Chat Cockpit Implementation Plan
 
-**Goal:** Make the CloudToLocalLLM main chat the single channel of truth for direct chat, Hermes work/activity events, tool traces, background local-think jobs, artifacts, restart/resume events, and future cross-device sync.
+**Goal:** Make the Pistisai main chat the single channel of truth for direct chat, Hermes work/activity events, tool traces, background local-think jobs, artifacts, restart/resume events, and future cross-device sync.
 
 **Architecture:** Do this in layers. First introduce a normalized append-only timeline event model and merge existing chat messages with local-think job events in the main chat surface. Then add compact/verbose rendering. Then persist/sync the event log. Avoid separate diagnostic panels as the primary UX; secondary tabs should only be filtered views of the same event stream.
 
 **Current source-of-truth context:**
-- Repo: `/mnt/data/projects/CloudToLocalLLM`
+- Repo: `/mnt/data/projects/Pistisai`
 - Existing doc: `docs/architecture/HERMES_LOCAL_THINK_TRAIN.md`
 - Existing chat surface: `lib/screens/home/home_layout.dart`
 - Existing chat model: `lib/models/chat_model.dart`
@@ -49,7 +49,7 @@
 Run:
 
 ```bash
-cd /mnt/data/projects/CloudToLocalLLM
+cd /mnt/data/projects/Pistisai
 git status --short
 ```
 
@@ -321,7 +321,7 @@ Future shape:
 Run at minimum:
 
 ```bash
-cd /mnt/data/projects/CloudToLocalLLM
+cd /mnt/data/projects/Pistisai
 flutter test test/services/hermes_manager/local_think_job_service_test.dart
 flutter test test/services/hermes_manager/local_think_timeline_mapper_test.dart
 flutter test test/services/hermes_manager/main_chat_timeline_composer_test.dart
@@ -336,7 +336,7 @@ flutter build linux --debug
 ```
 
 Manual check:
-- Start CloudToLocalLLM desktop.
+- Start Pistisai desktop.
 - Main chat still sends/receives normal messages.
 - Local-think jobs appear inline in the main chat timeline.
 - Completed jobs show final preview.

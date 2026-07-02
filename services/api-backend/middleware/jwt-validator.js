@@ -310,7 +310,7 @@ export class JWTValidator {
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           'https://pistisai.app/roles': ['admin'],
-          'https://CloudToLocalLLM.com/app_metadata': { role: 'admin' },
+          'https://Pistisai.com/app_metadata': { role: 'admin' },
           scope: 'openid profile email admin',
         };
 

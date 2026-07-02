@@ -11,7 +11,7 @@ FAKE_TOOL="$WORK_DIR/appimagetool"
 OUTPUT_DIR="$WORK_DIR/out"
 APPIMAGE_WORKDIR="$WORK_DIR/work"
 DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
-TEMPLATE_DIR="$WORK_DIR/build-tools/packaging/appimage/CloudToLocalLLM.AppDir"
+TEMPLATE_DIR="$WORK_DIR/build-tools/packaging/appimage/Pistisai.AppDir"
 
 cleanup() {
   rm -rf "$WORK_DIR"
@@ -42,7 +42,7 @@ EOF
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
-Name=CloudToLocalLLM
+Name=Pistisai
 Exec=cloudtolocalllm
 Icon=cloudtolocalllm
 Type=Application

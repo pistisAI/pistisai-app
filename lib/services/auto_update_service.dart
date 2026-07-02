@@ -56,7 +56,7 @@ class UpdateInfo {
   });
 }
 
-/// Auto-update service for CloudToLocalLLM
+/// Auto-update service for Pistisai
 class AutoUpdateService extends ChangeNotifier {
   // Singleton pattern
   static final AutoUpdateService _instance = AutoUpdateService._internal();
@@ -157,7 +157,7 @@ class AutoUpdateService extends ChangeNotifier {
 
     try {
       final request = await client.getUrl(Uri.parse(
-          'https://api.github.com/repos/CloudToLocalLLM-online/CloudToLocalLLM/releases/latest'));
+          'https://api.github.com/repos/Pistisai-online/Pistisai/releases/latest'));
       final response = await request.close();
 
       if (response.statusCode != 200) {

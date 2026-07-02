@@ -1,8 +1,8 @@
-# CloudToLocalLLM Build Scripts Guide
+# Pistisai Build Scripts Guide
 
 ## Overview
 
-This guide explains the different build scripts available in CloudToLocalLLM and when to use each one for creating release packages.
+This guide explains the different build scripts available in Pistisai and when to use each one for creating release packages.
 
 ## Build Scripts Comparison
 
@@ -61,14 +61,14 @@ This guide explains the different build scripts available in CloudToLocalLLM and
 
 - **Status**: Fully implemented and tested
 - **Size**: ~13MB (includes Flutter web build and all dependencies)
-- **Installation**: Extract and run `CloudToLocalLLM.exe`
+- **Installation**: Extract and run `Pistisai.exe`
 - **Advantages**: No installation required, portable, works on all Windows versions
 - **Recommended for**: Testing, temporary use, and users who prefer portable applications
 
 ### ✅ Inno Setup Installer Package
 
 - **Status**: Implemented in the GitHub Actions Windows build lane
-- **Output**: `CloudToLocalLLM-Windows-x64-Setup.exe`
+- **Output**: `Pistisai-Windows-x64-Setup.exe`
 - **Installation**: Guided installer with Start Menu shortcut, optional desktop shortcut, and per-user URL-scheme registration
 - **Recommended for**: Most Windows users
 
@@ -121,7 +121,7 @@ To implement MSI and NSIS packages in the future:
 
 1. Install WiX Toolset v3 or v4
 2. Create WiX configuration files:
-   - `installer/windows/CloudToLocalLLM.wxs` (main installer definition)
+   - `installer/windows/Pistisai.wxs` (main installer definition)
    - `installer/windows/Components.wxs` (file components)
 3. Integrate MSI build into `Create-UnifiedPackages.ps1`
 4. Add MSI-specific features (registry entries, start menu shortcuts, etc.)
@@ -130,7 +130,7 @@ To implement MSI and NSIS packages in the future:
 
 1. Install NSIS compiler
 2. Create NSIS installer script:
-   - `installer/windows/CloudToLocalLLM.nsi`
+   - `installer/windows/Pistisai.nsi`
 3. Integrate NSIS build into `Create-UnifiedPackages.ps1`
 4. Add NSIS-specific features (uninstaller, registry cleanup, etc.)
 

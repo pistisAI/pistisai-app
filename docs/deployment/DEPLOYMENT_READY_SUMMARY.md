@@ -1,4 +1,4 @@
-# CloudToLocalLLM - Docker Compose Deployment Guide
+# Pistisai - Docker Compose Deployment Guide
 
 > **Status**: Historical deployment summary for the older tunnel-centered stack. Current product direction is agent-runtime-first and Tailscale-first, with optional per-user cloud connector containers and optional paid hosted agent runtime containers. Ollama/LM Studio are support model providers, not primary app runtimes. Keep this file for deployment history and migration reference.
 
@@ -6,7 +6,7 @@
 
 **Note**: For production, **Kubernetes deployment is recommended**. Docker Compose is suitable for development, testing, or small deployments.
 
-This guide covers deploying CloudToLocalLLM using Docker Compose for development/testing purposes.
+This guide covers deploying Pistisai using Docker Compose for development/testing purposes.
 
 ## Kubernetes/Proxmox Readiness Addendum
 
@@ -76,8 +76,8 @@ services/api-backend/package.json  # Moved ws to dependencies
 ### One-Command Deployment
 
 ```bash
-git clone https://github.com/yourusername/CloudToLocalLLM.git
-cd CloudToLocalLLM
+git clone https://github.com/yourusername/Pistisai.git
+cd Pistisai
 chmod +x deploy.sh
 ./deploy.sh
 ```
@@ -187,11 +187,11 @@ The script will:
 docker compose -f docker-compose.production.yml ps
 
 # Should show:
-# CloudToLocalLLM-postgres    (healthy)
+# Pistisai-postgres    (healthy)
 # cloudtolocalllm-api-backend (healthy)
-# CloudToLocalLLM-web         (healthy)
-# CloudToLocalLLM-nginx       (healthy)
-# CloudToLocalLLM-certbot     (running)
+# Pistisai-web         (healthy)
+# Pistisai-nginx       (healthy)
+# Pistisai-certbot     (running)
 ```
 
 ### 3. Test Endpoints
@@ -217,7 +217,7 @@ curl -X POST https://api.yourdomain.com/api/bridge/register \
 
 ### 4. Launch Windows Desktop App
 
-1. Start the CloudToLocalLLM Windows app
+1. Start the Pistisai Windows app
 2. Sign in with Auth0 credentials
 3. App should show "Connected" status in system tray
 4. Check server logs for connection:
@@ -260,7 +260,7 @@ docker stats
 ```bash
 # Access PostgreSQL
 docker compose -f docker-compose.production.yml exec postgres \
-  psql -U appuser -d CloudToLocalLLM
+  psql -U appuser -d Pistisai
 
 # Check active connections
 SELECT * FROM bridge_connections;
@@ -350,7 +350,7 @@ docker compose -f docker-compose.production.yml logs postgres
 
 # Verify connection from API backend
 docker compose -f docker-compose.production.yml exec api-backend \
-  node -e "const pg = require('pg'); const client = new pg.Client({host:'postgres',user:'appuser',password:'$POSTGRES_PASSWORD',database:'CloudToLocalLLM'}); client.connect().then(() => console.log('Connected')).catch(console.error);"
+  node -e "const pg = require('pg'); const client = new pg.Client({host:'postgres',user:'appuser',password:'$POSTGRES_PASSWORD',database:'Pistisai'}); client.connect().then(() => console.log('Connected')).catch(console.error);"
 ```
 
 ## 📚 Documentation Reference
@@ -388,4 +388,4 @@ This historical stack is configured for the older HTTP-polling tunnel path. Curr
 
 **Questions or issues?** Check the troubleshooting section or review the detailed guides in the docs folder.
 
-**Ready to deploy?** Run `./deploy.sh` and let's get CloudToLocalLLM running! 🚀
+**Ready to deploy?** Run `./deploy.sh` and let's get Pistisai running! 🚀

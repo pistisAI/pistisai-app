@@ -1,8 +1,8 @@
-# CloudToLocalLLM API Documentation Guide
+# Pistisai API Documentation Guide
 
 ## Overview
 
-The CloudToLocalLLM API Backend provides comprehensive REST API endpoints for managing tunnels, users, authentication, and system operations. This guide explains how to access and use the API documentation.
+The Pistisai API Backend provides comprehensive REST API endpoints for managing tunnels, users, authentication, and system operations. This guide explains how to access and use the API documentation.
 
 ## Accessing API Documentation
 
@@ -380,9 +380,9 @@ X-Webhook-Signature: sha256=abcdef123456...
 
 Official SDKs are available for:
 
-- **JavaScript/TypeScript**: `@CloudToLocalLLM/api-client`
+- **JavaScript/TypeScript**: `@Pistisai/api-client`
 - **Python**: `cloudtolocalllm-api`
-- **Go**: `github.com/CloudToLocalLLM/api-go`
+- **Go**: `github.com/Pistisai/api-go`
 
 ## API Versioning
 
@@ -407,9 +407,9 @@ The API uses URL-based versioning:
 For API support:
 
 - **Documentation**: https://docs.pistisai.app
-- **Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/CloudToLocalLLM/api/issues
+- **Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
 - **Email**: support@pistisai.app
-- **Discord**: https://discord.gg/CloudToLocalLLM
+- **Discord**: https://discord.gg/Pistisai
 
 ## Changelog
 
@@ -417,4 +417,4 @@ See [CHANGELOG.md](../../../docs/CHANGELOG.md) for API changes and updates.
 
 ## License
 
-The CloudToLocalLLM API is licensed under the MIT License.
+The Pistisai API is licensed under the MIT License.
