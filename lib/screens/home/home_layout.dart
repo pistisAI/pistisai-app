@@ -11,7 +11,6 @@ import '../../components/message_input.dart' as msg_input;
 import '../../components/glass_container.dart';
 import '../../components/welcome_screen.dart';
 import '../../components/animated_background.dart';
-import '../../features/avatar/avatar_widget.dart';
 import '../../models/avatar/personality_models.dart';
 import '../../di/locator.dart' as di;
 import '../../services/avatar/personality_engine.dart';
@@ -346,7 +345,7 @@ class _ChatPaneState extends State<_ChatPane> {
                       ),
               ),
               // 5-pillar action bar — always visible
-              _ActionBar(isConnected: connectionManager.isConnected),
+              const _ActionBar(),
               GlassContainer(
                 margin: EdgeInsets.only(
                   bottom: widget.isCompact ? spacing.m : spacing.l,
@@ -443,9 +442,7 @@ class _MessageList extends StatelessWidget {
 
 /// Mini action bar for the 5 pillars — avatar, tools, mood, settings.
 class _ActionBar extends StatelessWidget {
-  final bool isConnected;
-
-  const _ActionBar({required this.isConnected});
+  const _ActionBar();
 
   @override
   Widget build(BuildContext context) {
@@ -463,13 +460,13 @@ class _ActionBar extends StatelessWidget {
           _PillarButton(
             icon: Icons.handyman,
             label: 'Tools',
-            enabled: isConnected,
+            enabled: true,
             onTap: () => _showTools(context),
           ),
           _PillarButton(
             icon: Icons.favorite,
             label: 'Mood',
-            enabled: isConnected,
+            enabled: true,
             onTap: () => _showMood(context),
           ),
         ],
@@ -478,27 +475,7 @@ class _ActionBar extends StatelessWidget {
   }
 
   void _openAvatar(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        content: Center(
-          child: AgentAvatar(
-            state: AgentState.idle,
-            size: 200,
-          ),
-        ),
-        actions: [
-          Center(
-            child: TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Close'),
-            ),
-          ),
-        ],
-      ),
-    );
+    context.push('/settings/avatar');
   }
 
   void _showTools(BuildContext context) {
@@ -666,6 +643,7 @@ class _ToolsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -673,18 +651,57 @@ class _ToolsPanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'What Zoid Can Do',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            Row(
+              children: [
+                Icon(Icons.handyman, size: 24, color: Colors.amber),
+                const SizedBox(width: 12),
+                Text(
+                  'What Zoid Can Do',
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Available offline • Connect to unlock more',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.grey,
+              ),
             ),
             const SizedBox(height: 20),
-            _ToolRow(Icons.desktop_windows, 'Desktop Control', 'Click, type, scroll, drag on your PC'),
-            _ToolRow(Icons.visibility, 'Vision', 'See and analyze your screen'),
-            _ToolRow(Icons.record_voice_over, 'Voice', 'Speak and listen'),
-            _ToolRow(Icons.language, 'Web Search', 'Search and extract web content'),
-            _ToolRow(Icons.code, 'Code Execution', 'Run Python, shell, and Dart scripts'),
+            _ToolRow(
+              icon: Icons.desktop_windows,
+              title: 'Desktop Control',
+              description: 'Click, type, scroll, drag on your PC',
+              available: true,
+            ),
+            _ToolRow(
+              icon: Icons.visibility,
+              title: 'Vision',
+              description: 'See and analyze your screen',
+              available: true,
+            ),
+            _ToolRow(
+              icon: Icons.record_voice_over,
+              title: 'Voice',
+              description: 'Speak and listen',
+              available: true,
+            ),
+            _ToolRow(
+              icon: Icons.language,
+              title: 'Web Search',
+              description: 'Search and extract web content',
+              available: false,
+              note: 'Requires agent connection',
+            ),
+            _ToolRow(
+              icon: Icons.code,
+              title: 'Code Execution',
+              description: 'Run Python, shell, and Dart scripts',
+              available: true,
+            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -697,28 +714,98 @@ class _ToolRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
+  final bool available;
+  final String? note;
 
-  const _ToolRow(this.icon, this.title, this.description);
+  const _ToolRow({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.available,
+    this.note,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: available
+                  ? Colors.green.withValues(alpha: 0.1)
+                  : Colors.grey.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              size: 22,
+              color: available ? Colors.green : Colors.grey,
+            ),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                Text(description,
-                    style: TextStyle(
-                        fontSize: 12, color: Colors.grey.shade600)),
+                Row(
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: available
+                            ? Colors.green.withValues(alpha: 0.15)
+                            : Colors.orange.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        available ? 'local' : 'cloud',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: available ? Colors.green : Colors.orange,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                if (note != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      note!,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.orange.shade400,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
+          if (available)
+            Icon(
+              Icons.check_circle,
+              size: 18,
+              color: Colors.green.shade400,
+            ),
         ],
       ),
     );
