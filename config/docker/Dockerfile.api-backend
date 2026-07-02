@@ -1,0 +1,48 @@
+# API Backend Container (Node.js/Express)
+FROM node:24-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY services/api-backend/package*.json ./
+# Build tools for native modules (sqlite3)
+RUN apk add --no-cache python3 make g++
+
+# Use npm install if package-lock.json doesn't exist, otherwise use npm ci
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
+
+# Production container
+FROM node:24-alpine
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Create app user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S -D -H -u 1001 -h /app -s /bin/sh -G nodejs -g nodejs nodejs
+
+# Set working directory
+WORKDIR /app
+
+# Copy node_modules from builder
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy application code
+COPY services/api-backend/ ./
+
+# Set proper ownership
+RUN chown -R nodejs:nodejs /app
+
+# Security: Run as non-root user
+USER nodejs
+
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD curl --fail http://localhost:8080/health || exit 1
+
+# Start the application
+CMD ["node", "server.js"]

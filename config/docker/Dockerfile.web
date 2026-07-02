@@ -1,0 +1,29 @@
+# ============================================================================
+# Single-stage Dockerfile for Zoidbot Web Application
+# Expects pre-compiled Flutter web assets in build/web/
+# ============================================================================
+
+FROM nginx:1.27-alpine
+
+USER root
+
+# Create zoidbot user with UID 1001
+RUN addgroup -g 1001 -S zoidbot && \
+    adduser -S -D -H -u 1001 -h /usr/share/nginx/html -s /bin/sh -G zoidbot -g zoidbot zoidbot
+
+# Copy main config
+COPY config/docker/nginx.conf /etc/nginx/nginx.conf
+# Copy site config
+COPY config/docker/nginx-web.conf /etc/nginx/conf.d/default.conf
+
+# Copy assets
+COPY build/web /usr/share/nginx/html
+
+# Fix permissions for non-root execution (using zoidbot:1001)
+RUN chown -R zoidbot:zoidbot /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
+
+USER zoidbot
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]

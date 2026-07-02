@@ -1,0 +1,28 @@
+# ============================================================================
+# Deployer Dockerfile for Zoidbot
+# Contains kubectl, kustomize, and psql for in-cluster deployment tasks
+# ============================================================================
+FROM alpine:3.20
+
+USER root
+
+RUN apk add --no-cache bash ca-certificates curl git openssl postgresql-client
+
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && \
+    rm kubectl
+
+RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash && \
+    mv kustomize /usr/local/bin/
+
+RUN addgroup -g 1000 -S deployer && \
+    adduser -S -D -H -u 1000 -h /app -s /bin/sh -G deployer deployer
+
+WORKDIR /app
+
+COPY --chown=deployer:deployer k8s/ k8s/
+COPY --chown=deployer:deployer scripts/ scripts/
+
+RUN chmod +x scripts/deploy-in-cluster.sh
+
+USER deployer

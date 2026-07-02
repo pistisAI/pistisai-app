@@ -1,0 +1,97 @@
+import { jest, describe, it, expect, beforeAll } from "@jest/globals";
+import request from "supertest";
+
+let app;
+
+beforeAll(async () => {
+  const mod = await import("../../backend/auth/handlers.js");
+  app = mod.app || mod.default.app;
+});
+
+describe("Auth Backend", () => {
+  describe("GET /health", () => {
+    it("returns 200 with status ok", async () => {
+      const res = await request(app).get("/health");
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({ status: "ok" });
+    });
+  });
+
+  describe("CORS", () => {
+    const allowedOrigins = [
+      "https://app.pistisai.app",
+      "https://pistisai.app",
+      "http://localhost:3000",
+      "http://localhost:8080",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:8080",
+    ];
+
+    allowedOrigins.forEach((origin) => {
+      it(`allows origin ${origin}`, async () => {
+        const res = await request(app).get("/health").set("Origin", origin);
+        expect(res.status).toBe(200);
+      });
+    });
+
+    it("strips CORS headers for disallowed origin", async () => {
+      const res = await request(app)
+        .get("/health")
+        .set("Origin", "https://evil.com");
+      expect(res.status).toBe(200);
+      expect(res.headers["access-control-allow-origin"]).toBeUndefined();
+    });
+
+    it("allows requests with no origin (server-to-server)", async () => {
+      const res = await request(app).get("/health").unset("Origin");
+      expect(res.status).toBe(200);
+    });
+  });
+
+  describe("GET /api/protected", () => {
+    it("returns 401 without token", async () => {
+      const res = await request(app).get("/api/protected");
+      expect(res.status).toBe(401);
+    });
+
+    it("returns 401 with invalid token", async () => {
+      const res = await request(app)
+        .get("/api/protected")
+        .set("Authorization", "Bearer invalid.jwt.token");
+      expect(res.status).toBe(401);
+    });
+
+    it("returns proper error body for missing token", async () => {
+      const res = await request(app).get("/api/protected");
+      expect(res.body).toHaveProperty("error");
+    });
+  });
+
+  describe("Error handling", () => {
+    it("returns 401 for UnauthorizedError", async () => {
+      const res = await request(app)
+        .get("/api/protected")
+        .set("Authorization", "Bearer invalid.jwt.token");
+      expect(res.status).toBe(401);
+      expect(res.body).toEqual({ error: "Invalid token" });
+    });
+
+    it("returns 404 for unknown routes", async () => {
+      const res = await request(app).get("/nonexistent-route");
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe("Rate limiting", () => {
+    it("applies rate limiter to /api/ routes", async () => {
+      const res = await request(app).get("/api/protected");
+      expect(res.headers["x-ratelimit-limit"]).toBeDefined();
+      expect(res.headers["x-ratelimit-remaining"]).toBeDefined();
+    });
+
+    it("does not apply rate limit headers to non-api routes", async () => {
+      const res = await request(app).get("/health");
+      expect(res.headers["x-ratelimit-limit"]).toBeUndefined();
+    });
+  });
+});

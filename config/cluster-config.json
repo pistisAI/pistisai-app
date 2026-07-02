@@ -1,0 +1,19 @@
+{
+    "name": "CloudToLocalLLM-aks",
+    "location": "centralus",
+    "resourceGroup": "CloudToLocalLLM-rg",
+    "kubernetesVersion": "1.29",
+    "nodePools": [
+        {
+            "name": "nodepool1",
+            "count": 1,
+            "vmSize": "Standard_D2s_v3",
+            "osType": "Linux",
+            "mode": "System"
+        }
+    ],
+    "networkProfile": {
+        "loadBalancerSku": "standard",
+        "networkPlugin": "kubenet"
+    }
+}

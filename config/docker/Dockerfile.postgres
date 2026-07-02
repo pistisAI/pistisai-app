@@ -1,0 +1,31 @@
+# ==========================================================================
+# Custom Postgres Image for Zoidbot
+# Based on the standard Postgres Alpine image
+# ==========================================================================
+FROM postgres:16-alpine
+
+USER root
+
+# Create zoidbot user with UID 1001 (consistent with app)
+RUN addgroup -g 1001 -S zoidbot && \
+    adduser -S -D -H -u 1001 -h /var/lib/postgresql/data -s /bin/sh -G zoidbot -g zoidbot zoidbot
+
+RUN apk add --no-cache bash
+
+COPY config/docker/postgres-entrypoint.sh /usr/local/bin/
+COPY config/docker/postgres-init.sh /docker-entrypoint-initdb.d/01-init.sh
+
+RUN chmod +x /usr/local/bin/postgres-entrypoint.sh /docker-entrypoint-initdb.d/01-init.sh
+
+# Note: Standard postgres entrypoint handles switching to the 'postgres' user (70:70)
+# To use a specific UID/GID, we often rely on volume ownership at runtime.
+# However, we'll keep the standard behavior but ensure our entrypoint is robust.
+USER postgres
+
+EXPOSE 5432
+
+# Health check - verify PostgreSQL is ready to accept connections
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=5 \
+  CMD pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-zoidbot} || exit 1
+
+ENTRYPOINT ["/usr/local/bin/postgres-entrypoint.sh"]

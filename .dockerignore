@@ -1,0 +1,29 @@
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+flutter_*.log
+
+# Testing
+coverage/
+test-results/
+playwright-report/
+
+# CI/CD
+.github/
+.github-actions/
+
+# Documentation
+docs/
+*.md
+windows/
+test/
+tests/
+e2e/
+coverage/
+data/
+*.db
+*.db-journal

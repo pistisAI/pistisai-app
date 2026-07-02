@@ -1,0 +1,172 @@
+name: cloudtolocalllm
+description: Manage and run powerful Large Language Models locally, orchestrated via a cloud interface.
+publish_to: none
+homepage: https://pistisai.app
+repository: https://github.com/CloudToLocalLLM-online/CloudToLocalLLM
+version: 10.1.205+4205
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  # HTTP Server for LLM Router
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
+
+  sentry_flutter: ^9.22.0
+  flutter:
+    sdk: flutter
+
+  # UI and Navigation
+  cupertino_icons: ^1.0.8
+  go_router: ^17.2.1
+
+  # Authentication
+  provider: ^6.1.2
+  jwt_decoder: ^2.0.1
+  auth0_flutter: ^2.3.0
+  shared_preferences: ^2.5.4
+
+  # Database - Local Brain
+  drift: ^2.34.0
+  sqlite3_flutter_libs: ^0.6.0+eol
+
+  # Error tracking
+  url_launcher: ^6.3.2
+
+  # HTTP and Web
+  intl: ^0.20.2
+  http: ^1.2.2
+
+  # Streaming and WebSocket support
+  web_socket_channel: ^3.0.3
+
+  # Enhanced HTTP handling for streaming
+  dio: ^5.9.2
+
+  # Real-time event handling
+  rxdart: ^0.28.0
+
+  # Google APIs for Local Integration
+  googleapis: ^16.0.0
+  googleapis_auth: ^2.3.2
+  google_sign_in: 6.3.0
+
+  # System Integration - Flutter plugins for window management and secure storage
+  window_manager: ^0.5.1
+
+  flutter_secure_storage: ^10.0.0
+  mutex: ^3.0.1
+  logging: ^1.3.0
+  path_provider: ^2.1.6
+  path: ^1.9.0
+
+  # System Integration - Native Flutter system tray integration
+  tray_manager: ^0.5.3
+
+  # UUID generation
+  uuid: ^4.5.3
+
+  # Encryption for local storage
+  encrypt: ^5.0.3
+
+  # Crypto for PKCE and ED25519 device identity
+  crypto: ^3.0.7
+  cryptography: ^2.9.0
+
+  # SSH tunneling
+  dartssh2: ^2.9.0
+
+  get_it: ^9.2.1
+  logger: ^2.7.0
+
+  # Discord integration
+  nyxx: ^6.8.1
+
+  # Rich message rendering
+  flutter_markdown_plus: ^1.0.7
+
+  # Web interop for dart:js_interop
+  web: ^1.0.0
+  app_links: ^7.2.0
+
+  meta: ^1.17.0
+  package_info_plus: ^10.1.0
+  process_run: ^1.3.1
+  device_info_plus: ^13.1.0
+  local_notifier: ^0.1.6
+  flutter_colorpicker: ^1.1.0
+
+  # Vision System - Camera
+  camera: ^0.12.0
+
+  # Vision System - OCR
+  tesseract_ocr: ^0.5.0
+
+  # Voice System - Recording
+  record: ^7.1.0
+
+dev_dependencies:
+  sentry_dart_plugin: ^3.2.1
+  flutter_lints: ^6.0.0
+
+  # Code Generation for Database
+  drift_dev: ^2.34.0
+  build_runner: ^2.12.2
+  mockito: ^5.4.4
+
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_native_splash: ^2.4.1
+  flutter_launcher_icons: ^0.14.4
+  test: ^1.31.0
+
+flutter_native_splash:
+  color: "#181a20"
+  image: assets/images/lobster_avatar.png
+  color_dark: "#181a20"
+  image_dark: assets/images/lobster_avatar.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  web:
+    generate: true
+  image_path: assets/images/app_icon.png
+  icon_size: 48 # min for Android
+  adaptive_icon_background: "#181a20"
+  adaptive_icon_foreground: assets/images/app_icon.png
+  windows:
+    generate: true
+    image_path: assets/images/app_icon.png
+    icon_size: 48 # min for Windows
+  macos:
+    generate: true
+    image_path: assets/images/app_icon.png
+  linux:
+    generate: true
+    image_path: assets/images/app_icon.png
+    icon_size: 48 # min for Linux
+
+# Removed web package override - using dart:js_interop instead
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/images/lobster_avatar.png
+    - assets/images/lobster_avatar_64.png
+    - assets/images/lobster_avatar_128.png
+    - assets/version.json
+    - assets/component-versions.json
+
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: true
+  project: cloudtolocalllm
+  org: cloudtolocalllm-lg

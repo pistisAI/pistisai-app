@@ -1,0 +1,37 @@
+# Base Image for Zoidbot
+# Using Ubuntu 24.04 as requested to match GitHub Actions runner.
+# Updated to force full rebuild of all services.
+
+FROM ubuntu:24.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install essential tools and Node.js 24
+# We need curl to setup nodesource
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates gnupg rsync tar openssh-client && \
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create custom user 'zoidbot' (UID 1000)
+# Ubuntu 24.04 has a default user 'ubuntu' with UID 1000.
+# We rename it to 'zoidbot' to match our expectation.
+RUN if id -u ubuntu >/dev/null 2>&1; then \
+    usermod -l zoidbot -d /home/zoidbot -m ubuntu; \
+    groupmod -n zoidbot ubuntu; \
+    else \
+    useradd -u 1000 -m -s /bin/bash zoidbot; \
+    fi
+
+# Set up working directory
+WORKDIR /app
+RUN chown zoidbot:zoidbot /app
+
+# Default to non-root user
+USER zoidbot
