@@ -12,6 +12,7 @@ import '../../widgets/common/card_section.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
+import '../../config/app_config.dart';
 import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
 import '../../services/settings_preference_service.dart';
@@ -70,7 +71,6 @@ class _ConfigScreenState extends State<ConfigScreen>
   bool _showDevTools = false;
 
   // System Info
-  final String _appVersion = '1.0.0';
   final String _buildNumber = '20260304';
   String _appPath = '';
   String _configPath = '';
@@ -498,7 +498,7 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Application',
           children: [
-            _readOnly('Version', '$_appVersion (build $_buildNumber)'),
+            _readOnly('Version', '${AppConfig.appVersion} (build $_buildNumber)'),
             _readOnly('Platform',
                 '${Platform.operatingSystem} ${Platform.operatingSystemVersion}'),
             _readOnly('Dart Version', Platform.version.split(' ').first),

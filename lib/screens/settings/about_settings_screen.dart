@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/app_config.dart';
 import '../../config/theme.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 
@@ -33,7 +34,7 @@ class AboutSettingsScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 const Text('Pistisai - AI Agent Manager'),
                 const SizedBox(height: 8),
-                const Text('Version: 1.0.0'),
+                Text('Version: ${AppConfig.appVersion}'),
                 const SizedBox(height: 32),
 
                 // Upgrade to Pro
