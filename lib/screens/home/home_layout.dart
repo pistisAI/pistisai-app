@@ -345,7 +345,9 @@ class _ChatPaneState extends State<_ChatPane> {
                                 widget.onSendMessage(chatService, message),
                           )),
               ),
-              if (connectionManager.isConnected || hasMessages)
+              if (connectionManager.isConnected || hasMessages) ...[
+                // 5-pillar action bar
+                _ActionBar(isConnected: connectionManager.isConnected),
                 GlassContainer(
                   margin: EdgeInsets.only(
                     bottom: widget.isCompact ? spacing.m : spacing.l,
@@ -361,6 +363,7 @@ class _ChatPaneState extends State<_ChatPane> {
                     placeholder: 'Message Hermes...',
                   ),
                 ),
+              ],
             ],
           );
         },
@@ -437,5 +440,193 @@ class _MessageList extends StatelessWidget {
     if (lastUserMessage != null && lastUserMessage.isNotEmpty) {
       chatService.sendMessage(lastUserMessage);
     }
+  }
+}
+
+/// Mini action bar for the 5 pillars — avatar, tools, mood, settings.
+class _ActionBar extends StatelessWidget {
+  final bool isConnected;
+
+  const _ActionBar({required this.isConnected});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _PillarButton(
+            icon: Icons.face_6,
+            label: 'Avatar',
+            enabled: isConnected,
+            onTap: () => _openAvatar(context),
+          ),
+          _PillarButton(
+            icon: Icons.handyman,
+            label: 'Tools',
+            enabled: isConnected,
+            onTap: () => _showTools(context),
+          ),
+          _PillarButton(
+            icon: Icons.favorite,
+            label: 'Mood',
+            enabled: isConnected,
+            onTap: () => _showMood(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openAvatar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('\u{1F3AD} Avatar window coming soon'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _showTools(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => const _ToolsPanel(),
+    );
+  }
+
+  void _showMood(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.favorite, size: 24),
+            SizedBox(width: 8),
+            Text("Zoid's Mood"),
+          ],
+        ),
+        content: const Text('Personality engine coming soon.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PillarButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  const _PillarButton({
+    required this.icon,
+    required this.label,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.4,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: enabled ? onTap : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 18, color: colors.primary),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: colors.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bottom sheet showing Zoid's available capabilities.
+class _ToolsPanel extends StatelessWidget {
+  const _ToolsPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'What Zoid Can Do',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 20),
+            _ToolRow(Icons.desktop_windows, 'Desktop Control', 'Click, type, scroll, drag on your PC'),
+            _ToolRow(Icons.visibility, 'Vision', 'See and analyze your screen'),
+            _ToolRow(Icons.record_voice_over, 'Voice', 'Speak and listen'),
+            _ToolRow(Icons.language, 'Web Search', 'Search and extract web content'),
+            _ToolRow(Icons.code, 'Code Execution', 'Run Python, shell, and Dart scripts'),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToolRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+
+  const _ToolRow(this.icon, this.title, this.description);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(description,
+                    style: TextStyle(
+                        fontSize: 12, color: Colors.grey.shade600)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
