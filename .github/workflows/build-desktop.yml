@@ -150,7 +150,9 @@ jobs:
 
       - name: Install vcpkg dependencies (auth0_flutter)
         run: |
-          # Use pre-installed vcpkg — do NOT git pull as newer versions removed cpprestsdk
+          # Pin vcpkg to a baseline that still has cpprestsdk (removed in newer vcpkg)
+          cd C:\vcpkg
+          git checkout fa9a5b330a
           vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
           echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $GITHUB_ENV
 
