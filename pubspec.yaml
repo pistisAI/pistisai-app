@@ -3,7 +3,7 @@ description: Manage and run powerful Large Language Models locally, orchestrated
 publish_to: none
 homepage: https://pistisai.app
 repository: https://github.com/pistisAI/pistisai-app
-version: 10.1.205+4205
+version: 1.0.0+1
 
 environment:
   sdk: ">=3.5.0 <4.0.0"

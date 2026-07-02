@@ -196,7 +196,7 @@ class AutoUpdateService extends ChangeNotifier {
   String _getCurrentVersion() {
     // This will be implemented using package_info_plus
     // For now, return a placeholder
-    return '10.1.200';
+    return '1.0.0';
   }
 
   /// Download update

@@ -50,7 +50,7 @@ void main([List<String> args = const []]) async {
 
   // Immediate logging to verify Dart entry point is reached
   // Build trigger: force new release tag
-  debugPrint('----- DART MAIN START ----- v10.1.187');
+  debugPrint('----- DART MAIN START ----- v1.0.0');
 
   // Handle command-line arguments (OAuth callback URLs)
   if (args.isNotEmpty) {

@@ -174,7 +174,7 @@ class _SharedWebSocket {
         'maxProtocol': 3,
         'client': {
           'id': 'cli',
-          'version': '10.1.200',
+          'version': '1.0.0',
           'platform': _platformName,
           'mode': 'cli',
         },
@@ -186,7 +186,7 @@ class _SharedWebSocket {
         },
         'device': deviceAuth.toJson(),
         'locale': 'en-US',
-        'userAgent': 'Pistisai/10.1.200',
+        'userAgent': 'Pistisai/1.0.0',
       }
     };
 
@@ -209,7 +209,7 @@ class _SharedWebSocket {
         'maxProtocol': 3,
         'client': {
           'id': 'cli',
-          'version': '10.1.200',
+          'version': '1.0.0',
           'platform': _platformName,
           'mode': 'cli',
         },
@@ -218,7 +218,7 @@ class _SharedWebSocket {
         'caps': [],
         'auth': {'token': isLocalConnection ? _gatewayToken : _authToken},
         'locale': 'en-US',
-        'userAgent': 'Pistisai/10.1.200',
+        'userAgent': 'Pistisai/1.0.0',
       }
     };
 
