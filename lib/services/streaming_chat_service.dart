@@ -599,6 +599,8 @@ class StreamingChatService extends ChangeNotifier {
   Future<void> _autoRenameConversation() async {
     final conversation = _mainChannel;
     if (conversation == null || conversation.title != 'New Chat') return;
+    // Main channel (title: 'Zoid Maltek') will never match — this only fires
+    // if a conversation was created with the 'New Chat' default title.
     if (conversation.userMessageCount != 1) return;
 
     final firstUserMessage =
