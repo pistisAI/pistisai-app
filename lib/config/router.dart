@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/auth_service.dart';
 import '../services/streaming_chat_service.dart';
-import '../di/locator.dart';
-import '../services/onboarding/setup_wizard_service.dart';
 
 import '../screens/login_screen.dart';
 import '../screens/callback_screen.dart';
@@ -207,23 +205,9 @@ class _HomeWithSetupCheckState extends State<_HomeWithSetupCheck> {
       if (mounted) setState(() => _checking = false);
       return;
     }
-    try {
-      final setupWizardService = serviceLocator<SetupWizardService>();
-      final shouldShow = await setupWizardService.shouldShowWizard();
-
-      if (!mounted) return;
-
-      if (shouldShow) {
-        debugPrint(
-            '[Router] No providers configured, redirecting to setup wizard');
-        context.go('/setup');
-      } else {
-        setState(() => _checking = false);
-      }
-    } catch (e) {
-      debugPrint('[Router] Error checking setup status: $e');
-      if (mounted) setState(() => _checking = false);
-    }
+    // Offline-first: never force the setup wizard. The user configures
+    // an agent runtime via Settings when they want to connect.
+    if (mounted) setState(() => _checking = false);
   }
 
   @override
