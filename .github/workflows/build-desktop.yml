@@ -150,6 +150,11 @@ jobs:
 
       - name: Install vcpkg dependencies (auth0_flutter)
         run: |
+          # Update vcpkg ports to get latest (cpprestsdk may have been removed from old ports)
+          cd C:\vcpkg
+          git pull --ff-only 2>&1 || echo "git pull failed, using existing vcpkg"
+          ./bootstrap-vcpkg.bat -disableMetrics 2>&1 || echo "bootstrap skipped"
+          cd ${{ github.workspace }}
           vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
           echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $GITHUB_ENV
 
@@ -222,6 +227,8 @@ jobs:
         run: |
           flutter pub get
           flutter build macos --release
+        env:
+          MACOSX_DEPLOYMENT_TARGET: 11.0
 
       - name: Package macOS App
         run: |
