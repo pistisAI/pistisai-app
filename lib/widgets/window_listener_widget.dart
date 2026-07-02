@@ -135,6 +135,7 @@ class _WindowListenerWidgetState extends State<WindowListenerWidget>
 
   @override
   void onWindowEvent(String eventName, [int? windowId]) {
-    debugPrint(' [WindowListener] Window event: $eventName');
+    // Don't log — this fires for every native event including move/resize
+    // and would flood the console.
   }
 }
