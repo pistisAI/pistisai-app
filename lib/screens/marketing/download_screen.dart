@@ -182,12 +182,12 @@ class DownloadScreen extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _downloadFile(
-                    'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Windows-${AppConfig.appVersion}-Setup.exe',
-                    'Pistisai-Windows-${AppConfig.appVersion}-Setup.exe',
+                    'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Windows-${AppConfig.appVersion}-portable.zip',
+                    'Pistisai-Windows-${AppConfig.appVersion}-portable.zip',
                     context,
                   ),
                   icon: const Icon(Icons.desktop_windows),
-                  label: const Text('Windows Installer'),
+                  label: const Text('Windows Portable'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00c58e),
                     foregroundColor: Colors.white,
@@ -199,7 +199,7 @@ class DownloadScreen extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _downloadFile(
-                    'https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-${AppConfig.appVersion}-portable.zip',
+                    'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Windows-${AppConfig.appVersion}-portable.zip',
                     'Pistisai-${AppConfig.appVersion}-portable.zip',
                     context,
                   ),

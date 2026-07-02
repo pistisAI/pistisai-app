@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "CloudToLocalLLM" "\0"
-            VALUE "FileDescription", "CloudToLocalLLM Desktop Client" "\0"
+            VALUE "CompanyName", "Pistisai" "\0"
+            VALUE "FileDescription", "Pistisai Desktop Client" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "CloudToLocalLLM" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 CloudToLocalLLM. All rights reserved." "\0"
-            VALUE "OriginalFilename", "CloudToLocalLLM.exe" "\0"
-            VALUE "ProductName", "CloudToLocalLLM" "\0"
+            VALUE "InternalName", "Pistisai" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Pistisai. All rights reserved." "\0"
+            VALUE "OriginalFilename", "Pistisai.exe" "\0"
+            VALUE "ProductName", "Pistisai" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

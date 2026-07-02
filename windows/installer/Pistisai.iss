@@ -8,10 +8,10 @@
   #define MyOutputDir "dist\\windows"
 #endif
 
-#define MyAppName "CloudToLocalLLM"
-#define MyAppPublisher "CloudToLocalLLM"
+#define MyAppName "Pistisai"
+#define MyAppPublisher "Pistisai"
 #define MyAppURL "https://cloudtolocalllm.online"
-#define MyAppExeName "CloudToLocalLLM.exe"
+#define MyAppExeName "Pistisai.exe"
 #define MyAppProtocol "online.cloudtolocalllm.app"
 #define MyAppAssocName MyAppName + " Protocol"
 
@@ -30,7 +30,7 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir={#MyOutputDir}
-OutputBaseFilename=CloudToLocalLLM-Windows-x64-Setup
+OutputBaseFilename=Pistisai-Windows-x64-Setup
 SetupIconFile=..\\..\\windows\\runner\\resources\\app_icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/max
