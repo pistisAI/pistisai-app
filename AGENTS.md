@@ -64,10 +64,10 @@ flutter build linux --release
 flutter build web --release
 ```
 
-- Main app package: `pubspec.yaml`, package name `cloudtolocalllm`, version `10.1.200+4200`.
+- Main app package: `pubspec.yaml`, package name `pistisai`, version `1.0.1+1`.
 - Dart SDK constraint: `>=3.5.0 <4.0.0`.
 - Lints: `analysis_options.yaml` includes `flutter_lints`, strong mode, `implicit-casts: false`, `implicit-dynamic: false`, `prefer_single_quotes`, and generated-file excludes.
-- Shared Flutter package: `lib/shared/pubspec.yaml`, package name `cloudtolocalllm_shared`, Dart SDK `>=3.9.0 <4.0.0`.
+- Shared Flutter package: `lib/shared/pubspec.yaml`, package name `pistisai_shared`, Dart SDK `>=3.9.0 <4.0.0`.
 
 ### Drift database codegen
 
