@@ -165,7 +165,8 @@ jobs:
         run: |
           mkdir -p dist/windows
           cd build/windows/x64/runner/Release
-          7z a -tzip ${{ github.workspace }}/dist/windows/Pistisai-Windows-x64-portable.zip *
+          WS="$(echo $GITHUB_WORKSPACE | sed 's|\\|/|g')"
+          7z a -tzip "$WS/dist/windows/Pistisai-Windows-x64-portable.zip" *
           echo "✅ Portable zip created"
 
       - name: Install Inno Setup
