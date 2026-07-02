@@ -154,7 +154,6 @@ jobs:
           cd C:\vcpkg
           git pull --ff-only 2>&1 || echo "git pull failed, using existing vcpkg"
           ./bootstrap-vcpkg.bat -disableMetrics 2>&1 || echo "bootstrap skipped"
-          cd ${{ github.workspace }}
           vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
           echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $GITHUB_ENV
 
