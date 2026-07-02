@@ -32,6 +32,7 @@ class WizardState {
   final ProviderInfo? selectedProvider;
   final String? gatewayPassword; // OpenClaw Gateway password/token
   final String? hermesUrl; // Hermes Agent URL
+  final String? hermesApiKey; // Hermes API key (auto-discovered)
   final bool isLoading;
   final String? errorMessage;
 
@@ -44,6 +45,7 @@ class WizardState {
     this.selectedProvider,
     this.gatewayPassword,
     this.hermesUrl,
+    this.hermesApiKey,
     this.isLoading = false,
     this.errorMessage,
   });
@@ -57,6 +59,7 @@ class WizardState {
     Object? selectedProvider = _unset,
     String? gatewayPassword,
     Object? hermesUrl = _unset,
+    Object? hermesApiKey = _unset,
     bool? isLoading,
     Object? errorMessage = _unset,
   }) {
@@ -73,6 +76,8 @@ class WizardState {
       gatewayPassword: gatewayPassword ?? this.gatewayPassword,
       hermesUrl:
           identical(hermesUrl, _unset) ? this.hermesUrl : hermesUrl as String?,
+      hermesApiKey:
+          identical(hermesApiKey, _unset) ? this.hermesApiKey : hermesApiKey as String?,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
@@ -404,6 +409,20 @@ class SetupWizardService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Auto-discover the Hermes API key from the local .env file
+  Future<String?> discoverHermesApiKey() async {
+    if (_settings == null) return null;
+    final key = await _settings!.getHermesApiKey();
+    if (key != null && key.isNotEmpty) {
+      _state = _state.copyWith(
+        hermesApiKey: key,
+      );
+      notifyListeners();
+      appLogger.info('[SetupWizard] Auto-discovered Hermes API key');
+    }
+    return key;
+  }
+
   /// Complete setup and save configuration
   Future<bool> completeSetup() async {
     final validationError = _validateCompleteSetupInput();
@@ -602,16 +621,13 @@ class SetupWizardService extends ChangeNotifier {
         await settings.setHermesEnabled(true);
         await settings.setHermesUrl(runtimeUrl);
         await settings.setActiveBackend(BackendType.hermes);
-        // Auto-discover and save the Hermes API key from the .env file
-        // so the connection manager can authenticate against the API server.
-        final existingKey = await settings.getHermesApiKey();
-        if (existingKey == null || existingKey.isEmpty) {
-          // getHermesApiKey() already falls back to .env discovery,
-          // but calling setHermesApiKey with the result persists it.
-          final discoveredKey = await settings.getHermesApiKey();
-          if (discoveredKey != null && discoveredKey.isNotEmpty) {
-            await settings.setHermesApiKey(discoveredKey);
-          }
+        // Use the key discovered in the wizard step, or fall back to
+        // auto-discovery from .env if it wasn't loaded yet.
+        final key = _state.hermesApiKey?.isNotEmpty == true
+            ? _state.hermesApiKey
+            : await settings.getHermesApiKey();
+        if (key != null && key.isNotEmpty) {
+          await settings.setHermesApiKey(key);
         }
         break;
       case ProviderType.openclaw:
