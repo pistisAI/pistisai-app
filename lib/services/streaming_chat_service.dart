@@ -145,7 +145,7 @@ class StreamingChatService extends ChangeNotifier {
         );
         _mainChannel = existing;
         appLogger.info(
-          '[StreamingChat] Loaded main channel with ${existing.messages.length} messages',
+          '[StreamingChat] Loaded main channel (${existing.messages.length} messages)',
         );
       } else {
         _createWelcomeConversation();
@@ -197,7 +197,7 @@ class StreamingChatService extends ChangeNotifier {
     if (_mainChannel == null) return;
     await _storageService.saveConversations([_mainChannel!]);
     appLogger.info(
-      '[StreamingChat] Saved main channel with ${_mainChannel!.messages.length} messages',
+      '[StreamingChat] Main channel saved (${_mainChannel!.messages.length} messages)',
     );
   }
 

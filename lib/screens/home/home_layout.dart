@@ -364,7 +364,7 @@ class _ChatPaneState extends State<_ChatPane> {
                     onSendMessage: (message) =>
                         widget.onSendMessage(chatService, message),
                     isLoading: chatService.isLoading,
-                    placeholder: 'Message Hermes...',
+                    placeholder: 'Message Zoid... (/new to reset)',
                   ),
                 ),
               ],
@@ -464,7 +464,7 @@ class _ActionBar extends StatelessWidget {
           _PillarButton(
             icon: Icons.face_6,
             label: 'Avatar',
-            enabled: isConnected,
+            enabled: true,
             onTap: () => _openAvatar(context),
           ),
           _PillarButton(
