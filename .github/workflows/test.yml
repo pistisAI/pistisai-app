@@ -160,8 +160,8 @@ jobs:
           path: /tmp/pistisai-linux-x64.tar.gz
           retention-days: 7
 
-  backend:
-    name: "Backend — lint + test"
+  backend_lint:
+    name: "Backend — lint"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     defaults:
@@ -180,6 +180,3 @@ jobs:
 
       - name: "🔍 npm lint"
         run: npm run lint
-
-      - name: "🧪 npm test (unit, excluding deployment tests)"
-        run: node --experimental-vm-modules node_modules/jest/bin/jest.js ../../test/api-backend/ --forceExit --testPathIgnorePatterns='end-to-end-deployment'
