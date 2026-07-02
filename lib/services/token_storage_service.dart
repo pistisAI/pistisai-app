@@ -7,7 +7,7 @@ import '../di/locator.dart' as di;
 class TokenStorageService {
   static final _secureStorage = const FlutterSecureStorage();
   static encrypt.Encrypter? _encrypter;
-  static encrypt.IV? _iv;
+  static encrypt.Key? _aesKey;
   static bool _secureStorageAvailable = true;
   static final Map<String, String> _memoryFallback = {};
   SessionStorageService? _sessionStorage;
@@ -33,20 +33,34 @@ class TokenStorageService {
         await _secureStorage.write(key: 'auth_encryption_key', value: keyStr);
       }
 
-      final key = encrypt.Key.fromBase64(keyStr);
-      _encrypter = encrypt.Encrypter(encrypt.AES(key));
-      _iv =
-          encrypt.IV.fromLength(16); // Static IV for simplicity in this context
+      _aesKey = encrypt.Key.fromBase64(keyStr);
+      _encrypter = encrypt.Encrypter(encrypt.AES(_aesKey!));
       _secureStorageAvailable = true;
     } catch (e) {
       debugPrint(
           '[TokenStorageService] Secure storage unavailable, using in-memory fallback: $e');
-      // Generate in-memory encryption key as fallback
       final key = encrypt.Key.fromSecureRandom(32);
+      _aesKey = key;
       _encrypter = encrypt.Encrypter(encrypt.AES(key));
-      _iv = encrypt.IV.fromLength(16);
       _secureStorageAvailable = false;
     }
+  }
+
+  /// Encrypt value with a random IV, return "base64iv:base64ciphertext"
+  String _encryptWithRandomIV(String plaintext) {
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypted = _encrypter!.encrypt(plaintext, iv: iv);
+    return '${iv.base64}:${encrypted.base64}';
+  }
+
+  /// Decrypt a value stored as "base64iv:base64ciphertext"
+  String _decryptWithIV(String stored) {
+    final parts = stored.split(':');
+    if (parts.length != 2) {
+      throw FormatException('Invalid encrypted format');
+    }
+    final iv = encrypt.IV.fromBase64(parts[0]);
+    return _encrypter!.decrypt64(parts[1], iv: iv);
   }
 
   Future<void> saveToken(String key, String value) async {
@@ -75,8 +89,8 @@ class TokenStorageService {
     }
 
     try {
-      final encrypted = _encrypter!.encrypt(value, iv: _iv);
-      await _secureStorage.write(key: 'token_$key', value: encrypted.base64);
+      final encrypted = _encryptWithRandomIV(value);
+      await _secureStorage.write(key: 'token_$key', value: encrypted);
     } catch (e) {
       debugPrint(
           '[TokenStorageService] Failed to write to secure storage, using memory fallback: $e');
@@ -104,7 +118,7 @@ class TokenStorageService {
       final encryptedStr = await _secureStorage.read(key: 'token_$key');
       if (encryptedStr == null) return null;
 
-      return _encrypter!.decrypt64(encryptedStr, iv: _iv);
+      return _decryptWithIV(encryptedStr);
     } catch (e) {
       debugPrint('[TokenStorageService] Decryption failed for key: $key - $e');
       return _memoryFallback['token_$key'];
@@ -135,18 +149,18 @@ class TokenStorageService {
 
     await _secureStorage.write(
         key: 'tokens_$provider:$email:access',
-        value: _encrypter!.encrypt(accessToken, iv: _iv).base64);
+        value: _encryptWithRandomIV(accessToken));
 
     if (idToken != null) {
       await _secureStorage.write(
           key: 'tokens_$provider:$email:id',
-          value: _encrypter!.encrypt(idToken, iv: _iv).base64);
+          value: _encryptWithRandomIV(idToken));
     }
 
     if (refreshToken != null) {
       await _secureStorage.write(
           key: 'tokens_$provider:$email:refresh',
-          value: _encrypter!.encrypt(refreshToken, iv: _iv).base64);
+          value: _encryptWithRandomIV(refreshToken));
     }
 
     // Keep track of connected emails for this provider
@@ -169,6 +183,6 @@ class TokenStorageService {
     final encrypted =
         await _secureStorage.read(key: 'tokens_$provider:$email:access');
     if (encrypted == null) return null;
-    return _encrypter!.decrypt64(encrypted, iv: _iv);
+    return _decryptWithIV(encrypted);
   }
 }

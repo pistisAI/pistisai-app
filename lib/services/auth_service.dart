@@ -143,12 +143,7 @@ class AuthService extends ChangeNotifier {
   String get assistantName {
     final user = currentUser;
     if (user == null) return 'Your AI Assistant';
-    if (user.email == 'christopher.maltais@gmail.com' ||
-        user.email == 'chokesmaster@gmail.com' ||
-        user.email == 'dev@pistisai.app') {
-      return 'Pistisai';
-    }
-    return '${user.name ?? 'Your'}\'s Assistant';
+    return 'Pistisai';
   }
 
   // Platform detection
@@ -170,6 +165,7 @@ class AuthService extends ChangeNotifier {
 
   /// Mock/Developer login for testing purposes
   Future<void> loginMockDeveloper() async {
+    if (kReleaseMode) return; // Never allow in production builds
     debugPrint('[AuthService] loginMockDeveloper() called');
     _isLoading.value = true;
     notifyListeners();

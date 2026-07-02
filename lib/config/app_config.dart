@@ -22,11 +22,10 @@ class AppConfig {
   static const AuthProviderType authProvider = AuthProviderType.auth0;
 
   // Sentry Configuration
-  // Can be overridden at compile time using --dart-define=SENTRY_DSN=your_dsn
+  // Override at compile time: flutter build --dart-define=SENTRY_DSN=your_dsn
   static const String sentryDsn = String.fromEnvironment(
     'SENTRY_DSN',
-    defaultValue:
-        'https://b2fd3263e0ad7b490b0583f7df2e165a@o4509853774315520.ingest.us.sentry.io/4509853780541440',
+    defaultValue: '',
   );
   static const String sentryEnvironment = String.fromEnvironment(
     'SENTRY_ENVIRONMENT',
@@ -59,11 +58,9 @@ class AppConfig {
   // Feature Flags
   static const bool enableDarkMode = true;
   static const bool enableAnalytics = false; // Disabled for privacy
-  static const bool enableDebugMode = true; // Enabled for v3.5.2 development
-
-  // Enhanced debug features for v3.5.2
-  static const bool showTunnelDebugInfo = true;
-  static const bool enableVerboseLogging = true;
+  static bool get enableDebugMode => !kReleaseMode;
+  static bool get showTunnelDebugInfo => !kReleaseMode;
+  static bool get enableVerboseLogging => !kReleaseMode;
 
   // Tier-based feature flags
   static const bool enableTierDetection = true;
@@ -205,7 +202,7 @@ class AppConfig {
   static const int adminDashboardRefreshIntervalSeconds = 30;
   static const int adminRealtimeUpdateIntervalSeconds = 5;
   static const bool enableAdminDarkMode = true;
-  static const bool showAdminDebugInfo = enableDebugMode;
+  static bool get showAdminDebugInfo => enableDebugMode;
 
   // Debug logging for configuration
   static void logConfiguration() {
