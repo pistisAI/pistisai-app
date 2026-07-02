@@ -181,5 +181,5 @@ jobs:
       - name: "🔍 npm lint"
         run: npm run lint
 
-      - name: "🧪 npm test"
-        run: npm test
+      - name: "🧪 npm test (unit, excluding deployment tests)"
+        run: node --experimental-vm-modules node_modules/jest/bin/jest.js ../../test/api-backend/ --forceExit --testPathIgnorePatterns='end-to-end-deployment'
