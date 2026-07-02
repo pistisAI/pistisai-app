@@ -4,10 +4,10 @@ import 'package:cloudtolocalllm/services/settings_preference_service.dart';
 /// Application configuration constants
 class AppConfig {
   // App Information
-  static const String appName = 'Aiman';
-  static const String appVersion = '1.0.0';
+  static const String appName = 'Pistisai';
+  static const String appVersion = '1.0.1';
   static const String appDescription =
-      'Privacy-first local AI workspace with support for multiple AI backends. Login is optional and used only to enable Cloud Relay and secure tunnels.';
+      'Local-first agent companion. Offline until you choose to connect.';
 
   // URLs
   static const String homepageUrl = 'https://pistisai.app';
