@@ -1088,9 +1088,7 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
       }
     }
 
-    // Start periodic scanning for new providers
-    discoveryService.startPeriodicScanning();
-    debugPrint('[ServiceLocator] Started periodic provider scanning');
+    debugPrint('[ServiceLocator] Provider discovery completed (periodic scan disabled)');
   } catch (e) {
     debugPrint(
         '[ServiceLocator] Error during provider discovery initialization: $e');
