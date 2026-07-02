@@ -33,17 +33,6 @@ class StreamingChatService extends ChangeNotifier {
   /// The main channel — a single persistent conversation with Zoid.
   Conversation? _mainChannel;
 
-  // Backward-compatible aliases so legacy code continues to work.
-  List<Conversation> get _conversations =>
-      _mainChannel != null ? [_mainChannel!] : [];
-  set _conversations(List<Conversation> v) {
-    if (v.isNotEmpty) _mainChannel = v.first;
-  }
-  Conversation? get _currentConversation => _mainChannel;
-  set _currentConversation(Conversation? v) {
-    if (v != null) _mainChannel = v;
-  }
-
   String? _selectedModel;
   bool _isLoading = false;
   bool _isStreaming = false;
@@ -212,69 +201,23 @@ class StreamingChatService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Select a conversation
-  void selectConversation(Conversation? conversation) {
-    _currentConversation = conversation;
 
-    // Cancel any ongoing streaming
-    _cancelCurrentStream();
-
-    notifyListeners();
-  }
-
-  /// Select a conversation by ID (null to deselect)
-  void selectConversationById(String? conversationId) {
-    if (conversationId == null) {
-      _currentConversation = null;
-    } else {
-      final index = _conversations.indexWhere((c) => c.id == conversationId);
-      if (index != -1) {
-        _currentConversation = _conversations[index];
-      }
-    }
-    _cancelCurrentStream();
-    notifyListeners();
-  }
-
-  /// Delete a conversation
-  void deleteConversation(Conversation conversation) {
-    _conversations.removeWhere((c) => c.id == conversation.id);
-
-    if (_currentConversation?.id == conversation.id) {
-      _currentConversation =
-          _conversations.isNotEmpty ? _conversations.first : null;
-    }
-
-    _saveConversations();
-    notifyListeners();
-  }
 
   /// Update conversation title
   void updateConversationTitle(Conversation conversation, String newTitle) {
-    final index = _conversations.indexWhere((c) => c.id == conversation.id);
-    if (index != -1) {
-      _conversations[index] = _conversations[index].updateTitle(newTitle);
-      if (_currentConversation?.id == conversation.id) {
-        _currentConversation = _conversations[index];
-      }
-      _saveConversations();
-      notifyListeners();
-    }
+    if (_mainChannel == null || _mainChannel!.id != conversation.id) return;
+    _mainChannel = _mainChannel!.updateTitle(newTitle);
+    _saveConversations();
+    notifyListeners();
   }
 
   /// Set the selected model
   void setSelectedModel(String model) {
     _selectedModel = model;
 
-    // Update current conversation's default model
-    if (_currentConversation != null) {
-      final index = _conversations.indexWhere(
-        (c) => c.id == _currentConversation!.id,
-      );
-      if (index != -1) {
-        _conversations[index] = _conversations[index].updateModel(model);
-        _currentConversation = _conversations[index];
-      }
+    // Update main channel's default model
+    if (_mainChannel != null) {
+      _mainChannel = _mainChannel!.updateModel(model);
     }
 
     notifyListeners();
@@ -339,7 +282,7 @@ class StreamingChatService extends ChangeNotifier {
       // If the streaming service is Hermes, also listen to agent events
       _subscribeToAgentEvents(streamingService);
 
-      final conversationId = _currentConversation!.id;
+      final conversationId = _mainChannel!.id;
       final messageStream = streamingService.streamResponse(
         prompt: content.trim(),
         model: streamingModel,
@@ -357,9 +300,9 @@ class StreamingChatService extends ChangeNotifier {
       appLogger.error('[StreamingChat] Error in sendMessage', error: e);
 
       // Remove streaming message if it was added
-      if (_currentConversation != null &&
-          _currentConversation!.messages.isNotEmpty) {
-        final lastMessage = _currentConversation!.messages.last;
+      if (_mainChannel != null &&
+          _mainChannel!.messages.isNotEmpty) {
+        final lastMessage = _mainChannel!.messages.last;
         if (lastMessage.isStreaming) {
           _removeLastMessage();
           appLogger.debug(
@@ -459,9 +402,9 @@ class StreamingChatService extends ChangeNotifier {
     }
 
     // Always remove the streaming placeholder if it exists
-    if (_currentConversation != null &&
-        _currentConversation!.messages.isNotEmpty &&
-        _currentConversation!.messages.last.id == _currentStreamingMessageId) {
+    if (_mainChannel != null &&
+        _mainChannel!.messages.isNotEmpty &&
+        _mainChannel!.messages.last.id == _currentStreamingMessageId) {
       _removeLastMessage();
     }
 
@@ -750,9 +693,9 @@ class StreamingChatService extends ChangeNotifier {
       appLogger.error('[StreamingChat] Fallback chat error', error: e);
 
       // Remove loading message if it exists
-      if (_currentConversation != null &&
-          _currentConversation!.messages.isNotEmpty) {
-        final lastMessage = _currentConversation!.messages.last;
+      if (_mainChannel != null &&
+          _mainChannel!.messages.isNotEmpty) {
+        final lastMessage = _mainChannel!.messages.last;
         if (lastMessage.isLoading) {
           _removeLastMessage();
         }

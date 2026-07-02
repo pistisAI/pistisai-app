@@ -412,7 +412,7 @@ class SetupWizardService extends ChangeNotifier {
   /// Auto-discover the Hermes API key from the local .env file
   Future<String?> discoverHermesApiKey() async {
     if (_settings == null) return null;
-    final key = await _settings!.getHermesApiKey();
+    final key = await _settings.getHermesApiKey();
     if (key != null && key.isNotEmpty) {
       _state = _state.copyWith(
         hermesApiKey: key,
