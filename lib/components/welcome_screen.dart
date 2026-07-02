@@ -3,12 +3,10 @@ import '../config/theme_extensions.dart';
 
 class WelcomeScreen extends StatelessWidget {
   final VoidCallback onNewChat;
-  final Function(String) onAction;
 
   const WelcomeScreen({
     super.key,
     required this.onNewChat,
-    required this.onAction,
   });
 
   @override
@@ -19,21 +17,22 @@ class WelcomeScreen extends StatelessWidget {
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        constraints: const BoxConstraints(maxWidth: 600),
+        constraints: const BoxConstraints(maxWidth: 540),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo or Icon with Glow
+              const SizedBox(height: 32),
+              // Logo with Glow
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: colors.primary.withValues(alpha: 0.3),
+                      color: colors.primary.withValues(alpha: 0.25),
                       blurRadius: 40,
-                      spreadRadius: 10,
+                      spreadRadius: 8,
                     ),
                   ],
                 ),
@@ -41,54 +40,83 @@ class WelcomeScreen extends StatelessWidget {
                   tag: 'app_logo',
                   child: Icon(
                     Icons.auto_awesome,
-                    size: 80,
+                    size: 72,
                     color: colors.primary,
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
+              // Title
               Text(
-                'Runtime channel ready',
-                style: theme.textTheme.displayMedium?.copyWith(
+                'Pistisai',
+                style: theme.textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colors.textColor,
+                  letterSpacing: 0.5,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              // Subtitle — offline-first positioning
               Text(
-                'Talk to the selected agent runtime. Local model servers stay in support roles for memory, summaries, and background tasks.',
+                'Your agent companion. Fully offline until you choose to connect.',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: colors.textColorLight,
+                  height: 1.4,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 48),
-              // Quick Action Cards
+              const SizedBox(height: 40),
+              // Offline-friendly suggestion
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colors.backgroundCard.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: colors.secondary.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 20,
+                      color: colors.primary,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Type a message or tap /new to start. Connect an agent runtime in Settings for AI responses and desktop control.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.textColorLight,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Quick actions that work offline
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _QuickAction(
-                    icon: Icons.route_outlined,
-                    label: 'Plan Task',
-                    onTap: () => onAction('Plan the next steps for '),
+                    icon: Icons.face_6,
+                    label: 'Avatar',
+                    onTap: onNewChat,
                   ),
                   const SizedBox(width: 16),
                   _QuickAction(
-                    icon: Icons.desktop_windows_outlined,
-                    label: 'Desktop Action',
-                    onTap: () => onAction(
-                        'Request approval before using desktop control to '),
-                  ),
-                  const SizedBox(width: 16),
-                  _QuickAction(
-                    icon: Icons.manage_search_outlined,
-                    label: 'Inspect Context',
-                    onTap: () =>
-                        onAction('Inspect the current context and summarize '),
+                    icon: Icons.settings_outlined,
+                    label: 'Settings',
+                    onTap: () {},
+                    // Settings navigation handled externally via context.go
                   ),
                 ],
               ),
+              const SizedBox(height: 32),
             ],
           ),
         ),

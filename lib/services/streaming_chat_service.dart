@@ -682,14 +682,12 @@ class StreamingChatService extends ChangeNotifier {
         // Auto-rename conversation if it's the first message
         await _autoRenameConversation();
       } else {
-        final errorMessage = Message.assistant(
+        final offlineMessage = Message.assistant(
           content:
-              'Sorry, I encountered an error while processing your request.',
+              'Agent runtime not configured \u2014 your message has been saved locally. Configure an agent in Settings to get AI responses and use desktop control features. The app works fully offline in the meantime.',
           model: fallbackModel,
-          status: MessageStatus.error,
-          error: 'Connection error',
         );
-        _addMessageToCurrentConversation(errorMessage);
+        _addMessageToCurrentConversation(offlineMessage);
       }
     } catch (e) {
       appLogger.error('[StreamingChat] Fallback chat error', error: e);

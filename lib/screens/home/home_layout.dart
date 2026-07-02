@@ -195,7 +195,7 @@ class _ChatPaneState extends State<_ChatPane> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'No Local Agent Connected',
+                    'No Agent Connected',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.amber,
@@ -203,7 +203,7 @@ class _ChatPaneState extends State<_ChatPane> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'To orchestrate local models and enable desktop controls, please download and run the companion app.',
+                    'Configure an agent runtime in Settings to enable AI responses and desktop control.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.8),
                     ),
@@ -213,9 +213,9 @@ class _ChatPaneState extends State<_ChatPane> {
             ),
             const SizedBox(width: 12),
             ElevatedButton.icon(
-              onPressed: () => context.go('/download'),
-              icon: const Icon(Icons.download_rounded, size: 16),
-              label: const Text('Download App'),
+              onPressed: () => context.go('/config'),
+              icon: const Icon(Icons.settings_rounded, size: 16),
+              label: const Text('Settings'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
                 foregroundColor: Colors.black87,
@@ -276,7 +276,7 @@ class _ChatPaneState extends State<_ChatPane> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Pistisai requires the desktop companion app to connect to your local agent runtimes (Hermes, OpenClaw, etc.) and orchestrate secure desktop capabilities.',
+                'Configure an agent runtime in Settings to get started, or use the avatar and local features while offline.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurface.withValues(alpha: 0.7),
                   height: 1.4,
@@ -284,11 +284,11 @@ class _ChatPaneState extends State<_ChatPane> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              // Download CTA
+              // Settings CTA
               ElevatedButton.icon(
-                onPressed: () => context.go('/download'),
-                icon: const Icon(Icons.download_rounded),
-                label: const Text('Download Companion App'),
+                onPressed: () => context.go('/config'),
+                icon: const Icon(Icons.settings_rounded),
+                label: const Text('Open Settings'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,
                   foregroundColor: Colors.black87,
@@ -343,8 +343,6 @@ class _ChatPaneState extends State<_ChatPane> {
                       )
                     : WelcomeScreen(
                         onNewChat: () => chatService.resetContext(),
-                        onAction: (message) =>
-                            widget.onSendMessage(chatService, message),
                       ),
               ),
               // 5-pillar action bar — always visible
