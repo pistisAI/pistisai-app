@@ -361,15 +361,8 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 48),
 
-          // Pillar cards grid
-          Wrap(
-            spacing: isMobile ? 16 : 24,
-            runSpacing: isMobile ? 16 : 24,
-            alignment: WrapAlignment.center,
-            children: pillars.map((p) => _buildPillarCard(
-              context, p, isMobile || isTablet,
-            )).toList(),
-          ),
+          // Pillar cards grid — equal height on desktop, stacked on mobile
+          _buildPillarsGrid(context, pillars, isMobile),
 
           const SizedBox(height: 48),
 
@@ -401,9 +394,41 @@ class HomepageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPillarCard(BuildContext context, _PillarData p, bool isCompact) {
+  Widget _buildPillarsGrid(
+    BuildContext context,
+    List<_PillarData> pillars,
+    bool isMobile,
+  ) {
+    if (isMobile) {
+      return Wrap(
+        spacing: 16,
+        runSpacing: 16,
+        alignment: WrapAlignment.center,
+        children: pillars.map((p) => SizedBox(
+          width: double.infinity,
+          child: _buildPillarCard(context, p),
+        )).toList(),
+      );
+    }
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 1100),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: pillars.map((p) => Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: _buildPillarCard(context, p),
+            ),
+          )).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPillarCard(BuildContext context, _PillarData p) {
     return Container(
-      width: isCompact ? double.infinity : 240,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFF1E2230),
