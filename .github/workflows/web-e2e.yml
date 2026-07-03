@@ -49,7 +49,7 @@ jobs:
         run: flutter pub get
 
       - name: "🌐 flutter build web --release"
-        run: flutter build web --release --no-tree-shake-icons
+        run: flutter build web --release --no-tree-shake-icons --no-web-resources-cdn
 
       - name: "🔍 Verify splash fix is in built index.html"
         run: |

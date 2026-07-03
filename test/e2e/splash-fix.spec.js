@@ -47,7 +47,7 @@ test.describe("Splash fix (PR #416)", () => {
     // Production build on a fresh CI runner typically paints in 3-6s; the
     // 8s splash timeout already covers the slow case.
     await expect(page.locator(GLASS_PANE_SELECTOR).first()).toBeVisible({
-      timeout: 25_000,
+      timeout: 15_000,
     });
   });
 
