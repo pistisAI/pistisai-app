@@ -1,6 +1,8 @@
-# Pistisai 🦞
+# Pistisai — ΠΙΣΤΙΣΑΙ
 
 **A local-first companion and desktop capability layer for your AI agent. Private, secure, yours.**
+
+> *Πίστις (Pistis) — the ancient spirit of trust, honesty, and good faith. After fleeing Pandora's box, she returned to Olympus. Pistisai builds a Stoa worthy of her return.*
 
 Your AI runs on your hardware. The app gives it voice, vision, desktop control, and a secure channel across all your devices — no data leaves your network unless you decide otherwise.
 

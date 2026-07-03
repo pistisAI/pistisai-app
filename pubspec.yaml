@@ -127,9 +127,9 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#181a20"
-  image: assets/images/lobster_avatar.png
+  image: assets/images/app_icon.png
   color_dark: "#181a20"
-  image_dark: assets/images/lobster_avatar.png
+  image_dark: assets/images/app_icon.png
 
 flutter_launcher_icons:
   android: true
@@ -159,6 +159,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/brand/
+    - assets/images/app_icon.png
     - assets/images/lobster_avatar.png
     - assets/images/lobster_avatar_64.png
     - assets/images/lobster_avatar_128.png
