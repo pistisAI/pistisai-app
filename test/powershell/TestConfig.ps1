@@ -137,21 +137,17 @@ class HomeScreen extends StatelessWidget {
 "@
         }
         
-        # Sample SSH keys
+        # Sample SSH keys (dummy placeholders — never real keys)
         SSHKeys = @{
-            "id_rsa" = @"
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAFwAAAAdzc2gtcn
-NhAAAAAwEAAQAAAQEA1234567890abcdef...
+            "id_rsa" = @"-----BEGIN OPENSSH PRIVATE KEY-----
+dummy-placeholder-do-not-use
 -----END OPENSSH PRIVATE KEY-----
 "@
             
             "id_rsa.pub" = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD1234567890abcdef... testuser@testhost"
             
-            "id_ed25519" = @"
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAbcdef1234567890...
+            "id_ed25519" = @"-----BEGIN OPENSSH PRIVATE KEY-----
+dummy-placeholder-do-not-use
 -----END OPENSSH PRIVATE KEY-----
 "@
             
