@@ -24,23 +24,23 @@ class ThemeConfig {
   // Color Definitions
   // ============================================================================
 
-  /// Primary brand color (Pistis Gold)
-  static const Color primaryColor = Color(0xFFD4AF37);
+  /// Primary brand color (Pistis Gold) — Πίστις
+  static const Color primaryColor = Color(0xFFFFD700);
 
-  /// Secondary brand color (Warm Amber Gold)
-  static const Color secondaryColor = Color(0xFFE8C547);
+  /// Secondary brand color (Warm Gold)
+  static const Color secondaryColor = Color(0xFFFFE44D);
 
   /// Accent color (Deep Gold)
-  static const Color accentColor = Color(0xFFC9A227);
+  static const Color accentColor = Color(0xFFD4A017);
 
-  // Dark Mode Colors — Pistisai warm dark
-  static const Color darkBackgroundMain = Color(0xFF0F0F1A);
-  static const Color darkBackgroundCard = Color(0xFF1A1A2E);
+  // Dark Mode Colors — Pistisai warm dark (refined 2026-07)
+  static const Color darkBackgroundMain = Color(0xFF181A20);
+  static const Color darkBackgroundCard = Color(0xFF1E2230);
   static const Color darkTextColor = Color(0xFFF5E6C8);
   static const Color darkTextColorLight = Color(0xFFB8A88A);
   static const Color darkBorderColor = Color(0xFF2A2A3E);
-  static const Color darkGlassBackground = Color(0x33D4AF37);
-  static const Color darkGlassBorder = Color(0x26D4AF37);
+  static const Color darkGlassBackground = Color(0x33FFD700);
+  static const Color darkGlassBorder = Color(0x26FFD700);
 
   // Light Mode Colors
   static const Color lightBackgroundMain = Colors.white;

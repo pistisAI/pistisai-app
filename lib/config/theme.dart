@@ -9,16 +9,16 @@ import 'theme_extensions.dart';
 class AppTheme {
   // Color scheme matching Pistisai gold-on-dark branding
   static const Color primaryColor = Color(
-    0xFFD4AF37,
+    0xFFFFD700,
   ); // Pistis Gold
   static const Color secondaryColor = Color(
-    0xFFE8C547,
-  ); // Warm Amber Gold
-  static const Color accentColor = Color(0xFFC9A227); // Deep Gold
+    0xFFFFE44D,
+  ); // Warm Gold
+  static const Color accentColor = Color(0xFFD4A017); // Deep Gold
 
   // Background colors
-  static const Color backgroundMain = Color(0xFF0F0F1A); // Warm dark
-  static const Color backgroundCard = Color(0xFF1A1A2E); // Card dark
+  static const Color backgroundMain = Color(0xFF181A20); // Warm dark
+  static const Color backgroundCard = Color(0xFF1E2230); // Card dark
   static const Color backgroundLight = Color(0xFFf5f5f5); // --bg-light: #f5f5f5
 
   // Text colors

@@ -64,7 +64,7 @@ class AppLogo extends StatelessWidget {
     final effectiveBorderColor = borderColor ?? AppTheme.primaryColor;
     final borderWidth = size * 0.04;
 
-    // Pistisai lobster avatar
+    // Pistisai logos (4-column stoa portico)
     String assetPath = 'assets/images/lobster_avatar_64.png';
     if (size >= 128) {
       assetPath = 'assets/images/lobster_avatar_128.png';
@@ -98,10 +98,10 @@ class AppLogo extends StatelessWidget {
           height: size,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            // Fallback to lobster emoji if image fails
+            // Fallback to gold P monogram if image fails
             return Center(
               child: Text(
-                '🦞',
+                'P',
                 style: TextStyle(fontSize: size * 0.6),
               ),
             );
@@ -248,10 +248,10 @@ class GradientAppLogo extends StatelessWidget {
           height: size,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            // Fallback to lobster emoji if image fails
+            // Fallback to gold P monogram if image fails
             return Center(
               child: Text(
-                '🦞',
+                'P',
                 style: TextStyle(fontSize: size * 0.6, color: Colors.white),
               ),
             );
