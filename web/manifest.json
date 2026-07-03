@@ -5,8 +5,8 @@
     "display": "standalone",
     "background_color": "#181a20",
     "theme_color": "#181a20",
-    "description": "Manage and run powerful Large Language Models locally, orchestrated via a cloud interface.",
-    "orientation": "portrait-primary",
+    "description": "A portico for private AI — four pillars that know you, run on your machine, and grow with you. Local-first AI companion with avatar, desktop control, and vision.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
