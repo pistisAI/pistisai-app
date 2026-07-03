@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:cloudtolocalllm/services/tunnel/interfaces/tunnel_models.dart';
-import 'package:cloudtolocalllm/services/tunnel/persistent_request_queue.dart';
+import 'package:pistisai/services/tunnel/interfaces/tunnel_models.dart';
+import 'package:pistisai/services/tunnel/persistent_request_queue.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

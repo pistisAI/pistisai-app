@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 
 /// Application configuration constants
 class AppConfig {

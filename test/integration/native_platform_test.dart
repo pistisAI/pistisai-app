@@ -4,7 +4,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/main.dart' as app;
+import 'package:pistisai/main.dart' as app;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

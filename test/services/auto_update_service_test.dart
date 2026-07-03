@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/auto_update_service.dart';
+import 'package:pistisai/services/auto_update_service.dart';
 
 void main() {
   group('AutoUpdateService', () {

@@ -1,7 +1,7 @@
-import 'package:cloudtolocalllm/config/app_config.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloudtolocalllm/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
 /// Connection Test Step
 /// Tests connectivity to the selected provider

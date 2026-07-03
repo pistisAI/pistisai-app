@@ -1,6 +1,6 @@
-import 'package:cloudtolocalllm/models/local_think_job.dart';
-import 'package:cloudtolocalllm/services/hermes_manager/local_think_artifact_preview_service.dart';
-import 'package:cloudtolocalllm/services/hermes_manager/local_think_job_service.dart';
+import 'package:pistisai/models/local_think_job.dart';
+import 'package:pistisai/services/hermes_manager/local_think_artifact_preview_service.dart';
+import 'package:pistisai/services/hermes_manager/local_think_job_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

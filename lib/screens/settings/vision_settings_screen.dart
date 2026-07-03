@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloudtolocalllm/di/locator.dart' as di;
-import 'package:cloudtolocalllm/services/vision/vision_service.dart';
-import 'package:cloudtolocalllm/services/vision/region_capture_service.dart';
-import 'package:cloudtolocalllm/services/vision/camera_capture_service.dart';
-import 'package:cloudtolocalllm/services/vision/ocr_engine_service.dart';
+import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/services/vision/vision_service.dart';
+import 'package:pistisai/services/vision/region_capture_service.dart';
+import 'package:pistisai/services/vision/camera_capture_service.dart';
+import 'package:pistisai/services/vision/ocr_engine_service.dart';
 
 /// Vision Settings Screen
 /// Provides UI for configuring and testing vision system services

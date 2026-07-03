@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/settings_validator.dart';
+import 'package:pistisai/services/settings_validator.dart';
 
 void main() {
   group('SettingsValidator', () {

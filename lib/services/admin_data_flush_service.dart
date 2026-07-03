@@ -385,13 +385,13 @@ class AdminDataFlushService extends ChangeNotifier {
     try {
       // Clear Pistisai-specific localStorage keys
       final keysToRemove = [
-        'cloudtolocalllm_access_token',
-        'cloudtolocalllm_id_token',
-        'cloudtolocalllm_token_expiry',
-        'cloudtolocalllm_authenticated',
-        'cloudtolocalllm_auth_logs',
-        'cloudtolocalllm_last_validation',
-        'cloudtolocalllm_auth_persistent',
+        'pistisai_access_token',
+        'pistisai_id_token',
+        'pistisai_token_expiry',
+        'pistisai_authenticated',
+        'pistisai_auth_logs',
+        'pistisai_last_validation',
+        'pistisai_auth_persistent',
       ];
 
       for (final key in keysToRemove) {

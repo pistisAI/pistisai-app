@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/services/avatar/personality_engine.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/services/avatar/personality_engine.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 @GenerateMocks([LocalBrain])
 import 'personality_engine_test.mocks.dart';

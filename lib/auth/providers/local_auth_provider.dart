@@ -27,7 +27,7 @@ class LocalAuthProvider extends AuthProvider {
     debugPrint('[LocalAuthProvider] Initializing local-only auth...');
     _currentUser = UserModel(
       id: 'local-user',
-      email: 'local@cloudtolocalllm.local',
+      email: 'local@pistisai.local',
       name: 'Local User',
       nickname: 'local',
       createdAt: DateTime.now(),

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/desktop_control/window_manager_service.dart';
+import 'package:pistisai/services/desktop_control/window_manager_service.dart';
 
 void main() {
   late WindowManagerService service;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 /// Represents the current expression/state of the agent.
 enum AgentState {

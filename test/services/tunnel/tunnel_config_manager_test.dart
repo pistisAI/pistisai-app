@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:cloudtolocalllm/services/tunnel/interfaces/tunnel_config.dart';
-import 'package:cloudtolocalllm/services/tunnel/tunnel_config_manager.dart';
+import 'package:pistisai/services/tunnel/interfaces/tunnel_config.dart';
+import 'package:pistisai/services/tunnel/tunnel_config_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

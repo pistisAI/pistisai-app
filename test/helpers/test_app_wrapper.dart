@@ -6,10 +6,10 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloudtolocalllm/services/theme_provider.dart';
-import 'package:cloudtolocalllm/services/platform_detection_service.dart';
-import 'package:cloudtolocalllm/services/platform_adapter.dart';
-import 'package:cloudtolocalllm/config/theme.dart';
+import 'package:pistisai/services/theme_provider.dart';
+import 'package:pistisai/services/platform_detection_service.dart';
+import 'package:pistisai/services/platform_adapter.dart';
+import 'package:pistisai/config/theme.dart';
 import 'mock_services.dart';
 
 /// Wraps a widget with MaterialApp and theme providers for testing

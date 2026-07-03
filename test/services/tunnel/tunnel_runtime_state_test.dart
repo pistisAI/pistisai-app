@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:cloudtolocalllm/services/tunnel/connection_state_tracker.dart';
-import 'package:cloudtolocalllm/services/tunnel/interfaces/tunnel_models.dart';
-import 'package:cloudtolocalllm/services/tunnel/ssh_host_key_manager.dart';
+import 'package:pistisai/services/tunnel/connection_state_tracker.dart';
+import 'package:pistisai/services/tunnel/interfaces/tunnel_models.dart';
+import 'package:pistisai/services/tunnel/ssh_host_key_manager.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

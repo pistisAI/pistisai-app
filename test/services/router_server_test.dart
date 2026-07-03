@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloudtolocalllm/database/drift_local_brain.dart' as brain;
-import 'package:cloudtolocalllm/services/providers/base_provider.dart'
+import 'package:pistisai/database/drift_local_brain.dart' as brain;
+import 'package:pistisai/services/providers/base_provider.dart'
     as provider;
-import 'package:cloudtolocalllm/services/rate_limit_manager.dart';
-import 'package:cloudtolocalllm/services/router_server.dart';
+import 'package:pistisai/services/rate_limit_manager.dart';
+import 'package:pistisai/services/router_server.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 

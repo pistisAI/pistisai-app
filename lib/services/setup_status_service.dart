@@ -62,8 +62,8 @@ class SecureSetupStatusStorage implements SetupStatusStorage {
   /// Clear all setup data (for testing/reset)
   Future<void> clearAll() async {
     try {
-      await _secureStorage.delete(key: 'cloudtolocalllm_setup_status');
-      await _secureStorage.delete(key: 'cloudtolocalllm_setup_progress');
+      await _secureStorage.delete(key: 'pistisai_setup_status');
+      await _secureStorage.delete(key: 'pistisai_setup_progress');
       debugPrint('[SecureSetupStatusStorage] Cleared all setup data');
     } catch (e) {
       debugPrint('[SecureSetupStatusStorage] Error clearing data: $e');
@@ -79,8 +79,8 @@ class SecureSetupStatusStorage implements SetupStatusStorage {
 /// - Setup progress persistence and recovery
 /// - Integration with authentication and client detection services
 class SetupStatusService extends ChangeNotifier {
-  static const String _setupStatusKey = 'cloudtolocalllm_setup_status';
-  static const String _setupProgressKey = 'cloudtolocalllm_setup_progress';
+  static const String _setupStatusKey = 'pistisai_setup_status';
+  static const String _setupProgressKey = 'pistisai_setup_progress';
 
   final SetupStatusStorage _storage;
   final AuthService _authService;

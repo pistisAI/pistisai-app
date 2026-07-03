@@ -2,7 +2,7 @@
 /// Handles and categorizes LLM provider errors
 library;
 
-import 'package:cloudtolocalllm/services/provider_discovery_service.dart';
+import 'package:pistisai/services/provider_discovery_service.dart';
 
 class LLMErrorHandler {
   LLMErrorHandler({ProviderDiscoveryService? providerDiscovery});

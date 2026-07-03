@@ -70,7 +70,7 @@ class Auth0AuthProvider implements AuthProvider {
       try {
         final tempDir = Directory.systemTemp;
         final callbackFile =
-            File('${tempDir.path}/cloudtolocalllm_callback.txt');
+            File('${tempDir.path}/pistisai_callback.txt');
         if (await callbackFile.exists()) {
           final url = await callbackFile.readAsString();
           debugPrint(' [Auth0] Found callback file with URL: $url');

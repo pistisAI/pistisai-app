@@ -6,8 +6,8 @@ import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/navigation/popout_button.dart';
 
-import 'package:cloudtolocalllm/services/rate_limit_manager.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
+import 'package:pistisai/services/rate_limit_manager.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
 
 enum TimeRange { today, week, month }
 

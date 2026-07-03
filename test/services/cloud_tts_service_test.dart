@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/voice/cloud_tts_service.dart';
+import 'package:pistisai/services/voice/cloud_tts_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

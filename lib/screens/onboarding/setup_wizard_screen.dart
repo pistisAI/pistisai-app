@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloudtolocalllm/services/onboarding/setup_wizard_service.dart';
-import 'package:cloudtolocalllm/utils/logger.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/welcome_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/connection_method_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/local_detection_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/gateway_password_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/tailscale_discovery_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/remote_connection_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/hermes_url_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/connection_test_step.dart';
-import 'package:cloudtolocalllm/screens/onboarding/steps/completion_step.dart';
+import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/utils/logger.dart';
+import 'package:pistisai/screens/onboarding/steps/welcome_step.dart';
+import 'package:pistisai/screens/onboarding/steps/connection_method_step.dart';
+import 'package:pistisai/screens/onboarding/steps/local_detection_step.dart';
+import 'package:pistisai/screens/onboarding/steps/gateway_password_step.dart';
+import 'package:pistisai/screens/onboarding/steps/tailscale_discovery_step.dart';
+import 'package:pistisai/screens/onboarding/steps/remote_connection_step.dart';
+import 'package:pistisai/screens/onboarding/steps/hermes_url_step.dart';
+import 'package:pistisai/screens/onboarding/steps/connection_test_step.dart';
+import 'package:pistisai/screens/onboarding/steps/completion_step.dart';
 
 /// Setup Wizard Screen
 /// Guides new users through OpenClaw Gateway configuration

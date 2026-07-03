@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
-import 'package:cloudtolocalllm/services/hermes_manager/main_chat_timeline_record.dart';
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart';
+import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart';
+import 'package:pistisai/models/main_chat_timeline_event.dart';
 import 'connection/connection.dart'
     if (dart.library.io) 'connection/native.dart'
     if (dart.library.js_interop) 'connection/web.dart';

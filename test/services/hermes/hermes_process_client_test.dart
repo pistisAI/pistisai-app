@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/services/hermes/hermes_process_client.dart';
+import 'package:pistisai/services/hermes/hermes_process_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

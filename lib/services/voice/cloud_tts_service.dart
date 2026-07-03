@@ -7,7 +7,7 @@ import 'package:path/path.dart' as p;
 class CloudTtsRequest {
   const CloudTtsRequest({
     required this.input,
-    this.model = 'cloudtolocalllm-edge-tts',
+    this.model = 'pistisai-edge-tts',
     this.voice = 'en-US-GuyNeural',
     this.responseFormat = 'mp3',
     this.speed = 1.0,
@@ -21,7 +21,7 @@ class CloudTtsRequest {
 
     return CloudTtsRequest(
       input: input,
-      model: _stringOrDefault(json['model'], 'cloudtolocalllm-edge-tts'),
+      model: _stringOrDefault(json['model'], 'pistisai-edge-tts'),
       voice: _stringOrDefault(json['voice'], 'en-US-GuyNeural'),
       responseFormat: _normalizeFormat(
         _stringOrDefault(json['response_format'], 'mp3'),
@@ -87,16 +87,16 @@ class CloudTtsService {
     Duration timeout = const Duration(seconds: 45),
   })  : _processRunner = processRunner ?? Process.run,
         _ttsCommand = ttsCommand ??
-            Platform.environment['CLOUDTOLOCALLLM_TTS_COMMAND'] ??
+            Platform.environment['pistisai_TTS_COMMAND'] ??
             'edge-tts',
         _ffmpegCommand = ffmpegCommand ??
-            Platform.environment['CLOUDTOLOCALLLM_FFMPEG_COMMAND'] ??
+            Platform.environment['pistisai_FFMPEG_COMMAND'] ??
             'ffmpeg',
         _outputDirectory = outputDirectory ??
             Directory(p.join(
               Platform.environment['XDG_CACHE_HOME'] ??
                   p.join(Platform.environment['HOME'] ?? '/tmp', '.cache'),
-              'cloudtolocalllm',
+              'pistisai',
               'tts',
             )),
         _timeout = timeout;

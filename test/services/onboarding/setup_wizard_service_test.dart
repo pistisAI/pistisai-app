@@ -1,9 +1,9 @@
-import 'package:cloudtolocalllm/models/provider_configuration.dart';
-import 'package:cloudtolocalllm/services/auth_service.dart';
-import 'package:cloudtolocalllm/services/onboarding/setup_wizard_service.dart';
-import 'package:cloudtolocalllm/services/provider_configuration_manager.dart';
-import 'package:cloudtolocalllm/services/provider_discovery_service.dart';
-import 'package:cloudtolocalllm/services/setup_status_service.dart';
+import 'package:pistisai/models/provider_configuration.dart';
+import 'package:pistisai/services/auth_service.dart';
+import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/provider_configuration_manager.dart';
+import 'package:pistisai/services/provider_discovery_service.dart';
+import 'package:pistisai/services/setup_status_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

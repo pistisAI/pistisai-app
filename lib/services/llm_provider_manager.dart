@@ -2,8 +2,8 @@
 /// Manages LLM provider lifecycle and interactions
 library;
 
-import 'package:cloudtolocalllm/services/langchain_integration_service.dart';
-import 'package:cloudtolocalllm/services/provider_discovery_service.dart';
+import 'package:pistisai/services/langchain_integration_service.dart';
+import 'package:pistisai/services/provider_discovery_service.dart';
 
 class LLMProviderManager {
   LLMProviderManager({

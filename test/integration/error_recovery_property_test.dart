@@ -7,8 +7,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloudtolocalllm/services/theme_provider.dart';
-import 'package:cloudtolocalllm/services/platform_detection_service.dart';
+import 'package:pistisai/services/theme_provider.dart';
+import 'package:pistisai/services/platform_detection_service.dart';
 
 void main() {
   group('Error Recovery Property Tests', () {

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 

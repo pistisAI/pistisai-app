@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloudtolocalllm/widgets/navigation/breadcrumb_bar.dart';
+import 'package:pistisai/widgets/navigation/breadcrumb_bar.dart';
 
 /// Screen for file operations (browse, copy, move, delete files)
 ///

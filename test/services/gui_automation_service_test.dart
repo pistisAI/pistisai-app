@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/gui_automation_service.dart';
+import 'package:pistisai/services/gui_automation_service.dart';
 
 void main() {
   late GuiAutomationService service;

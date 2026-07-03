@@ -5,9 +5,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
-import 'package:cloudtolocalllm/database/drift_local_brain.dart' as _i3;
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart' as _i8;
-import 'package:cloudtolocalllm/services/hermes_manager/main_chat_timeline_record.dart'
+import 'package:pistisai/database/drift_local_brain.dart' as _i3;
+import 'package:pistisai/models/main_chat_timeline_event.dart' as _i8;
+import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart'
     as _i7;
 import 'package:drift/drift.dart' as _i2;
 import 'package:drift/src/runtime/executor/stream_queries.dart' as _i4;

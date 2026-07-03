@@ -1,8 +1,8 @@
-import 'package:cloudtolocalllm/config/app_config.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloudtolocalllm/services/onboarding/setup_wizard_service.dart';
-import 'package:cloudtolocalllm/models/provider_configuration.dart';
+import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/models/provider_configuration.dart';
 
 /// Local runtime detection step.
 /// Scans for compatible agent runtimes, not raw local model providers.

@@ -1,4 +1,4 @@
-name: cloudtolocalllm_shared
+name: pistisai_shared
 description: Shared libraries and utilities for Pistisai applications
 publish_to: none
 version: 4.3.0+202511062338

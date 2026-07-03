@@ -12,8 +12,8 @@ import 'avatar/personality_engine.dart';
 import 'avatar/evolution_tracker.dart';
 import 'conscience_storage_service.dart';
 import 'voice/cloud_tts_service.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
-import 'package:cloudtolocalllm/utils/http_constants.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/utils/http_constants.dart';
 
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
 ///
@@ -285,17 +285,17 @@ class RouterServer {
           {
             'id': 'en-US-GuyNeural',
             'object': 'voice',
-            'owned_by': 'cloudtolocalllm',
+            'owned_by': 'pistisai',
           },
           {
             'id': 'en-US-AriaNeural',
             'object': 'voice',
-            'owned_by': 'cloudtolocalllm',
+            'owned_by': 'pistisai',
           },
           {
             'id': 'en-US-JennyNeural',
             'object': 'voice',
-            'owned_by': 'cloudtolocalllm',
+            'owned_by': 'pistisai',
           },
         ],
       }),

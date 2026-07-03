@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
 import 'package:uuid/uuid.dart';
 
 /// Memory Service

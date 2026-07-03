@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloudtolocalllm/services/settings_validator.dart';
-import 'package:cloudtolocalllm/models/settings_state.dart';
-import 'package:cloudtolocalllm/utils/settings_error_handler.dart';
+import 'package:pistisai/services/settings_validator.dart';
+import 'package:pistisai/models/settings_state.dart';
+import 'package:pistisai/utils/settings_error_handler.dart';
 
 void main() {
   group('Validation and Error Handling Property Tests', () {

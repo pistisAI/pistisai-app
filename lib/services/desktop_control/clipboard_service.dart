@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/utils/logger.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/utils/logger.dart';
 
 /// Service for managing clipboard operations and history
 /// Supports desktop platforms with full functionality,

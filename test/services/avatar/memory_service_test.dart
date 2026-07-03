@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/avatar/memory_service.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
+import 'package:pistisai/services/avatar/memory_service.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
 
 void main() {
   group('MemoryService', () {

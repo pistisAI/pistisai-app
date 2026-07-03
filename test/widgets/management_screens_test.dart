@@ -1,9 +1,9 @@
-import 'package:cloudtolocalllm/di/locator.dart' as di;
-import 'package:cloudtolocalllm/screens/agents/agents_screen.dart';
-import 'package:cloudtolocalllm/screens/cron/cron_jobs_screen.dart';
-import 'package:cloudtolocalllm/screens/skills/skills_screen.dart';
-import 'package:cloudtolocalllm/services/popout/popout_manager.dart';
-import 'package:cloudtolocalllm/widgets/common/loading_skeleton.dart';
+import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/screens/agents/agents_screen.dart';
+import 'package:pistisai/screens/cron/cron_jobs_screen.dart';
+import 'package:pistisai/screens/skills/skills_screen.dart';
+import 'package:pistisai/services/popout/popout_manager.dart';
+import 'package:pistisai/widgets/common/loading_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

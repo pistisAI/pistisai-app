@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/utils/accessibility_helpers.dart';
+import 'package:pistisai/utils/accessibility_helpers.dart';
 
 void main() {
   group('AccessibilityHelpers', () {

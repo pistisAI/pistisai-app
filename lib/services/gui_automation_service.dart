@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/config/app_config.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';

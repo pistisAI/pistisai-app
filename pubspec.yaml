@@ -1,4 +1,4 @@
-name: cloudtolocalllm
+name: pistisai
 description: Local-first agent companion for Hermes, OpenClaw, and compatible agent runtimes.
 publish_to: none
 homepage: https://pistisai.app
@@ -170,5 +170,5 @@ flutter:
 sentry:
   upload_debug_symbols: true
   upload_source_maps: true
-  project: cloudtolocalllm
-  org: cloudtolocalllm-lg
+  project: pistisai-app
+  org: pistisai

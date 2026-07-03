@@ -1,7 +1,7 @@
-import 'package:cloudtolocalllm/models/chat_model.dart';
-import 'package:cloudtolocalllm/models/local_think_job.dart';
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart';
-import 'package:cloudtolocalllm/services/hermes_manager/main_chat_timeline_composer.dart';
+import 'package:pistisai/models/chat_model.dart';
+import 'package:pistisai/models/local_think_job.dart';
+import 'package:pistisai/models/main_chat_timeline_event.dart';
+import 'package:pistisai/services/hermes_manager/main_chat_timeline_composer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

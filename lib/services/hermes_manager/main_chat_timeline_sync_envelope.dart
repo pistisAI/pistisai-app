@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cloudtolocalllm/services/hermes_manager/main_chat_timeline_record.dart';
+import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart';
 
 /// Authorization that is allowed to carry a sync envelope locally.
 enum MainChatTimelineSyncAuthorizationKind {

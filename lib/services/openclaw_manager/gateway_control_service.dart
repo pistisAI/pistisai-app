@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart'
+import 'package:pistisai/services/settings_preference_service.dart'
     hide BackendType;
-import 'package:cloudtolocalllm/services/connection_manager_service.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
 
 enum GatewayState {
   unknown,

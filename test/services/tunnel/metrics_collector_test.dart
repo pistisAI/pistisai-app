@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:cloudtolocalllm/services/tunnel/metrics_collector.dart';
-import 'package:cloudtolocalllm/services/tunnel/metrics_exporter.dart';
+import 'package:pistisai/services/tunnel/metrics_collector.dart';
+import 'package:pistisai/services/tunnel/metrics_exporter.dart';
 
 void main() {
   test('recordRequest counts failed errors once and exports them correctly', () {

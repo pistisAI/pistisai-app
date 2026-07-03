@@ -1,5 +1,5 @@
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart';
-import 'package:cloudtolocalllm/services/hermes_manager/main_chat_timeline_record.dart';
+import 'package:pistisai/models/main_chat_timeline_event.dart';
+import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

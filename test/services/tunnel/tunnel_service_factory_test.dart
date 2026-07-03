@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:cloudtolocalllm/auth/auth_provider.dart';
-import 'package:cloudtolocalllm/models/user_model.dart';
-import 'package:cloudtolocalllm/services/auth_service.dart';
-import 'package:cloudtolocalllm/services/tunnel/interfaces/interfaces.dart';
-import 'package:cloudtolocalllm/services/tunnel/metrics_collector.dart' as metrics_impl;
-import 'package:cloudtolocalllm/services/tunnel/persistent_request_queue.dart';
-import 'package:cloudtolocalllm/services/tunnel/tunnel_service_factory.dart';
+import 'package:pistisai/auth/auth_provider.dart';
+import 'package:pistisai/models/user_model.dart';
+import 'package:pistisai/services/auth_service.dart';
+import 'package:pistisai/services/tunnel/interfaces/interfaces.dart';
+import 'package:pistisai/services/tunnel/metrics_collector.dart' as metrics_impl;
+import 'package:pistisai/services/tunnel/persistent_request_queue.dart';
+import 'package:pistisai/services/tunnel/tunnel_service_factory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -5,17 +5,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
-import 'package:cloudtolocalllm/database/drift_local_brain.dart' as _i3;
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart' as _i6;
-import 'package:cloudtolocalllm/models/conversation.dart' as _i12;
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart' as _i9;
-import 'package:cloudtolocalllm/models/message.dart' as _i13;
-import 'package:cloudtolocalllm/services/avatar/evolution_tracker.dart' as _i11;
-import 'package:cloudtolocalllm/services/avatar/markdown_sync_service.dart'
+import 'package:pistisai/database/drift_local_brain.dart' as _i3;
+import 'package:pistisai/models/avatar/personality_models.dart' as _i6;
+import 'package:pistisai/models/conversation.dart' as _i12;
+import 'package:pistisai/models/main_chat_timeline_event.dart' as _i9;
+import 'package:pistisai/models/message.dart' as _i13;
+import 'package:pistisai/services/avatar/evolution_tracker.dart' as _i11;
+import 'package:pistisai/services/avatar/markdown_sync_service.dart'
     as _i14;
-import 'package:cloudtolocalllm/services/avatar/personality_engine.dart'
+import 'package:pistisai/services/avatar/personality_engine.dart'
     as _i10;
-import 'package:cloudtolocalllm/services/hermes_manager/main_chat_timeline_record.dart'
+import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart'
     as _i8;
 import 'package:drift/drift.dart' as _i2;
 import 'package:drift/src/runtime/executor/stream_queries.dart' as _i4;

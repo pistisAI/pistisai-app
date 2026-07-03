@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/settings_import_export_service.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart';
-import 'package:cloudtolocalllm/utils/settings_error_handler.dart';
+import 'package:pistisai/services/settings_import_export_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
+import 'package:pistisai/utils/settings_error_handler.dart';
 
 void main() {
   group('SettingsImportExportService', () {

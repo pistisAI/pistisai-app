@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloudtolocalllm/features/avatar/avatar_widget.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
-import 'package:cloudtolocalllm/widgets/navigation/breadcrumb_bar.dart';
+import 'package:pistisai/features/avatar/avatar_widget.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/widgets/navigation/breadcrumb_bar.dart';
 
 /// Screen for customizing avatar visual appearance
 /// Allows users to customize avatar type, color, size, and effects

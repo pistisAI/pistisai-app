@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:cloudtolocalllm/services/voice/voice_conversation_service.dart';
-import 'package:cloudtolocalllm/services/voice/local_voice_input_service.dart';
-import 'package:cloudtolocalllm/widgets/voice/voice_conversation_status_card.dart';
+import 'package:pistisai/services/voice/voice_conversation_service.dart';
+import 'package:pistisai/services/voice/local_voice_input_service.dart';
+import 'package:pistisai/widgets/voice/voice_conversation_status_card.dart';
 
 Widget buildWidget(VoiceConversationService service, {bool showDemoControls = false}) {
   return MaterialApp(

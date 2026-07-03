@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/vision/ocr_engine_service.dart';
+import 'package:pistisai/services/vision/ocr_engine_service.dart';
 
 void main() {
   group('OcrEngineService', () {

@@ -4,42 +4,42 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:cloudtolocalllm/services/voice/voice_conversation_service.dart';
-import 'package:cloudtolocalllm/services/voice/local_voice_input_service.dart';
-import 'package:cloudtolocalllm/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/voice/voice_conversation_service.dart';
+import 'package:pistisai/services/voice/local_voice_input_service.dart';
+import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
-import 'package:cloudtolocalllm/bootstrap/bootstrapper.dart';
-import 'package:cloudtolocalllm/config/app_config.dart';
-import 'package:cloudtolocalllm/config/router.dart';
-import 'package:cloudtolocalllm/config/theme.dart';
+import 'package:pistisai/bootstrap/bootstrapper.dart';
+import 'package:pistisai/config/app_config.dart';
+import 'package:pistisai/config/router.dart';
+import 'package:pistisai/config/theme.dart';
 
-import 'package:cloudtolocalllm/di/locator.dart' as di;
-import 'package:cloudtolocalllm/services/app_initialization_service.dart';
-import 'package:cloudtolocalllm/services/auth_service.dart';
-import 'package:cloudtolocalllm/services/connection_manager_service.dart';
-import 'package:cloudtolocalllm/services/desktop_client_detection_service.dart';
-import 'package:cloudtolocalllm/services/enhanced_user_tier_service.dart';
-import 'package:cloudtolocalllm/services/langchain_prompt_service.dart';
-import 'package:cloudtolocalllm/services/provider_configuration_manager.dart';
-import 'package:cloudtolocalllm/services/provider_discovery_service.dart';
-import 'package:cloudtolocalllm/services/streaming_chat_service.dart';
-import 'package:cloudtolocalllm/services/web_download_prompt_service.dart'
-    if (dart.library.io) 'package:cloudtolocalllm/services/web_download_prompt_service_stub.dart';
-import 'package:cloudtolocalllm/services/log_buffer_service.dart';
-import 'package:cloudtolocalllm/services/theme_provider.dart';
-import 'package:cloudtolocalllm/services/platform_detection_service.dart';
-import 'package:cloudtolocalllm/services/url_scheme_registration_service.dart'
-    if (dart.library.html) 'package:cloudtolocalllm/services/url_scheme_registration_service_stub.dart';
+import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/services/app_initialization_service.dart';
+import 'package:pistisai/services/auth_service.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
+import 'package:pistisai/services/desktop_client_detection_service.dart';
+import 'package:pistisai/services/enhanced_user_tier_service.dart';
+import 'package:pistisai/services/langchain_prompt_service.dart';
+import 'package:pistisai/services/provider_configuration_manager.dart';
+import 'package:pistisai/services/provider_discovery_service.dart';
+import 'package:pistisai/services/streaming_chat_service.dart';
+import 'package:pistisai/services/web_download_prompt_service.dart'
+    if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
+import 'package:pistisai/services/log_buffer_service.dart';
+import 'package:pistisai/services/theme_provider.dart';
+import 'package:pistisai/services/platform_detection_service.dart';
+import 'package:pistisai/services/url_scheme_registration_service.dart'
+    if (dart.library.html) 'package:pistisai/services/url_scheme_registration_service_stub.dart';
 import 'web_plugins_stub.dart'
     if (dart.library.html) 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:cloudtolocalllm/widgets/tray_initializer.dart';
+import 'package:pistisai/widgets/tray_initializer.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'package:cloudtolocalllm/widgets/window_listener_widget.dart'
-    if (dart.library.html) 'package:cloudtolocalllm/widgets/window_listener_widget_stub.dart';
-import 'package:cloudtolocalllm/config/navigator_key.dart';
-import 'package:cloudtolocalllm/utils/platform_file_utils.dart'
-    if (dart.library.html) 'package:cloudtolocalllm/utils/platform_file_utils_web.dart';
+import 'package:pistisai/widgets/window_listener_widget.dart'
+    if (dart.library.html) 'package:pistisai/widgets/window_listener_widget_stub.dart';
+import 'package:pistisai/config/navigator_key.dart';
+import 'package:pistisai/utils/platform_file_utils.dart'
+    if (dart.library.html) 'package:pistisai/utils/platform_file_utils_web.dart';
 
 // navigatorKey is now imported from config/navigator_key.dart
 

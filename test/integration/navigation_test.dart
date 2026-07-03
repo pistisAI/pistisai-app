@@ -1,12 +1,12 @@
 library;
 
-import 'package:cloudtolocalllm/di/locator.dart';
-import 'package:cloudtolocalllm/screens/config/config_screen.dart';
-import 'package:cloudtolocalllm/services/auto_update_service.dart';
-import 'package:cloudtolocalllm/services/connection_manager_service.dart';
-import 'package:cloudtolocalllm/services/hermes_manager/hermes_gateway_control_service.dart';
-import 'package:cloudtolocalllm/services/openclaw_manager/gateway_control_service.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart'
+import 'package:pistisai/di/locator.dart';
+import 'package:pistisai/screens/config/config_screen.dart';
+import 'package:pistisai/services/auto_update_service.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
+import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart'
     as settings;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

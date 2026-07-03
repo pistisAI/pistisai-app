@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/services/hermes_manager/local_think_artifact_preview_service.dart';
+import 'package:pistisai/services/hermes_manager/local_think_artifact_preview_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

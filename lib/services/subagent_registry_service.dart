@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/config/app_config.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

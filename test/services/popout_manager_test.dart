@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/services/popout/popout_manager.dart';
+import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

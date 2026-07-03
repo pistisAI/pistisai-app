@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/config/app_config.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';

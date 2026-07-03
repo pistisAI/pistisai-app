@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
-import 'package:cloudtolocalllm/models/message.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/models/message.dart';
 
 void main() {
   group('Avatar Evolution Flow Integration Tests', () {

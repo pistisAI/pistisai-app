@@ -11,8 +11,8 @@ library;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/platform_detection_service.dart';
-import 'package:cloudtolocalllm/models/platform_config.dart';
+import 'package:pistisai/services/platform_detection_service.dart';
+import 'package:pistisai/models/platform_config.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

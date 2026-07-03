@@ -1,11 +1,11 @@
-import 'package:cloudtolocalllm/config/app_config.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
-import 'package:cloudtolocalllm/models/provider_configuration.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart';
+import 'package:pistisai/models/provider_configuration.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 
 /// Provider Discovery Service
 /// Discovers agent runtimes and optional support model providers.

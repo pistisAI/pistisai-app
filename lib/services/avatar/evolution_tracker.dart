@@ -1,6 +1,6 @@
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/models/conversation.dart' as models;
-import 'package:cloudtolocalllm/models/message.dart' as msg;
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/models/conversation.dart' as models;
+import 'package:pistisai/models/message.dart' as msg;
 
 /// Depth metrics for a conversation.
 class DepthMetrics {

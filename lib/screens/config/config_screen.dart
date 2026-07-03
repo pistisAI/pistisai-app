@@ -99,8 +99,8 @@ class _ConfigScreenState extends State<ConfigScreen>
     try {
       _appPath = kIsWeb ? '/' : Directory.current.path;
       final home = _getHomeDirectory() ?? '~';
-      _configPath = '$home/.config/cloudtolocalllm';
-      _dataPath = '$home/.local/share/cloudtolocalllm';
+      _configPath = '$home/.config/pistisai';
+      _dataPath = '$home/.local/share/pistisai';
       if (mounted) setState(() {});
     } catch (e) {
       debugPrint('Error loading system info: $e');

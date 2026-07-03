@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/auth_service.dart';
+import 'package:pistisai/services/auth_service.dart';
 
-import 'package:cloudtolocalllm/services/session_storage_service.dart';
-import 'package:cloudtolocalllm/models/user_model.dart';
-import 'package:cloudtolocalllm/models/session_model.dart';
-import 'package:cloudtolocalllm/models/settings_category.dart';
+import 'package:pistisai/services/session_storage_service.dart';
+import 'package:pistisai/models/user_model.dart';
+import 'package:pistisai/models/session_model.dart';
+import 'package:pistisai/models/settings_category.dart';
 
 // Mock SessionStorageService
 class MockSessionStorageService extends SessionStorageService {

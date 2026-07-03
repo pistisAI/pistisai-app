@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/services/conscience_storage_service.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/services/conscience_storage_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

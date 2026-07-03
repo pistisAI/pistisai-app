@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:cloudtolocalllm/models/agent_event.dart';
-import 'package:cloudtolocalllm/models/streaming_message.dart';
-import 'package:cloudtolocalllm/services/agent_runtime/agent_runtime_client.dart';
-import 'package:cloudtolocalllm/services/hermes/hermes_streaming_service.dart';
-import 'package:cloudtolocalllm/services/streaming_service.dart';
+import 'package:pistisai/models/agent_event.dart';
+import 'package:pistisai/models/streaming_message.dart';
+import 'package:pistisai/services/agent_runtime/agent_runtime_client.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/streaming_service.dart';
 
 class HermesRuntimeClient implements AgentRuntimeClient {
   final String baseUrl;

@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart' as db;
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/models/conversation.dart' as models;
-import 'package:cloudtolocalllm/models/message.dart' as msg;
-import 'package:cloudtolocalllm/services/avatar/evolution_tracker.dart';
+import 'package:pistisai/database/drift_local_brain.dart' as db;
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/models/conversation.dart' as models;
+import 'package:pistisai/models/message.dart' as msg;
+import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 

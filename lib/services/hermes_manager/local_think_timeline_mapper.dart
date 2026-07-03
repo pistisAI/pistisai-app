@@ -1,5 +1,5 @@
-import 'package:cloudtolocalllm/models/local_think_job.dart';
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart';
+import 'package:pistisai/models/local_think_job.dart';
+import 'package:pistisai/models/main_chat_timeline_event.dart';
 
 class LocalThinkTimelineMapper {
   const LocalThinkTimelineMapper._();

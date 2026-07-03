@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:cloudtolocalllm/services/tunnel/interfaces/tunnel_health_metrics.dart';
+import 'package:pistisai/services/tunnel/interfaces/tunnel_health_metrics.dart';
 
 /// Helper that wraps fromJson and returns null on error.
 TunnelHealthMetrics? _tryFromJson(Map<String, dynamic> json) {

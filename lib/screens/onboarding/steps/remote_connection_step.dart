@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloudtolocalllm/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
 /// Remote Connection Step
 /// User enters a custom URL for OpenClaw Gateway

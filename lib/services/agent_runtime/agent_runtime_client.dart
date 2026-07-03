@@ -1,6 +1,6 @@
-import 'package:cloudtolocalllm/models/agent_event.dart';
-import 'package:cloudtolocalllm/models/streaming_message.dart';
-import 'package:cloudtolocalllm/services/streaming_service.dart';
+import 'package:pistisai/models/agent_event.dart';
+import 'package:pistisai/models/streaming_message.dart';
+import 'package:pistisai/services/streaming_service.dart';
 
 enum AgentRuntimeKind {
   hermes,

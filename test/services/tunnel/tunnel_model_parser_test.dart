@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:cloudtolocalllm/services/tunnel/interfaces/tunnel_models.dart';
+import 'package:pistisai/services/tunnel/interfaces/tunnel_models.dart';
 
 void main() {
   test('TunnelError.fromJson returns error for valid payloads', () {

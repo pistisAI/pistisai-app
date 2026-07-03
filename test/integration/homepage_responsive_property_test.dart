@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/screens/marketing/homepage_screen.dart';
-import 'package:cloudtolocalllm/services/platform_detection_service.dart';
+import 'package:pistisai/screens/marketing/homepage_screen.dart';
+import 'package:pistisai/services/platform_detection_service.dart';
 import '../helpers/mock_services.dart';
 import '../helpers/test_app_wrapper.dart';
 import '../helpers/test_utilities.dart';

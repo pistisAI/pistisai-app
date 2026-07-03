@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart';
+import 'package:pistisai/models/main_chat_timeline_event.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,6 +1,6 @@
-import 'package:cloudtolocalllm/models/chat_model.dart';
-import 'package:cloudtolocalllm/models/local_think_job.dart';
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart';
+import 'package:pistisai/models/chat_model.dart';
+import 'package:pistisai/models/local_think_job.dart';
+import 'package:pistisai/models/main_chat_timeline_event.dart';
 
 import 'local_think_timeline_mapper.dart';
 

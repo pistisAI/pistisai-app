@@ -8,9 +8,9 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/platform_detection_service.dart';
-import 'package:cloudtolocalllm/services/platform_adapter.dart';
-import 'package:cloudtolocalllm/di/locator.dart' as di;
+import 'package:pistisai/services/platform_detection_service.dart';
+import 'package:pistisai/services/platform_adapter.dart';
+import 'package:pistisai/di/locator.dart' as di;
 
 void main() {
   group('Platform Features Integration Tests', () {

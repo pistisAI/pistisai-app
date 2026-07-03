@@ -120,9 +120,9 @@ class CommandVoiceTranscriptTranscriber implements VoiceTranscriptTranscriber {
     ProcessRunner? processRunner,
   }) {
     final resolvedCommand =
-        command ?? Platform.environment['CLOUDTOLOCALLLM_VOICE_TRANSCRIBE_COMMAND'] ?? 'bash';
+        command ?? Platform.environment['pistisai_VOICE_TRANSCRIBE_COMMAND'] ?? 'bash';
     final resolvedScriptPath = scriptPath ??
-        Platform.environment['CLOUDTOLOCALLLM_VOICE_TRANSCRIBE_SCRIPT'] ??
+        Platform.environment['pistisai_VOICE_TRANSCRIBE_SCRIPT'] ??
         'scripts/voice_transcribe.sh';
     final resolvedArguments = arguments ?? [resolvedScriptPath];
     return CommandVoiceTranscriptTranscriber(

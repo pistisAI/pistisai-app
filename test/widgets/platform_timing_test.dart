@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/platform_category_filter.dart';
-import 'package:cloudtolocalllm/services/auth_service.dart';
+import 'package:pistisai/services/platform_category_filter.dart';
+import 'package:pistisai/services/auth_service.dart';
 
-import 'package:cloudtolocalllm/models/user_model.dart';
+import 'package:pistisai/models/user_model.dart';
 import 'package:flutter/foundation.dart';
 
 void main() {

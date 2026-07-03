@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 
 /// Integration tests for Hermes streaming service.
 ///

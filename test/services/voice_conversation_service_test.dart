@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/voice/voice_conversation_service.dart';
+import 'package:pistisai/services/voice/voice_conversation_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

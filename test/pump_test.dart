@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/theme_provider.dart';
+import 'package:pistisai/services/theme_provider.dart';
 import 'helpers/mock_services.dart';
 import 'helpers/test_utilities.dart';
 

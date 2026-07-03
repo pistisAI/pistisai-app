@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 class PersonalityEngine {
   final LocalBrain _database;

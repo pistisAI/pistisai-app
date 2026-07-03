@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cloudtolocalllm/models/main_chat_timeline_event.dart';
+import 'package:pistisai/models/main_chat_timeline_event.dart';
 
 class MainChatTimelineSanitizer {
   static const int currentRedactionVersion = 1;

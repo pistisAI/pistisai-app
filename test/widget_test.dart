@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:cloudtolocalllm/main.dart';
+import 'package:pistisai/main.dart';
 import 'test_config.dart';
 
 void main() {

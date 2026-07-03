@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/services/avatar/personality_engine.dart';
-import 'package:cloudtolocalllm/services/avatar/evolution_tracker.dart';
-import 'package:cloudtolocalllm/services/avatar/markdown_sync_service.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/services/avatar/personality_engine.dart';
+import 'package:pistisai/services/avatar/evolution_tracker.dart';
+import 'package:pistisai/services/avatar/markdown_sync_service.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 /// Centralized service for managing avatar state across the application.
 ///

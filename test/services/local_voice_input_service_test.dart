@@ -1,6 +1,6 @@
-import 'package:cloudtolocalllm/services/voice/dev_voice_input_adapter.dart';
-import 'package:cloudtolocalllm/services/voice/voice_input_contract.dart';
-import 'package:cloudtolocalllm/services/voice/voice_conversation_service.dart';
+import 'package:pistisai/services/voice/dev_voice_input_adapter.dart';
+import 'package:pistisai/services/voice/voice_input_contract.dart';
+import 'package:pistisai/services/voice/voice_conversation_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

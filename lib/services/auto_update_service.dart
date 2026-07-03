@@ -75,7 +75,7 @@ class AutoUpdateService extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   // Socket path for daemon communication
-  static const String _socketPath = '/tmp/cloudtolocalllm-updated.sock';
+  static const String _socketPath = '/tmp/pistisai-updated.sock';
 
   /// Parse semantic version string
   VersionComponents parseVersion(String version) {

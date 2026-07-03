@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart';
-import 'package:cloudtolocalllm/services/connection_manager_service.dart';
-import 'package:cloudtolocalllm/services/openclaw_manager/gateway_control_service.dart';
-import 'package:cloudtolocalllm/services/hermes_manager/hermes_gateway_control_service.dart';
-import 'package:cloudtolocalllm/services/voice/voice_conversation_service.dart';
-import 'package:cloudtolocalllm/services/voice/local_voice_input_service.dart';
-import 'package:cloudtolocalllm/widgets/voice/open_voice_ui_control_panel.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
+import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
+import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/voice/voice_conversation_service.dart';
+import 'package:pistisai/services/voice/local_voice_input_service.dart';
+import 'package:pistisai/widgets/voice/open_voice_ui_control_panel.dart';
 
 Widget buildWidget() {
   final settings = SettingsPreferenceService();

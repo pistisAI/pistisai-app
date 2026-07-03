@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/models/local_think_job.dart';
+import 'package:pistisai/models/local_think_job.dart';
 import 'package:flutter/foundation.dart';
 
 import 'local_think_artifact_preview_service.dart';

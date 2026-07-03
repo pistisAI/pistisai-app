@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 /// Service for synchronizing avatar data to markdown files.
 ///

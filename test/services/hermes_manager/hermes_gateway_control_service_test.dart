@@ -1,4 +1,4 @@
-import 'package:cloudtolocalllm/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

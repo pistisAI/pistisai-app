@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloudtolocalllm/services/voice/linux_voice_input_adapter_io.dart';
-import 'package:cloudtolocalllm/services/voice/voice_input_adapter.dart';
+import 'package:pistisai/services/voice/linux_voice_input_adapter_io.dart';
+import 'package:pistisai/services/voice/voice_input_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

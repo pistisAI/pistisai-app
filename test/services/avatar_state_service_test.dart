@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:cloudtolocalllm/database/drift_local_brain.dart';
-import 'package:cloudtolocalllm/services/avatar/avatar_state_service.dart';
-import 'package:cloudtolocalllm/services/avatar/personality_engine.dart';
-import 'package:cloudtolocalllm/services/avatar/evolution_tracker.dart';
-import 'package:cloudtolocalllm/services/avatar/markdown_sync_service.dart';
-import 'package:cloudtolocalllm/models/avatar/personality_models.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/services/avatar/avatar_state_service.dart';
+import 'package:pistisai/services/avatar/personality_engine.dart';
+import 'package:pistisai/services/avatar/evolution_tracker.dart';
+import 'package:pistisai/services/avatar/markdown_sync_service.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 @GenerateMocks([
   LocalBrain,

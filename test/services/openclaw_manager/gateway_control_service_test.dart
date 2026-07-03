@@ -1,5 +1,5 @@
-import 'package:cloudtolocalllm/services/openclaw_manager/gateway_control_service.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart';
+import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

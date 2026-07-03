@@ -4,13 +4,13 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:cloudtolocalllm/config/app_config.dart';
-import 'package:cloudtolocalllm/utils/logger.dart';
-import 'package:cloudtolocalllm/services/provider_discovery_service.dart';
-import 'package:cloudtolocalllm/services/setup_status_service.dart';
-import 'package:cloudtolocalllm/services/provider_configuration_manager.dart';
-import 'package:cloudtolocalllm/models/provider_configuration.dart';
-import 'package:cloudtolocalllm/services/settings_preference_service.dart';
+import 'package:pistisai/config/app_config.dart';
+import 'package:pistisai/utils/logger.dart';
+import 'package:pistisai/services/provider_discovery_service.dart';
+import 'package:pistisai/services/setup_status_service.dart';
+import 'package:pistisai/services/provider_configuration_manager.dart';
+import 'package:pistisai/models/provider_configuration.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 
 /// Connection method selection
 enum ConnectionMethod {
