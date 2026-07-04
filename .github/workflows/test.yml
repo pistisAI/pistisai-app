@@ -1,77 +1,156 @@
 name: "🧪 CI — Test & Build Every Branch"
 
+
+
 on:
+
   push:
+
     branches:
+
       - "**"
+
     paths-ignore:
+
       - "**.md"
+
       - "docs/**"
+
       - "images/**"
+
   pull_request:
+
     branches:
+
       - main
+
     paths-ignore:
+
       - "**.md"
+
       - "docs/**"
+
       - "images/**"
+
+
 
 concurrency:
+
   group: ci-test-${{ github.ref }}
+
   cancel-in-progress: true
 
+
+
 permissions:
+
   contents: read
+
   checks: write
 
+
+
 jobs:
+
   flutter_analyze:
+
     name: "🔍 Flutter Analyze"
+
     runs-on: ubuntu-24.04
+
     timeout-minutes: 10
+
     steps:
+
       - uses: actions/checkout@v4
+
       - uses: subosito/flutter-action@v2
+
         with:
+
           channel: "stable"
+
           cache: true
+
       - name: "📦 flutter pub get"
+
         run: flutter pub get
+
       - name: "🔍 flutter analyze"
+
         run: flutter analyze lib/
 
+
+
   flutter_unit_test:
+
     name: "🧪 Flutter — unit tests"
+
     runs-on: ubuntu-24.04
+
     timeout-minutes: 10
+
     steps:
+
       - uses: actions/checkout@v4
+
       - uses: subosito/flutter-action@v2
+
         with:
+
           channel: "stable"
+
           cache: true
+
       - name: "📦 flutter pub get"
+
         run: flutter pub get
+
       - name: "🧪 flutter test (unit)"
+
         run: flutter test --reporter expanded
 
+
+
   backend:
+
     name: "Backend — lint + test"
+
     runs-on: ubuntu-24.04
+
     timeout-minutes: 10
+
     defaults:
+
       run:
+
         working-directory: services/api-backend
+
     steps:
+
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
+
         with:
+
           node-version: "22"
+
           cache: "npm"
+
       - name: "📦 npm ci"
+
         run: npm ci
+
       - name: "🔍 npm lint"
+
         run: npm run lint
+
       - name: "🧪 npm test"
+
         run: npm test
+
+
+
+# PAP-12 CI fix applied 2026-07-04
 
