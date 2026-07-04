@@ -51,4 +51,23 @@ Maintain a local-first, review-disciplined codebase for the Pistisai Flutter app
 
 ## CI Expectations
 - CI blocks merge on failing quality gates unless explicitly marked non-blocking.
-- Jobs should not silently absorb failures with blanket `continue-on-error: true` on test gates.
+- Jobs should not silently absorb failures with blanket `continue-on-error: true` on test gates.# Engineering Standards (PAP-12 / #29)
+
+## Branching
+- Use feat/ prefixes for feature work tied to GH issues.
+- Keep PRs focused.
+
+## Commits
+- Conventional commits.
+- Prefix agent automation as ai(CTO): ...
+
+## CI / Gates
+- No blanket continue-on-error on test/lint gates.
+- CI blocks merge on failures unless explicitly marked non-blocking.
+
+## PRs
+- Link the GH issue.
+- Include what changed and verification steps.
+- Keep reviewable.
+
+(Expanded by board to give agent concrete starting point. CTO to complete the full scope from memory.)
