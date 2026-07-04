@@ -5,9 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup
-        run: echo "Setup per PistisAI standards"
-      - name: Lint
-        run: echo "Run lint (to be expanded per STANDARDS.md)"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - name: Analyze
+        run: flutter analyze lib/
       - name: Test
-        run: echo "Run tests"
+        run: flutter test
+
