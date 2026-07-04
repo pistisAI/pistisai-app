@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
@@ -48,10 +48,10 @@ jobs:
     name: "🧪 Flutter — unit tests"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    continue-on-error: true
+    # continue-on-error removed for blocking gate per standards
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
@@ -62,7 +62,7 @@ jobs:
         run: flutter pub get
 
       - name: "🧪 flutter test (unit)"
-        continue-on-error: true
+        # continue-on-error removed for blocking gate per standards
         run: |
           flutter test test/config/ test/models/ test/utils/ test/helpers/ \
             test/services/ test/services/desktop_control/ test/services/avatar/ \
@@ -74,10 +74,10 @@ jobs:
     name: "🧪 Flutter — integration (allow fail)"
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    continue-on-error: true
+    # continue-on-error removed for blocking gate per standards
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
@@ -98,7 +98,7 @@ jobs:
     needs: [flutter_analyze, flutter_unit_test]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
@@ -109,7 +109,7 @@ jobs:
         run: flutter pub get
 
       - name: "🌐 flutter build web"
-        run: flutter build web --release --no-web-resources-cdn
+        run: flutter build web --release
 
       - name: "📦 Upload web build"
         uses: actions/upload-artifact@v5
@@ -125,7 +125,7 @@ jobs:
     needs: [flutter_analyze, flutter_unit_test]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
@@ -151,17 +151,17 @@ jobs:
       - name: "📦 Package bundle"
         run: |
           cd build/linux/x64/release
-          tar -czf /tmp/pistisai-linux-x64.tar.gz bundle/
+          tar -czf /tmp/cloudtolocalllm-linux-x64.tar.gz bundle/
 
       - name: "📦 Upload Linux build"
         uses: actions/upload-artifact@v5
         with:
           name: linux-build
-          path: /tmp/pistisai-linux-x64.tar.gz
+          path: /tmp/cloudtolocalllm-linux-x64.tar.gz
           retention-days: 7
 
-  backend_lint:
-    name: "Backend — lint"
+  backend:
+    name: "Backend — lint + test"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     defaults:
@@ -169,14 +169,19 @@ jobs:
         working-directory: services/api-backend
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v5
         with:
           node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "services/api-backend/package-lock.json"
 
-      - name: "📦 npm install"
-        run: npm install
+      - name: "📦 npm ci"
+        run: npm ci
 
       - name: "🔍 npm lint"
         run: npm run lint
+
+      - name: "🧪 npm test"
+        run: npm test
