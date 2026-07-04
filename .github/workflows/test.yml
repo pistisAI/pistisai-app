@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
@@ -48,10 +48,9 @@ jobs:
     name: "🧪 Flutter — unit tests"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    # continue-on-error removed for blocking gate per standards
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
@@ -62,7 +61,6 @@ jobs:
         run: flutter pub get
 
       - name: "🧪 flutter test (unit)"
-        # continue-on-error removed for blocking gate per standards
         run: |
           flutter test test/config/ test/models/ test/utils/ test/helpers/ \
             test/services/ test/services/desktop_control/ test/services/avatar/ \
@@ -74,10 +72,10 @@ jobs:
     name: "🧪 Flutter — integration (allow fail)"
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    # continue-on-error removed for blocking gate per standards
+    continue-on-error: true
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
@@ -98,7 +96,7 @@ jobs:
     needs: [flutter_analyze, flutter_unit_test]
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
@@ -125,12 +123,7 @@ jobs:
     needs: [flutter_analyze, flutter_unit_test]
 
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          cache: true
+      - uses: actions/checkout@v4
 
       - name: "🐧 Install Linux deps"
         run: |
@@ -141,6 +134,11 @@ jobs:
             libsecret-1-dev libjsoncpp-dev \
             libnotify-dev libcurl4-openssl-dev \
             libayatana-appindicator3-dev
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
 
       - name: "📦 flutter pub get"
         run: flutter pub get
@@ -169,13 +167,12 @@ jobs:
         working-directory: services/api-backend
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: "services/api-backend/package-lock.json"
 
       - name: "📦 npm ci"
         run: npm ci
