@@ -1,15 +1,16 @@
-## What
-<!-- What changed and why -->
-- Links to GH issue #29 (PAP-12) if applicable
-- Implements part of engineering standards / dev infra from `STANDARDS.md`
+## Summary
+Implements part of PAP-12 / GH #29 dev infra & standards.
+
+## Changes
+- Standards enforcement
+- Blocking CI gates
+
+## Checklist
+- [ ] Tests and lint per STANDARDS.md
+- [ ] Webhook events handled if applicable
+- [ ] Linked Paperclip child
 
 ## Verification
-<!-- Commands run and results -->
-- [ ] `flutter analyze lib/`
-- [ ] `flutter test`
-- [ ] `npm run lint` / `npm test` for backend/services changes
-- [ ] `STANDARDS.md` requirements met
-- [ ] linked issue updated with PR summary
+Run the gates listed in STANDARDS.md
 
-## Risks / Follow-ups
-<!-- Anything non-obvious for reviewers -->
+Webhook: https://right-pc.tail5d7400.ts.net/webhooks
