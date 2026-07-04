@@ -1,0 +1,13 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup
+        run: echo "Setup per PistisAI standards"
+      - name: Lint
+        run: echo "Run lint (to be expanded per STANDARDS.md)"
+      - name: Test
+        run: echo "Run tests"
