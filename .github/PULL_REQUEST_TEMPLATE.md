@@ -1,5 +1,5 @@
 ## Summary
-Implements part of PAP-12 / GH #29 dev infra & standards.
+Restores/continues standards/CI enforcement artifacts for GH #29 / GH #30.
 
 ## Changes
 - Standards enforcement
