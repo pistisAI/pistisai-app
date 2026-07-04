@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "PAP-12 unblocked"
+      - run: echo "Resume after crash - PAP-12"
