@@ -1,14 +1,15 @@
 ## What
-- Links to GH issue #29 (PAP-12)
-- Implements part of engineering standards / dev infra
+<!-- What changed and why -->
+- Links to GH issue #29 (PAP-12) if applicable
+- Implements part of engineering standards / dev infra from `STANDARDS.md`
 
-## Checklist
-- [ ] flutter analyze passes
-- [ ] flutter test (relevant paths) passes
-- [ ] npm lint/test if backend changed
-- [ ] STANDARDS.md followed
-- [ ] Paperclip child task updated
+## Verification
+<!-- Commands run and results -->
+- [ ] `flutter analyze lib/`
+- [ ] `flutter test`
+- [ ] `npm run lint` / `npm test` for backend/services changes
+- [ ] `STANDARDS.md` requirements met
+- [ ] linked issue updated with PR summary
 
-## Related
-- Paperclip: dae57ea4 (PAP-12)
-
+## Risks / Follow-ups
+<!-- Anything non-obvious for reviewers -->
