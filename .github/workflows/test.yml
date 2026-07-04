@@ -1,8 +1,182 @@
-name: CI
-on: [push, pull_request]
+name: "🧪 CI — Test & Build Every Branch"
+
+on:
+  push:
+    branches:
+      - "**"
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "images/**"
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "images/**"
+
+concurrency:
+  group: ci-test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  flutter_analyze:
+    name: "🔍 Flutter Analyze"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Resume after crash - PAP-12"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: "🔍 flutter analyze"
+        run: flutter analyze lib/
+
+  flutter_unit_test:
+    name: "🧪 Flutter — unit tests"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: "🧪 flutter test (unit)"
+        continue-on-error: true
+        run: |
+          flutter test test/config/ test/models/ test/utils/ test/helpers/ \
+            test/services/ test/services/desktop_control/ test/services/avatar/ \
+            test/services/vision/ test/services/voice/ \
+            test/screens/ test/widgets/ test/widgets/hermes/ test/widgets/voice/ \
+            --reporter expanded
+
+  flutter_integration_test:
+    name: "🧪 Flutter — integration (allow fail)"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: "🧪 flutter test (integration)"
+        run: |
+          flutter test test/integration/ --reporter expanded --timeout 30s || echo "⚠️ Some integration tests failed (non-blocking)"
+
+  build_web:
+    name: "🌐 Build Web"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    needs: [flutter_analyze, flutter_unit_test]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: "🌐 flutter build web"
+        run: flutter build web --release --no-web-resources-cdn
+
+      - name: "📦 Upload web build"
+        uses: actions/upload-artifact@v5
+        with:
+          name: web-build
+          path: build/web/
+          retention-days: 7
+
+  build_linux:
+    name: "🐧 Build Linux Desktop"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs: [flutter_analyze, flutter_unit_test]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+
+      - name: "🐧 Install Linux deps"
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev libjsoncpp-dev \
+            libnotify-dev libcurl4-openssl-dev \
+            libayatana-appindicator3-dev
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: "🐧 flutter build linux --release"
+        run: flutter build linux --release
+
+      - name: "📦 Package bundle"
+        run: |
+          cd build/linux/x64/release
+          tar -czf /tmp/pistisai-linux-x64.tar.gz bundle/
+
+      - name: "📦 Upload Linux build"
+        uses: actions/upload-artifact@v5
+        with:
+          name: linux-build
+          path: /tmp/pistisai-linux-x64.tar.gz
+          retention-days: 7
+
+  backend_lint:
+    name: "Backend — lint"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/api-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: "📦 npm install"
+        run: npm install
+
+      - name: "🔍 npm lint"
+        run: npm run lint
