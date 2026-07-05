@@ -54,6 +54,7 @@ class AdminErrorHandler {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
+      case DioExceptionType.transformTimeout:
         return AdminError(
           type: AdminErrorType.network,
           message: 'Connection timeout. Please check your internet connection.',
