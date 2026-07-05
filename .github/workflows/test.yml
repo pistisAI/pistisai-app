@@ -109,7 +109,7 @@ jobs:
         run: flutter build web --release --no-web-resources-cdn
 
       - name: "📦 Upload web build"
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: web-build
           path: build/web/
@@ -151,7 +151,7 @@ jobs:
           tar -czf /tmp/pistisai-linux-x64.tar.gz bundle/
 
       - name: "📦 Upload Linux build"
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: linux-build
           path: /tmp/pistisai-linux-x64.tar.gz

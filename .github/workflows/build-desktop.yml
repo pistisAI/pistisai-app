@@ -119,7 +119,7 @@ jobs:
           ./scripts/packaging/build_installer.sh || echo "Installer script skipped"
 
       - name: Upload Linux Bundles
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: linux-bundles
           path: dist/linux/*
@@ -193,7 +193,7 @@ jobs:
           fi
 
       - name: Upload Windows Bundles
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: windows-bundles
           path: |
@@ -238,7 +238,7 @@ jobs:
           echo "✅ macOS bundle packaged"
 
       - name: Upload macOS Bundle
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: macos-bundles
           path: dist/macos/*.zip
