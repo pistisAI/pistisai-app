@@ -11,7 +11,7 @@ void main() {
       final request = CloudTtsRequest.fromJson({'input': 'hello there'});
 
       expect(request.input, 'hello there');
-      expect(request.model, 'cloudtolocalllm-edge-tts');
+      expect(request.model, 'pistisai-edge-tts');
       expect(request.voice, 'en-US-GuyNeural');
       expect(request.responseFormat, 'mp3');
     });

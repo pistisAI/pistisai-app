@@ -55,7 +55,6 @@ class DesignTokens {
         error: danger500,
         onError: neutral0,
       ),
-      borderRadius: const BorderRadius.all(Radius.circular(radiusMd)),
     );
   }
 }
