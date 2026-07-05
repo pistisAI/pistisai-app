@@ -126,26 +126,15 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
             errorBuilder: (ctx, _, __) => const Icon(Icons.hub, size: 32),
           ),
           const SizedBox(width: 12),
-          if (!_sidebarCollapsed)
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Pistisai',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                    overflow: TextOverflow.ellipsis,
+          Expanded(
+            child: Text(
+              'Pistisai',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(
-                    'Runtime Control Plane',
-                    style: Theme.of(context).textTheme.bodySmall,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+              overflow: TextOverflow.ellipsis,
             ),
+          ),
           IconButton(
             icon: const Icon(Icons.chevron_left),
             onPressed: () =>
@@ -162,12 +151,12 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
       children: [
         SidebarSection(
           collapsed: _sidebarCollapsed,
-          title: 'Channel',
+          title: '',
           initiallyExpanded: true,
           destinations: [
             OpenClawNavItem(
               collapsed: _sidebarCollapsed,
-              title: 'Runtime Channel',
+              title: 'Home',
               branchIndex: 0,
               navigationShell: widget.navigationShell,
               icon: Icons.chat_bubble_outline,
@@ -176,10 +165,9 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
           ],
         ),
 
-        // Control section
         SidebarSection(
           collapsed: _sidebarCollapsed,
-          title: 'Control',
+          title: 'Navigation',
           initiallyExpanded: true,
           destinations: [
             OpenClawNavItem(
@@ -192,19 +180,11 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
             ),
             OpenClawNavItem(
               collapsed: _sidebarCollapsed,
-              title: 'Secure Channels',
+              title: 'Channels',
               branchIndex: 2,
               navigationShell: widget.navigationShell,
               icon: Icons.cable_outlined,
               selected: widget.navigationShell.currentIndex == 2,
-            ),
-            OpenClawNavItem(
-              collapsed: _sidebarCollapsed,
-              title: 'Runtimes',
-              branchIndex: 3,
-              navigationShell: widget.navigationShell,
-              icon: Icons.devices_outlined,
-              selected: widget.navigationShell.currentIndex == 3,
             ),
             OpenClawNavItem(
               collapsed: _sidebarCollapsed,
@@ -216,19 +196,11 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
             ),
             OpenClawNavItem(
               collapsed: _sidebarCollapsed,
-              title: 'Usage',
-              branchIndex: 5,
+              title: 'Runtimes',
+              branchIndex: 3,
               navigationShell: widget.navigationShell,
-              icon: Icons.analytics_outlined,
-              selected: widget.navigationShell.currentIndex == 5,
-            ),
-            OpenClawNavItem(
-              collapsed: _sidebarCollapsed,
-              title: 'Scheduled Tasks',
-              branchIndex: 6,
-              navigationShell: widget.navigationShell,
-              icon: Icons.schedule_outlined,
-              selected: widget.navigationShell.currentIndex == 6,
+              icon: Icons.devices_outlined,
+              selected: widget.navigationShell.currentIndex == 3,
             ),
           ],
         ),
@@ -256,7 +228,7 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
             ),
             OpenClawNavItem(
               collapsed: _sidebarCollapsed,
-              title: 'Devices',
+              title: 'Nodes',
               branchIndex: 9,
               navigationShell: widget.navigationShell,
               icon: Icons.hub_outlined,
@@ -267,12 +239,12 @@ class _OpenClawNavigationShellState extends State<OpenClawNavigationShell> {
 
         SidebarSection(
           collapsed: _sidebarCollapsed,
-          title: 'Settings',
-          initiallyExpanded: true,
+          title: 'Advanced',
+          initiallyExpanded: false,
           destinations: [
             OpenClawNavItem(
               collapsed: _sidebarCollapsed,
-              title: 'Runtime Settings',
+              title: 'Config',
               branchIndex: 10,
               navigationShell: widget.navigationShell,
               icon: Icons.settings_outlined,
