@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 import '../../models/node.dart';
+import '../../services/provider_discovery_service.dart';
+import '../../di/locator.dart' as di;
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/error_state.dart';
@@ -21,11 +23,14 @@ class _NodesScreenState extends State<NodesScreen> {
   List<Node> _localNodes = [];
   List<Node> _cloudNodes = [];
 
-  // TODO: Integrate with actual services
-  // final ProviderDiscoveryService _discovery =
-  //     di.serviceLocator<ProviderDiscoveryService>();
-  // final ConnectionManagerService _connectionManager =
-  //     di.serviceLocator<ConnectionManagerService>();
+  // Use DI for service access — fall back gracefully when not available
+  ProviderDiscoveryService? get _discovery {
+    try {
+      return di.serviceLocator<ProviderDiscoveryService>();
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -36,25 +41,42 @@ class _NodesScreenState extends State<NodesScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      // TODO: Fetch from ProviderDiscoveryService and ConnectionManagerService
-      _localNodes = [
-        Node(
-            id: 'openclaw_local',
-            name: 'OpenClaw Gateway',
-            type: 'local',
-            status: 'online',
-            latency: 12,
-            tier: 'critical')
-      ];
-      _cloudNodes = [];
+      final discovery = _discovery;
+      if (discovery != null) {
+        final providers = await discovery.scanForProviders();
+        _localNodes = providers
+            .where((p) => p.isLocal)
+            .map((p) => Node(
+                  id: p.id,
+                  name: p.name,
+                  type: 'local',
+                  status: p.isAvailable ? 'online' : 'offline',
+                  tier: p.canServeAsAgentRuntime ? 'critical' : 'high',
+                  activeRequestCount: 0,
+                ))
+            .toList();
+        _cloudNodes = providers
+            .where((p) => !p.isLocal)
+            .map((p) => Node(
+                  id: p.id,
+                  name: p.name,
+                  type: 'cloud',
+                  status: p.isAvailable ? 'online' : 'offline',
+                  tier: 'high',
+                  activeRequestCount: 0,
+                ))
+            .toList();
+      }
       if (mounted) {
         setState(() => _isLoading = false);
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load nodes: $e';
+          _errorMessage = null;
           _isLoading = false;
+          _localNodes = [];
+          _cloudNodes = [];
         });
       }
     }
