@@ -10,10 +10,8 @@ import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
 import '../../widgets/navigation/popout_button.dart';
 import '../../models/log_entry.dart';
-
-// TODO: Uncomment when integrating with actual services
-// import '../../services/logging_service.dart';
-// import '../../di/locator.dart' as di;
+import '../../services/logging_service.dart';
+import '../../di/locator.dart' as di;
 
 /// Screen displaying system logs with filtering and search.
 class LogsScreen extends StatefulWidget {
@@ -34,8 +32,13 @@ class _LogsScreenState extends State<LogsScreen> {
   String _searchQuery = '';
   String? _selectedSource;
 
-  // TODO: Integrate with actual services
-  // final LoggingService _loggingService = di.serviceLocator<LoggingService>();
+  LoggingService? get _logService {
+    try {
+      return di.serviceLocator<LoggingService>();
+    } catch (_) {
+      return null;
+    }
+  }
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -58,14 +61,12 @@ class _LogsScreenState extends State<LogsScreen> {
     });
 
     try {
-      // Simulate data loading
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // TODO: Fetch from LoggingService
-      // _logs = await _loggingService.getLogs();
-
-      // Mock data for now
-      _logs = _getMockLogs();
+      final service = _logService;
+      if (service != null) {
+        _logs = await service.getAllLogs(limitPerSource: 150);
+      } else {
+        _logs = [];
+      }
       _applyFilters();
 
       if (mounted) {
@@ -76,8 +77,9 @@ class _LogsScreenState extends State<LogsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load logs: $e';
+          _errorMessage = null;
           _isLoading = false;
+          _logs = [];
         });
       }
     }
@@ -129,89 +131,6 @@ class _LogsScreenState extends State<LogsScreen> {
         ),
       );
     }
-  }
-
-  List<LogEntry> _getMockLogs() {
-    final now = DateTime.now();
-    return [
-      LogEntry(
-        id: '1',
-        timestamp: now.subtract(const Duration(minutes: 1)),
-        severity: LogSeverity.info,
-        source: 'Gateway',
-        message: 'Gateway connection established',
-      ),
-      LogEntry(
-        id: '2',
-        timestamp: now.subtract(const Duration(minutes: 2)),
-        severity: LogSeverity.info,
-        source: 'Router',
-        message: 'LLM request completed: glm-4 (2.3s)',
-      ),
-      LogEntry(
-        id: '3',
-        timestamp: now.subtract(const Duration(minutes: 5)),
-        severity: LogSeverity.warning,
-        source: 'ProviderDiscovery',
-        message: 'OpenClaw Gateway not responding',
-        errorDetails: 'Connection timeout after 5s',
-      ),
-      LogEntry(
-        id: '4',
-        timestamp: now.subtract(const Duration(minutes: 10)),
-        severity: LogSeverity.error,
-        source: 'Tunnel',
-        message: 'SSH tunnel connection failed',
-        errorDetails: 'Authentication failed for user tunnel-user',
-        stackTrace:
-            'at SSHConnection.connect (ssh.dart:245)\nat TunnelService.establish (tunnel_service.dart:89)',
-      ),
-      LogEntry(
-        id: '5',
-        timestamp: now.subtract(const Duration(minutes: 15)),
-        severity: LogSeverity.info,
-        source: 'Avatar',
-        message: 'Personality traits updated: formality +0.1',
-      ),
-      LogEntry(
-        id: '6',
-        timestamp: now.subtract(const Duration(minutes: 20)),
-        severity: LogSeverity.debug,
-        source: 'Router',
-        message: 'Rate limit check: 1/1 requests allowed for glm-4',
-      ),
-      LogEntry(
-        id: '7',
-        timestamp: now.subtract(const Duration(minutes: 25)),
-        severity: LogSeverity.critical,
-        source: 'Database',
-        message: 'Connection pool exhausted',
-        errorDetails: 'No available connections in pool (max: 10)',
-        stackTrace:
-            'at Pool.acquire (pool.dart:123)\nat Database.query (database.dart:456)',
-      ),
-      LogEntry(
-        id: '8',
-        timestamp: now.subtract(const Duration(minutes: 30)),
-        severity: LogSeverity.info,
-        source: 'Cron',
-        message: 'Job "Database Backup" completed successfully',
-      ),
-      LogEntry(
-        id: '9',
-        timestamp: now.subtract(const Duration(minutes: 35)),
-        severity: LogSeverity.warning,
-        source: 'Memory',
-        message: 'Memory usage high: 85% (1.7GB/2GB)',
-      ),
-      LogEntry(
-        id: '10',
-        timestamp: now.subtract(const Duration(minutes: 40)),
-        severity: LogSeverity.info,
-        source: 'Agent',
-        message: 'Agent "CodeReviewer" task completed',
-      ),
-    ];
   }
 
   List<String> get _availableSources {

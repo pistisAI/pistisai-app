@@ -151,7 +151,27 @@ class _ConfigScreenState extends State<ConfigScreen>
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
+      final theme = await _settingsService.getTheme();
+      _selectedTheme = switch (theme) {
+        'light' => 'Light',
+        'dark' => 'Dark',
+        _ => 'System',
+      };
+
+      final lang = await _settingsService.getLanguage();
+      _selectedLanguage = switch (lang) {
+        'es' => 'Spanish',
+        'fr' => 'French',
+        'de' => 'German',
+        _ => 'English',
+      };
+
+      _notificationsEnabled = await _settingsService.isNotificationsEnabled();
+      _trayIconEnabled = await _settingsService.isMinimizeToTrayEnabled();
+      _biometricAuth = await _settingsService.isBiometricAuthEnabled();
+      final autoRestart = await _settingsService.getGatewayAutoRestart();
+      if (autoRestart != null) _autoRestart = autoRestart;
+
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) setState(() => _errorMessage = 'Failed to load config: $e');
@@ -161,10 +181,31 @@ class _ConfigScreenState extends State<ConfigScreen>
   Future<void> _saveConfig() async {
     setState(() => _isSaving = true);
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
+      await _settingsService.setTheme(
+        switch (_selectedTheme) {
+          'Light' => 'light',
+          'Dark' => 'dark',
+          _ => 'system',
+        },
+      );
+
+      await _settingsService.setLanguage(
+        switch (_selectedLanguage) {
+          'Spanish' => 'es',
+          'French' => 'fr',
+          'German' => 'de',
+          _ => 'en',
+        },
+      );
+
+      await _settingsService.setNotificationsEnabled(_notificationsEnabled);
+      await _settingsService.setMinimizeToTrayEnabled(_trayIconEnabled);
+      await _settingsService.setBiometricAuthEnabled(_biometricAuth);
+      await _settingsService.setGatewayAutoRestart(_autoRestart);
+
       if (mounted) {
         setState(() => _isSaving = false);
-        _showSnackBar('Configuration saved successfully', isError: false);
+        _showSnackBar('Configuration saved', isError: false);
       }
     } catch (e) {
       if (mounted) {

@@ -76,6 +76,7 @@ import 'package:pistisai/services/voice/voice_conversation_service.dart';
 import 'package:pistisai/services/desktop_control/window_manager_service.dart';
 import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:pistisai/services/auto_update_service.dart';
+import 'package:pistisai/services/logging_service.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -385,6 +386,11 @@ Future<void> setupCoreServices() async {
     // Platform adapter - provides platform-appropriate UI components
     final platformAdapter = PlatformAdapter(platformDetectionService);
     serviceLocator.registerSingleton<PlatformAdapter>(platformAdapter);
+
+    // Logging service — reads local Hermes log files
+    debugPrint('[ServiceLocator] Initializing LoggingService...');
+    final loggingService = LoggingService();
+    serviceLocator.registerSingleton<LoggingService>(loggingService);
 
     // Theme provider - manages application theme mode
     final themeProvider = ThemeProvider();
