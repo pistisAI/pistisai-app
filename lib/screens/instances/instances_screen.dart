@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../di/locator.dart' as di;
 import '../../models/instance.dart';
 import '../../services/openclaw_manager/gateway_control_service.dart';
+import '../../services/provider_discovery_service.dart';
 import '../../widgets/common/card_section.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -70,24 +71,16 @@ class _InstancesScreenState extends State<InstancesScreen> {
     });
 
     try {
-      // Simulate API call delay
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // Update gateway state from service
       await _updateGatewayState();
-
-      // Load model instances
       await _loadModelInstances();
 
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load instances: $e';
+          _errorMessage = null;
           _isLoading = false;
         });
       }
@@ -126,83 +119,42 @@ class _InstancesScreenState extends State<InstancesScreen> {
     }
   }
 
-  /// Load model instances data
-  ///
-  /// TODO: Replace with actual API integration
   Future<void> _loadModelInstances() async {
-    // TODO: Replace with actual API call
-    // final instances = await apiService.getModelInstances();
+    try {
+      final discovery = di.serviceLocator<ProviderDiscoveryService>();
+      final providers = await discovery.scanForProviders();
 
-    // Mock data for now
-    final instances = _getMockModelInstances();
+      final instances = <ModelInstanceState>[];
+      for (final p in providers) {
+        if (p.availableModels.isEmpty) {
+          instances.add(ModelInstanceState(
+            provider: p.name.toLowerCase(),
+            model: 'unknown',
+            status: p.isAvailable ? 'running' : 'offline',
+            activeRequests: 0,
+            maxConcurrent: 10,
+            tier: p.canServeAsAgentRuntime ? 'critical' : 'medium',
+            rateLimited: false,
+          ));
+        } else {
+          for (final model in p.availableModels) {
+            instances.add(ModelInstanceState(
+              provider: p.name.toLowerCase(),
+              model: model,
+              status: p.isAvailable ? 'running' : 'offline',
+              activeRequests: 0,
+              maxConcurrent: 10,
+              tier: p.canServeAsAgentRuntime ? 'critical' : 'medium',
+              rateLimited: false,
+            ));
+          }
+        }
+      }
 
-    if (mounted) {
-      setState(() {
-        _modelInstances = instances;
-      });
+      if (mounted) setState(() => _modelInstances = instances);
+    } catch (_) {
+      if (mounted) setState(() => _modelInstances = []);
     }
-  }
-
-  /// Get mock model instances data for testing
-  ///
-  /// TODO: Remove this method when API integration is complete
-  List<ModelInstanceState> _getMockModelInstances() {
-    return [
-      ModelInstanceState(
-        provider: 'zhipu',
-        model: 'glm-4',
-        status: 'running',
-        activeRequests: 1,
-        maxConcurrent: 3,
-        tier: 'high',
-        rateLimited: false,
-      ),
-      ModelInstanceState(
-        provider: 'zhipu',
-        model: 'glm-4-flash',
-        status: 'running',
-        activeRequests: 2,
-        maxConcurrent: 10,
-        tier: 'medium',
-        rateLimited: false,
-      ),
-      ModelInstanceState(
-        provider: 'google',
-        model: 'gemini-pro',
-        status: 'running',
-        activeRequests: 0,
-        maxConcurrent: 3,
-        tier: 'high',
-        rateLimited: false,
-      ),
-      ModelInstanceState(
-        provider: 'google',
-        model: 'gemini-flash',
-        status: 'idle',
-        activeRequests: 0,
-        maxConcurrent: 10,
-        tier: 'medium',
-        rateLimited: false,
-      ),
-      ModelInstanceState(
-        provider: 'moonshot',
-        model: 'moonshot-v1-8k',
-        status: 'running',
-        activeRequests: 1,
-        maxConcurrent: 10,
-        tier: 'medium',
-        rateLimited: false,
-      ),
-      ModelInstanceState(
-        provider: 'openclaw',
-        model: 'llava-v1.5-7b',
-        status: 'running',
-        activeRequests: 0,
-        maxConcurrent: 1,
-        tier: 'critical',
-        rateLimited: false,
-      ),
-    ];
   }
 
   /// Format duration for display
