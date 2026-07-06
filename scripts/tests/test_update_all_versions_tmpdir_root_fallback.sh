@@ -15,7 +15,7 @@ trap cleanup EXIT
 mkdir -p "$FAKE_ROOT/assets" "$FAKE_ROOT/lib/config" "$FAKE_ROOT/services/api-backend" "$FAKE_ROOT/services/streaming-proxy" "$FAKE_ROOT/scripts"
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 1.2.3+9
 EOF
 

@@ -9,7 +9,7 @@ set -e
 PROJECT_ID="Pistisai-468303"
 INSTANCE_NAME="Pistisai-db"
 REGION="us-central1"
-SERVICE_NAME="cloudtolocalllm-api"
+SERVICE_NAME="pistisai-api"
 DATABASE_NAME="Pistisai"
 DB_USER="appuser"
 

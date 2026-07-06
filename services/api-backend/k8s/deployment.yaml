@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: api-backend
-          image: gcr.io/cloudtolocalllm-468303/api-backend:latest
+          image: gcr.io/pistisai-468303/api-backend:latest
           ports:
             - containerPort: 3000
           env:

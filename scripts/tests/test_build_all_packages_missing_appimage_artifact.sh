@@ -17,7 +17,7 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$SCRIPT_DIR" "$FAKE_SCRIPT_DIR" "$TMP_ROOT/lib/config" "$TMP_ROOT/assets" "$TMP_ROOT/build/linux/x64/release/bundle" "$TMP_ROOT/dist/linux"
-printf '%s\n' 'name: cloudtolocalllm' > "$TMP_ROOT/pubspec.yaml"
+printf '%s\n' 'name: pistisai' > "$TMP_ROOT/pubspec.yaml"
 cp "$PROJECT_ROOT/scripts/packaging/build_all_packages.sh" "$SCRIPT_DIR/build_all_packages.sh"
 chmod +x "$SCRIPT_DIR/build_all_packages.sh"
 
@@ -46,8 +46,8 @@ case "${1:-}" in
   build)
     if [[ "${2:-}" == "linux" ]]; then
       mkdir -p "$proj_root/build/linux/x64/release/bundle"
-      printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
-      chmod +x "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
+      printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/pistisai"
+      chmod +x "$proj_root/build/linux/x64/release/bundle/pistisai"
       exit 0
     fi
     ;;

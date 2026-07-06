@@ -6,8 +6,8 @@ WORK_DIR="$(mktemp -d)"
 FAKE_BUILD_DIR="$WORK_DIR/bundle"
 FAKE_TOOLS="$WORK_DIR/bin"
 TMPDIR_BASE="$WORK_DIR/trailing/tmpdir/base"
-TMP_OUTPUT="$WORK_DIR/dist/linux/cloudtolocalllm-1.2.3-x86_64.AppImage"
-TMP_DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+TMP_OUTPUT="$WORK_DIR/dist/linux/pistisai-1.2.3-x86_64.AppImage"
+TMP_DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 LOG_FILE="$WORK_DIR/appimagetool.log"
 export LOG_FILE
 
@@ -18,17 +18,17 @@ trap cleanup EXIT
 
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$TMPDIR_BASE" "$(dirname "$TMP_OUTPUT")"
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=TMPDIR trailing slash test
@@ -62,7 +62,7 @@ if [[ ! -f "$TMP_OUTPUT" ]]; then
   exit 1
 fi
 
-if ! grep -Fq "cwd:$TMPDIR_BASE/cloudtolocalllm-appimage." "$LOG_FILE"; then
+if ! grep -Fq "cwd:$TMPDIR_BASE/pistisai-appimage." "$LOG_FILE"; then
   echo "Expected AppImage workdir to be created under normalized TMPDIR root" >&2
   cat /tmp/test_build_appimage_tmpdir_trailing_slashes.log >&2
   cat "$LOG_FILE" >&2

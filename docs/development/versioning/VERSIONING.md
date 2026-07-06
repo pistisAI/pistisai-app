@@ -120,9 +120,9 @@ metadata:
 Images are stored with multiple tags:
 
 ```
-ghcr.io/cloudtolocalllm-online/Pistisai/web:latest
-ghcr.io/cloudtolocalllm-online/Pistisai/web:latest
-ghcr.io/cloudtolocalllm-online/Pistisai/web:latest
+ghcr.io/pistisai/Pistisai/web:latest
+ghcr.io/pistisai/Pistisai/web:latest
+ghcr.io/pistisai/Pistisai/web:latest
 ```
 
 ## Release Process
@@ -140,10 +140,10 @@ To rollback to a previous version:
 
 ```bash
 # List available versions
-az acr repository show-tags --name imrightguycloudtolocalllm --repository web --orderby time_desc
+az acr repository show-tags --name imrightguypistisai --repository web --orderby time_desc
 
 # Update deployment to use specific version
-kubectl set image deployment/web web=ghcr.io/cloudtolocalllm-online/Pistisai/web:latest -n Pistisai
+kubectl set image deployment/web web=ghcr.io/pistisai/Pistisai/web:latest -n Pistisai
 ```
 
 ## Benefits

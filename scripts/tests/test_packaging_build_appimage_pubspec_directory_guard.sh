@@ -8,7 +8,7 @@ BUILD_DIR="$WORK_DIR/bundle"
 APPIMAGE_WORKDIR="$WORK_DIR/work"
 OUTPUT_FILE="$WORK_DIR/out/Pistisai-x86_64.AppImage"
 PUBSPEC_DIR="$WORK_DIR/pubspec-dir"
-DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 mkdir -p "$BUILD_DIR" "$APPIMAGE_WORKDIR" "$(dirname "$OUTPUT_FILE")" "$PUBSPEC_DIR"
 
 cleanup() {
@@ -16,17 +16,17 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$BUILD_DIR/cloudtolocalllm"
+chmod +x "$BUILD_DIR/pistisai"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Packaging pubspec guard test

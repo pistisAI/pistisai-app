@@ -9,7 +9,7 @@ FAKE_TOOLS_DIR="$WORK_DIR/bin"
 LOG_FILE="$WORK_DIR/calls.log"
 INSTALL_DIR="$WORK_DIR/install-bin"
 APPIMAGE_OUTPUT="$WORK_DIR/output/Pistisai-x86_64.AppImage"
-DESKTOP_ENTRY="$WORK_DIR/share/cloudtolocalllm.desktop"
+DESKTOP_ENTRY="$WORK_DIR/share/pistisai.desktop"
 mkdir -p "$FAKE_TOOLS_DIR" "$INSTALL_DIR" "$(dirname "$APPIMAGE_OUTPUT")" "$(dirname "$DESKTOP_ENTRY")"
 
 cleanup() {

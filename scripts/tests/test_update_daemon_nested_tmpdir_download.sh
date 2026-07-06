@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-DAEMON_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated"
+DAEMON_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated"
 WORK_DIR="$(mktemp -d)"
 HOME_DIR="$WORK_DIR/home"
 BIN_DIR="$WORK_DIR/bin"
@@ -43,7 +43,7 @@ done
 
 if [[ "\$url" == *'api.github.com'* ]]; then
   cat > "\$out_file" <<'JSON'
-{"assets":[{"name":"cloudtolocalllm-1.2.3-x86_64.AppImage","browser_download_url":"https://example.com/cloudtolocalllm-1.2.3.AppImage"}]}
+{"assets":[{"name":"pistisai-1.2.3-x86_64.AppImage","browser_download_url":"https://example.com/pistisai-1.2.3.AppImage"}]}
 JSON
 else
   printf 'appimage-binary' > "\$out_file"
@@ -66,15 +66,15 @@ STATE_DIR_OVERRIDE="$STATE_DIR" \
 PATH="$BIN_DIR:$PATH" \
 "$DAEMON_SCRIPT" download 1.2.3
 
-EXPECTED_OUTPUT="$HOME_DIR/.local/share/cloudtolocalllm/cache/cloudtolocalllm-1.2.3.AppImage"
+EXPECTED_OUTPUT="$HOME_DIR/.local/share/pistisai/cache/pistisai-1.2.3.AppImage"
 [[ -d "$TMPDIR_ROOT" ]]
 [[ -f "$EXPECTED_OUTPUT" ]]
 grep -Fqx 'appimage-binary' "$EXPECTED_OUTPUT"
 [[ $(wc -l < "$CURL_LOG") -eq 2 ]]
 grep -Fq 'api.github.com/repos/pistisAI/pistisai-app/releases/tags/v1.2.3' "$CURL_LOG"
-grep -Fq 'https://example.com/cloudtolocalllm-1.2.3.AppImage' "$CURL_LOG"
+grep -Fq 'https://example.com/pistisai-1.2.3.AppImage' "$CURL_LOG"
 [[ $(wc -l < "$MKTEMP_LOG") -eq 2 ]]
-grep -Fq "${TMPDIR_ROOT%/}/cloudtolocalllm-1.2.3.AppImage" "$MKTEMP_LOG"
-grep -Fq "${TMPDIR_ROOT%/}/cloudtolocalllm-updated-response" "$MKTEMP_LOG"
+grep -Fq "${TMPDIR_ROOT%/}/pistisai-1.2.3.AppImage" "$MKTEMP_LOG"
+grep -Fq "${TMPDIR_ROOT%/}/pistisai-updated-response" "$MKTEMP_LOG"
 
 echo "[test_update_daemon_nested_tmpdir_download] Passed"

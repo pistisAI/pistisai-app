@@ -26,7 +26,7 @@ describe("Log Aggregation Support", () => {
       expect(logAggregationConfig.loki.url).toBeDefined();
       expect(logAggregationConfig.loki.labels).toBeDefined();
       expect(logAggregationConfig.loki.labels.service).toBe(
-        "cloudtolocalllm-api",
+        "pistisai-api",
       );
     });
 
@@ -59,7 +59,7 @@ describe("Log Aggregation Support", () => {
       expect(formatted).toHaveProperty("stream");
       expect(formatted).toHaveProperty("values");
       expect(formatted.stream.level).toBe("info");
-      expect(formatted.stream.service).toBe("cloudtolocalllm-api");
+      expect(formatted.stream.service).toBe("pistisai-api");
     });
 
     test("should include correlation ID in Loki stream labels", () => {

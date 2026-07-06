@@ -26,7 +26,7 @@ Verified locally with:
 # No issues found
 
 /mnt/data/flutter-sdk/bin/flutter build linux --debug
-# Built build/linux/x64/debug/bundle/cloudtolocalllm
+# Built build/linux/x64/debug/bundle/pistisai
 ```
 
 Important discovered gap:

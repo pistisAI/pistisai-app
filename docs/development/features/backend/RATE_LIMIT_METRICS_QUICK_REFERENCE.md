@@ -170,7 +170,7 @@ Add to `prometheus.yml`:
 
 ```yaml
 scrape_configs:
-  - job_name: 'cloudtolocalllm-api'
+  - job_name: 'pistisai-api'
     static_configs:
       - targets: ['localhost:8080']
     metrics_path: '/metrics'

@@ -129,8 +129,8 @@ git status
 
 ```bash
 # Upload specific files
-gh release upload v3.8.0 dist/windows/cloudtolocalllm-3.8.0-portable.zip
-gh release upload v3.8.0 dist/windows/cloudtolocalllm-3.8.0-portable.zip.sha256
+gh release upload v3.8.0 dist/windows/pistisai-3.8.0-portable.zip
+gh release upload v3.8.0 dist/windows/pistisai-3.8.0-portable.zip.sha256
 ```
 
 ### Step 6: Commit and Push Changes

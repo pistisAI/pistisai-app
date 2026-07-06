@@ -20,7 +20,7 @@ import {
 export interface PersonalityConfig {
   agentId: string;
   driftDbPath?: string;
-  cloudToLocalApiUrl?: string;
+  pistisaiApiUrl?: string;
   markdownPath?: string;
 }
 
@@ -221,13 +221,13 @@ export class PersonalitySkill {
     };
 
     // Send to Pistisai API
-    if (!this.config.cloudToLocalApiUrl) {
+    if (!this.config.pistisaiApiUrl) {
       console.warn('[PersonalitySkill] No API URL configured, auto-approving');
       return { approved: true };
     }
 
     try {
-      const response = await fetch(`${this.config.cloudToLocalApiUrl}/api/evolution`, {
+      const response = await fetch(`${this.config.pistisaiApiUrl}/api/evolution`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),

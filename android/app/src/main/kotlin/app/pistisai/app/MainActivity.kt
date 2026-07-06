@@ -1,4 +1,4 @@
-package online.cloudtolocalllm.app
+package app.pistisai.app
 
 import io.flutter.embedding.android.FlutterActivity
 

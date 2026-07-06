@@ -7,9 +7,9 @@ TARGET_SCRIPT="$PROJECT_ROOT/scripts/build-appimage.sh"
 WORK_DIR="$(mktemp -d)"
 FAKE_TOOLS_DIR="$WORK_DIR/bin"
 LOG_FILE="$WORK_DIR/calls.log"
-INSTALL_BIN="$WORK_DIR/install/cloudtolocalllm"
+INSTALL_BIN="$WORK_DIR/install/pistisai"
 APPIMAGE_OUTPUT_DIR="$WORK_DIR/output-dir"
-DESKTOP_ENTRY="$WORK_DIR/share/cloudtolocalllm.desktop"
+DESKTOP_ENTRY="$WORK_DIR/share/pistisai.desktop"
 mkdir -p "$FAKE_TOOLS_DIR" "$(dirname "$INSTALL_BIN")" "$APPIMAGE_OUTPUT_DIR" "$(dirname "$DESKTOP_ENTRY")"
 
 cleanup() {

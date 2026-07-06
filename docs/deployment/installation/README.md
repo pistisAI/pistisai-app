@@ -148,7 +148,7 @@ Download the latest release and install it over the existing app. Settings, loca
 ### Linux Package
 
 ```bash
-sudo apt remove cloudtolocalllm
+sudo apt remove pistisai
 ```
 
 ### Windows

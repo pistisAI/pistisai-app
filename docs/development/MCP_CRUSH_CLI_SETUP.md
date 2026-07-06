@@ -73,7 +73,7 @@ MCP servers for Crush CLI need to be configured in the appropriate configuration
       "env": {
         "POSTGRES_HOST": "localhost",
         "POSTGRES_PORT": "5432",
-        "POSTGRES_DB": "cloudtolocalllm",
+        "POSTGRES_DB": "pistisai",
         "POSTGRES_USER": "${POSTGRES_USER:-appuser}",
         "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:-changeme}"
       }

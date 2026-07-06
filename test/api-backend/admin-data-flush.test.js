@@ -147,7 +147,7 @@ describe("AdminDataFlushService", () => {
       mockDocker.listContainers.mockResolvedValue([
         {
           Id: "container1",
-          Names: ["/cloudtolocalllm-proxy-user123"],
+          Names: ["/pistisai-proxy-user123"],
           State: "running",
           Labels: {
             "Pistisai.user": "user123",
@@ -156,7 +156,7 @@ describe("AdminDataFlushService", () => {
         },
         {
           Id: "container2",
-          Names: ["/cloudtolocalllm-proxy-user456"],
+          Names: ["/pistisai-proxy-user456"],
           State: "exited",
           Labels: {
             "Pistisai.user": "user456",

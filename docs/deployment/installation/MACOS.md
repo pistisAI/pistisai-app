@@ -125,7 +125,7 @@ Homebrew distribution is planned after packaging is stable.
 
 ```bash
 brew tap pistisAI/pistisai-app
-brew install cloudtolocalllm
+brew install pistisai
 ```
 
 ---

@@ -268,7 +268,7 @@ async function initializeCloudSQL() {
 async function loadTurnCredentials() {
   const response = await fetch('/api/turn/credentials');
   const data = await response.json();
-  window.cloudToLocalLLMConfig.turnServer.credential = data.credential;
+  window.pistisaiConfig.turnServer.credential = data.credential;
 }
 
 // Option 2: Inject at build time

@@ -8,7 +8,7 @@ WORK_DIR="$(mktemp -d)"
 FAKE_BUILD_DIR="$WORK_DIR/bundle"
 FAKE_TOOLS_DIR="$WORK_DIR/bin"
 APPIMAGE_OUTPUT_DIR="$WORK_DIR/output-dir"
-DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 PUBSPEC_FILE="$WORK_DIR/pubspec.yaml"
 LOG_FILE="$WORK_DIR/appimagetool.log"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS_DIR" "$APPIMAGE_OUTPUT_DIR"
@@ -19,21 +19,21 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$PUBSPEC_FILE" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 1.2.3+4
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/bash
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Output directory guard test desktop entry

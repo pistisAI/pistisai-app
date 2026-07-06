@@ -9,7 +9,7 @@ FAKE_TOOLS_DIR="$WORK_DIR/bin"
 DPKG_DIR="$WORK_DIR/dpkg tools"
 DIST_DIR="$WORK_DIR/dist with spaces/output"
 DPKG_LOG="$WORK_DIR/dpkg.log"
-OUTPUT_DEB="$DIST_DIR/cloudtolocalllm_10.1.200_amd64.deb"
+OUTPUT_DEB="$DIST_DIR/pistisai_10.1.200_amd64.deb"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS_DIR" "$DPKG_DIR" "$DIST_DIR"
 export DPKG_LOG
 
@@ -18,11 +18,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$DPKG_DIR/dpkg-deb wrapper" <<'EOF'
 #!/bin/bash

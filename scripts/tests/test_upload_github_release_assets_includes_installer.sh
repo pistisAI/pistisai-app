@@ -11,8 +11,8 @@ fi
 
 for needle in \
   'Upload all release assets, including the Windows installer.' \
-  'cloudtolocalllm-$Version-portable.zip' \
-  'cloudtolocalllm-$Version-portable.zip.sha256' \
+  'pistisai-$Version-portable.zip' \
+  'pistisai-$Version-portable.zip.sha256' \
   'Pistisai-Windows-$Version-Setup.exe' \
   'Pistisai-Windows-$Version-Setup.exe.sha256' \
   'Missing release assets:' \

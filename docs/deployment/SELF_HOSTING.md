@@ -37,8 +37,8 @@ Run only the Flutter frontend with local SQLite storage. No backend services req
 
 ```bash
 # Get the code
-git clone https://github.com/your-repo/cloudtolocalllm.git
-cd cloudtolocalllm
+git clone https://github.com/your-repo/pistisai.git
+cd pistisai
 
 # Install Flutter dependencies
 flutter pub get
@@ -120,9 +120,9 @@ Key environment variables in `.env`:
 # Database
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
-POSTGRES_USER=cloudtolocalllm
+POSTGRES_USER=pistisai
 POSTGRES_PASSWORD=your_secure_password
-POSTGRES_DB=cloudtolocalllm
+POSTGRES_DB=pistisai
 
 # Redis
 REDIS_HOST=localhost
@@ -182,7 +182,7 @@ class EndpointConfig {
 
 ```bash
 # Backup PostgreSQL database
-pg_dump -h localhost -U cloudtolocalllm cloudtolocalllm > backup.sql
+pg_dump -h localhost -U pistisai pistisai > backup.sql
 
 # Backup Redis (optional, mainly for caching)
 redis-cli BGSAVE

@@ -7,8 +7,8 @@
 set -e
 
 # Secure Configuration (Inject via Env)
-CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-"cmaltais@cloudtolocalllm.online"}
-DOMAIN=${CLOUDFLARE_DOMAIN:-"cloudtolocalllm.online"}
+CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-"cmaltais@pistisai.app"}
+DOMAIN=${CLOUDFLARE_DOMAIN:-"pistisai.app"}
 TUNNEL_ID=${CLOUDFLARE_TUNNEL_ID:-"62da6c19-947b-4bf6-acad-100a73de4e0d"}
 TARGET_CNAME="$TUNNEL_ID.cfargotunnel.com"
 

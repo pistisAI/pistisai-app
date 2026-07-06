@@ -6,7 +6,7 @@ TMP_HOME="$(mktemp -d)"
 TMP_FAKE_ROOT="$(mktemp -d)"
 TMP_BUILD_DIR="$TMP_FAKE_ROOT/build/linux/x64/release/bundle"
 TMP_WORKDIR="$(mktemp -d)"
-TMP_OUTPUT="$TMP_FAKE_ROOT/dist/linux/cloudtolocalllm-appimage-missing-template-data-lib.AppImage"
+TMP_OUTPUT="$TMP_FAKE_ROOT/dist/linux/pistisai-appimage-missing-template-data-lib.AppImage"
 TMP_PUBSPEC="$TMP_FAKE_ROOT/pubspec.yaml"
 TMP_DESKTOP_TEMPLATE="$TMP_FAKE_ROOT/custom.desktop"
 TMP_INVOKE_LOG="$TMP_WORKDIR/invoke.log"
@@ -19,16 +19,16 @@ cleanup() {
 }
 trap cleanup EXIT
 
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 printf '%s\n' 'data-file' > "$TMP_BUILD_DIR/data/subdir/example.txt"
 printf '%s\n' 'lib-file' > "$TMP_BUILD_DIR/lib/subdir/example.txt"
-printf '%s\n' 'name: cloudtolocalllm' 'version: 1.2.3+4' > "$TMP_PUBSPEC"
+printf '%s\n' 'name: pistisai' 'version: 1.2.3+4' > "$TMP_PUBSPEC"
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 EOF

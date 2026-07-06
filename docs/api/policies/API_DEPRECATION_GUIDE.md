@@ -350,7 +350,7 @@ For questions about API deprecation or migration help:
 - **Email**: support@pistisai.app
 - **Documentation**: https://docs.pistisai.app
 - **API Docs**: https://api.pistisai.app/api/docs
-- **GitHub Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
+- **GitHub Issues**: https://github.com/ghcr.io/pistisai/Pistisai/api/issues
 
 ## Implementation Details
 

@@ -7,9 +7,9 @@ REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 SIMON_HOST="${SIMON_HOST:-}"
 SIMON_USER="${SIMON_USER:-root}"
 SIMON_SSH_KEY_FILE="${SIMON_SSH_KEY_FILE:-}"
-SIMON_APP_DIR="${SIMON_APP_DIR:-/opt/cloudtolocalllm}"
+SIMON_APP_DIR="${SIMON_APP_DIR:-/opt/pistisai}"
 SIMON_PUBLIC_HTTP_PORT="${SIMON_PUBLIC_HTTP_PORT:-3100}"
-CLOUDFLARE_DOMAIN="${CLOUDFLARE_DOMAIN:-cloudtolocalllm.online}"
+CLOUDFLARE_DOMAIN="${CLOUDFLARE_DOMAIN:-pistisai.app}"
 CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-35fa09929e656c4e96e4aa79909d11b7}"
 CLOUDFLARE_TUNNEL_ID="${CLOUDFLARE_TUNNEL_ID:-b0aebd5d-5fdf-4dc1-b64c-932c4ee8b400}"
 SYNC_REPO="${SYNC_REPO:-true}"
@@ -109,8 +109,8 @@ fi
 if bool_is_true "$DEPLOY_APP"; then
   log "Deploying Docker Compose stack on Simon VPS"
   remote_bash <<REMOTE
-mkdir -p /root/cloudtolocalllm-recovery-snapshots
-SNAP="/root/cloudtolocalllm-recovery-snapshots/\$(date +%Y%m%d-%H%M%S)"
+mkdir -p /root/pistisai-recovery-snapshots
+SNAP="/root/pistisai-recovery-snapshots/\$(date +%Y%m%d-%H%M%S)"
 mkdir -p "\$SNAP"
 cd "$SIMON_APP_DIR"
 if [[ -f deploy/simon-vps/.env ]]; then cp deploy/simon-vps/.env "\$SNAP/.env"; fi
@@ -157,7 +157,7 @@ base = 'https://api.cloudflare.com/client/v4'
 headers = {
     'Authorization': f'Bearer {api_token}',
     'Content-Type': 'application/json',
-    'User-Agent': 'cloudtolocalllm-simon-vps-deploy'
+    'User-Agent': 'pistisai-simon-vps-deploy'
 }
 ctx = ssl.create_default_context()
 
@@ -221,26 +221,26 @@ print(json.dumps(summary))
 PY
 
   log "Installing Cloudflare tunnel service on Simon VPS"
-  scp "${ssh_opts[@]}" "$TOKEN_ENV_FILE" "$(ssh_target):/tmp/cloudflared-cloudtolocalllm.env"
+  scp "${ssh_opts[@]}" "$TOKEN_ENV_FILE" "$(ssh_target):/tmp/cloudflared-pistisai.env"
   scp "${ssh_opts[@]}" \
-    "$REPO_ROOT/deploy/simon-vps/cloudflared-cloudtolocalllm.service" \
-    "$REPO_ROOT/deploy/simon-vps/cloudtolocalllm.yml" \
+    "$REPO_ROOT/deploy/simon-vps/cloudflared-pistisai.service" \
+    "$REPO_ROOT/deploy/simon-vps/pistisai.yml" \
     "$(ssh_target):/tmp/"
   remote_bash <<REMOTE
-mkdir -p /root/cloudtolocalllm-recovery-snapshots
-SNAP="/root/cloudtolocalllm-recovery-snapshots/\$(date +%Y%m%d-%H%M%S)-cloudflared"
+mkdir -p /root/pistisai-recovery-snapshots
+SNAP="/root/pistisai-recovery-snapshots/\$(date +%Y%m%d-%H%M%S)-cloudflared"
 mkdir -p "\$SNAP"
-[[ -f /etc/default/cloudflared-cloudtolocalllm ]] && cp /etc/default/cloudflared-cloudtolocalllm "\$SNAP/" || true
-[[ -f /etc/systemd/system/cloudflared-cloudtolocalllm.service ]] && cp /etc/systemd/system/cloudflared-cloudtolocalllm.service "\$SNAP/" || true
-[[ -f /etc/cloudflared/cloudtolocalllm.yml ]] && cp /etc/cloudflared/cloudtolocalllm.yml "\$SNAP/" || true
+[[ -f /etc/default/cloudflared-pistisai ]] && cp /etc/default/cloudflared-pistisai "\$SNAP/" || true
+[[ -f /etc/systemd/system/cloudflared-pistisai.service ]] && cp /etc/systemd/system/cloudflared-pistisai.service "\$SNAP/" || true
+[[ -f /etc/cloudflared/pistisai.yml ]] && cp /etc/cloudflared/pistisai.yml "\$SNAP/" || true
 install -d -m 755 /etc/cloudflared
-install -m 600 /tmp/cloudflared-cloudtolocalllm.env /etc/default/cloudflared-cloudtolocalllm
-install -m 644 /tmp/cloudflared-cloudtolocalllm.service /etc/systemd/system/cloudflared-cloudtolocalllm.service
-install -m 644 /tmp/cloudtolocalllm.yml /etc/cloudflared/cloudtolocalllm.yml
-rm -f /tmp/cloudflared-cloudtolocalllm.env /tmp/cloudflared-cloudtolocalllm.service /tmp/cloudtolocalllm.yml
+install -m 600 /tmp/cloudflared-pistisai.env /etc/default/cloudflared-pistisai
+install -m 644 /tmp/cloudflared-pistisai.service /etc/systemd/system/cloudflared-pistisai.service
+install -m 644 /tmp/pistisai.yml /etc/cloudflared/pistisai.yml
+rm -f /tmp/cloudflared-pistisai.env /tmp/cloudflared-pistisai.service /tmp/pistisai.yml
 systemctl daemon-reload
-systemctl enable --now cloudflared-cloudtolocalllm.service
-systemctl is-active --quiet cloudflared-cloudtolocalllm.service
+systemctl enable --now cloudflared-pistisai.service
+systemctl is-active --quiet cloudflared-pistisai.service
 REMOTE
 fi
 

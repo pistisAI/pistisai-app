@@ -29,7 +29,7 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Service names
-SERVICES=("Pistisai-web" "cloudtolocalllm-api" "Pistisai-streaming")
+SERVICES=("Pistisai-web" "pistisai-api" "Pistisai-streaming")
 
 # Logging functions
 log_info() {

@@ -27,7 +27,7 @@ NC='\033[0m'
 CONFIG_FILE=".aws-deployment-config.json"
 NON_INTERACTIVE="false"
 SKIP_VALIDATION="false"
-EKS_CLUSTER_NAME="cloudtolocalllm-eks"
+EKS_CLUSTER_NAME="pistisai-eks"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -473,7 +473,7 @@ Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 AWS Configuration:
   AWS_REGION: $AWS_REGION
   AWS_SECRETS_MANAGER_SECRET_ID: $AWS_SECRETS_MANAGER_SECRET_ID
-  EKS_CLUSTER_NAME: ${EKS_CLUSTER_NAME:-cloudtolocalllm-eks}
+  EKS_CLUSTER_NAME: ${EKS_CLUSTER_NAME:-pistisai-eks}
 
 Application Secrets:
   POSTGRES_PASSWORD: [stored in AWS Secrets Manager]

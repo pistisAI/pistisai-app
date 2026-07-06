@@ -165,4 +165,4 @@ mountVersionedRoutes(app, '/users', {
 
 - Documentation: https://docs.pistisai.app
 - Migration Guide: See API_VERSIONING_GUIDE.md
-- Issues: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
+- Issues: https://github.com/ghcr.io/pistisai/Pistisai/api/issues

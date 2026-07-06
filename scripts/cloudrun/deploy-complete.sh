@@ -245,13 +245,13 @@ phase_config() {
     
     # Get service URLs
     local web_url=$(gcloud run services describe Pistisai-web --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
-    local api_url=$(gcloud run services describe cloudtolocalllm-api --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
+    local api_url=$(gcloud run services describe pistisai-api --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
     local streaming_url=$(gcloud run services describe Pistisai-streaming --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "")
     
     # Update services with cross-service URLs
     if [ -n "$api_url" ] && [ -n "$web_url" ]; then
         log_info "Updating API service with CORS configuration..."
-        gcloud run services update cloudtolocalllm-api \
+        gcloud run services update pistisai-api \
             --platform=managed \
             --region="$GOOGLE_CLOUD_REGION" \
             --set-env-vars="CORS_ORIGINS=$web_url" \
@@ -278,7 +278,7 @@ phase_config() {
       "description": "Flutter web application"
     },
     "api": {
-      "name": "cloudtolocalllm-api", 
+      "name": "pistisai-api", 
       "url": "$api_url",
       "description": "Node.js API backend"
     },
@@ -332,7 +332,7 @@ show_summary() {
     
     # Get service URLs
     local web_url=$(gcloud run services describe Pistisai-web --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
-    local api_url=$(gcloud run services describe cloudtolocalllm-api --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
+    local api_url=$(gcloud run services describe pistisai-api --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
     local streaming_url=$(gcloud run services describe Pistisai-streaming --platform=managed --region="$GOOGLE_CLOUD_REGION" --format="value(status.url)" 2>/dev/null || echo "Not deployed")
     
     echo

@@ -22,9 +22,9 @@ version: 10.1.200+4200
 EOF
 
 cp "$PROJECT_ROOT/scripts/packaging/installer-template.sh" "$FAKE_ROOT/scripts/packaging/installer-template.sh"
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated" "$FAKE_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated"
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.service" "$FAKE_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.service"
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.timer" "$FAKE_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.timer"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated" "$FAKE_ROOT/scripts/packaging/update-daemon/pistisai-updated"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated.service" "$FAKE_ROOT/scripts/packaging/update-daemon/pistisai-updated.service"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated.timer" "$FAKE_ROOT/scripts/packaging/update-daemon/pistisai-updated.timer"
 
 cat > "$BIN_DIR/mktemp" <<'EOF'
 #!/bin/bash

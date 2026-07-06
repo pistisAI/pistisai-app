@@ -240,7 +240,7 @@ SERVICE_ACCOUNT_EMAIL=Pistisai-runner@$PROJECT_ID.iam.gserviceaccount.com
 
 # Cloud Run Service Names
 WEB_SERVICE_NAME=Pistisai-web
-API_SERVICE_NAME=cloudtolocalllm-api
+API_SERVICE_NAME=pistisai-api
 STREAMING_SERVICE_NAME=Pistisai-streaming
 
 # Application Configuration (customize as needed)

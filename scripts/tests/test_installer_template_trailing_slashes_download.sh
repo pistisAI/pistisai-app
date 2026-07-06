@@ -45,24 +45,24 @@ chmod +x "$FAKE_BIN/curl"
 TMPDIR="$TMPDIR_ROOT_RAW" \
 PATH="$FAKE_BIN:$PATH" \
 INSTALL_VERSION="10.1.200" \
-CLOUDTOLOCALLLM_DIR="$INSTALL_DIR" \
+PISTISAI_DIR="$INSTALL_DIR" \
 "$TARGET_SCRIPT" --no-daemon >/tmp/test_installer_template_trailing_slashes_download.log 2>&1
 
-if [[ ! -f "$INSTALL_DIR/cloudtolocalllm" ]]; then
-  echo "Expected installer to place cloudtolocalllm into the custom install dir" >&2
+if [[ ! -f "$INSTALL_DIR/pistisai" ]]; then
+  echo "Expected installer to place pistisai into the custom install dir" >&2
   cat /tmp/test_installer_template_trailing_slashes_download.log >&2
   exit 1
 fi
 
-if ! grep -Fq "$TMPDIR_ROOT_EXPECTED/.cloudtolocalllm-download." "$CURL_LOG"; then
+if ! grep -Fq "$TMPDIR_ROOT_EXPECTED/.pistisai-download." "$CURL_LOG"; then
   echo "Expected installer download temp file to use the normalized TMPDIR root" >&2
   cat "$CURL_LOG" >&2
   exit 1
 fi
 
-if find "$TMPDIR_ROOT_EXPECTED" -maxdepth 1 -name '.cloudtolocalllm-download.*' | grep -q .; then
+if find "$TMPDIR_ROOT_EXPECTED" -maxdepth 1 -name '.pistisai-download.*' | grep -q .; then
   echo "Expected download temp cleanup under normalized TMPDIR root" >&2
-  find "$TMPDIR_ROOT_EXPECTED" -maxdepth 1 -name '.cloudtolocalllm-download.*' >&2
+  find "$TMPDIR_ROOT_EXPECTED" -maxdepth 1 -name '.pistisai-download.*' >&2
   cat /tmp/test_installer_template_trailing_slashes_download.log >&2
   exit 1
 fi

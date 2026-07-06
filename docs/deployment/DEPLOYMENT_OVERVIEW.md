@@ -27,8 +27,8 @@ Deploy the full Pistisai stack to **Kubernetes** using Dockerfiles and Kubernete
 ```bash
 # Build and push Docker images to your container registry
 docker build -f config/docker/Dockerfile.web \
-  -t your-registry.com/ghcr.io/cloudtolocalllm-online/Pistisai/web:latest .
-docker push your-registry.com/ghcr.io/cloudtolocalllm-online/Pistisai/web:latest
+  -t your-registry.com/ghcr.io/pistisai/Pistisai/web:latest .
+docker push your-registry.com/ghcr.io/pistisai/Pistisai/web:latest
 
 docker build -f services/api-backend/Dockerfile.prod \
   -t your-registry.com/Pistisai/api:latest .
@@ -119,7 +119,7 @@ docker build -f config/docker/Dockerfile.web -t Pistisai-web:latest .
 Builds the Node.js API backend service.
 
 ```bash
-docker build -f services/api-backend/Dockerfile.prod -t cloudtolocalllm-api:latest .
+docker build -f services/api-backend/Dockerfile.prod -t pistisai-api:latest .
 ```
 
 ### ☸️ **Kubernetes Deployment**

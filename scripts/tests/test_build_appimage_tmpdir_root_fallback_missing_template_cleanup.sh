@@ -17,15 +17,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 9.8.7+6
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_ROOT/scripts/flutter_with_cleanup.sh" <<'EOF'
 #!/bin/bash
@@ -58,13 +58,13 @@ if [[ $status -eq 0 ]]; then
   exit 1
 fi
 
-if ! grep -Fq '/tmp/cloudtolocalllm-appimage.' "$MKTEMP_LOG"; then
+if ! grep -Fq '/tmp/pistisai-appimage.' "$MKTEMP_LOG"; then
   echo "Expected APPIMAGE_WORKDIR to fall back to /tmp" >&2
   cat "$MKTEMP_LOG" >&2
   exit 1
 fi
 
-workdir_path="$(awk -F ' => ' '/cloudtolocalllm-appimage/ {print $2; exit}' "$MKTEMP_LOG")"
+workdir_path="$(awk -F ' => ' '/pistisai-appimage/ {print $2; exit}' "$MKTEMP_LOG")"
 if [[ -z "$workdir_path" ]]; then
   echo "Expected to capture AppImage workdir path" >&2
   cat "$MKTEMP_LOG" >&2

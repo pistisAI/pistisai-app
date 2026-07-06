@@ -101,7 +101,7 @@ verify_packages() {
     print_status "Verifying Phase 3 build packages for version $version..."
 
     # Check Windows packages
-    if [[ ! -f "$PROJECT_ROOT/dist/windows/cloudtolocalllm-$version-portable.zip" ]]; then
+    if [[ ! -f "$PROJECT_ROOT/dist/windows/pistisai-$version-portable.zip" ]]; then
         missing_packages+=("Windows portable ZIP")
     fi
 
@@ -110,11 +110,11 @@ verify_packages() {
     fi
 
     # Check Linux packages
-    if [[ ! -f "$PROJECT_ROOT/dist/linux/cloudtolocalllm-$version-amd64.deb" ]]; then
+    if [[ ! -f "$PROJECT_ROOT/dist/linux/pistisai-$version-amd64.deb" ]]; then
         missing_packages+=("Linux .deb package")
     fi
 
-    if [[ ! -f "$PROJECT_ROOT/dist/linux/cloudtolocalllm-$version-x86_64.AppImage" ]]; then
+    if [[ ! -f "$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage" ]]; then
         missing_packages+=("Linux AppImage")
     fi
 
@@ -190,8 +190,8 @@ makepkg -si
 
 ## 🔗 Links
 
-- **Homepage**: https://cloudtolocalllm.online
-- **Web App**: https://app.cloudtolocalllm.online
+- **Homepage**: https://pistisai.app
+- **Web App**: https://app.pistisai.app
 - **Documentation**: https://github.com/$REPO_OWNER/$REPO_NAME/wiki
 - **Issues**: https://github.com/$REPO_OWNER/$REPO_NAME/issues
 
@@ -239,9 +239,9 @@ create_release() {
     local assets=()
 
     # Windows packages
-    if [[ -f "$PROJECT_ROOT/dist/windows/cloudtolocalllm-$version-portable.zip" ]]; then
-        assets+=("$PROJECT_ROOT/dist/windows/cloudtolocalllm-$version-portable.zip")
-        assets+=("$PROJECT_ROOT/dist/windows/cloudtolocalllm-$version-portable.zip.sha256")
+    if [[ -f "$PROJECT_ROOT/dist/windows/pistisai-$version-portable.zip" ]]; then
+        assets+=("$PROJECT_ROOT/dist/windows/pistisai-$version-portable.zip")
+        assets+=("$PROJECT_ROOT/dist/windows/pistisai-$version-portable.zip.sha256")
     fi
 
     if [[ -f "$PROJECT_ROOT/dist/windows/Pistisai-Windows-$version-Setup.exe" ]]; then
@@ -250,14 +250,14 @@ create_release() {
     fi
 
     # Linux packages
-    if [[ -f "$PROJECT_ROOT/dist/linux/cloudtolocalllm_${version}_amd64.deb" ]]; then
-        assets+=("$PROJECT_ROOT/dist/linux/cloudtolocalllm_${version}_amd64.deb")
-        assets+=("$PROJECT_ROOT/dist/linux/cloudtolocalllm_${version}_amd64.deb.sha256")
+    if [[ -f "$PROJECT_ROOT/dist/linux/pistisai_${version}_amd64.deb" ]]; then
+        assets+=("$PROJECT_ROOT/dist/linux/pistisai_${version}_amd64.deb")
+        assets+=("$PROJECT_ROOT/dist/linux/pistisai_${version}_amd64.deb.sha256")
     fi
 
-    if [[ -f "$PROJECT_ROOT/dist/linux/cloudtolocalllm-$version-x86_64.AppImage" ]]; then
-        assets+=("$PROJECT_ROOT/dist/linux/cloudtolocalllm-$version-x86_64.AppImage")
-        assets+=("$PROJECT_ROOT/dist/linux/cloudtolocalllm-$version-x86_64.AppImage.sha256")
+    if [[ -f "$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage" ]]; then
+        assets+=("$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage")
+        assets+=("$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage.sha256")
     fi
 
     # Create release with multi-platform assets

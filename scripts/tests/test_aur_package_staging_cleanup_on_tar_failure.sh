@@ -20,7 +20,7 @@ chmod +x "$WORK_DIR/test_aur_package.sh"
 cp "$PROJECT_ROOT/build-tools/packaging/aur/PKGBUILD" "$WORK_DIR/build-tools/packaging/aur/PKGBUILD"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 

@@ -11,7 +11,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BUILD_DIR="$PROJECT_ROOT/build/linux/x64/release/bundle"
 VERSION=$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)
 PACKAGE_NAME="Pistisai"
-MAINTAINER="Pistisai Team <team@cloudtolocalllm.online>"
+MAINTAINER="Pistisai Team <team@pistisai.app>"
 DESCRIPTION="Manage and run powerful Large Language Models locally, orchestrated via a cloud interface."
 
 # Output Directory

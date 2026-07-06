@@ -2,11 +2,11 @@ services:
   # PostgreSQL Database
   database:
     image: postgres:17
-    container_name: cloudtolocalllm-postgres
+    container_name: pistisai-postgres
     restart: unless-stopped
     command: postgres -c shared_buffers=4GB -c effective_cache_size=6GB -c work_mem=64MB -c maintenance_work_mem=512MB
     environment:
-      - POSTGRES_DB=cloudtolocalllm
+      - POSTGRES_DB=pistisai
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
@@ -28,7 +28,7 @@ services:
   # Redis for Tunnel State
   redis:
     image: redis:7-alpine
-    container_name: cloudtolocalllm-redis
+    container_name: pistisai-redis
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
@@ -49,7 +49,7 @@ services:
   # Cloudflare Tunnel (Ingress)
   cloudflared:
     image: cloudflare/cloudflared:2024.12.2
-    container_name: cloudtolocalllm-cloudflared
+    container_name: pistisai-cloudflared
     command: tunnel --no-autoupdate --metrics 0.0.0.0:2000 run
     environment:
        - TUNNEL_TOKEN=62da6c19-947b-4bf6-acad-100a73de4e0d
@@ -64,7 +64,7 @@ services:
     build:
       context: .
       dockerfile: services/tailscale-relay/Dockerfile
-    container_name: cloudtolocalllm-tailscale-relay
+    container_name: pistisai-tailscale-relay
     environment:
       - PORT=3002
       - JWT_SECRET=${JWT_SECRET}
@@ -79,8 +79,8 @@ services:
     build:
       context: .
       dockerfile: config/docker/Dockerfile.nginx
-    image: cloudtolocalllm-nginx
-    container_name: cloudtolocalllm-webapp
+    image: pistisai-nginx
+    container_name: pistisai-webapp
     ports:
       - "80:80"
       - "443:443"
@@ -108,8 +108,8 @@ services:
     build:
       context: .
       dockerfile: config/docker/Dockerfile.api-backend
-    image: cloudtolocalllm-api-backend
-    container_name: cloudtolocalllm-api-backend
+    image: pistisai-api-backend
+    container_name: pistisai-api-backend
     ports:
       - "8080:8080"
     volumes:
@@ -121,16 +121,16 @@ services:
       - DB_TYPE=postgresql
       - DB_HOST=database
       - DB_PORT=5432
-      - DB_NAME=cloudtolocalllm
+      - DB_NAME=pistisai
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - PGHOST=database
       - PGPORT=5432
-      - PGDATABASE=cloudtolocalllm
+      - PGDATABASE=pistisai
       - PGUSER=postgres
       - PGPASSWORD=postgres
       - AUTH0_DOMAIN=${AUTH0_DOMAIN}
-      - AUTH0_AUDIENCE=https://app.cloudtolocalllm.online
+      - AUTH0_AUDIENCE=https://app.pistisai.app
     restart: unless-stopped
     depends_on:
       database:
@@ -145,21 +145,21 @@ services:
   # Postfix Mail Server
   postfix-mail:
     image: boky/postfix:latest
-    container_name: cloudtolocalllm-postfix-mail
+    container_name: pistisai-postfix-mail
     restart: always
     environment:
-      - "HOSTNAME=mail.cloudtolocalllm.online"
-      - "DOMAIN=cloudtolocalllm.online"
-      - "ALLOWED_SENDER_DOMAINS=cloudtolocalllm.online"
+      - "HOSTNAME=mail.pistisai.app"
+      - "DOMAIN=pistisai.app"
+      - "ALLOWED_SENDER_DOMAINS=pistisai.app"
       - "NETWORK_INTERFACE=eth0"
       - "RELAYHOST="
       - "MYNETWORKS=127.0.0.0/8 172.16.0.0/12 192.168.0.0/16"
-      - "DKIM_DOMAINS=cloudtolocalllm.online"
+      - "DKIM_DOMAINS=pistisai.app"
       - "DKIM_SELECTOR=mail"
-      - "DKIM_KEY_PATH=/etc/opendkim/keys/cloudtolocalllm.online/mail.private"
+      - "DKIM_KEY_PATH=/etc/opendkim/keys/pistisai.app/mail.private"
       - "DKIM_AUTOGENERATE=true"
     volumes:
-      - ./config/dkim:/etc/opendkim/keys/cloudtolocalllm.online:ro
+      - ./config/dkim:/etc/opendkim/keys/pistisai.app:ro
     ports:
       - "2500:25"
       - "587:587"
@@ -170,7 +170,7 @@ services:
   # Certbot for SSL certificates
   certbot:
     image: certbot/certbot
-    container_name: cloudtolocalllm-certbot
+    container_name: pistisai-certbot
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/live:/etc/letsencrypt/live
@@ -185,7 +185,7 @@ services:
         mkdir -p /etc/letsencrypt/live /etc/letsencrypt/archive;
         chmod -R 755 /etc/letsencrypt;
         echo "Attempting initial certificate acquisition...";
-        certbot certonly --webroot -w /var/www/certbot --email admin@cloudtolocalllm.online --agree-tos --no-eff-email -d cloudtolocalllm.online -d app.cloudtolocalllm.online -d api.cloudtolocalllm.online -d docs.cloudtolocalllm.online -d mail.cloudtolocalllm.online --force-renewal --deploy-hook "/opt/certbot_permissions_hook.sh" || echo "Initial certonly command failed or no certs due for renewal.";
+        certbot certonly --webroot -w /var/www/certbot --email admin@pistisai.app --agree-tos --no-eff-email -d pistisai.app -d app.pistisai.app -d api.pistisai.app -d docs.pistisai.app -d mail.pistisai.app --force-renewal --deploy-hook "/opt/certbot_permissions_hook.sh" || echo "Initial certonly command failed or no certs due for renewal.";
         chown -R 101:101 /etc/letsencrypt/live /etc/letsencrypt/archive;
         echo "Initial cert attempt/check done. Starting renewal loop.";
         while :; do
@@ -197,7 +197,7 @@ services:
 
 networks:
   default:
-    name: cloudtolocalllm_default
+    name: pistisai_default
 
 volumes:
   postgres_data:

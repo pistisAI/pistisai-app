@@ -335,7 +335,7 @@ generate_deployment_report() {
   "applications": $(argocd app list --output json),
   "cluster_info": {
     "nodes": $(kubectl get nodes --no-headers | wc -l),
-    "cloudtolocalllm_pods": $(kubectl get pods -n $CLOUDTOLOCLLM_NAMESPACE --no-headers | wc -l)
+    "pistisai_pods": $(kubectl get pods -n $CLOUDTOLOCLLM_NAMESPACE --no-headers | wc -l)
   }
 }
 EOF

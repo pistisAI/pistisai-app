@@ -39,8 +39,8 @@ cat > "$FAKE_FLUTTER" <<'EOF'
 set -euo pipefail
 proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 mkdir -p "$proj_root/build/linux/x64/release/bundle"
-printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
-chmod +x "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/pistisai"
+chmod +x "$proj_root/build/linux/x64/release/bundle/pistisai"
 exit 0
 EOF
 chmod +x "$FAKE_FLUTTER"
@@ -52,7 +52,7 @@ proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 version="$(grep '^version:' "$proj_root/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)"
 dist_dir="$proj_root/dist/linux"
 mkdir -p "$dist_dir"
-package="$dist_dir/cloudtolocalllm-${version}-x86_64.AppImage"
+package="$dist_dir/pistisai-${version}-x86_64.AppImage"
 printf 'appimage' > "$package"
 chmod +x "$package"
 sha256sum "$package" > "$package.sha256"
@@ -60,7 +60,7 @@ EOF
 chmod +x "$FAKE_BUILD_SCRIPT"
 
 cat > "$TMP_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 printf '%s' "class AppConfig {\n  static const String appVersion = '0.0.0';\n}\n" > "$TMP_ROOT/lib/config/app_config.dart"

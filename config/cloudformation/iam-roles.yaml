@@ -17,7 +17,7 @@ Resources:
   EKSServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: cloudtolocalllm-eks-service-role
+      RoleName: pistisai-eks-service-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -30,7 +30,7 @@ Resources:
         - 'arn:aws:iam::aws:policy/AmazonEKSVPCResourceController'
       Tags:
         - Key: Name
-          Value: cloudtolocalllm-eks-service-role
+          Value: pistisai-eks-service-role
         - Key: Environment
           Value: production
 
@@ -38,7 +38,7 @@ Resources:
   NodeInstanceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: cloudtolocalllm-eks-node-role
+      RoleName: pistisai-eks-node-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -53,7 +53,7 @@ Resources:
         - 'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy'
       Tags:
         - Key: Name
-          Value: cloudtolocalllm-eks-node-role
+          Value: pistisai-eks-node-role
         - Key: Environment
           Value: production
 
@@ -61,7 +61,7 @@ Resources:
   NodeInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: cloudtolocalllm-eks-node-profile
+      InstanceProfileName: pistisai-eks-node-profile
       Roles:
         - !Ref NodeInstanceRole
 
@@ -139,7 +139,7 @@ Resources:
           - Effect: Allow
             Action:
               - 'eks:DescribeCluster'
-            Resource: !Sub 'arn:aws:eks:${AWS::Region}:${AWS::AccountId}:cluster/cloudtolocalllm-eks'
+            Resource: !Sub 'arn:aws:eks:${AWS::Region}:${AWS::AccountId}:cluster/pistisai-eks'
       Roles:
         - !Ref GitHubActionsRole
 
@@ -190,7 +190,7 @@ Resources:
   EKSCloudWatchLogsRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: cloudtolocalllm-eks-cloudwatch-logs-role
+      RoleName: pistisai-eks-cloudwatch-logs-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -202,7 +202,7 @@ Resources:
         - 'arn:aws:iam::aws:policy/CloudWatchLogsFullAccess'
       Tags:
         - Key: Name
-          Value: cloudtolocalllm-eks-cloudwatch-logs-role
+          Value: pistisai-eks-cloudwatch-logs-role
         - Key: Environment
           Value: production
 
@@ -211,7 +211,7 @@ Outputs:
     Description: ARN of EKS Service Role
     Value: !GetAtt EKSServiceRole.Arn
     Export:
-      Name: cloudtolocalllm-eks-service-role-arn
+      Name: pistisai-eks-service-role-arn
 
   NodeInstanceRoleArn:
     Description: ARN of Node Instance Role
@@ -241,4 +241,4 @@ Outputs:
     Description: ARN of EKS CloudWatch Logs Role
     Value: !GetAtt EKSCloudWatchLogsRole.Arn
     Export:
-      Name: cloudtolocalllm-eks-cloudwatch-logs-role-arn
+      Name: pistisai-eks-cloudwatch-logs-role-arn

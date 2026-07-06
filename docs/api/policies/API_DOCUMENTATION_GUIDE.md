@@ -381,7 +381,7 @@ X-Webhook-Signature: sha256=abcdef123456...
 Official SDKs are available for:
 
 - **JavaScript/TypeScript**: `@pistisAI/pistisai-app`
-- **Python**: `cloudtolocalllm-api`
+- **Python**: `pistisai-api`
 - **Go**: `github.com/pistisAI/pistisai-app`
 
 ## API Versioning

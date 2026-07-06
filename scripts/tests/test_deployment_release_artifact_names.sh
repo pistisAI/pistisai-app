@@ -17,23 +17,23 @@ if [[ ! -f "$SCRIPT_FILE" ]]; then
 fi
 
 for needle in \
-  'mkdir -p "$STAGING_DIR/cloudtolocalllm"' \
-  'cp -a build/linux/x64/release/bundle/. "$STAGING_DIR/cloudtolocalllm/"' \
-  'tar -czf dist/linux/cloudtolocalllm-linux-x64.tar.gz -C "$STAGING_DIR" cloudtolocalllm' \
+  'mkdir -p "$STAGING_DIR/pistisai"' \
+  'cp -a build/linux/x64/release/bundle/. "$STAGING_DIR/pistisai/"' \
+  'tar -czf dist/linux/pistisai-linux-x64.tar.gz -C "$STAGING_DIR" pistisai' \
   'build-tools/installers/windows/' \
   'windows/installer/' \
   'name: windows-release-assets' \
   'Verify Windows Release Assets' \
-  'test -f "dist/windows/cloudtolocalllm-${VERSION}-portable.zip"' \
-  'test -f "dist/windows/cloudtolocalllm-${VERSION}-portable.zip.sha256"' \
+  'test -f "dist/windows/pistisai-${VERSION}-portable.zip"' \
+  'test -f "dist/windows/pistisai-${VERSION}-portable.zip.sha256"' \
   'test -f "dist/windows/Pistisai-Windows-${VERSION}-Setup.exe"' \
   'Verify GitHub Release Assets Published' \
   'run: python3 scripts/release/verify_github_release_assets.py' \
   'test -f "dist/windows/Pistisai-Windows-${VERSION}-Setup.exe.sha256"' \
-  'cloudtolocalllm-x86_64.AppImage' \
-  'artifacts: "dist/linux/*,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip,dist/windows/cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip.sha256,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe.sha256,dist/aur/*"' \
+  'pistisai-x86_64.AppImage' \
+  'artifacts: "dist/linux/*,dist/windows/pistisai-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip,dist/windows/pistisai-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip.sha256,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe,dist/windows/Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe.sha256,dist/aur/*"' \
   '### Windows' \
-  '- `cloudtolocalllm-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip`' \
+  '- `pistisai-${{ needs.ai_change_analysis.outputs.new_version }}-portable.zip`' \
   '- `Pistisai-Windows-${{ needs.ai_change_analysis.outputs.new_version }}-Setup.exe`'; do
   if ! grep -Fq -- "$needle" "$WORKFLOW_FILE"; then
     echo "Deployment workflow missing expected release artifact hardening string: $needle" >&2
@@ -43,14 +43,14 @@ done
 
 for needle in \
   'required_assets = {' \
-  'cloudtolocalllm-{version}-portable.zip' \
-  'cloudtolocalllm-{version}-portable.zip.sha256' \
+  'pistisai-{version}-portable.zip' \
+  'pistisai-{version}-portable.zip.sha256' \
   'Pistisai-Windows-{version}-Setup.exe' \
   'Pistisai-Windows-{version}-Setup.exe.sha256' \
-  'cloudtolocalllm_{version}_amd64.deb' \
-  'cloudtolocalllm_{version}_amd64.deb.sha256' \
-  'cloudtolocalllm-{version}-x86_64.AppImage' \
-  'cloudtolocalllm-{version}-x86_64.AppImage.sha256' \
+  'pistisai_{version}_amd64.deb' \
+  'pistisai_{version}_amd64.deb.sha256' \
+  'pistisai-{version}-x86_64.AppImage' \
+  'pistisai-{version}-x86_64.AppImage.sha256' \
   'Verified GitHub release assets: ' \
   'Missing release assets: '; do
   if ! grep -Fq "$needle" "$SCRIPT_FILE"; then

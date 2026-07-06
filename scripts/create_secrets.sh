@@ -65,7 +65,7 @@ PERM_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/user/tokens/permi
 echo "Permission ID: $PERM_ID"
 
 echo "Fetching Zone ID..."
-ZONE_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=cloudtolocalllm.online" \
+ZONE_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=pistisai.app" \
   -H "Authorization: Bearer $CLOUDFLARE_API_KEY" \
   -H "Content-Type: application/json" | jq -r '.result[0].id')
 

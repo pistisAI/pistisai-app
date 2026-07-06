@@ -41,15 +41,15 @@ COPY config/swarm/nginx.conf /etc/nginx/sites-available/default
 RUN rm -f /etc/nginx/sites-enabled/default && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Supervisor configuration to run API, Streaming Proxy, and Nginx
-COPY config/swarm/supervisor.conf /etc/supervisor/conf.d/cloudtolocalllm.conf
+COPY config/swarm/supervisor.conf /etc/supervisor/conf.d/pistisai.conf
 
 # Add startup script
 COPY config/swarm/start.sh /app/code/start.sh
 RUN chmod +x /app/code/start.sh
 
 # Create non-root user for running services
-RUN groupadd -r cloudtolocalllm && useradd -r -g cloudtolocalllm cloudtolocalllm
-RUN chown -R cloudtolocalllm:cloudtolocalllm /app/code
+RUN groupadd -r pistisai && useradd -r -g pistisai pistisai
+RUN chown -R pistisai:pistisai /app/code
 
 # Expose port for web traffic (nginx)
 EXPOSE 8080

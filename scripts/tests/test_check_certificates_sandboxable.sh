@@ -5,7 +5,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 FILE="$PROJECT_ROOT/scripts/ssl/check_certificates.sh"
 
 for needle in \
-  'DOMAIN="${DOMAIN:-cloudtolocalllm.online}"' \
+  'DOMAIN="${DOMAIN:-pistisai.app}"' \
   'CERT_PATH="${CERT_PATH:-/etc/letsencrypt/live/$DOMAIN}"' \
   'DOCKER_CMD="${DOCKER_CMD:-docker}"' \
   'compose() {' \

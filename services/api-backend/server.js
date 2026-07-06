@@ -164,7 +164,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json(),
   ),
-  defaultMeta: { service: 'cloudtolocalllm-api' },
+  defaultMeta: { service: 'pistisai-api' },
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
@@ -181,19 +181,19 @@ const logger = winston.createLogger({
 // Configuration
 const PORT = process.env.PORT || 8080;
 const LEGACY_PROXY_ROUTES_ENABLED =
-  process.env.CLOUDTOLOCALLLM_ENABLE_LEGACY_PROXY_ROUTES === 'true';
+  process.env.PISTISAI_ENABLE_LEGACY_PROXY_ROUTES === 'true';
 const LEGACY_TUNNEL_ROUTES_ENABLED =
   LEGACY_PROXY_ROUTES_ENABLED ||
-  process.env.CLOUDTOLOCALLLM_ENABLE_LEGACY_TUNNEL_ROUTES === 'true';
+  process.env.PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES === 'true';
 const LEGACY_OLLAMA_PROXY_ENABLED =
   LEGACY_PROXY_ROUTES_ENABLED ||
-  process.env.CLOUDTOLOCALLLM_ENABLE_LEGACY_OLLAMA_PROXY === 'true';
+  process.env.PISTISAI_ENABLE_LEGACY_OLLAMA_PROXY === 'true';
 const LEGACY_STREAMING_PROXY_ROUTES_ENABLED =
   LEGACY_PROXY_ROUTES_ENABLED ||
-  process.env.CLOUDTOLOCALLLM_ENABLE_LEGACY_STREAMING_PROXY_ROUTES === 'true';
+  process.env.PISTISAI_ENABLE_LEGACY_STREAMING_PROXY_ROUTES === 'true';
 const LEGACY_DIRECT_PROXY_ROUTES_ENABLED =
   LEGACY_PROXY_ROUTES_ENABLED ||
-  process.env.CLOUDTOLOCALLLM_ENABLE_LEGACY_DIRECT_PROXY_ROUTES === 'true';
+  process.env.PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES === 'true';
 
 // AuthService will be initialized in initializeHttpPollingSystem()
 
@@ -486,7 +486,7 @@ registerRoutes('/health', (req, res) => {
       res.status(503).json({
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
-        service: 'cloudtolocalllm-api',
+        service: 'pistisai-api',
         error: 'Health check failed',
         message: error.message,
       });

@@ -156,7 +156,7 @@ void main() {
       const repoName = 'Pistisai';
 
       final portableUrl =
-          'https://github.com/$repoOwner/$repoName/releases/download/$version/cloudtolocalllm-${version.substring(1)}-portable.zip';
+          'https://github.com/$repoOwner/$repoName/releases/download/$version/pistisai-${version.substring(1)}-portable.zip';
       final installerUrl =
           'https://github.com/$repoOwner/$repoName/releases/download/$version/Pistisai-Windows-${version.substring(1)}-Setup.exe';
 

@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated"
+TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated"
 
 python3 - <<'PY' "$TARGET_SCRIPT"
 from pathlib import Path
@@ -11,9 +11,9 @@ import sys
 
 script = Path(sys.argv[1]).read_text()
 checks = [
-    'local asset_name="cloudtolocalllm-${version}-x86_64.AppImage"',
-    'local output_file="$DOWNLOAD_DIR/cloudtolocalllm-${version}.AppImage"',
-    'tmp_file="$(mktemp "$TMPDIR_ROOT/cloudtolocalllm-${version}.AppImage.XXXXXX")"',
+    'local asset_name="pistisai-${version}-x86_64.AppImage"',
+    'local output_file="$DOWNLOAD_DIR/pistisai-${version}.AppImage"',
+    'tmp_file="$(mktemp "$TMPDIR_ROOT/pistisai-${version}.AppImage.XXXXXX")"',
     'mv "$tmp_file" "$output_file"',
 ]
 for needle in checks:

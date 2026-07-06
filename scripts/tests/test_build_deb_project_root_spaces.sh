@@ -7,7 +7,7 @@ FAKE_ROOT="$WORK_DIR/project root with spaces"
 FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_TOOLS_DIR="$WORK_DIR/bin"
 DPKG_LOG="$WORK_DIR/dpkg.log"
-OUTPUT_DEB="$FAKE_ROOT/dist dir with spaces/linux packages/cloudtolocalllm_2.3.4_amd64.deb"
+OUTPUT_DEB="$FAKE_ROOT/dist dir with spaces/linux packages/pistisai_2.3.4_amd64.deb"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS_DIR" "$FAKE_ROOT/assets/images"
 export DPKG_LOG
 
@@ -17,15 +17,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 2.3.4+5
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 printf '%s\n' 'fake-icon' > "$FAKE_ROOT/assets/images/app_icon.png"
 

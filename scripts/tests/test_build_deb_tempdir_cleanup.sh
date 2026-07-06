@@ -11,7 +11,7 @@ FAKE_DPKG_DEB_LOG="$WORK_DIR/dpkg-deb.log"
 FAKE_PKG_ROOT="$WORK_DIR/pkg-root"
 DIST_DIR="$WORK_DIR/dist"
 VERSION="$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)"
-OUTPUT_DEB="$DIST_DIR/cloudtolocalllm_${VERSION}_amd64.deb"
+OUTPUT_DEB="$DIST_DIR/pistisai_${VERSION}_amd64.deb"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS_DIR" "$DIST_DIR"
 export FAKE_DPKG_DEB_LOG
 
@@ -20,11 +20,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_TOOLS_DIR/mktemp" <<EOF
 #!/bin/bash
@@ -49,7 +49,7 @@ if PATH="$FAKE_TOOLS_DIR:$PATH" \
   BUILD_DIR="$FAKE_BUILD_DIR" \
   DIST_DIR="$DIST_DIR" \
   APP_NAME="Pistisai" \
-  PACKAGE_NAME="cloudtolocalllm" \
+  PACKAGE_NAME="pistisai" \
   bash "$TARGET_SCRIPT" >/dev/null 2>&1; then
   echo "build_deb.sh unexpectedly succeeded in failure-path harness" >&2
   exit 1

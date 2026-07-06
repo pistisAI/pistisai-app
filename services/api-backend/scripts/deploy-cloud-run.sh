@@ -7,7 +7,7 @@ set -e
 
 # Configuration
 PROJECT_ID="Pistisai-468303"
-SERVICE_NAME="cloudtolocalllm-api"
+SERVICE_NAME="pistisai-api"
 REGION="us-central1"
 IMAGE_NAME="gcr.io/$PROJECT_ID/$SERVICE_NAME"
 

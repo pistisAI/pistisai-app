@@ -22,9 +22,9 @@ cat > "$WORK_DIR/scripts/packaging/installer-template.sh" <<'EOF'
 INSTALL_VERSION=""
 EOF
 
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated" "$WORK_DIR/scripts/packaging/update-daemon/cloudtolocalllm-updated"
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.service" "$WORK_DIR/scripts/packaging/update-daemon/cloudtolocalllm-updated.service"
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.timer" "$WORK_DIR/scripts/packaging/update-daemon/cloudtolocalllm-updated.timer"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated" "$WORK_DIR/scripts/packaging/update-daemon/pistisai-updated"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated.service" "$WORK_DIR/scripts/packaging/update-daemon/pistisai-updated.service"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated.timer" "$WORK_DIR/scripts/packaging/update-daemon/pistisai-updated.timer"
 
 cat > "$BIN_DIR/mktemp" <<EOF
 #!/bin/bash

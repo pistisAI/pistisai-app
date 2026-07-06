@@ -86,13 +86,13 @@ Pistisai uses Dockerfiles for container builds. Build and push images to your re
 
 # Build and push web application image (update registry as needed)
 docker build -f config/docker/Dockerfile.web \
-  -t your-registry/cloudtolocalllm-web:latest .
-docker push your-registry/cloudtolocalllm-web:latest
+  -t your-registry/pistisai-web:latest .
+docker push your-registry/pistisai-web:latest
 
 # Build and push API backend image
 docker build -f services/api-backend/Dockerfile.prod \
-  -t your-registry/cloudtolocalllm-api:latest .
-docker push your-registry/cloudtolocalllm-api:latest
+  -t your-registry/pistisai-api:latest .
+docker push your-registry/pistisai-api:latest
 ```
 
 **Note:** Update image tags in `k8s/api-backend-deployment.yaml` and `k8s/web-deployment.yaml` if using different tags.

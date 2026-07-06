@@ -20,9 +20,9 @@ echo "Generating installer script for v$VERSION..."
 # Prepare embedded files as base64
 echo "Embedding update-daemon files..."
 
-UPDATED_B64=$(base64 -w0 "$UPDATE_DAEMON_DIR/cloudtolocalllm-updated")
-UPDATED_SERVICE_B64=$(base64 -w0 "$UPDATE_DAEMON_DIR/cloudtolocalllm-updated.service")
-UPDATED_TIMER_B64=$(base64 -w0 "$UPDATE_DAEMON_DIR/cloudtolocalllm-updated.timer")
+UPDATED_B64=$(base64 -w0 "$UPDATE_DAEMON_DIR/pistisai-updated")
+UPDATED_SERVICE_B64=$(base64 -w0 "$UPDATE_DAEMON_DIR/pistisai-updated.service")
+UPDATED_TIMER_B64=$(base64 -w0 "$UPDATE_DAEMON_DIR/pistisai-updated.timer")
 
 # Create temporary file with embedded data
 TEMP_FILE=$(mktemp)
@@ -55,4 +55,4 @@ chmod +x "$OUTPUT"
 
 echo "✓ Generated: $OUTPUT"
 echo "  Version: $VERSION"
-echo "  Embedded files: cloudtolocalllm-updated, .service, .timer"
+echo "  Embedded files: pistisai-updated, .service, .timer"

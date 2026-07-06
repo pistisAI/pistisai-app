@@ -84,8 +84,8 @@ if ! grep -Fq 'No PID file found. Cleanup manually if needed.' /tmp/test_cleanup
   exit 1
 fi
 
-if [[ $(grep -Fc -- '-9 -f cloudtolocalllm' "$PKILL_LOG") -ne 1 ]]; then
-  echo "Expected one pkill -f cloudtolocalllm call" >&2
+if [[ $(grep -Fc -- '-9 -f pistisai' "$PKILL_LOG") -ne 1 ]]; then
+  echo "Expected one pkill -f pistisai call" >&2
   cat "$PKILL_LOG" >&2
   exit 1
 fi

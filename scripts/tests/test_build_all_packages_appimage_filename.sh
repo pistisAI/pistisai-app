@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 script = Path(sys.argv[1]).read_text()
-expected = 'cloudtolocalllm-${version}-x86_64.AppImage'
+expected = 'pistisai-${version}-x86_64.AppImage'
 if expected not in script:
     raise SystemExit(f'missing AppImage filename hardening string: {expected}')
 

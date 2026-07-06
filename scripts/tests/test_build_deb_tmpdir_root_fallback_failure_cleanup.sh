@@ -9,7 +9,7 @@ FAKE_BUILD_DIR="$WORK_DIR/bundle"
 FAKE_DPKG_DEB="$WORK_DIR/dpkg-deb"
 FAKE_LOG="$WORK_DIR/dpkg-deb.log"
 DIST_DIR="$WORK_DIR/dist"
-OUTPUT_DEB="$DIST_DIR/cloudtolocalllm_failure_amd64.deb"
+OUTPUT_DEB="$DIST_DIR/pistisai_failure_amd64.deb"
 mkdir -p "$FAKE_BUILD_DIR" "$DIST_DIR" "$WORK_DIR/bin"
 export FAKE_LOG
 
@@ -18,11 +18,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_DPKG_DEB" <<'EOF'
 #!/bin/bash
@@ -58,7 +58,7 @@ if [[ $status -eq 0 ]]; then
   exit 1
 fi
 
-if ! grep -Fq "root:/tmp/cloudtolocalllm-deb." "$FAKE_LOG"; then
+if ! grep -Fq "root:/tmp/pistisai-deb." "$FAKE_LOG"; then
   echo "Expected TMPDIR=/ to fall back to /tmp for the package root" >&2
   cat "$FAKE_LOG" >&2
   exit 1
@@ -70,9 +70,9 @@ if ! grep -Fq "out:$OUTPUT_DEB" "$FAKE_LOG"; then
   exit 1
 fi
 
-if find /tmp -maxdepth 1 -type d -name 'cloudtolocalllm-deb.*' | grep -q .; then
+if find /tmp -maxdepth 1 -type d -name 'pistisai-deb.*' | grep -q .; then
   echo "Expected temporary Debian package root cleanup after failure" >&2
-  find /tmp -maxdepth 1 -type d -name 'cloudtolocalllm-deb.*' >&2
+  find /tmp -maxdepth 1 -type d -name 'pistisai-deb.*' >&2
   exit 1
 fi
 

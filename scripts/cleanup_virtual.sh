@@ -11,6 +11,6 @@ if [ -f "$PID_FILE" ]; then
     echo "Done."
 else
     echo "No PID file found. Cleanup manually if needed."
-    pkill -9 -f cloudtolocalllm
+    pkill -9 -f pistisai
     pkill -9 Xvfb
 fi

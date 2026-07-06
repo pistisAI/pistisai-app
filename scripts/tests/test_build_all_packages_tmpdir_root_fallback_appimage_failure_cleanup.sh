@@ -18,7 +18,7 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
@@ -32,12 +32,12 @@ cat > "$FAKE_ROOT/assets/version.json" <<'EOF'
 {"version":"old","build_number":"0"}
 EOF
 
-cat > "$FAKE_ROOT/build/linux/x64/release/bundle/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_ROOT/build/linux/x64/release/bundle/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
 chmod +x "$FAKE_ROOT/build/linux/x64/release/bundle/cloudtolalllm" 2>/dev/null || true
-chmod +x "$FAKE_ROOT/build/linux/x64/release/bundle/cloudtolocalllm"
+chmod +x "$FAKE_ROOT/build/linux/x64/release/bundle/pistisai"
 
 cat > "$VERSION_MANAGER" <<'EOF'
 #!/bin/bash
@@ -73,11 +73,11 @@ case "${1:-}" in
   build)
     if [[ "${2:-}" == "linux" ]]; then
       mkdir -p "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle"
-      cat > "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/cloudtolocalllm" <<'APP'
+      cat > "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/pistisai" <<'APP'
 #!/bin/sh
 exit 0
 APP
-      chmod +x "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/cloudtolocalllm"
+      chmod +x "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/pistisai"
       exit 0
     fi
     ;;

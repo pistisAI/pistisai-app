@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 script = Path(sys.argv[1]).read_text()
-expected = 'cloudtolocalllm_${version}_amd64.deb'
+expected = 'pistisai_${version}_amd64.deb'
 if expected not in script:
     raise SystemExit(f'missing Debian filename hardening string: {expected}')
 

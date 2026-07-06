@@ -14,11 +14,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$BUILD_DIR/cloudtolocalllm"
+chmod +x "$BUILD_DIR/pistisai"
 
 set +e
 BUILD_DIR="$BUILD_DIR" \

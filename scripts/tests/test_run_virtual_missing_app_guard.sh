@@ -9,7 +9,7 @@ FAKE_XVFB_DIR="$WORK_DIR/fakebin"
 LOG_FILE="$WORK_DIR/run.log"
 PID_FILE="$WORK_DIR/run.pid"
 XVFB_LOG="$WORK_DIR/xvfb.log"
-MISSING_APP_PATH="$WORK_DIR/missing app dir/cloudtolocalllm"
+MISSING_APP_PATH="$WORK_DIR/missing app dir/pistisai"
 mkdir -p "$FAKE_XVFB_DIR"
 
 cleanup() {

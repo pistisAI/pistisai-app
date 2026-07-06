@@ -410,7 +410,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
         services: ["web-service"],
         domains: ["pistisai.app", "app.pistisai.app"],
@@ -445,7 +445,7 @@ describe("End-to-End Deployment Verification", () => {
           async (config) => {
             const fullConfig = {
               ...config,
-              image: "Pistisai/cloudtolocalllm-web:latest",
+              image: "Pistisai/pistisai-web:latest",
               domains: ["pistisai.app", "app.pistisai.app"],
               healthEndpoints: ["https://api.pistisai.app/health"],
             };
@@ -472,7 +472,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "api-backend",
-        image: "Pistisai/cloudtolocalllm-api:latest",
+        image: "Pistisai/pistisai-api:latest",
         replicas: 2,
         healthEndpoints: [
           "https://api.pistisai.app/health",
@@ -494,7 +494,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
       };
 
@@ -533,7 +533,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
       };
 
@@ -562,7 +562,7 @@ describe("End-to-End Deployment Verification", () => {
           async (config) => {
             const fullConfig = {
               ...config,
-              image: "Pistisai/cloudtolocalllm-web:latest",
+              image: "Pistisai/pistisai-web:latest",
               replicas: config.replicaCount,
             };
 
@@ -588,7 +588,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
         services: ["web-service", "api-service"],
       };
@@ -606,7 +606,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
         domains: ["pistisai.app", "app.pistisai.app"],
       };
@@ -624,7 +624,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
       };
 
@@ -651,7 +651,7 @@ describe("End-to-End Deployment Verification", () => {
             const config = {
               namespace: "Pistisai",
               deploymentName: `web-app-${replicaCount}`,
-              image: "Pistisai/cloudtolocalllm-web:latest",
+              image: "Pistisai/pistisai-web:latest",
               replicas: replicaCount,
             };
 
@@ -671,9 +671,9 @@ describe("End-to-End Deployment Verification", () => {
 
     it("should verify deployment with different image versions", async () => {
       const imageVersions = [
-        "Pistisai/cloudtolocalllm-web:latest",
-        "Pistisai/cloudtolocalllm-web:v1.0.0",
-        "Pistisai/cloudtolocalllm-web:sha-abc123",
+        "Pistisai/pistisai-web:latest",
+        "Pistisai/pistisai-web:v1.0.0",
+        "Pistisai/pistisai-web:sha-abc123",
       ];
 
       for (const image of imageVersions) {
@@ -696,7 +696,7 @@ describe("End-to-End Deployment Verification", () => {
         const config = {
           namespace,
           deploymentName: "web-app",
-          image: "Pistisai/cloudtolocalllm-web:latest",
+          image: "Pistisai/pistisai-web:latest",
           replicas: 2,
         };
 
@@ -714,7 +714,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
       };
 
@@ -740,7 +740,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app-no-replicas",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 0,
       };
 
@@ -755,7 +755,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
         domains: ["nonexistent.example.com"],
       };
@@ -772,7 +772,7 @@ describe("End-to-End Deployment Verification", () => {
       const config = {
         namespace: "Pistisai",
         deploymentName: "web-app",
-        image: "Pistisai/cloudtolocalllm-web:latest",
+        image: "Pistisai/pistisai-web:latest",
         replicas: 2,
         healthEndpoints: ["https://unreachable.example.com/health"],
       };

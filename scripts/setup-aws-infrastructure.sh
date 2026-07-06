@@ -14,7 +14,7 @@
 #
 # Options:
 #   --region REGION           AWS region (default: us-east-1)
-#   --cluster-name NAME       EKS cluster name (default: cloudtolocalllm-eks)
+#   --cluster-name NAME       EKS cluster name (default: pistisai-eks)
 #   --node-count NUMBER       Desired node count (default: 2)
 #   --non-interactive         Run without prompts
 #   --skip-secrets            Skip secrets setup
@@ -30,7 +30,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 AWS_REGION="${AWS_REGION:-us-east-1}"
-CLUSTER_NAME="${CLUSTER_NAME:-cloudtolocalllm-eks}"
+CLUSTER_NAME="${CLUSTER_NAME:-pistisai-eks}"
 NODE_COUNT="${NODE_COUNT:-2}"
 NON_INTERACTIVE="false"
 SKIP_SECRETS="false"

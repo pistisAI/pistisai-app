@@ -13,7 +13,7 @@ dotenv.config();
 
 const SERVICE_URL =
   process.env.SERVICE_URL ||
-  'https://cloudtolocalllm-api-123456789-uc.a.run.app';
+  'https://pistisai-api-123456789-uc.a.run.app';
 const TEST_TOKEN = process.env.TEST_TOKEN; // Valid JWT JWT token for testing
 
 async function testAuthFlow() {

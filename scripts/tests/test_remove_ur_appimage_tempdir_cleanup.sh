@@ -42,7 +42,7 @@ if [[ -d "$TEMP_DIR" ]]; then
   exit 1
 fi
 
-if ! grep -Fxq 'clone ssh://aur@aur.archlinux.org/cloudtolocalllm-appimage.git aur-remove' "$LOG_FILE"; then
+if ! grep -Fxq 'clone ssh://aur@aur.archlinux.org/pistisai-appimage.git aur-remove' "$LOG_FILE"; then
   echo "Expected git clone to run before failure" >&2
   exit 1
 fi

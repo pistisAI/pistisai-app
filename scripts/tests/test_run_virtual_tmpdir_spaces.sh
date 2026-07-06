@@ -6,7 +6,7 @@ WORK_DIR="$(mktemp -d)"
 FAKE_ROOT="$WORK_DIR/fake-root"
 FAKE_TOOLS="$WORK_DIR/bin"
 TMPDIR_BASE="$WORK_DIR/tmp dir with spaces/base"
-APP_PATH="$FAKE_ROOT/build/linux/x64/debug/bundle/cloudtolocalllm"
+APP_PATH="$FAKE_ROOT/build/linux/x64/debug/bundle/pistisai"
 LOG_FILE="$TMPDIR_BASE/app_virtual_display.log"
 PID_FILE="$TMPDIR_BASE/app_virtual_display.pid"
 

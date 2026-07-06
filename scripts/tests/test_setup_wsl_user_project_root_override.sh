@@ -48,7 +48,7 @@ nvm() {
 EOF
 chmod +x "$HOME_DIR/.nvm/nvm.sh"
 
-printf '%s\n' '{"name":"cloudtolocalllm"}' > "$FAKE_ROOT/package.json"
+printf '%s\n' '{"name":"pistisai"}' > "$FAKE_ROOT/package.json"
 
 HOME="$HOME_DIR" \
 PATH="$BIN_DIR:$PATH" \

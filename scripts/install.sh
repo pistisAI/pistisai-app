@@ -33,8 +33,8 @@ mkdir -p "$BIN_DIR"
 
 echo "Installing to $BIN_DIR..."
 # Mocking the binary placement
-# curl -L https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-${OS} -o "$BIN_DIR/cloudtolocalllm"
-# chmod +x "$BIN_DIR/cloudtolocalllm"
+# curl -L https://github.com/pistisAI/pistisai-app/releases/latest/download/pistisai-${OS} -o "$BIN_DIR/pistisai"
+# chmod +x "$BIN_DIR/pistisai"
 
 # OpenClaw Gateway Install
 echo "Checking for OpenClaw Gateway..."
@@ -58,4 +58,4 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
 fi
 
 echo "✅ Pistisai installed successfully!"
-echo "Run 'cloudtolocalllm' to get started."
+echo "Run 'pistisai' to get started."

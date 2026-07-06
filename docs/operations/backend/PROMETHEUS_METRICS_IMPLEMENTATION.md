@@ -140,7 +140,7 @@ Example Prometheus scrape config:
 
 ```yaml
 scrape_configs:
-  - job_name: 'cloudtolocalllm-api'
+  - job_name: 'pistisai-api'
     static_configs:
       - targets: ['localhost:8080']
     metrics_path: '/metrics'
@@ -268,7 +268,7 @@ Add to Prometheus scrape_configs:
 
 ```yaml
 scrape_configs:
-  - job_name: 'cloudtolocalllm-api'
+  - job_name: 'pistisai-api'
     static_configs:
       - targets: ['api.pistisai.app:8080']
     metrics_path: '/metrics'

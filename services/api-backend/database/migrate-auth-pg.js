@@ -20,7 +20,7 @@ export class AuthDatabaseMigratorPG {
       host: process.env.AUTH_DB_HOST || config.host,
       port: parseInt(process.env.AUTH_DB_PORT || config.port || '5432', 10),
       database:
-        process.env.AUTH_DB_NAME || config.database || 'cloudtolocalllm_auth',
+        process.env.AUTH_DB_NAME || config.database || 'pistisai_auth',
       user: process.env.AUTH_DB_USER || config.user,
       password: process.env.AUTH_DB_PASSWORD || config.password,
       ssl:

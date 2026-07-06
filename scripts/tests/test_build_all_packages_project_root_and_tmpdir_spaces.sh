@@ -24,7 +24,7 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
@@ -60,11 +60,11 @@ case "${1:-}" in
   build)
     if [[ "${2:-}" == "linux" ]]; then
       mkdir -p "$proj_root/build/linux/x64/release/bundle"
-      cat > "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm" <<'APP'
+      cat > "$proj_root/build/linux/x64/release/bundle/pistisai" <<'APP'
 #!/bin/sh
 exit 0
 APP
-      chmod +x "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
+      chmod +x "$proj_root/build/linux/x64/release/bundle/pistisai"
       exit 0
     fi
     ;;
@@ -79,8 +79,8 @@ set -euo pipefail
 printf 'build_appimage %s\n' "$*" >> "$LOG_FILE"
 proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 mkdir -p "$proj_root/dist/linux"
-printf '%s\n' 'appimage' > "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage"
-printf '%s\n' 'checksum' > "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage.sha256"
+printf '%s\n' 'appimage' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
+printf '%s\n' 'checksum' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
 EOF
 chmod +x "$FAKE_BUILD_APPIMAGE"
 
@@ -92,7 +92,7 @@ FLUTTER_CMD="$FAKE_FLUTTER" \
 BUILD_APPIMAGE_CMD="$FAKE_BUILD_APPIMAGE" \
 "$TARGET_SCRIPT" --skip-increment >/tmp/test_build_all_packages_project_root_and_tmpdir_spaces.log 2>&1
 
-APPIMAGE_FILE="$FAKE_DIST_DIR/cloudtolocalllm-10.1.200-x86_64.AppImage"
+APPIMAGE_FILE="$FAKE_DIST_DIR/pistisai-10.1.200-x86_64.AppImage"
 APPIMAGE_SHA="$APPIMAGE_FILE.sha256"
 
 if [[ ! -f "$APPIMAGE_FILE" ]]; then

@@ -510,7 +510,7 @@ class CloudflareInfrastructureTunnelService {
       // Try Docker Swarm service update first
       try {
         const { stdout } = await execAsync(
-          'docker service update --force cloudtolocalllm_cloudflared 2>&1',
+          'docker service update --force pistisai_cloudflared 2>&1',
           { timeout: 60000 },
         );
 

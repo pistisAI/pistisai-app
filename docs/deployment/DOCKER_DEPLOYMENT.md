@@ -184,7 +184,7 @@ Nginx (Port 80/443)
 
 ### API Backend
 
-- **Container**: `cloudtolocalllm-api-backend`
+- **Container**: `pistisai-api-backend`
 - **Technology**: Node.js Express
 - **Port**: 3000 (internal)
 - **Features**:
@@ -200,7 +200,7 @@ Nginx (Port 80/443)
 - **Container**: `Pistisai-postgres`
 - **Version**: PostgreSQL 16 Alpine
 - **Port**: 5432 (internal only)
-- **Data**: Persisted in Docker volume `cloudtolocalllm_postgres_data`
+- **Data**: Persisted in Docker volume `pistisai_postgres_data`
 - **Schema**: Auto-initialized from `services/api-backend/database/schema.pg.sql`
 
 ### Nginx Reverse Proxy

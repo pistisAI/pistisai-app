@@ -2,11 +2,11 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated"
+TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated"
 WORK_DIR="$(mktemp -d)"
-STATE_DIR="$WORK_DIR/nested/state/cloudtolocalllm"
-SOCKET_PATH="$WORK_DIR/nested/runtime/cloudtolocalllm.sock"
-PID_FILE="$WORK_DIR/nested/runtime/cloudtolocalllm.pid"
+STATE_DIR="$WORK_DIR/nested/state/pistisai"
+SOCKET_PATH="$WORK_DIR/nested/runtime/pistisai.sock"
+PID_FILE="$WORK_DIR/nested/runtime/pistisai.pid"
 
 cleanup() {
   rm -rf "$WORK_DIR"

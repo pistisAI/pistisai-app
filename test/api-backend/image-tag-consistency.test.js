@@ -37,10 +37,10 @@ const dockerImageTagArbitrary = () => {
 const repositoryNameArbitrary = () => {
   // CI-stable repositories
   return fc.constantFrom(
-    "cloudtolocalllm-api",
-    "cloudtolocalllm-web",
-    "cloudtolocalllm-streaming",
-    "cloudtolocalllm-postgres",
+    "pistisai-api",
+    "pistisai-web",
+    "pistisai-streaming",
+    "pistisai-postgres",
   );
 };
 

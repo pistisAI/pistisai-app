@@ -5,7 +5,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TMP_HOME="$(mktemp -d)"
 TMP_BUILD_DIR="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
-TMP_OUTPUT="$(mktemp -u /tmp/cloudtolocalllm-appimage-missing-template.XXXXXX.AppImage)"
+TMP_OUTPUT="$(mktemp -u /tmp/pistisai-appimage-missing-template.XXXXXX.AppImage)"
 TMP_PUBSPEC="$(mktemp)"
 LOG_FILE="/tmp/test_build_appimage_missing_desktop_template_guard.log"
 
@@ -22,9 +22,9 @@ exit 0
 EOF
 chmod +x "$TMP_WORKDIR/flutter"
 
-printf '%s\n' 'name: cloudtolocalllm' > "$TMP_PUBSPEC"
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' 'name: pistisai' > "$TMP_PUBSPEC"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 set +e
 PATH="/usr/bin:/bin" \

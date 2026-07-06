@@ -8,5 +8,5 @@
 -dontwarn io.flutter.embedding.**
 
 ## Keep the app entry point
--keep class online.cloudtolocalllm.app.** { *; }
+-keep class app.pistisai.app.** { *; }
 -keep class com.zoidbot.app.** { *; }

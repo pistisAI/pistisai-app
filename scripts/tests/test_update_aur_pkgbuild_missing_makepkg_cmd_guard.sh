@@ -17,17 +17,17 @@ cp "$TARGET_SCRIPT" "$WORK_DIR/scripts/packaging/update_aur_pkgbuild.sh"
 chmod +x "$WORK_DIR/scripts/packaging/update_aur_pkgbuild.sh"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
 cat > "$WORK_DIR/build-tools/packaging/aur/PKGBUILD" <<'EOF'
-pkgname=cloudtolocalllm
+pkgname=pistisai
 pkgver=VERSION
 sha256sums=('SKIP')
 EOF
 
-: > "$WORK_DIR/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage"
+: > "$WORK_DIR/dist/linux/pistisai-10.1.200-x86_64.AppImage"
 
 cat > "$WORK_DIR/makepkg-wrapper" <<'EOF'
 #!/bin/bash

@@ -359,7 +359,7 @@ spec:
     spec:
       containers:
       - name: api-backend
-        image: ghcr.io/cloudtolocalllm-online/Pistisai/api:latest
+        image: ghcr.io/pistisai/Pistisai/api:latest
         ports:
         - containerPort: 8080
         envFrom:

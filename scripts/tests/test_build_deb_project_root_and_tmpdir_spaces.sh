@@ -8,7 +8,7 @@ TMPDIR_ROOT="$WORK_DIR/tmp dir with spaces/base/inner"
 FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_TOOLS="$WORK_DIR/bin"
 FAKE_DPKG_DEB="$WORK_DIR/dpkg deb wrapper.sh"
-OUTPUT_DEB="$FAKE_ROOT/dist dir with spaces/linux packages/cloudtolocalllm_2.3.4_amd64.deb"
+OUTPUT_DEB="$FAKE_ROOT/dist dir with spaces/linux packages/pistisai_2.3.4_amd64.deb"
 DPKG_LOG="$WORK_DIR/dpkg.log"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$FAKE_ROOT/assets/images" "$TMPDIR_ROOT"
 export DPKG_LOG
@@ -19,15 +19,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 2.3.4+5
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 printf '%s\n' 'fake-icon' > "$FAKE_ROOT/assets/images/app_icon.png"
 
@@ -60,9 +60,9 @@ if ! grep -Fq "$FAKE_DPKG_DEB" "$DPKG_LOG"; then
   exit 1
 fi
 
-if find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'cloudtolocalllm-deb.*' | grep -q .; then
+if find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'pistisai-deb.*' | grep -q .; then
   echo "Expected temporary package root cleanup under spaced TMPDIR root" >&2
-  find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'cloudtolocalllm-deb.*' >&2
+  find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'pistisai-deb.*' >&2
   exit 1
 fi
 

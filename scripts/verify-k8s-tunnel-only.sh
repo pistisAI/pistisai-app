@@ -4,10 +4,10 @@ set -euo pipefail
 NAMESPACE="Pistisai"
 CLOUDFLARED_NAME="cloudflared"
 CONFIGMAP_NAME="cloudflared-config"
-FORBIDDEN_HOST="argocd.cloudtolocalllm.online"
-ADMIN_HOST="argocd-admin.cloudtolocalllm.online"
-APP_HOST="app.cloudtolocalllm.online"
-API_HOST="api.cloudtolocalllm.online"
+FORBIDDEN_HOST="argocd.pistisai.app"
+ADMIN_HOST="argocd-admin.pistisai.app"
+APP_HOST="app.pistisai.app"
+API_HOST="api.pistisai.app"
 
 log() {
   printf '[verify-k8s-tunnel-only] %s\n' "$1"

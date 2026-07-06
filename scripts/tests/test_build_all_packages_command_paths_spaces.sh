@@ -25,7 +25,7 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
@@ -56,8 +56,8 @@ case "${1:-}" in
   build)
     if [[ "${2:-}" == "linux" ]]; then
       mkdir -p "$proj_root/build/linux/x64/release/bundle"
-      printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
-      chmod +x "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
+      printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/pistisai"
+      chmod +x "$proj_root/build/linux/x64/release/bundle/pistisai"
       exit 0
     fi
     ;;
@@ -72,9 +72,9 @@ set -euo pipefail
 printf '%s\n' "$0 $*" >> "${APPIMAGE_LOG:?missing APPIMAGE_LOG}"
 proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 mkdir -p "$proj_root/dist/linux"
-printf '%s\n' 'appimage-built' > "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage"
-printf '%s\n' 'checksum-built' > "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage.sha256"
-chmod +x "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage"
+printf '%s\n' 'appimage-built' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
+printf '%s\n' 'checksum-built' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
+chmod +x "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
 exit 0
 EOF
 chmod +x "$FAKE_BUILD_APPIMAGE"
@@ -127,7 +127,7 @@ if ! grep -Fq "$FAKE_BUILD_APPIMAGE" "$APPIMAGE_LOG"; then
   exit 1
 fi
 
-if [[ ! -f "$FAKE_ROOT/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage" ]]; then
+if [[ ! -f "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected final AppImage artifact on success" >&2
   cat /tmp/test_build_all_packages_command_paths_spaces.log >&2
   exit 1

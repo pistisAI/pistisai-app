@@ -131,8 +131,8 @@ chmod +x Pistisai-linux.AppImage
 ### Linux Deb Package
 
 ```bash
-sudo dpkg -i cloudtolocalllm_amd64.deb
-cloudtolocalllm
+sudo dpkg -i pistisai_amd64.deb
+pistisai
 ```
 
 ---

@@ -9,7 +9,7 @@ CURL_LOG="$WORK_DIR/curl.log"
 MV_LOG="$WORK_DIR/mv.log"
 BUILD_DIR="$WORK_DIR/build/linux/x64/release/bundle"
 APPIMAGE_OUTPUT="$WORK_DIR/output/nested/Pistisai.AppImage"
-DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 mkdir -p "$FAKE_BIN" "$BUILD_DIR" "$(dirname "$APPIMAGE_OUTPUT")"
 export TMP_LOG CURL_LOG MV_LOG
 
@@ -18,14 +18,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$BUILD_DIR/cloudtolocalllm"
-chmod +x "$BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$BUILD_DIR/pistisai"
+chmod +x "$BUILD_DIR/pistisai"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Move cleanup test desktop entry
@@ -98,19 +98,19 @@ if [[ $status -eq 0 ]]; then
   exit 1
 fi
 
-if ! grep -Fq '/tmp/cloudtolocalllm-appimage.' "$TMP_LOG"; then
+if ! grep -Fq '/tmp/pistisai-appimage.' "$TMP_LOG"; then
   echo "Expected AppImage workdir to fall back to /tmp" >&2
   cat "$TMP_LOG" >&2
   exit 1
 fi
 
-if ! grep -Fq '/tmp/cloudtolocalllm-appimage.' "$TMP_LOG"; then
+if ! grep -Fq '/tmp/pistisai-appimage.' "$TMP_LOG"; then
   echo "Expected AppImage workdir to fall back to /tmp" >&2
   cat "$TMP_LOG" >&2
   exit 1
 fi
 
-workdir_path="$(awk -F ' => ' '/cloudtolocalllm-appimage/ {print $2; exit}' "$TMP_LOG")"
+workdir_path="$(awk -F ' => ' '/pistisai-appimage/ {print $2; exit}' "$TMP_LOG")"
 if [[ -z "$workdir_path" ]]; then
   echo "Expected to capture AppImage workdir path" >&2
   cat "$TMP_LOG" >&2

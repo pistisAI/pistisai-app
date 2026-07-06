@@ -237,7 +237,7 @@ export function setupRoutes(
         res.status(503).json({
           status: 'unhealthy',
           timestamp: new Date().toISOString(),
-          service: 'cloudtolocalllm-api',
+          service: 'pistisai-api',
           error: 'Health check failed',
           message: error.message,
         });

@@ -102,7 +102,7 @@ git push origin main
 - **Streaming Proxy**: WebSocket proxy service
 - **Postgres**: Customized database container
 
-**Docker Registry**: GitHub Container Registry (GHCR) - `ghcr.io/cloudtolocalllm-online/Pistisai`
+**Docker Registry**: GitHub Container Registry (GHCR) - `ghcr.io/pistisai/Pistisai`
 
 ## Deployment Process
 

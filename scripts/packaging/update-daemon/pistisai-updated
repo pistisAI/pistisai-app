@@ -1,14 +1,14 @@
 #!/bin/bash
-# CloudToLocalLLM Update Daemon
+# Pistisai Update Daemon
 # Background service that checks for updates and handles installation
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STATE_DIR="$HOME/.config/cloudtolocalllm"
+STATE_DIR="$HOME/.config/pistisai"
 STATE_FILE="$STATE_DIR/update-state.json"
-SOCKET_PATH="/tmp/cloudtolocalllm-updated.sock"
-PID_FILE="/tmp/cloudtolocalllm-updated.pid"
+SOCKET_PATH="/tmp/pistisai-updated.sock"
+PID_FILE="/tmp/pistisai-updated.pid"
 
 INSTALL_DIR=""
 CURRENT_VERSION=""
@@ -164,14 +164,14 @@ check_for_updates() {
     fi
 }
 
-INSTALL_DIR="${HOME}/.local/share/cloudtolocalllm"
+INSTALL_DIR="${HOME}/.local/share/pistisai"
 DOWNLOAD_DIR="$INSTALL_DIR/cache"
-APPIMAGE_TARGET="$INSTALL_DIR/cloudtolocalllm"
+APPIMAGE_TARGET="$INSTALL_DIR/pistisai"
 
 get_release_asset_url() {
     local version="$1"
     local api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases/tags/v${version}"
-    local asset_name="cloudtolocalllm-${version}-x86_64.AppImage"
+    local asset_name="pistisai-${version}-x86_64.AppImage"
     local response_file
 
     if ! command -v curl &> /dev/null; then
@@ -208,7 +208,7 @@ PY
 download_update() {
     local version="$1"
     local url=""
-    local output_file="$DOWNLOAD_DIR/cloudtolocalllm-${version}.AppImage"
+    local output_file="$DOWNLOAD_DIR/pistisai-${version}.AppImage"
 
     mkdir -p "$DOWNLOAD_DIR"
     log "Downloading update $version..."
@@ -228,7 +228,7 @@ download_update() {
 # Install update into the local AppImage launcher
 install_update() {
     local version="$1"
-    local cached_file="$DOWNLOAD_DIR/cloudtolocalllm-${version}.AppImage"
+    local cached_file="$DOWNLOAD_DIR/pistisai-${version}.AppImage"
 
     log "Installing update $version..."
 
@@ -259,7 +259,7 @@ notify_user() {
     log "Notifying user about $update_type update to $version..."
 
     if command -v notify-send &> /dev/null; then
-        notify-send "CloudToLocalLLM Update Available" \
+        notify-send "Pistisai Update Available" \
                     "Version $version is ready to install ($update_type update)"
     fi
 }

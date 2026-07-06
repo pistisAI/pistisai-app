@@ -188,7 +188,7 @@ docker compose -f docker-compose.production.yml ps
 
 # Should show:
 # Pistisai-postgres    (healthy)
-# cloudtolocalllm-api-backend (healthy)
+# pistisai-api-backend (healthy)
 # Pistisai-web         (healthy)
 # Pistisai-nginx       (healthy)
 # Pistisai-certbot     (running)

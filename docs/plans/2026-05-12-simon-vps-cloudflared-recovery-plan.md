@@ -39,20 +39,20 @@ Do not call this fixed until all are true:
 **Objective:** preserve the current broken state before changing it.
 
 **Files / surfaces:**
-- `/opt/cloudtolocalllm/deploy/simon-vps/.env`
-- `/opt/cloudtolocalllm/deploy/simon-vps/docker-compose.yml`
-- `/opt/cloudtolocalllm/deploy/simon-vps/nginx.conf`
+- `/opt/pistisai/deploy/simon-vps/.env`
+- `/opt/pistisai/deploy/simon-vps/docker-compose.yml`
+- `/opt/pistisai/deploy/simon-vps/nginx.conf`
 - `/etc/cloudflared/config.yml`
 - `systemctl cat cloudflared`
 
 **Command:**
 ```bash
 ssh -i ~/.ssh/immogestion_github_actions_ed25519 root@31.97.140.7 '
-  mkdir -p /root/cloudtolocalllm-recovery-snapshots/$(date +%Y%m%d-%H%M%S) &&
-  SNAP=$(ls -td /root/cloudtolocalllm-recovery-snapshots/* | head -1) &&
-  cp /opt/cloudtolocalllm/deploy/simon-vps/.env "$SNAP/.env" &&
-  cp /opt/cloudtolocalllm/deploy/simon-vps/docker-compose.yml "$SNAP/docker-compose.yml" &&
-  cp /opt/cloudtolocalllm/deploy/simon-vps/nginx.conf "$SNAP/nginx.conf" &&
+  mkdir -p /root/pistisai-recovery-snapshots/$(date +%Y%m%d-%H%M%S) &&
+  SNAP=$(ls -td /root/pistisai-recovery-snapshots/* | head -1) &&
+  cp /opt/pistisai/deploy/simon-vps/.env "$SNAP/.env" &&
+  cp /opt/pistisai/deploy/simon-vps/docker-compose.yml "$SNAP/docker-compose.yml" &&
+  cp /opt/pistisai/deploy/simon-vps/nginx.conf "$SNAP/nginx.conf" &&
   cp /etc/cloudflared/config.yml "$SNAP/cloudflared-config.yml" 2>/dev/null || true &&
   systemctl cat cloudflared > "$SNAP/cloudflared.service.txt" 2>/dev/null || true &&
   echo "$SNAP"'
@@ -124,7 +124,7 @@ curl -sS "https://api.cloudflare.com/client/v4/zones?name=pistisai.app" \
 ### Task 3.1: Create a Pistisai-specific cloudflared config
 **Objective:** separate this from ImmoGestion completely.
 
-**Create:** `/etc/cloudflared/cloudtolocalllm.yml`
+**Create:** `/etc/cloudflared/pistisai.yml`
 
 **Target mapping:**
 - `app.pistisai.app` → `http://127.0.0.1:3100`
@@ -133,8 +133,8 @@ curl -sS "https://api.cloudflare.com/client/v4/zones?name=pistisai.app" \
 
 **Config shape:**
 ```yaml
-tunnel: <cloudtolocalllm-tunnel-id>
-credentials-file: /etc/cloudflared/<cloudtolocalllm-tunnel-id>.json
+tunnel: <pistisai-tunnel-id>
+credentials-file: /etc/cloudflared/<pistisai-tunnel-id>.json
 ingress:
   - hostname: app.pistisai.app
     service: http://127.0.0.1:3100
@@ -148,7 +148,7 @@ ingress:
 ### Task 3.2: Create a separate systemd unit
 **Objective:** do not reuse the ImmoGestion tunnel service.
 
-**Create:** `/etc/systemd/system/cloudflared-cloudtolocalllm.service`
+**Create:** `/etc/systemd/system/cloudflared-pistisai.service`
 
 **Minimal unit:**
 ```ini
@@ -159,7 +159,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/cloudflared --config /etc/cloudflared/cloudtolocalllm.yml tunnel run
+ExecStart=/usr/local/bin/cloudflared --config /etc/cloudflared/pistisai.yml tunnel run
 Restart=always
 RestartSec=5
 
@@ -170,9 +170,9 @@ WantedBy=multi-user.target
 **Verification:**
 ```bash
 systemctl daemon-reload
-systemctl enable --now cloudflared-cloudtolocalllm
-systemctl status cloudflared-cloudtolocalllm --no-pager -l
-journalctl -u cloudflared-cloudtolocalllm -n 100 --no-pager
+systemctl enable --now cloudflared-pistisai
+systemctl status cloudflared-pistisai --no-pager -l
+journalctl -u cloudflared-pistisai -n 100 --no-pager
 ```
 
 **Success criteria:** service is active and tunnel registers successfully.

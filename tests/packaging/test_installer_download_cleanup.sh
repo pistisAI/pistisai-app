@@ -6,7 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/installer-template.sh"
 WORK_DIR="$(mktemp -d)"
 BIN_DIR="$WORK_DIR/bin"
-TEMP_FILE="$WORK_DIR/downloads/.cloudtolocalllm-download.fixed"
+TEMP_FILE="$WORK_DIR/downloads/.pistisai-download.fixed"
 OUTPUT_DIR="$WORK_DIR/output"
 
 cleanup() {
@@ -64,7 +64,7 @@ if [[ -e "$TEMP_FILE" ]]; then
   exit 1
 fi
 
-if [[ -e "$OUTPUT_DIR/cloudtolocalllm-10.1.200-x86_64.AppImage" ]]; then
+if [[ -e "$OUTPUT_DIR/pistisai-10.1.200-x86_64.AppImage" ]]; then
   echo "Unexpected final AppImage file left behind after mv failure" >&2
   exit 1
 fi

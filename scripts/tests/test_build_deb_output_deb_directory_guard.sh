@@ -19,15 +19,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$PUBSPEC_FILE" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 1.2.3+4
 EOF
 
-cat > "$BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$BUILD_DIR/pistisai" <<'EOF'
 #!/bin/bash
 exit 0
 EOF
-chmod +x "$BUILD_DIR/cloudtolocalllm"
+chmod +x "$BUILD_DIR/pistisai"
 
 cat > "$FAKE_TOOLS_DIR/dpkg-deb" <<EOF
 #!/bin/bash

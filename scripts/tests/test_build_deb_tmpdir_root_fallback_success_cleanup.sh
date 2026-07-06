@@ -10,7 +10,7 @@ FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_DPKG_DEB="$WORK_DIR/dpkg-deb"
 FAKE_LOG="$WORK_DIR/dpkg-deb.log"
 DIST_DIR="$FAKE_ROOT/dist/linux"
-OUTPUT_DEB="$DIST_DIR/cloudtolocalllm_2.3.4_amd64.deb"
+OUTPUT_DEB="$DIST_DIR/pistisai_2.3.4_amd64.deb"
 mkdir -p "$FAKE_ROOT" "$FAKE_BUILD_DIR" "$DIST_DIR"
 export FAKE_LOG
 
@@ -20,15 +20,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 2.3.4+5
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_DPKG_DEB" <<'EOF'
 #!/bin/bash
@@ -60,7 +60,7 @@ if [[ ! -f "$OUTPUT_DEB" ]]; then
   exit 1
 fi
 
-if ! grep -Fq 'root:/tmp/cloudtolocalllm-deb.' "$FAKE_LOG"; then
+if ! grep -Fq 'root:/tmp/pistisai-deb.' "$FAKE_LOG"; then
   echo "Expected TMPDIR=/ to fall back to /tmp for the package root" >&2
   cat "$FAKE_LOG" >&2
   exit 1

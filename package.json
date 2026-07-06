@@ -1,5 +1,5 @@
 {
-  "name": "cloudtolocalllm-backend",
+  "name": "pistisai-backend",
   "version": "10.1.187",
   "description": "Backend services for Pistisai",
   "main": "services/api-backend/server.js",

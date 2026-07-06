@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Pistisai Let's Encrypt Certificate Setup Script
-# This script sets up and manages Let's Encrypt certificates for cloudtolocalllm.online
+# This script sets up and manages Let's Encrypt certificates for pistisai.app
 
 set -euo pipefail
 
@@ -13,8 +13,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-DOMAIN="cloudtolocalllm.online"
-EMAIL="admin@cloudtolocalllm.online"
+DOMAIN="pistisai.app"
+EMAIL="admin@pistisai.app"
 WEBROOT_PATH="/var/www/certbot"
 DOCKER_COMPOSE_FILE="docker-compose.yml"
 
@@ -66,7 +66,7 @@ precheck_acme_challenge() {
     chmod 644 "$testfile"
     
     local failed=0
-    for d in cloudtolocalllm.online www.cloudtolocalllm.online app.cloudtolocalllm.online mail.cloudtolocalllm.online; do
+    for d in pistisai.app www.pistisai.app app.pistisai.app mail.pistisai.app; do
         echo -n "[Precheck] Testing $d: "
         local result=$(curl -s -m 5 "http://$d/.well-known/acme-challenge/testfile")
         if [ "$result" = "$teststr" ]; then

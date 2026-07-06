@@ -21,18 +21,18 @@ cp "$TARGET_SCRIPT" "$WORK_DIR/scripts/packaging/update_aur_pkgbuild.sh"
 chmod +x "$WORK_DIR/scripts/packaging/update_aur_pkgbuild.sh"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
 cp "$PROJECT_ROOT/build-tools/packaging/aur/PKGBUILD" "$WORK_DIR/build-tools/packaging/aur/PKGBUILD"
 echo 'keep-me' > "$OUTPUT_DIR/original.txt"
-: > "$APPIMAGE_DIR/cloudtolocalllm-10.1.200-x86_64.AppImage"
+: > "$APPIMAGE_DIR/pistisai-10.1.200-x86_64.AppImage"
 
 cat > "$BIN_DIR/mktemp" <<EOF
 #!/bin/bash
 case "\$*" in
-  *cloudtolocalllm-aur.XXXXXX*)
+  *pistisai-aur.XXXXXX*)
     mkdir -p "$STAGING_DIR"
     printf '%s\n' "$STAGING_DIR"
     ;;

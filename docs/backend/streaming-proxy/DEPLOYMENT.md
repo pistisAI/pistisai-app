@@ -90,9 +90,9 @@ Add streaming-proxy build and deployment to `.github/workflows/deploy-aks.yml`:
 ```yaml
 env:
   REGISTRY: Pistisai
-  API_IMAGE: Pistisai/cloudtolocalllm-api
-  WEB_IMAGE: Pistisai/cloudtolocalllm-web
-  STREAMING_PROXY_IMAGE: ghcr.io/cloudtolocalllm-online/Pistisai/streaming  # Add this
+  API_IMAGE: Pistisai/pistisai-api
+  WEB_IMAGE: Pistisai/pistisai-web
+  STREAMING_PROXY_IMAGE: ghcr.io/pistisai/Pistisai/streaming  # Add this
 
 jobs:
   deploy:
@@ -146,7 +146,7 @@ spec:
     spec:
       containers:
       - name: streaming-proxy
-        image: ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest
+        image: ghcr.io/pistisai/Pistisai/streaming:latest
         ports:
         - containerPort: 3001
           name: websocket
@@ -355,13 +355,13 @@ npm install
 ### 2. Build Docker Image Locally (Optional)
 
 ```bash
-docker build -f services/streaming-proxy/Dockerfile.prod -t ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest .
+docker build -f services/streaming-proxy/Dockerfile.prod -t ghcr.io/pistisai/Pistisai/streaming:latest .
 ```
 
 ### 3. Push to Docker Hub (Optional)
 
 ```bash
-docker push ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest
+docker push ghcr.io/pistisai/Pistisai/streaming:latest
 ```
 
 ### 4. Deploy to Kubernetes

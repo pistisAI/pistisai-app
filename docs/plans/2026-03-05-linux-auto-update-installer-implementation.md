@@ -44,8 +44,8 @@ Options:
     -h, --help            Show this help message
 
 Environment Variables:
-    CLOUDTOLOCALLLM_DIR       Override installation directory
-    CLOUDTOLOCALLLM_CHANNEL   Default update channel
+    PISTISAI_DIR       Override installation directory
+    PISTISAI_CHANNEL   Default update channel
 
 Examples:
     # User-local installation (default)
@@ -279,9 +279,9 @@ setup_install_dir() {
     if [ -n "$custom_dir" ]; then
         install_dir="$custom_dir"
     elif [ "$system_wide" = true ]; then
-        install_dir="/opt/cloudtolocalllm"
+        install_dir="/opt/pistisai"
     else
-        install_dir="$HOME/.local/share/cloudtolocalllm"
+        install_dir="$HOME/.local/share/pistisai"
     fi
 
     mkdir -p "$install_dir"
@@ -314,26 +314,26 @@ create_desktop_entry() {
     mkdir -p "$applications_dir"
     mkdir -p "$icon_dir/hicolor"
 
-    cat > "${applications_dir}/cloudtolocalllm.desktop" << EOF
+    cat > "${applications_dir}/pistisai.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=Pistisai
 GenericName=AI Model Bridge
 Comment=Manage and run powerful Large Language Models locally
-Icon=cloudtolocalllm
+Icon=pistisai
 Exec=${install_dir}/Pistisai %u
 Terminal=false
 Categories=Development;Utility;Network;
 Keywords=AI;LLM;Machine Learning;Ollama;Local;
 StartupNotify=true
 StartupWMClass=Pistisai
-MimeType=x-scheme-handler/cloudtolocalllm;
+MimeType=x-scheme-handler/pistisai;
 EOF
 
     # Copy icon
-    if [ -f "${install_dir}/icons/cloudtolocalllm.png" ]; then
-        cp "${install_dir}/icons/cloudtolocalllm.png" "${icon_dir}/hicolor/128x128/apps/cloudtolocalllm.png"
+    if [ -f "${install_dir}/icons/pistisai.png" ]; then
+        cp "${install_dir}/icons/pistisai.png" "${icon_dir}/hicolor/128x128/apps/pistisai.png"
     fi
 
     log_success "Created desktop entry"
@@ -367,7 +367,7 @@ git commit -m "feat: add AppImage download and installation logic"
 ## Task 4: Create Update Daemon Script
 
 **Files:**
-- Create: `scripts/packaging/update-daemon/cloudtolocalllm-updated`
+- Create: `scripts/packaging/update-daemon/pistisai-updated`
 
 **Step 1: Write daemon script header**
 
@@ -379,10 +379,10 @@ git commit -m "feat: add AppImage download and installation logic"
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STATE_DIR="$HOME/.config/cloudtolocalllm"
+STATE_DIR="$HOME/.config/pistisai"
 STATE_FILE="$STATE_DIR/update-state.json"
-SOCKET_PATH="/tmp/cloudtolocalllm-updated.sock"
-PID_FILE="/tmp/cloudtolocalllm-updated.pid"
+SOCKET_PATH="/tmp/pistisai-updated.sock"
+PID_FILE="/tmp/pistisai-updated.pid"
 
 INSTALL_DIR=""
 CURRENT_VERSION=""
@@ -553,12 +553,12 @@ check_for_updates() {
 
 **Step 5: Make executable and test**
 
-Run: `chmod +x scripts/packaging/update-daemon/cloudtolocalllm-updated`
+Run: `chmod +x scripts/packaging/update-daemon/pistisai-updated`
 
 **Step 6: Commit**
 
 ```bash
-git add scripts/packaging/update-daemon/cloudtolocalllm-updated
+git add scripts/packaging/update-daemon/pistisai-updated
 git commit -m "feat: add update daemon script with version comparison"
 ```
 
@@ -567,12 +567,12 @@ git commit -m "feat: add update daemon script with version comparison"
 ## Task 5: Create Systemd Service Unit Files
 
 **Files:**
-- Create: `scripts/packaging/update-daemon/cloudtolocalllm-updated.service`
-- Create: `scripts/packaging/update-daemon/cloudtolocalllm-updated.timer`
+- Create: `scripts/packaging/update-daemon/pistisai-updated.service`
+- Create: `scripts/packaging/update-daemon/pistisai-updated.timer`
 
 **Step 1: Write user service unit**
 
-Create `scripts/packaging/update-daemon/cloudtolocalllm-updated.service`:
+Create `scripts/packaging/update-daemon/pistisai-updated.service`:
 
 ```ini
 [Unit]
@@ -582,8 +582,8 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/share/cloudtolocalllm/cloudtolocalllm-updated check
-WorkingDirectory=%h/.local/share/cloudtolocalllm
+ExecStart=%h/.local/share/pistisai/pistisai-updated check
+WorkingDirectory=%h/.local/share/pistisai
 
 # Nice scheduling
 Nice=10
@@ -595,7 +595,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=%h/.config/cloudtolocalllm %h/.local/share/cloudtolocalllm/cache
+ReadWritePaths=%h/.config/pistisai %h/.local/share/pistisai/cache
 
 [Install]
 WantedBy=multi-user.target
@@ -603,13 +603,13 @@ WantedBy=multi-user.target
 
 **Step 2: Write timer unit**
 
-Create `scripts/packaging/update-daemon/cloudtolocalllm-updated.timer`:
+Create `scripts/packaging/update-daemon/pistisai-updated.timer`:
 
 ```ini
 [Unit]
 Description=Pistisai Update Checker
 Documentation=https://pistisai.app
-Requires=cloudtolocalllm-updated.service
+Requires=pistisai-updated.service
 
 [Timer]
 OnBootSec=15min
@@ -645,29 +645,29 @@ install_daemon() {
     log_info "Installing update daemon..."
 
     # Copy daemon script
-    cp "${SCRIPT_DIR}/update-daemon/cloudtolocalllm-updated" "${install_dir}/"
-    chmod +x "${install_dir}/cloudtolocalllm-updated"
+    cp "${SCRIPT_DIR}/update-daemon/pistisai-updated" "${install_dir}/"
+    chmod +x "${install_dir}/pistisai-updated"
 
     if [ "$system_wide" = true ]; then
         # System-wide installation
-        cp "${SCRIPT_DIR}/update-daemon/cloudtolocalllm-updated.service" /etc/systemd/system/
-        cp "${SCRIPT_DIR}/update-daemon/cloudtolocalllm-updated.timer" /etc/systemd/system/
+        cp "${SCRIPT_DIR}/update-daemon/pistisai-updated.service" /etc/systemd/system/
+        cp "${SCRIPT_DIR}/update-daemon/pistisai-updated.timer" /etc/systemd/system/
 
         systemctl daemon-reload
-        systemctl enable cloudtolocalllm-updated.timer
-        systemctl start cloudtolocalllm-updated.timer
+        systemctl enable pistisai-updated.timer
+        systemctl start pistisai-updated.timer
     else
         # User installation
         local user_service_dir="$HOME/.config/systemd/user"
         mkdir -p "$user_service_dir"
 
         # Adapt service file for user installation
-        sed "s|%h|%h|g" "${SCRIPT_DIR}/update-daemon/cloudtolocalllm-updated.service" > "$user_service_dir/cloudtolocalllm-updated.service"
-        sed "s|%h|%h|g" "${SCRIPT_DIR}/update-daemon/cloudtolocalllm-updated.timer" > "$user_service_dir/cloudtolocalllm-updated.timer"
+        sed "s|%h|%h|g" "${SCRIPT_DIR}/update-daemon/pistisai-updated.service" > "$user_service_dir/pistisai-updated.service"
+        sed "s|%h|%h|g" "${SCRIPT_DIR}/update-daemon/pistisai-updated.timer" > "$user_service_dir/pistisai-updated.timer"
 
         systemctl --user daemon-reload
-        systemctl --user enable cloudtolocalllm-updated.timer
-        systemctl --user start cloudtolocalllm-updated.timer
+        systemctl --user enable pistisai-updated.timer
+        systemctl --user start pistisai-updated.timer
     fi
 
     log_success "Update daemon installed and enabled"
@@ -694,7 +694,7 @@ Create: `test/services/auto_update_service_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/auto_update_service.dart';
+import 'package:pistisai/services/auto_update_service.dart';
 
 void main() {
   group('AutoUpdateService', () {
@@ -798,7 +798,7 @@ class AutoUpdateService extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   // Socket path for daemon communication
-  static const String _socketPath = '/tmp/cloudtolocalllm-updated.sock';
+  static const String _socketPath = '/tmp/pistisai-updated.sock';
 
   /// Parse semantic version string
   VersionComponents parseVersion(String version) {
@@ -1300,9 +1300,9 @@ git commit -m "feat: add installer generation to CI/CD workflow"
 ```dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:cloudtolocalllm/main.dart' as app;
-import 'package:cloudtolocalllm/di/locator.dart' as di;
-import 'package:cloudtolocalllm/services/auto_update_service.dart';
+import 'package:pistisai/main.dart' as app;
+import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/services/auto_update_service.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -1460,7 +1460,7 @@ git commit --allow-empty -m "test: validate auto-update installer implementation
 This implementation plan creates a complete Linux auto-updating installer system with:
 
 1. **Installer Script** (`install.sh`) - One-line installation from web
-2. **Update Daemon** (`cloudtolocalllm-updated`) - Background update service
+2. **Update Daemon** (`pistisai-updated`) - Background update service
 3. **Auto-Update Service** (`auto_update_service.dart`) - In-app update management
 4. **UI Integration** - Update status and controls in Config screen
 5. **CI/CD Integration** - Automatic installer generation in releases

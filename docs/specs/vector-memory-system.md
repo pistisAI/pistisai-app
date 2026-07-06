@@ -28,12 +28,12 @@ services:
   # PostgreSQL with pgvector extension
   vector-db:
     image: ankane/pgvector:v0.5.1 # Specific pgvector-enabled image
-    container_name: cloudtolocalllm-vector-db
+    container_name: pistisai-vector-db
     restart: unless-stopped
     ports:
       - "5433:5432" # Host 5433 -> Container 5432
     environment:
-      POSTGRES_DB: cloudtolocalllm_memory
+      POSTGRES_DB: pistisai_memory
       POSTGRES_USER: memory_admin
       POSTGRES_PASSWORD: ${MEMORY_DB_PASSWORD:-memory_pass}
     volumes:
@@ -45,7 +45,7 @@ services:
   # pgAdmin for database management
   pgadmin:
     image: dpage/pgadmin4
-    container_name: cloudtolocalllm-pgadmin
+    container_name: pistisai-pgadmin
     restart: unless-stopped
     ports:
       - "5050:80"

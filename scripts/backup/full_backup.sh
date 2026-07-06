@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # VPS configuration
-VPS_HOST="cloudtolocalllm.online"
+VPS_HOST="pistisai.app"
 VPS_USER="cloudllm"
 VPS_PROJECT_DIR="/opt/Pistisai"
 
@@ -98,7 +98,7 @@ backup_application() {
     
     # Backup main application directory
     log_info "Backing up Pistisai application..."
-    execute_command "cd $VPS_PROJECT_DIR && tar -czf $backup_dir/application/cloudtolocalllm_app.tar.gz \
+    execute_command "cd $VPS_PROJECT_DIR && tar -czf $backup_dir/application/pistisai_app.tar.gz \
         --exclude='*.log' \
         --exclude='node_modules' \
         --exclude='.git' \

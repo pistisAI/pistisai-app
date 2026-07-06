@@ -25,12 +25,12 @@ version: 2.3.4+5
 EOF
 
 for file in \
-  "dist/windows/cloudtolocalllm-2.3.4-portable.zip" \
-  "dist/windows/cloudtolocalllm-2.3.4-portable.zip.sha256" \
-  "dist/linux/cloudtolocalllm_2.3.4_amd64.deb" \
-  "dist/linux/cloudtolocalllm_2.3.4_amd64.deb.sha256" \
-  "dist/linux/cloudtolocalllm-2.3.4-x86_64.AppImage" \
-  "dist/linux/cloudtolocalllm-2.3.4-x86_64.AppImage.sha256"; do
+  "dist/windows/pistisai-2.3.4-portable.zip" \
+  "dist/windows/pistisai-2.3.4-portable.zip.sha256" \
+  "dist/linux/pistisai_2.3.4_amd64.deb" \
+  "dist/linux/pistisai_2.3.4_amd64.deb.sha256" \
+  "dist/linux/pistisai-2.3.4-x86_64.AppImage" \
+  "dist/linux/pistisai-2.3.4-x86_64.AppImage.sha256"; do
   printf 'artifact\n' > "$REPO_DIR/$file"
 done
 

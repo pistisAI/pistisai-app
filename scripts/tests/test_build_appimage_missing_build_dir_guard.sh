@@ -4,7 +4,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TMP_HOME="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
-TMP_OUTPUT="$(mktemp -u /tmp/cloudtolocalllm-appimage-missing-build-dir.XXXXXX.AppImage)"
+TMP_OUTPUT="$(mktemp -u /tmp/pistisai-appimage-missing-build-dir.XXXXXX.AppImage)"
 TMP_DESKTOP_TEMPLATE="$(mktemp)"
 LOG_FILE="/tmp/test_build_appimage_missing_build_dir_guard.log"
 
@@ -24,8 +24,8 @@ chmod +x "$TMP_WORKDIR/flutter"
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Missing build dir guard test desktop entry

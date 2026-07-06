@@ -7,7 +7,7 @@ TMP_HOME="$WORK_DIR/home"
 TMP_BUILD_DIR="$WORK_DIR/bundle"
 TMP_OUTPUT_DIR="$WORK_DIR/dist/linux"
 TMP_APPIMAGE_WORKDIR="$WORK_DIR/appimage"
-TMP_DESKTOP_TEMPLATE="$WORK_DIR/desktop/cloudtolocalllm.desktop"
+TMP_DESKTOP_TEMPLATE="$WORK_DIR/desktop/pistisai.desktop"
 TMP_PUBSPEC="$WORK_DIR/pubspec.yaml"
 LOG_FILE="$WORK_DIR/build.log"
 
@@ -17,14 +17,14 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$TMP_HOME" "$TMP_BUILD_DIR" "$TMP_OUTPUT_DIR" "$(dirname "$TMP_DESKTOP_TEMPLATE")"
-printf '%s\n' 'name: cloudtolocalllm' > "$TMP_PUBSPEC"
-printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' 'name: pistisai' > "$TMP_PUBSPEC"
+printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Malformed version test desktop entry

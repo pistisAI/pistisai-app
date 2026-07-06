@@ -42,7 +42,7 @@ EOF
 chmod +x "$FAKE_BIN/curl"
 
 set +e
-TMPDIR='/' PATH="$FAKE_BIN:$PATH" INSTALL_VERSION='10.1.200' CLOUDTOLOCALLLM_DIR="$INSTALL_DIR" SKIP_DAEMON=true bash "$TARGET_SCRIPT" >/tmp/test_installer_template_tmpdir_failure_cleanup.log 2>&1
+TMPDIR='/' PATH="$FAKE_BIN:$PATH" INSTALL_VERSION='10.1.200' PISTISAI_DIR="$INSTALL_DIR" SKIP_DAEMON=true bash "$TARGET_SCRIPT" >/tmp/test_installer_template_tmpdir_failure_cleanup.log 2>&1
 status=$?
 set -e
 
@@ -52,13 +52,13 @@ if [[ $status -eq 0 ]]; then
   exit 1
 fi
 
-if ! grep -Fq '/tmp/.cloudtolocalllm-download.' "$CURL_LOG"; then
+if ! grep -Fq '/tmp/.pistisai-download.' "$CURL_LOG"; then
   echo "Expected installer download temp file to fall back to /tmp" >&2
   cat "$CURL_LOG" >&2
   exit 1
 fi
 
-temp_path="$(sed -n 's#^.* \(/tmp/\.cloudtolocalllm-download\.[^ ]*\)$#\1#p' "$CURL_LOG" | head -n 1)"
+temp_path="$(sed -n 's#^.* \(/tmp/\.pistisai-download\.[^ ]*\)$#\1#p' "$CURL_LOG" | head -n 1)"
 if [[ -z "$temp_path" ]]; then
   echo "Failed to capture installer download temp path" >&2
   cat "$CURL_LOG" >&2

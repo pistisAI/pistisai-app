@@ -1,5 +1,5 @@
 {
-  "name": "cloudtolocalllm-api-backend",
+  "name": "pistisai-api-backend",
   "version": "10.1.187",
   "description": "Pistisai API Backend for Bridge Communication",
   "main": "server.js",

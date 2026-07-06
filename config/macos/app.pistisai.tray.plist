@@ -7,7 +7,7 @@
     
     <key>ProgramArguments</key>
     <array>
-        <string>/Applications/Pistisai.app/Contents/MacOS/cloudtolocalllm-tray</string>
+        <string>/Applications/Pistisai.app/Contents/MacOS/pistisai-tray</string>
     </array>
     
     <key>RunAtLoad</key>
@@ -28,10 +28,10 @@
     <string>Aqua</string>
     
     <key>StandardOutPath</key>
-    <string>/tmp/cloudtolocalllm-tray.log</string>
+    <string>/tmp/pistisai-tray.log</string>
     
     <key>StandardErrorPath</key>
-    <string>/tmp/cloudtolocalllm-tray.error.log</string>
+    <string>/tmp/pistisai-tray.error.log</string>
     
     <key>EnvironmentVariables</key>
     <dict>

@@ -10,7 +10,7 @@ FAKE_TOOL="$WORK_DIR/appimagetool"
 FAKE_TOOL_LOG="$WORK_DIR/appimagetool.log"
 OUTPUT_DIR="$WORK_DIR/out"
 APPIMAGE_WORKDIR="$WORK_DIR/work"
-DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 mkdir -p "$FAKE_BUILD_DIR/data" "$FAKE_BUILD_DIR/lib" "$OUTPUT_DIR"
 
 cleanup() {
@@ -18,17 +18,17 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/bash
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Utility;
 Version=1.0.0
@@ -51,7 +51,7 @@ DESKTOP_TEMPLATE="$DESKTOP_TEMPLATE" \
 FAKE_TOOL_LOG="$FAKE_TOOL_LOG" \
 "$TARGET_SCRIPT"
 
-APPIMAGE_FILE="$OUTPUT_DIR/cloudtolocalllm-$(grep 'version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)-x86_64.AppImage"
+APPIMAGE_FILE="$OUTPUT_DIR/pistisai-$(grep 'version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)-x86_64.AppImage"
 CHECKSUM_FILE="$APPIMAGE_FILE.sha256"
 
 [[ -f "$APPIMAGE_FILE" ]]

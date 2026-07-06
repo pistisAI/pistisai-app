@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated"
+TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated"
 WORK_DIR="$(mktemp -d)"
 HOME_DIR="$WORK_DIR/home"
 TMPDIR_ROOT="$WORK_DIR/nested/tmp/dir///"
@@ -18,8 +18,8 @@ output="$(HOME="$HOME_DIR" TMPDIR="$TMPDIR_ROOT" bash -c 'source "$1"; printf "%
 
 socket_out="$(printf '%s\n' "$output" | sed -n '1p')"
 pid_out="$(printf '%s\n' "$output" | sed -n '2p')"
-expected_socket="${WORK_DIR}/nested/tmp/dir/cloudtolocalllm-updated.sock"
-expected_pid="${WORK_DIR}/nested/tmp/dir/cloudtolocalllm-updated.pid"
+expected_socket="${WORK_DIR}/nested/tmp/dir/pistisai-updated.sock"
+expected_pid="${WORK_DIR}/nested/tmp/dir/pistisai-updated.pid"
 
 if [[ "$socket_out" != "$expected_socket" ]]; then
   echo "SOCKET_PATH default did not normalize repeated TMPDIR slashes" >&2

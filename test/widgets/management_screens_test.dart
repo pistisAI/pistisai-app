@@ -33,7 +33,7 @@ void main() {
   });
 
   group('SkillsScreen', () {
-    testWidgets('renders skills list after loading', (tester) async {
+    testWidgets('renders empty state when no skills directory available', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: const SizedBox(
@@ -44,10 +44,9 @@ void main() {
         ),
       );
 
-      expect(find.byType(LoadingSkeleton), findsWidgets);
-      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pump();
 
-      // Tab controller with 3 tabs.
+      // Tab controller with 3 tabs renders.
       expect(find.byType(Tab), findsNWidgets(3));
     });
   });

@@ -31,7 +31,7 @@ This guide explains the different build scripts available in Pistisai and when t
 .\Build-GitHubReleaseAssets-Simple.ps1 -Clean
 ```
 
-**Output**: `dist/windows/cloudtolocalllm-{version}-portable.zip`
+**Output**: `dist/windows/pistisai-{version}-portable.zip`
 
 ### 2. Create-UnifiedPackages.ps1 ⚠️ **INCOMPLETE**
 

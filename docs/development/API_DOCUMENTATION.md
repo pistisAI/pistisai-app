@@ -27,7 +27,7 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 
 - **Algorithm**: RS256
 - **Issuer**: `https://Pistisai.auth0.com/`
-- **Audience**: `cloudtolocalllm-api`
+- **Audience**: `pistisai-api`
 - **Expiry**: 24 hours
 
 #### **Error Responses**
@@ -653,7 +653,7 @@ wss://app.pistisai.app/ws/{type}/{id}
 Download the complete API collection:
 
 ```bash
-curl -o cloudtolocalllm-api.json \
+curl -o pistisai-api.json \
   https://raw.githubusercontent.com/pistisAI/pistisai-app/main/docs/api/postman-collection.json
 ```
 

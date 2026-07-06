@@ -23,7 +23,7 @@
 ssh root@208.110.72.50 "pct exec 201 -- bash"
 
 # Copy and edit the environment file
-cd /opt/cloudtolocalllm
+cd /opt/pistisai
 cp .env.example .env
 nano .env  # Edit with your values
 ```
@@ -43,14 +43,14 @@ From your local machine (in the project root):
 
 ```bash
 # Build API Backend image
-docker build -t cloudtolocalllm/api-backend:latest ./services/api-backend
+docker build -t pistisai/api-backend:latest ./services/api-backend
 
 # Build Streaming Proxy image
-docker build -t cloudtolocalllm/streaming-proxy:latest ./services/streaming-proxy
+docker build -t pistisai/streaming-proxy:latest ./services/streaming-proxy
 
 # Save images to tar files
-docker save cloudtolocalllm/api-backend:latest | gzip > api-backend.tar.gz
-docker save cloudtolocalllm/streaming-proxy:latest | gzip > streaming-proxy.tar.gz
+docker save pistisai/api-backend:latest | gzip > api-backend.tar.gz
+docker save pistisai/streaming-proxy:latest | gzip > streaming-proxy.tar.gz
 
 # Copy to container
 scp api-backend.tar.gz root@208.110.72.52:/tmp/
@@ -68,8 +68,8 @@ docker load < /tmp/streaming-proxy.tar.gz
 ### 3. Deploy Stack
 
 ```bash
-cd /opt/cloudtolocalllm
-docker stack deploy -c docker-compose.prod.yml cloudtolocalllm
+cd /opt/pistisai
+docker stack deploy -c docker-compose.prod.yml pistisai
 ```
 
 ### 4. Verify Deployment
@@ -79,8 +79,8 @@ docker stack deploy -c docker-compose.prod.yml cloudtolocalllm
 docker service ls
 
 # Check service logs
-docker service logs -f cloudtolocalllm_api-backend
-docker service logs -f cloudtolocalllm_streaming-proxy
+docker service logs -f pistisai_api-backend
+docker service logs -f pistisai_streaming-proxy
 
 # Check health
 curl http://localhost:8080/health
@@ -102,20 +102,20 @@ curl http://localhost:3001/health
 
 ```bash
 # Scale API backend
-docker service scale cloudtolocalllm_api-backend=3
+docker service scale pistisai_api-backend=3
 
 # Scale streaming proxy
-docker service scale cloudtolocalllm_streaming-proxy=2
+docker service scale pistisai_streaming-proxy=2
 ```
 
 ## Updating
 
 ```bash
 # Build new images
-docker build -t cloudtolocalllm/api-backend:v1.0.1 ./services/api-backend
+docker build -t pistisai/api-backend:v1.0.1 ./services/api-backend
 
 # Update stack with new image
-docker service update --image cloudtolocalllm/api-backend:v1.0.1 cloudtolocalllm_api-backend
+docker service update --image pistisai/api-backend:v1.0.1 pistisai_api-backend
 ```
 
 ## Monitoring
@@ -128,17 +128,17 @@ docker service update --image cloudtolocalllm/api-backend:v1.0.1 cloudtolocalllm
 
 ### View logs for all services
 ```bash
-docker service logs cloudtolocalllm_api-backend --tail 100
+docker service logs pistisai_api-backend --tail 100
 ```
 
 ### Restart a service
 ```bash
-docker service update --force cloudtolocalllm_api-backend
+docker service update --force pistisai_api-backend
 ```
 
 ### Remove the stack
 ```bash
-docker stack rm cloudtolocalllm
+docker stack rm pistisai
 ```
 
 ### Check resource usage

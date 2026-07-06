@@ -42,7 +42,7 @@ Resources:
       EnableDnsSupport: true
       Tags:
         - Key: Name
-          Value: cloudtolocalllm-vpc
+          Value: pistisai-vpc
         - Key: Environment
           Value: production
 
@@ -263,7 +263,7 @@ Resources:
           Description: All outbound traffic
       Tags:
         - Key: Name
-          Value: cloudtolocalllm-eks-sg
+          Value: pistisai-eks-sg
 
   # Security Group for Nodes
   NodeSecurityGroup:
@@ -304,7 +304,7 @@ Outputs:
     Description: VPC ID
     Value: !Ref VPC
     Export:
-      Name: cloudtolocalllm-vpc-id
+      Name: pistisai-vpc-id
 
   PrivateSubnet1Id:
     Description: Private Subnet 1 ID
@@ -340,7 +340,7 @@ Outputs:
     Description: EKS Security Group ID
     Value: !Ref EKSSecurityGroup
     Export:
-      Name: cloudtolocalllm-eks-sg-id
+      Name: pistisai-eks-sg-id
 
   NodeSecurityGroupId:
     Description: Node Security Group ID

@@ -189,7 +189,7 @@ npm run lint
 
 ### OpenClaw Skills
 
-Directory: `services/openclaw-skills/cloudtolocallm/`
+Directory: `services/openclaw-skills/pistisai/`
 
 ```bash
 npm install
@@ -274,7 +274,7 @@ import 'thing.dart'
 | Tailscale Relay | `services/tailscale-relay/` | `3002` | ESM relay service, Express 4 |
 | Auth Backend | `backend/auth/` | `3000` | Lightweight CommonJS Auth0 JWT validation |
 | SDK | `services/sdk/` | n/a | TypeScript SDK, builds to `dist/` |
-| OpenClaw Skills | `services/openclaw-skills/cloudtolocallm/` | n/a | TypeScript/Vitest skill package |
+| OpenClaw Skills | `services/openclaw-skills/pistisai/` | n/a | TypeScript/Vitest skill package |
 
 ### Data storage
 

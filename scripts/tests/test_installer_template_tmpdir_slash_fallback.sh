@@ -44,16 +44,16 @@ chmod +x "$FAKE_BIN/curl"
 TMPDIR="$TMPDIR_ROOT" \
 PATH="$FAKE_BIN:$PATH" \
 INSTALL_VERSION="10.1.200" \
-CLOUDTOLOCALLLM_DIR="$INSTALL_DIR" \
+PISTISAI_DIR="$INSTALL_DIR" \
 "$TARGET_SCRIPT" --no-daemon >/tmp/test_installer_template_tmpdir_slash_fallback.log 2>&1
 
-if [[ ! -f "$INSTALL_DIR/cloudtolocalllm" ]]; then
-  echo "Expected installer to place cloudtolocalllm into the custom install dir" >&2
+if [[ ! -f "$INSTALL_DIR/pistisai" ]]; then
+  echo "Expected installer to place pistisai into the custom install dir" >&2
   cat /tmp/test_installer_template_tmpdir_slash_fallback.log >&2
   exit 1
 fi
 
-if ! grep -Fq '/tmp/.cloudtolocalllm-download.' "$CURL_LOG"; then
+if ! grep -Fq '/tmp/.pistisai-download.' "$CURL_LOG"; then
   echo "Expected installer download temp file to fall back to /tmp" >&2
   cat "$CURL_LOG" >&2
   exit 1

@@ -8,7 +8,7 @@ for needle in \
   'cd \${PROJECT_DIR:-/opt/Pistisai}' \
   'docker-compose down api-backend' \
   'docker-compose build api-backend' \
-  'sudo systemctl stop cloudtolocalllm-api'; do
+  'sudo systemctl stop pistisai-api'; do
   if ! grep -Fq "$needle" "$FILE"; then
     echo "missing rollback guidance string: $needle" >&2
     exit 1

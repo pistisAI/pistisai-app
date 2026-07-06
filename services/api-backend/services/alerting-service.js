@@ -196,7 +196,7 @@ async function sendPagerDutyAlert(summary, severity = 'error', metadata = {}) {
       payload: {
         summary: summary,
         severity: severity,
-        source: 'cloudtolocalllm-api',
+        source: 'pistisai-api',
         custom_details: metadata,
       },
     };

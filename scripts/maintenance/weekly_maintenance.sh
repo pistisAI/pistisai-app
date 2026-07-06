@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # VPS configuration
-VPS_HOST="cloudtolocalllm.online"
+VPS_HOST="pistisai.app"
 VPS_USER="cloudllm"
 VPS_PROJECT_DIR="/opt/Pistisai"
 
@@ -131,7 +131,7 @@ clean_docker_system() {
 check_ssl_certificates() {
     log_step 3 "Checking SSL certificates..."
     
-    local domains=("cloudtolocalllm.online" "app.cloudtolocalllm.online")
+    local domains=("pistisai.app" "app.pistisai.app")
     local ssl_issues=()
     
     for domain in "${domains[@]}"; do

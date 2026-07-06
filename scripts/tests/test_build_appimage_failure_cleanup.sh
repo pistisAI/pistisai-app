@@ -6,10 +6,10 @@ TMP_HOME="$(mktemp -d)"
 TMP_BUILD_DIR="$(mktemp -d)"
 TMP_TOOLS_DIR="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
-TMP_OUTPUT="$(mktemp -u /tmp/cloudtolocalllm-appimage.XXXXXX.AppImage)"
+TMP_OUTPUT="$(mktemp -u /tmp/pistisai-appimage.XXXXXX.AppImage)"
 TMP_DESKTOP_TEMPLATE="$(mktemp)"
-TMP_INSTALL_BIN="$TMP_HOME/.local/bin/cloudtolocalllm"
-TMP_DESKTOP_ENTRY="$TMP_HOME/.local/share/applications/cloudtolocalllm-appimage.desktop"
+TMP_INSTALL_BIN="$TMP_HOME/.local/bin/pistisai"
+TMP_DESKTOP_ENTRY="$TMP_HOME/.local/share/applications/pistisai-appimage.desktop"
 
 cleanup() {
   rm -rf "$TMP_HOME" "$TMP_BUILD_DIR" "$TMP_TOOLS_DIR" "$TMP_WORKDIR"
@@ -47,14 +47,14 @@ EOF
 chmod +x "$TMP_TOOLS_DIR/chmod"
 
 mkdir -p "$TMP_BUILD_DIR"
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Failure cleanup test desktop entry

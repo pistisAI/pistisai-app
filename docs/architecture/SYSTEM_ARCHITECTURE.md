@@ -12,7 +12,7 @@ The setup wizard is the authority for agent runtime selection. Do not assume one
 
 | Layer | Current implementation |
 | --- | --- |
-| Flutter app | `pubspec.yaml`, Dart `>=3.5.0 <4.0.0`, package `cloudtolocalllm` |
+| Flutter app | `pubspec.yaml`, Dart `>=3.5.0 <4.0.0`, package `pistisai` |
 | Shared Flutter package | `lib/shared/pubspec.yaml`, Dart `>=3.9.0 <4.0.0` |
 | Local database | Drift/SQLite in `lib/database/drift_local_brain.dart` |
 | Embedded router | Shelf server in `lib/services/router_server.dart`, default port `1337` |
@@ -185,7 +185,7 @@ dart run build_runner build --delete-conflicting-outputs
 | Tailscale relay | `services/tailscale-relay/` | Relay service using Express 4 |
 | Auth backend | `backend/auth/` | Lightweight CommonJS Auth0 JWT validation |
 | SDK | `services/sdk/` | TypeScript SDK published from `dist/` |
-| OpenClaw skills | `services/openclaw-skills/cloudtolocallm/` | Avatar personality/evolution skill package |
+| OpenClaw skills | `services/openclaw-skills/pistisai/` | Avatar personality/evolution skill package |
 
 ## Platform Boundaries
 

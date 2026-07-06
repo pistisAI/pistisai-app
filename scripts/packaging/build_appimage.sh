@@ -49,9 +49,9 @@ check_prerequisites() {
     fi
     
     # Check if Flutter Linux build exists
-    if [[ ! -f "$PROJECT_ROOT/build/linux/x64/release/bundle/cloudtolocalllm" ]]; then
+    if [[ ! -f "$PROJECT_ROOT/build/linux/x64/release/bundle/pistisai" ]]; then
         log_error "Flutter Linux build not found. Please run 'flutter build linux --release' first."
-        log_error "Expected: $PROJECT_ROOT/build/linux/x64/release/bundle/cloudtolocalllm"
+        log_error "Expected: $PROJECT_ROOT/build/linux/x64/release/bundle/pistisai"
         exit 1
     fi
     
@@ -87,8 +87,8 @@ download_appimagetool() {
 
 # Variables
 VERSION=$(get_version)
-PACKAGE_NAME="cloudtolocalllm-${VERSION}-x86_64.AppImage"
-BUILD_DIR="/tmp/cloudtolocalllm-appimage-build"
+PACKAGE_NAME="pistisai-${VERSION}-x86_64.AppImage"
+BUILD_DIR="/tmp/pistisai-appimage-build"
 OUTPUT_DIR="$PROJECT_ROOT/dist/linux"
 OUTPUT_PATH="$OUTPUT_DIR/$PACKAGE_NAME"
 
@@ -117,11 +117,11 @@ copy_appimage_files() {
         mkdir -p "$BUILD_DIR/Pistisai.AppDir/usr/share/icons/hicolor/128x128/apps"
         
         # Create a basic desktop file if template missing
-        cat > "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.desktop" << EOF
+        cat > "$BUILD_DIR/Pistisai.AppDir/pistisai.desktop" << EOF
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Utility;
 EOF
@@ -134,7 +134,7 @@ EOF
     log_info "Copying Flutter Linux build artifacts..."
     
     # Copy Flutter Linux build to AppImage structure
-    cp "$PROJECT_ROOT/build/linux/x64/release/bundle/cloudtolocalllm" "$BUILD_DIR/Pistisai.AppDir/"
+    cp "$PROJECT_ROOT/build/linux/x64/release/bundle/pistisai" "$BUILD_DIR/Pistisai.AppDir/"
     cp -r "$PROJECT_ROOT/build/linux/x64/release/bundle/data" "$BUILD_DIR/Pistisai.AppDir/"
     cp -r "$PROJECT_ROOT/build/linux/x64/release/bundle/lib" "$BUILD_DIR/Pistisai.AppDir/"
     
@@ -146,7 +146,7 @@ update_appimage_metadata() {
     log_info "Updating AppImage metadata..."
 
     # Remove Version line from desktop file (it's optional and causes validation issues)
-    sed -i '/^Version=/d' "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.desktop"
+    sed -i '/^Version=/d' "$BUILD_DIR/Pistisai.AppDir/pistisai.desktop"
 
     # Update AppRun script to use current Flutter build structure
     cat > "$BUILD_DIR/Pistisai.AppDir/AppRun" << 'EOF'
@@ -154,7 +154,7 @@ update_appimage_metadata() {
 HERE="$(dirname "$(readlink -f "${0}")")"
 export LD_LIBRARY_PATH="${HERE}/lib:${LD_LIBRARY_PATH}"
 cd "${HERE}"
-exec ./cloudtolocalllm "$@"
+exec ./pistisai "$@"
 EOF
 
     log_success "Updated AppImage metadata"
@@ -166,10 +166,10 @@ copy_assets() {
     
     # Copy icon if available
     if [[ -f "$PROJECT_ROOT/assets/images/app_icon.png" ]]; then
-        cp "$PROJECT_ROOT/assets/images/app_icon.png" "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.png"
+        cp "$PROJECT_ROOT/assets/images/app_icon.png" "$BUILD_DIR/Pistisai.AppDir/pistisai.png"
         log_success "Updated app icon from assets/images/"
     elif [[ -f "$PROJECT_ROOT/assets/images/icon.png" ]]; then
-        cp "$PROJECT_ROOT/assets/icons/app_icon.png" "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.png"
+        cp "$PROJECT_ROOT/assets/icons/app_icon.png" "$BUILD_DIR/Pistisai.AppDir/pistisai.png"
         log_success "Updated app icon from assets/icons/"
     else
         log_warning "Using existing icon from AppImage structure"
@@ -182,7 +182,7 @@ set_permissions() {
     
     # Set executable permissions
     chmod +x "$BUILD_DIR/Pistisai.AppDir/AppRun"
-    chmod +x "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm"
+    chmod +x "$BUILD_DIR/Pistisai.AppDir/pistisai"
     
     # Set data and lib permissions
     find "$BUILD_DIR/Pistisai.AppDir/data" -type f -exec chmod 644 {} \; 2>/dev/null || true
@@ -191,8 +191,8 @@ set_permissions() {
     find "$BUILD_DIR/Pistisai.AppDir/lib" -type d -exec chmod 755 {} \; 2>/dev/null || true
     
     # Set desktop file permissions
-    chmod 644 "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.desktop"
-    chmod 644 "$BUILD_DIR/Pistisai.AppDir/cloudtolocalllm.png"
+    chmod 644 "$BUILD_DIR/Pistisai.AppDir/pistisai.desktop"
+    chmod 644 "$BUILD_DIR/Pistisai.AppDir/pistisai.png"
     
     log_success "Set correct permissions"
 }

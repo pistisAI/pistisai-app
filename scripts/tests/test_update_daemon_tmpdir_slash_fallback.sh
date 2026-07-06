@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated"
+TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated"
 WORK_DIR="$(mktemp -d)"
 HOME_DIR="$WORK_DIR/home"
 
@@ -17,8 +17,8 @@ output="$(HOME="$HOME_DIR" TMPDIR="/" bash -c 'source "$1"; printf "%s\n%s\n" "$
 
 socket_out="$(printf '%s\n' "$output" | sed -n '1p')"
 pid_out="$(printf '%s\n' "$output" | sed -n '2p')"
-expected_socket="/tmp/cloudtolocalllm-updated.sock"
-expected_pid="/tmp/cloudtolocalllm-updated.pid"
+expected_socket="/tmp/pistisai-updated.sock"
+expected_pid="/tmp/pistisai-updated.pid"
 
 if [[ "$socket_out" != "$expected_socket" ]]; then
   echo "SOCKET_PATH fallback for TMPDIR=/ did not use /tmp" >&2

@@ -64,28 +64,28 @@ sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
 ## DEB Package
 
 ```bash
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm_amd64.deb
-sudo dpkg -i cloudtolocalllm_amd64.deb
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/pistisai_amd64.deb
+sudo dpkg -i pistisai_amd64.deb
 sudo apt-get install -f
 ```
 
 Launch:
 
 ```bash
-cloudtolocalllm
+pistisai
 ```
 
 Update:
 
 ```bash
 sudo apt-get update
-sudo apt-get upgrade cloudtolocalllm
+sudo apt-get upgrade pistisai
 ```
 
 Uninstall:
 
 ```bash
-sudo apt-get remove cloudtolocalllm
+sudo apt-get remove pistisai
 ```
 
 ---
@@ -207,8 +207,8 @@ Log out and back in if your desktop environment needs to reload tray support.
 ### Logs
 
 ```bash
-tail -f ~/.local/share/cloudtolocalllm/logs/app.log
-journalctl --user -u cloudtolocalllm -f
+tail -f ~/.local/share/pistisai/logs/app.log
+journalctl --user -u pistisai -f
 ```
 
 ---

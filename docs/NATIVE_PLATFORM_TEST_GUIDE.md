@@ -11,7 +11,7 @@ The Pistisai app is currently running with native platform channels registered.
 **How to test:**
 - Navigate to Vision Settings in the app
 - Click "Take Test Screenshot" button
-- Check if screenshot file is created at `/tmp/cloudtolocallm_screenshot.ppm`
+- Check if screenshot file is created at `/tmp/pistisai_screenshot.ppm`
 
 **Expected result:** `true` (success)
 
@@ -70,7 +70,7 @@ ls -lh /tmp/*.ppm
 
 ```bash
 # Check if app is running
-ps aux | grep cloudtolocalllm | grep -v grep
+ps aux | grep pistisai | grep -v grep
 
 # Check for screenshot files
 ls -lh /tmp/*.ppm

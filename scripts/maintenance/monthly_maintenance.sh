@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # VPS configuration
-VPS_HOST="cloudtolocalllm.online"
+VPS_HOST="pistisai.app"
 VPS_USER="cloudllm"
 VPS_PROJECT_DIR="/opt/Pistisai"
 
@@ -83,7 +83,7 @@ full_system_backup() {
     
     local backup_date=$(date +%Y%m%d)
     local backup_dir="/var/backups/Pistisai"
-    local backup_file="cloudtolocalllm_full_backup_${backup_date}.tar.gz"
+    local backup_file="pistisai_full_backup_${backup_date}.tar.gz"
     
     log_step 1.1 "Creating full system backup..."
     

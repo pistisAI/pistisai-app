@@ -49,8 +49,8 @@ case "${1:-}" in
     ;;
 esac
 mkdir -p "$proj_root/build/linux/x64/release/bundle"
-printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
-chmod +x "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/pistisai"
+chmod +x "$proj_root/build/linux/x64/release/bundle/pistisai"
 exit 0
 EOF
 chmod +x "$FAKE_FLUTTER"

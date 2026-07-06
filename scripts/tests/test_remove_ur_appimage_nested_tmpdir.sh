@@ -56,7 +56,7 @@ if find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'remove-ur-appimage.*' | grep -
   exit 1
 fi
 
-if ! grep -Fq '|clone|ssh://aur@aur.archlinux.org/cloudtolocalllm-appimage.git aur-remove' "$GIT_LOG"; then
+if ! grep -Fq '|clone|ssh://aur@aur.archlinux.org/pistisai-appimage.git aur-remove' "$GIT_LOG"; then
   echo "Expected git clone to be invoked" >&2
   cat "$GIT_LOG" >&2
   exit 1

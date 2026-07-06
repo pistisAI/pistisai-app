@@ -20,14 +20,14 @@ trap cleanup EXIT
 
 cat > "$SERVER_STATE" <<'EOF'
 {"assets": [
-  {"name": "cloudtolocalllm-9.9.9-portable.zip"},
-  {"name": "cloudtolocalllm-9.9.9-portable.zip.sha256"},
+  {"name": "pistisai-9.9.9-portable.zip"},
+  {"name": "pistisai-9.9.9-portable.zip.sha256"},
   {"name": "Pistisai-Windows-9.9.9-Setup.exe"},
   {"name": "Pistisai-Windows-9.9.9-Setup.exe.sha256"},
-  {"name": "cloudtolocalllm_9.9.9_amd64.deb"},
-  {"name": "cloudtolocalllm_9.9.9_amd64.deb.sha256"},
-  {"name": "cloudtolocalllm-9.9.9-x86_64.AppImage"},
-  {"name": "cloudtolocalllm-9.9.9-x86_64.AppImage.sha256"}
+  {"name": "pistisai_9.9.9_amd64.deb"},
+  {"name": "pistisai_9.9.9_amd64.deb.sha256"},
+  {"name": "pistisai-9.9.9-x86_64.AppImage"},
+  {"name": "pistisai-9.9.9-x86_64.AppImage.sha256"}
 ]}
 EOF
 

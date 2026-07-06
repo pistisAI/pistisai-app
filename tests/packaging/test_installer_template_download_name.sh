@@ -11,14 +11,14 @@ import sys
 
 script = Path(sys.argv[1]).read_text()
 checks = [
-    'local appimage_name="cloudtolocalllm-${version}-x86_64.AppImage"',
+    'local appimage_name="pistisai-${version}-x86_64.AppImage"',
     'local downloaded_appimage="${output_dir}/${appimage_name}"',
-    'download_tmp="$(mktemp "$TMPDIR_ROOT/.cloudtolocalllm-download.XXXXXX")"',
+    'download_tmp="$(mktemp "$TMPDIR_ROOT/.pistisai-download.XXXXXX")"',
     'if ! curl -L -o "$download_tmp" "$download_url" >&2; then',
     'mv "$download_tmp" "$downloaded_appimage"',
-    'Exec=${install_dir}/cloudtolocalllm %u',
-    'cp "$downloaded_appimage" "$INSTALL_DIR/cloudtolocalllm"',
-    'echo "Location: $INSTALL_DIR/cloudtolocalllm"',
+    'Exec=${install_dir}/pistisai %u',
+    'cp "$downloaded_appimage" "$INSTALL_DIR/pistisai"',
+    'echo "Location: $INSTALL_DIR/pistisai"',
 ]
 for needle in checks:
     if needle not in script:

@@ -240,6 +240,6 @@ curl "https://api.pistisai.app/api/deprecation/endpoint-info?path=/v1/users" | \
 - **Documentation**: https://docs.pistisai.app/api/deprecation
 - **API Docs**: https://api.pistisai.app/api/docs
 - **Support**: support@pistisai.app
-- **Issues**: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
+- **Issues**: https://github.com/ghcr.io/pistisai/Pistisai/api/issues
 
 </content>

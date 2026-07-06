@@ -22,7 +22,7 @@ curl -fsSL https://pistisai.app/install.sh | bash
 ### Components
 
 1. **Installer Script** (`install.sh`) - Downloads and sets up the application
-2. **Update Daemon** (`cloudtolocalllm-updated`) - Background service for update checks
+2. **Update Daemon** (`pistisai-updated`) - Background service for update checks
 3. **Auto-Update Service** (`auto_update_service.dart`) - Flutter service for in-app updates
 4. **CI/CD Integration** - Generates installer during deployment pipeline
 
@@ -30,8 +30,8 @@ curl -fsSL https://pistisai.app/install.sh | bash
 
 | Scope | Location | Systemd | Requirements |
 |-------|----------|---------|--------------|
-| User-local (default) | `~/.local/share/cloudtolocalllm/` | `~/.config/systemd/user/` | No sudo |
-| System-wide (`--system`) | `/opt/cloudtolocalllm/` | `/etc/systemd/system/` | sudo required |
+| User-local (default) | `~/.local/share/pistisai/` | `~/.config/systemd/user/` | No sudo |
+| System-wide (`--system`) | `/opt/pistisai/` | `/etc/systemd/system/` | sudo required |
 
 ## Installer Script (`install.sh`)
 
@@ -74,10 +74,10 @@ curl -fsSL https://pistisai.app/install.sh | bash -s -- --silent
 
 | Variable | Description |
 |----------|-------------|
-| `CLOUDTOLOCALLLM_DIR` | Override installation directory |
-| `CLOUDTOLOCALLLM_CHANNEL` | Default update channel |
+| `PISTISAI_DIR` | Override installation directory |
+| `PISTISAI_CHANNEL` | Default update channel |
 
-## Update Daemon (`cloudtolocalllm-updated`)
+## Update Daemon (`pistisai-updated`)
 
 ### Purpose
 
@@ -111,7 +111,7 @@ fi
 
 ### State File
 
-**Location:** `~/.config/cloudtolocalllm/update-state.json`
+**Location:** `~/.config/pistisai/update-state.json`
 
 ```json
 {
@@ -128,7 +128,7 @@ fi
 
 ### Communication
 
-- **Unix Socket:** `/tmp/cloudtolocalllm-updated.sock`
+- **Unix Socket:** `/tmp/pistisai-updated.sock`
 - **Signals:** `UpdateAvailable`, `UpdateDownloaded`, `UpdateInstalled`
 - **Commands:** `check`, `download`, `install`, `status`
 
@@ -202,28 +202,28 @@ Each release will include:
 - `Pistisai-x86_64.AppImage` - Main application
 - `install.sh` - Installer script
 - `Pistisai-x86_64.tar.gz` - Portable bundle
-- `cloudtolocalllm_${VERSION}_amd64.deb` - Debian package
-- `cloudtolocalllm.sha256` - Checksums
+- `pistisai_${VERSION}_amd64.deb` - Debian package
+- `pistisai.sha256` - Checksums
 
 ## File Structure
 
 ```
-cloudtolocalllm/
+pistisai/
 ├── scripts/
 │   └── packaging/
 │       ├── installer-template.sh       # Template for install.sh
 │       ├── build_installer.sh          # Generates install.sh
 │       └── update-daemon/              # Update daemon files
-│           ├── cloudtolocalllm-updated # Daemon script
-│           └── cloudtolocalllm-updated.service # Systemd unit
+│           ├── pistisai-updated # Daemon script
+│           └── pistisai-updated.service # Systemd unit
 ├── lib/services/
 │   └── auto_update_service.dart        # NEW: In-app update service
 ├── linux/
-│   └── cloudtolocalllm-updated         # Daemon binary (bundled)
+│   └── pistisai-updated         # Daemon binary (bundled)
 ├── test/services/
 │   └── auto_update_service_test.dart   # NEW: Tests
 └── build/linux/x64/release/bundle/
-    └── cloudtolocalllm-updated         # Daemon bundled with app
+    └── pistisai-updated         # Daemon bundled with app
 ```
 
 ## User Experience Flows
@@ -234,14 +234,14 @@ cloudtolocalllm/
 $ curl -fsSL https://pistisai.app/install.sh | bash
 
 🦞 Installing Pistisai v10.1.200...
-✓ Downloaded AppImage to ~/.local/share/cloudtolocalllm/
+✓ Downloaded AppImage to ~/.local/share/pistisai/
 ✓ Created desktop entry
 ✓ Installed icon to ~/.local/share/icons/
 ✓ Set up update daemon
 ✓ Started background update service
 
 🎉 Pistisai installed successfully!
-Run 'cloudtolocalllm' or find it in your application menu.
+Run 'pistisai' or find it in your application menu.
 
 💡 The update daemon will check for updates every 6 hours.
 ```
@@ -255,7 +255,7 @@ Run 'cloudtolocalllm' or find it in your application menu.
 2. Queries GitHub Releases API
 3. Compares v10.1.200 → v10.1.201
 4. Determines: PATCH version → AUTO-INSTALL
-5. Downloads AppImage to ~/.cache/cloudtolocalllm/
+5. Downloads AppImage to ~/.cache/pistisai/
 6. Prepares replacement for next app quit
 7. [User quits app]
 8. Daemon replaces AppImage

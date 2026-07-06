@@ -67,7 +67,7 @@ check_domain_mappings() {
     log_header "=== Checking Domain Mappings ==="
     
     local domains=("$APP_DOMAIN" "$API_DOMAIN" "$STREAMING_DOMAIN")
-    local services=("Pistisai-web" "cloudtolocalllm-api" "Pistisai-streaming")
+    local services=("Pistisai-web" "pistisai-api" "Pistisai-streaming")
     
     for i in "${!domains[@]}"; do
         local domain="${domains[$i]}"
@@ -94,7 +94,7 @@ update_service_cors() {
     local cors_origins="https://$MAIN_DOMAIN,https://$APP_DOMAIN,https://$API_DOMAIN,https://$STREAMING_DOMAIN"
     
     log_info "Updating API service CORS..."
-    gcloud run services update cloudtolocalllm-api \
+    gcloud run services update pistisai-api \
         --platform=managed \
         --region=us-east4 \
         --set-env-vars="CORS_ORIGINS=$cors_origins" \
@@ -121,16 +121,16 @@ generate_dns_records() {
 # Add these CNAME records to your domain registrar
 
 # Main domain (redirects to app)
-cloudtolocalllm.online.     CNAME   ghs.googlehosted.com.
+pistisai.app.     CNAME   ghs.googlehosted.com.
 
 # Application frontend
-app.cloudtolocalllm.online.     CNAME   ghs.googlehosted.com.
+app.pistisai.app.     CNAME   ghs.googlehosted.com.
 
 # API backend
-api.cloudtolocalllm.online.     CNAME   ghs.googlehosted.com.
+api.pistisai.app.     CNAME   ghs.googlehosted.com.
 
 # Streaming service
-streaming.cloudtolocalllm.online.     CNAME   ghs.googlehosted.com.
+streaming.pistisai.app.     CNAME   ghs.googlehosted.com.
 
 # Instructions:
 # 1. Log into your domain registrar's DNS management panel
@@ -149,10 +149,10 @@ EOF
     echo "┌─────────────────────────────────────┬──────┬─────────────────────────┐"
     echo "│ Name                                │ Type │ Value                   │"
     echo "├─────────────────────────────────────┼──────┼─────────────────────────┤"
-    echo "│ cloudtolocalllm.online              │ CNAME│ ghs.googlehosted.com.   │"
-    echo "│ app.cloudtolocalllm.online          │ CNAME│ ghs.googlehosted.com.   │"
-    echo "│ api.cloudtolocalllm.online          │ CNAME│ ghs.googlehosted.com.   │"
-    echo "│ streaming.cloudtolocalllm.online    │ CNAME│ ghs.googlehosted.com.   │"
+    echo "│ pistisai.app              │ CNAME│ ghs.googlehosted.com.   │"
+    echo "│ app.pistisai.app          │ CNAME│ ghs.googlehosted.com.   │"
+    echo "│ api.pistisai.app          │ CNAME│ ghs.googlehosted.com.   │"
+    echo "│ streaming.pistisai.app    │ CNAME│ ghs.googlehosted.com.   │"
     echo "└─────────────────────────────────────┴──────┴─────────────────────────┘"
 }
 
@@ -188,7 +188,7 @@ create_web_config() {
 // Pistisai - Production Subdomain Configuration
 // This file configures the Flutter web app to use production subdomains
 
-window.cloudToLocalLLMConfig = {
+window.pistisaiConfig = {
   environment: 'production',
   
   // Production subdomain URLs
@@ -239,8 +239,8 @@ window.cloudToLocalLLMConfig = {
 };
 
 console.log('Pistisai: Production subdomain configuration loaded');
-console.log('API URL:', window.cloudToLocalLLMConfig.services.api.baseUrl);
-console.log('Streaming URL:', window.cloudToLocalLLMConfig.services.streaming.baseUrl);
+console.log('API URL:', window.pistisaiConfig.services.api.baseUrl);
+console.log('Streaming URL:', window.pistisaiConfig.services.streaming.baseUrl);
 EOF
     
     log_success "Web app configuration created: $web_config_file"

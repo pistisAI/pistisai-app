@@ -6,7 +6,7 @@ Voice belongs with the avatar companion. It should not be treated as a separate 
 
 ## Current Status
 
-The core avatar system is implemented. It uses Drift/SQLite through `LocalBrain`, service classes under `lib/services/avatar/`, UI under `lib/features/avatar/` and `lib/screens/avatar/`, and a TypeScript OpenClaw skill under `services/openclaw-skills/cloudtolocallm/`.
+The core avatar system is implemented. It uses Drift/SQLite through `LocalBrain`, service classes under `lib/services/avatar/`, UI under `lib/features/avatar/` and `lib/screens/avatar/`, and a TypeScript OpenClaw skill under `services/openclaw-skills/pistisai/`.
 
 The voice companion foundation is implemented under `lib/services/voice/` and `lib/widgets/voice/`. It currently tracks conversation mode, Hermes bridge status, TTS output, and companion status panels. A full microphone/STT/barge-in path is still planned.
 
@@ -27,7 +27,7 @@ The old XP/achievement design is not the current implementation. Current evoluti
 | Local TTS foundation | Implemented | `lib/services/voice/cloud_tts_service.dart` |
 | Voice status/control UI | Implemented | `lib/widgets/voice/` |
 | Customization UI | Implemented | `lib/screens/avatar/avatar_customization_screen.dart` |
-| OpenClaw skill | Implemented | `services/openclaw-skills/cloudtolocallm/SKILL.md` |
+| OpenClaw skill | Implemented | `services/openclaw-skills/pistisai/SKILL.md` |
 | Pop-out avatar/voice sidecar | Planned | Build on popout/window services |
 | Real microphone/STT path | Planned | Not present |
 | Achievement service/UI | Planned | Not present |
@@ -115,12 +115,12 @@ The companion should show enough state for trust: listening, engaged, speaking, 
 
 ## OpenClaw Skill
 
-The avatar skill package in `services/openclaw-skills/cloudtolocallm/` provides OpenClaw-side personality/evolution integration.
+The avatar skill package in `services/openclaw-skills/pistisai/` provides OpenClaw-side personality/evolution integration.
 
 Useful commands:
 
 ```bash
-cd services/openclaw-skills/cloudtolocallm
+cd services/openclaw-skills/pistisai
 npm run build
 npm test
 ```

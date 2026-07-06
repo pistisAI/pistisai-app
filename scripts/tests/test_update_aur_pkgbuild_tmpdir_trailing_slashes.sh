@@ -18,24 +18,24 @@ mkdir -p "$FAKE_ROOT/build-tools/packaging/aur" "$FAKE_ROOT/dist/linux" "$TMP_OU
 export LOG_FILE
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 1.2.3+9
 EOF
 
 cat > "$FAKE_ROOT/build-tools/packaging/aur/PKGBUILD" <<'EOF'
-pkgname=cloudtolocalllm-appimage
+pkgname=pistisai-appimage
 pkgver=VERSION
 sha256sums=('SKIP')
 EOF
 
-printf 'appimage' > "$FAKE_ROOT/dist/linux/cloudtolocalllm-1.2.3-x86_64.AppImage"
+printf 'appimage' > "$FAKE_ROOT/dist/linux/pistisai-1.2.3-x86_64.AppImage"
 
 cat > "$FAKE_TOOLS/makepkg" <<'EOF'
 #!/bin/bash
 set -euo pipefail
 printf 'makepkg %s\n' "$*" >> "$LOG_FILE"
 cat <<'SRC' > .SRCINFO
-pkgname = cloudtolocalllm-appimage
+pkgname = pistisai-appimage
 SRC
 exit 0
 EOF

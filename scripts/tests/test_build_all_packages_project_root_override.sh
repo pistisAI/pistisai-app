@@ -53,8 +53,8 @@ case "${1:-}" in
   build)
     if [[ "${2:-}" == "linux" ]]; then
       mkdir -p "$proj_root/build/linux/x64/release/bundle"
-      printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
-      chmod +x "$proj_root/build/linux/x64/release/bundle/cloudtolocalllm"
+      printf '%s\n' '#!/bin/sh' 'echo bundle-ok' > "$proj_root/build/linux/x64/release/bundle/pistisai"
+      chmod +x "$proj_root/build/linux/x64/release/bundle/pistisai"
       exit 0
     fi
     ;;
@@ -68,9 +68,9 @@ cat > "$TMP_ROOT/fake_build_appimage.sh" <<'EOF'
 set -euo pipefail
 proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 mkdir -p "$proj_root/dist/linux"
-printf '%s\n' 'appimage-built' > "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage"
-printf '%s\n' 'checksum-built' > "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage.sha256"
-chmod +x "$proj_root/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage"
+printf '%s\n' 'appimage-built' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
+printf '%s\n' 'checksum-built' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
+chmod +x "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
 exit 0
 EOF
 chmod +x "$TMP_ROOT/fake_build_appimage.sh"
@@ -118,7 +118,7 @@ if ! grep -Fq "git:-C $TMP_ROOT rev-parse --short HEAD" "$GIT_LOG"; then
   exit 1
 fi
 
-if [[ ! -f "$TMP_ROOT/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage" ]]; then
+if [[ ! -f "$TMP_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected final AppImage artifact on success" >&2
   cat /tmp/test_build_all_packages_project_root_override.log >&2
   exit 1

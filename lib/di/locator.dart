@@ -77,6 +77,7 @@ import 'package:pistisai/services/desktop_control/window_manager_service.dart';
 import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/logging_service.dart';
+import 'package:pistisai/services/skill_service.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -391,6 +392,11 @@ Future<void> setupCoreServices() async {
     debugPrint('[ServiceLocator] Initializing LoggingService...');
     final loggingService = LoggingService();
     serviceLocator.registerSingleton<LoggingService>(loggingService);
+
+    // Skill service — reads local Hermes skill files
+    debugPrint('[ServiceLocator] Initializing SkillService...');
+    final skillService = SkillService();
+    serviceLocator.registerSingleton<SkillService>(skillService);
 
     // Theme provider - manages application theme mode
     final themeProvider = ThemeProvider();

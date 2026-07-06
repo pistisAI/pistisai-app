@@ -103,7 +103,7 @@ Required environment variables:
 - `DB_NAME=Pistisai`
 - `DB_USER=appuser`
 - `DB_PASSWORD=<your-password>`
-- `DB_HOST=/cloudsql/cloudtolocalllm-468303:us-central1:Pistisai-db`
+- `DB_HOST=/cloudsql/pistisai-468303:us-central1:Pistisai-db`
 - `SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com`
 - `SUPABASE_AUTH_AUDIENCE=https://api.pistisai.app`
 
@@ -111,11 +111,11 @@ Required environment variables:
 
 ```bash
 # Build container image
-gcloud builds submit --tag gcr.io/cloudtolocalllm-468303/cloudtolocalllm-api
+gcloud builds submit --tag gcr.io/pistisai-468303/pistisai-api
 
 # Deploy to Cloud Run
-gcloud run deploy cloudtolocalllm-api \
-    --image gcr.io/cloudtolocalllm-468303/cloudtolocalllm-api \
+gcloud run deploy pistisai-api \
+    --image gcr.io/pistisai-468303/pistisai-api \
     --platform managed \
     --region us-central1 \
     --allow-unauthenticated \
@@ -170,13 +170,13 @@ curl https://your-service-url/api/db/health
 
 ```bash
 # View logs
-gcloud logs tail --service=cloudtolocalllm-api
+gcloud logs tail --service=pistisai-api
 
 # Filter for database logs
-gcloud logs tail --service=cloudtolocalllm-api --filter="database"
+gcloud logs tail --service=pistisai-api --filter="database"
 
 # Filter for authentication logs
-gcloud logs tail --service=cloudtolocalllm-api --filter="auth"
+gcloud logs tail --service=pistisai-api --filter="auth"
 ```
 
 ### Cloud SQL Monitoring

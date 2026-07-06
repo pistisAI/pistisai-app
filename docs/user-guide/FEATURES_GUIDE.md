@@ -145,8 +145,8 @@ Use a custom endpoint for private servers, VPS deployments, or compatible agent 
 
 | Location | Description |
 | --- | --- |
-| `~/.config/cloudtolocalllm/` | Configuration files |
-| `~/.local/share/cloudtolocalllm/` | Logs and app data |
+| `~/.config/pistisai/` | Configuration files |
+| `~/.local/share/pistisai/` | Logs and app data |
 | LocalBrain SQLite | Encrypted local companion database |
 | Optional cloud account | Sync metadata and conversation state when enabled |
 
@@ -186,8 +186,8 @@ Confirm both the app device and agent runtime device are in the expected tailnet
 
 ### Logs
 
-- Linux: `~/.local/share/cloudtolocalllm/logs/`
-- Windows: `%LOCALAPPDATA%\cloudtolocalllm\logs\`
+- Linux: `~/.local/share/pistisai/logs/`
+- Windows: `%LOCALAPPDATA%\pistisai\logs\`
 
 ---
 

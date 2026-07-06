@@ -18,7 +18,7 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
@@ -32,11 +32,11 @@ cat > "$FAKE_ROOT/assets/version.json" <<'EOF'
 {"version":"old","build_number":"0"}
 EOF
 
-cat > "$FAKE_ROOT/build/linux/x64/release/bundle/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_ROOT/build/linux/x64/release/bundle/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_ROOT/build/linux/x64/release/bundle/cloudtolocalllm"
+chmod +x "$FAKE_ROOT/build/linux/x64/release/bundle/pistisai"
 
 cat > "$VERSION_MANAGER" <<'EOF'
 #!/bin/bash
@@ -72,11 +72,11 @@ case "${1:-}" in
   build)
     if [[ "${2:-}" == "linux" ]]; then
       mkdir -p "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle"
-      cat > "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/cloudtolocalllm" <<'APP'
+      cat > "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/pistisai" <<'APP'
 #!/bin/sh
 exit 0
 APP
-      chmod +x "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/cloudtolocalllm"
+      chmod +x "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/pistisai"
       exit 0
     fi
     ;;
@@ -90,8 +90,8 @@ cat > "$FAKE_TOOLS/build_appimage.sh" <<'EOF'
 set -euo pipefail
 printf 'build_appimage %s\n' "$*" >> "$BUILD_APPIMAGE_LOG"
 mkdir -p "$PROJECT_ROOT_OVERRIDE/dist/linux"
-printf 'appimage\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage"
-printf 'checksum\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage.sha256"
+printf 'appimage\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/pistisai-10.1.200-x86_64.AppImage"
+printf 'checksum\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
 EOF
 chmod +x "$FAKE_TOOLS/build_appimage.sh"
 
@@ -103,13 +103,13 @@ FLUTTER_CMD="$FAKE_TOOLS/flutter.sh" \
 BUILD_APPIMAGE_CMD="$FAKE_TOOLS/build_appimage.sh" \
 "$PROJECT_ROOT/scripts/packaging/build_all_packages.sh" --skip-increment >"$WORK_DIR/output.log" 2>&1
 
-if [[ ! -f "$FAKE_ROOT/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage" ]]; then
+if [[ ! -f "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected final AppImage artifact at the fake root output path" >&2
   cat "$WORK_DIR/output.log" >&2
   exit 1
 fi
 
-if [[ ! -f "$FAKE_ROOT/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage.sha256" ]]; then
+if [[ ! -f "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256" ]]; then
   echo "Expected AppImage checksum artifact at the fake root output path" >&2
   cat "$WORK_DIR/output.log" >&2
   exit 1

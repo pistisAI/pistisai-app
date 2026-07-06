@@ -70,7 +70,7 @@ The Avatar Personality Engine enables the selected agent runtime to develop a co
 ┌─────────────────────────────────────────────────────────────────────┐
 │                  OpenClaw Gateway (localhost:18789)                │
 │  ┌──────────────────────────────────────────────────────────────┐  │
-│  │  Pistisai Skill (~/.openclaw/skills/cloudtolocallm/) │  │
+│  │  Pistisai Skill (~/.openclaw/skills/pistisai/) │  │
 │  │  - SKILL.md: skill descriptor                                │  │
 │  │  - index.ts: personality logic, self-reflection              │  │
 │  │  - personality.md: backup (agent_name, traits, evolution)    │  │
@@ -260,7 +260,7 @@ CREATE TABLE visual_context (
 
 Located in OpenClaw skills directory (not Pistisai app data):
 ```
-~/.openclaw/skills/cloudtolocallm/
+~/.openclaw/skills/pistisai/
 ├── SKILL.md
 ├── index.ts
 ├── personality.md
@@ -582,7 +582,7 @@ dependencies:
 - **docs/development/IMPLEMENTATION_PLAN.md**: Integration with Phase 2
 - **docs/architecture/SYSTEM_ARCHITECTURE.md**: System architecture
 - **CLAUDE.md**: Development guidelines
-- **~/.openclaw/skills/cloudtolocallm/**: OpenClaw skill location
+- **~/.openclaw/skills/pistisai/**: OpenClaw skill location
 
 ---
 

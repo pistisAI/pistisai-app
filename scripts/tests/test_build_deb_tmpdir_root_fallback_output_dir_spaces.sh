@@ -7,7 +7,7 @@ FAKE_ROOT="$WORK_DIR/fake-root"
 FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_TOOLS="$WORK_DIR/bin"
 DIST_DIR="$FAKE_ROOT/dist dir with spaces/linux packages"
-OUTPUT_DEB="$DIST_DIR/cloudtolocalllm_2.3.4_amd64.deb"
+OUTPUT_DEB="$DIST_DIR/pistisai_2.3.4_amd64.deb"
 DPKG_LOG="$WORK_DIR/dpkg.log"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$DIST_DIR" "$FAKE_ROOT/assets/images"
 export DPKG_LOG
@@ -18,15 +18,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 2.3.4+5
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 printf '%s\n' 'fake-icon' > "$FAKE_ROOT/assets/images/app_icon.png"
 
@@ -61,7 +61,7 @@ if [[ ! -f "$OUTPUT_DEB" ]]; then
   exit 1
 fi
 
-if ! grep -Fq '/tmp/cloudtolocalllm-deb.' "$DPKG_LOG"; then
+if ! grep -Fq '/tmp/pistisai-deb.' "$DPKG_LOG"; then
   echo "Expected TMPDIR=/ to fall back to /tmp for the package root" >&2
   cat "$DPKG_LOG" >&2
   exit 1
@@ -69,7 +69,7 @@ fi
 
 pkg_root="$(awk -F' ' '/root:/ {print $2; exit}' "$DPKG_LOG")"
 if [[ -z "$pkg_root" ]]; then
-  pkg_root="$(sed -n 's#^.* /tmp/cloudtolocalllm-deb\.\([^ ]*\).*# /tmp/cloudtolocalllm-deb.\1#p' "$DPKG_LOG" | awk '{print $1}' | head -n 1)"
+  pkg_root="$(sed -n 's#^.* /tmp/pistisai-deb\.\([^ ]*\).*# /tmp/pistisai-deb.\1#p' "$DPKG_LOG" | awk '{print $1}' | head -n 1)"
 fi
 
 if [[ -n "$pkg_root" && -d "$pkg_root" ]]; then

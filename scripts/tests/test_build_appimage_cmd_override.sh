@@ -5,7 +5,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TMP_HOME="$(mktemp -d)"
 TMP_BUILD_DIR="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
-TMP_OUTPUT="$(mktemp -u /tmp/cloudtolocalllm-appimage-cmd.XXXXXX.AppImage)"
+TMP_OUTPUT="$(mktemp -u /tmp/pistisai-appimage-cmd.XXXXXX.AppImage)"
 TMP_DESKTOP_TEMPLATE="$(mktemp)"
 TMP_INVOKE_LOG="$(mktemp /tmp/appimage-cmd-override-invoke.XXXXXX.log)"
 BIN_DIR="$TMP_WORKDIR/bin"
@@ -18,14 +18,14 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$TMP_BUILD_DIR"
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Command override smoke test desktop entry

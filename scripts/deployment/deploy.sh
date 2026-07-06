@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 # Configuration
 ENVIRONMENT="${1:-prod}"
 COMPOSE_FILE="docker-compose.${ENVIRONMENT}.yml"
-STACK_NAME="cloudtolocalllm"
+STACK_NAME="pistisai"
 ENV_FILE=".env"
 
 echo -e "${GREEN}======================================${NC}"

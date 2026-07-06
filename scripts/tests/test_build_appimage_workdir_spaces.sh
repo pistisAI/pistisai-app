@@ -7,7 +7,7 @@ FAKE_ROOT="$WORK_DIR/project root"
 FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_TOOLS="$WORK_DIR/bin"
 APPIMAGE_WORKDIR="$WORK_DIR/appimage work dir with spaces"
-APPIMAGE_OUTPUT="$WORK_DIR/output/cloudtolocalllm-workdir-spaces.AppImage"
+APPIMAGE_OUTPUT="$WORK_DIR/output/pistisai-workdir-spaces.AppImage"
 APPIMAGETOOL_LOG="$WORK_DIR/appimagetool.log"
 mkdir -p "$FAKE_ROOT/scripts" "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir"
 export APPIMAGETOOL_LOG
@@ -18,15 +18,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 9.8.7+6
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_ROOT/scripts/flutter_with_cleanup.sh" <<'EOF'
 #!/bin/bash
@@ -35,11 +35,11 @@ exit 0
 EOF
 chmod +x "$FAKE_ROOT/scripts/flutter_with_cleanup.sh"
 
-cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/cloudtolocalllm.desktop" <<'EOF'
+cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/pistisai.desktop" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 EOF

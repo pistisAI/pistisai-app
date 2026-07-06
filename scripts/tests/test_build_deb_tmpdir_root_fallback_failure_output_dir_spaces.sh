@@ -7,7 +7,7 @@ FAKE_ROOT="$WORK_DIR/fake-root"
 FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_TOOLS="$WORK_DIR/bin"
 DIST_DIR="$FAKE_ROOT/dist dir with spaces/linux packages"
-OUTPUT_DEB="$DIST_DIR/cloudtolocalllm_2.3.4_amd64.deb"
+OUTPUT_DEB="$DIST_DIR/pistisai_2.3.4_amd64.deb"
 DPKG_LOG="$WORK_DIR/dpkg.log"
 TMPDIR_BASE="/tmp"
 mkdir -p "$FAKE_ROOT" "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$DIST_DIR" "$FAKE_ROOT/assets/images"
@@ -19,15 +19,15 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 2.3.4+5
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 printf '%s\n' 'fake-icon' > "$FAKE_ROOT/assets/images/app_icon.png"
 
@@ -62,7 +62,7 @@ if [[ $status -eq 0 ]]; then
   exit 1
 fi
 
-if ! grep -Fq "root:$TMPDIR_BASE/cloudtolocalllm-deb." "$DPKG_LOG"; then
+if ! grep -Fq "root:$TMPDIR_BASE/pistisai-deb." "$DPKG_LOG"; then
   echo "Expected TMPDIR=/ to fall back to /tmp for the package root" >&2
   cat "$DPKG_LOG" >&2
   exit 1
@@ -74,7 +74,7 @@ if ! grep -Fq "out:$OUTPUT_DEB" "$DPKG_LOG"; then
   exit 1
 fi
 
-pkg_root="$(sed -n 's#^root:\(.*cloudtolocalllm-deb\.[^ ]*\)$#\1#p' "$DPKG_LOG" | head -n 1)"
+pkg_root="$(sed -n 's#^root:\(.*pistisai-deb\.[^ ]*\)$#\1#p' "$DPKG_LOG" | head -n 1)"
 if [[ -z "$pkg_root" ]]; then
   echo "Expected to capture the temporary package root" >&2
   cat "$DPKG_LOG" >&2

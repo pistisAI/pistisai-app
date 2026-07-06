@@ -10,7 +10,7 @@ FAKE_BUILD_DIR="$WORK_DIR/bundle"
 FAKE_TOOL="$WORK_DIR/appimagetool"
 OUTPUT_DIR="$WORK_DIR/out"
 APPIMAGE_WORKDIR="$WORK_DIR/work"
-DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 TEMPLATE_DIR="$WORK_DIR/build-tools/packaging/appimage/Pistisai.AppDir"
 
 cleanup() {
@@ -23,15 +23,15 @@ cp "$TARGET_SCRIPT" "$SCRIPT_COPY"
 chmod +x "$SCRIPT_COPY"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/bash
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_BUILD_DIR/data/.hidden-data" <<'EOF'
 hidden data marker
@@ -43,8 +43,8 @@ EOF
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Utility;
 Version=1.0.0
@@ -81,7 +81,7 @@ APPIMAGETOOL_CMD="$FAKE_TOOL" \
 "$SCRIPT_COPY" >/dev/null 2>&1
 
 APPIMAGE_VERSION="$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)"
-APPIMAGE_FILE="$OUTPUT_DIR/cloudtolocalllm-${APPIMAGE_VERSION}-x86_64.AppImage"
+APPIMAGE_FILE="$OUTPUT_DIR/pistisai-${APPIMAGE_VERSION}-x86_64.AppImage"
 [[ -f "$APPIMAGE_FILE" ]]
 [[ -x "$APPIMAGE_FILE" ]]
 

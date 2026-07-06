@@ -9,7 +9,7 @@ FAKE_BUILD_DIR="$WORK_DIR/bundle"
 FAKE_TOOLS_DIR="$WORK_DIR/bin"
 OUTPUT_DIR="$WORK_DIR/out"
 APPIMAGE_WORKDIR="$WORK_DIR/work"
-DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 LOG_FILE="$WORK_DIR/appimagetool.log"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS_DIR" "$OUTPUT_DIR"
 
@@ -18,17 +18,17 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Failure cleanup test desktop entry
@@ -74,13 +74,13 @@ if [[ -d "$APPIMAGE_WORKDIR" ]]; then
   exit 1
 fi
 
-if [[ -f "$OUTPUT_DIR/cloudtolocalllm-1.0.0-x86_64.AppImage" ]]; then
+if [[ -f "$OUTPUT_DIR/pistisai-1.0.0-x86_64.AppImage" ]]; then
   echo "Expected failed AppImage output cleanup, but output file still exists" >&2
   cat /tmp/test_packaging_build_appimage_failure_cleanup.log >&2
   exit 1
 fi
 
-if [[ -f "$OUTPUT_DIR/cloudtolocalllm-1.0.0-x86_64.AppImage.sha256" ]]; then
+if [[ -f "$OUTPUT_DIR/pistisai-1.0.0-x86_64.AppImage.sha256" ]]; then
   echo "Expected failed AppImage checksum cleanup, but checksum file still exists" >&2
   cat /tmp/test_packaging_build_appimage_failure_cleanup.log >&2
   exit 1

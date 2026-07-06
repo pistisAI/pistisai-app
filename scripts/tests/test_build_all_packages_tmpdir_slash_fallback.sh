@@ -8,7 +8,7 @@ FAKE_TOOLS="$WORK_DIR/bin"
 LOG_FILE="$WORK_DIR/invocations.log"
 FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_DIST_DIR="$FAKE_ROOT/dist/linux"
-FAKE_APPIMAGE="$FAKE_DIST_DIR/cloudtolocalllm-2.3.4-x86_64.AppImage"
+FAKE_APPIMAGE="$FAKE_DIST_DIR/pistisai-2.3.4-x86_64.AppImage"
 FAKE_VERSION_MANAGER="$WORK_DIR/version_manager.sh"
 FAKE_FLUTTER="$WORK_DIR/flutter.sh"
 FAKE_BUILD_APPIMAGE="$WORK_DIR/build_appimage.sh"
@@ -22,7 +22,7 @@ trap cleanup EXIT
 mkdir -p "$FAKE_ROOT/lib/config" "$FAKE_BUILD_DIR" "$FAKE_DIST_DIR" "$FAKE_TOOLS"
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 2.3.4+5
 EOF
 
@@ -53,11 +53,11 @@ printf 'flutter %s\n' "$*" >> "$LOG_FILE"
 case "$*" in
   *'build linux --release'*)
     mkdir -p "$FAKE_BUILD_DIR"
-    cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'APP'
+    cat > "$FAKE_BUILD_DIR/pistisai" <<'APP'
 #!/bin/sh
 exit 0
 APP
-    chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+    chmod +x "$FAKE_BUILD_DIR/pistisai"
     ;;
 esac
 exit 0

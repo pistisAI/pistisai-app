@@ -86,7 +86,7 @@ class TestConfig {
           case 'getAll':
             return {
               'appName': 'Pistisai',
-              'packageName': 'online.cloudtolocalllm.app',
+              'packageName': 'app.pistisai.app',
               'version': '3.6.1',
               'buildNumber': '202506192205',
               'buildSignature': '',

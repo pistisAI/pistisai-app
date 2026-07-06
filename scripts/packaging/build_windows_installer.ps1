@@ -25,7 +25,7 @@ if (-not $resolvedSourceDir) {
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $resolvedOutputDir = (Resolve-Path $OutputDir).Path
-$installerScript = Join-Path $projectRoot "windows/installer/CloudToLocalLLM.iss"
+$installerScript = Join-Path $projectRoot "windows/installer/Pistisai.iss"
 
 $isccCommand = (Get-Command iscc.exe -ErrorAction SilentlyContinue)?.Source
 if (-not $isccCommand) {

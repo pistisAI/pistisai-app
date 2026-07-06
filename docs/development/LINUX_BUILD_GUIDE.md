@@ -20,7 +20,7 @@ Linux builds produce two package formats:
    - Sandboxed environment with controlled permissions
    - Works on Ubuntu, Fedora, Arch, Debian, openSUSE, etc.
 
-2. **.deb Package** (`cloudtolocalllm_{version}_amd64.deb`)
+2. **.deb Package** (`pistisai_{version}_amd64.deb`)
    - Native package for Debian/Ubuntu-based systems
    - Integrates with system package manager
    - Appears in application menu automatically

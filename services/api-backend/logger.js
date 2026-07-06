@@ -91,7 +91,7 @@ const logger = winston.createLogger({
   level: LOG_LEVEL,
   format: productionFormat,
   defaultMeta: {
-    service: 'cloudtolocalllm-api',
+    service: 'pistisai-api',
     version: process.env.npm_package_version || '1.0.0',
     environment: NODE_ENV,
   },

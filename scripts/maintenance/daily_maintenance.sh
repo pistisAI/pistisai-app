@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # VPS configuration
-VPS_HOST="cloudtolocalllm.online"
+VPS_HOST="pistisai.app"
 VPS_USER="cloudllm"
 VPS_PROJECT_DIR="/opt/Pistisai"
 
@@ -263,8 +263,8 @@ check_application_endpoints() {
     log_step 8 "Checking application endpoints..."
     
     local endpoints=(
-        "http://cloudtolocalllm.online"
-        "http://app.cloudtolocalllm.online"
+        "http://pistisai.app"
+        "http://app.pistisai.app"
     )
     
     local failed_endpoints=()

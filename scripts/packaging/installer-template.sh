@@ -13,7 +13,7 @@ show_help() {
     cat << EOF
 Pistisai Linux Installer
 
-Usage: curl -fsSL https://cloudtolocalllm.online/install.sh | bash [OPTIONS]
+Usage: curl -fsSL https://pistisai.app/install.sh | bash [OPTIONS]
 
 Options:
     --system              Install system-wide to /opt (requires sudo)
@@ -24,18 +24,18 @@ Options:
     -h, --help            Show this help message
 
 Environment Variables:
-    CLOUDTOLOCALLLM_DIR       Override installation directory
-    CLOUDTOLOCALLLM_CHANNEL   Default update channel
+    PISTISAI_DIR       Override installation directory
+    PISTISAI_CHANNEL   Default update channel
 
 Examples:
     # User-local installation (default)
-    curl -fsSL https://cloudtolocalllm.online/install.sh | bash
+    curl -fsSL https://pistisai.app/install.sh | bash
 
     # System-wide installation
-    curl -fsSL https://cloudtolocalllm.online/install.sh | bash -s -- --system
+    curl -fsSL https://pistisai.app/install.sh | bash -s -- --system
 
     # Beta channel
-    curl -fsSL https://cloudtolocalllm.online/install.sh | bash -s -- --channel beta
+    curl -fsSL https://pistisai.app/install.sh | bash -s -- --channel beta
 EOF
 }
 
@@ -129,14 +129,14 @@ setup_install_dir() {
     local install_dir=""
 
     # Check for environment variable override
-    if [ -n "$CLOUDTOLOCALLLM_DIR" ]; then
-        install_dir="$CLOUDTOLOCALLLM_DIR"
+    if [ -n "$PISTISAI_DIR" ]; then
+        install_dir="$PISTISAI_DIR"
     elif [ -n "$custom_dir" ]; then
         install_dir="$custom_dir"
     elif [ "$system_wide" = true ]; then
-        install_dir="/opt/cloudtolocalllm"
+        install_dir="/opt/pistisai"
     else
-        install_dir="$HOME/.local/share/cloudtolocalllm"
+        install_dir="$HOME/.local/share/pistisai"
     fi
 
     mkdir -p "$install_dir"
@@ -200,27 +200,27 @@ create_desktop_entry() {
     mkdir -p "$desktop_dir"
     mkdir -p "$icon_dir/hicolor"
 
-    cat > "${desktop_dir}/cloudtolocalllm.desktop" << EOF
+    cat > "${desktop_dir}/pistisai.desktop" << EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=Pistisai
 GenericName=AI Model Bridge
 Comment=Manage and run powerful Large Language Models locally
-Icon=cloudtolocalllm
+Icon=pistisai
 Exec=${install_dir}/Pistisai %u
 Terminal=false
 Categories=Development;Utility;Network;
 Keywords=AI;LLM;Machine Learning;Ollama;Local;
 StartupNotify=true
 StartupWMClass=Pistisai
-MimeType=x-scheme-handler/cloudtolocalllm;
+MimeType=x-scheme-handler/pistisai;
 EOF
 
     # Copy icon
-    if [ -f "${install_dir}/icons/cloudtolocalllm.png" ]; then
+    if [ -f "${install_dir}/icons/pistisai.png" ]; then
         mkdir -p "$icon_dir/hicolor/128x128/apps"
-        cp "${install_dir}/icons/cloudtolocalllm.png" "$icon_dir/hicolor/128x128/apps/cloudtolocalllm.png"
+        cp "${install_dir}/icons/pistisai.png" "$icon_dir/hicolor/128x128/apps/pistisai.png"
     fi
 
     log_success "Created desktop entry"
@@ -245,20 +245,20 @@ install_daemon() {
     log_info "Installing update daemon..."
 
     # Extract embedded files from base64
-    echo "$EMBEDDED_UPDATED" | base64 -d > "${install_dir}/cloudtolocalllm-updated"
-    chmod +x "${install_dir}/cloudtolocalllm-updated"
+    echo "$EMBEDDED_UPDATED" | base64 -d > "${install_dir}/pistisai-updated"
+    chmod +x "${install_dir}/pistisai-updated"
 
     if [ "$system_wide" = true ]; then
         # System-wide installation
-        echo "$EMBEDDED_UPDATED_SERVICE" | base64 -d > /etc/systemd/system/cloudtolocalllm-updated.service
-        echo "$EMBEDDED_UPDATED_TIMER" | base64 -d > /etc/systemd/system/cloudtolocalllm-updated.timer
+        echo "$EMBEDDED_UPDATED_SERVICE" | base64 -d > /etc/systemd/system/pistisai-updated.service
+        echo "$EMBEDDED_UPDATED_TIMER" | base64 -d > /etc/systemd/system/pistisai-updated.timer
 
         systemctl daemon-reload || true
-        systemctl unmask cloudtolocalllm-updated.service cloudtolocalllm-updated.timer 2>/dev/null || true
-        if ! systemctl enable cloudtolocalllm-updated.timer; then
+        systemctl unmask pistisai-updated.service pistisai-updated.timer 2>/dev/null || true
+        if ! systemctl enable pistisai-updated.timer; then
             log_warning "Could not enable system update timer; continuing"
         fi
-        if ! systemctl start cloudtolocalllm-updated.timer; then
+        if ! systemctl start pistisai-updated.timer; then
             log_warning "Could not start system update timer; continuing"
         fi
     else
@@ -267,15 +267,15 @@ install_daemon() {
         mkdir -p "$user_service_dir"
 
         # Extract and adapt service file for user installation
-        echo "$EMBEDDED_UPDATED_SERVICE" | base64 -d | sed "s|%h|%h|g" > "$user_service_dir/cloudtolocalllm-updated.service"
-        echo "$EMBEDDED_UPDATED_TIMER" | base64 -d | sed "s|%h|%h|g" > "$user_service_dir/cloudtolocalllm-updated.timer"
+        echo "$EMBEDDED_UPDATED_SERVICE" | base64 -d | sed "s|%h|%h|g" > "$user_service_dir/pistisai-updated.service"
+        echo "$EMBEDDED_UPDATED_TIMER" | base64 -d | sed "s|%h|%h|g" > "$user_service_dir/pistisai-updated.timer"
 
         systemctl --user daemon-reload || true
-        systemctl --user unmask cloudtolocalllm-updated.service cloudtolocalllm-updated.timer 2>/dev/null || true
-        if ! systemctl --user enable cloudtolocalllm-updated.timer; then
+        systemctl --user unmask pistisai-updated.service pistisai-updated.timer 2>/dev/null || true
+        if ! systemctl --user enable pistisai-updated.timer; then
             log_warning "Could not enable user update timer; continuing"
         fi
-        if ! systemctl --user start cloudtolocalllm-updated.timer; then
+        if ! systemctl --user start pistisai-updated.timer; then
             log_warning "Could not start user update timer; continuing"
         fi
     fi

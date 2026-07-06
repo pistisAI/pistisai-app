@@ -971,7 +971,7 @@ test('user performs batch file operations');
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:cloudtolocalllm/services/[feature]_service.dart';
+import 'package:pistisai/services/[feature]_service.dart';
 
 @GenerateMocks([DependencyClass])
 import '[feature]_service_test.mocks.dart';
@@ -1043,8 +1043,8 @@ void main() {
 ```dart
 // test/integration/[feature]_flow_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/main.dart';
-import 'package:cloudtolocalllm/services/[feature]_service.dart';
+import 'package:pistisai/main.dart';
+import 'package:pistisai/services/[feature]_service.dart';
 import 'helpers/test_app_wrapper.dart';
 
 void main() {

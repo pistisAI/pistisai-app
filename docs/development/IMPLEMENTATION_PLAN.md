@@ -408,7 +408,7 @@ OpenClaw Gateway              Drift Database (VPS)           Pistisai
 | MarkdownSyncService | `lib/services/avatar/markdown_sync_service.dart` | 4h | P1 | ✅ Complete |
 | ConscienceStorageService | `lib/services/conscience_storage_service.dart` | 3h | P1 | ✅ Complete |
 | Evolution API endpoints | `lib/services/router_server.dart` | 3h | P1 | ✅ Complete |
-| OpenClaw personality skill | `~/.openclaw/skills/cloudtolocallm/` | 6h | P0 | 🔲 User Setup |
+| OpenClaw personality skill | `~/.openclaw/skills/pistisai/` | 6h | P0 | 🔲 User Setup |
 | Rive avatar animations | `assets/animations/avatar.riv` | 8h | P2 | 🔲 Pending |
 | Emoji blending fallback | `lib/features/avatar/emoji_blending_avatar.dart` | 3h | P2 | 🔲 Pending |
 | Avatar settings UI | `lib/screens/avatar/avatar_settings_screen.dart` | 4h | P2 | 🔲 Pending |
@@ -493,7 +493,7 @@ OpenClaw Gateway              Drift Database (VPS)           Pistisai
 - ✅ Personality engine with 4 traits (formality, humor, enthusiasm, empathy)
 - ✅ Evolution tracker (no XP - organic growth via conversation depth)
 - ✅ Conscience System storage layer (agentThoughts, conscienceDecisions tables)
-- 🔲 OpenClaw skill: ~/.openclaw/skills/cloudtolocallm/ (user setup)
+- 🔲 OpenClaw skill: ~/.openclaw/skills/pistisai/ (user setup)
 - ✅ Markdown backup sync (personality.md, memory.md, context.md)
 - 🔲 Avatar visuals respond to personality (Rive + emoji blending) - pending assets
 - ✅ Clipboard service with history

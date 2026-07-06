@@ -335,7 +335,7 @@ Ensure Docker environment supports user containers:
 # docker-compose.yml additions
 services:
   streaming-proxy-template:
-    image: ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest
+    image: ghcr.io/pistisai/Pistisai/streaming:latest
     deploy:
       replicas: 0  # Template only, scaled per user
     environment:

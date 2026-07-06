@@ -14,7 +14,7 @@ trap cleanup EXIT
 
 mkdir -p "$FAKE_ROOT" "$(dirname "$OUTPUT_FILE")" "$TMPDIR_BASE"
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 1.2.3+9
 EOF
 

@@ -17,11 +17,11 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$FAKE_BUILD_DIR" "$DIST_DIR"
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_DPKG_DEB" <<'EOF'
 #!/bin/bash
@@ -34,8 +34,8 @@ if [[ ! -f "$control" ]]; then
   exit 1
 fi
 printf 'control:%s\n' "$(tr '\n' '|' < "$control")" >> "$FAKE_LOG"
-if [[ -f "$root/usr/share/applications/cloudtolocalllm.desktop" ]]; then
-  printf 'desktop:%s\n' "$(tr '\n' '|' < "$root/usr/share/applications/cloudtolocalllm.desktop")" >> "$FAKE_LOG"
+if [[ -f "$root/usr/share/applications/pistisai.desktop" ]]; then
+  printf 'desktop:%s\n' "$(tr '\n' '|' < "$root/usr/share/applications/pistisai.desktop")" >> "$FAKE_LOG"
 fi
 : > "$out"
 chmod +x "$out"
@@ -46,17 +46,17 @@ PATH="$WORK_DIR:/usr/bin:/bin" \
 BUILD_DIR="$FAKE_BUILD_DIR" \
 DIST_DIR="$DIST_DIR" \
 APP_NAME="Pistisai" \
-PACKAGE_NAME="cloudtolocalllm" \
+PACKAGE_NAME="pistisai" \
 FAKE_LOG="$FAKE_LOG" \
 "$TARGET_SCRIPT"
 
-PACKAGE_FILE="$DIST_DIR/cloudtolocalllm_$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)_amd64.deb"
+PACKAGE_FILE="$DIST_DIR/pistisai_$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)_amd64.deb"
 
 [[ -f "$PACKAGE_FILE" ]]
 [[ -x "$PACKAGE_FILE" ]]
-grep -Fq 'Package: cloudtolocalllm|' "$FAKE_LOG"
+grep -Fq 'Package: pistisai|' "$FAKE_LOG"
 grep -Fq 'Name=Pistisai|' "$FAKE_LOG"
-grep -Fq 'Exec=cloudtolocalllm %u|' "$FAKE_LOG"
-grep -Fq 'MimeType=x-scheme-handler/cloudtolocalllm;|' "$FAKE_LOG"
+grep -Fq 'Exec=pistisai %u|' "$FAKE_LOG"
+grep -Fq 'MimeType=x-scheme-handler/pistisai;|' "$FAKE_LOG"
 
 echo "[test_build_deb_smoke] Passed"

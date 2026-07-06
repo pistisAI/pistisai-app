@@ -223,7 +223,7 @@ git commit -m "feat: add avatar personality tables to Drift schema
 Create `lib/models/avatar/personality_models.dart`:
 
 ```dart
-import 'package:cloudtolocallm/database/database.dart';
+import 'package:pistisai/database/database.dart';
 
 class PersonalityTraits {
   final double formality;
@@ -297,9 +297,9 @@ Create `test/services/avatar/personality_engine_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocallm/database/database.dart';
-import 'package:cloudtolocallm/models/avatar/personality_models.dart';
-import 'package:cloudtolocallm/services/avatar/personality_engine.dart';
+import 'package:pistisai/database/database.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/services/avatar/personality_engine.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
@@ -424,8 +424,8 @@ Create `lib/services/avatar/personality_engine.dart`:
 ```dart
 import 'dart:io';
 import 'dart:convert';
-import 'package:cloudtolocallm/database/database.dart';
-import 'package:cloudtolocallm/models/avatar/personality_models.dart';
+import 'package:pistisai/database/database.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 class PersonalityEngine {
   final DriftLocalBrain _database;
@@ -578,7 +578,7 @@ git commit -m "feat: implement PersonalityEngine service
 **Step 1: Add personality parameter to Avatar**
 
 ```dart
-import 'package:cloudtolocallm/models/avatar/personality_models.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 class AgentAvatar extends StatefulWidget {
   final AgentState state;
@@ -830,9 +830,9 @@ String _getOpenClawSkillsPath() {
   }
 
   final possiblePaths = [
-    '$home/.openclaw/skills/cloudtolocallm',
-    '$home/.config/openclaw/skills/cloudtolocallm',
-    '$home/AppData/Roaming/openclaw/skills/cloudtolocallm',  // Windows
+    '$home/.openclaw/skills/pistisai',
+    '$home/.config/openclaw/skills/pistisai',
+    '$home/AppData/Roaming/openclaw/skills/pistisai',  // Windows
   ];
 
   for (final path in possiblePaths) {
@@ -842,7 +842,7 @@ String _getOpenClawSkillsPath() {
   }
 
   // Create default path if it doesn't exist
-  final defaultPath = '$home/.openclaw/skills/cloudtolocallm';
+  final defaultPath = '$home/.openclaw/skills/pistisai';
   Directory(defaultPath).createSync(recursive: true);
   return defaultPath;
 }
@@ -902,11 +902,11 @@ Create `test/services/avatar/evolution_tracker_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocallm/database/database.dart';
-import 'package:cloudtolocallm/services/avatar/evolution_tracker.dart';
+import 'package:pistisai/database/database.dart';
+import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:cloudtolocallm/models/conversation.dart';
+import 'package:pistisai/models/conversation.dart';
 
 @GenerateMocks([DriftLocalBrain])
 import 'evolution_tracker_test.mocks.dart';
@@ -1031,7 +1031,7 @@ Expected: FAIL with "EvolutionTracker not implemented"
 Create `lib/services/avatar/evolution_tracker.dart`:
 
 ```dart
-import 'package:cloudtolocallm/database/database.dart';
+import 'package:pistisai/database/database.dart';
 
 class DepthMetrics {
   final double complexity;
@@ -1276,21 +1276,21 @@ git commit -m "feat: register EvolutionTracker in service locator"
 ### Task 3.1: Create OpenClaw Skill Directory Structure
 
 **Files:**
-- Create: `~/.openclaw/skills/cloudtolocallm/` directory
-- Create: `~/.openclaw/skills/cloudtolocallm/SKILL.md`
-- Create: `~/.openclaw/skills/cloudtolocallm/package.json`
-- Create: `~/.openclaw/skills/cloudtolocallm/tsconfig.json`
+- Create: `~/.openclaw/skills/pistisai/` directory
+- Create: `~/.openclaw/skills/pistisai/SKILL.md`
+- Create: `~/.openclaw/skills/pistisai/package.json`
+- Create: `~/.openclaw/skills/pistisai/tsconfig.json`
 
 **Step 1: Create skill directory**
 
 ```bash
-mkdir -p ~/.openclaw/skills/cloudtolocallm
+mkdir -p ~/.openclaw/skills/pistisai
 ```
 
 **Step 2: Create SKILL.md**
 
 ```bash
-cat > ~/.openclaw/skills/cloudtolocallm/SKILL.md << 'EOF'
+cat > ~/.openclaw/skills/pistisai/SKILL.md << 'EOF'
 # Pistisai Avatar Personality
 
 Provides personality-driven responses and organic evolution capabilities for OpenClaw agents.
@@ -1330,9 +1330,9 @@ EOF
 **Step 3: Create package.json**
 
 ```bash
-cat > ~/.openclaw/skills/cloudtolocallm/package.json << 'EOF'
+cat > ~/.openclaw/skills/pistisai/package.json << 'EOF'
 {
-  "name": "cloudtolocallm-personality-skill",
+  "name": "pistisai-personality-skill",
   "version": "1.0.0",
   "description": "Avatar personality and evolution system for OpenClaw",
   "main": "index.ts",
@@ -1364,7 +1364,7 @@ EOF
 **Step 4: Create tsconfig.json**
 
 ```bash
-cat > ~/.openclaw/skills/cloudtolocallm/tsconfig.json << 'EOF'
+cat > ~/.openclaw/skills/pistisai/tsconfig.json << 'EOF'
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -1391,19 +1391,19 @@ EOF
 
 Note: This is in OpenClaw skills directory, not the git repo. We'll create the skill files in the repo first, then provide instructions to install.
 
-**Alternative approach**: Create skill files in `services/openclaw-skills/cloudtolocallm/` directory in the repo, then copy to OpenClaw skills directory.
+**Alternative approach**: Create skill files in `services/openclaw-skills/pistisai/` directory in the repo, then copy to OpenClaw skills directory.
 
 ---
 
 ### Task 3.2: Create OpenClaw Personality Skill (TypeScript)
 
 **Files:**
-- Create: `services/openclaw-skills/cloudtolocallm/index.ts`
-- Create: `services/openclaw-skills/cloudtolocallm/drift-adapter.ts`
+- Create: `services/openclaw-skills/pistisai/index.ts`
+- Create: `services/openclaw-skills/pistisai/drift-adapter.ts`
 
 **Step 1: Create Drift adapter**
 
-Create `services/openclaw-skills/cloudtolocallm/drift-adapter.ts`:
+Create `services/openclaw-skills/pistisai/drift-adapter.ts`:
 
 ```typescript
 import Database from 'better-sqlite3';
@@ -1522,7 +1522,7 @@ export class DriftAdapter {
 
 **Step 2: Create main skill index**
 
-Create `services/openclaw-skills/cloudtolocallm/index.ts`:
+Create `services/openclaw-skills/pistisai/index.ts`:
 
 ```typescript
 import { readFileSync, existsSync } from 'fs';
@@ -1730,8 +1730,8 @@ Respond in a way that reflects these personality traits naturally.`;
 **Step 3: Copy to OpenClaw skills directory**
 
 ```bash
-mkdir -p ~/.openclaw/skills/cloudtolocallm
-cp -r services/openclaw-skills/cloudtolocallm/* ~/.openclaw/skills/cloudtolocallm/
+mkdir -p ~/.openclaw/skills/pistisai
+cp -r services/openclaw-skills/pistisai/* ~/.openclaw/skills/pistisai/
 ```
 
 **Step 4: Commit**
@@ -1867,10 +1867,10 @@ git commit -m "feat: add evolution API endpoints to router
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocallm/database/database.dart';
-import 'package:cloudtolocallm/services/avatar/personality_engine.dart';
-import 'package:cloudtolocallm/services/avatar/evolution_tracker.dart';
-import 'package:cloudtolocallm/models/avatar/personality_models.dart';
+import 'package:pistisai/database/database.dart';
+import 'package:pistisai/services/avatar/personality_engine.dart';
+import 'package:pistisai/services/avatar/evolution_tracker.dart';
+import 'package:pistisai/models/avatar/personality_models.dart';
 
 void main() {
   group('Evolution Flow Integration', () {
@@ -1994,7 +1994,7 @@ Add under "Avatar System (Pistisai)" section:
 - OpenClaw owns personality & evolution (traits, evolution stages)
 - Pistisai provides expanded awareness (memory, context, visual data)
 - Drift database (VPS via Tailscale) = primary storage
-- Markdown files (~/.openclaw/skills/cloudtolocallm/) = backup storage
+- Markdown files (~/.openclaw/skills/pistisai/) = backup storage
 
 **Personality Traits** (0-1 scale):
 - Formality, Humor, Enthusiasm, Empathy
@@ -2015,7 +2015,7 @@ Add under "Avatar System (Pistisai)" section:
 - POST /avatar/evolution/request - Evolution validation
 
 **OpenClaw Skill**:
-- Location: ~/.openclaw/skills/cloudtolocallm/
+- Location: ~/.openclaw/skills/pistisai/
 - Files: SKILL.md, index.ts, drift-adapter.ts
 - Functionality: Personality injection, self-reflection, evolution requests
 
@@ -2053,7 +2053,7 @@ cat > scripts/install-openclaw-skill.sh << 'EOF'
 
 # Install Pistisai personality skill to OpenClaw
 
-SKILL_NAME="cloudtolocallm"
+SKILL_NAME="pistisai"
 SOURCE_DIR="services/openclaw-skills/$SKILL_NAME"
 TARGET_DIR="$HOME/.openclaw/skills/$SKILL_NAME"
 
@@ -2159,7 +2159,7 @@ OpenClaw Gateway              Drift Database              Pistisai
 ## Data Storage
 
 - **Primary**: Drift database on VPS (via Tailscale)
-- **Backup**: Markdown files in `~/.openclaw/skills/cloudtolocallm/`
+- **Backup**: Markdown files in `~/.openclaw/skills/pistisai/`
 - **Fallback**: Markdown files when database unavailable
 
 ## API Endpoints
@@ -2219,7 +2219,7 @@ flutter test
 
 **Skill not loading**:
 - Check OpenClaw logs: `openclaw logs`
-- Verify skill directory: `ls ~/.openclaw/skills/cloudtolocallm/`
+- Verify skill directory: `ls ~/.openclaw/skills/pistisai/`
 
 **Database connection failed**:
 - Verify Tailscale connection: `tailscale status`

@@ -19,14 +19,14 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$TMP_BUILD_DIR"
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Default TMPDIR smoke test desktop entry
@@ -61,7 +61,7 @@ if [[ ! -f "$TMP_OUTPUT" ]]; then
   exit 1
 fi
 
-if [[ ! -x "$TMP_HOME/.local/bin/cloudtolocalllm" ]]; then
+if [[ ! -x "$TMP_HOME/.local/bin/pistisai" ]]; then
   echo "Expected installed AppImage binary in temp HOME" >&2
   cat /tmp/test_build_appimage_tmpdir_default_output.log >&2
   exit 1

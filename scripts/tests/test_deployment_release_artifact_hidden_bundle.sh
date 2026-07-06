@@ -6,7 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 WORKFLOW_FILE="$PROJECT_ROOT/.github/workflows/deployment.yml"
 WORK_DIR="$(mktemp -d)"
 SRC_DIR="$WORK_DIR/bundle"
-DST_DIR="$WORK_DIR/staging/cloudtolocalllm"
+DST_DIR="$WORK_DIR/staging/pistisai"
 
 cleanup() {
   rm -rf "$WORK_DIR"
@@ -25,7 +25,7 @@ cat > "$SRC_DIR/.hidden-dir/marker" <<'EOF'
 HIDDEN-DIR
 EOF
 
-if ! grep -Fq 'cp -a build/linux/x64/release/bundle/. "$STAGING_DIR/cloudtolocalllm/"' "$WORKFLOW_FILE"; then
+if ! grep -Fq 'cp -a build/linux/x64/release/bundle/. "$STAGING_DIR/pistisai/"' "$WORKFLOW_FILE"; then
   echo "deployment workflow missing cp -a bundle copy hardening" >&2
   exit 1
 fi

@@ -7,16 +7,16 @@ set -e
 
 # Configuration
 RESOURCE_GROUP="Pistisai-rg"
-DNS_ZONE_NAME="cloudtolocalllm.online"
+DNS_ZONE_NAME="pistisai.app"
 AKS_CLUSTER_NAME="Pistisai-aks"
 TTL=300
 
 # DNS records to create
 declare -a DOMAINS=(
-    "cloudtolocalllm.online"
-    "app.cloudtolocalllm.online"
-    "api.cloudtolocalllm.online"
-    "auth.cloudtolocalllm.online"
+    "pistisai.app"
+    "app.pistisai.app"
+    "api.pistisai.app"
+    "auth.pistisai.app"
 )
 
 echo "ðŸ”§ Setting up Azure DNS for $DNS_ZONE_NAME..."
@@ -75,7 +75,7 @@ echo "ðŸ“‹ Step 5: Creating DNS records..."
 
 for domain in "${DOMAINS[@]}"; do
     # Extract subdomain name
-    if [ "$domain" = "cloudtolocalllm.online" ]; then
+    if [ "$domain" = "pistisai.app" ]; then
         record_name="@"
     else
         record_name=$(echo "$domain" | sed 's/\.Pistisai\.online//')

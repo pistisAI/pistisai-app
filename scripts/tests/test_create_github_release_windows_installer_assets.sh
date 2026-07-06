@@ -10,8 +10,8 @@ if [[ ! -f "$SCRIPT_FILE" ]]; then
 fi
 
 for needle in \
-  'cloudtolocalllm-$version-portable.zip' \
-  'cloudtolocalllm-$version-portable.zip.sha256' \
+  'pistisai-$version-portable.zip' \
+  'pistisai-$version-portable.zip.sha256' \
   'Pistisai-Windows-$version-Setup.exe' \
   'Pistisai-Windows-$version-Setup.exe.sha256' \
   'Missing packages from Phase 3 builds:'; do

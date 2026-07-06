@@ -21,7 +21,7 @@ chmod +x "$WORK_DIR/test_aur_package.sh"
 cp "$PROJECT_ROOT/build-tools/packaging/aur/PKGBUILD" "$WORK_DIR/build-tools/packaging/aur/PKGBUILD"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
@@ -38,7 +38,7 @@ chmod +x "$WORK_DIR/flutter_with_cleanup.sh"
 cat > "$BIN_DIR/mktemp" <<'EOF'
 #!/bin/bash
 if [[ "$1" == "-d" ]]; then
-  dir="/tmp/cloudtolocalllm-success-cleanup.$$"
+  dir="/tmp/pistisai-success-cleanup.$$"
   mkdir -p "$dir"
   printf '%s\n' "$dir"
   exit 0

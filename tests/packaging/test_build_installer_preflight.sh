@@ -18,13 +18,13 @@ cp "$TARGET_SCRIPT" "$WORK_DIR/scripts/packaging/build_installer.sh"
 chmod +x "$WORK_DIR/scripts/packaging/build_installer.sh"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated" "$WORK_DIR/scripts/packaging/update-daemon/cloudtolocalllm-updated"
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.service" "$WORK_DIR/scripts/packaging/update-daemon/cloudtolocalllm-updated.service"
-cp "$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated.timer" "$WORK_DIR/scripts/packaging/update-daemon/cloudtolocalllm-updated.timer"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated" "$WORK_DIR/scripts/packaging/update-daemon/pistisai-updated"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated.service" "$WORK_DIR/scripts/packaging/update-daemon/pistisai-updated.service"
+cp "$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated.timer" "$WORK_DIR/scripts/packaging/update-daemon/pistisai-updated.timer"
 
 if (cd "$WORK_DIR" && bash "$WORK_DIR/scripts/packaging/build_installer.sh") >"$LOG_FILE" 2>&1; then
   echo "build_installer.sh unexpectedly succeeded with a missing template" >&2

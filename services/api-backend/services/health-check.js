@@ -186,7 +186,7 @@ export class HealthCheckService {
       return {
         status: overallStatus,
         timestamp,
-        service: 'cloudtolocalllm-api',
+        service: 'pistisai-api',
         dependencies: {
           database: databaseHealth,
           cache: cacheHealth,
@@ -199,7 +199,7 @@ export class HealthCheckService {
       return {
         status: 'unhealthy',
         timestamp,
-        service: 'cloudtolocalllm-api',
+        service: 'pistisai-api',
         error: error.message || 'Failed to determine health status',
       };
     }

@@ -19,15 +19,15 @@ chmod +x "$WORK_DIR/scripts/packaging/update_aur_pkgbuild.sh"
 cp "$PROJECT_ROOT/build-tools/packaging/aur/PKGBUILD" "$WORK_DIR/build-tools/packaging/aur/PKGBUILD"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version:
 description: Test pubspec with empty version
 EOF
 
 cat > "$BIN_DIR/mktemp" <<'EOF'
 #!/bin/bash
-if [[ "$1" == "-d" && "$2" == "-t" && "$3" == cloudtolocalllm-aur.XXXXXX ]]; then
-  dir="/tmp/cloudtolocalllm-aur-test.$$"
+if [[ "$1" == "-d" && "$2" == "-t" && "$3" == pistisai-aur.XXXXXX ]]; then
+  dir="/tmp/pistisai-aur-test.$$"
   mkdir -p "$dir"
   printf '%s\n' "$dir"
   exit 0

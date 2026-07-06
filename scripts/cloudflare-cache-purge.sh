@@ -10,7 +10,7 @@ set -e
 #   ./scripts/cloudflare-cache-purge.sh
 
 # Configuration
-DOMAIN="cloudtolocalllm.online"
+DOMAIN="pistisai.app"
 SUBDOMAINS=("app" "api" "docs" "mail")
 MAX_RETRIES=3
 RETRY_DELAY=5

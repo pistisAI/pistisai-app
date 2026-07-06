@@ -7,7 +7,7 @@ set -e
 
 RESOURCE_GROUP="Pistisai-rg"
 KEY_VAULT_NAME="Pistisai-kv"
-DOMAIN="cloudtolocalllm.online"
+DOMAIN="pistisai.app"
 SUBSCRIPTION_ID="${AZURE_SUBSCRIPTION_ID}"
 
 echo "ðŸ” Setting up Azure Key Vault for SSL certificate management..."

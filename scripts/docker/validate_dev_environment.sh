@@ -195,7 +195,7 @@ check_docker_images() {
     done
     
     # Check if project images exist
-    local project_images=("Pistisai-webapp" "cloudtolocalllm-api")
+    local project_images=("Pistisai-webapp" "pistisai-api")
     
     for image in "${project_images[@]}"; do
         if docker image inspect "$image" >/dev/null 2>&1; then

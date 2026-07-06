@@ -107,7 +107,7 @@ Linux:
 
 ```bash
 ldd /opt/pistisai-app
-./cloudtolocalllm --verbose
+./pistisai --verbose
 ```
 
 Windows:
@@ -239,13 +239,13 @@ nvidia-smi
 
 ### Conversation Storage
 
-- Linux: `~/.local/share/cloudtolocalllm/local_brain.db`
-- Windows: `%LOCALAPPDATA%\cloudtolocalllm\local_brain.db`
+- Linux: `~/.local/share/pistisai/local_brain.db`
+- Windows: `%LOCALAPPDATA%\pistisai\local_brain.db`
 
 ### Logs
 
-- Linux: `~/.local/share/cloudtolocalllm/logs/app.log`
-- Windows: `%LOCALAPPDATA%\cloudtolocalllm\logs\app.log`
+- Linux: `~/.local/share/pistisai/logs/app.log`
+- Windows: `%LOCALAPPDATA%\pistisai\logs\app.log`
 
 ### Reset Configuration
 
@@ -254,7 +254,7 @@ This removes local app configuration and local app data.
 Linux:
 
 ```bash
-rm -rf ~/.config/Pistisai/ ~/.local/share/cloudtolocalllm/
+rm -rf ~/.config/Pistisai/ ~/.local/share/pistisai/
 ```
 
 Windows:

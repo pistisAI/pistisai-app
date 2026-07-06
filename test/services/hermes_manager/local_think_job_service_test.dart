@@ -9,13 +9,13 @@ void main() {
       const ledgerJson = '''
 [
   {
-    "task_id": "20260502_030547_cloudtolocalllm-thought-train-code-slice",
+    "task_id": "20260502_030547_pistisai-thought-train-code-slice",
     "status": "queued",
     "exit_code": null,
     "attempts": 0,
     "max_attempts": 2,
-    "dedup_key": "cloudtolocalllm-thought-train-code-slice",
-    "name": "cloudtolocalllm-thought-train-code-slice",
+    "dedup_key": "pistisai-thought-train-code-slice",
+    "name": "pistisai-thought-train-code-slice",
     "created_at": "2026-05-02T07:05:47.745631+00:00",
     "finished_at": null,
     "parent_task_id": null
@@ -42,14 +42,14 @@ void main() {
       expect(jobs, hasLength(2));
       expect(
         jobs.first.taskId,
-        '20260502_030547_cloudtolocalllm-thought-train-code-slice',
+        '20260502_030547_pistisai-thought-train-code-slice',
       );
       expect(jobs.first.status, LocalThinkJobStatus.queued);
       expect(jobs.first.attempts, 0);
       expect(jobs.first.maxAttempts, 2);
       expect(
         jobs.first.dedupKey,
-        'cloudtolocalllm-thought-train-code-slice',
+        'pistisai-thought-train-code-slice',
       );
       expect(jobs.first.createdAt, isNotNull);
       expect(jobs.first.finishedAt, isNull);

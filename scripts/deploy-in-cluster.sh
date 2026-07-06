@@ -20,7 +20,7 @@ log_success() {
 echo "Deploying to environment: $ENVIRONMENT"
 echo "Namespace: $NAMESPACE"
 
-EKS_CLUSTER_NAME="${EKS_CLUSTER_NAME:-cloudtolocalllm-eks}"
+EKS_CLUSTER_NAME="${EKS_CLUSTER_NAME:-pistisai-eks}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 
 if ! kubectl cluster-info > /dev/null 2>&1; then
@@ -66,9 +66,9 @@ kustomize build --load-restrictor LoadRestrictionsNone k8s/deployments/overlays/
 log_success "Generated full-manifest.yaml"
 
 log_info "Updating image tags..."
-sed -i "s|ghcr.io/cloudtolocalllm-online/Pistisai/web:latest|$WEB_IMAGE|g" full-manifest.yaml
-sed -i "s|ghcr.io/cloudtolocalllm-online/Pistisai/api:latest|$API_IMAGE|g" full-manifest.yaml
-sed -i "s|ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest|$STREAMING_IMAGE|g" full-manifest.yaml
+sed -i "s|ghcr.io/pistisai/Pistisai/web:latest|$WEB_IMAGE|g" full-manifest.yaml
+sed -i "s|ghcr.io/pistisai/Pistisai/api:latest|$API_IMAGE|g" full-manifest.yaml
+sed -i "s|ghcr.io/pistisai/Pistisai/streaming:latest|$STREAMING_IMAGE|g" full-manifest.yaml
 sed -i "s|Pistisai/postgres:latest|$POSTGRES_IMAGE|g" full-manifest.yaml
 
 log_info "Injecting configuration..."

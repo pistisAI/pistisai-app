@@ -36,19 +36,19 @@ sleep 60
 EOF
 chmod +x "$FAKE_XVFB_DIR/Xvfb"
 
-cat > "$FAKE_APP_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_APP_DIR/pistisai" <<'EOF'
 #!/bin/bash
 set -euo pipefail
 echo "root-fallback app started with DISPLAY=$DISPLAY"
 echo "root-fallback app started with DISPLAY=$DISPLAY" >> "$APP_LOG"
 sleep 60
 EOF
-chmod +x "$FAKE_APP_DIR/cloudtolocalllm"
+chmod +x "$FAKE_APP_DIR/pistisai"
 
 TMPDIR='/' \
 DISPLAY_NUM=78 \
 RESOLUTION='1280x720x24' \
-APP_PATH="$FAKE_APP_DIR/cloudtolocalllm" \
+APP_PATH="$FAKE_APP_DIR/pistisai" \
 XVFB_BIN="$FAKE_XVFB_DIR/Xvfb" \
 XVFB_READY_DELAY=1 \
 STARTUP_CHECK_DELAY=1 \

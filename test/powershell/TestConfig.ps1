@@ -332,9 +332,9 @@ function Initialize-TestConfig {
     }
     
     # Set environment variables for tests
-    $env:CLOUDTOLOCALLLM_TEST_MODE = "true"
-    $env:CLOUDTOLOCALLLM_PROJECT_ROOT = $Script:TestConfig.Environment.ProjectRoot
-    $env:CLOUDTOLOCALLLM_TEST_TEMP = $tempPath
+    $env:PISTISAI_TEST_MODE = "true"
+    $env:PISTISAI_PROJECT_ROOT = $Script:TestConfig.Environment.ProjectRoot
+    $env:PISTISAI_TEST_TEMP = $tempPath
     
     return $Script:TestConfig
 }
@@ -351,9 +351,9 @@ function Clear-TestConfig {
     }
     
     # Clear environment variables
-    Remove-Item -Path "env:CLOUDTOLOCALLLM_TEST_MODE" -ErrorAction SilentlyContinue
-    Remove-Item -Path "env:CLOUDTOLOCALLLM_PROJECT_ROOT" -ErrorAction SilentlyContinue
-    Remove-Item -Path "env:CLOUDTOLOCALLLM_TEST_TEMP" -ErrorAction SilentlyContinue
+    Remove-Item -Path "env:PISTISAI_TEST_MODE" -ErrorAction SilentlyContinue
+    Remove-Item -Path "env:PISTISAI_PROJECT_ROOT" -ErrorAction SilentlyContinue
+    Remove-Item -Path "env:PISTISAI_TEST_TEMP" -ErrorAction SilentlyContinue
 }
 
 # Export functions

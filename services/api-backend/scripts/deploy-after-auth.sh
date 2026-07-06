@@ -8,7 +8,7 @@ set -e
 PROJECT_ID="Pistisai-468303"
 INSTANCE_NAME="Pistisai-db"
 REGION="us-central1"
-SERVICE_NAME="cloudtolocalllm-api"
+SERVICE_NAME="pistisai-api"
 
 echo " Pistisai Deployment (Post-Authentication)"
 echo "=================================================="

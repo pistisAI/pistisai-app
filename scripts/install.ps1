@@ -1,7 +1,7 @@
-# CloudToLocalLLM Installer for Windows
-# Installs CloudToLocalLLM Agent Manager and OpenClaw Gateway
+# Pistisai Installer for Windows
+# Installs Pistisai Agent Manager and OpenClaw Gateway
 
-Write-Host "🦞 Welcome to the CloudToLocalLLM Installer!" -ForegroundColor Cyan
+Write-Host "🦞 Welcome to the Pistisai Installer!" -ForegroundColor Cyan
 
 # Check for Node.js
 $node = Get-Command node -ErrorAction SilentlyContinue
@@ -11,7 +11,7 @@ if (!$node) {
 }
 
 # Install Directory
-$installDir = Join-Path $HOME ".cloudtolocalllm"
+$installDir = Join-Path $HOME ".pistisai"
 if (!(Test-Path $installDir)) {
     New-Item -ItemType Directory -Path $installDir
 }
@@ -19,7 +19,7 @@ if (!(Test-Path $installDir)) {
 Write-Host "Installing to $installDir..."
 
 # Mocking the download
-# Invoke-WebRequest -Uri "https://github.com/pistisAI/pistisai-app/releases/latest/download/cloudtolocalllm-windows.exe" -OutFile (Join-Path $installDir "cloudtolocalllm.exe")
+# Invoke-WebRequest -Uri "https://github.com/pistisAI/pistisai-app/releases/latest/download/pistisai-windows.exe" -OutFile (Join-Path $installDir "pistisai.exe")
 
 # OpenClaw Gateway Install
 $openclaw = Get-Command openclaw -ErrorAction SilentlyContinue
@@ -40,5 +40,5 @@ if ($userPath -notlike "*$installDir*") {
     [Environment]::SetEnvironmentVariable("Path", $userPath + ";" + $installDir, "User")
 }
 
-Write-Host "✅ CloudToLocalLLM installed successfully!" -ForegroundColor Green
-Write-Host "Run 'cloudtolocalllm' to get started."
+Write-Host "✅ Pistisai installed successfully!" -ForegroundColor Green
+Write-Host "Run 'pistisai' to get started."

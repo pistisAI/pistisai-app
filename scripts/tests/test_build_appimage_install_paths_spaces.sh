@@ -6,10 +6,10 @@ WORK_DIR="$(mktemp -d)"
 TMP_HOME="$WORK_DIR/home with spaces"
 TMP_BUILD_DIR="$WORK_DIR/build dir"
 TMP_WORKDIR="$WORK_DIR/appimage workdir"
-TMP_OUTPUT="$WORK_DIR/output dir/cloudtolocalllm-install-path-spaces.AppImage"
-TMP_DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
-TMP_INSTALL_BIN="$WORK_DIR/install bin path with spaces/cloudtolocalllm"
-TMP_DESKTOP_ENTRY="$WORK_DIR/desktop entries with spaces/cloudtolocalllm-appimage.desktop"
+TMP_OUTPUT="$WORK_DIR/output dir/pistisai-install-path-spaces.AppImage"
+TMP_DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
+TMP_INSTALL_BIN="$WORK_DIR/install bin path with spaces/pistisai"
+TMP_DESKTOP_ENTRY="$WORK_DIR/desktop entries with spaces/pistisai-appimage.desktop"
 APPIMAGETOOL_LOG="$WORK_DIR/appimagetool.log"
 FAKE_TOOLS="$WORK_DIR/bin"
 mkdir -p "$TMP_HOME" "$TMP_BUILD_DIR" "$TMP_WORKDIR" "$FAKE_TOOLS" "$(dirname "$TMP_OUTPUT")" "$(dirname "$TMP_INSTALL_BIN")" "$(dirname "$TMP_DESKTOP_ENTRY")"
@@ -20,17 +20,17 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$TMP_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$TMP_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Install path spaces test desktop entry

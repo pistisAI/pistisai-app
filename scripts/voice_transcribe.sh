@@ -31,7 +31,7 @@ mkdir -p "$tmpdir_root"
 tmpdir="$(mktemp -d "$tmpdir_root/paperclip-voice.XXXXXX")"
 trap 'rm -rf "$tmpdir"' EXIT
 
-model="${CLOUDTOLOCALLLM_WHISPER_MODEL:-base}"
+model="${PISTISAI_WHISPER_MODEL:-base}"
 whisper "$audio_path" --model "$model" --output_format txt --output_dir "$tmpdir" >/dev/null
 
 transcript_file="$(find "$tmpdir" -maxdepth 1 -name '*.txt' -print -quit)"

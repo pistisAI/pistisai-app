@@ -16,7 +16,7 @@ The pipeline has been optimized to leverage GitOps principles:
 Located in `.github/workflows/ci-cd.yml`.
 
 - **Trigger**: Push to `main`.
-- **Registry**: Azure Container Registry (ACR) - `ghcr.io/cloudtolocalllm-online/Pistisai`
+- **Registry**: Azure Container Registry (ACR) - `ghcr.io/pistisai/Pistisai`
 - **Steps**:
     1. **Build**: Creates Docker images for `api-backend` and `web-frontend`.
     2. **Push**: Uploads images to ACR.

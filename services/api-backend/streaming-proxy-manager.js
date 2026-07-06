@@ -127,7 +127,7 @@ export class StreamingProxyManager {
             {
               name: 'proxy',
               image:
-                'ghcr.io/cloudtolocalllm-online/Pistisai/streaming:latest',
+                'ghcr.io/pistisai/Pistisai/streaming:latest',
               env: [
                 { name: 'USER_ID', value: userId },
                 { name: 'PROXY_ID', value: proxyId },

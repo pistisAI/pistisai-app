@@ -43,7 +43,7 @@
     - local voice input service
     - voice conversation status card
   - Linux debug build succeeded:
-    - `build/linux/x64/debug/bundle/cloudtolocalllm`
+    - `build/linux/x64/debug/bundle/pistisai`
 
 ### What this means
 Pistisai is **close enough to product-shape that the bottleneck is now launch discipline**, not raw invention. The repo already smells like a near-product, but it is still carrying too many parallel surfaces and unclosed launch gaps.

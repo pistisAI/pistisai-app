@@ -17,7 +17,7 @@ cp "$TARGET_SCRIPT" "$WORK_DIR/test_aur_package.sh"
 chmod +x "$WORK_DIR/test_aur_package.sh"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 

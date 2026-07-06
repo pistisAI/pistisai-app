@@ -20,11 +20,11 @@ name: temp_app
 version: 9.8.7+6
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_ROOT/scripts/flutter_with_cleanup.sh" <<'EOF'
 #!/bin/bash
@@ -34,11 +34,11 @@ exit 0
 EOF
 chmod +x "$FAKE_ROOT/scripts/flutter_with_cleanup.sh"
 
-cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/cloudtolocalllm.desktop" <<'EOF'
+cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/pistisai.desktop" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 EOF
@@ -58,13 +58,13 @@ PATH="$FAKE_TOOLS_DIR:/usr/bin:/bin" \
 PROJECT_ROOT_OVERRIDE="$FAKE_ROOT" \
 APPIMAGE_WORKDIR="$WORK_DIR/work" \
 KEEP_WORKDIR=true \
-APPIMAGE_OUTPUT="$FAKE_ROOT/dist/linux/cloudtolocalllm-9.8.7-x86_64.AppImage" \
-DESKTOP_TEMPLATE="$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/cloudtolocalllm.desktop" \
+APPIMAGE_OUTPUT="$FAKE_ROOT/dist/linux/pistisai-9.8.7-x86_64.AppImage" \
+DESKTOP_TEMPLATE="$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/pistisai.desktop" \
 APPIMAGETOOL_CMD="$FAKE_TOOLS_DIR/fake-appimagetool" \
 FLUTTER_CMD="$FAKE_ROOT/scripts/flutter_with_cleanup.sh" \
 "$PROJECT_ROOT/scripts/build-appimage.sh" >/tmp/test_build_appimage_project_root_override.log 2>&1
 
-if [[ ! -f "$FAKE_ROOT/dist/linux/cloudtolocalllm-9.8.7-x86_64.AppImage" ]]; then
+if [[ ! -f "$FAKE_ROOT/dist/linux/pistisai-9.8.7-x86_64.AppImage" ]]; then
   echo "Expected AppImage output in the override root dist directory" >&2
   cat /tmp/test_build_appimage_project_root_override.log >&2
   exit 1

@@ -2,15 +2,13 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../services/skill_service.dart';
+import '../../di/locator.dart' as di;
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/navigation/popout_button.dart';
-
-// TODO: Uncomment when integrating with actual services
-// import '../../services/subagent_registry_service.dart';
-// import '../../di/locator.dart' as di;
 
 /// Skill model for displaying in the registry
 class Skill {
@@ -22,6 +20,8 @@ class Skill {
   final int usageCount;
   final double avgResponseTime;
   final DateTime lastUsed;
+  final int fileCount;
+  final DateTime lastModified;
 
   const Skill({
     required this.id,
@@ -32,6 +32,8 @@ class Skill {
     this.usageCount = 0,
     this.avgResponseTime = 0.0,
     required this.lastUsed,
+    this.fileCount = 1,
+    required this.lastModified,
   });
 }
 
@@ -52,9 +54,13 @@ class _SkillsScreenState extends State<SkillsScreen>
   List<Skill> _skills = [];
   Map<String, int> _skillUsage = {};
 
-  // TODO: Integrate with actual services
-  // final SubagentRegistryService _subagentRegistry =
-  //     di.serviceLocator<SubagentRegistryService>();
+  SkillService? get _skillService {
+    try {
+      return di.serviceLocator<SkillService>();
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -76,91 +82,38 @@ class _SkillsScreenState extends State<SkillsScreen>
     });
 
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
+      final service = _skillService;
+      if (service != null) {
+        final skillInfos = await service.getSkills();
+        _skills = skillInfos.map((s) => Skill(
+          id: s.name,
+          name: s.name,
+          description: s.description,
+          category: s.category,
+          enabled: s.enabled,
+          lastUsed: s.lastModified ?? DateTime.now(),
+          fileCount: s.fileCount,
+          lastModified: s.lastModified ?? DateTime.now(),
+        )).toList();
 
-      // Mock skills data
-      _skills = [
-        Skill(
-          id: 'code-reviewer',
-          name: 'Code Reviewer',
-          description:
-              'Analyzes code for bugs, security issues, and best practices',
-          category: 'Development',
-          enabled: true,
-          usageCount: 47,
-          avgResponseTime: 2.3,
-          lastUsed: DateTime.now().subtract(const Duration(hours: 2)),
-        ),
-        Skill(
-          id: 'summarizer',
-          name: 'Text Summarizer',
-          description: 'Condenses long documents into concise summaries',
-          category: 'Text Processing',
-          enabled: true,
-          usageCount: 123,
-          avgResponseTime: 1.8,
-          lastUsed: DateTime.now().subtract(const Duration(minutes: 30)),
-        ),
-        Skill(
-          id: 'file-scanner',
-          name: 'File Scanner',
-          description: 'Scans directories for specific file patterns',
-          category: 'Utilities',
-          enabled: true,
-          usageCount: 28,
-          avgResponseTime: 0.9,
-          lastUsed: DateTime.now().subtract(const Duration(days: 1)),
-        ),
-        Skill(
-          id: 'translator',
-          name: 'Multi-language Translator',
-          description: 'Translates text between multiple languages',
-          category: 'Text Processing',
-          enabled: false,
-          usageCount: 15,
-          avgResponseTime: 2.1,
-          lastUsed: DateTime.now().subtract(const Duration(days: 5)),
-        ),
-        Skill(
-          id: 'data-analyzer',
-          name: 'Data Analyzer',
-          description: 'Performs statistical analysis on datasets',
-          category: 'Data Science',
-          enabled: true,
-          usageCount: 34,
-          avgResponseTime: 3.5,
-          lastUsed: DateTime.now().subtract(const Duration(hours: 6)),
-        ),
-        Skill(
-          id: 'image-processor',
-          name: 'Image Processor',
-          description: 'Applies filters and transformations to images',
-          category: 'Media',
-          enabled: false,
-          usageCount: 8,
-          avgResponseTime: 4.2,
-          lastUsed: DateTime.now().subtract(const Duration(days: 3)),
-        ),
-      ];
-
-      _skillUsage = {
-        'Development': 81,
-        'Text Processing': 138,
-        'Utilities': 28,
-        'Data Science': 34,
-        'Media': 8,
-      };
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        final usageByCategory = <String, int>{};
+        for (final s in skillInfos) {
+          usageByCategory[s.category] =
+              (usageByCategory[s.category] ?? 0) + 1;
+        }
+        _skillUsage = usageByCategory;
+      } else {
+        _skills = [];
+        _skillUsage = {};
       }
+
+      if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load skills: $e';
           _isLoading = false;
+          _skills = [];
+          _skillUsage = {};
         });
       }
     }
@@ -183,6 +136,8 @@ class _SkillsScreenState extends State<SkillsScreen>
           usageCount: skill.usageCount,
           avgResponseTime: skill.avgResponseTime,
           lastUsed: skill.lastUsed,
+          fileCount: skill.fileCount,
+          lastModified: skill.lastModified,
         );
       }
     });

@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/cloudtolocalllm-updated"
+TARGET_SCRIPT="$PROJECT_ROOT/scripts/packaging/update-daemon/pistisai-updated"
 
 python3 - <<'PY' "$TARGET_SCRIPT"
 from pathlib import Path
@@ -13,13 +13,13 @@ script = Path(sys.argv[1]).read_text()
 checks = [
     'set -euo pipefail',
     'TMPDIR_ROOT="$(normalize_tmpdir_root "$TMPDIR")"',
-    'STATE_DIR="${STATE_DIR_OVERRIDE:-$HOME/.config/cloudtolocalllm}"',
-    'SOCKET_PATH="${SOCKET_PATH_OVERRIDE:-$TMPDIR_ROOT/cloudtolocalllm-updated.sock}"',
-    'PID_FILE="${PID_FILE_OVERRIDE:-$TMPDIR_ROOT/cloudtolocalllm-updated.pid}"',
+    'STATE_DIR="${STATE_DIR_OVERRIDE:-$HOME/.config/pistisai}"',
+    'SOCKET_PATH="${SOCKET_PATH_OVERRIDE:-$TMPDIR_ROOT/pistisai-updated.sock}"',
+    'PID_FILE="${PID_FILE_OVERRIDE:-$TMPDIR_ROOT/pistisai-updated.pid}"',
     'mkdir -p "$STATE_DIR" "$(dirname "$SOCKET_PATH")" "$(dirname "$PID_FILE")" "$TMPDIR_ROOT"',
-    'response_file="$(mktemp "$TMPDIR_ROOT/cloudtolocalllm-updated-response.XXXXXX")"',
+    'response_file="$(mktemp "$TMPDIR_ROOT/pistisai-updated-response.XXXXXX")"',
     'rm -f "$response_file"',
-    'tmp_file="$(mktemp "$TMPDIR_ROOT/cloudtolocalllm-${version}.AppImage.XXXXXX")"',
+    'tmp_file="$(mktemp "$TMPDIR_ROOT/pistisai-${version}.AppImage.XXXXXX")"',
     'rm -f "$tmp_file"',
 ]
 for needle in checks:

@@ -1,5 +1,5 @@
 // Pistisai Runtime Configuration
-window.cloudToLocalLLMConfig = {
+window.pistisaiConfig = {
   apiEndpoint: "https://api.pistisai.app",
   wsEndpoint: "wss://api.pistisai.app/ws",
   environment: "production",

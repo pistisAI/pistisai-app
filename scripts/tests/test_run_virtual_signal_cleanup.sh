@@ -27,17 +27,17 @@ sleep 60
 EOF
 chmod +x "$FAKE_BIN/Xvfb"
 
-cat > "$FAKE_APP_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_APP_DIR/pistisai" <<'EOF'
 #!/bin/bash
 set -euo pipefail
 echo "app started with DISPLAY=$DISPLAY" >> "$APP_LOG"
 sleep 60
 EOF
-chmod +x "$FAKE_APP_DIR/cloudtolocalllm"
+chmod +x "$FAKE_APP_DIR/pistisai"
 
 DISPLAY_NUM=79 \
 RESOLUTION='800x600x24' \
-APP_PATH="$FAKE_APP_DIR/cloudtolocalllm" \
+APP_PATH="$FAKE_APP_DIR/pistisai" \
 LOG_FILE="$LOG_FILE" \
 PID_FILE="$PID_FILE" \
 XVFB_BIN="$FAKE_BIN/Xvfb" \

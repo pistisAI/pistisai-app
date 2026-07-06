@@ -9,8 +9,8 @@ for needle in \
   'compose() {' \
   'PROJECT_DIR="${PROJECT_DIR:-/opt/Pistisai}"' \
   'compose restart webapp' \
-  'sed -i '\''s|ssl_certificate /etc/nginx/ssl/default.pem;|ssl_certificate /etc/letsencrypt/live/cloudtolocalllm.online/fullchain.pem;|g'\'' "$PROJECT_DIR/config/nginx/nginx-webapp-internal.conf"' \
-  'sed -i '\''s|ssl_certificate_key /etc/nginx/ssl/default.key;|ssl_certificate_key /etc/letsencrypt/live/cloudtolocalllm.online/privkey.pem;|g'\'' "$PROJECT_DIR/config/nginx/nginx-webapp-internal.conf"'; do
+  'sed -i '\''s|ssl_certificate /etc/nginx/ssl/default.pem;|ssl_certificate /etc/letsencrypt/live/pistisai.app/fullchain.pem;|g'\'' "$PROJECT_DIR/config/nginx/nginx-webapp-internal.conf"' \
+  'sed -i '\''s|ssl_certificate_key /etc/nginx/ssl/default.key;|ssl_certificate_key /etc/letsencrypt/live/pistisai.app/privkey.pem;|g'\'' "$PROJECT_DIR/config/nginx/nginx-webapp-internal.conf"'; do
   if ! grep -Fq "$needle" "$FILE"; then
     echo "missing hardening string: $needle" >&2
     exit 1

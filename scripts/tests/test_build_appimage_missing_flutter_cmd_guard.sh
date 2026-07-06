@@ -5,7 +5,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TMP_HOME="$(mktemp -d)"
 TMP_BUILD_DIR="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
-TMP_OUTPUT="$(mktemp -u /tmp/cloudtolocalllm-appimage-missing-flutter.XXXXXX.AppImage)"
+TMP_OUTPUT="$(mktemp -u /tmp/pistisai-appimage-missing-flutter.XXXXXX.AppImage)"
 TMP_DESKTOP_TEMPLATE="$(mktemp)"
 LOG_FILE="/tmp/test_build_appimage_missing_flutter_cmd_guard.log"
 
@@ -16,14 +16,14 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$TMP_BUILD_DIR"
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Missing FLUTTER_CMD guard test desktop entry

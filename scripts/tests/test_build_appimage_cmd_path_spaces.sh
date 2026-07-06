@@ -7,8 +7,8 @@ WORK_DIR="$(mktemp -d)"
 TMP_HOME="$(mktemp -d)"
 TMP_BUILD_DIR="$(mktemp -d)"
 TMP_WORKDIR="$WORK_DIR/work dir with spaces"
-TMP_OUTPUT="$WORK_DIR/output dir with spaces/cloudtolocalllm-appimage-spaced-cmd.AppImage"
-TMP_DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+TMP_OUTPUT="$WORK_DIR/output dir with spaces/pistisai-appimage-spaced-cmd.AppImage"
+TMP_DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 DPKG_DIR="$WORK_DIR/appimage tools"
 TMP_INVOKE_LOG="$WORK_DIR/appimage.log"
 mkdir -p "$TMP_WORKDIR" "$TMP_BUILD_DIR" "$WORK_DIR/output dir with spaces" "$DPKG_DIR"
@@ -19,14 +19,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Spaced appimagetool command test desktop entry
@@ -46,7 +46,7 @@ EOF
 chmod +x "$DPKG_DIR/appimagetool wrapper"
 
 cat > "$WORK_DIR/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 

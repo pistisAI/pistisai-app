@@ -19,7 +19,7 @@ version: 10.1.200+4200
 EOF
 
 cat > "$FAKE_ROOT/build-tools/packaging/aur/PKGBUILD" <<'EOF'
-pkgname=cloudtolocalllm
+pkgname=pistisai
 pkgver=VERSION
 sha256sums=('SKIP')
 EOF

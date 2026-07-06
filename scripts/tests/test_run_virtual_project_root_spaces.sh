@@ -27,13 +27,13 @@ sleep 60
 EOF
 chmod +x "$FAKE_XVFB_DIR/Xvfb"
 
-cat > "$FAKE_APP_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_APP_DIR/pistisai" <<'EOF'
 #!/bin/bash
 set -euo pipefail
 echo "space root app started with DISPLAY=$DISPLAY" >> "${LOG_FILE:?missing LOG_FILE}"
 sleep 60
 EOF
-chmod +x "$FAKE_APP_DIR/cloudtolocalllm"
+chmod +x "$FAKE_APP_DIR/pistisai"
 
 PROJECT_ROOT_OVERRIDE="$FAKE_ROOT" \
 DISPLAY_NUM=80 \

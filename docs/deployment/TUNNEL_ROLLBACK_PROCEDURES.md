@@ -119,7 +119,7 @@ docker-compose logs api-backend
 
 ```bash
 # Stop current service
-sudo systemctl stop cloudtolocalllm-api
+sudo systemctl stop pistisai-api
 
 # Revert code to previous version
 cd /opt/Pistisai
@@ -131,8 +131,8 @@ cd api-backend
 npm ci  # Install exact versions from package-lock.json
 
 # Restart service
-sudo systemctl start cloudtolocalllm-api
-sudo systemctl status cloudtolocalllm-api
+sudo systemctl start pistisai-api
+sudo systemctl status pistisai-api
 ```
 
 #### 1.3 Revert Nginx Configuration
@@ -230,7 +230,7 @@ sudo systemctl reload nginx
 docker images | grep Pistisai
 
 # Tag previous stable image
-docker tag cloudtolocalllm-api:previous cloudtolocalllm-api:latest
+docker tag pistisai-api:previous pistisai-api:latest
 ```
 
 **Update Docker Compose:**
@@ -239,7 +239,7 @@ docker tag cloudtolocalllm-api:previous cloudtolocalllm-api:latest
 # Update docker-compose.yml to use previous image
 services:
   api-backend:
-    image: cloudtolocalllm-api:previous
+    image: pistisai-api:previous
     # ... rest of configuration
 ```
 
@@ -263,8 +263,8 @@ docker-compose up -d --force-recreate api-backend
 
 ```bash
 # Download from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/cloudtolocalllm-linux.AppImage
-wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/cloudtolocalllm-windows.exe
+wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/pistisai-linux.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/pistisai-windows.exe
 
 # Verify checksums
 sha256sum Pistisai-linux.AppImage
@@ -292,7 +292,7 @@ EOF
 ```bash
 # Update DEB repository
 reprepro -b /var/www/apt remove stable Pistisai
-reprepro -b /var/www/apt includedeb stable cloudtolocalllm_3.10.2_amd64.deb
+reprepro -b /var/www/apt includedeb stable pistisai_3.10.2_amd64.deb
 
 # Update AppImage repository
 cp Pistisai-3.10.2.AppImage /var/www/releases/latest/Pistisai.AppImage

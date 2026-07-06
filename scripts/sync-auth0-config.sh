@@ -81,7 +81,7 @@ if [ -z "$CLIENT_SECRET" ] || [ "$CLIENT_SECRET" == "null" ]; then
 fi
 
 AUTH0_ISSUER_URL="https://$TENANT_DOMAIN/"
-AUTH0_AUDIENCE="https://api.cloudtolocalllm.online"
+AUTH0_AUDIENCE="https://api.pistisai.app"
 
 # 3. Update GitHub Secrets (Programmatic Injection Only)
 echo "Updating GitHub Repository Secrets..."

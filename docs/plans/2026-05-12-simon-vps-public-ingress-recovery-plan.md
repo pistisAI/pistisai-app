@@ -46,20 +46,20 @@ If this decision is not made, the deployment will stay in split-brain mode.
 
 ### Task 1.1: Snapshot live VPS config
 **Files / surfaces:**
-- `/opt/cloudtolocalllm/deploy/simon-vps/.env`
-- `/opt/cloudtolocalllm/deploy/simon-vps/docker-compose.yml`
-- `/opt/cloudtolocalllm/deploy/simon-vps/nginx.conf`
+- `/opt/pistisai/deploy/simon-vps/.env`
+- `/opt/pistisai/deploy/simon-vps/docker-compose.yml`
+- `/opt/pistisai/deploy/simon-vps/nginx.conf`
 - `/etc/cloudflared/config.yml`
 - `systemctl cat cloudflared`
 
 **Commands:**
 ```bash
 ssh root@31.97.140.7 '
-  mkdir -p /root/cloudtolocalllm-recovery-snapshots/$(date +%Y%m%d-%H%M%S) &&
-  SNAP=$(ls -td /root/cloudtolocalllm-recovery-snapshots/* | head -1) &&
-  cp /opt/cloudtolocalllm/deploy/simon-vps/.env "$SNAP/.env" &&
-  cp /opt/cloudtolocalllm/deploy/simon-vps/docker-compose.yml "$SNAP/docker-compose.yml" &&
-  cp /opt/cloudtolocalllm/deploy/simon-vps/nginx.conf "$SNAP/nginx.conf" &&
+  mkdir -p /root/pistisai-recovery-snapshots/$(date +%Y%m%d-%H%M%S) &&
+  SNAP=$(ls -td /root/pistisai-recovery-snapshots/* | head -1) &&
+  cp /opt/pistisai/deploy/simon-vps/.env "$SNAP/.env" &&
+  cp /opt/pistisai/deploy/simon-vps/docker-compose.yml "$SNAP/docker-compose.yml" &&
+  cp /opt/pistisai/deploy/simon-vps/nginx.conf "$SNAP/nginx.conf" &&
   cp /etc/cloudflared/config.yml "$SNAP/cloudflared-config.yml" 2>/dev/null || true &&
   systemctl cat cloudflared > "$SNAP/cloudflared.service.txt" 2>/dev/null || true &&
   echo "$SNAP"'
@@ -99,8 +99,8 @@ ssh root@31.97.140.7 'sed -n "1,200p" /etc/cloudflared/config.yml; systemctl cat
 
 **Config example:**
 ```yaml
-tunnel: <cloudtolocalllm-tunnel-id>
-credentials-file: /etc/cloudflared/<cloudtolocalllm-tunnel-id>.json
+tunnel: <pistisai-tunnel-id>
+credentials-file: /etc/cloudflared/<pistisai-tunnel-id>.json
 ingress:
   - hostname: app.pistisai.app
     service: http://127.0.0.1:3100
@@ -113,15 +113,15 @@ ingress:
 Do not overload the ImmoGestion service unit.
 
 **Files:**
-- create `/etc/cloudflared/cloudtolocalllm.yml`
-- create `/etc/systemd/system/cloudflared-cloudtolocalllm.service`
+- create `/etc/cloudflared/pistisai.yml`
+- create `/etc/systemd/system/cloudflared-pistisai.service`
 
 **Success criteria:** separate service name, separate tunnel config, separate credentials.
 
 ### Task 2A.4: Verify tunnel path end-to-end
 **Commands:**
 ```bash
-ssh root@31.97.140.7 'systemctl restart cloudflared-cloudtolocalllm && systemctl status cloudflared-cloudtolocalllm --no-pager -l | sed -n "1,80p"'
+ssh root@31.97.140.7 'systemctl restart cloudflared-pistisai && systemctl status cloudflared-pistisai --no-pager -l | sed -n "1,80p"'
 
 curl -I -L https://app.pistisai.app
 curl -I -L https://api.pistisai.app/health
@@ -145,7 +145,7 @@ curl -I -L https://api.pistisai.app/health
 **Current problem:** those hosts currently resolve to `208.110.72.50`.
 
 ### Task 2B.2: Publish nginx on 80/443 instead of only 3100
-**File:** `/opt/cloudtolocalllm/deploy/simon-vps/docker-compose.yml`
+**File:** `/opt/pistisai/deploy/simon-vps/docker-compose.yml`
 
 **Change:** publish proxy on 80/443, not just 3100, or add a host nginx/traefik layer forwarding 80/443 to 3100.
 

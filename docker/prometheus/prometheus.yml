@@ -3,7 +3,7 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    cluster: 'cloudtolocalllm-prod'
+    cluster: 'pistisai-prod'
     environment: 'production'
 
 # Alerting configuration

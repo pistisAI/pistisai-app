@@ -50,18 +50,18 @@ SELF=$(readlink -f "$0")
 HERE=${SELF%/*}
 export PATH="${HERE}/usr/bin:${PATH}"
 export LD_LIBRARY_PATH="${HERE}/usr/lib:${LD_LIBRARY_PATH}"
-exec "${HERE}/usr/bin/cloudtolocalllm" "$@"
+exec "${HERE}/usr/bin/pistisai" "$@"
 EOF
 chmod +x "$APPIMAGE_DIR/AppDir/AppRun"
 
 # Copy desktop file
-cp "$PROJECT_DIR/assets/linux/cloudtolocalllm.desktop" "$APPIMAGE_DIR/AppDir/usr/share/applications/"
-cp "$PROJECT_DIR/assets/linux/cloudtolocalllm.desktop" "$APPIMAGE_DIR/AppDir/"
+cp "$PROJECT_DIR/assets/linux/pistisai.desktop" "$APPIMAGE_DIR/AppDir/usr/share/applications/"
+cp "$PROJECT_DIR/assets/linux/pistisai.desktop" "$APPIMAGE_DIR/AppDir/"
 
 # Copy icon if exists, otherwise use placeholder
 if [ -f "$PROJECT_DIR/assets/icon/icon.png" ]; then
-    cp "$PROJECT_DIR/assets/icon/icon.png" "$APPIMAGE_DIR/AppDir/usr/share/icons/hicolor/256x256/apps/cloudtolocalllm.png"
-    cp "$PROJECT_DIR/assets/icon/icon.png" "$APPIMAGE_DIR/AppDir/cloudtolocalllm.png"
+    cp "$PROJECT_DIR/assets/icon/icon.png" "$APPIMAGE_DIR/AppDir/usr/share/icons/hicolor/256x256/apps/pistisai.png"
+    cp "$PROJECT_DIR/assets/icon/icon.png" "$APPIMAGE_DIR/AppDir/pistisai.png"
 else
     echo "⚠️ Icon not found, AppImage will use default"
 fi
@@ -71,11 +71,11 @@ echo "🔨 Preparing AppDir for appimagetool..."
 cd "$APPIMAGE_DIR"
 
 # desktop file needs to be at root of AppDir
-cp AppDir/usr/share/applications/cloudtolocalllm.desktop AppDir/
+cp AppDir/usr/share/applications/pistisai.desktop AppDir/
 
 # Copy icon if exists
-if [ -f AppDir/usr/share/icons/hicolor/256x256/apps/cloudtolocalllm.png ]; then
-    cp AppDir/usr/share/icons/hicolor/256x256/apps/cloudtolocalllm.png AppDir/cloudtolocalllm.png
+if [ -f AppDir/usr/share/icons/hicolor/256x256/apps/pistisai.png ]; then
+    cp AppDir/usr/share/icons/hicolor/256x256/apps/pistisai.png AppDir/pistisai.png
 fi
 
 # Step 5: Build AppImage using appimagetool
@@ -86,16 +86,16 @@ ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir "$APPIMAGE_OUTPUT" --no-appstr
 echo "💿 Installing AppImage..."
 INSTALL_DIR="$HOME/.local/bin"
 mkdir -p "$INSTALL_DIR"
-cp "$APPIMAGE_OUTPUT" "$INSTALL_DIR/cloudtolocalllm"
-chmod +x "$INSTALL_DIR/cloudtolocalllm"
+cp "$APPIMAGE_OUTPUT" "$INSTALL_DIR/pistisai"
+chmod +x "$INSTALL_DIR/pistisai"
 
 # Create desktop entry for AppImage
 mkdir -p "$HOME/.local/share/applications"
-cat > "$HOME/.local/share/applications/cloudtolocalllm-appimage.desktop" << EOF
+cat > "$HOME/.local/share/applications/pistisai-appimage.desktop" << EOF
 [Desktop Entry]
 Name=Pistisai
-Exec=$INSTALL_DIR/cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=$INSTALL_DIR/pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Hybrid LLM workspace and Agent Dashboard
@@ -108,8 +108,8 @@ update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 echo ""
 echo "✅ AppImage built and installed successfully!"
 echo ""
-echo "📍 Location: $INSTALL_DIR/cloudtolocalllm"
+echo "📍 Location: $INSTALL_DIR/pistisai"
 echo "📍 AppImage: $APPIMAGE_OUTPUT"
 echo ""
-echo "🚀 Launch with: cloudtolocalllm"
+echo "🚀 Launch with: pistisai"
 echo "🚀 Or run: $APPIMAGE_OUTPUT"

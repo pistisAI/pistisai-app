@@ -7,7 +7,7 @@ TMP_HOME="$(mktemp -d)"
 TMP_BUILD_DIR="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
 TMP_OUTPUT_DIR="$(mktemp -d)"
-TMP_OUTPUT="$TMP_OUTPUT_DIR/nested/cloudtolocalllm-curl-fallback.AppImage"
+TMP_OUTPUT="$TMP_OUTPUT_DIR/nested/pistisai-curl-fallback.AppImage"
 TMP_DESKTOP_TEMPLATE="$(mktemp)"
 TMP_INVOKE_LOG="$(mktemp /tmp/appimage-curl-fallback-invoke.XXXXXX.log)"
 BIN_DIR="$TMP_WORKDIR/bin"
@@ -21,14 +21,14 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$TMP_BUILD_DIR"
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Curl fallback smoke test desktop entry
@@ -91,7 +91,7 @@ if [[ ! -f "$TMP_OUTPUT" ]]; then
   exit 1
 fi
 
-if [[ ! -x "$TMP_HOME/.local/bin/cloudtolocalllm" ]]; then
+if [[ ! -x "$TMP_HOME/.local/bin/pistisai" ]]; then
   echo "Expected installed AppImage binary in temp HOME" >&2
   cat /tmp/test_build_appimage_curl_fallback.log >&2
   exit 1

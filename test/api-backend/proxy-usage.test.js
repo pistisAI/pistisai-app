@@ -36,7 +36,7 @@ describe("Proxy Usage Tracking", () => {
     pool = new Pool({
       connectionString:
         process.env.DATABASE_URL ||
-        "postgresql://localhost/cloudtolocalllm_test",
+        "postgresql://localhost/pistisai_test",
     });
 
     proxyUsageService = new ProxyUsageService();

@@ -15,11 +15,11 @@ DATE=$(date '+%Y-%m-%d %H:%M:%S')
 
 # Domain configuration
 DOMAINS=(
-    "cloudtolocalllm.online"
-    "app.cloudtolocalllm.online"
-    "api.cloudtolocalllm.online"
-    "argocd.cloudtolocalllm.online"
-    "grafana.cloudtolocalllm.online"
+    "pistisai.app"
+    "app.pistisai.app"
+    "api.pistisai.app"
+    "argocd.pistisai.app"
+    "grafana.pistisai.app"
 )
 
 # Service configuration

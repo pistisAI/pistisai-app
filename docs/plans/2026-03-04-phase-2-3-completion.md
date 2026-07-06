@@ -100,7 +100,7 @@ git commit -m "feat(vision): add base vision service interface"
 - `RegionCaptureService` - Main service class
 
 **RegionCaptureService must include:**
-- MethodChannel: `cloudtolocallm/region_capture`
+- MethodChannel: `pistisai/region_capture`
 - Properties: `_isInitialized`, `_isCapturing`, `_lastError` (with getters)
 - `initialize()` - Sets up platform channel, handles web platform gracefully (kIsWeb check)
 - `captureRegion(x, y, width, height)` - Captures screen region with:
@@ -117,7 +117,7 @@ git commit -m "feat(vision): add base vision service interface"
 ```dart
 // test/services/vision/region_capture_service_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/vision/region_capture_service.dart';
+import 'package:pistisai/services/vision/region_capture_service.dart';
 
 void main() {
   group('RegionCaptureService', () {
@@ -175,7 +175,7 @@ class CaptureResult {
 
 /// Service for capturing specific regions of the screen
 class RegionCaptureService {
-  static const MethodChannel _channel = MethodChannel('cloudtolocallm/region_capture');
+  static const MethodChannel _channel = MethodChannel('pistisai/region_capture');
 
   bool _isInitialized = false;
   bool _isCapturing = false;
@@ -283,7 +283,7 @@ flutter pub get
 ```dart
 // test/services/vision/camera_capture_service_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/vision/camera_capture_service.dart';
+import 'package:pistisai/services/vision/camera_capture_service.dart';
 
 void main() {
   group('CameraCaptureService', () {
@@ -423,7 +423,7 @@ flutter pub get
 ```dart
 // test/services/vision/ocr_engine_service_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/vision/ocr_engine_service.dart';
+import 'package:pistisai/services/vision/ocr_engine_service.dart';
 
 void main() {
   group('OcrEngineService', () {
@@ -536,10 +536,10 @@ git commit -m "feat(vision): add OCR engine service"
 Add to `setupAuthenticatedServices()` in `lib/di/locator.dart`:
 
 ```dart
-import 'package:cloudtolocalllm/services/vision/vision_service.dart';
-import 'package:cloudtolocalllm/services/vision/region_capture_service.dart';
-import 'package:cloudtolocalllm/services/vision/camera_capture_service.dart';
-import 'package:cloudtolocalllm/services/vision/ocr_engine_service.dart';
+import 'package:pistisai/services/vision/vision_service.dart';
+import 'package:pistisai/services/vision/region_capture_service.dart';
+import 'package:pistisai/services/vision/camera_capture_service.dart';
+import 'package:pistisai/services/vision/ocr_engine_service.dart';
 
 // In setupAuthenticatedServices(), after existing service registrations:
 
@@ -581,7 +581,7 @@ git commit -m "feat(di): register vision services in locator"
 ```dart
 // test/services/gui_automation_service_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocalllm/services/gui_automation_service.dart';
+import 'package:pistisai/services/gui_automation_service.dart';
 
 void main() {
   group('GuiAutomationService', () {
@@ -626,12 +626,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:cloudtolocallm/config/app_config.dart';
+import 'package:pistisai/config/app_config.dart';
 
 /// GUI Automation Service
 /// Screenshots → Vision Model → Actions
 class GuiAutomationService extends ChangeNotifier {
-  static const MethodChannel _channel = MethodChannel('cloudtolocallm/gui_automation');
+  static const MethodChannel _channel = MethodChannel('pistisai/gui_automation');
 
   bool _isInitialized = false;
   bool _isProcessing = false;
@@ -751,7 +751,7 @@ git commit -m "feat(desktop): add platform channels to gui automation"
 ```dart
 // test/services/desktop_control/window_manager_service_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocallm/services/desktop_control/window_manager_service.dart';
+import 'package:pistisai/services/desktop_control/window_manager_service.dart';
 
 void main() {
   group('WindowManagerService', () {
@@ -860,7 +860,7 @@ class WindowInfo {
 
 /// Service for managing desktop windows with state tracking
 class WindowManagerService {
-  static const MethodChannel _channel = MethodChannel('cloudtolocallm/window_manager');
+  static const MethodChannel _channel = MethodChannel('pistisai/window_manager');
 
   bool _isInitialized = false;
   String? _lastError;
@@ -1059,7 +1059,7 @@ Expected: PASS
 
 ```dart
 // lib/di/locator.dart - add to setupAuthenticatedServices()
-import 'package:cloudtolocallm/services/desktop_control/window_manager_service.dart';
+import 'package:pistisai/services/desktop_control/window_manager_service.dart';
 
 serviceLocator.registerLazySingleton<WindowManagerService>(() => WindowManagerService());
 ```
@@ -1212,7 +1212,7 @@ dependencies:
 ```dart
 // test/services/avatar/memory_service_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:cloudtolocallm/services/avatar/memory_service.dart';
+import 'package:pistisai/services/avatar/memory_service.dart';
 
 void main() {
   group('MemoryService', () {
@@ -1258,7 +1258,7 @@ Expected: FAIL - "MemoryService not found"
 
 ```dart
 // lib/services/avatar/memory_service.dart
-import 'package:cloudtolocallm/database/drift_local_brain.dart';
+import 'package:pistisai/database/drift_local_brain.dart';
 import 'package:uuid/uuid.dart';
 
 /// Service for managing avatar memory with semantic search
@@ -1388,7 +1388,7 @@ Expected: PASS
 
 ```dart
 // lib/di/locator.dart - add to setupAuthenticatedServices()
-import 'package:cloudtolocallm/services/avatar/memory_service.dart';
+import 'package:pistisai/services/avatar/memory_service.dart';
 
 serviceLocator.registerLazySingleton<MemoryService>(() => MemoryService(
   database: serviceLocator<LocalBrain>(),
@@ -1420,11 +1420,11 @@ git commit -m "feat(avatar): add memory service with semantic search"
 // lib/screens/settings/vision_settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloudtolocallm/services/vision/vision_service.dart';
-import 'package:cloudtolocallm/services/vision/region_capture_service.dart';
-import 'package:cloudtolocallm/services/vision/camera_capture_service.dart';
-import 'package:cloudtolocallm/services/vision/ocr_engine_service.dart';
-import 'package:cloudtolocallm/di/locator.dart' as di;
+import 'package:pistisai/services/vision/vision_service.dart';
+import 'package:pistisai/services/vision/region_capture_service.dart';
+import 'package:pistisai/services/vision/camera_capture_service.dart';
+import 'package:pistisai/services/vision/ocr_engine_service.dart';
+import 'package:pistisai/di/locator.dart' as di;
 
 class VisionSettingsScreen extends StatefulWidget {
   const VisionSettingsScreen({super.key});

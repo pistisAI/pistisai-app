@@ -57,7 +57,7 @@ android {
             versionCode 1
         }
         versionName flutterVersionName
-        manifestPlaceholders = [auth0Domain: "cloudtolocalllm.online", auth0Scheme: "Pistisai", applicationName: "android.app.Application"]
+        manifestPlaceholders = [auth0Domain: "pistisai.app", auth0Scheme: "Pistisai", applicationName: "android.app.Application"]
     }
 
     signingConfigs {

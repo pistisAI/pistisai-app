@@ -9,8 +9,8 @@ FAKE_BUILD_DIR="$FAKE_ROOT/build/linux/x64/release/bundle"
 FAKE_TOOLS="$WORK_DIR/bin"
 APPIMAGETOOL_DIR="$WORK_DIR/appimage tools"
 APPIMAGE_LOG="$WORK_DIR/appimage.log"
-TMP_OUTPUT="$WORK_DIR/output dir with spaces/cloudtolocalllm-appimage-project-root-tmpdir-spaces.AppImage"
-TMP_DESKTOP_TEMPLATE="$WORK_DIR/cloudtolocalllm.desktop"
+TMP_OUTPUT="$WORK_DIR/output dir with spaces/pistisai-appimage-project-root-tmpdir-spaces.AppImage"
+TMP_DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 mkdir -p "$FAKE_BUILD_DIR" "$FAKE_TOOLS" "$APPIMAGETOOL_DIR" "$TMPDIR_ROOT" "$(dirname "$TMP_OUTPUT")" "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir" "$FAKE_ROOT/scripts"
 export APPIMAGE_LOG
 
@@ -20,21 +20,21 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 9.8.7+6
 EOF
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Project root and tmpdir spaces test desktop entry
@@ -49,11 +49,11 @@ exit 0
 EOF
 chmod +x "$FAKE_ROOT/scripts/flutter_with_cleanup.sh"
 
-cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/cloudtolocalllm.desktop" <<'EOF'
+cat > "$FAKE_ROOT/build-tools/packaging/appimage/Pistisai.AppDir/pistisai.desktop" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 EOF
@@ -105,9 +105,9 @@ if ! grep -Fq 'AppImage built and installed successfully!' /tmp/test_build_appim
   exit 1
 fi
 
-if find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'cloudtolocalllm-appimage.*' | grep -q .; then
+if find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'pistisai-appimage.*' | grep -q .; then
   echo "Expected AppImage workdir cleanup under normalized TMPDIR root" >&2
-  find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'cloudtolocalllm-appimage.*' >&2
+  find "$TMPDIR_ROOT" -maxdepth 1 -type d -name 'pistisai-appimage.*' >&2
   exit 1
 fi
 

@@ -7,7 +7,7 @@ TMP_HOME="$(mktemp -d)"
 TMP_BUILD_DIR="$(mktemp -d)"
 TMP_TOOLS_DIR="$(mktemp -d)"
 TMP_WORKDIR="$(mktemp -d)"
-TMP_OUTPUT="$(mktemp -u /tmp/cloudtolocalllm-appimage.XXXXXX.AppImage)"
+TMP_OUTPUT="$(mktemp -u /tmp/pistisai-appimage.XXXXXX.AppImage)"
 TMP_DESKTOP_TEMPLATE="$(mktemp)"
 
 cleanup() {
@@ -33,14 +33,14 @@ EOF
 chmod +x "$TMP_TOOLS_DIR/appimagetool"
 
 mkdir -p "$TMP_BUILD_DIR"
-printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/cloudtolocalllm"
-chmod +x "$TMP_BUILD_DIR/cloudtolocalllm"
+printf '%s\n' '#!/bin/sh' 'echo packaged-ok' > "$TMP_BUILD_DIR/pistisai"
+chmod +x "$TMP_BUILD_DIR/pistisai"
 
 cat > "$TMP_DESKTOP_TEMPLATE" <<'EOF'
 [Desktop Entry]
 Name=Pistisai
-Exec=cloudtolocalllm
-Icon=cloudtolocalllm
+Exec=pistisai
+Icon=pistisai
 Type=Application
 Categories=Development;
 Comment=Smoke test desktop entry
@@ -68,13 +68,13 @@ if [[ -e "$TMP_WORKDIR" ]]; then
   exit 1
 fi
 
-if [[ ! -x "$TMP_HOME/.local/bin/cloudtolocalllm" ]]; then
+if [[ ! -x "$TMP_HOME/.local/bin/pistisai" ]]; then
   echo "Expected installed AppImage binary in temp HOME" >&2
   cat /tmp/test_build_appimage_smoke.log >&2
   exit 1
 fi
 
-if [[ ! -f "$TMP_HOME/.local/share/applications/cloudtolocalllm-appimage.desktop" ]]; then
+if [[ ! -f "$TMP_HOME/.local/share/applications/pistisai-appimage.desktop" ]]; then
   echo "Expected desktop entry in temp HOME" >&2
   cat /tmp/test_build_appimage_smoke.log >&2
   exit 1

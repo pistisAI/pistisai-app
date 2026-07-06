@@ -17,11 +17,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-cat > "$FAKE_BUILD_DIR/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_BUILD_DIR/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_BUILD_DIR/cloudtolocalllm"
+chmod +x "$FAKE_BUILD_DIR/pistisai"
 
 cat > "$FAKE_DPKG_DEB" <<'EOF'
 #!/bin/bash
@@ -45,15 +45,15 @@ BUILD_DIR="$FAKE_BUILD_DIR" \
 DIST_DIR="$DIST_DIR" \
 DPKG_DEB_CMD="$FAKE_DPKG_DEB" \
 APP_NAME="Pistisai" \
-PACKAGE_NAME="cloudtolocalllm" \
+PACKAGE_NAME="pistisai" \
 "$TARGET_SCRIPT"
 
 VERSION="$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)"
-PACKAGE_FILE="$DIST_DIR/cloudtolocalllm_${VERSION}_amd64.deb"
+PACKAGE_FILE="$DIST_DIR/pistisai_${VERSION}_amd64.deb"
 [[ -f "$PACKAGE_FILE" ]]
 [[ -x "$PACKAGE_FILE" ]]
 [[ -s "$FAKE_LOG" ]]
-grep -Fq 'root:/tmp/cloudtolocalllm-deb.' "$FAKE_LOG"
+grep -Fq 'root:/tmp/pistisai-deb.' "$FAKE_LOG"
 grep -Fq "out:$PACKAGE_FILE" "$FAKE_LOG"
 
 echo "[test_build_deb_tmpdir_slash_fallback] Passed"

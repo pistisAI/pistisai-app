@@ -265,7 +265,7 @@ For questions about API versioning or migration help, contact:
 
 - Email: support@pistisai.app
 - Documentation: https://docs.pistisai.app
-- GitHub Issues: https://github.com/ghcr.io/cloudtolocalllm-online/Pistisai/api/issues
+- GitHub Issues: https://github.com/ghcr.io/pistisai/Pistisai/api/issues
 
 ## Implementation Details
 

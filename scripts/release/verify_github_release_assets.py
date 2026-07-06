@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify GitHub release assets for a CloudToLocalLLM release.
+"""Verify GitHub release assets for a Pistisai release.
 
 The script polls the GitHub release API until the expected Windows and Linux
 artifacts are visible or a retry budget is exhausted.
@@ -60,14 +60,14 @@ def main() -> int:
 
     url = _release_url(api_base, repo, release_tag)
     required_assets = {
-        f"cloudtolocalllm-{version}-portable.zip",
-        f"cloudtolocalllm-{version}-portable.zip.sha256",
-        f"CloudToLocalLLM-Windows-{version}-Setup.exe",
-        f"CloudToLocalLLM-Windows-{version}-Setup.exe.sha256",
-        f"cloudtolocalllm_{version}_amd64.deb",
-        f"cloudtolocalllm_{version}_amd64.deb.sha256",
-        f"cloudtolocalllm-{version}-x86_64.AppImage",
-        f"cloudtolocalllm-{version}-x86_64.AppImage.sha256",
+        f"pistisai-{version}-portable.zip",
+        f"pistisai-{version}-portable.zip.sha256",
+        f"Pistisai-Windows-{version}-Setup.exe",
+        f"Pistisai-Windows-{version}-Setup.exe.sha256",
+        f"pistisai_{version}_amd64.deb",
+        f"pistisai_{version}_amd64.deb.sha256",
+        f"pistisai-{version}-x86_64.AppImage",
+        f"pistisai-{version}-x86_64.AppImage.sha256",
     }
 
     last_error: Exception | None = None

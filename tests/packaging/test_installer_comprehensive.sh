@@ -3,7 +3,7 @@
 
 set -e
 
-TEST_DIR="/tmp/cloudtolocalllm-test-$$"
+TEST_DIR="/tmp/pistisai-test-$$"
 mkdir -p "$TEST_DIR"
 
 # Source the installer template to get functions
@@ -33,9 +33,9 @@ echo ""
 # Test 2: Installation directory setup (user-local)
 echo "Test 2: Installation directory setup (user-local)"
 echo "-------------------------------------------"
-unset CLOUDTOLOCALLLM_DIR
+unset PISTISAI_DIR
 USER_DIR=$(setup_install_dir false "")
-if [[ "$USER_DIR" == *"/.local/share/cloudtolocalllm" ]]; then
+if [[ "$USER_DIR" == *"/.local/share/pistisai" ]]; then
     echo "✅ PASS: User directory is $USER_DIR"
     if [ -d "$USER_DIR" ] && [ -d "$USER_DIR/icons" ] && [ -d "$USER_DIR/cache" ]; then
         echo "✅ PASS: Subdirectories created"
@@ -53,10 +53,10 @@ echo ""
 echo "Test 3: Installation directory setup (system-wide)"
 echo "-------------------------------------------"
 SYSTEM_DIR=$(setup_install_dir true "")
-if [ "$SYSTEM_DIR" == "/opt/cloudtolocalllm" ]; then
+if [ "$SYSTEM_DIR" == "/opt/pistisai" ]; then
     echo "✅ PASS: System directory is $SYSTEM_DIR"
 else
-    echo "❌ FAIL: Expected /opt/cloudtolocalllm, got $SYSTEM_DIR"
+    echo "❌ FAIL: Expected /opt/pistisai, got $SYSTEM_DIR"
     exit 1
 fi
 echo ""
@@ -76,7 +76,7 @@ echo ""
 # Test 5: Installation directory setup (environment variable)
 echo "Test 5: Installation directory setup (environment variable)"
 echo "-------------------------------------------"
-export CLOUDTOLOCALLLM_DIR="$TEST_DIR/env_override"
+export PISTISAI_DIR="$TEST_DIR/env_override"
 ENV_DIR=$(setup_install_dir false "")
 if [ "$ENV_DIR" == "$TEST_DIR/env_override" ]; then
     echo "✅ PASS: Environment variable override works"
@@ -84,7 +84,7 @@ else
     echo "❌ FAIL: Expected $TEST_DIR/env_override, got $ENV_DIR"
     exit 1
 fi
-unset CLOUDTOLOCALLLM_DIR
+unset PISTISAI_DIR
 echo ""
 
 # Test 6: Desktop entry creation (user-local)
@@ -100,12 +100,12 @@ export HOME="$TEST_DIR"
 
 create_desktop_entry "$TEST_INSTALL_DIR" false
 
-if [ -f "$DESKTOP_DIR/cloudtolocalllm.desktop" ]; then
+if [ -f "$DESKTOP_DIR/pistisai.desktop" ]; then
     echo "✅ PASS: Desktop file created"
 
     # Check content
-    if grep -q "Name=Pistisai" "$DESKTOP_DIR/cloudtolocalllm.desktop" && \
-       grep -q "Exec=$TEST_INSTALL_DIR/Pistisai" "$DESKTOP_DIR/cloudtolocalllm.desktop"; then
+    if grep -q "Name=Pistisai" "$DESKTOP_DIR/pistisai.desktop" && \
+       grep -q "Exec=$TEST_INSTALL_DIR/Pistisai" "$DESKTOP_DIR/pistisai.desktop"; then
         echo "✅ PASS: Desktop file content is correct"
     else
         echo "❌ FAIL: Desktop file content is incorrect"

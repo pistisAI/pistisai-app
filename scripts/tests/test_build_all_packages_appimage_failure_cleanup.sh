@@ -21,18 +21,18 @@ cleanup() {
 trap cleanup EXIT
 
 cat > "$FAKE_ROOT/pubspec.yaml" <<'EOF'
-name: cloudtolocalllm
+name: pistisai
 version: 10.1.200+4200
 EOF
 
 printf '%s' "$ORIGINAL_APP_CONFIG" > "$FAKE_ROOT/lib/config/app_config.dart"
 printf '%s' "$ORIGINAL_VERSION_JSON" > "$FAKE_ROOT/assets/version.json"
 
-cat > "$FAKE_ROOT/build/linux/x64/release/bundle/cloudtolocalllm" <<'EOF'
+cat > "$FAKE_ROOT/build/linux/x64/release/bundle/pistisai" <<'EOF'
 #!/bin/sh
 exit 0
 EOF
-chmod +x "$FAKE_ROOT/build/linux/x64/release/bundle/cloudtolocalllm"
+chmod +x "$FAKE_ROOT/build/linux/x64/release/bundle/pistisai"
 
 cat > "$VERSION_MANAGER" <<'EOF'
 #!/bin/bash
@@ -59,11 +59,11 @@ case "${1:-}" in
   build)
     if [[ "${2:-}" == "linux" ]]; then
       mkdir -p "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle"
-      cat > "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/cloudtolocalllm" <<'APP'
+      cat > "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/pistisai" <<'APP'
 #!/bin/sh
 exit 0
 APP
-      chmod +x "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/cloudtolocalllm"
+      chmod +x "$PROJECT_ROOT_OVERRIDE/build/linux/x64/release/bundle/pistisai"
       exit 0
     fi
     ;;
@@ -135,7 +135,7 @@ if compgen -G "$FAKE_ROOT/assets/.version.json.*" > /dev/null; then
   exit 1
 fi
 
-if [[ -e "$FAKE_ROOT/dist/linux/cloudtolocalllm-10.1.200-x86_64.AppImage" ]]; then
+if [[ -e "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected no final AppImage output after failure" >&2
   exit 1
 fi

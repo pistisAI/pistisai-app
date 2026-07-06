@@ -83,7 +83,7 @@ GoRoute(
 
 ```bash
 # Check if app is still running
-ps aux | grep cloudtolocalllm | grep -v grep
+ps aux | grep pistisai | grep -v grep
 
 # Restart app if needed
 flutter run -d linux --debug

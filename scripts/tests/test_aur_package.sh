@@ -38,16 +38,16 @@ cp "$PROJECT_ROOT/build-tools/packaging/aur/PKGBUILD" "$AUR_TEST_DIR/"
 
 # 4. Modify PKGBUILD for local testing
 VERSION=$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)
-APPIMAGE_PATH="$DIST_DIR/cloudtolocalllm-${VERSION}-x86_64.AppImage"
+APPIMAGE_PATH="$DIST_DIR/pistisai-${VERSION}-x86_64.AppImage"
 CHECKSUM=$(sha256sum "$APPIMAGE_PATH" | cut -d' ' -f1)
 
 log_info "Updating PKGBUILD with local version ($VERSION) and checksum..."
 sed -i "s/pkgver=VERSION/pkgver=$VERSION/" "$AUR_TEST_DIR/PKGBUILD"
-sed -i "s|source=(.*)|source=(\"cloudtolocalllm-${VERSION}-x86_64.AppImage\")|" "$AUR_TEST_DIR/PKGBUILD"
+sed -i "s|source=(.*)|source=(\"pistisai-${VERSION}-x86_64.AppImage\")|" "$AUR_TEST_DIR/PKGBUILD"
 sed -i "s/sha256sums=(.*)/sha256sums=('$CHECKSUM')/" "$AUR_TEST_DIR/PKGBUILD"
 
 # Link the local AppImage so makepkg can find it
-ln -sf "$APPIMAGE_PATH" "$AUR_TEST_DIR/cloudtolocalllm-${VERSION}-x86_64.AppImage"
+ln -sf "$APPIMAGE_PATH" "$AUR_TEST_DIR/pistisai-${VERSION}-x86_64.AppImage"
 
 # 5. Build and install the package
 log_info "Running makepkg -si..."

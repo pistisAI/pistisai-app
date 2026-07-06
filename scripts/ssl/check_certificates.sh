@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-DOMAIN="cloudtolocalllm.online"
+DOMAIN="pistisai.app"
 CERT_PATH="/etc/letsencrypt/live/$DOMAIN"
 
 # Function to print colored output
@@ -90,7 +90,7 @@ check_cert_domains() {
 test_https_connectivity() {
     echo_color "$BLUE" "Testing HTTPS connectivity..."
     
-    local test_domains=("cloudtolocalllm.online" "app.cloudtolocalllm.online")
+    local test_domains=("pistisai.app" "app.pistisai.app")
     
     for domain in "${test_domains[@]}"; do
         if curl -s --max-time 10 "https://$domain" > /dev/null 2>&1; then

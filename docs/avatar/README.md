@@ -73,7 +73,7 @@ The avatar progresses through four evolution stages:
 ### Basic Personality Management
 
 ```dart
-import 'package:cloudtolocalllm/services/avatar/personality_engine.dart';
+import 'package:pistisai/services/avatar/personality_engine.dart';
 
 // Get the personality engine from service locator
 final personalityEngine = serviceLocator<PersonalityEngine>();
@@ -116,7 +116,7 @@ if (decision.approved) {
 ### Conversation Tracking
 
 ```dart
-import 'package:cloudtolocalllm/services/avatar/evolution_tracker.dart';
+import 'package:pistisai/services/avatar/evolution_tracker.dart';
 
 final evolutionTracker = serviceLocator<EvolutionTracker>();
 
@@ -255,9 +255,9 @@ The avatar personality system integrates with OpenClaw Gateway as a skill:
 ```
 
 This installs the skill to:
-- Linux: `~/.openclaw/skills/cloudtolocallm/avatar_personality/`
-- macOS: `~/.config/openclaw/skills/cloudtolocallm/avatar_personality/`
-- Windows: `%APPDATA%\openclaw\skills\cloudtolocallm\avatar_personality\`
+- Linux: `~/.openclaw/skills/pistisai/avatar_personality/`
+- macOS: `~/.config/openclaw/skills/pistisai/avatar_personality/`
+- Windows: `%APPDATA%\openclaw\skills\pistisai\avatar_personality\`
 
 ### Skill Triggers
 
@@ -450,7 +450,7 @@ Planned features for future phases:
 
 1. Verify skill installation:
    ```bash
-   ls ~/.openclaw/skills/cloudtolocallm/avatar_personality/
+   ls ~/.openclaw/skills/pistisai/avatar_personality/
    ```
 
 2. Check OpenClaw Gateway status:
