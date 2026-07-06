@@ -2,6 +2,8 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../services/cron_service.dart';
+import '../../di/locator.dart' as di;
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -9,10 +11,6 @@ import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
 import '../../widgets/navigation/popout_button.dart';
 import '../../models/cron_job.dart';
-
-// TODO: Uncomment when integrating with actual services
-// import '../../services/cron_service.dart';
-// import '../../di/locator.dart' as di;
 
 /// Screen displaying and managing scheduled cron jobs.
 class CronJobsScreen extends StatefulWidget {
@@ -27,8 +25,9 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
   String? _errorMessage;
   List<CronJob> _jobs = [];
 
-  // TODO: Integrate with actual services
-  // final CronService _cronService = di.serviceLocator<CronService>();
+  CronService? get _cronService {
+    try { return di.serviceLocator<CronService>(); } catch (_) { return null; }
+  }
 
   @override
   void initState() {
@@ -43,106 +42,43 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
     });
 
     try {
-      // Simulate data loading
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // TODO: Fetch from CronService
-      // _jobs = await _cronService.listJobs();
-
-      // Mock data for now
-      _jobs = _getMockJobs();
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+      final service = _cronService;
+      if (service != null) {
+        _jobs = await service.listJobs();
+      } else {
+        _jobs = [];
       }
+      if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _errorMessage = 'Failed to load cron jobs: $e';
-          _isLoading = false;
-        });
+        setState(() { _isLoading = false; _jobs = []; });
       }
     }
   }
 
-  Future<void> _onRefresh() async {
-    await _loadData();
-  }
+  Future<void> _onRefresh() async => _loadData();
 
-  /// Toggle job active/inactive
   Future<void> _toggleJob(CronJob job) async {
-    // TODO: Implement toggle via CronService
-    debugPrint('Toggle job: ${job.id}');
+    final service = _cronService;
+    if (service == null) return;
+    final isActive = job.status == CronJobStatus.active;
+    await service.toggleJob(job.id, isActive);
     await _loadData();
   }
 
-  /// Run job immediately
   Future<void> _runJob(CronJob job) async {
-    // TODO: Implement run now via CronService
-    debugPrint('Run job now: ${job.id}');
+    final service = _cronService;
+    if (service == null) return;
+    await service.runJobNow(job.id);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Triggered: ${job.name}')),
+    );
   }
 
   /// Edit job schedule
   Future<void> _editJob(CronJob job) async {
     // TODO: Implement edit dialog
     debugPrint('Edit job: ${job.id}');
-  }
-
-  List<CronJob> _getMockJobs() {
-    final now = DateTime.now();
-    return [
-      CronJob(
-        id: '1',
-        name: 'Database Backup',
-        schedule: '0 2 * * *',
-        scheduleDescription: 'Daily at 2:00 AM',
-        command: '/usr/local/bin/backup-db.sh',
-        status: CronJobStatus.active,
-        nextRun: DateTime(now.year, now.month, now.day + 1, 2, 0),
-        lastRun: DateTime(now.year, now.month, now.day - 1, 2, 0),
-        lastRunSuccess: true,
-        lastRunOutput: 'Backup completed: 2.3GB in 45s',
-      ),
-      CronJob(
-        id: '2',
-        name: 'Log Cleanup',
-        schedule: '0 3 * * 0',
-        scheduleDescription: 'Weekly (Sundays at 3:00 AM)',
-        command: '/usr/local/bin/cleanup-logs.sh',
-        status: CronJobStatus.active,
-        nextRun: DateTime(
-            now.year, now.month, now.day + (7 - now.weekday % 7), 3, 0),
-        lastRun: DateTime(now.year, now.month, now.day - 7, 3, 0),
-        lastRunSuccess: true,
-        lastRunOutput: 'Cleaned 1.2GB of old logs',
-      ),
-      CronJob(
-        id: '3',
-        name: 'Health Check',
-        schedule: '*/30 * * * *',
-        scheduleDescription: 'Every 30 minutes',
-        command: '/usr/local/bin/health-check.sh',
-        status: CronJobStatus.active,
-        nextRun: now.add(const Duration(minutes: 30)),
-        lastRun: now.subtract(const Duration(minutes: 5)),
-        lastRunSuccess: true,
-        lastRunOutput: 'All systems operational',
-      ),
-      CronJob(
-        id: '4',
-        name: 'Report Generation',
-        schedule: '0 8 * * 1-5',
-        scheduleDescription: 'Weekdays at 8:00 AM',
-        command: '/usr/local/bin/generate-reports.sh',
-        status: CronJobStatus.inactive,
-        nextRun: null,
-        lastRun: DateTime(now.year, now.month, now.day - 3, 8, 0),
-        lastRunSuccess: false,
-        lastRunOutput: 'Error: Database connection timeout',
-      ),
-    ];
   }
 
   @override

@@ -78,6 +78,7 @@ import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/logging_service.dart';
 import 'package:pistisai/services/skill_service.dart';
+import 'package:pistisai/services/cron_service.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -397,6 +398,11 @@ Future<void> setupCoreServices() async {
     debugPrint('[ServiceLocator] Initializing SkillService...');
     final skillService = SkillService();
     serviceLocator.registerSingleton<SkillService>(skillService);
+
+    // Cron service — shells out to `hermes cron list`
+    debugPrint('[ServiceLocator] Initializing CronService...');
+    final cronService = CronService();
+    serviceLocator.registerSingleton<CronService>(cronService);
 
     // Theme provider - manages application theme mode
     final themeProvider = ThemeProvider();
