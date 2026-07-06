@@ -53,7 +53,7 @@ dependencies:
   google_sign_in: 7.2.0
 
   # System Integration - Flutter plugins for window management and secure storage
-  window_manager: ^0.5.1
+  window_manager: ^0.5.2
 
   flutter_secure_storage: ^10.0.0
   mutex: ^3.0.1
