@@ -2,20 +2,14 @@
 
 ## What this is
 
-Flutter desktop/web app plus Node.js backend services. The product is a local-first companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, and compatible agent gateways.
+Flutter desktop/web app plus Node.js backend services: a local-first companion and desktop capability layer for user-selected agent runtimes (Hermes, OpenClaw, and compatible agent gateways). Ollama/LM Studio/etc. are support model providers for app-owned features (memory, embeddings, summarization, classification, OCR cleanup, speech) — they are **not** primary app runtimes unless wrapped by a compatible agent runtime.
 
-Ollama, LM Studio, and similar local model servers are support model providers for app-owned features such as memory, embeddings, summarization, classification, OCR cleanup, and speech helpers. They are not primary app runtimes unless wrapped by a compatible agent runtime.
-
-Core orientation: secure agent channel, avatar/voice companion, desktop control, vision, agent runtime management, and multi-device sync through a Tailscale-first secure device mesh.
-
-- Do not assume a universal default runtime. The setup wizard decides whether the active agent runtime is on this device, another private device, a Tailscale device, a manual/private URL, or optional paid Pistisai-hosted compute.
-- The main secure channel connects to an agent runtime, not a raw local model provider.
-- Hermes is the current first test path.
-- OpenClaw remains a supported agent runtime and original integration, but it is not the universal default.
-- Desktop control is a core feature and must remain explicit, device-scoped, permissioned, and auditable.
-- Voice belongs with the avatar companion. The avatar/voice companion should be able to open as a sidecar window, separate from the main app.
-- Agent runtime management remains important but should not be the first UI surface.
-- Prefer Tailscale for secure private connectivity. The cloud connector model is one isolated container per user, joined to that user's tailnet.
+- The setup wizard decides the active agent runtime location: this device, another private device, a Tailscale device, a manual/private URL, or optional paid Pistisai-hosted compute. Do not assume a universal default.
+- The main secure channel connects to an agent runtime, not a raw local model provider. Hermes is the current first test path; OpenClaw is supported but not the universal default.
+- Desktop control is core and must stay explicit, device-scoped, permissioned, and auditable.
+- Voice belongs with the avatar companion; the avatar/voice companion can open as a sidecar window separate from the main app.
+- Prefer Tailscale for secure private connectivity. The cloud connector is one isolated container per user, joined to that user's tailnet.
+- Custom SSH/WebSocket tunnel docs and services are legacy/fallback unless a task explicitly targets them.
 
 ## GitHub issues are the work-tracking source of truth
 
