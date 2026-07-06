@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/session.dart';
+import '../../services/session_service.dart';
+import '../../di/locator.dart' as di;
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -50,8 +52,6 @@ class _SessionsScreenState extends State<SessionsScreen>
   }
 
   /// Load sessions data
-  ///
-  /// TODO: Replace with actual API integration
   Future<void> _loadSessions() async {
     setState(() {
       _isLoading = true;
@@ -59,29 +59,23 @@ class _SessionsScreenState extends State<SessionsScreen>
     });
 
     try {
-      // Simulate API call delay
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // TODO: Replace with actual API call
-      // final sessions = await apiService.getSessions();
-
-      // Mock data for now
-      final sessions = _getMockSessions();
-
-      if (mounted) {
-        setState(() {
-          _allSessions = sessions;
-          _isLoading = false;
-        });
+      final service = _sessionService;
+      if (service != null) {
+        _allSessions = await service.listSessions(limit: 50);
+      } else {
+        _allSessions = [];
       }
+
+      if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _errorMessage = 'Failed to load sessions: $e';
-          _isLoading = false;
-        });
+        setState(() { _isLoading = false; _allSessions = []; });
       }
     }
+  }
+
+  SessionService? get _sessionService {
+    try { return di.serviceLocator<SessionService>(); } catch (_) { return null; }
   }
 
   /// Get sessions filtered by current tab
@@ -93,99 +87,6 @@ class _SessionsScreenState extends State<SessionsScreen>
             ? 'conversation'
             : 'user';
     return _allSessions.where((s) => s.type == typeFilter).toList();
-  }
-
-  /// Get mock sessions data for testing
-  ///
-  /// TODO: Remove this method when API integration is complete
-  List<SessionData> _getMockSessions() {
-    final now = DateTime.now();
-    return [
-      // WebSocket sessions
-      SessionData(
-        id: 'ws-001',
-        type: 'websocket',
-        userOrAgent: 'client-app-001',
-        startTime: now.subtract(const Duration(minutes: 45)),
-        tokenUsage: 0,
-        messageCount: 234,
-        status: 'active',
-      ),
-      SessionData(
-        id: 'ws-002',
-        type: 'websocket',
-        userOrAgent: 'mobile-client-42',
-        startTime: now.subtract(const Duration(hours: 2)),
-        tokenUsage: 0,
-        messageCount: 567,
-        status: 'active',
-      ),
-      SessionData(
-        id: 'ws-003',
-        type: 'websocket',
-        userOrAgent: 'web-client-101',
-        startTime: now.subtract(const Duration(minutes: 5)),
-        tokenUsage: 0,
-        messageCount: 12,
-        status: 'connecting',
-      ),
-      // Conversation sessions
-      SessionData(
-        id: 'conv-001',
-        type: 'conversation',
-        userOrAgent: 'user@example.com',
-        startTime: now.subtract(const Duration(hours: 3)),
-        tokenUsage: 15420,
-        messageCount: 45,
-        status: 'active',
-      ),
-      SessionData(
-        id: 'conv-002',
-        type: 'conversation',
-        userOrAgent: 'agent@system.local',
-        startTime: now.subtract(const Duration(minutes: 30)),
-        tokenUsage: 8930,
-        messageCount: 28,
-        status: 'active',
-      ),
-      SessionData(
-        id: 'conv-003',
-        type: 'conversation',
-        userOrAgent: 'user@example.com',
-        startTime: now.subtract(const Duration(days: 1)),
-        tokenUsage: 45670,
-        messageCount: 123,
-        status: 'idle',
-      ),
-      // User sessions
-      SessionData(
-        id: 'usr-001',
-        type: 'user',
-        userOrAgent: 'admin@pistisai.app',
-        startTime: now.subtract(const Duration(minutes: 15)),
-        tokenUsage: 2340,
-        messageCount: 8,
-        status: 'active',
-      ),
-      SessionData(
-        id: 'usr-002',
-        type: 'user',
-        userOrAgent: 'user@example.com',
-        startTime: now.subtract(const Duration(hours: 6)),
-        tokenUsage: 34560,
-        messageCount: 89,
-        status: 'idle',
-      ),
-      SessionData(
-        id: 'usr-003',
-        type: 'user',
-        userOrAgent: 'guest@temp.local',
-        startTime: now.subtract(const Duration(minutes: 50)),
-        tokenUsage: 5670,
-        messageCount: 18,
-        status: 'terminated',
-      ),
-    ];
   }
 
   /// Format duration for display

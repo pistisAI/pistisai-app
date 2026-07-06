@@ -79,6 +79,7 @@ import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/logging_service.dart';
 import 'package:pistisai/services/skill_service.dart';
 import 'package:pistisai/services/cron_service.dart';
+import 'package:pistisai/services/session_service.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -403,6 +404,11 @@ Future<void> setupCoreServices() async {
     debugPrint('[ServiceLocator] Initializing CronService...');
     final cronService = CronService();
     serviceLocator.registerSingleton<CronService>(cronService);
+
+    // Session service — shells out to `hermes sessions list`
+    debugPrint('[ServiceLocator] Initializing SessionService...');
+    final sessionService = SessionService();
+    serviceLocator.registerSingleton<SessionService>(sessionService);
 
     // Theme provider - manages application theme mode
     final themeProvider = ThemeProvider();
