@@ -67,7 +67,7 @@ class WindowInfo {
 /// Provides window management functionality: focus, move, resize, minimize, maximize, close
 class WindowManagerService {
   static const MethodChannel _channel =
-      MethodChannel('cloudtolocallm/window_manager');
+      MethodChannel('pistisai/window_manager');
 
   bool _isInitialized = false;
   String? _lastError;

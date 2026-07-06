@@ -1,5 +1,5 @@
 {
-  "name": "cloudtolocallm-personality-skill",
+  "name": "pistisai-personality-skill",
   "version": "1.0.0",
   "description": "Avatar personality and evolution system for OpenClaw",
   "main": "index.ts",

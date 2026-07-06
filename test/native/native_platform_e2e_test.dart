@@ -9,7 +9,7 @@ void main() {
 
   group('Native Platform E2E Tests', () {
     testWidgets('Screenshot capture test', (WidgetTester tester) async {
-      const guiChannel = MethodChannel('cloudtolocallm/gui_automation');
+      const guiChannel = MethodChannel('pistisai/gui_automation');
 
       // Build a minimal widget to initialize platform channels
       await tester.pumpWidget(MaterialApp(home: Container()));
@@ -25,7 +25,7 @@ void main() {
     });
 
     testWidgets('Get windows test', (WidgetTester tester) async {
-      const windowChannel = MethodChannel('cloudtolocallm/window_manager');
+      const windowChannel = MethodChannel('pistisai/window_manager');
 
       await tester.pumpWidget(MaterialApp(home: Container()));
       await tester.pumpAndSettle();
@@ -38,7 +38,7 @@ void main() {
     });
 
     testWidgets('Keypress test', (WidgetTester tester) async {
-      const guiChannel = MethodChannel('cloudtolocallm/gui_automation');
+      const guiChannel = MethodChannel('pistisai/gui_automation');
 
       await tester.pumpWidget(MaterialApp(home: Container()));
       await tester.pumpAndSettle();

@@ -911,7 +911,7 @@ void register_platform_channels(FlEngine* engine) {
 
     g_autoptr(FlMethodChannel) gui_automation_channel =
         fl_method_channel_new(fl_engine_get_binary_messenger(engine),
-                              "cloudtolocallm/gui_automation",
+                              "pistisai/gui_automation",
                               FL_METHOD_CODEC(codec));
 
     fl_method_channel_set_method_call_handler(
@@ -922,7 +922,7 @@ void register_platform_channels(FlEngine* engine) {
 
     g_autoptr(FlMethodChannel) region_capture_channel =
         fl_method_channel_new(fl_engine_get_binary_messenger(engine),
-                              "cloudtolocallm/region_capture",
+                              "pistisai/region_capture",
                               FL_METHOD_CODEC(codec));
 
     fl_method_channel_set_method_call_handler(
@@ -933,7 +933,7 @@ void register_platform_channels(FlEngine* engine) {
 
     g_autoptr(FlMethodChannel) window_manager_channel =
         fl_method_channel_new(fl_engine_get_binary_messenger(engine),
-                              "cloudtolocallm/window_manager",
+                              "pistisai/window_manager",
                               FL_METHOD_CODEC(codec));
 
     fl_method_channel_set_method_call_handler(

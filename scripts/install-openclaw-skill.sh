@@ -22,11 +22,11 @@ HOME_DIR="$HOME"
 
 # Check common locations
 POSSIBLE_PATHS=(
-  "$HOME_DIR/.openclaw/skills/cloudtolocallm"
-  "$HOME_DIR/.config/openclaw/skills/cloudtolocallm"
-  "$HOME_DIR/AppData/Roaming/openclaw/skills/cloudtolocallm"
-  "/opt/openclaw/skills/cloudtolocallm"
-  "$HOME_DIR/.local/share/openclaw/skills/cloudtolocallm"
+  "$HOME_DIR/.openclaw/skills/pistisai"
+  "$HOME_DIR/.config/openclaw/skills/pistisai"
+  "$HOME_DIR/AppData/Roaming/openclaw/skills/pistisai"
+  "/opt/openclaw/skills/pistisai"
+  "$HOME_DIR/.local/share/openclaw/skills/pistisai"
 )
 
 for path in "${POSSIBLE_PATHS[@]}"; do
@@ -39,7 +39,7 @@ done
 
 # If not found, create default path
 if [ -z "$OPENCLAW_SKILLS_DIR" ]; then
-  OPENCLAW_SKILLS_DIR="$HOME_DIR/.openclaw/skills/cloudtolocallm"
+  OPENCLAW_SKILLS_DIR="$HOME_DIR/.openclaw/skills/pistisai"
   echo -e "${YELLOW}⚠${NC} OpenClaw skills directory not found, will create: $OPENCLAW_SKILLS_DIR"
 fi
 

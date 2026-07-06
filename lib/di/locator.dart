@@ -105,9 +105,9 @@ String _getOpenClawSkillsPath() {
   }
 
   final possiblePaths = [
-    '$home/.openclaw/skills/cloudtolocallm',
-    '$home/.config/openclaw/skills/cloudtolocallm',
-    '$home/AppData/Roaming/openclaw/skills/cloudtolocallm', // Windows
+    '$home/.openclaw/skills/pistisai',
+    '$home/.config/openclaw/skills/pistisai',
+    '$home/AppData/Roaming/openclaw/skills/pistisai', // Windows
   ];
 
   for (final path in possiblePaths) {
@@ -117,7 +117,7 @@ String _getOpenClawSkillsPath() {
   }
 
   // Create default path if it doesn't exist
-  final defaultPath = '$home/.openclaw/skills/cloudtolocallm';
+  final defaultPath = '$home/.openclaw/skills/pistisai';
   Directory(defaultPath).createSync(recursive: true);
   return defaultPath;
 }

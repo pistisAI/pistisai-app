@@ -18,25 +18,16 @@ void main() {
   });
 
   group('AgentsScreen', () {
-    testWidgets('renders mock agent data after loading', (tester) async {
+    testWidgets('renders empty state when no backend available', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: AgentsScreen(),
         ),
       );
 
-      // Screen starts in loading state with LoadingSkeleton.
-      expect(find.byType(LoadingSkeleton), findsWidgets);
+      await tester.pump();
 
-      // Pump past the simulated 300ms data load.
-      await tester.pump(const Duration(milliseconds: 400));
-
-      // Mock data should now be rendered.
-      expect(find.text('Code Review Agent'), findsOneWidget);
-      expect(find.text('File Scanner Agent'), findsOneWidget);
-      expect(find.text('Document Summarizer Agent'), findsOneWidget);
-
-      // Tab controller should be present (3 tabs).
+      // Tab controller with 3 tabs renders.
       expect(find.byType(Tab), findsNWidgets(3));
     });
   });

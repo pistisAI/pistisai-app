@@ -41,7 +41,7 @@ class CaptureResult {
 /// Service for capturing specific regions of the screen
 class RegionCaptureService {
   static const MethodChannel _channel =
-      MethodChannel('cloudtolocallm/region_capture');
+      MethodChannel('pistisai/region_capture');
 
   bool _isInitialized = false;
   bool _isCapturing = false;

@@ -9,7 +9,7 @@ SCRIPT_COPY="$WORK_DIR/scripts/install-openclaw-skill.sh"
 HOME_DIR="$WORK_DIR/home"
 BIN_DIR="$WORK_DIR/bin"
 LOG_FILE="$WORK_DIR/run.log"
-SKILL_DIR="$HOME_DIR/.openclaw/skills/cloudtolocallm/avatar_personality"
+SKILL_DIR="$HOME_DIR/.openclaw/skills/pistisai/avatar_personality"
 
 cleanup() {
   rm -rf "$WORK_DIR"

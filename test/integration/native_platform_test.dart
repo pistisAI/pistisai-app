@@ -19,9 +19,9 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 500));
 
       guiAutomationChannel =
-          const MethodChannel('cloudtolocallm/gui_automation');
+          const MethodChannel('pistisai/gui_automation');
       windowManagerChannel =
-          const MethodChannel('cloudtolocallm/window_manager');
+          const MethodChannel('pistisai/window_manager');
     });
 
     test('GUI Automation channel exists', () async {

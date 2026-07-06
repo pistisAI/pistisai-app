@@ -91,52 +91,51 @@ class _AgentsScreenState extends State<AgentsScreen>
   }
 
   Future<void> _loadData() async {
+    final registry = _subagentRegistry;
+    if (registry == null) {
+      // No service available — skip loading, show empty state
+      _agents = [];
+      _activityFeed = [];
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      final registry = _subagentRegistry;
-      if (registry != null) {
-        final subagents = await registry.listSubagents();
+      final subagents = await registry.listSubagents();
 
-        _agents = subagents.map((s) => Agent(
-          id: s.subagentId,
-          name: s.label ?? s.subagentId,
-          description: s.task ?? 'No task assigned',
-          status: _mapStatus(s.status),
-          taskCount: 0,
-          avgLatency: 0.0,
-          lastActive: s.completedAt ?? s.startedAt ?? s.createdAt,
-        )).toList();
+      _agents = subagents.map((s) => Agent(
+        id: s.subagentId,
+        name: s.label ?? s.subagentId,
+        description: s.task ?? 'No task assigned',
+        status: _mapStatus(s.status),
+        taskCount: 0,
+        avgLatency: 0.0,
+        lastActive: s.completedAt ?? s.startedAt ?? s.createdAt,
+      )).toList();
 
-        _activityFeed = subagents
-            .where((s) => s.completedAt != null || s.startedAt != null)
-            .map((s) => ActivityEvent(
-              agentId: s.subagentId,
-              agentName: s.label ?? s.subagentId,
-              action: s.status == SubagentStatus.completed
-                  ? 'Completed: ${s.task ?? "task"}'
-                  : s.status == SubagentStatus.failed
-                      ? 'Failed: ${s.errorMessage ?? "unknown error"}'
-                      : 'Started: ${s.task ?? "task"}',
-              timestamp: s.completedAt ?? s.startedAt ?? s.createdAt,
-              success: s.status != SubagentStatus.failed,
-            )).toList();
-      } else {
-        // Service not available — leave empty gracefully
-        _agents = [];
-        _activityFeed = [];
-      }
+      _activityFeed = subagents
+          .where((s) => s.completedAt != null || s.startedAt != null)
+          .map((s) => ActivityEvent(
+            agentId: s.subagentId,
+            agentName: s.label ?? s.subagentId,
+            action: s.status == SubagentStatus.completed
+                ? 'Completed: ${s.task ?? "task"}'
+                : s.status == SubagentStatus.failed
+                    ? 'Failed: ${s.errorMessage ?? "unknown error"}'
+                    : 'Started: ${s.task ?? "task"}',
+            timestamp: s.completedAt ?? s.startedAt ?? s.createdAt,
+            success: s.status != SubagentStatus.failed,
+          )).toList();
 
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = null;
           _isLoading = false;
           _agents = [];
           _activityFeed = [];

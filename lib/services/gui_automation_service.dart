@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 /// Screenshots → Vision Model → Actions
 class GuiAutomationService extends ChangeNotifier {
   static const MethodChannel _channel =
-      MethodChannel('cloudtolocallm/gui_automation');
+      MethodChannel('pistisai/gui_automation');
 
   bool _isInitialized = false;
   bool _isProcessing = false;
