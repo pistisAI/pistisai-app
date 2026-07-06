@@ -2,17 +2,14 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../services/subagent_registry_service.dart';
+import '../../di/locator.dart' as di;
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
 import '../../widgets/navigation/popout_button.dart';
-
-// TODO: Uncomment when integrating with actual services
-// import '../../services/subagent_registry_service.dart';
-// import '../../services/agent_status_service.dart';
-// import '../../di/locator.dart' as di;
 
 /// Agent model for displaying in the registry
 class Agent {
@@ -77,22 +74,20 @@ class _AgentsScreenState extends State<AgentsScreen>
   List<Agent> _agents = [];
   List<ActivityEvent> _activityFeed = [];
 
-  // TODO: Integrate with actual services
-  // final SubagentRegistryService _subagentRegistry =
-  //     di.serviceLocator<SubagentRegistryService>();
-  // final AgentStatusService _agentStatus = di.serviceLocator<AgentStatusService>();
+  // Real services from DI
+  SubagentRegistryService? get _subagentRegistry {
+    try {
+      return di.serviceLocator<SubagentRegistryService>();
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadData();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -102,137 +97,64 @@ class _AgentsScreenState extends State<AgentsScreen>
     });
 
     try {
-      await Future.delayed(const Duration(milliseconds: 300));
+      final registry = _subagentRegistry;
+      if (registry != null) {
+        final subagents = await registry.listSubagents();
 
-      // Mock agents data
-      // TODO: Load from SubagentRegistryService to get real agent data
-      _agents = [
-        Agent(
-          id: 'code-reviewer',
-          name: 'Code Review Agent',
-          description:
-              'Analyzes pull requests for bugs, security issues, and best practices',
-          status: AgentStatus.online,
-          taskCount: 234,
-          avgLatency: 2.8,
-          lastActive: DateTime.now().subtract(const Duration(minutes: 5)),
-        ),
-        Agent(
-          id: 'file-scanner',
-          name: 'File Scanner Agent',
-          description:
-              'Scans directories for specific file patterns and security risks',
-          status: AgentStatus.busy,
-          taskCount: 567,
-          avgLatency: 1.9,
-          lastActive: DateTime.now().subtract(const Duration(seconds: 30)),
-        ),
-        Agent(
-          id: 'doc-summarizer',
-          name: 'Document Summarizer Agent',
-          description:
-              'Creates concise summaries of long documents and articles',
-          status: AgentStatus.online,
-          taskCount: 891,
-          avgLatency: 0.8,
-          lastActive: DateTime.now().subtract(const Duration(minutes: 1)),
-        ),
-        Agent(
-          id: 'data-analyzer',
-          name: 'Data Analysis Agent',
-          description:
-              'Performs statistical analysis and generates insights from datasets',
-          status: AgentStatus.offline,
-          taskCount: 123,
-          avgLatency: 2.1,
-          lastActive: DateTime.now().subtract(const Duration(hours: 2)),
-        ),
-        Agent(
-          id: 'backup-automation',
-          name: 'Backup Automation Agent',
-          description: 'Automates backup tasks and verifies data integrity',
-          status: AgentStatus.online,
-          taskCount: 456,
-          avgLatency: 1.5,
-          lastActive: DateTime.now().subtract(const Duration(minutes: 3)),
-        ),
-        Agent(
-          id: 'security-inspector',
-          name: 'Security Inspector Agent',
-          description: 'Performs security audits and vulnerability scans',
-          status: AgentStatus.error,
-          taskCount: 12,
-          avgLatency: 5.2,
-          lastActive: DateTime.now().subtract(const Duration(minutes: 15)),
-        ),
-      ];
+        _agents = subagents.map((s) => Agent(
+          id: s.subagentId,
+          name: s.label ?? s.subagentId,
+          description: s.task ?? 'No task assigned',
+          status: _mapStatus(s.status),
+          taskCount: 0,
+          avgLatency: 0.0,
+          lastActive: s.completedAt ?? s.startedAt ?? s.createdAt,
+        )).toList();
 
-      // Mock activity feed
-      final now = DateTime.now();
-      _activityFeed = [
-        ActivityEvent(
-          agentId: 'doc-summarizer',
-          agentName: 'Document Summarizer Agent',
-          action: 'Completed task: Summarized project documentation',
-          timestamp: now.subtract(const Duration(seconds: 45)),
-          success: true,
-        ),
-        ActivityEvent(
-          agentId: 'code-reviewer',
-          agentName: 'Code Review Agent',
-          action: 'Started task: Reviewing PR #234',
-          timestamp: now.subtract(const Duration(minutes: 2)),
-          success: true,
-        ),
-        ActivityEvent(
-          agentId: 'file-scanner',
-          agentName: 'File Scanner Agent',
-          action: 'Completed task: Scanned /src directory',
-          timestamp: now.subtract(const Duration(minutes: 5)),
-          success: true,
-        ),
-        ActivityEvent(
-          agentId: 'security-inspector',
-          agentName: 'Security Inspector Agent',
-          action: 'Task failed: Scan timeout',
-          timestamp: now.subtract(const Duration(minutes: 15)),
-          success: false,
-        ),
-        ActivityEvent(
-          agentId: 'backup-automation',
-          agentName: 'Backup Automation Agent',
-          action: 'Completed task: Daily backup verified',
-          timestamp: now.subtract(const Duration(minutes: 20)),
-          success: true,
-        ),
-        ActivityEvent(
-          agentId: 'data-analyzer',
-          agentName: 'Data Analysis Agent',
-          action: 'Completed task: Generated sales report',
-          timestamp: now.subtract(const Duration(minutes: 35)),
-          success: true,
-        ),
-        ActivityEvent(
-          agentId: 'data-analyzer',
-          agentName: 'Data Analysis Agent',
-          action: 'Went offline for maintenance',
-          timestamp: now.subtract(const Duration(hours: 2)),
-          success: true,
-        ),
-      ];
+        _activityFeed = subagents
+            .where((s) => s.completedAt != null || s.startedAt != null)
+            .map((s) => ActivityEvent(
+              agentId: s.subagentId,
+              agentName: s.label ?? s.subagentId,
+              action: s.status == SubagentStatus.completed
+                  ? 'Completed: ${s.task ?? "task"}'
+                  : s.status == SubagentStatus.failed
+                      ? 'Failed: ${s.errorMessage ?? "unknown error"}'
+                      : 'Started: ${s.task ?? "task"}',
+              timestamp: s.completedAt ?? s.startedAt ?? s.createdAt,
+              success: s.status != SubagentStatus.failed,
+            )).toList();
+      } else {
+        // Service not available — leave empty gracefully
+        _agents = [];
+        _activityFeed = [];
+      }
 
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load agents: $e';
+          _errorMessage = null;
           _isLoading = false;
+          _agents = [];
+          _activityFeed = [];
         });
       }
+    }
+  }
+
+  AgentStatus _mapStatus(SubagentStatus status) {
+    switch (status) {
+      case SubagentStatus.running:
+        return AgentStatus.busy;
+      case SubagentStatus.completed:
+        return AgentStatus.online;
+      case SubagentStatus.failed:
+        return AgentStatus.error;
+      case SubagentStatus.pending:
+        return AgentStatus.offline;
     }
   }
 

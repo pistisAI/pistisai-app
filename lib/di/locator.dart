@@ -52,6 +52,7 @@ import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/agent_status_service.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
+import 'package:pistisai/services/subagent_registry_service.dart';
 import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
@@ -855,6 +856,12 @@ Future<void> setupAuthenticatedServices() async {
     );
     serviceLocator
         .registerSingleton<AgentLifecycleService>(agentLifecycleService);
+
+    // Subagent Registry Service - manages subagent lifecycle via API
+    debugPrint('[ServiceLocator] Initializing SubagentRegistryService...');
+    final subagentRegistryService = SubagentRegistryService();
+    serviceLocator
+        .registerSingleton<SubagentRegistryService>(subagentRegistryService);
 
     // Clipboard Service - Desktop clipboard operations and history
     debugPrint('[ServiceLocator] Initializing ClipboardService...');
