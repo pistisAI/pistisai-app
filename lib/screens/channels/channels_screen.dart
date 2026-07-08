@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/channel.dart';
+import '../../services/channel_service.dart';
+import '../../di/locator.dart' as di;
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -13,8 +15,9 @@ import '../../widgets/navigation/popout_button.dart';
 
 /// Screen displaying gateway communication channels
 ///
-/// Shows a list of all active channels in the OpenClaw Gateway,
-/// including message counts, unread indicators, and last activity timestamps.
+/// Shows the list of gateway profiles and connected messaging platforms
+/// reported by the local agent runtime, including connection status and last
+/// activity timestamps.
 class ChannelsScreen extends StatefulWidget {
   const ChannelsScreen({super.key});
 
@@ -32,15 +35,21 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   /// List of channels to display
   List<GatewayChannel> _channels = [];
 
+  ChannelService? get _channelService {
+    try {
+      return di.serviceLocator<ChannelService>();
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _loadChannels();
   }
 
-  /// Load channels data
-  ///
-  /// TODO: Replace with actual API integration
+  /// Load channels data from the connected gateway
   Future<void> _loadChannels() async {
     setState(() {
       _isLoading = true;
@@ -48,18 +57,15 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
     });
 
     try {
-      // Simulate API call delay
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // TODO: Replace with actual API call
-      // final channels = await apiService.getChannels();
-
-      // Mock data for now
-      final channels = _getMockChannels();
+      final service = _channelService;
+      if (service != null) {
+        _channels = await service.listChannels();
+      } else {
+        _channels = [];
+      }
 
       if (mounted) {
         setState(() {
-          _channels = channels;
           _isLoading = false;
         });
       }
@@ -71,55 +77,6 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
         });
       }
     }
-  }
-
-  /// Get mock channels data for testing
-  ///
-  /// TODO: Remove this method when API integration is complete
-  List<GatewayChannel> _getMockChannels() {
-    final now = DateTime.now();
-    return [
-      GatewayChannel(
-        id: 'ch-001',
-        name: 'main',
-        description: 'Primary communication channel',
-        messageCount: 1247,
-        lastActivity: now.subtract(const Duration(minutes: 2)),
-        unreadCount: 3,
-      ),
-      GatewayChannel(
-        id: 'ch-002',
-        name: 'agent-events',
-        description: 'Agent lifecycle and event notifications',
-        messageCount: 856,
-        lastActivity: now.subtract(const Duration(hours: 1)),
-        unreadCount: 0,
-      ),
-      GatewayChannel(
-        id: 'ch-003',
-        name: 'system-monitor',
-        description: 'System health and metrics',
-        messageCount: 2341,
-        lastActivity: now.subtract(const Duration(minutes: 15)),
-        unreadCount: 12,
-      ),
-      GatewayChannel(
-        id: 'ch-004',
-        name: 'debug-output',
-        description: 'Debug and development messages',
-        messageCount: 432,
-        lastActivity: now.subtract(const Duration(days: 1)),
-        unreadCount: 0,
-      ),
-      GatewayChannel(
-        id: 'ch-005',
-        name: 'notifications',
-        description: 'User notifications and alerts',
-        messageCount: 89,
-        lastActivity: now.subtract(const Duration(hours: 3)),
-        unreadCount: 1,
-      ),
-    ];
   }
 
   /// Format timestamp for display

@@ -14,6 +14,9 @@ class GatewayChannel {
   /// Optional description of the channel's purpose
   final String? description;
 
+  /// The platform/type backing this channel (e.g. 'gateway', 'telegram')
+  final String? platform;
+
   /// Total number of messages in this channel
   final int messageCount;
 
@@ -27,19 +30,19 @@ class GatewayChannel {
     required this.id,
     required this.name,
     this.description,
+    this.platform,
     required this.messageCount,
     this.lastActivity,
     required this.unreadCount,
   });
 
   /// Creates a GatewayChannel from JSON data
-  ///
-  /// TODO: Replace with actual API integration
   factory GatewayChannel.fromJson(Map<String, dynamic> json) {
     return GatewayChannel(
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String?,
+      platform: json['platform'] as String?,
       messageCount: json['messageCount'] as int? ?? 0,
       lastActivity: json['lastActivity'] != null
           ? DateTime.parse(json['lastActivity'] as String)

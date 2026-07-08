@@ -80,6 +80,7 @@ import 'package:pistisai/services/logging_service.dart';
 import 'package:pistisai/services/skill_service.dart';
 import 'package:pistisai/services/cron_service.dart';
 import 'package:pistisai/services/session_service.dart';
+import 'package:pistisai/services/channel_service.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -409,6 +410,11 @@ Future<void> setupCoreServices() async {
     debugPrint('[ServiceLocator] Initializing SessionService...');
     final sessionService = SessionService();
     serviceLocator.registerSingleton<SessionService>(sessionService);
+
+    // Channel service — shells out to `hermes gateway list`
+    debugPrint('[ServiceLocator] Initializing ChannelService...');
+    final channelService = ChannelService();
+    serviceLocator.registerSingleton<ChannelService>(channelService);
 
     // Theme provider - manages application theme mode
     final themeProvider = ThemeProvider();
