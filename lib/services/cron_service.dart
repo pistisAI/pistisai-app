@@ -82,17 +82,24 @@ class CronService {
       }
       if (id == null) continue;
 
-      if (t.startsWith('Name:')) name = t.substring(5).trim();
-      else if (t.startsWith('Schedule:')) schedule = t.substring(9).trim();
-      else if (t.startsWith('Next run:')) next = DateTime.tryParse(t.substring(9).trim());
-      else if (t.startsWith('Last run:')) {
+      if (t.startsWith('Name:')) {
+        name = t.substring(5).trim();
+      } else if (t.startsWith('Schedule:')) {
+        schedule = t.substring(9).trim();
+      } else if (t.startsWith('Next run:')) {
+        next = DateTime.tryParse(t.substring(9).trim());
+      } else if (t.startsWith('Last run:')) {
         final p = t.substring(9).trim();
         if (p.contains('  ')) {
           final parts = p.split('  ');
           last = DateTime.tryParse(parts[0].trim());
           ok = parts[1].trim() == 'ok';
-        } else { last = DateTime.tryParse(p); }
-      } else if (t.startsWith('Script:')) cmd = t.substring(7).trim();
+        } else {
+          last = DateTime.tryParse(p);
+        }
+      } else if (t.startsWith('Script:')) {
+        cmd = t.substring(7).trim();
+      }
     }
     flush();
     return jobs;

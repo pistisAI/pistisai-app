@@ -70,6 +70,7 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
     final service = _cronService;
     if (service == null) return;
     await service.runJobNow(job.id);
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Triggered: ${job.name}')),
     );
