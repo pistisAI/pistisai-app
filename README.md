@@ -120,6 +120,7 @@ Full developer guide → [docs/development/BUILD_SCRIPTS.md](docs/development/BU
 | [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical deep-dive |
 | [Deployment Guide](docs/operations/backend/) | Production setup |
 | [Security Guide](docs/operations/security/SECURITY.md) | |
+| [Contributing](CONTRIBUTING.md) | How to file issues, set up, and open PRs |
 
 ---
 

@@ -171,6 +171,7 @@ and permissioned per action — explicit consent, fully auditable.
 | Setup Guide | [docs/user-guide/SETUP_GUIDE.md](docs/user-guide/SETUP_GUIDE.md) |
 | Build Scripts | [docs/development/BUILD_SCRIPTS.md](docs/development/BUILD_SCRIPTS.md) |
 | Deployment Overview | [docs/deployment/DEPLOYMENT_OVERVIEW.md](docs/deployment/DEPLOYMENT_OVERVIEW.md) |
+| Contributing | [CONTRIBUTING.md](../CONTRIBUTING.md) |
 
 ---
 
