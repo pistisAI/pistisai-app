@@ -174,6 +174,22 @@ and permissioned per action — explicit consent, fully auditable.
 
 ---
 
+## Launch content & assets
+
+The publish-ready copy backing this launch lives in the repo so it travels with
+the code and stays in sync:
+
+| Asset | Link |
+|-------|------|
+| Content brief (one-liner, positioning, channel plan) | [docs/marketing/LAUNCH_CONTENT_BRIEF.md](docs/marketing/LAUNCH_CONTENT_BRIEF.md) |
+| Social thread pack (X + LinkedIn) | [docs/marketing/publish-ready/social-thread-pack.md](docs/marketing/publish-ready/social-thread-pack.md) |
+| Community copy pack (Discord/forum FAQ) | [docs/marketing/publish-ready/community-copy-pack.md](docs/marketing/publish-ready/community-copy-pack.md) |
+| Measurement plan (Day 1 / Week 1 metrics) | [docs/marketing/publish-ready/measurement-plan.md](docs/marketing/publish-ready/measurement-plan.md) |
+| Social announcements (CMO drafts + calendar) | [cmo-deliverables/launch-social-announcements.md](cmo-deliverables/launch-social-announcements.md) |
+| Community activation plan | [cmo-deliverables/community-activation-plan.md](cmo-deliverables/community-activation-plan.md) |
+
+---
+
 ## Call to action
 
 Clone the repo, run a workflow, and open an issue or discussion with your real
