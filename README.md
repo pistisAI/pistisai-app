@@ -80,7 +80,7 @@ Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECT
 
 ```bash
 git clone https://github.com/pistisAI/pistisai-app.git
-cd Pistisai
+cd pistisai-app
 flutter pub get
 
 # Run
