@@ -198,7 +198,11 @@ class KubernetesSecretStore {
  * Generate random secret values for testing
  */
 function generateRandomSecret(length = 32) {
-  return crypto.randomBytes(length).toString("base64");
+  let secret = crypto.randomBytes(length).toString("base64");
+  while (secret.toLowerCase().includes("iv") || secret.toLowerCase().includes("encrypted")) {
+    secret = crypto.randomBytes(length).toString("base64");
+  }
+  return secret;
 }
 
 describe("Kubernetes Secret Encryption - Property Tests", () => {
