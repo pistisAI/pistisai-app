@@ -37,7 +37,7 @@ git clone https://github.com/pistisAI/pistisai-app.git
 cd pistisai-app
 
 flutter pub get
-flutter analyze          # must pass (info-level test lints are fine)
+flutter analyze lib/     # must pass — CI scopes analysis to lib/ (test-file lints are non-blocking)
 flutter test             # run the app test suite
 
 # Run it
@@ -85,7 +85,7 @@ We keep it low-ceremony.
    ```
 2. **Make the change.** Keep commits small and real — no stubs, no empty docs.
 3. **Verify before pushing:**
-   - `flutter analyze` is clean
+   - `flutter analyze lib/` is clean (CI only analyzes `lib/`; `test/` info-lints don't block)
    - `flutter test` (or the affected suite) passes
    - `npm test` passes for backend/tooling changes
 4. **Open a pull request** against `main` with a clear description of what and why.
