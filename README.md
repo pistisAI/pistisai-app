@@ -18,6 +18,8 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 **You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work.
 
+> 🚀 **Public launch is live.** Full quick-start, supported runtimes, and self-hosting steps → [docs/LAUNCH.md](docs/LAUNCH.md). Primary CTA: clone the repo, run a workflow, and open an issue or discussion with your real use case. Track the launch → [GitHub issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
+
 ---
 
 ## What Sets It Apart
@@ -120,6 +122,7 @@ Full developer guide → [docs/development/BUILD_SCRIPTS.md](docs/development/BU
 | [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical deep-dive |
 | [Deployment Guide](docs/operations/backend/) | Production setup |
 | [Security Guide](docs/operations/security/SECURITY.md) | |
+| [Public Launch Guide](docs/LAUNCH.md) | Quick-start, runtimes, self-hosting |
 | [Contributing](CONTRIBUTING.md) | How to file issues, set up, and open PRs |
 
 ---

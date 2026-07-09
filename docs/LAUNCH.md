@@ -149,7 +149,8 @@ and permissioned per action — explicit consent, fully auditable.
 
 ## Security posture (launch-relevant)
 
-- Branch protection on `main`, passing CI required.
+- CI runs on every push to `main`; reviewed, owner-/agent-authored commits only
+  (direct-push model, per `AGENTS.md`).
 - Secret scanning + push protection.
 - CodeQL on every push; Dependabot automated updates.
 - Tailscale-first private connectivity; the cloud connector is one isolated
