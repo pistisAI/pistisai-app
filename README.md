@@ -10,9 +10,10 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 ## Try It Now
 
-🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. Log in, that's it.
+🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. One-liner:
+`open https://pistisai.app && log in`. No build step. That's the fastest way to try Pistisai.
 
-🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (coming soon)
+🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (AppImage + auto-update daemon; rolling out).
 
 📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/pistisAI/pistisai-app/releases/latest).
 
@@ -84,6 +85,9 @@ Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECT
 git clone https://github.com/pistisAI/pistisai-app.git
 cd pistisai-app
 flutter pub get
+
+# The app depends on a separate shared package — get its deps too:
+cd lib/shared && flutter pub get && cd ../..
 
 # Run
 
