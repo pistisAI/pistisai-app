@@ -121,7 +121,7 @@ Full developer guide → [docs/development/BUILD_SCRIPTS.md](docs/development/BU
 | [Troubleshooting](docs/user-guide/TROUBLESHOOTING.md) | Common issues |
 | [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical deep-dive |
 | [Deployment Guide](docs/operations/backend/) | Production setup |
-| [Security Guide](docs/operations/security/SECURITY.md) | |
+| [Security Guide](SECURITY.md) | Reporting policy + security posture |
 | [Public Launch Guide](docs/LAUNCH.md) | Quick-start, runtimes, self-hosting |
 | [Contributing](CONTRIBUTING.md) | How to file issues, set up, and open PRs |
 
