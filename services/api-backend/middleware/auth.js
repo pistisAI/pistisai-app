@@ -348,12 +348,11 @@ export function authenticateContainer(req, res, next) {
     .update(message)
     .digest('hex');
 
-  const signatureBuf = Buffer.from(signature);
-  const expectedBuf = Buffer.from(expectedSignature);
-
   if (
-    signatureBuf.length !== expectedBuf.length ||
-    !crypto.timingSafeEqual(signatureBuf, expectedBuf)
+    !crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(expectedSignature),
+    )
   ) {
     return res.status(403).json({
       error: 'Invalid signature',
