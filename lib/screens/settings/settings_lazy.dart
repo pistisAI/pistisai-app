@@ -6,18 +6,14 @@ import 'connection_status_screen.dart';
 import 'pricing_screen.dart';
 import '../avatar/avatar_customization_screen.dart';
 import '../desktop/file_operations_screen.dart';
-import '../avatar/achievements_screen.dart';
 
 // Individual category screens
 import 'general_settings_screen.dart';
 import 'appearance_settings_screen.dart';
 import 'connection_settings_screen.dart';
-import '../avatar/avatar_settings_screen.dart';
+import 'avatar_settings_screen.dart';
 import 'desktop_settings_screen.dart';
 import 'about_settings_screen.dart';
-import 'discord_settings_screen.dart';
-import 'vision_settings_screen.dart';
-import 'llm_provider_settings_screen.dart';
 
 // This file contains the route configuration for the settings screens,
 // which will be lazy-loaded to improve initial application performance.
@@ -156,54 +152,6 @@ final settingsRoutes = [
       return MaterialPage(
         key: state.pageKey,
         child: const FileOperationsScreen(),
-      );
-    },
-  ),
-
-  GoRoute(
-    path: '/settings/achievements',
-    name: 'settings-achievements',
-    pageBuilder: (context, state) {
-      debugPrint('[Router] Building AchievementsScreen');
-      return MaterialPage(
-        key: state.pageKey,
-        child: const AchievementsScreen(),
-      );
-    },
-  ),
-
-  GoRoute(
-    path: '/settings/discord',
-    name: 'settings-discord',
-    pageBuilder: (context, state) {
-      debugPrint('[Router] Building DiscordSettingsScreen');
-      return MaterialPage(
-        key: state.pageKey,
-        child: const DiscordSettingsScreen(),
-      );
-    },
-  ),
-
-  GoRoute(
-    path: '/settings/vision',
-    name: 'settings-vision',
-    pageBuilder: (context, state) {
-      debugPrint('[Router] Building VisionSettingsScreen');
-      return MaterialPage(
-        key: state.pageKey,
-        child: const VisionSettingsScreen(),
-      );
-    },
-  ),
-
-  GoRoute(
-    path: '/settings/llm',
-    name: 'settings-llm',
-    pageBuilder: (context, state) {
-      debugPrint('[Router] Building LLMProviderSettingsScreen');
-      return MaterialPage(
-        key: state.pageKey,
-        child: const LLMProviderSettingsScreen(),
       );
     },
   ),
