@@ -51,7 +51,7 @@ void main() {
     final localVoice = LocalVoiceInputService(
       voiceConversationService: voiceService,
     );
-    voiceService.noteWakePhrase('Zoidbot, are you there?');
+    voiceService.noteWakePhrase('Hermes, are you there?');
 
     await tester.pumpWidget(
       MultiProvider(

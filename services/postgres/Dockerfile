@@ -1,5 +1,5 @@
 # ============================================================================
-# PostgreSQL Dockerfile for Zoidbot
+# PostgreSQL Dockerfile for Pistisai
 # Uses the standard Postgres Alpine image
 # ============================================================================
 FROM postgres:16-alpine

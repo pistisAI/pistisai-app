@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - "antigravity/**"
-      - "zoidbot/**"
       - "codex/**"
     paths:
       - "lib/**"
@@ -77,7 +76,7 @@ jobs:
         env:
           VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST || '31.97.140.7' }}
-          VPS_USER: ${{ secrets.VPS_USER || 'zoidbot' }}
+          VPS_USER: ${{ secrets.VPS_USER || 'pistisai' }}
         run: |
           set -euo pipefail
           if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then

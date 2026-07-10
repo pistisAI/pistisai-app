@@ -285,7 +285,7 @@ function Show-TestSummary {
         Write-LogSuccess "� All integration tests passed! Windows-to-VPS integration is working correctly."
         Write-Host ""
         Write-Host "Next steps:" -ForegroundColor Green
-        Write-Host "  1. Deploy using: .\scripts\powershell\Deploy-Zoidbot.ps1 -Force" -ForegroundColor Yellow
+        Write-Host "  1. Deploy using: .\scripts\powershell\Deploy-Pistisai.ps1 -Force" -ForegroundColor Yellow
         Write-Host "  2. Install VPS automation: ssh $VPSUser@$VPSHost 'cd $VPSProjectPath && ./scripts/deploy/install_vps_automation.sh --install-service --enable-service'" -ForegroundColor Yellow
     } else {
         Write-LogError " Some integration tests failed. Please fix the issues before proceeding."

@@ -33,7 +33,7 @@ void main() {
     connectionManager.dispose();
   });
 
-  // TODO(zoidbot): Re-enable once NodesScreen integrates ProviderDiscoveryService.
+  // TODO: Re-enable once NodesScreen integrates ProviderDiscoveryService.
   // Current NodesScreen implementation is a stub with hardcoded data and does not
   // consume ProviderDiscoveryService from the widget tree. These tests are the
   // spec for the intended implementation. Also requires PopOutManager GetIt registration.

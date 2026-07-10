@@ -1,17 +1,17 @@
 [Unit]
-Description=Zoidbot Service
+Description=Pistisai Service
 After=network.target docker.service
 Requires=docker.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/opt/zoidbot/portal
+WorkingDirectory=/opt/pistisai/portal
 User=root
 Group=root
 
 # Setup environment
-ExecStartPre=/bin/bash -c 'mkdir -p /opt/zoidbot/logs'
+ExecStartPre=/bin/bash -c 'mkdir -p /opt/pistisai/logs'
 
 # Check docker service
 ExecStartPre=/bin/bash -c 'systemctl is-active --quiet docker || systemctl start docker'

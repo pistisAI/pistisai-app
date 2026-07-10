@@ -1,17 +1,17 @@
 [Unit]
-Description=Zoidbot Service
+Description=Pistisai Service
 After=network.target postgresql.service
 Wants=network.target postgresql.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/opt/zoidbot/portal
+WorkingDirectory=/opt/pistisai/portal
 User=root
 Group=root
 
 # Setup environment
-ExecStartPre=/bin/bash -c 'mkdir -p /opt/zoidbot/logs'
+ExecStartPre=/bin/bash -c 'mkdir -p /opt/pistisai/logs'
 
 # Start all services
 ExecStart=/usr/bin/docker-compose -f docker-compose.auth.yml -f docker-compose.web.yml up -d

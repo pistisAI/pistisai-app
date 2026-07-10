@@ -68,7 +68,7 @@ void main() {
           id: '1',
           timestamp: DateTime(2024, 1, 1),
           channel: 'general',
-          agent: 'Zoidbot',
+          agent: 'Hermes',
           thoughtType: 'intention',
           content: 'I will update config',
           metadata: null,
@@ -90,7 +90,7 @@ void main() {
       final result = await service.getThoughts();
 
       expect(result.length, equals(2));
-      expect(result[0]['agent'], equals('Zoidbot'));
+      expect(result[0]['agent'], equals('Hermes'));
       expect(result[1]['agent'], equals('Benjamin'));
 
       verify(mockDb.getRecentThoughts(limit: 50)).called(1);
@@ -187,7 +187,7 @@ void main() {
           id: '1',
           timestamp: DateTime(2024, 1, 1),
           channel: 'general',
-          agent: 'Zoidbot',
+          agent: 'Hermes',
           thoughtType: 'intention',
           content: 'I will update config',
           metadata: encodedMetadata,

@@ -1,4 +1,4 @@
-# Base Image for Zoidbot
+# Base Image for Pistisai
 # Using Ubuntu 24.04 as requested to match GitHub Actions runner.
 # Updated to force full rebuild of all services.
 
@@ -19,19 +19,19 @@ RUN apt-get update && \
     npm install -g npm@latest && \
     rm -rf /var/lib/apt/lists/*
 
-# Create custom user 'zoidbot' (UID 1000)
+# Create custom user 'pistisai' (UID 1000)
 # Ubuntu 24.04 has a default user 'ubuntu' with UID 1000.
-# We rename it to 'zoidbot' to match our expectation.
+# We rename it to 'pistisai' to match our expectation.
 RUN if id -u ubuntu >/dev/null 2>&1; then \
-    usermod -l zoidbot -d /home/zoidbot -m ubuntu; \
-    groupmod -n zoidbot ubuntu; \
+    usermod -l pistisai -d /home/pistisai -m ubuntu; \
+    groupmod -n pistisai ubuntu; \
     else \
-    useradd -u 1000 -m -s /bin/bash zoidbot; \
+    useradd -u 1000 -m -s /bin/bash pistisai; \
     fi
 
 # Set up working directory
 WORKDIR /app
-RUN chown zoidbot:zoidbot /app
+RUN chown pistisai:pistisai /app
 
 # Default to non-root user
-USER zoidbot
+USER pistisai

@@ -144,27 +144,27 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/app.pistisai.desktop"
   COMPONENT Runtime)
 
 # Install icons to standard icon theme locations
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/zoidbot-16.png"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/pistisai-16.png"
   DESTINATION "share/icons/hicolor/16x16/apps"
-  RENAME "zoidbot.png"
+  RENAME "pistisai.png"
   COMPONENT Runtime)
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/zoidbot-32.png"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/pistisai-32.png"
   DESTINATION "share/icons/hicolor/32x32/apps"
-  RENAME "zoidbot.png"
+  RENAME "pistisai.png"
   COMPONENT Runtime)
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/zoidbot-48.png"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/pistisai-48.png"
   DESTINATION "share/icons/hicolor/48x48/apps"
-  RENAME "zoidbot.png"
+  RENAME "pistisai.png"
   COMPONENT Runtime)
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/zoidbot-64.png"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/pistisai-64.png"
   DESTINATION "share/icons/hicolor/64x64/apps"
-  RENAME "zoidbot.png"
+  RENAME "pistisai.png"
   COMPONENT Runtime)
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/zoidbot-128.png"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/icons/pistisai-128.png"
   DESTINATION "share/icons/hicolor/128x128/apps"
-  RENAME "zoidbot.png"
+  RENAME "pistisai.png"
   COMPONENT Runtime)

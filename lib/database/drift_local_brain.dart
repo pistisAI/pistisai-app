@@ -338,7 +338,7 @@ class AgentThoughts extends Table {
   DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
   TextColumn get channel => text()
       .withDefault(const Constant('general'))(); // general, review, research
-  TextColumn get agent => text()(); // zoidbot, benjamin, harper
+  TextColumn get agent => text()(); // hermes, benjamin, harper
   TextColumn get thoughtType =>
       text()(); // intention, observation, question, summary
   TextColumn get content => text()(); // The actual thought text

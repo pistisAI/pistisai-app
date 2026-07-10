@@ -1,6 +1,6 @@
 [Unit]
-Description=Zoidbot System Tray Daemon
-Documentation=https://zoidbot.online
+Description=Pistisai System Tray Daemon
+Documentation=https://github.com/pistisAI/pistisai-app
 After=graphical-session.target
 Wants=graphical-session.target
 
@@ -8,7 +8,7 @@ Wants=graphical-session.target
 Type=simple
 User=%i
 Group=%i
-ExecStart=/usr/bin/zoidbot-tray
+ExecStart=/usr/bin/pistisai-tray
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 RestartSec=5
@@ -19,7 +19,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=false
-ReadWritePaths=/home/%i/.zoidbot
+ReadWritePaths=/home/%i/.pistisai
 
 # Environment
 Environment=HOME=/home/%i
@@ -29,7 +29,7 @@ Environment=DISPLAY=:0
 # Logging
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=zoidbot-tray
+SyslogIdentifier=pistisai-tray
 
 [Install]
 WantedBy=default.target

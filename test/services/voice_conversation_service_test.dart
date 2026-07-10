@@ -28,12 +28,12 @@ void main() {
     });
 
     test('wake phrase engages conversation and stores transcript', () {
-      service.noteWakePhrase('Zoidbot, are you there?');
+      service.noteWakePhrase('Hermes, are you there?');
 
       final snapshot = service.snapshot;
       expect(snapshot.mode, VoiceConversationMode.engaged);
       expect(snapshot.isEngaged, isTrue);
-      expect(snapshot.lastUserTranscript, 'Zoidbot, are you there?');
+      expect(snapshot.lastUserTranscript, 'Hermes, are you there?');
       expect(snapshot.engagedUntil, isNotNull);
     });
 
@@ -43,7 +43,7 @@ void main() {
         'Yeah, I hear you.',
       );
       expect(
-        service.buildFastAcknowledgement('Zoidbot hello bot'),
+        service.buildFastAcknowledgement('hermes hello bot'),
         'Yeah? I’m here.',
       );
       expect(

@@ -1,34 +1,34 @@
 {
   "entries": [
     {
-      "path": "/home/rightguy/soul.md/skills"
+      "path": "/home/rightguy/soul.md/skills/flutter"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/software-development"
+      "path": "/home/rightguy/soul.md/skills/flutter-fix-layout-issues"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/web-development"
+      "path": "/home/rightguy/soul.md/skills/software-development/flutter-repo-maintenance"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/productivity"
+      "path": "/home/rightguy/soul.md/skills/pistisai"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/research"
+      "path": "/home/rightguy/soul.md/skills/software-development/systematic-debugging"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/security"
+      "path": "/home/rightguy/soul.md/skills/software-development/test-driven-development"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/personal"
+      "path": "/home/rightguy/soul.md/skills/gh-cli"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/payments"
+      "path": "/home/rightguy/soul.md/skills/software-development/node-inspect-debugger"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/mlops"
+      "path": "/home/rightguy/soul.md/skills/devops/docker-management"
     },
     {
-      "path": "/home/rightguy/soul.md/skills/note-taking"
+      "path": "/home/rightguy/soul.md/skills/postgresql"
     }
   ]
 }

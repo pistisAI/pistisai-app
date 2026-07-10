@@ -1,5 +1,5 @@
 # ============================================================================
-# Runtime Dockerfile for Zoidbot Streaming Proxy
+# Runtime Dockerfile for Pistisai Streaming Proxy
 # Uses standard Node.js Alpine images
 # ============================================================================
 

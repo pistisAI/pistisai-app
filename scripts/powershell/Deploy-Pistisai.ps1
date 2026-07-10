@@ -1,4 +1,4 @@
-# Zoidbot Local Desktop Build Script
+# Pistisai Local Desktop Build Script
 # Builds desktop applications and creates GitHub releases for local distribution
 # Cloud deployment is handled separately by GitHub Actions
 
@@ -15,7 +15,7 @@ param(
 # Configuration
 $ProjectRoot = Split-Path $PSScriptRoot -Parent | Split-Path -Parent
 
-Write-Host "=== Zoidbot Local Desktop Build ===" -ForegroundColor Cyan
+Write-Host "=== Pistisai Local Desktop Build ===" -ForegroundColor Cyan
 Write-Host "Version Increment: $VersionIncrement"
 Write-Host "Project Root: $ProjectRoot"
 Write-Host "Dry Run: $DryRun"
@@ -182,11 +182,11 @@ if (-not $DryRun) {
         }
 
         $tagName = "v$currentVersion"
-        $releaseName = "Zoidbot v$currentVersion"
+        $releaseName = "Pistisai v$currentVersion"
 
         # Generate release notes
         $releaseNotes = @"
-# Zoidbot v$currentVersion
+# Pistisai v$currentVersion
 
 ## What's Changed
 - Version $currentVersion release
@@ -197,25 +197,25 @@ if (-not $DryRun) {
 Choose the appropriate package for your system:
 
 ### Windows
-- **zoidbot-$currentVersion-portable.zip** - Portable version (no installation required)
-- **Zoidbot-Windows-$currentVersion-Setup.exe** - Windows installer
+- **pistisai-$currentVersion-portable.zip** - Portable version (no installation required)
+- **Pistisai-Windows-$currentVersion-Setup.exe** - Windows installer
 
 ### Linux
-- **zoidbot-$($currentVersion)-x86_64.AppImage** - Universal Linux package (recommended)
+- **pistisai-$($currentVersion)-x86_64.AppImage** - Universal Linux package (recommended)
 
 ### Package Managers
-- **AUR**: `yay -S zoidbot` (Arch Linux and derivatives)
+- **AUR**: `yay -S pistisai` (Arch Linux and derivatives)
 - **Manual**: Download AppImage for any Linux distribution
 
 ## Checksums
 SHA256 checksums are provided for all packages to verify integrity.
 
-**Full Changelog**: https://github.com/Zoidbot-online/Zoidbot/compare/v$($currentVersion.Split('.')[0]).$($currentVersion.Split('.')[1]).$([int]$currentVersion.Split('.')[2] - 1)...v$currentVersion
+**Full Changelog**: https://github.com/pistisAI/pistisai-app/compare/v$($currentVersion.Split('.')[0]).$($currentVersion.Split('.')[1]).$([int]$currentVersion.Split('.')[2] - 1)...v$currentVersion
 "@
 
         # Create and push tag
         Write-Host "Creating and pushing tag $tagName..."
-        git tag -a $tagName -m "Zoidbot v$currentVersion"
+        git tag -a $tagName -m "Pistisai v$currentVersion"
         if ($LASTEXITCODE -ne 0) {
             Write-Host "Tag may already exist, continuing..."
         }
@@ -235,15 +235,15 @@ SHA256 checksums are provided for all packages to verify integrity.
         # Windows assets - only for current version
         if (Test-Path $windowsDir) {
             $windowsAssets = Get-ChildItem -Path $windowsDir -File | Where-Object {
-                $_.Name -match "zoidbot-$currentVersion.*\.(zip|exe)$" -or
-                $_.Name -match "Zoidbot-Windows-$currentVersion.*\.exe$"
+                $_.Name -match "pistisai-$currentVersion.*\.(zip|exe)$" -or
+                $_.Name -match "Pistisai-Windows-$currentVersion.*\.exe$"
             }
             $assets += $windowsAssets.FullName
 
             # Also include SHA256 checksums for the current version assets
             $checksumAssets = Get-ChildItem -Path $windowsDir -File | Where-Object {
-                $_.Name -match "zoidbot-$currentVersion.*\.sha256$" -or
-                $_.Name -match "Zoidbot-Windows-$currentVersion.*\.sha256$"
+                $_.Name -match "pistisai-$currentVersion.*\.sha256$" -or
+                $_.Name -match "Pistisai-Windows-$currentVersion.*\.sha256$"
             }
             $assets += $checksumAssets.FullName
         }
@@ -251,15 +251,15 @@ SHA256 checksums are provided for all packages to verify integrity.
         # Linux assets - only for current version
         if (Test-Path $linuxDir) {
             $linuxAssets = Get-ChildItem -Path $linuxDir -File | Where-Object {
-                $_.Name -match "zoidbot-$currentVersion.*\.AppImage$" -or
-                $_.Name -match "Zoidbot-$currentVersion.*\.AppImage$"
+                $_.Name -match "pistisai-$currentVersion.*\.AppImage$" -or
+                $_.Name -match "Pistisai-$currentVersion.*\.AppImage$"
             }
             $assets += $linuxAssets.FullName
 
             # Also include SHA256 checksums for the current version Linux assets
             $linuxChecksumAssets = Get-ChildItem -Path $linuxDir -File | Where-Object {
-                $_.Name -match "zoidbot-$currentVersion.*\.AppImage\.sha256$" -or
-                $_.Name -match "Zoidbot-$currentVersion.*\.AppImage\.sha256$"
+                $_.Name -match "pistisai-$currentVersion.*\.AppImage\.sha256$" -or
+                $_.Name -match "Pistisai-$currentVersion.*\.AppImage\.sha256$"
             }
             $assets += $linuxChecksumAssets.FullName
         }
@@ -275,16 +275,16 @@ SHA256 checksums are provided for all packages to verify integrity.
         if ($assets.Count -eq 0) {
             Write-Host "WARNING: No assets found for version $currentVersion. Expected files:" -ForegroundColor Yellow
             Write-Host "  Windows:" -ForegroundColor Yellow
-            Write-Host "    - zoidbot-$currentVersion-portable.zip" -ForegroundColor Yellow
-            Write-Host "    - Zoidbot-Windows-$currentVersion-Setup.exe" -ForegroundColor Yellow
+            Write-Host "    - pistisai-$currentVersion-portable.zip" -ForegroundColor Yellow
+            Write-Host "    - Pistisai-Windows-$currentVersion-Setup.exe" -ForegroundColor Yellow
             Write-Host "  Linux:" -ForegroundColor Yellow
-            Write-Host "    - zoidbot-$currentVersion.AppImage" -ForegroundColor Yellow
+            Write-Host "    - pistisai-$currentVersion.AppImage" -ForegroundColor Yellow
         }
 
         # Verify we have the expected assets
-        $expectedPortableZip = $assets | Where-Object { $_ -and $_ -match "zoidbot-$currentVersion.*portable\.zip$" }
-        $expectedInstaller = $assets | Where-Object { $_ -and $_ -match "Zoidbot-Windows-$currentVersion.*Setup\.exe$" }
-        $expectedAppImage = $assets | Where-Object { $_ -and $_ -match "zoidbot-$currentVersion.*\.AppImage$" }
+        $expectedPortableZip = $assets | Where-Object { $_ -and $_ -match "pistisai-$currentVersion.*portable\.zip$" }
+        $expectedInstaller = $assets | Where-Object { $_ -and $_ -match "Pistisai-Windows-$currentVersion.*Setup\.exe$" }
+        $expectedAppImage = $assets | Where-Object { $_ -and $_ -match "pistisai-$currentVersion.*\.AppImage$" }
 
         Write-Host "Asset verification for version ${currentVersion}:" -ForegroundColor Cyan
         Write-Host "  Windows Portable ZIP: $($expectedPortableZip -ne $null)" -ForegroundColor $(if ($expectedPortableZip) { "Green" } else { "Yellow" })
@@ -303,7 +303,7 @@ SHA256 checksums are provided for all packages to verify integrity.
 
         $ghArgs = @(
             "release", "create", $tagName,
-            "--repo", "Zoidbot-online/Zoidbot",
+            "--repo", "pistisAI/pistisai-app",
             "--title", $releaseName,
             "--notes-file", $releaseNotesFile
         )
@@ -321,9 +321,9 @@ SHA256 checksums are provided for all packages to verify integrity.
         # Clean up
         Remove-Item $releaseNotesFile -ErrorAction SilentlyContinue
 
-        Write-Host "? GitHub release created successfully!"
-        Write-Host "? Release URL: https://github.com/Zoidbot-online/Zoidbot/releases/tag/$tagName"
-        Write-Host "? Uploaded $($assets.Count) assets to the release"
+        Write-Host "✔ GitHub release created successfully!"
+        Write-Host "✔ Release URL: https://github.com/pistisAI/pistisai-app/releases/tag/$tagName"
+        Write-Host "✔ Uploaded $($assets.Count) assets to the release"
 
     } catch {
         Write-Host "ERROR: Release build and GitHub release creation failed: $($_.Exception.Message)" -ForegroundColor Red

@@ -9,4 +9,4 @@
 
 ## Keep the app entry point
 -keep class app.pistisai.app.** { *; }
--keep class com.zoidbot.app.** { *; }
+-keep class com.Pistisai.Pistisai.** { *; }

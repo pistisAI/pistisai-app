@@ -64,7 +64,7 @@ $PesterConfig = New-PesterConfiguration
 
 # Test discovery
 $PesterConfig.Run.Path = @(
-    "$PSScriptRoot\Deploy-Zoidbot.Tests.ps1",
+    "$PSScriptRoot\Deploy-Pistisai.Tests.ps1",
     "$PSScriptRoot\BuildEnvironmentUtilities.Tests.ps1",
     "$PSScriptRoot\Integration\"
 )

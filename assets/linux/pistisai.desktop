@@ -1,16 +1,16 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Zoidbot
+Name=Pistisai
 Comment=Manage and run powerful Large Language Models locally
 GenericName=LLM Manager
-Exec=zoidbot
-Icon=zoidbot
+Exec=pistisai
+Icon=pistisai
 Terminal=false
 StartupNotify=true
 Categories=Development;Utility;Network;
 Keywords=LLM;AI;Machine Learning;Ollama;Local;Cloud;
-MimeType=application/x-zoidbot;
-StartupWMClass=Zoidbot
+MimeType=application/x-pistisai;
+StartupWMClass=Pistisai
 X-GNOME-SingleWindow=true
-X-Ubuntu-Gettext-Domain=zoidbot
+X-Ubuntu-Gettext-Domain=pistisai

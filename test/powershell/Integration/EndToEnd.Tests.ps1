@@ -1,4 +1,4 @@
-# End-to-End Integration Tests for Zoidbot Deployment Workflow
+# End-to-End Integration Tests for Pistisai Deployment Workflow
 # Tests complete deployment scenarios in staging environment with real external dependencies
 
 BeforeAll {
@@ -13,7 +13,7 @@ BeforeAll {
     $Global:TestConfig = Initialize-TestConfig
     
     # Import the deployment script (without executing)
-    $DeploymentScriptPath = Join-Path $PSScriptRoot "..\..\..\scripts\powershell\Deploy-Zoidbot.ps1"
+    $DeploymentScriptPath = Join-Path $PSScriptRoot "..\..\..\scripts\powershell\Deploy-Pistisai.ps1"
     
     # Set up staging environment configuration
     $Global:StagingConfig = @{

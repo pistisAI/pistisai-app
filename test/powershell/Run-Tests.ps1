@@ -186,7 +186,7 @@ function Get-PesterConfiguration {
         # Include PowerShell scripts for coverage analysis
         $scriptsDir = Join-Path $PSScriptRoot "..\..\scripts\powershell"
         $config.CodeCoverage.Path = @(
-            (Join-Path $scriptsDir "Deploy-Zoidbot.ps1"),
+            (Join-Path $scriptsDir "Deploy-Pistisai.ps1"),
             (Join-Path $scriptsDir "BuildEnvironmentUtilities.ps1")
         )
     }

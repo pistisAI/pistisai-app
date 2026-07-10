@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: config/docker/Dockerfile.nginx-proxy
-    container_name: zoidbot-nginx-proxy
+    container_name: pistisai-nginx-proxy
     ports:
       - "80:80"
       - "443:443"
@@ -28,9 +28,9 @@ services:
   # Static Website and Documentation Container - DEPRECATED
   # This container has been replaced by unified Flutter web architecture
   # All domains now served by flutter-app container:
-  # - zoidbot.online: Flutter marketing pages
-  # - app.zoidbot.online: Flutter chat interface
-  # - docs.zoidbot.online: Flutter documentation
+  # - pistisai.online: Flutter marketing pages
+  # - app.pistisai.online: Flutter chat interface
+  # - docs.pistisai.online: Flutter documentation
   #
   # Uncomment below if you need to temporarily restore static site functionality
   # static-site:
@@ -57,7 +57,7 @@ services:
     build:
       context: .
       dockerfile: config/docker/Dockerfile.flutter-app
-    container_name: zoidbot-flutter-app
+    container_name: pistisai-flutter-app
     volumes:
       - ./build/web:/usr/share/nginx/html:ro
       - ./config/nginx/nginx-flutter.conf:/etc/nginx/nginx.conf:ro
@@ -76,12 +76,12 @@ services:
     build:
       context: .
       dockerfile: config/docker/Dockerfile.api-backend
-    container_name: zoidbot-api-backend
+    container_name: pistisai-api-backend
     environment:
       - NODE_ENV=production
       - PORT=8080
       - AUTH0_DOMAIN=dev-xafu7oedkd5wlrbo.us.auth0.com
-      - AUTH0_AUDIENCE=https://app.zoidbot.online
+      - AUTH0_AUDIENCE=https://app.pistisai.online
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket for proxy management
     networks:
@@ -99,14 +99,14 @@ services:
     build:
       context: .
       dockerfile: config/docker/Dockerfile.streaming-proxy
-    image: zoidbot-streaming-proxy:latest
+    image: pistisai-streaming-proxy:latest
     profiles:
       - build-only # Only built, not started
 
   # Certbot for SSL certificate management
   certbot:
     image: certbot/certbot:latest
-    container_name: zoidbot-certbot
+    container_name: pistisai-certbot
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/live:/etc/letsencrypt/live
@@ -114,14 +114,14 @@ services:
       - ./certbot/logs:/var/log/letsencrypt
     networks:
       - cloudllm-network
-    command: certonly --webroot --webroot-path=/var/www/certbot --email support@zoidbot.online --agree-tos --no-eff-email -d zoidbot.online -d app.zoidbot.online -d api.zoidbot.online -d docs.zoidbot.online
+    command: certonly --webroot --webroot-path=/var/www/certbot --email support@pistisai.online --agree-tos --no-eff-email -d pistisai.online -d app.pistisai.online -d api.pistisai.online -d docs.pistisai.online
     profiles:
       - ssl-setup
 
 networks:
   cloudllm-network:
     driver: bridge
-    name: zoidbot-network
+    name: pistisai-network
 
 volumes:
   certbot-www:

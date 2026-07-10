@@ -69,7 +69,7 @@ void main() {
       expect(queue.isEmpty, isTrue);
     });
 
-    // TODO(zoidbot): Update expected count once maxHistorySize is confirmed.
+    // TODO: Update expected count once maxHistorySize is confirmed.
     // Test expects 17 but implementation has maxHistorySize=10000 (default).
     test('createMetricsCollector returns the concrete metrics implementation',
         skip: true,
@@ -91,7 +91,7 @@ void main() {
       expect(c.totalRequests, 17);
     });
 
-    // TODO(zoidbot): Re-enable once TunnelServiceFactory.createTunnelService is implemented.
+    // TODO: Re-enable once TunnelServiceFactory.createTunnelService is implemented.
     test('createTunnelService returns a concrete TunnelServiceImpl',
         skip: true, () {
       final service = TunnelServiceFactory.createTunnelService(
@@ -105,7 +105,7 @@ void main() {
       expect(service, isA<TunnelService>());
     });
 
-    // TODO(zoidbot): Re-enable once TunnelServiceFactory.createFullTunnelStack is implemented.
+    // TODO: Re-enable once TunnelServiceFactory.createFullTunnelStack is implemented.
     test('createFullTunnelStack returns the concrete stack entries',
         skip: true, () {
       final stack = TunnelServiceFactory.createFullTunnelStack(

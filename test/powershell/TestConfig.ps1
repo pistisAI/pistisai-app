@@ -238,7 +238,7 @@ dummy-placeholder-do-not-use
             RequiredProjectFiles = @(
                 "pubspec.yaml",
                 "lib/main.dart",
-                "scripts/powershell/Deploy-Zoidbot.ps1",
+                "scripts/powershell/Deploy-Pistisai.ps1",
                 "scripts/powershell/BuildEnvironmentUtilities.ps1"
             )
             

@@ -1,5 +1,5 @@
 # ============================================================================
-# Deployer Dockerfile for Zoidbot
+# Deployer Dockerfile for Pistisai
 # Contains kubectl, kustomize, and psql for in-cluster deployment tasks
 # ============================================================================
 FROM alpine:3.20

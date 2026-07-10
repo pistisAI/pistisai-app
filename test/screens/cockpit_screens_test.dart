@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  // TODO(zoidbot): Re-enable — pending timers in initState cause pumpAndSettle timeout. See #424.
+  // TODO: Re-enable — pending timers in initState cause pumpAndSettle timeout. See #424.
   group('Cockpit screens', skip: 'Pending timers in initState (see #424)', () {
     testWidgets('ChannelsScreen renders without crashing', (tester) async {
       await tester.pumpWidget(
