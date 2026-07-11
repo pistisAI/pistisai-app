@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../widgets/usage/metric_card.dart';
-import '../../widgets/common/loading_skeleton.dart';
-import '../../widgets/common/error_state.dart';
 import '../../widgets/navigation/popout_button.dart';
 
 import 'package:pistisai/services/rate_limit_manager.dart';
@@ -20,16 +18,8 @@ class UsageScreen extends StatefulWidget {
 
 class _UsageScreenState extends State<UsageScreen> {
   TimeRange _selectedTimeRange = TimeRange.today;
-  bool _isLoading = false;
-  String? _error;
 
   late final RateLimitManager _rateLimitManager;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadMetrics();
-  }
 
   @override
   void didChangeDependencies() {
@@ -37,29 +27,10 @@ class _UsageScreenState extends State<UsageScreen> {
     _rateLimitManager = context.read<RateLimitManager>();
   }
 
-  Future<void> _loadMetrics() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      // Fetch real metrics from services
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _error = e.toString();
-      });
-    }
-  }
-
   Future<void> _onRefresh() async {
-    await _loadMetrics();
+    // Capacities are streamed live via RateLimitManager; refresh triggers a
+    // re-read of the underlying Drift stream through a state bump.
+    setState(() {});
   }
 
   void _onTimeRangeChanged(Set<TimeRange> newSelection) {
@@ -67,7 +38,6 @@ class _UsageScreenState extends State<UsageScreen> {
       setState(() {
         _selectedTimeRange = newSelection.first;
       });
-      _loadMetrics();
     }
   }
 
@@ -92,118 +62,149 @@ class _UsageScreenState extends State<UsageScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _onRefresh,
-        child: _isLoading
-            ? const LoadingSkeleton(itemCount: 3, height: 200)
-            : _error != null
-                ? ErrorState(
-                    message: _error!,
-                    onRetry: _onRefresh,
-                  )
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Time range selector
-                        Center(
-                          child: SegmentedButton<TimeRange>(
-                            segments: const [
-                              ButtonSegment(
-                                value: TimeRange.today,
-                                label: Text('Today'),
-                                icon: Icon(Icons.today),
-                              ),
-                              ButtonSegment(
-                                value: TimeRange.week,
-                                label: Text('Week'),
-                                icon: Icon(Icons.date_range),
-                              ),
-                              ButtonSegment(
-                                value: TimeRange.month,
-                                label: Text('Month'),
-                                icon: Icon(Icons.calendar_month),
-                              ),
-                            ],
-                            selected: {_selectedTimeRange},
-                            onSelectionChanged: _onTimeRangeChanged,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Time range selector
+              Center(
+                child: SegmentedButton<TimeRange>(
+                  segments: const [
+                    ButtonSegment(
+                      value: TimeRange.today,
+                      label: Text('Today'),
+                      icon: Icon(Icons.today),
+                    ),
+                    ButtonSegment(
+                      value: TimeRange.week,
+                      label: Text('Week'),
+                      icon: Icon(Icons.date_range),
+                    ),
+                    ButtonSegment(
+                      value: TimeRange.month,
+                      label: Text('Month'),
+                      icon: Icon(Icons.calendar_month),
+                    ),
+                  ],
+                  selected: {_selectedTimeRange},
+                  onSelectionChanged: _onTimeRangeChanged,
+                ),
+              ),
+              const SizedBox(height: 24),
 
-                        // Token Usage Card
-FutureBuilder<List<ModelCapacityData>>(
-      future: _rateLimitManager.watchCapacities().first,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final capacities = snapshot.data!;
-          final totalTokens = capacities.fold(
-              0, (sum, capacity) => sum + capacity.concurrentUsed);
-          final totalLimit = capacities.fold(
-              0, (sum, capacity) => sum + capacity.concurrentLimit);
-          final utilization = totalLimit > 0 ? totalTokens / totalLimit : 0.0;
-
-          return MetricCard(
-            title: 'Token Usage',
-            icon: Icons.token,
-            value: _formatTokenValue(totalTokens),
-            unit: 'tokens',
-            subtitle: 'Total tokens processed',
-            trend: utilization > 0.8 ? MetricTrend.up : MetricTrend.neutral,
-            progressValue: utilization,
-            progressLabel: 'Rate limit utilization',
-            child: _buildTokenCostBreakdown(theme, capacities),
-          );
-        }
-      },
-    ),
-                        const SizedBox(height: 16),
-
-                        // Request Metrics Card
-                        FutureBuilder<Map<String, dynamic>>(
-                          future: _fetchRequestMetrics(),
+                        // Concurrency / active requests Card (real capacity data)
+                        StreamBuilder<List<ModelCapacityData>>(
+                          stream: _rateLimitManager.watchCapacities(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return const SizedBox();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
-                              final metrics = snapshot.data!;
+                              final capacities = snapshot.data!;
+                              final totalUsed = capacities.fold(
+                                  0,
+                                  (sum, c) =>
+                                      sum + c.concurrentUsed);
+                              final totalLimit = capacities.fold(
+                                  0,
+                                  (sum, c) =>
+                                      sum + c.concurrentLimit);
+                              final utilization = totalLimit > 0
+                                  ? totalUsed / totalLimit
+                                  : 0.0;
+
                               return MetricCard(
-                                title: 'Request Metrics',
-                                icon: Icons.api,
-                                value: '${metrics['requestsPerMin'] ?? 'N/A'}',
-                                unit: 'req/min',
-                                subtitle: 'Requests per minute',
-                                trend: MetricTrend.neutral,
-                                child: _buildRequestMetrics(theme, metrics),
+                                title: 'Active Concurrency',
+                                icon: Icons.sync,
+                                value: '$totalUsed',
+                                unit: 'of $totalLimit',
+                                subtitle: 'Concurrent requests in flight',
+                                trend: utilization > 0.8
+                                    ? MetricTrend.up
+                                    : MetricTrend.neutral,
+                                progressValue: utilization,
+                                progressLabel: 'Concurrency utilization',
+                                child: _buildConcurrencyBreakdown(
+                                    theme, capacities),
                               );
                             }
                           },
                         ),
                         const SizedBox(height: 16),
 
-                        // Resource Usage Card
-                        FutureBuilder<Map<String, dynamic>>(
-                          future: _fetchResourceMetrics(),
+                        // Requests-per-minute Card (real capacity data)
+                        StreamBuilder<List<ModelCapacityData>>(
+                          stream: _rateLimitManager.watchCapacities(),
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return const SizedBox();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
-                              final metrics = snapshot.data!;
+                              final capacities = snapshot.data!;
+                              final totalRpm = capacities.fold(
+                                  0, (sum, c) => sum + c.rpmUsed);
+                              final totalRpmLimit = capacities.fold(
+                                  0,
+                                  (sum, c) =>
+                                      sum + (c.rpmLimit ?? 0));
+                              final rpmUtil = totalRpmLimit > 0
+                                  ? totalRpm / totalRpmLimit
+                                  : 0.0;
+
                               return MetricCard(
-                                title: 'Resource Usage',
-                                icon: Icons.memory,
-                                value: '${metrics['cpuUsage']}%',
-                                unit: 'CPU',
-                                subtitle: 'System resource consumption',
+                                title: 'Request Rate',
+                                icon: Icons.api,
+                                value: '$totalRpm',
+                                unit: 'req/min',
+                                subtitle: 'Requests per minute across models',
                                 trend: MetricTrend.neutral,
-                                child: _buildResourceMetrics(theme, metrics),
+                                progressValue: rpmUtil,
+                                progressLabel: 'RPM utilization',
+                                child: _buildRpmBreakdown(
+                                    theme, capacities),
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Tokens-per-minute Card (real capacity data)
+                        StreamBuilder<List<ModelCapacityData>>(
+                          stream: _rateLimitManager.watchCapacities(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final capacities = snapshot.data!;
+                              final totalTpm = capacities.fold(
+                                  0, (sum, c) => sum + c.tpmUsed);
+                              final totalTpmLimit = capacities.fold(
+                                  0,
+                                  (sum, c) =>
+                                      sum + (c.tpmLimit ?? 0));
+                              final tpmUtil = totalTpmLimit > 0
+                                  ? totalTpm / totalTpmLimit
+                                  : 0.0;
+
+                              return MetricCard(
+                                title: 'Token Rate',
+                                icon: Icons.token,
+                                value: _formatTokenValue(totalTpm),
+                                unit: 'tok/min',
+                                subtitle: 'Tokens per minute across models',
+                                trend: MetricTrend.neutral,
+                                progressValue: tpmUtil,
+                                progressLabel: 'TPM utilization',
+                                child: _buildTpmBreakdown(
+                                    theme, capacities),
                               );
                             }
                           },
@@ -224,28 +225,6 @@ FutureBuilder<List<ModelCapacityData>>(
     );
   }
 
-  Future<Map<String, dynamic>> _fetchRequestMetrics() async {
-    // This would fetch real metrics from ConnectionManagerService
-    // For now, return mock data with real structure
-    return {
-      'requestsPerMin': _getMockRequestValue(),
-      'successRate': _selectedTimeRange == TimeRange.today ? '98.5%' : '97.2%',
-      'avgLatency': _selectedTimeRange == TimeRange.today ? '245ms' : '312ms',
-      'errorRate': _selectedTimeRange == TimeRange.today ? '1.5%' : '2.8%',
-    };
-  }
-
-  Future<Map<String, dynamic>> _fetchResourceMetrics() async {
-    // This would fetch real system metrics
-    // For now, return mock data with real structure
-    return {
-      'cpuUsage': _getMockCpuUsage(),
-      'memoryUsage': '2.1 GB',
-      'diskUsage': '12.4 GB / 500 GB',
-      'networkIo': '125 MB/s down, 42 MB/s up',
-    };
-  }
-
   String _formatTokenValue(int tokens) {
     if (tokens >= 1000000) {
       return '${(tokens / 1000000).toStringAsFixed(1)}M';
@@ -256,63 +235,107 @@ FutureBuilder<List<ModelCapacityData>>(
     }
   }
 
-  Widget _buildTokenCostBreakdown(ThemeData theme, List<ModelCapacityData> capacities) {
+  Widget _buildConcurrencyBreakdown(
+      ThemeData theme, List<ModelCapacityData> capacities) {
+    if (capacities.isEmpty) {
+      return _buildEmptyRow(theme, 'No active models');
+    }
+    final top = capacities
+        .where((c) => c.concurrentLimit > 0)
+        .toList()
+      ..sort((a, b) => b.concurrentUsed.compareTo(a.concurrentUsed));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
         Text(
-          'Cost Breakdown',
+          'Per-model concurrency',
           style: theme.textTheme.labelSmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 4),
-        _buildCostRow('Input tokens', '74,750', theme),
-        _buildCostRow('Output tokens', '49,833', theme),
-        _buildCostRow('Est. cost', r'$0.037', theme),
+        for (final c in top.take(4))
+          _buildMetricRow(
+            c.displayName ?? c.modelId,
+            '${c.concurrentUsed}/${c.concurrentLimit}',
+            Icons.sync,
+            theme.colorScheme.primary,
+            theme,
+          ),
       ],
     );
   }
 
-  Widget _buildCostRow(String label, String value, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
-          Text(
-            value,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRequestMetrics(ThemeData theme, Map<String, dynamic> metrics) {
+  Widget _buildRpmBreakdown(
+      ThemeData theme, List<ModelCapacityData> capacities) {
+    if (capacities.isEmpty) {
+      return _buildEmptyRow(theme, 'No rate data');
+    }
+    final withLimit = capacities.where((c) => c.rpmLimit != null).toList()
+      ..sort((a, b) => b.rpmUsed.compareTo(a.rpmUsed));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        _buildMetricRow('Success rate', metrics['successRate'], Icons.check_circle,
-            Colors.green, theme),
+        Text(
+          'Top models by RPM',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
+        ),
         const SizedBox(height: 4),
-        _buildMetricRow(
-            'Avg latency', metrics['avgLatency'], Icons.speed, Colors.blue, theme),
-        const SizedBox(height: 4),
-        _buildMetricRow(
-            'Error rate', metrics['errorRate'], Icons.error, Colors.red, theme),
+        for (final c in withLimit.take(4))
+          _buildMetricRow(
+            c.displayName ?? c.modelId,
+            '${c.rpmUsed}/${c.rpmLimit}',
+            Icons.api,
+            theme.colorScheme.primary,
+            theme,
+          ),
       ],
+    );
+  }
+
+  Widget _buildTpmBreakdown(
+      ThemeData theme, List<ModelCapacityData> capacities) {
+    if (capacities.isEmpty) {
+      return _buildEmptyRow(theme, 'No token data');
+    }
+    final withLimit = capacities.where((c) => c.tpmLimit != null).toList()
+      ..sort((a, b) => b.tpmUsed.compareTo(a.tpmUsed));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          'Top models by TPM',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 4),
+        for (final c in withLimit.take(4))
+          _buildMetricRow(
+            c.displayName ?? c.modelId,
+            '${_formatTokenValue(c.tpmUsed)}/${_formatTokenValue(c.tpmLimit!)}',
+            Icons.token,
+            theme.colorScheme.primary,
+            theme,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyRow(ThemeData theme, String message) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Text(
+        message,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+      ),
     );
   }
 
@@ -336,93 +359,6 @@ FutureBuilder<List<ModelCapacityData>>(
             fontWeight: FontWeight.w500,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildResourceMetrics(ThemeData theme, Map<String, dynamic> metrics) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-        _buildResourceRow('Memory', metrics['memoryUsage'], theme, 0.26),
-        const SizedBox(height: 4),
-        _buildResourceRow('Disk', metrics['diskUsage'], theme, 0.025),
-        const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(
-            children: [
-              Icon(
-                Icons.network_check,
-                size: 14,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'Network I/O',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              const Spacer(),
-              Text(
-                metrics['networkIo'],
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildResourceRow(
-      String label, String value, ThemeData theme, double usage) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              label == 'Memory' ? Icons.storage : Icons.folder,
-              size: 14,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
-            const Spacer(),
-            Text(
-              value,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        if (usage > 0) ...[
-          const SizedBox(height: 4),
-          LinearProgressIndicator(
-            value: usage,
-            backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              usage >= 0.9
-                  ? theme.colorScheme.error
-                  : usage >= 0.7
-                      ? theme.colorScheme.secondary
-                      : theme.colorScheme.primary,
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -472,20 +408,8 @@ FutureBuilder<List<ModelCapacityData>>(
     );
   }
 
-  // Mock data methods - for now, will be replaced with real implementations
-  String _getMockRequestValue() {
-    switch (_selectedTimeRange) {
-      case TimeRange.today:
-        return '42';
-      case TimeRange.week:
-        return '38';
-      case TimeRange.month:
-        return '45';
-    }
-  }
-
-  double _getMockCpuUsage() {
-    // Simulate varying CPU usage
-    return 35.0;
-  }
+  // NOTE: Per-user request success/latency/CPU metrics have no backend
+  // endpoint or client data source yet. The cards above use real
+  // RateLimitManager capacity data (concurrency, RPM, TPM) until that
+  // telemetry exists. Do not reintroduce mocked values.
 }
