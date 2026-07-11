@@ -24,6 +24,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
   late TabController _tabController;
   final _targetUserController = TextEditingController();
   String _selectedScope = 'FULL_FLUSH';
+  Map<String, dynamic>? _systemStats;
   final Map<String, bool> _flushOptions = {
     'skipAuth': false,
     'skipConversations': false,
@@ -52,7 +53,12 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
 
   Future<void> _loadInitialData() async {
     final adminService = di.serviceLocator.get<AdminDataFlushService>();
-    await adminService.getSystemStatistics();
+    final stats = await adminService.getSystemStatistics();
+    if (mounted) {
+      setState(() {
+        _systemStats = stats;
+      });
+    }
     await adminService.loadFlushHistory();
   }
 
@@ -156,6 +162,33 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
   ) {
     return Consumer<AdminDataFlushService>(
       builder: (context, adminService, child) {
+        if (_systemStats == null) {
+          return platformAdapter.buildCard(
+            padding: EdgeInsets.all(isMobile ? 12 : 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'System Statistics',
+                  style: theme.textTheme.headlineSmall,
+                ),
+                SizedBox(height: isMobile ? 12 : 16),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: platformAdapter.buildProgressIndicator(
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final docker = _systemStats!['docker'] as Map<String, dynamic>? ?? {};
+        final lastFlush = _systemStats!['lastFlushOperation'] as String?;
+
         return platformAdapter.buildCard(
           padding: EdgeInsets.all(isMobile ? 12 : 16),
           child: Column(
@@ -163,19 +196,126 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
             children: [
               Text(
                 'System Statistics',
-                style: theme.textTheme.headlineSmall,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(height: isMobile ? 12 : 16),
-              // System stats would be displayed here
-              // This is a placeholder for the actual implementation
-              Text(
-                'Loading system statistics...',
-                style: theme.textTheme.bodyMedium,
+              const SizedBox(height: 16),
+              GridView.count(
+                crossAxisCount: isMobile ? 2 : 4,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildStatTile(
+                    theme,
+                    'Active Tenants',
+                    '${docker['activeUsers'] ?? 0}',
+                    Icons.people_outline,
+                    theme.colorScheme.primary,
+                  ),
+                  _buildStatTile(
+                    theme,
+                    'Total Containers',
+                    '${docker['totalContainers'] ?? 0}',
+                    Icons.layers_outlined,
+                    theme.colorScheme.secondary,
+                  ),
+                  _buildStatTile(
+                    theme,
+                    'User Networks',
+                    '${docker['userNetworks'] ?? 0}',
+                    Icons.hub_outlined,
+                    theme.colorScheme.tertiary,
+                  ),
+                  _buildStatTile(
+                    theme,
+                    'Running Tasks',
+                    '${docker['runningContainers'] ?? 0}',
+                    Icons.run_circle_outlined,
+                    Colors.green,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.history,
+                    size: 16,
+                    color: theme.textTheme.bodySmall?.color,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Last Data Flush: ',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    lastFlush != null ? _formatTimestamp(lastFlush) : 'Never',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStatTile(
+    ThemeData theme,
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(icon, color: color, size: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                title,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.8),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

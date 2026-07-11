@@ -43,6 +43,12 @@ class CronJob {
   /// Last execution output (truncated)
   final String? lastRunOutput;
 
+  /// Whether the job runs without an LLM agent
+  final bool noAgent;
+
+  /// Working directory for execution
+  final String? workdir;
+
   const CronJob({
     required this.id,
     required this.name,
@@ -54,6 +60,8 @@ class CronJob {
     this.lastRun,
     this.lastRunSuccess = true,
     this.lastRunOutput,
+    this.noAgent = false,
+    this.workdir,
   });
 
   /// Get status icon
@@ -132,6 +140,8 @@ class CronJob {
       lastRun: json['lastRun'] != null ? DateTime.tryParse(json['lastRun'] as String) : null,
       lastRunSuccess: json['lastRunSuccess'] as bool? ?? true,
       lastRunOutput: json['lastRunOutput'] as String?,
+      noAgent: json['noAgent'] as bool? ?? false,
+      workdir: json['workdir'] as String?,
     );
   }
 
@@ -160,6 +170,8 @@ class CronJob {
       'lastRun': lastRun?.toIso8601String(),
       'lastRunSuccess': lastRunSuccess,
       'lastRunOutput': lastRunOutput,
+      'noAgent': noAgent,
+      'workdir': workdir,
     };
   }
 
@@ -174,6 +186,8 @@ class CronJob {
     DateTime? lastRun,
     bool? lastRunSuccess,
     String? lastRunOutput,
+    bool? noAgent,
+    String? workdir,
   }) {
     return CronJob(
       id: id ?? this.id,
@@ -186,6 +200,8 @@ class CronJob {
       lastRun: lastRun ?? this.lastRun,
       lastRunSuccess: lastRunSuccess ?? this.lastRunSuccess,
       lastRunOutput: lastRunOutput ?? this.lastRunOutput,
+      noAgent: noAgent ?? this.noAgent,
+      workdir: workdir ?? this.workdir,
     );
   }
 }

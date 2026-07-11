@@ -331,6 +331,14 @@ import 'thing.dart'
 - Avoid direct `dart:io` usage in shared Flutter code.
 - Secret-bearing files and environment templates live under `config/` and related deployment directories; avoid printing or committing real secrets.
 
+## CI expectations and merge rules
+
+- CI blocks merge on failing quality gates; do not use blanket `continue-on-error: true` on test gates.
+- Verify local gates before pushing: `flutter analyze lib/`, `flutter test`, backend `npm run lint && npm test`.
+- Inspect PR checks after push; do not merge if PR checks are absent or failing.
+- If GitHub Actions shows `startup_failure` with `jobs: []`, treat it as a workflow-level blocker and do not consider the branch green until an actual job runs.
+- Keep PRs focused; split follow-up work into separate issues/branches if scope grows.
+
 ## Useful documentation
 
 - `SPEC.md` - Product specification and vision.
