@@ -114,13 +114,36 @@ class _LogsScreenState extends State<LogsScreen> {
   }
 
   Future<void> _exportLogs() async {
-    // TODO: Implement export via LoggingService
-    final logsText = _filteredLogs.map((log) {
-      final timestamp = '${log.formatDate()} ${log.formatTimestamp()}';
-      final severity = log.severityLabel.padRight(8);
-      return '[$timestamp] [$severity] [${log.source}] ${log.message}';
-    }).join('\n');
+    final service = _logService;
+    if (service == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Log service unavailable'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      return;
+    }
 
+    // Try a real file export first; fall back to clipboard when unsupported
+    // (web) or when nothing was written.
+    final path = await service.exportLogs(entries: _filteredLogs);
+
+    if (path != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logs exported to $path'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
+    final logsText = _filteredLogs.map(LoggingService.formatEntry).join('\n');
     await Clipboard.setData(ClipboardData(text: logsText));
 
     if (mounted) {

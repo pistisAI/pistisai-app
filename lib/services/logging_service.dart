@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:pistisai/models/log_entry.dart';
 
 /// Reads and parses Hermes agent log files for the logs screen.
@@ -139,6 +141,52 @@ class LoggingService {
         message: message,
       );
     } catch (e) {
+      return null;
+    }
+  }
+
+  /// Formats a single [LogEntry] into the canonical export line:
+  /// `[YYYY-MM-DD HH:MM:SS] [SEVERITY] [source] message`
+  static String formatEntry(LogEntry log) {
+    final timestamp = '${log.formatDate()} ${log.formatTimestamp()}';
+    final severity = log.severityLabel.padRight(8);
+    return '[$timestamp] [$severity] [${log.source}] ${log.message}';
+  }
+
+  /// Exports [entries] (or all available logs if null) to a `.log` file.
+  ///
+  /// By default the file is written to the app documents directory via
+  /// [getApplicationDocumentsDirectory]. Pass [outputDir] to override the
+  /// destination (mainly for tests or custom export locations).
+  ///
+  /// Returns the absolute file path on success, or `null` when export is not
+  /// supported (e.g. web, or no logs to write) so callers can fall back to
+  /// copying to the clipboard.
+  Future<String?> exportLogs({
+    List<LogEntry>? entries,
+    String? fileName,
+    String? outputDir,
+  }) async {
+    if (kIsWeb) return null;
+
+    final logs = entries ?? await getAllLogs();
+    if (logs.isEmpty) return null;
+
+    try {
+      final dirPath = outputDir ??
+          (await getApplicationDocumentsDirectory()).path;
+      final dir = Directory(dirPath);
+      if (!await dir.exists()) await dir.create(recursive: true);
+
+      final stamp =
+          DateTime.now().toIso8601String().replaceAll(':', '-').split('.').first;
+      final name = fileName ?? 'pistisai-logs-$stamp.log';
+      final file = File(p.join(dir.path, name));
+      final buffer = logs.map(formatEntry).join('\n');
+      await file.writeAsString('$buffer\n');
+      return file.path;
+    } catch (e) {
+      debugPrint('[LoggingService] Error exporting logs: $e');
       return null;
     }
   }
