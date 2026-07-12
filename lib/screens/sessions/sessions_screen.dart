@@ -1,5 +1,7 @@
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -189,20 +191,39 @@ class _SessionsScreenState extends State<SessionsScreen>
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              // TODO: Implement actual session termination
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Session ${session.id} terminated'),
-                  action: SnackBarAction(
-                    label: 'Undo',
-                    onPressed: () {
-                      // TODO: Implement undo
-                    },
+
+              final service = _sessionService;
+              final messenger = ScaffoldMessenger.of(context);
+              final errorColor = Theme.of(context).colorScheme.error;
+              if (service == null) {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: const Text('Session service unavailable'),
+                    backgroundColor: errorColor,
                   ),
-                ),
-              );
+                );
+                return;
+              }
+
+              final ok = await service.terminate(session.id);
+
+              if (ok) {
+                unawaited(_loadSessions());
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text('Session ${session.id} terminated'),
+                  ),
+                );
+              } else {
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to terminate session ${session.id}'),
+                    backgroundColor: errorColor,
+                  ),
+                );
+              }
             },
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
