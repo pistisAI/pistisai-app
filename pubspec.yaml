@@ -3,7 +3,7 @@ description: Local-first agent companion for Hermes, OpenClaw, and compatible ag
 publish_to: none
 homepage: https://pistisai.app
 repository: https://github.com/pistisAI/pistisai-app
-version: 1.0.1+1
+version: 1.0.2+2
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
