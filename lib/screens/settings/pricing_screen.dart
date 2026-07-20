@@ -147,6 +147,7 @@ class _PricingScreenState extends State<PricingScreen> {
         'icon': Icons.info,
         'benefits': [
           'Web platform access',
+          'Desktop app access (Linux, Windows, macOS)',
           'Local conversation storage',
           'Basic LLM chat functionality',
           'Manual data export/import',
@@ -161,7 +162,7 @@ class _PricingScreenState extends State<PricingScreen> {
         'color': Colors.blue,
         'icon': Icons.star,
         'benefits': [
-          'All platform access (web, desktop, mobile)',
+          'All platform access (web, mobile)',
           'Persistent always-on containers',
           'Priority connection handling',
           'Extended request queue (20 requests)',

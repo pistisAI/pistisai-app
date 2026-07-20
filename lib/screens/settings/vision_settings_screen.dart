@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
 import 'package:pistisai/services/vision/camera_capture_service.dart';
+import 'package:pistisai/services/vision/v4l2_camera_service.dart';
+import 'package:pistisai/screens/settings/v4l2_camera_preview.dart';
 import 'package:pistisai/services/vision/ocr_engine_service.dart';
 
 /// Vision Settings Screen
@@ -28,6 +31,23 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
       di.serviceLocator<CameraCaptureService>();
   late final OcrEngineService _ocrEngineService =
       di.serviceLocator<OcrEngineService>();
+
+  // Linux/v4l2 capture path — used on desktop Linux where the `camera`
+  // plugin has no backend and camera_desktop can't convert YUYV frames.
+  final V4L2CameraService _v4l2 = V4L2CameraService();
+  bool _v4l2Running = false;
+
+  Future<void> _startLinuxCamera() async {
+    try {
+      await _v4l2.start();
+      _v4l2Running = true;
+      _testResults.add('✅ Linux camera capture started (${_v4l2.device})');
+    } catch (e) {
+      _v4l2Running = false;
+      _testResults.add('❌ Linux camera: $e');
+    }
+    if (mounted) setState(() {});
+  }
 
   Future<void> _initializeAllServices() async {
     setState(() {
@@ -66,6 +86,12 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
         _testResults.add('✅ OCR Engine Service initialized');
       } catch (e) {
         _testResults.add('❌ OCR Engine Service: $e');
+      }
+
+      // On desktop Linux, start the v4l2 capture path (camera plugin has
+      // no Linux backend; camera_desktop can't convert YUYV frames).
+      if (Platform.isLinux) {
+        await _startLinuxCamera();
       }
 
       setState(() {
@@ -158,6 +184,38 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                   isInitialized: _ocrEngineService.isInitialized,
                   lastError: _ocrEngineService.lastError,
                 ),
+                // Live camera preview (Linux/v4l2 path). The feed is rendered
+                // locally from ffmpeg-captured RGBA frames; no frames are
+                // retained or transmitted by this widget.
+                if (_v4l2Running)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Camera Preview',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: SizedBox(
+                            height: 240,
+                            child: V4L2CameraPreview(service: _v4l2),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Local-only preview (v4l2/ffmpeg). Frames are not saved or sent.',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: Colors.grey.shade600),
+                        ),
+                      ],
+                    ),
+                  ),
                 if (_testResults.isNotEmpty) ...[
                   const Padding(
                     padding: EdgeInsets.all(16),

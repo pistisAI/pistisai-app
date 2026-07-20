@@ -28,6 +28,8 @@ import 'package:pistisai/services/web_download_prompt_service.dart'
 import 'package:pistisai/services/log_buffer_service.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
+import 'package:camera_desktop/camera_desktop.dart'
+    if (dart.library.html) 'package:camera_desktop/camera_desktop_stub.dart';
 import 'package:pistisai/services/url_scheme_registration_service.dart'
     if (dart.library.html) 'package:pistisai/services/url_scheme_registration_service_stub.dart';
 import 'web_plugins_stub.dart'
@@ -63,6 +65,11 @@ String? resolveCallbackUrl(List<String> args) {
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Register the desktop camera backend (Linux/macOS/Windows) for the
+  // `camera` plugin. The official plugin has no Linux impl; camera_desktop
+  // provides one via camera_platform_interface. No-op on web (stub).
+  CameraDesktopPlugin.registerWith();
 
   // Immediate logging to verify Dart entry point is reached
   // Build trigger: force new release tag

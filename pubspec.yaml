@@ -99,6 +99,10 @@ dependencies:
 
   # Vision System - Camera
   camera: ^0.12.0
+  # Desktop (Linux/macOS/Windows) backend for the camera plugin — the official
+  # `camera` package has no Linux impl; camera_desktop implements
+  # camera_platform_interface so CameraCaptureService works on desktop.
+  camera_desktop: ^1.2.1
 
   # Vision System - OCR
   tesseract_ocr: ^0.5.0
