@@ -32,11 +32,15 @@ is to **carry** trust rather than perform it. If the agent at Pistisai's center 
 untrustworthy, the name is a lie.
 
 ### The Biblical layer (verified — `bible-service-seed.js`, curated "Zoid Maltek, June 6 2026")
-The same word anchors in KJV: **Hebrews 11:1** (faith = substance/evidence of things not
-seen), **Proverbs 3:5-6** (trust, lean not on own understanding), **Galatians 5:22**
+The same word anchors in the curated KJV corpus: **Hebrews 11:1** (faith = substance/evidence
+of things not seen), **Proverbs 3:5-6** (trust, lean not on own understanding), **Galatians 5:22**
 (faithfulness is fruit), **1 Corinthians 13:4-7** (love keeps no record of wrongs,
 rejoices with the truth), **2 Timothy 3:16** (Scripture for *rebuking, correcting,
-training*), **Proverbs 27:17** (iron sharpens iron), **Luke 16:10** (faithful in the least).
+training*), **Proverbs 27:17** (iron sharpens iron).
+> Supporting KJV (real scripture, but NOT in the pistisai seed corpus — cite as general KJV,
+> not as "the Biblical layer" above): **Luke 16:10** (faithful in the least), **Matthew 7:3-5**
+(the plank / hypocrite). These two are used below for the discipline, flagged so the claim
+"verified in seed" stays true.
 
 ---
 
