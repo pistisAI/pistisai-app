@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
@@ -158,6 +159,38 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                   isInitialized: _ocrEngineService.isInitialized,
                   lastError: _ocrEngineService.lastError,
                 ),
+                // Live camera preview — only when the service is initialized
+                // and a controller exists. The feed is rendered locally;
+                // no frames are retained or transmitted by this widget.
+                if (_cameraCaptureService.isInitialized &&
+                    _cameraCaptureService.controller != null)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Camera Preview',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: CameraPreview(
+                            _cameraCaptureService.controller!,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Local-only preview. Frames are not saved or sent.',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: Colors.grey.shade600),
+                        ),
+                      ],
+                    ),
+                  ),
                 if (_testResults.isNotEmpty) ...[
                   const Padding(
                     padding: EdgeInsets.all(16),
