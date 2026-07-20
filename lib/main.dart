@@ -43,6 +43,23 @@ import 'package:pistisai/utils/platform_file_utils.dart'
 
 // navigatorKey is now imported from config/navigator_key.dart
 
+/// Resolve the OAuth callback URL from process arguments, if present.
+///
+/// Returns the first argument that looks like a Pistisai callback scheme
+/// (`pistisai://` or `com.pistisai.app://`). Returns `null` when none of the
+/// arguments are a callback URL — including when conventional engine/flutter
+/// flags such as `--enable-logging` or `--verbose` are passed. This prevents
+/// non-callback arguments from ever triggering the early `return` in [main]
+/// that would skip `runApp` and leave the window black.
+String? resolveCallbackUrl(List<String> args) {
+  for (final a in args) {
+    if (a.startsWith('com.pistisai.app://') || a.startsWith('pistisai://')) {
+      return a;
+    }
+  }
+  return null;
+}
+
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,8 +68,12 @@ void main([List<String> args = const []]) async {
   // Build trigger: force new release tag
   debugPrint('----- DART MAIN START ----- v1.0.0');
 
-  // Handle command-line arguments (OAuth callback URLs)
-  if (args.isNotEmpty) {
+  // Handle command-line arguments (OAuth callback URLs).
+  // Only bail out early when an actual callback URL is present; ignore
+  // conventional engine/flutter flags (--enable-logging, --verbose, etc.)
+  // so they cannot prevent the UI from ever starting.
+  final callbackUrl = resolveCallbackUrl(args);
+  if (callbackUrl != null) {
     debugPrint('[Main] Command-line arguments received: $args');
     await _handleCommandLineArgs(args);
     return; // Exit after handling callback
