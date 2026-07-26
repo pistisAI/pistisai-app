@@ -549,10 +549,12 @@ class _AppRouterHostState extends State<_AppRouterHost> {
   }
 
   void _initializeRouter(AuthService authService) {
+    final setupWizardService = di.serviceLocator.get<SetupWizardService>();
     setState(() {
       _router = AppRouter.createRouter(
         navigatorKey: navigatorKey,
         authService: authService,
+        setupWizardService: setupWizardService,
       );
     });
   }
