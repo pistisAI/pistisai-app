@@ -49,7 +49,7 @@ function(APPLY_STANDARD_SETTINGS TARGET)
   # Allow deprecated declarations for system tray functionality
   target_compile_options(${TARGET} PRIVATE -Wno-deprecated-declarations)
   # Allow deprecated literal operators for flutter_secure_storage_linux compatibility
-  target_compile_options(${TARGET} PRIVATE -Wno-deprecated-literal-operator)
+  target_compile_options(${TARGET} PRIVATE -Wno-deprecated-copy-dtor)
 
   target_compile_options(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:-O3>")
   target_compile_definitions(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")

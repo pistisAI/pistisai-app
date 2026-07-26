@@ -74,8 +74,8 @@ Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECT
 | 🐧 Linux | ✅ AppImage + auto-update daemon |
 | 🌐 Web | [pistisai.app](https://pistisai.app) |
 | 📱 Android | ✅ APK builds from CI |
-| 🪟 Windows | 🚧 Installer in development |
-| 🍎 macOS | 📋 Planned |
+| 🪟 Windows | ✅ Installer (InnoSetup) + CI |
+| 🍎 macOS | ✅ Installer + CI |
 
 ---
 
@@ -101,6 +101,8 @@ flutter run -d chrome  # Web
 flutter build linux --release
 flutter build web --release
 flutter build apk --release --split-per-abi
+flutter build windows --release
+flutter build macos --release
 ```
 
 ### Backend Services

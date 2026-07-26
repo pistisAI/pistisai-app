@@ -68,6 +68,7 @@ import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
 import 'package:pistisai/services/vision/camera_capture_service.dart';
 import 'package:pistisai/services/vision/ocr_engine_service.dart';
+import 'package:pistisai/services/vision/presence_service.dart';
 import 'package:pistisai/services/voice/cloud_tts_service.dart';
 import 'package:pistisai/services/voice/hermes_voice_bridge_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
@@ -935,6 +936,11 @@ Future<void> setupAuthenticatedServices() async {
     final ocrEngineService = OcrEngineService();
     serviceLocator
         .registerLazySingleton<OcrEngineService>(() => ocrEngineService);
+
+    final presenceService = PresenceService(
+      cameraCaptureService: cameraCaptureService,
+    );
+    serviceLocator.registerLazySingleton<PresenceService>(() => presenceService);
 
     // Desktop control services - window management
     debugPrint('[ServiceLocator] Initializing Desktop Control services...');

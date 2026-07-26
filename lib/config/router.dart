@@ -9,6 +9,7 @@ import '../screens/callback_screen.dart';
 import '../screens/onboarding/setup_wizard_screen.dart';
 import '../screens/home/home_layout.dart';
 import '../widgets/navigation/openclaw_navigation_shell.dart';
+import '../services/onboarding/setup_wizard_service.dart';
 
 // Settings screens are lazy-loaded
 import '../screens/settings/settings_lazy.dart' as settings_lazy;
@@ -145,6 +146,7 @@ class AppRouter {
   static GoRouter createRouter({
     GlobalKey<NavigatorState>? navigatorKey,
     required AuthService authService,
+    required SetupWizardService setupWizardService,
   }) {
     debugPrint('[Router] createRouter called');
 
@@ -167,6 +169,7 @@ class AppRouter {
 
     final rootNavigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
 
+    // Setup wizard redirect is handled in the redirect function below
     return GoRouter(
       navigatorKey: rootNavigatorKey,
       initialLocation: initialLocation,
@@ -393,7 +396,7 @@ class AppRouter {
         ...gui_automation_lazy.guiAutomationRoutes,
         ...construction_lazy.constructionRoutes,
       ],
-      redirect: (context, state) {
+      redirect: (context, state) async {
         debugPrint('[Router] Redirect check: ${state.matchedLocation}');
 
         final location = state.matchedLocation;
@@ -465,6 +468,14 @@ class AppRouter {
 
         // 6. Unauthenticated state on App domain or Desktop
         if (isLoggingIn || isCallback || isSetup || !kIsWeb) {
+          // Check if first-time user on desktop needs setup wizard
+          if (!kIsWeb && !isAuthenticated && !isSetup) {
+            final shouldShowWizard = await setupWizardService.shouldShowWizard();
+            if (shouldShowWizard) {
+              debugPrint('[Router] First-time desktop user, redirecting to setup wizard');
+              return '/setup';
+            }
+          }
           return null; // Allow these (Desktop is always allowed)
         }
 
