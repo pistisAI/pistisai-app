@@ -31,6 +31,34 @@ class SettingsPreferenceService {
   // Active Backend
   static const String _activeBackendKey = 'settings_active_backend';
 
+  // Runtime Settings
+  static const String _supportProviderKey = 'settings_support_provider';
+  static const String _rateLimitKey = 'settings_rate_limit';
+  static const String _runtimeTimeoutKey = 'settings_runtime_timeout';
+
+  // Network Settings
+  static const String _useProxyKey = 'settings_use_proxy';
+  static const String _proxyHostKey = 'settings_proxy_host';
+  static const String _proxyPortKey = 'settings_proxy_port';
+  static const String _maxRetriesKey = 'settings_max_retries';
+  static const String _requestTimeoutKey = 'settings_request_timeout';
+
+  // App Settings
+  static const String _encryptLocalDataKey = 'settings_encrypt_local_data';
+  static const String _sessionTimeoutMinutesKey = 'settings_session_timeout_minutes';
+  static const String _rememberTokensKey = 'settings_remember_tokens';
+
+  // Storage Settings
+  static const String _maxConversationHistoryKey = 'settings_max_conversation_history';
+  static const String _enableCacheKey = 'settings_enable_cache';
+  static const String _cacheSizeMBKey = 'settings_cache_size_mb';
+  static const String _autoCleanupKey = 'settings_auto_cleanup';
+
+  // Developer Settings
+  static const String _debugModeKey = 'settings_debug_mode';
+  static const String _verboseLoggingKey = 'settings_verbose_logging';
+  static const String _showDevToolsKey = 'settings_show_dev_tools';
+
   // Hermes Settings
   static const String _hermesEnabledKey = 'settings_hermes_enabled';
   static const String _hermesUrlKey = 'settings_hermes_url';
@@ -422,5 +450,241 @@ class SettingsPreferenceService {
     } else {
       await prefs.setString(_hermesApiKeyKey, value);
     }
+  }
+
+  // ==========================================================================
+  // Runtime Settings
+  // ==========================================================================
+
+  /// Get the preferred support model provider
+  Future<String> getSupportProvider() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_supportProviderKey) ?? 'Auto';
+  }
+
+  /// Set the preferred support model provider
+  Future<void> setSupportProvider(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_supportProviderKey, value);
+  }
+
+  /// Get the rate limit (max concurrent requests)
+  Future<int> getRateLimit() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_rateLimitKey) ?? 1;
+  }
+
+  /// Set the rate limit (max concurrent requests)
+  Future<void> setRateLimit(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_rateLimitKey, value);
+  }
+
+  /// Get the runtime timeout in seconds
+  Future<int> getRuntimeTimeout() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_runtimeTimeoutKey) ?? 30;
+  }
+
+  /// Set the runtime timeout in seconds
+  Future<void> setRuntimeTimeout(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_runtimeTimeoutKey, value);
+  }
+
+  // ==========================================================================
+  // Network Settings
+  // ==========================================================================
+
+  /// Get whether proxy is enabled
+  Future<bool> isProxyEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_useProxyKey) ?? false;
+  }
+
+  /// Set whether proxy is enabled
+  Future<void> setProxyEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_useProxyKey, value);
+  }
+
+  /// Get the proxy host
+  Future<String> getProxyHost() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_proxyHostKey) ?? '';
+  }
+
+  /// Set the proxy host
+  Future<void> setProxyHost(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_proxyHostKey, value);
+  }
+
+  /// Get the proxy port
+  Future<int> getProxyPort() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_proxyPortKey) ?? 8080;
+  }
+
+  /// Set the proxy port
+  Future<void> setProxyPort(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_proxyPortKey, value);
+  }
+
+  /// Get max retries
+  Future<int> getMaxRetries() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_maxRetriesKey) ?? 3;
+  }
+
+  /// Set max retries
+  Future<void> setMaxRetries(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_maxRetriesKey, value);
+  }
+
+  /// Get request timeout in seconds
+  Future<int> getRequestTimeout() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_requestTimeoutKey) ?? 60;
+  }
+
+  /// Set request timeout in seconds
+  Future<void> setRequestTimeout(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_requestTimeoutKey, value);
+  }
+
+  // ==========================================================================
+  // App Settings (additional)
+  // ==========================================================================
+
+  /// Get encrypt local data preference
+  Future<bool> isEncryptLocalDataEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_encryptLocalDataKey) ?? true;
+  }
+
+  /// Set encrypt local data preference
+  Future<void> setEncryptLocalDataEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_encryptLocalDataKey, value);
+  }
+
+  /// Get session timeout in minutes
+  Future<int> getSessionTimeoutMinutes() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_sessionTimeoutMinutesKey) ?? 30;
+  }
+
+  /// Set session timeout in minutes
+  Future<void> setSessionTimeoutMinutes(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_sessionTimeoutMinutesKey, value);
+  }
+
+  /// Get remember tokens preference
+  Future<bool> isRememberTokensEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_rememberTokensKey) ?? true;
+  }
+
+  /// Set remember tokens preference
+  Future<void> setRememberTokensEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_rememberTokensKey, value);
+  }
+
+  // ==========================================================================
+  // Storage Settings
+  // ==========================================================================
+
+  /// Get max conversation history limit
+  Future<int> getMaxConversationHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_maxConversationHistoryKey) ?? 1000;
+  }
+
+  /// Set max conversation history limit
+  Future<void> setMaxConversationHistory(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_maxConversationHistoryKey, value);
+  }
+
+  /// Get enable cache preference
+  Future<bool> isCacheEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_enableCacheKey) ?? true;
+  }
+
+  /// Set enable cache preference
+  Future<void> setCacheEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_enableCacheKey, value);
+  }
+
+  /// Get cache size limit in MB
+  Future<int> getCacheSizeMB() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_cacheSizeMBKey) ?? 500;
+  }
+
+  /// Set cache size limit in MB
+  Future<void> setCacheSizeMB(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_cacheSizeMBKey, value);
+  }
+
+  /// Get auto cleanup preference
+  Future<bool> isAutoCleanupEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_autoCleanupKey) ?? true;
+  }
+
+  /// Set auto cleanup preference
+  Future<void> setAutoCleanupEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_autoCleanupKey, value);
+  }
+
+  // ==========================================================================
+  // Developer Settings
+  // ==========================================================================
+
+  /// Get debug mode preference
+  Future<bool> isDebugModeEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_debugModeKey) ?? false;
+  }
+
+  /// Set debug mode preference
+  Future<void> setDebugModeEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_debugModeKey, value);
+  }
+
+  /// Get verbose logging preference
+  Future<bool> isVerboseLoggingEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_verboseLoggingKey) ?? false;
+  }
+
+  /// Set verbose logging preference
+  Future<void> setVerboseLoggingEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_verboseLoggingKey, value);
+  }
+
+  /// Get show dev tools preference
+  Future<bool> isShowDevToolsEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_showDevToolsKey) ?? false;
+  }
+
+  /// Set show dev tools preference
+  Future<void> setShowDevToolsEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showDevToolsKey, value);
   }
 }
