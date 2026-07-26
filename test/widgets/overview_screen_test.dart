@@ -68,7 +68,7 @@ void main() {
     voiceService.dispose();
   });
 
-  // Re-enabled — DI registered in setUp (#424).
+  // Re-enabled — DI registered in setUp.
   testWidgets('overview voice section exposes demo controls', (tester) async {
     final localVoice = LocalVoiceInputService(
       voiceConversationService: voiceService,
