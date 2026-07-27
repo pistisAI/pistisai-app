@@ -17,6 +17,7 @@ class GuiAutomationService extends ChangeNotifier {
   String _status = 'Ready';
   String _lastResult = '';
   String _modelEndpoint = AppConfig.gatewayUrl; // OpenClaw Gateway endpoint
+  final String _localEndpoint = 'http://127.0.0.1:1234'; // LM Studio local endpoint
 
   bool get isInitialized => _isInitialized;
   bool get isProcessing => _isProcessing;
@@ -128,6 +129,59 @@ class GuiAutomationService extends ChangeNotifier {
       }
     } catch (e) {
       _lastResult = 'Error: $e';
+    }
+
+    _isProcessing = false;
+    _status = 'Ready';
+    notifyListeners();
+
+    return _lastResult;
+  }
+
+  /// Analyze screenshot with local vision model via LM Studio
+  Future<String> analyzeScreenshotLocal(String imagePath) async {
+    _isProcessing = true;
+    _status = 'Analyzing screenshot locally...';
+    notifyListeners();
+
+    try {
+      final file = File(imagePath);
+      final bytes = await file.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final response = await http.post(
+        Uri.parse('$_localEndpoint/v1/chat/completions'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'model': 'google/gemma-4-e4b',
+          'messages': [
+            {
+              'role': 'user',
+              'content': [
+                {
+                  'type': 'text',
+                  'text':
+                      'You are a high-precision sensor. Analyze this screenshot and output ONLY: [applications visible], [user activity], [one action]. No preamble, no explanation.'
+                },
+                {
+                  'type': 'image_url',
+                  'image_url': {'url': 'data:image/png;base64,$base64Image'}
+                }
+              ]
+            }
+          ],
+          'max_tokens': 200
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _lastResult = data['choices'][0]['message']['content'];
+      } else {
+        _lastResult = 'Local analysis failed: ${response.statusCode}';
+      }
+    } catch (e) {
+      _lastResult = 'Local analysis error: $e';
     }
 
     _isProcessing = false;
