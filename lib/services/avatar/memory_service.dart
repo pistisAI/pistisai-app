@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pistisai/database/drift_local_brain.dart';
@@ -9,6 +10,7 @@ import 'package:uuid/uuid.dart';
 class MemoryService {
   final LocalBrain database;
   final Uuid _uuid = const Uuid();
+  final String _embeddingEndpoint;
 
   bool _isInitialized = false;
   String? _lastError;
@@ -16,7 +18,37 @@ class MemoryService {
   bool get isInitialized => _isInitialized;
   String? get lastError => _lastError;
 
-  MemoryService({required this.database});
+  MemoryService({
+    required this.database,
+    String? embeddingEndpoint,
+  }) : _embeddingEndpoint = embeddingEndpoint ?? 'http://localhost:1234/v1/embeddings';
+
+  /// Generate embedding vector for text using LM Studio embedding endpoint.
+  Future<List<double>> _generateEmbedding(String text) async {
+    try {
+      final client = HttpClient();
+      final request = await client.postUrl(Uri.parse(_embeddingEndpoint));
+      request.headers.contentType = ContentType.json;
+      request.write(jsonEncode({
+        'input': text,
+        'model': 'gemma-4-e4b',
+      }));
+
+      final response = await request.close();
+      if (response.statusCode != 200) {
+        debugPrint('[MemoryService] Embedding API returned ${response.statusCode}');
+        return [];
+      }
+
+      final body = await response.transform(utf8.decoder).join();
+      final data = jsonDecode(body) as Map<String, dynamic>;
+      final embedding = (data['data'] as List).first['embedding'] as List<double>;
+      return embedding;
+    } catch (e) {
+      debugPrint('[MemoryService] Embedding generation failed: $e');
+      return [];
+    }
+  }
 
   /// Initialize the memory service
   Future<void> initialize() async {
@@ -49,10 +81,15 @@ class MemoryService {
     debugPrint('[MemoryService] Storing memory: $id');
 
     try {
-      // For now, store empty embedding array
-      // TODO: Generate actual embedding using text embedding model
-      final embeddingJson =
-          embedding != null ? jsonEncode(embedding) : jsonEncode(<double>[]);
+      // Generate embedding if not provided
+      final List<double> finalEmbedding;
+      if (embedding != null) {
+        finalEmbedding = embedding;
+      } else {
+        finalEmbedding = await _generateEmbedding(content);
+      }
+
+      final embeddingJson = jsonEncode(finalEmbedding);
 
       await database.insertMemory(
         ConversationMemoriesCompanion.insert(
