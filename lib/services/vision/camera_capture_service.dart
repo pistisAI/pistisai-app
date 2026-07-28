@@ -1,13 +1,19 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Camera Capture Service
 ///
 /// This service handles camera input capture for real-time vision.
 /// It provides access to webcam feeds and frame capture capabilities.
+/// On desktop platforms (Linux/Windows), it delegates to native platform
+/// channels for camera operations, with the camera_desktop plugin as fallback.
 class CameraCaptureService {
+  static const MethodChannel _channel =
+      MethodChannel('pistisai/camera_capture');
+
   CameraController? _controller;
   List<CameraDescription> _cameras = [];
   bool _isInitialized = false;
@@ -30,6 +36,7 @@ class CameraCaptureService {
   ///
   /// Gets available cameras and initializes the first camera with
   /// high resolution preset. Returns silently if already initialized.
+  /// On desktop platforms, initializes the native platform channel first.
   Future<void> initialize() async {
     if (_isInitialized) {
       debugPrint('[CameraCapture] Already initialized, skipping');
@@ -37,6 +44,21 @@ class CameraCaptureService {
     }
 
     debugPrint('[CameraCapture] Initializing...');
+
+    // On web, camera access is not supported
+    if (kIsWeb) {
+      _lastError = 'Camera capture not supported on web platform';
+      debugPrint('[CameraCapture] $_lastError');
+      return;
+    }
+
+    try {
+      // Initialize native platform channel (desktop)
+      await _channel.invokeMethod('cameraInitialize');
+      debugPrint('[CameraCapture] Native channel initialized');
+    } catch (e) {
+      debugPrint('[CameraCapture] Native channel not available: $e');
+    }
 
     try {
       _cameras = await availableCameras();

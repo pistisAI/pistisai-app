@@ -855,6 +855,140 @@ static FlValue* initialize_region_capture() {
   return fl_value_new_bool(true);
 }
 
+// ============================================================================
+// Camera Capture Channel (pistisai/camera_capture)
+// ============================================================================
+
+static FlValue* camera_initialize() {
+  // On Linux, camera access is handled by the camera_desktop plugin.
+  // This channel provides a native wrapper for camera operations.
+  return fl_value_new_bool(true);
+}
+
+static FlValue* camera_list_cameras() {
+  // Return a placeholder list — the actual camera enumeration
+  // is handled by the camera_desktop plugin on the Dart side.
+  FlValue* result = fl_value_new_list();
+  return result;
+}
+
+static FlValue* camera_capture_image(FlValue* args) {
+  // Camera image capture is delegated to the camera_desktop plugin.
+  // This channel method exists for future native camera integration.
+  return fl_value_new_bool(false);
+}
+
+// ============================================================================
+// OCR Engine Channel (pistisai/ocr_engine)
+// ============================================================================
+
+static FlValue* ocr_initialize() {
+  // Check if tesseract is available on the system
+  int ret = system("which tesseract > /dev/null 2>&1");
+  if (ret == 0) {
+    std::cout << "[OCR] Tesseract binary found on system" << std::endl;
+    return fl_value_new_bool(true);
+  }
+  std::cerr << "[OCR] Tesseract binary not found on system" << std::endl;
+  return fl_value_new_bool(false);
+}
+
+static FlValue* ocr_extract_text(FlValue* args) {
+  if (fl_value_get_type(args) != FL_VALUE_TYPE_MAP) {
+    return fl_value_new_string("");
+  }
+
+  FlValue* path_value = fl_value_lookup_string(args, "imagePath");
+  if (!path_value || fl_value_get_type(path_value) != FL_VALUE_TYPE_STRING) {
+    return fl_value_new_string("");
+  }
+
+  const char* image_path = fl_value_get_string(path_value);
+
+  // Build and execute tesseract command
+  std::string cmd = "tesseract \"";
+  cmd += image_path;
+  cmd += "\" stdout -l eng 2>/dev/null";
+
+  FILE* pipe = popen(cmd.c_str(), "r");
+  if (!pipe) {
+    std::cerr << "[OCR] Failed to run tesseract" << std::endl;
+    return fl_value_new_string("");
+  }
+
+  std::string result;
+  char buffer[4096];
+  while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+    result += buffer;
+  }
+  pclose(pipe);
+
+  // Trim trailing newline
+  while (!result.empty() && (result.back() == '\n' || result.back() == '\r')) {
+    result.pop_back();
+  }
+
+  return fl_value_new_string(result.c_str());
+}
+
+static FlValue* ocr_extract_text_multilingual(FlValue* args) {
+  if (fl_value_get_type(args) != FL_VALUE_TYPE_MAP) {
+    return fl_value_new_string("");
+  }
+
+  FlValue* path_value = fl_value_lookup_string(args, "imagePath");
+  FlValue* languages_value = fl_value_lookup_string(args, "languages");
+
+  if (!path_value || fl_value_get_type(path_value) != FL_VALUE_TYPE_STRING) {
+    return fl_value_new_string("");
+  }
+
+  const char* image_path = fl_value_get_string(path_value);
+
+  // Build language string
+  std::string lang = "eng";
+  if (languages_value && fl_value_get_type(languages_value) == FL_VALUE_TYPE_LIST) {
+    lang = "";
+    for (size_t i = 0; i < fl_value_get_length(languages_value); i++) {
+      FlValue* item = fl_value_get_list_value(languages_value, i);
+      if (fl_value_get_type(item) == FL_VALUE_TYPE_STRING) {
+        if (!lang.empty()) lang += "+";
+        lang += fl_value_get_string(item);
+      }
+    }
+    if (lang.empty()) lang = "eng";
+  }
+
+  std::string cmd = "tesseract \"";
+  cmd += image_path;
+  cmd += "\" stdout -l ";
+  cmd += lang;
+  cmd += " 2>/dev/null";
+
+  FILE* pipe = popen(cmd.c_str(), "r");
+  if (!pipe) {
+    std::cerr << "[OCR] Failed to run tesseract" << std::endl;
+    return fl_value_new_string("");
+  }
+
+  std::string result;
+  char buffer[4096];
+  while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+    result += buffer;
+  }
+  pclose(pipe);
+
+  while (!result.empty() && (result.back() == '\n' || result.back() == '\r')) {
+    result.pop_back();
+  }
+
+  return fl_value_new_string(result.c_str());
+}
+
+static FlValue* ocr_dispose() {
+  return fl_value_new_bool(true);
+}
+
 static void platform_channels_method_call_handler(FlMethodChannel* channel,
                                                    FlMethodCall* method_call,
                                                    gpointer user_data) {
@@ -890,6 +1024,20 @@ static void platform_channels_method_call_handler(FlMethodChannel* channel,
         result = toggle_maximize(args);
     } else if (strcmp(method, "closeWindow") == 0) {
         result = close_window(args);
+    } else if (strcmp(method, "cameraInitialize") == 0) {
+        result = camera_initialize();
+    } else if (strcmp(method, "cameraListCameras") == 0) {
+        result = camera_list_cameras();
+    } else if (strcmp(method, "cameraCaptureImage") == 0) {
+        result = camera_capture_image(args);
+    } else if (strcmp(method, "ocrInitialize") == 0) {
+        result = ocr_initialize();
+    } else if (strcmp(method, "ocrExtractText") == 0) {
+        result = ocr_extract_text(args);
+    } else if (strcmp(method, "ocrExtractTextMultilingual") == 0) {
+        result = ocr_extract_text_multilingual(args);
+    } else if (strcmp(method, "ocrDispose") == 0) {
+        result = ocr_dispose();
     } else {
         response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
         fl_method_call_respond(method_call, response, nullptr);
@@ -938,6 +1086,28 @@ void register_platform_channels(FlEngine* engine) {
 
     fl_method_channel_set_method_call_handler(
         window_manager_channel,
+        platform_channels_method_call_handler,
+        nullptr,
+        nullptr);
+
+    g_autoptr(FlMethodChannel) camera_capture_channel =
+        fl_method_channel_new(fl_engine_get_binary_messenger(engine),
+                              "pistisai/camera_capture",
+                              FL_METHOD_CODEC(codec));
+
+    fl_method_channel_set_method_call_handler(
+        camera_capture_channel,
+        platform_channels_method_call_handler,
+        nullptr,
+        nullptr);
+
+    g_autoptr(FlMethodChannel) ocr_engine_channel =
+        fl_method_channel_new(fl_engine_get_binary_messenger(engine),
+                              "pistisai/ocr_engine",
+                              FL_METHOD_CODEC(codec));
+
+    fl_method_channel_set_method_call_handler(
+        ocr_engine_channel,
         platform_channels_method_call_handler,
         nullptr,
         nullptr);
