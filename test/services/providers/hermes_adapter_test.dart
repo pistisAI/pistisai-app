@@ -11,7 +11,7 @@ import 'package:pistisai/services/providers/hermes_adapter.dart';
 class FakeHttpClient extends http.BaseClient {
   final Map<String, Future<http.Response> Function()> _responses = {};
   final Map<String, Future<http.StreamedResponse> Function()>
-      _streamedResponses = {};
+      streamedResponses = {};
   int requestCount = 0;
   List<http.BaseRequest> requests = [];
 
@@ -21,7 +21,7 @@ class FakeHttpClient extends http.BaseClient {
 
   void onStreamed(
       String url, Future<http.StreamedResponse> Function() response) {
-    _streamedResponses[url] = response;
+    streamedResponses[url] = response;
   }
 
   @override
@@ -40,7 +40,7 @@ class FakeHttpClient extends http.BaseClient {
     requestCount++;
     requests.add(request);
     final key = request.url.toString();
-    final handler = _streamedResponses[key];
+    final handler = streamedResponses[key];
     if (handler != null) return handler();
     // Fall back to regular response handler for POST
     if (request.method == 'POST') {
@@ -68,7 +68,7 @@ class FakeHttpClient extends http.BaseClient {
 }
 
 /// Helper to create a streamed response from a string body.
-http.StreamedResponse _streamedResponse(String body, {int statusCode = 200}) {
+http.StreamedResponse streamedResponse(String body, {int statusCode = 200}) {
   final stream = Stream<List<int>>.fromIterable([utf8.encode(body)]);
   return http.StreamedResponse(stream, statusCode);
 }
