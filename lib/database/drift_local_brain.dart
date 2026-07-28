@@ -328,6 +328,32 @@ class Macros extends Table {
 }
 
 // ============================================================================
+// AGENT IDENTITY TABLES (Phase 3 - Persistent Agent Identities)
+// ============================================================================
+
+/// Table for persistent agent identities with roles
+@DataClassName('AgentIdentity')
+class AgentIdentities extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get role => text().withDefault(const Constant('secondary'))();
+  // primary, secondary, coordinator, reviewer
+  TextColumn get personalityTraits =>
+      text().nullable()(); // JSON: {formality, humor, enthusiasm, empathy}
+  TextColumn get systemPrompt => text().nullable()();
+  TextColumn get capabilities =>
+      text().nullable()(); // JSON: ["research", "review", "coordination"]
+  TextColumn get avatarConfig =>
+      text().nullable()(); // JSON: visual appearance config
+  BoolColumn get isActive => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+// ============================================================================
 // CONSCIENCE SYSTEM TABLES (Phase 1 - Storage Layer)
 // ============================================================================
 
@@ -363,6 +389,57 @@ class ConscienceDecisions extends Table {
   TextColumn get reasoning => text().nullable()(); // Why the verdict was given
   TextColumn get status => text()
       .withDefault(const Constant('pending'))(); // pending, reviewed, resolved
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+// ============================================================================
+// COORDINATOR SYSTEM TABLES (Phase 4 - Consensus & Conflict Resolution)
+// ============================================================================
+
+/// Table for tracking coordinator state - consensus sessions
+@DataClassName('CoordinatorState')
+class CoordinatorStates extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get decisionId =>
+      text().references(ConscienceDecisions, #id)();
+  TextColumn get action => text()(); // The action being coordinated
+  TextColumn get riskLevel => text()(); // low, medium, high, critical
+  TextColumn get status => text()
+      .withDefault(const Constant('open'))(); // open, consensus, conflict, escalated, resolved
+  TextColumn get consensusVerdict =>
+      text().nullable()(); // APPROVED, QUESTION, HOLD, DENIED
+  TextColumn get consensusReasoning =>
+      text().nullable()(); // The consensus reasoning
+  TextColumn get conflictType =>
+      text().nullable()(); // majority_split, tie, escalation_needed
+  TextColumn get resolutionStrategy =>
+      text().nullable()(); // majority_vote, escalation, user_mediation
+  TextColumn get resolvedBy =>
+      text().nullable()(); // agent name or 'user' if user-mediated
+  IntColumn get totalVotes => integer().withDefault(const Constant(0))();
+  IntColumn get approveCount => integer().withDefault(const Constant(0))();
+  IntColumn get questionCount => integer().withDefault(const Constant(0))();
+  IntColumn get holdCount => integer().withDefault(const Constant(0))();
+  IntColumn get denyCount => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Table for storing individual agent votes within a coordinator session
+@DataClassName('CoordinatorVote')
+class CoordinatorVotes extends Table {
+  TextColumn get id => text()();
+  TextColumn get coordinatorId =>
+      text().references(CoordinatorStates, #id)();
+  TextColumn get agent => text()(); // hermes, benjamin, harper
+  TextColumn get vote => text()(); // APPROVED, QUESTION, HOLD, DENIED
+  TextColumn get reasoning => text().nullable()();
+  DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -467,19 +544,21 @@ class ConversationMemories extends Table {
   ConversationMemories,
   AgentThoughts,
   ConscienceDecisions,
+  AgentIdentities,
 ])
 class LocalBrain extends _$LocalBrain {
   LocalBrain() : super(openConnection());
   LocalBrain.withExecutor(super.executor);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (Migrator m) async {
           await m.createAll();
           await _populateInitialRateLimits();
+          await _createDefaultAgentIdentities();
         },
         onUpgrade: (Migrator m, int from, int to) async {
           if (from < 2) {
@@ -525,6 +604,11 @@ class LocalBrain extends _$LocalBrain {
           if (from < 8) {
             // Add durable main chat timeline persistence.
             await m.createTable(mainChatTimelineRecords);
+          }
+          if (from < 9) {
+            // Add Agent Identity tables for Phase 3
+            await m.createTable(agentIdentities);
+            await _createDefaultAgentIdentities();
           }
         },
       );
@@ -1298,6 +1382,18 @@ class LocalBrain extends _$LocalBrain {
   /// Insert a new memory with embedding
   Future<void> insertMemory(ConversationMemoriesCompanion memory) =>
       into(conversationMemories).insert(memory);
+
+  /// Get all memories that have embeddings (non-empty JSON arrays).
+  Future<List<ConversationMemory>> getAllMemoriesWithEmbeddings() async {
+    final all = await (select(conversationMemories)
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.timestamp, mode: OrderingMode.desc)
+          ]))
+        .get();
+    // Filter out memories with empty or minimal embeddings
+    return all.where((m) => m.embedding.length > 4).toList();
+  }
 
   /// Search memories by content and summary text.
   ///

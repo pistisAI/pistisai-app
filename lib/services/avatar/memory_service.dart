@@ -111,7 +111,7 @@ class MemoryService {
     }
   }
 
-  /// Search memories by content (semantic search)
+  /// Search memories by content (keyword fallback)
   Future<List<ConversationMemory>> searchMemories(String query) async {
     if (!_isInitialized) {
       final error = 'Service not initialized';
@@ -131,6 +131,105 @@ class MemoryService {
       debugPrint('[MemoryService] $_lastError');
       return [];
     }
+  }
+
+  /// Search memories by semantic similarity using vector embeddings.
+  ///
+  /// Generates a query embedding, loads all memories with embeddings from the
+  /// database, computes cosine similarity in Dart, and returns the top-K
+  /// results above [threshold] (default 0.5). Falls back to keyword search
+  /// when embedding generation fails or no embeddings are available.
+  Future<List<ConversationMemory>> searchMemoriesSemantic(
+    String query, {
+    int limit = 10,
+    double threshold = 0.5,
+  }) async {
+    if (!_isInitialized) {
+      final error = 'Service not initialized';
+      _lastError = error;
+      debugPrint('[MemoryService] $error');
+      throw StateError(error);
+    }
+
+    debugPrint('[MemoryService] Semantic search for: $query');
+    try {
+      // 1. Generate query embedding
+      final queryEmbedding = await _generateEmbedding(query);
+      if (queryEmbedding.isEmpty) {
+        debugPrint('[MemoryService] Embedding generation failed, falling back to keyword search');
+        return searchMemories(query);
+      }
+
+      // 2. Load all memories with embeddings
+      final memories = await database.getAllMemoriesWithEmbeddings();
+      if (memories.isEmpty) {
+        debugPrint('[MemoryService] No memories with embeddings found, falling back to keyword search');
+        return searchMemories(query);
+      }
+
+      // 3. Compute cosine similarity for each memory
+      final scored = <_ScoredMemory>[];
+      for (final memory in memories) {
+        try {
+          final memoryEmbedding = List<double>.from(
+            jsonDecode(memory.embedding) as List,
+          );
+          if (memoryEmbedding.isEmpty) continue;
+
+          final similarity = _cosineSimilarity(queryEmbedding, memoryEmbedding);
+          if (similarity >= threshold) {
+            scored.add(_ScoredMemory(memory, similarity));
+          }
+        } catch (e) {
+          // Skip memories with malformed embeddings
+          debugPrint('[MemoryService] Skipping memory ${memory.id}: $e');
+        }
+      }
+
+      // 4. Sort by similarity descending and take top-K
+      scored.sort((a, b) => b.similarity.compareTo(a.similarity));
+      final results = scored.take(limit).map((s) => s.memory).toList();
+
+      _lastError = null;
+      debugPrint('[MemoryService] Semantic search found ${results.length} memories (scored ${scored.length})');
+      return results;
+    } catch (e) {
+      _lastError = 'Failed to search memories semantically: $e';
+      debugPrint('[MemoryService] $_lastError');
+      // Fallback to keyword search on error
+      return searchMemories(query);
+    }
+  }
+
+  /// Compute cosine similarity between two vectors.
+  double _cosineSimilarity(List<double> a, List<double> b) {
+    if (a.length != b.length || a.isEmpty) return 0.0;
+
+    double dotProduct = 0.0;
+    double normA = 0.0;
+    double normB = 0.0;
+
+    for (int i = 0; i < a.length; i++) {
+      dotProduct += a[i] * b[i];
+      normA += a[i] * a[i];
+      normB += b[i] * b[i];
+    }
+
+    final magnitude = _sqrt(normA) * _sqrt(normB);
+    if (magnitude == 0.0) return 0.0;
+    return dotProduct / magnitude;
+  }
+
+  /// Square root helper to avoid importing dart:math for a single call.
+  double _sqrt(double x) {
+    if (x <= 0) return 0.0;
+    double result = x;
+    double previous;
+    do {
+      previous = result;
+      result = (result + x / result) / 2.0;
+    } while ((result - previous).abs() > 1e-10);
+    return result;
   }
 
   /// Get all memories for a specific conversation
@@ -213,4 +312,11 @@ class MemoryService {
     _lastError = null;
     debugPrint('[MemoryService] Disposed successfully');
   }
+}
+
+/// Internal helper to pair a memory with its similarity score.
+class _ScoredMemory {
+  final ConversationMemory memory;
+  final double similarity;
+  const _ScoredMemory(this.memory, this.similarity);
 }
