@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum BackendType { openclaw, hermes }
@@ -53,6 +54,18 @@ class SettingsPreferenceService {
   static const String _enableCacheKey = 'settings_enable_cache';
   static const String _cacheSizeMBKey = 'settings_cache_size_mb';
   static const String _autoCleanupKey = 'settings_auto_cleanup';
+
+  // Avatar Settings
+  static const String _avatarFormalityKey = 'avatar_formality';
+  static const String _avatarHumorKey = 'avatar_humor';
+  static const String _avatarEnthusiasmKey = 'avatar_enthusiasm';
+  static const String _avatarEmpathyKey = 'avatar_empathy';
+  static const String _avatarColorThemeKey = 'avatar_color_theme';
+  static const String _avatarAnimationStyleKey = 'avatar_animation_style';
+  static const String _avatarTypeKey = 'avatar_type';
+  static const String _avatarSizeKey = 'avatar_size';
+  static const String _avatarGlowEnabledKey = 'avatar_glow_enabled';
+  static const String _avatarColorOverrideKey = 'avatar_color_override';
 
   // Developer Settings
   static const String _debugModeKey = 'settings_debug_mode';
@@ -646,6 +659,137 @@ class SettingsPreferenceService {
   Future<void> setAutoCleanupEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_autoCleanupKey, value);
+  }
+
+  // ==========================================================================
+  // Avatar Settings
+  // ==========================================================================
+
+  /// Get avatar formality trait
+  Future<double> getAvatarFormality() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_avatarFormalityKey) ?? 0.5;
+  }
+
+  /// Set avatar formality trait
+  Future<void> setAvatarFormality(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_avatarFormalityKey, value);
+  }
+
+  /// Get avatar humor trait
+  Future<double> getAvatarHumor() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_avatarHumorKey) ?? 0.5;
+  }
+
+  /// Set avatar humor trait
+  Future<void> setAvatarHumor(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_avatarHumorKey, value);
+  }
+
+  /// Get avatar enthusiasm trait
+  Future<double> getAvatarEnthusiasm() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_avatarEnthusiasmKey) ?? 0.5;
+  }
+
+  /// Set avatar enthusiasm trait
+  Future<void> setAvatarEnthusiasm(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_avatarEnthusiasmKey, value);
+  }
+
+  /// Get avatar empathy trait
+  Future<double> getAvatarEmpathy() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_avatarEmpathyKey) ?? 0.5;
+  }
+
+  /// Set avatar empathy trait
+  Future<void> setAvatarEmpathy(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_avatarEmpathyKey, value);
+  }
+
+  /// Get avatar color theme
+  Future<String> getAvatarColorTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_avatarColorThemeKey) ?? 'personality';
+  }
+
+  /// Set avatar color theme
+  Future<void> setAvatarColorTheme(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_avatarColorThemeKey, value);
+  }
+
+  /// Get avatar animation style
+  Future<String> getAvatarAnimationStyle() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_avatarAnimationStyleKey) ?? 'bounce';
+  }
+
+  /// Set avatar animation style
+  Future<void> setAvatarAnimationStyle(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_avatarAnimationStyleKey, value);
+  }
+
+  /// Get avatar type
+  Future<String> getAvatarType() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_avatarTypeKey) ?? 'emoji';
+  }
+
+  /// Set avatar type
+  Future<void> setAvatarType(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_avatarTypeKey, value);
+  }
+
+  /// Get avatar size
+  Future<String> getAvatarSize() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_avatarSizeKey) ?? 'medium';
+  }
+
+  /// Set avatar size
+  Future<void> setAvatarSize(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_avatarSizeKey, value);
+  }
+
+  /// Get avatar glow enabled
+  Future<bool> isAvatarGlowEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_avatarGlowEnabledKey) ?? true;
+  }
+
+  /// Set avatar glow enabled
+  Future<void> setAvatarGlowEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_avatarGlowEnabledKey, value);
+  }
+
+  /// Get avatar color override (null = use personality-derived)
+  Future<Color?> getAvatarColorOverride() async {
+    final prefs = await SharedPreferences.getInstance();
+    final colorHex = prefs.getString(_avatarColorOverrideKey);
+    if (colorHex == null) return null;
+    return Color(int.parse(colorHex.substring(2), radix: 16));
+  }
+
+  /// Set avatar color override (null = use personality-derived)
+  Future<void> setAvatarColorOverride(Color? color) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (color == null) {
+      await prefs.remove(_avatarColorOverrideKey);
+    } else {
+      final colorHex = '#${color.toARGB32().toRadixString(16).substring(2)}';
+      await prefs.setString(_avatarColorOverrideKey, colorHex);
+    }
   }
 
   // ==========================================================================
