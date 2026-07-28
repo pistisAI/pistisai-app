@@ -11090,6 +11090,1713 @@ class ConscienceDecisionsCompanion extends UpdateCompanion<ConscienceDecision> {
   }
 }
 
+class $AgentIdentitiesTable extends AgentIdentities
+    with TableInfo<$AgentIdentitiesTable, AgentIdentity> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AgentIdentitiesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+      'role', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('secondary'));
+  static const VerificationMeta _personalityTraitsMeta =
+      const VerificationMeta('personalityTraits');
+  @override
+  late final GeneratedColumn<String> personalityTraits =
+      GeneratedColumn<String>('personality_traits', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _systemPromptMeta =
+      const VerificationMeta('systemPrompt');
+  @override
+  late final GeneratedColumn<String> systemPrompt = GeneratedColumn<String>(
+      'system_prompt', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _capabilitiesMeta =
+      const VerificationMeta('capabilities');
+  @override
+  late final GeneratedColumn<String> capabilities = GeneratedColumn<String>(
+      'capabilities', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _avatarConfigMeta =
+      const VerificationMeta('avatarConfig');
+  @override
+  late final GeneratedColumn<String> avatarConfig = GeneratedColumn<String>(
+      'avatar_config', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        role,
+        personalityTraits,
+        systemPrompt,
+        capabilities,
+        avatarConfig,
+        isActive,
+        createdAt,
+        updatedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'agent_identities';
+  @override
+  VerificationContext validateIntegrity(Insertable<AgentIdentity> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+          _roleMeta, role.isAcceptableOrUnknown(data['role']!, _roleMeta));
+    }
+    if (data.containsKey('personality_traits')) {
+      context.handle(
+          _personalityTraitsMeta,
+          personalityTraits.isAcceptableOrUnknown(
+              data['personality_traits']!, _personalityTraitsMeta));
+    }
+    if (data.containsKey('system_prompt')) {
+      context.handle(
+          _systemPromptMeta,
+          systemPrompt.isAcceptableOrUnknown(
+              data['system_prompt']!, _systemPromptMeta));
+    }
+    if (data.containsKey('capabilities')) {
+      context.handle(
+          _capabilitiesMeta,
+          capabilities.isAcceptableOrUnknown(
+              data['capabilities']!, _capabilitiesMeta));
+    }
+    if (data.containsKey('avatar_config')) {
+      context.handle(
+          _avatarConfigMeta,
+          avatarConfig.isAcceptableOrUnknown(
+              data['avatar_config']!, _avatarConfigMeta));
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AgentIdentity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AgentIdentity(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      role: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
+      personalityTraits: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}personality_traits']),
+      systemPrompt: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}system_prompt']),
+      capabilities: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}capabilities']),
+      avatarConfig: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}avatar_config']),
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $AgentIdentitiesTable createAlias(String alias) {
+    return $AgentIdentitiesTable(attachedDatabase, alias);
+  }
+}
+
+class AgentIdentity extends DataClass implements Insertable<AgentIdentity> {
+  final String id;
+  final String name;
+  final String role;
+  final String? personalityTraits;
+  final String? systemPrompt;
+  final String? capabilities;
+  final String? avatarConfig;
+  final bool isActive;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const AgentIdentity(
+      {required this.id,
+      required this.name,
+      required this.role,
+      this.personalityTraits,
+      this.systemPrompt,
+      this.capabilities,
+      this.avatarConfig,
+      required this.isActive,
+      required this.createdAt,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['role'] = Variable<String>(role);
+    if (!nullToAbsent || personalityTraits != null) {
+      map['personality_traits'] = Variable<String>(personalityTraits);
+    }
+    if (!nullToAbsent || systemPrompt != null) {
+      map['system_prompt'] = Variable<String>(systemPrompt);
+    }
+    if (!nullToAbsent || capabilities != null) {
+      map['capabilities'] = Variable<String>(capabilities);
+    }
+    if (!nullToAbsent || avatarConfig != null) {
+      map['avatar_config'] = Variable<String>(avatarConfig);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  AgentIdentitiesCompanion toCompanion(bool nullToAbsent) {
+    return AgentIdentitiesCompanion(
+      id: Value(id),
+      name: Value(name),
+      role: Value(role),
+      personalityTraits: personalityTraits == null && nullToAbsent
+          ? const Value.absent()
+          : Value(personalityTraits),
+      systemPrompt: systemPrompt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(systemPrompt),
+      capabilities: capabilities == null && nullToAbsent
+          ? const Value.absent()
+          : Value(capabilities),
+      avatarConfig: avatarConfig == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarConfig),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory AgentIdentity.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AgentIdentity(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      role: serializer.fromJson<String>(json['role']),
+      personalityTraits:
+          serializer.fromJson<String?>(json['personalityTraits']),
+      systemPrompt: serializer.fromJson<String?>(json['systemPrompt']),
+      capabilities: serializer.fromJson<String?>(json['capabilities']),
+      avatarConfig: serializer.fromJson<String?>(json['avatarConfig']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'role': serializer.toJson<String>(role),
+      'personalityTraits': serializer.toJson<String?>(personalityTraits),
+      'systemPrompt': serializer.toJson<String?>(systemPrompt),
+      'capabilities': serializer.toJson<String?>(capabilities),
+      'avatarConfig': serializer.toJson<String?>(avatarConfig),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  AgentIdentity copyWith(
+          {String? id,
+          String? name,
+          String? role,
+          Value<String?> personalityTraits = const Value.absent(),
+          Value<String?> systemPrompt = const Value.absent(),
+          Value<String?> capabilities = const Value.absent(),
+          Value<String?> avatarConfig = const Value.absent(),
+          bool? isActive,
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      AgentIdentity(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        role: role ?? this.role,
+        personalityTraits: personalityTraits.present
+            ? personalityTraits.value
+            : this.personalityTraits,
+        systemPrompt:
+            systemPrompt.present ? systemPrompt.value : this.systemPrompt,
+        capabilities:
+            capabilities.present ? capabilities.value : this.capabilities,
+        avatarConfig:
+            avatarConfig.present ? avatarConfig.value : this.avatarConfig,
+        isActive: isActive ?? this.isActive,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  AgentIdentity copyWithCompanion(AgentIdentitiesCompanion data) {
+    return AgentIdentity(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      role: data.role.present ? data.role.value : this.role,
+      personalityTraits: data.personalityTraits.present
+          ? data.personalityTraits.value
+          : this.personalityTraits,
+      systemPrompt: data.systemPrompt.present
+          ? data.systemPrompt.value
+          : this.systemPrompt,
+      capabilities: data.capabilities.present
+          ? data.capabilities.value
+          : this.capabilities,
+      avatarConfig: data.avatarConfig.present
+          ? data.avatarConfig.value
+          : this.avatarConfig,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AgentIdentity(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('role: $role, ')
+          ..write('personalityTraits: $personalityTraits, ')
+          ..write('systemPrompt: $systemPrompt, ')
+          ..write('capabilities: $capabilities, ')
+          ..write('avatarConfig: $avatarConfig, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, role, personalityTraits,
+      systemPrompt, capabilities, avatarConfig, isActive, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AgentIdentity &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.role == this.role &&
+          other.personalityTraits == this.personalityTraits &&
+          other.systemPrompt == this.systemPrompt &&
+          other.capabilities == this.capabilities &&
+          other.avatarConfig == this.avatarConfig &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class AgentIdentitiesCompanion extends UpdateCompanion<AgentIdentity> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> role;
+  final Value<String?> personalityTraits;
+  final Value<String?> systemPrompt;
+  final Value<String?> capabilities;
+  final Value<String?> avatarConfig;
+  final Value<bool> isActive;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const AgentIdentitiesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.role = const Value.absent(),
+    this.personalityTraits = const Value.absent(),
+    this.systemPrompt = const Value.absent(),
+    this.capabilities = const Value.absent(),
+    this.avatarConfig = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AgentIdentitiesCompanion.insert({
+    required String id,
+    required String name,
+    this.role = const Value.absent(),
+    this.personalityTraits = const Value.absent(),
+    this.systemPrompt = const Value.absent(),
+    this.capabilities = const Value.absent(),
+    this.avatarConfig = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name);
+  static Insertable<AgentIdentity> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? role,
+    Expression<String>? personalityTraits,
+    Expression<String>? systemPrompt,
+    Expression<String>? capabilities,
+    Expression<String>? avatarConfig,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (role != null) 'role': role,
+      if (personalityTraits != null) 'personality_traits': personalityTraits,
+      if (systemPrompt != null) 'system_prompt': systemPrompt,
+      if (capabilities != null) 'capabilities': capabilities,
+      if (avatarConfig != null) 'avatar_config': avatarConfig,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AgentIdentitiesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String>? role,
+      Value<String?>? personalityTraits,
+      Value<String?>? systemPrompt,
+      Value<String?>? capabilities,
+      Value<String?>? avatarConfig,
+      Value<bool>? isActive,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<int>? rowid}) {
+    return AgentIdentitiesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      personalityTraits: personalityTraits ?? this.personalityTraits,
+      systemPrompt: systemPrompt ?? this.systemPrompt,
+      capabilities: capabilities ?? this.capabilities,
+      avatarConfig: avatarConfig ?? this.avatarConfig,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (personalityTraits.present) {
+      map['personality_traits'] = Variable<String>(personalityTraits.value);
+    }
+    if (systemPrompt.present) {
+      map['system_prompt'] = Variable<String>(systemPrompt.value);
+    }
+    if (capabilities.present) {
+      map['capabilities'] = Variable<String>(capabilities.value);
+    }
+    if (avatarConfig.present) {
+      map['avatar_config'] = Variable<String>(avatarConfig.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AgentIdentitiesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('role: $role, ')
+          ..write('personalityTraits: $personalityTraits, ')
+          ..write('systemPrompt: $systemPrompt, ')
+          ..write('capabilities: $capabilities, ')
+          ..write('avatarConfig: $avatarConfig, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CoordinatorStatesTable extends CoordinatorStates
+    with TableInfo<$CoordinatorStatesTable, CoordinatorState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CoordinatorStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _decisionIdMeta =
+      const VerificationMeta('decisionId');
+  @override
+  late final GeneratedColumn<String> decisionId = GeneratedColumn<String>(
+      'decision_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES conscience_decisions (id)'));
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+      'action', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _riskLevelMeta =
+      const VerificationMeta('riskLevel');
+  @override
+  late final GeneratedColumn<String> riskLevel = GeneratedColumn<String>(
+      'risk_level', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('open'));
+  static const VerificationMeta _consensusVerdictMeta =
+      const VerificationMeta('consensusVerdict');
+  @override
+  late final GeneratedColumn<String> consensusVerdict = GeneratedColumn<String>(
+      'consensus_verdict', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _consensusReasoningMeta =
+      const VerificationMeta('consensusReasoning');
+  @override
+  late final GeneratedColumn<String> consensusReasoning =
+      GeneratedColumn<String>('consensus_reasoning', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _conflictTypeMeta =
+      const VerificationMeta('conflictType');
+  @override
+  late final GeneratedColumn<String> conflictType = GeneratedColumn<String>(
+      'conflict_type', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _resolutionStrategyMeta =
+      const VerificationMeta('resolutionStrategy');
+  @override
+  late final GeneratedColumn<String> resolutionStrategy =
+      GeneratedColumn<String>('resolution_strategy', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _resolvedByMeta =
+      const VerificationMeta('resolvedBy');
+  @override
+  late final GeneratedColumn<String> resolvedBy = GeneratedColumn<String>(
+      'resolved_by', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _totalVotesMeta =
+      const VerificationMeta('totalVotes');
+  @override
+  late final GeneratedColumn<int> totalVotes = GeneratedColumn<int>(
+      'total_votes', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _approveCountMeta =
+      const VerificationMeta('approveCount');
+  @override
+  late final GeneratedColumn<int> approveCount = GeneratedColumn<int>(
+      'approve_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _questionCountMeta =
+      const VerificationMeta('questionCount');
+  @override
+  late final GeneratedColumn<int> questionCount = GeneratedColumn<int>(
+      'question_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _holdCountMeta =
+      const VerificationMeta('holdCount');
+  @override
+  late final GeneratedColumn<int> holdCount = GeneratedColumn<int>(
+      'hold_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _denyCountMeta =
+      const VerificationMeta('denyCount');
+  @override
+  late final GeneratedColumn<int> denyCount = GeneratedColumn<int>(
+      'deny_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        createdAt,
+        updatedAt,
+        decisionId,
+        action,
+        riskLevel,
+        status,
+        consensusVerdict,
+        consensusReasoning,
+        conflictType,
+        resolutionStrategy,
+        resolvedBy,
+        totalVotes,
+        approveCount,
+        questionCount,
+        holdCount,
+        denyCount
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'coordinator_states';
+  @override
+  VerificationContext validateIntegrity(Insertable<CoordinatorState> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    if (data.containsKey('decision_id')) {
+      context.handle(
+          _decisionIdMeta,
+          decisionId.isAcceptableOrUnknown(
+              data['decision_id']!, _decisionIdMeta));
+    } else if (isInserting) {
+      context.missing(_decisionIdMeta);
+    }
+    if (data.containsKey('action')) {
+      context.handle(_actionMeta,
+          action.isAcceptableOrUnknown(data['action']!, _actionMeta));
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('risk_level')) {
+      context.handle(_riskLevelMeta,
+          riskLevel.isAcceptableOrUnknown(data['risk_level']!, _riskLevelMeta));
+    } else if (isInserting) {
+      context.missing(_riskLevelMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('consensus_verdict')) {
+      context.handle(
+          _consensusVerdictMeta,
+          consensusVerdict.isAcceptableOrUnknown(
+              data['consensus_verdict']!, _consensusVerdictMeta));
+    }
+    if (data.containsKey('consensus_reasoning')) {
+      context.handle(
+          _consensusReasoningMeta,
+          consensusReasoning.isAcceptableOrUnknown(
+              data['consensus_reasoning']!, _consensusReasoningMeta));
+    }
+    if (data.containsKey('conflict_type')) {
+      context.handle(
+          _conflictTypeMeta,
+          conflictType.isAcceptableOrUnknown(
+              data['conflict_type']!, _conflictTypeMeta));
+    }
+    if (data.containsKey('resolution_strategy')) {
+      context.handle(
+          _resolutionStrategyMeta,
+          resolutionStrategy.isAcceptableOrUnknown(
+              data['resolution_strategy']!, _resolutionStrategyMeta));
+    }
+    if (data.containsKey('resolved_by')) {
+      context.handle(
+          _resolvedByMeta,
+          resolvedBy.isAcceptableOrUnknown(
+              data['resolved_by']!, _resolvedByMeta));
+    }
+    if (data.containsKey('total_votes')) {
+      context.handle(
+          _totalVotesMeta,
+          totalVotes.isAcceptableOrUnknown(
+              data['total_votes']!, _totalVotesMeta));
+    }
+    if (data.containsKey('approve_count')) {
+      context.handle(
+          _approveCountMeta,
+          approveCount.isAcceptableOrUnknown(
+              data['approve_count']!, _approveCountMeta));
+    }
+    if (data.containsKey('question_count')) {
+      context.handle(
+          _questionCountMeta,
+          questionCount.isAcceptableOrUnknown(
+              data['question_count']!, _questionCountMeta));
+    }
+    if (data.containsKey('hold_count')) {
+      context.handle(_holdCountMeta,
+          holdCount.isAcceptableOrUnknown(data['hold_count']!, _holdCountMeta));
+    }
+    if (data.containsKey('deny_count')) {
+      context.handle(_denyCountMeta,
+          denyCount.isAcceptableOrUnknown(data['deny_count']!, _denyCountMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CoordinatorState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CoordinatorState(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      decisionId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}decision_id'])!,
+      action: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}action'])!,
+      riskLevel: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}risk_level'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
+      consensusVerdict: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}consensus_verdict']),
+      consensusReasoning: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}consensus_reasoning']),
+      conflictType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}conflict_type']),
+      resolutionStrategy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}resolution_strategy']),
+      resolvedBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}resolved_by']),
+      totalVotes: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}total_votes'])!,
+      approveCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}approve_count'])!,
+      questionCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}question_count'])!,
+      holdCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}hold_count'])!,
+      denyCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deny_count'])!,
+    );
+  }
+
+  @override
+  $CoordinatorStatesTable createAlias(String alias) {
+    return $CoordinatorStatesTable(attachedDatabase, alias);
+  }
+}
+
+class CoordinatorState extends DataClass
+    implements Insertable<CoordinatorState> {
+  final String id;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String decisionId;
+  final String action;
+  final String riskLevel;
+  final String status;
+  final String? consensusVerdict;
+  final String? consensusReasoning;
+  final String? conflictType;
+  final String? resolutionStrategy;
+  final String? resolvedBy;
+  final int totalVotes;
+  final int approveCount;
+  final int questionCount;
+  final int holdCount;
+  final int denyCount;
+  const CoordinatorState(
+      {required this.id,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.decisionId,
+      required this.action,
+      required this.riskLevel,
+      required this.status,
+      this.consensusVerdict,
+      this.consensusReasoning,
+      this.conflictType,
+      this.resolutionStrategy,
+      this.resolvedBy,
+      required this.totalVotes,
+      required this.approveCount,
+      required this.questionCount,
+      required this.holdCount,
+      required this.denyCount});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['decision_id'] = Variable<String>(decisionId);
+    map['action'] = Variable<String>(action);
+    map['risk_level'] = Variable<String>(riskLevel);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || consensusVerdict != null) {
+      map['consensus_verdict'] = Variable<String>(consensusVerdict);
+    }
+    if (!nullToAbsent || consensusReasoning != null) {
+      map['consensus_reasoning'] = Variable<String>(consensusReasoning);
+    }
+    if (!nullToAbsent || conflictType != null) {
+      map['conflict_type'] = Variable<String>(conflictType);
+    }
+    if (!nullToAbsent || resolutionStrategy != null) {
+      map['resolution_strategy'] = Variable<String>(resolutionStrategy);
+    }
+    if (!nullToAbsent || resolvedBy != null) {
+      map['resolved_by'] = Variable<String>(resolvedBy);
+    }
+    map['total_votes'] = Variable<int>(totalVotes);
+    map['approve_count'] = Variable<int>(approveCount);
+    map['question_count'] = Variable<int>(questionCount);
+    map['hold_count'] = Variable<int>(holdCount);
+    map['deny_count'] = Variable<int>(denyCount);
+    return map;
+  }
+
+  CoordinatorStatesCompanion toCompanion(bool nullToAbsent) {
+    return CoordinatorStatesCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      decisionId: Value(decisionId),
+      action: Value(action),
+      riskLevel: Value(riskLevel),
+      status: Value(status),
+      consensusVerdict: consensusVerdict == null && nullToAbsent
+          ? const Value.absent()
+          : Value(consensusVerdict),
+      consensusReasoning: consensusReasoning == null && nullToAbsent
+          ? const Value.absent()
+          : Value(consensusReasoning),
+      conflictType: conflictType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(conflictType),
+      resolutionStrategy: resolutionStrategy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolutionStrategy),
+      resolvedBy: resolvedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolvedBy),
+      totalVotes: Value(totalVotes),
+      approveCount: Value(approveCount),
+      questionCount: Value(questionCount),
+      holdCount: Value(holdCount),
+      denyCount: Value(denyCount),
+    );
+  }
+
+  factory CoordinatorState.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CoordinatorState(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      decisionId: serializer.fromJson<String>(json['decisionId']),
+      action: serializer.fromJson<String>(json['action']),
+      riskLevel: serializer.fromJson<String>(json['riskLevel']),
+      status: serializer.fromJson<String>(json['status']),
+      consensusVerdict: serializer.fromJson<String?>(json['consensusVerdict']),
+      consensusReasoning:
+          serializer.fromJson<String?>(json['consensusReasoning']),
+      conflictType: serializer.fromJson<String?>(json['conflictType']),
+      resolutionStrategy:
+          serializer.fromJson<String?>(json['resolutionStrategy']),
+      resolvedBy: serializer.fromJson<String?>(json['resolvedBy']),
+      totalVotes: serializer.fromJson<int>(json['totalVotes']),
+      approveCount: serializer.fromJson<int>(json['approveCount']),
+      questionCount: serializer.fromJson<int>(json['questionCount']),
+      holdCount: serializer.fromJson<int>(json['holdCount']),
+      denyCount: serializer.fromJson<int>(json['denyCount']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'decisionId': serializer.toJson<String>(decisionId),
+      'action': serializer.toJson<String>(action),
+      'riskLevel': serializer.toJson<String>(riskLevel),
+      'status': serializer.toJson<String>(status),
+      'consensusVerdict': serializer.toJson<String?>(consensusVerdict),
+      'consensusReasoning': serializer.toJson<String?>(consensusReasoning),
+      'conflictType': serializer.toJson<String?>(conflictType),
+      'resolutionStrategy': serializer.toJson<String?>(resolutionStrategy),
+      'resolvedBy': serializer.toJson<String?>(resolvedBy),
+      'totalVotes': serializer.toJson<int>(totalVotes),
+      'approveCount': serializer.toJson<int>(approveCount),
+      'questionCount': serializer.toJson<int>(questionCount),
+      'holdCount': serializer.toJson<int>(holdCount),
+      'denyCount': serializer.toJson<int>(denyCount),
+    };
+  }
+
+  CoordinatorState copyWith(
+          {String? id,
+          DateTime? createdAt,
+          DateTime? updatedAt,
+          String? decisionId,
+          String? action,
+          String? riskLevel,
+          String? status,
+          Value<String?> consensusVerdict = const Value.absent(),
+          Value<String?> consensusReasoning = const Value.absent(),
+          Value<String?> conflictType = const Value.absent(),
+          Value<String?> resolutionStrategy = const Value.absent(),
+          Value<String?> resolvedBy = const Value.absent(),
+          int? totalVotes,
+          int? approveCount,
+          int? questionCount,
+          int? holdCount,
+          int? denyCount}) =>
+      CoordinatorState(
+        id: id ?? this.id,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        decisionId: decisionId ?? this.decisionId,
+        action: action ?? this.action,
+        riskLevel: riskLevel ?? this.riskLevel,
+        status: status ?? this.status,
+        consensusVerdict: consensusVerdict.present
+            ? consensusVerdict.value
+            : this.consensusVerdict,
+        consensusReasoning: consensusReasoning.present
+            ? consensusReasoning.value
+            : this.consensusReasoning,
+        conflictType:
+            conflictType.present ? conflictType.value : this.conflictType,
+        resolutionStrategy: resolutionStrategy.present
+            ? resolutionStrategy.value
+            : this.resolutionStrategy,
+        resolvedBy: resolvedBy.present ? resolvedBy.value : this.resolvedBy,
+        totalVotes: totalVotes ?? this.totalVotes,
+        approveCount: approveCount ?? this.approveCount,
+        questionCount: questionCount ?? this.questionCount,
+        holdCount: holdCount ?? this.holdCount,
+        denyCount: denyCount ?? this.denyCount,
+      );
+  CoordinatorState copyWithCompanion(CoordinatorStatesCompanion data) {
+    return CoordinatorState(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      decisionId:
+          data.decisionId.present ? data.decisionId.value : this.decisionId,
+      action: data.action.present ? data.action.value : this.action,
+      riskLevel: data.riskLevel.present ? data.riskLevel.value : this.riskLevel,
+      status: data.status.present ? data.status.value : this.status,
+      consensusVerdict: data.consensusVerdict.present
+          ? data.consensusVerdict.value
+          : this.consensusVerdict,
+      consensusReasoning: data.consensusReasoning.present
+          ? data.consensusReasoning.value
+          : this.consensusReasoning,
+      conflictType: data.conflictType.present
+          ? data.conflictType.value
+          : this.conflictType,
+      resolutionStrategy: data.resolutionStrategy.present
+          ? data.resolutionStrategy.value
+          : this.resolutionStrategy,
+      resolvedBy:
+          data.resolvedBy.present ? data.resolvedBy.value : this.resolvedBy,
+      totalVotes:
+          data.totalVotes.present ? data.totalVotes.value : this.totalVotes,
+      approveCount: data.approveCount.present
+          ? data.approveCount.value
+          : this.approveCount,
+      questionCount: data.questionCount.present
+          ? data.questionCount.value
+          : this.questionCount,
+      holdCount: data.holdCount.present ? data.holdCount.value : this.holdCount,
+      denyCount: data.denyCount.present ? data.denyCount.value : this.denyCount,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoordinatorState(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('decisionId: $decisionId, ')
+          ..write('action: $action, ')
+          ..write('riskLevel: $riskLevel, ')
+          ..write('status: $status, ')
+          ..write('consensusVerdict: $consensusVerdict, ')
+          ..write('consensusReasoning: $consensusReasoning, ')
+          ..write('conflictType: $conflictType, ')
+          ..write('resolutionStrategy: $resolutionStrategy, ')
+          ..write('resolvedBy: $resolvedBy, ')
+          ..write('totalVotes: $totalVotes, ')
+          ..write('approveCount: $approveCount, ')
+          ..write('questionCount: $questionCount, ')
+          ..write('holdCount: $holdCount, ')
+          ..write('denyCount: $denyCount')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      createdAt,
+      updatedAt,
+      decisionId,
+      action,
+      riskLevel,
+      status,
+      consensusVerdict,
+      consensusReasoning,
+      conflictType,
+      resolutionStrategy,
+      resolvedBy,
+      totalVotes,
+      approveCount,
+      questionCount,
+      holdCount,
+      denyCount);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CoordinatorState &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.decisionId == this.decisionId &&
+          other.action == this.action &&
+          other.riskLevel == this.riskLevel &&
+          other.status == this.status &&
+          other.consensusVerdict == this.consensusVerdict &&
+          other.consensusReasoning == this.consensusReasoning &&
+          other.conflictType == this.conflictType &&
+          other.resolutionStrategy == this.resolutionStrategy &&
+          other.resolvedBy == this.resolvedBy &&
+          other.totalVotes == this.totalVotes &&
+          other.approveCount == this.approveCount &&
+          other.questionCount == this.questionCount &&
+          other.holdCount == this.holdCount &&
+          other.denyCount == this.denyCount);
+}
+
+class CoordinatorStatesCompanion extends UpdateCompanion<CoordinatorState> {
+  final Value<String> id;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> decisionId;
+  final Value<String> action;
+  final Value<String> riskLevel;
+  final Value<String> status;
+  final Value<String?> consensusVerdict;
+  final Value<String?> consensusReasoning;
+  final Value<String?> conflictType;
+  final Value<String?> resolutionStrategy;
+  final Value<String?> resolvedBy;
+  final Value<int> totalVotes;
+  final Value<int> approveCount;
+  final Value<int> questionCount;
+  final Value<int> holdCount;
+  final Value<int> denyCount;
+  final Value<int> rowid;
+  const CoordinatorStatesCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.decisionId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.riskLevel = const Value.absent(),
+    this.status = const Value.absent(),
+    this.consensusVerdict = const Value.absent(),
+    this.consensusReasoning = const Value.absent(),
+    this.conflictType = const Value.absent(),
+    this.resolutionStrategy = const Value.absent(),
+    this.resolvedBy = const Value.absent(),
+    this.totalVotes = const Value.absent(),
+    this.approveCount = const Value.absent(),
+    this.questionCount = const Value.absent(),
+    this.holdCount = const Value.absent(),
+    this.denyCount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CoordinatorStatesCompanion.insert({
+    required String id,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    required String decisionId,
+    required String action,
+    required String riskLevel,
+    this.status = const Value.absent(),
+    this.consensusVerdict = const Value.absent(),
+    this.consensusReasoning = const Value.absent(),
+    this.conflictType = const Value.absent(),
+    this.resolutionStrategy = const Value.absent(),
+    this.resolvedBy = const Value.absent(),
+    this.totalVotes = const Value.absent(),
+    this.approveCount = const Value.absent(),
+    this.questionCount = const Value.absent(),
+    this.holdCount = const Value.absent(),
+    this.denyCount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        decisionId = Value(decisionId),
+        action = Value(action),
+        riskLevel = Value(riskLevel);
+  static Insertable<CoordinatorState> custom({
+    Expression<String>? id,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? decisionId,
+    Expression<String>? action,
+    Expression<String>? riskLevel,
+    Expression<String>? status,
+    Expression<String>? consensusVerdict,
+    Expression<String>? consensusReasoning,
+    Expression<String>? conflictType,
+    Expression<String>? resolutionStrategy,
+    Expression<String>? resolvedBy,
+    Expression<int>? totalVotes,
+    Expression<int>? approveCount,
+    Expression<int>? questionCount,
+    Expression<int>? holdCount,
+    Expression<int>? denyCount,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (decisionId != null) 'decision_id': decisionId,
+      if (action != null) 'action': action,
+      if (riskLevel != null) 'risk_level': riskLevel,
+      if (status != null) 'status': status,
+      if (consensusVerdict != null) 'consensus_verdict': consensusVerdict,
+      if (consensusReasoning != null) 'consensus_reasoning': consensusReasoning,
+      if (conflictType != null) 'conflict_type': conflictType,
+      if (resolutionStrategy != null) 'resolution_strategy': resolutionStrategy,
+      if (resolvedBy != null) 'resolved_by': resolvedBy,
+      if (totalVotes != null) 'total_votes': totalVotes,
+      if (approveCount != null) 'approve_count': approveCount,
+      if (questionCount != null) 'question_count': questionCount,
+      if (holdCount != null) 'hold_count': holdCount,
+      if (denyCount != null) 'deny_count': denyCount,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CoordinatorStatesCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt,
+      Value<String>? decisionId,
+      Value<String>? action,
+      Value<String>? riskLevel,
+      Value<String>? status,
+      Value<String?>? consensusVerdict,
+      Value<String?>? consensusReasoning,
+      Value<String?>? conflictType,
+      Value<String?>? resolutionStrategy,
+      Value<String?>? resolvedBy,
+      Value<int>? totalVotes,
+      Value<int>? approveCount,
+      Value<int>? questionCount,
+      Value<int>? holdCount,
+      Value<int>? denyCount,
+      Value<int>? rowid}) {
+    return CoordinatorStatesCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      decisionId: decisionId ?? this.decisionId,
+      action: action ?? this.action,
+      riskLevel: riskLevel ?? this.riskLevel,
+      status: status ?? this.status,
+      consensusVerdict: consensusVerdict ?? this.consensusVerdict,
+      consensusReasoning: consensusReasoning ?? this.consensusReasoning,
+      conflictType: conflictType ?? this.conflictType,
+      resolutionStrategy: resolutionStrategy ?? this.resolutionStrategy,
+      resolvedBy: resolvedBy ?? this.resolvedBy,
+      totalVotes: totalVotes ?? this.totalVotes,
+      approveCount: approveCount ?? this.approveCount,
+      questionCount: questionCount ?? this.questionCount,
+      holdCount: holdCount ?? this.holdCount,
+      denyCount: denyCount ?? this.denyCount,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (decisionId.present) {
+      map['decision_id'] = Variable<String>(decisionId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (riskLevel.present) {
+      map['risk_level'] = Variable<String>(riskLevel.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (consensusVerdict.present) {
+      map['consensus_verdict'] = Variable<String>(consensusVerdict.value);
+    }
+    if (consensusReasoning.present) {
+      map['consensus_reasoning'] = Variable<String>(consensusReasoning.value);
+    }
+    if (conflictType.present) {
+      map['conflict_type'] = Variable<String>(conflictType.value);
+    }
+    if (resolutionStrategy.present) {
+      map['resolution_strategy'] = Variable<String>(resolutionStrategy.value);
+    }
+    if (resolvedBy.present) {
+      map['resolved_by'] = Variable<String>(resolvedBy.value);
+    }
+    if (totalVotes.present) {
+      map['total_votes'] = Variable<int>(totalVotes.value);
+    }
+    if (approveCount.present) {
+      map['approve_count'] = Variable<int>(approveCount.value);
+    }
+    if (questionCount.present) {
+      map['question_count'] = Variable<int>(questionCount.value);
+    }
+    if (holdCount.present) {
+      map['hold_count'] = Variable<int>(holdCount.value);
+    }
+    if (denyCount.present) {
+      map['deny_count'] = Variable<int>(denyCount.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoordinatorStatesCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('decisionId: $decisionId, ')
+          ..write('action: $action, ')
+          ..write('riskLevel: $riskLevel, ')
+          ..write('status: $status, ')
+          ..write('consensusVerdict: $consensusVerdict, ')
+          ..write('consensusReasoning: $consensusReasoning, ')
+          ..write('conflictType: $conflictType, ')
+          ..write('resolutionStrategy: $resolutionStrategy, ')
+          ..write('resolvedBy: $resolvedBy, ')
+          ..write('totalVotes: $totalVotes, ')
+          ..write('approveCount: $approveCount, ')
+          ..write('questionCount: $questionCount, ')
+          ..write('holdCount: $holdCount, ')
+          ..write('denyCount: $denyCount, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CoordinatorVotesTable extends CoordinatorVotes
+    with TableInfo<$CoordinatorVotesTable, CoordinatorVote> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CoordinatorVotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _coordinatorIdMeta =
+      const VerificationMeta('coordinatorId');
+  @override
+  late final GeneratedColumn<String> coordinatorId = GeneratedColumn<String>(
+      'coordinator_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES coordinator_states (id)'));
+  static const VerificationMeta _agentMeta = const VerificationMeta('agent');
+  @override
+  late final GeneratedColumn<String> agent = GeneratedColumn<String>(
+      'agent', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _voteMeta = const VerificationMeta('vote');
+  @override
+  late final GeneratedColumn<String> vote = GeneratedColumn<String>(
+      'vote', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _reasoningMeta =
+      const VerificationMeta('reasoning');
+  @override
+  late final GeneratedColumn<String> reasoning = GeneratedColumn<String>(
+      'reasoning', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _timestampMeta =
+      const VerificationMeta('timestamp');
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+      'timestamp', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, coordinatorId, agent, vote, reasoning, timestamp];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'coordinator_votes';
+  @override
+  VerificationContext validateIntegrity(Insertable<CoordinatorVote> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('coordinator_id')) {
+      context.handle(
+          _coordinatorIdMeta,
+          coordinatorId.isAcceptableOrUnknown(
+              data['coordinator_id']!, _coordinatorIdMeta));
+    } else if (isInserting) {
+      context.missing(_coordinatorIdMeta);
+    }
+    if (data.containsKey('agent')) {
+      context.handle(
+          _agentMeta, agent.isAcceptableOrUnknown(data['agent']!, _agentMeta));
+    } else if (isInserting) {
+      context.missing(_agentMeta);
+    }
+    if (data.containsKey('vote')) {
+      context.handle(
+          _voteMeta, vote.isAcceptableOrUnknown(data['vote']!, _voteMeta));
+    } else if (isInserting) {
+      context.missing(_voteMeta);
+    }
+    if (data.containsKey('reasoning')) {
+      context.handle(_reasoningMeta,
+          reasoning.isAcceptableOrUnknown(data['reasoning']!, _reasoningMeta));
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(_timestampMeta,
+          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CoordinatorVote map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CoordinatorVote(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      coordinatorId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}coordinator_id'])!,
+      agent: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}agent'])!,
+      vote: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}vote'])!,
+      reasoning: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}reasoning']),
+      timestamp: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}timestamp'])!,
+    );
+  }
+
+  @override
+  $CoordinatorVotesTable createAlias(String alias) {
+    return $CoordinatorVotesTable(attachedDatabase, alias);
+  }
+}
+
+class CoordinatorVote extends DataClass implements Insertable<CoordinatorVote> {
+  final String id;
+  final String coordinatorId;
+  final String agent;
+  final String vote;
+  final String? reasoning;
+  final DateTime timestamp;
+  const CoordinatorVote(
+      {required this.id,
+      required this.coordinatorId,
+      required this.agent,
+      required this.vote,
+      this.reasoning,
+      required this.timestamp});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['coordinator_id'] = Variable<String>(coordinatorId);
+    map['agent'] = Variable<String>(agent);
+    map['vote'] = Variable<String>(vote);
+    if (!nullToAbsent || reasoning != null) {
+      map['reasoning'] = Variable<String>(reasoning);
+    }
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    return map;
+  }
+
+  CoordinatorVotesCompanion toCompanion(bool nullToAbsent) {
+    return CoordinatorVotesCompanion(
+      id: Value(id),
+      coordinatorId: Value(coordinatorId),
+      agent: Value(agent),
+      vote: Value(vote),
+      reasoning: reasoning == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reasoning),
+      timestamp: Value(timestamp),
+    );
+  }
+
+  factory CoordinatorVote.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CoordinatorVote(
+      id: serializer.fromJson<String>(json['id']),
+      coordinatorId: serializer.fromJson<String>(json['coordinatorId']),
+      agent: serializer.fromJson<String>(json['agent']),
+      vote: serializer.fromJson<String>(json['vote']),
+      reasoning: serializer.fromJson<String?>(json['reasoning']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'coordinatorId': serializer.toJson<String>(coordinatorId),
+      'agent': serializer.toJson<String>(agent),
+      'vote': serializer.toJson<String>(vote),
+      'reasoning': serializer.toJson<String?>(reasoning),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+    };
+  }
+
+  CoordinatorVote copyWith(
+          {String? id,
+          String? coordinatorId,
+          String? agent,
+          String? vote,
+          Value<String?> reasoning = const Value.absent(),
+          DateTime? timestamp}) =>
+      CoordinatorVote(
+        id: id ?? this.id,
+        coordinatorId: coordinatorId ?? this.coordinatorId,
+        agent: agent ?? this.agent,
+        vote: vote ?? this.vote,
+        reasoning: reasoning.present ? reasoning.value : this.reasoning,
+        timestamp: timestamp ?? this.timestamp,
+      );
+  CoordinatorVote copyWithCompanion(CoordinatorVotesCompanion data) {
+    return CoordinatorVote(
+      id: data.id.present ? data.id.value : this.id,
+      coordinatorId: data.coordinatorId.present
+          ? data.coordinatorId.value
+          : this.coordinatorId,
+      agent: data.agent.present ? data.agent.value : this.agent,
+      vote: data.vote.present ? data.vote.value : this.vote,
+      reasoning: data.reasoning.present ? data.reasoning.value : this.reasoning,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoordinatorVote(')
+          ..write('id: $id, ')
+          ..write('coordinatorId: $coordinatorId, ')
+          ..write('agent: $agent, ')
+          ..write('vote: $vote, ')
+          ..write('reasoning: $reasoning, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, coordinatorId, agent, vote, reasoning, timestamp);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CoordinatorVote &&
+          other.id == this.id &&
+          other.coordinatorId == this.coordinatorId &&
+          other.agent == this.agent &&
+          other.vote == this.vote &&
+          other.reasoning == this.reasoning &&
+          other.timestamp == this.timestamp);
+}
+
+class CoordinatorVotesCompanion extends UpdateCompanion<CoordinatorVote> {
+  final Value<String> id;
+  final Value<String> coordinatorId;
+  final Value<String> agent;
+  final Value<String> vote;
+  final Value<String?> reasoning;
+  final Value<DateTime> timestamp;
+  final Value<int> rowid;
+  const CoordinatorVotesCompanion({
+    this.id = const Value.absent(),
+    this.coordinatorId = const Value.absent(),
+    this.agent = const Value.absent(),
+    this.vote = const Value.absent(),
+    this.reasoning = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CoordinatorVotesCompanion.insert({
+    required String id,
+    required String coordinatorId,
+    required String agent,
+    required String vote,
+    this.reasoning = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        coordinatorId = Value(coordinatorId),
+        agent = Value(agent),
+        vote = Value(vote);
+  static Insertable<CoordinatorVote> custom({
+    Expression<String>? id,
+    Expression<String>? coordinatorId,
+    Expression<String>? agent,
+    Expression<String>? vote,
+    Expression<String>? reasoning,
+    Expression<DateTime>? timestamp,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (coordinatorId != null) 'coordinator_id': coordinatorId,
+      if (agent != null) 'agent': agent,
+      if (vote != null) 'vote': vote,
+      if (reasoning != null) 'reasoning': reasoning,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CoordinatorVotesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? coordinatorId,
+      Value<String>? agent,
+      Value<String>? vote,
+      Value<String?>? reasoning,
+      Value<DateTime>? timestamp,
+      Value<int>? rowid}) {
+    return CoordinatorVotesCompanion(
+      id: id ?? this.id,
+      coordinatorId: coordinatorId ?? this.coordinatorId,
+      agent: agent ?? this.agent,
+      vote: vote ?? this.vote,
+      reasoning: reasoning ?? this.reasoning,
+      timestamp: timestamp ?? this.timestamp,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (coordinatorId.present) {
+      map['coordinator_id'] = Variable<String>(coordinatorId.value);
+    }
+    if (agent.present) {
+      map['agent'] = Variable<String>(agent.value);
+    }
+    if (vote.present) {
+      map['vote'] = Variable<String>(vote.value);
+    }
+    if (reasoning.present) {
+      map['reasoning'] = Variable<String>(reasoning.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CoordinatorVotesCompanion(')
+          ..write('id: $id, ')
+          ..write('coordinatorId: $coordinatorId, ')
+          ..write('agent: $agent, ')
+          ..write('vote: $vote, ')
+          ..write('reasoning: $reasoning, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LocalBrain extends GeneratedDatabase {
   _$LocalBrain(QueryExecutor e) : super(e);
   $LocalBrainManager get managers => $LocalBrainManager(this);
@@ -11128,6 +12835,12 @@ abstract class _$LocalBrain extends GeneratedDatabase {
   late final $AgentThoughtsTable agentThoughts = $AgentThoughtsTable(this);
   late final $ConscienceDecisionsTable conscienceDecisions =
       $ConscienceDecisionsTable(this);
+  late final $AgentIdentitiesTable agentIdentities =
+      $AgentIdentitiesTable(this);
+  late final $CoordinatorStatesTable coordinatorStates =
+      $CoordinatorStatesTable(this);
+  late final $CoordinatorVotesTable coordinatorVotes =
+      $CoordinatorVotesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -11157,7 +12870,10 @@ abstract class _$LocalBrain extends GeneratedDatabase {
         conversationDepthMetrics,
         conversationMemories,
         agentThoughts,
-        conscienceDecisions
+        conscienceDecisions,
+        agentIdentities,
+        coordinatorStates,
+        coordinatorVotes
       ];
 }
 
@@ -11185,8 +12901,7 @@ final class $$UsersTableReferences
   static MultiTypedResultKey<$ConversationsTable, List<Conversation>>
       _conversationsRefsTable(_$LocalBrain db) =>
           MultiTypedResultKey.fromTable(db.conversations,
-              aliasName:
-                  $_aliasNameGenerator(db.users.id, db.conversations.userId));
+              aliasName: 'users__id__conversations__user_id');
 
   $$ConversationsTableProcessedTableManager get conversationsRefs {
     final manager = $$ConversationsTableTableManager($_db, $_db.conversations)
@@ -11437,8 +13152,8 @@ final class $$ConversationsTableReferences
   $$ConversationsTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static $UsersTable _userIdTable(_$LocalBrain db) => db.users
-      .createAlias($_aliasNameGenerator(db.conversations.userId, db.users.id));
+  static $UsersTable _userIdTable(_$LocalBrain db) =>
+      db.users.createAlias('conversations__user_id__users__id');
 
   $$UsersTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
@@ -11454,8 +13169,7 @@ final class $$ConversationsTableReferences
   static MultiTypedResultKey<$MessagesTable, List<Message>> _messagesRefsTable(
           _$LocalBrain db) =>
       MultiTypedResultKey.fromTable(db.messages,
-          aliasName: $_aliasNameGenerator(
-              db.conversations.id, db.messages.conversationId));
+          aliasName: 'conversations__id__messages__conversation_id');
 
   $$MessagesTableProcessedTableManager get messagesRefs {
     final manager = $$MessagesTableTableManager($_db, $_db.messages).filter(
@@ -11470,8 +13184,8 @@ final class $$ConversationsTableReferences
       List<ConversationDepthMetric>> _conversationDepthMetricsRefsTable(
           _$LocalBrain db) =>
       MultiTypedResultKey.fromTable(db.conversationDepthMetrics,
-          aliasName: $_aliasNameGenerator(
-              db.conversations.id, db.conversationDepthMetrics.conversationId));
+          aliasName:
+              'conversations__id__conversation_depth_metrics__conversation_id');
 
   $$ConversationDepthMetricsTableProcessedTableManager
       get conversationDepthMetricsRefs {
@@ -11490,8 +13204,8 @@ final class $$ConversationsTableReferences
       List<ConversationMemory>> _conversationMemoriesRefsTable(
           _$LocalBrain db) =>
       MultiTypedResultKey.fromTable(db.conversationMemories,
-          aliasName: $_aliasNameGenerator(
-              db.conversations.id, db.conversationMemories.conversationId));
+          aliasName:
+              'conversations__id__conversation_memories__conversation_id');
 
   $$ConversationMemoriesTableProcessedTableManager
       get conversationMemoriesRefs {
@@ -11968,8 +13682,8 @@ final class $$MessagesTableReferences
   $$MessagesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $ConversationsTable _conversationIdTable(_$LocalBrain db) =>
-      db.conversations.createAlias($_aliasNameGenerator(
-          db.messages.conversationId, db.conversations.id));
+      db.conversations
+          .createAlias('messages__conversation_id__conversations__id');
 
   $$ConversationsTableProcessedTableManager get conversationId {
     final $_column = $_itemColumn<String>('conversation_id')!;
@@ -13506,8 +15220,7 @@ final class $$FileIndexTableReferences
   static MultiTypedResultKey<$FileContentCacheTable, List<FileContentCacheData>>
       _fileContentCacheRefsTable(_$LocalBrain db) =>
           MultiTypedResultKey.fromTable(db.fileContentCache,
-              aliasName: $_aliasNameGenerator(
-                  db.fileIndex.path, db.fileContentCache.filePath));
+              aliasName: 'file_index__path__file_content_cache__file_path');
 
   $$FileContentCacheTableProcessedTableManager get fileContentCacheRefs {
     final manager =
@@ -13833,9 +15546,8 @@ final class $$FileContentCacheTableReferences extends BaseReferences<
   $$FileContentCacheTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static $FileIndexTable _filePathTable(_$LocalBrain db) =>
-      db.fileIndex.createAlias($_aliasNameGenerator(
-          db.fileContentCache.filePath, db.fileIndex.path));
+  static $FileIndexTable _filePathTable(_$LocalBrain db) => db.fileIndex
+      .createAlias('file_content_cache__file_path__file_index__path');
 
   $$FileIndexTableProcessedTableManager get filePath {
     final $_column = $_itemColumn<String>('file_path')!;
@@ -14357,8 +16069,7 @@ final class $$ModelCapacityTableReferences extends BaseReferences<_$LocalBrain,
   static MultiTypedResultKey<$LlmRequestsTable, List<LlmRequest>>
       _llmRequestsRefsTable(_$LocalBrain db) =>
           MultiTypedResultKey.fromTable(db.llmRequests,
-              aliasName: $_aliasNameGenerator(
-                  db.modelCapacity.modelId, db.llmRequests.modelId));
+              aliasName: 'model_capacity__model_id__llm_requests__model_id');
 
   $$LlmRequestsTableProcessedTableManager get llmRequestsRefs {
     final manager = $$LlmRequestsTableTableManager($_db, $_db.llmRequests)
@@ -14698,9 +16409,8 @@ final class $$LlmRequestsTableReferences
     extends BaseReferences<_$LocalBrain, $LlmRequestsTable, LlmRequest> {
   $$LlmRequestsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $ModelCapacityTable _modelIdTable(_$LocalBrain db) =>
-      db.modelCapacity.createAlias($_aliasNameGenerator(
-          db.llmRequests.modelId, db.modelCapacity.modelId));
+  static $ModelCapacityTable _modelIdTable(_$LocalBrain db) => db.modelCapacity
+      .createAlias('llm_requests__model_id__model_capacity__model_id');
 
   $$ModelCapacityTableProcessedTableManager get modelId {
     final $_column = $_itemColumn<String>('model_id')!;
@@ -15041,8 +16751,7 @@ final class $$AvatarProfilesTableReferences
   static MultiTypedResultKey<$AchievementsTable, List<Achievement>>
       _achievementsRefsTable(_$LocalBrain db) =>
           MultiTypedResultKey.fromTable(db.achievements,
-              aliasName: $_aliasNameGenerator(
-                  db.avatarProfiles.id, db.achievements.avatarId));
+              aliasName: 'avatar_profiles__id__achievements__avatar_id');
 
   $$AchievementsTableProcessedTableManager get achievementsRefs {
     final manager = $$AchievementsTableTableManager($_db, $_db.achievements)
@@ -15056,8 +16765,8 @@ final class $$AvatarProfilesTableReferences
   static MultiTypedResultKey<$AvatarMemoryEntriesTable, List<AvatarMemoryEntry>>
       _avatarMemoryEntriesRefsTable(_$LocalBrain db) =>
           MultiTypedResultKey.fromTable(db.avatarMemoryEntries,
-              aliasName: $_aliasNameGenerator(
-                  db.avatarProfiles.id, db.avatarMemoryEntries.avatarId));
+              aliasName:
+                  'avatar_profiles__id__avatar_memory_entries__avatar_id');
 
   $$AvatarMemoryEntriesTableProcessedTableManager get avatarMemoryEntriesRefs {
     final manager = $$AvatarMemoryEntriesTableTableManager(
@@ -15462,8 +17171,8 @@ final class $$AchievementsTableReferences
   $$AchievementsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $AvatarProfilesTable _avatarIdTable(_$LocalBrain db) =>
-      db.avatarProfiles.createAlias(
-          $_aliasNameGenerator(db.achievements.avatarId, db.avatarProfiles.id));
+      db.avatarProfiles
+          .createAlias('achievements__avatar_id__avatar_profiles__id');
 
   $$AvatarProfilesTableProcessedTableManager get avatarId {
     final $_column = $_itemColumn<String>('avatar_id')!;
@@ -15784,8 +17493,8 @@ final class $$AvatarMemoryEntriesTableReferences extends BaseReferences<
       super.$_db, super.$_table, super.$_typedResult);
 
   static $AvatarProfilesTable _avatarIdTable(_$LocalBrain db) =>
-      db.avatarProfiles.createAlias($_aliasNameGenerator(
-          db.avatarMemoryEntries.avatarId, db.avatarProfiles.id));
+      db.avatarProfiles
+          .createAlias('avatar_memory_entries__avatar_id__avatar_profiles__id');
 
   $$AvatarProfilesTableProcessedTableManager get avatarId {
     final $_column = $_itemColumn<String>('avatar_id')!;
@@ -16731,8 +18440,8 @@ final class $$AvatarPersonalityProfilesTableReferences extends BaseReferences<
       List<EvolutionHistory>> _evolutionHistoryTableRefsTable(
           _$LocalBrain db) =>
       MultiTypedResultKey.fromTable(db.evolutionHistoryTable,
-          aliasName: $_aliasNameGenerator(db.avatarPersonalityProfiles.id,
-              db.evolutionHistoryTable.avatarId));
+          aliasName:
+              'avatar_personality_profiles__id__evolution_history_table__avatar_id');
 
   $$EvolutionHistoryTableTableProcessedTableManager
       get evolutionHistoryTableRefs {
@@ -17052,8 +18761,8 @@ final class $$EvolutionHistoryTableTableReferences extends BaseReferences<
       super.$_db, super.$_table, super.$_typedResult);
 
   static $AvatarPersonalityProfilesTable _avatarIdTable(_$LocalBrain db) =>
-      db.avatarPersonalityProfiles.createAlias($_aliasNameGenerator(
-          db.evolutionHistoryTable.avatarId, db.avatarPersonalityProfiles.id));
+      db.avatarPersonalityProfiles.createAlias(
+          'evolution_history_table__avatar_id__avatar_personality_profiles__id');
 
   $$AvatarPersonalityProfilesTableProcessedTableManager get avatarId {
     final $_column = $_itemColumn<String>('avatar_id')!;
@@ -17380,8 +19089,8 @@ final class $$ConversationDepthMetricsTableReferences extends BaseReferences<
       super.$_db, super.$_table, super.$_typedResult);
 
   static $ConversationsTable _conversationIdTable(_$LocalBrain db) =>
-      db.conversations.createAlias($_aliasNameGenerator(
-          db.conversationDepthMetrics.conversationId, db.conversations.id));
+      db.conversations.createAlias(
+          'conversation_depth_metrics__conversation_id__conversations__id');
 
   $$ConversationsTableProcessedTableManager get conversationId {
     final $_column = $_itemColumn<String>('conversation_id')!;
@@ -17681,9 +19390,9 @@ final class $$ConversationMemoriesTableReferences extends BaseReferences<
   $$ConversationMemoriesTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static $ConversationsTable _conversationIdTable(_$LocalBrain db) =>
-      db.conversations.createAlias($_aliasNameGenerator(
-          db.conversationMemories.conversationId, db.conversations.id));
+  static $ConversationsTable _conversationIdTable(_$LocalBrain db) => db
+      .conversations
+      .createAlias('conversation_memories__conversation_id__conversations__id');
 
   $$ConversationsTableProcessedTableManager get conversationId {
     final $_column = $_itemColumn<String>('conversation_id')!;
@@ -18179,6 +19888,29 @@ typedef $$ConscienceDecisionsTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$ConscienceDecisionsTableReferences extends BaseReferences<
+    _$LocalBrain, $ConscienceDecisionsTable, ConscienceDecision> {
+  $$ConscienceDecisionsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$CoordinatorStatesTable, List<CoordinatorState>>
+      _coordinatorStatesRefsTable(_$LocalBrain db) =>
+          MultiTypedResultKey.fromTable(db.coordinatorStates,
+              aliasName:
+                  'conscience_decisions__id__coordinator_states__decision_id');
+
+  $$CoordinatorStatesTableProcessedTableManager get coordinatorStatesRefs {
+    final manager = $$CoordinatorStatesTableTableManager(
+            $_db, $_db.coordinatorStates)
+        .filter((f) => f.decisionId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_coordinatorStatesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
 class $$ConscienceDecisionsTableFilterComposer
     extends Composer<_$LocalBrain, $ConscienceDecisionsTable> {
   $$ConscienceDecisionsTableFilterComposer({
@@ -18211,6 +19943,27 @@ class $$ConscienceDecisionsTableFilterComposer
 
   ColumnFilters<String> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> coordinatorStatesRefs(
+      Expression<bool> Function($$CoordinatorStatesTableFilterComposer f) f) {
+    final $$CoordinatorStatesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.coordinatorStates,
+        getReferencedColumn: (t) => t.decisionId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CoordinatorStatesTableFilterComposer(
+              $db: $db,
+              $table: $db.coordinatorStates,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$ConscienceDecisionsTableOrderingComposer
@@ -18279,6 +20032,28 @@ class $$ConscienceDecisionsTableAnnotationComposer
 
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
+
+  Expression<T> coordinatorStatesRefs<T extends Object>(
+      Expression<T> Function($$CoordinatorStatesTableAnnotationComposer a) f) {
+    final $$CoordinatorStatesTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.coordinatorStates,
+            getReferencedColumn: (t) => t.decisionId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$CoordinatorStatesTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.coordinatorStates,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
 }
 
 class $$ConscienceDecisionsTableTableManager extends RootTableManager<
@@ -18290,13 +20065,9 @@ class $$ConscienceDecisionsTableTableManager extends RootTableManager<
     $$ConscienceDecisionsTableAnnotationComposer,
     $$ConscienceDecisionsTableCreateCompanionBuilder,
     $$ConscienceDecisionsTableUpdateCompanionBuilder,
-    (
-      ConscienceDecision,
-      BaseReferences<_$LocalBrain, $ConscienceDecisionsTable,
-          ConscienceDecision>
-    ),
+    (ConscienceDecision, $$ConscienceDecisionsTableReferences),
     ConscienceDecision,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool coordinatorStatesRefs})> {
   $$ConscienceDecisionsTableTableManager(
       _$LocalBrain db, $ConscienceDecisionsTable table)
       : super(TableManagerState(
@@ -18355,9 +20126,37 @@ class $$ConscienceDecisionsTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable(table),
+                    $$ConscienceDecisionsTableReferences(db, table, e)
+                  ))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({coordinatorStatesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (coordinatorStatesRefs) db.coordinatorStates
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (coordinatorStatesRefs)
+                    await $_getPrefetchedData<ConscienceDecision,
+                            $ConscienceDecisionsTable, CoordinatorState>(
+                        currentTable: table,
+                        referencedTable: $$ConscienceDecisionsTableReferences
+                            ._coordinatorStatesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ConscienceDecisionsTableReferences(db, table, p0)
+                                .coordinatorStatesRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.decisionId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
@@ -18370,13 +20169,1105 @@ typedef $$ConscienceDecisionsTableProcessedTableManager = ProcessedTableManager<
     $$ConscienceDecisionsTableAnnotationComposer,
     $$ConscienceDecisionsTableCreateCompanionBuilder,
     $$ConscienceDecisionsTableUpdateCompanionBuilder,
-    (
-      ConscienceDecision,
-      BaseReferences<_$LocalBrain, $ConscienceDecisionsTable,
-          ConscienceDecision>
-    ),
+    (ConscienceDecision, $$ConscienceDecisionsTableReferences),
     ConscienceDecision,
+    PrefetchHooks Function({bool coordinatorStatesRefs})>;
+typedef $$AgentIdentitiesTableCreateCompanionBuilder = AgentIdentitiesCompanion
+    Function({
+  required String id,
+  required String name,
+  Value<String> role,
+  Value<String?> personalityTraits,
+  Value<String?> systemPrompt,
+  Value<String?> capabilities,
+  Value<String?> avatarConfig,
+  Value<bool> isActive,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+typedef $$AgentIdentitiesTableUpdateCompanionBuilder = AgentIdentitiesCompanion
+    Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String> role,
+  Value<String?> personalityTraits,
+  Value<String?> systemPrompt,
+  Value<String?> capabilities,
+  Value<String?> avatarConfig,
+  Value<bool> isActive,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$AgentIdentitiesTableFilterComposer
+    extends Composer<_$LocalBrain, $AgentIdentitiesTable> {
+  $$AgentIdentitiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get personalityTraits => $composableBuilder(
+      column: $table.personalityTraits,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get systemPrompt => $composableBuilder(
+      column: $table.systemPrompt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get capabilities => $composableBuilder(
+      column: $table.capabilities, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get avatarConfig => $composableBuilder(
+      column: $table.avatarConfig, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$AgentIdentitiesTableOrderingComposer
+    extends Composer<_$LocalBrain, $AgentIdentitiesTable> {
+  $$AgentIdentitiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get role => $composableBuilder(
+      column: $table.role, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get personalityTraits => $composableBuilder(
+      column: $table.personalityTraits,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get systemPrompt => $composableBuilder(
+      column: $table.systemPrompt,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get capabilities => $composableBuilder(
+      column: $table.capabilities,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get avatarConfig => $composableBuilder(
+      column: $table.avatarConfig,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$AgentIdentitiesTableAnnotationComposer
+    extends Composer<_$LocalBrain, $AgentIdentitiesTable> {
+  $$AgentIdentitiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<String> get personalityTraits => $composableBuilder(
+      column: $table.personalityTraits, builder: (column) => column);
+
+  GeneratedColumn<String> get systemPrompt => $composableBuilder(
+      column: $table.systemPrompt, builder: (column) => column);
+
+  GeneratedColumn<String> get capabilities => $composableBuilder(
+      column: $table.capabilities, builder: (column) => column);
+
+  GeneratedColumn<String> get avatarConfig => $composableBuilder(
+      column: $table.avatarConfig, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$AgentIdentitiesTableTableManager extends RootTableManager<
+    _$LocalBrain,
+    $AgentIdentitiesTable,
+    AgentIdentity,
+    $$AgentIdentitiesTableFilterComposer,
+    $$AgentIdentitiesTableOrderingComposer,
+    $$AgentIdentitiesTableAnnotationComposer,
+    $$AgentIdentitiesTableCreateCompanionBuilder,
+    $$AgentIdentitiesTableUpdateCompanionBuilder,
+    (
+      AgentIdentity,
+      BaseReferences<_$LocalBrain, $AgentIdentitiesTable, AgentIdentity>
+    ),
+    AgentIdentity,
+    PrefetchHooks Function()> {
+  $$AgentIdentitiesTableTableManager(
+      _$LocalBrain db, $AgentIdentitiesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AgentIdentitiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AgentIdentitiesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AgentIdentitiesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> role = const Value.absent(),
+            Value<String?> personalityTraits = const Value.absent(),
+            Value<String?> systemPrompt = const Value.absent(),
+            Value<String?> capabilities = const Value.absent(),
+            Value<String?> avatarConfig = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              AgentIdentitiesCompanion(
+            id: id,
+            name: name,
+            role: role,
+            personalityTraits: personalityTraits,
+            systemPrompt: systemPrompt,
+            capabilities: capabilities,
+            avatarConfig: avatarConfig,
+            isActive: isActive,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            Value<String> role = const Value.absent(),
+            Value<String?> personalityTraits = const Value.absent(),
+            Value<String?> systemPrompt = const Value.absent(),
+            Value<String?> capabilities = const Value.absent(),
+            Value<String?> avatarConfig = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              AgentIdentitiesCompanion.insert(
+            id: id,
+            name: name,
+            role: role,
+            personalityTraits: personalityTraits,
+            systemPrompt: systemPrompt,
+            capabilities: capabilities,
+            avatarConfig: avatarConfig,
+            isActive: isActive,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$AgentIdentitiesTableProcessedTableManager = ProcessedTableManager<
+    _$LocalBrain,
+    $AgentIdentitiesTable,
+    AgentIdentity,
+    $$AgentIdentitiesTableFilterComposer,
+    $$AgentIdentitiesTableOrderingComposer,
+    $$AgentIdentitiesTableAnnotationComposer,
+    $$AgentIdentitiesTableCreateCompanionBuilder,
+    $$AgentIdentitiesTableUpdateCompanionBuilder,
+    (
+      AgentIdentity,
+      BaseReferences<_$LocalBrain, $AgentIdentitiesTable, AgentIdentity>
+    ),
+    AgentIdentity,
     PrefetchHooks Function()>;
+typedef $$CoordinatorStatesTableCreateCompanionBuilder
+    = CoordinatorStatesCompanion Function({
+  required String id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  required String decisionId,
+  required String action,
+  required String riskLevel,
+  Value<String> status,
+  Value<String?> consensusVerdict,
+  Value<String?> consensusReasoning,
+  Value<String?> conflictType,
+  Value<String?> resolutionStrategy,
+  Value<String?> resolvedBy,
+  Value<int> totalVotes,
+  Value<int> approveCount,
+  Value<int> questionCount,
+  Value<int> holdCount,
+  Value<int> denyCount,
+  Value<int> rowid,
+});
+typedef $$CoordinatorStatesTableUpdateCompanionBuilder
+    = CoordinatorStatesCompanion Function({
+  Value<String> id,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<String> decisionId,
+  Value<String> action,
+  Value<String> riskLevel,
+  Value<String> status,
+  Value<String?> consensusVerdict,
+  Value<String?> consensusReasoning,
+  Value<String?> conflictType,
+  Value<String?> resolutionStrategy,
+  Value<String?> resolvedBy,
+  Value<int> totalVotes,
+  Value<int> approveCount,
+  Value<int> questionCount,
+  Value<int> holdCount,
+  Value<int> denyCount,
+  Value<int> rowid,
+});
+
+final class $$CoordinatorStatesTableReferences extends BaseReferences<
+    _$LocalBrain, $CoordinatorStatesTable, CoordinatorState> {
+  $$CoordinatorStatesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $ConscienceDecisionsTable _decisionIdTable(_$LocalBrain db) => db
+      .conscienceDecisions
+      .createAlias('coordinator_states__decision_id__conscience_decisions__id');
+
+  $$ConscienceDecisionsTableProcessedTableManager get decisionId {
+    final $_column = $_itemColumn<String>('decision_id')!;
+
+    final manager =
+        $$ConscienceDecisionsTableTableManager($_db, $_db.conscienceDecisions)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_decisionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$CoordinatorVotesTable, List<CoordinatorVote>>
+      _coordinatorVotesRefsTable(_$LocalBrain db) =>
+          MultiTypedResultKey.fromTable(db.coordinatorVotes,
+              aliasName:
+                  'coordinator_states__id__coordinator_votes__coordinator_id');
+
+  $$CoordinatorVotesTableProcessedTableManager get coordinatorVotesRefs {
+    final manager =
+        $$CoordinatorVotesTableTableManager($_db, $_db.coordinatorVotes).filter(
+            (f) => f.coordinatorId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_coordinatorVotesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$CoordinatorStatesTableFilterComposer
+    extends Composer<_$LocalBrain, $CoordinatorStatesTable> {
+  $$CoordinatorStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get action => $composableBuilder(
+      column: $table.action, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get riskLevel => $composableBuilder(
+      column: $table.riskLevel, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get consensusVerdict => $composableBuilder(
+      column: $table.consensusVerdict,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get consensusReasoning => $composableBuilder(
+      column: $table.consensusReasoning,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get conflictType => $composableBuilder(
+      column: $table.conflictType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get resolutionStrategy => $composableBuilder(
+      column: $table.resolutionStrategy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get resolvedBy => $composableBuilder(
+      column: $table.resolvedBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get totalVotes => $composableBuilder(
+      column: $table.totalVotes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get approveCount => $composableBuilder(
+      column: $table.approveCount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get questionCount => $composableBuilder(
+      column: $table.questionCount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get holdCount => $composableBuilder(
+      column: $table.holdCount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get denyCount => $composableBuilder(
+      column: $table.denyCount, builder: (column) => ColumnFilters(column));
+
+  $$ConscienceDecisionsTableFilterComposer get decisionId {
+    final $$ConscienceDecisionsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.decisionId,
+        referencedTable: $db.conscienceDecisions,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ConscienceDecisionsTableFilterComposer(
+              $db: $db,
+              $table: $db.conscienceDecisions,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> coordinatorVotesRefs(
+      Expression<bool> Function($$CoordinatorVotesTableFilterComposer f) f) {
+    final $$CoordinatorVotesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.coordinatorVotes,
+        getReferencedColumn: (t) => t.coordinatorId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CoordinatorVotesTableFilterComposer(
+              $db: $db,
+              $table: $db.coordinatorVotes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$CoordinatorStatesTableOrderingComposer
+    extends Composer<_$LocalBrain, $CoordinatorStatesTable> {
+  $$CoordinatorStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get action => $composableBuilder(
+      column: $table.action, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get riskLevel => $composableBuilder(
+      column: $table.riskLevel, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get consensusVerdict => $composableBuilder(
+      column: $table.consensusVerdict,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get consensusReasoning => $composableBuilder(
+      column: $table.consensusReasoning,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get conflictType => $composableBuilder(
+      column: $table.conflictType,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get resolutionStrategy => $composableBuilder(
+      column: $table.resolutionStrategy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get resolvedBy => $composableBuilder(
+      column: $table.resolvedBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get totalVotes => $composableBuilder(
+      column: $table.totalVotes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get approveCount => $composableBuilder(
+      column: $table.approveCount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get questionCount => $composableBuilder(
+      column: $table.questionCount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get holdCount => $composableBuilder(
+      column: $table.holdCount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get denyCount => $composableBuilder(
+      column: $table.denyCount, builder: (column) => ColumnOrderings(column));
+
+  $$ConscienceDecisionsTableOrderingComposer get decisionId {
+    final $$ConscienceDecisionsTableOrderingComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.decisionId,
+            referencedTable: $db.conscienceDecisions,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$ConscienceDecisionsTableOrderingComposer(
+                  $db: $db,
+                  $table: $db.conscienceDecisions,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+}
+
+class $$CoordinatorStatesTableAnnotationComposer
+    extends Composer<_$LocalBrain, $CoordinatorStatesTable> {
+  $$CoordinatorStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get riskLevel =>
+      $composableBuilder(column: $table.riskLevel, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get consensusVerdict => $composableBuilder(
+      column: $table.consensusVerdict, builder: (column) => column);
+
+  GeneratedColumn<String> get consensusReasoning => $composableBuilder(
+      column: $table.consensusReasoning, builder: (column) => column);
+
+  GeneratedColumn<String> get conflictType => $composableBuilder(
+      column: $table.conflictType, builder: (column) => column);
+
+  GeneratedColumn<String> get resolutionStrategy => $composableBuilder(
+      column: $table.resolutionStrategy, builder: (column) => column);
+
+  GeneratedColumn<String> get resolvedBy => $composableBuilder(
+      column: $table.resolvedBy, builder: (column) => column);
+
+  GeneratedColumn<int> get totalVotes => $composableBuilder(
+      column: $table.totalVotes, builder: (column) => column);
+
+  GeneratedColumn<int> get approveCount => $composableBuilder(
+      column: $table.approveCount, builder: (column) => column);
+
+  GeneratedColumn<int> get questionCount => $composableBuilder(
+      column: $table.questionCount, builder: (column) => column);
+
+  GeneratedColumn<int> get holdCount =>
+      $composableBuilder(column: $table.holdCount, builder: (column) => column);
+
+  GeneratedColumn<int> get denyCount =>
+      $composableBuilder(column: $table.denyCount, builder: (column) => column);
+
+  $$ConscienceDecisionsTableAnnotationComposer get decisionId {
+    final $$ConscienceDecisionsTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.decisionId,
+            referencedTable: $db.conscienceDecisions,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$ConscienceDecisionsTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.conscienceDecisions,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  Expression<T> coordinatorVotesRefs<T extends Object>(
+      Expression<T> Function($$CoordinatorVotesTableAnnotationComposer a) f) {
+    final $$CoordinatorVotesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.coordinatorVotes,
+        getReferencedColumn: (t) => t.coordinatorId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CoordinatorVotesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.coordinatorVotes,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$CoordinatorStatesTableTableManager extends RootTableManager<
+    _$LocalBrain,
+    $CoordinatorStatesTable,
+    CoordinatorState,
+    $$CoordinatorStatesTableFilterComposer,
+    $$CoordinatorStatesTableOrderingComposer,
+    $$CoordinatorStatesTableAnnotationComposer,
+    $$CoordinatorStatesTableCreateCompanionBuilder,
+    $$CoordinatorStatesTableUpdateCompanionBuilder,
+    (CoordinatorState, $$CoordinatorStatesTableReferences),
+    CoordinatorState,
+    PrefetchHooks Function({bool decisionId, bool coordinatorVotesRefs})> {
+  $$CoordinatorStatesTableTableManager(
+      _$LocalBrain db, $CoordinatorStatesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CoordinatorStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CoordinatorStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CoordinatorStatesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<String> decisionId = const Value.absent(),
+            Value<String> action = const Value.absent(),
+            Value<String> riskLevel = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<String?> consensusVerdict = const Value.absent(),
+            Value<String?> consensusReasoning = const Value.absent(),
+            Value<String?> conflictType = const Value.absent(),
+            Value<String?> resolutionStrategy = const Value.absent(),
+            Value<String?> resolvedBy = const Value.absent(),
+            Value<int> totalVotes = const Value.absent(),
+            Value<int> approveCount = const Value.absent(),
+            Value<int> questionCount = const Value.absent(),
+            Value<int> holdCount = const Value.absent(),
+            Value<int> denyCount = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CoordinatorStatesCompanion(
+            id: id,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            decisionId: decisionId,
+            action: action,
+            riskLevel: riskLevel,
+            status: status,
+            consensusVerdict: consensusVerdict,
+            consensusReasoning: consensusReasoning,
+            conflictType: conflictType,
+            resolutionStrategy: resolutionStrategy,
+            resolvedBy: resolvedBy,
+            totalVotes: totalVotes,
+            approveCount: approveCount,
+            questionCount: questionCount,
+            holdCount: holdCount,
+            denyCount: denyCount,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            required String decisionId,
+            required String action,
+            required String riskLevel,
+            Value<String> status = const Value.absent(),
+            Value<String?> consensusVerdict = const Value.absent(),
+            Value<String?> consensusReasoning = const Value.absent(),
+            Value<String?> conflictType = const Value.absent(),
+            Value<String?> resolutionStrategy = const Value.absent(),
+            Value<String?> resolvedBy = const Value.absent(),
+            Value<int> totalVotes = const Value.absent(),
+            Value<int> approveCount = const Value.absent(),
+            Value<int> questionCount = const Value.absent(),
+            Value<int> holdCount = const Value.absent(),
+            Value<int> denyCount = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CoordinatorStatesCompanion.insert(
+            id: id,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            decisionId: decisionId,
+            action: action,
+            riskLevel: riskLevel,
+            status: status,
+            consensusVerdict: consensusVerdict,
+            consensusReasoning: consensusReasoning,
+            conflictType: conflictType,
+            resolutionStrategy: resolutionStrategy,
+            resolvedBy: resolvedBy,
+            totalVotes: totalVotes,
+            approveCount: approveCount,
+            questionCount: questionCount,
+            holdCount: holdCount,
+            denyCount: denyCount,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$CoordinatorStatesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {decisionId = false, coordinatorVotesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (coordinatorVotesRefs) db.coordinatorVotes
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (decisionId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.decisionId,
+                    referencedTable:
+                        $$CoordinatorStatesTableReferences._decisionIdTable(db),
+                    referencedColumn: $$CoordinatorStatesTableReferences
+                        ._decisionIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (coordinatorVotesRefs)
+                    await $_getPrefetchedData<CoordinatorState,
+                            $CoordinatorStatesTable, CoordinatorVote>(
+                        currentTable: table,
+                        referencedTable: $$CoordinatorStatesTableReferences
+                            ._coordinatorVotesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$CoordinatorStatesTableReferences(db, table, p0)
+                                .coordinatorVotesRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.coordinatorId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$CoordinatorStatesTableProcessedTableManager = ProcessedTableManager<
+    _$LocalBrain,
+    $CoordinatorStatesTable,
+    CoordinatorState,
+    $$CoordinatorStatesTableFilterComposer,
+    $$CoordinatorStatesTableOrderingComposer,
+    $$CoordinatorStatesTableAnnotationComposer,
+    $$CoordinatorStatesTableCreateCompanionBuilder,
+    $$CoordinatorStatesTableUpdateCompanionBuilder,
+    (CoordinatorState, $$CoordinatorStatesTableReferences),
+    CoordinatorState,
+    PrefetchHooks Function({bool decisionId, bool coordinatorVotesRefs})>;
+typedef $$CoordinatorVotesTableCreateCompanionBuilder
+    = CoordinatorVotesCompanion Function({
+  required String id,
+  required String coordinatorId,
+  required String agent,
+  required String vote,
+  Value<String?> reasoning,
+  Value<DateTime> timestamp,
+  Value<int> rowid,
+});
+typedef $$CoordinatorVotesTableUpdateCompanionBuilder
+    = CoordinatorVotesCompanion Function({
+  Value<String> id,
+  Value<String> coordinatorId,
+  Value<String> agent,
+  Value<String> vote,
+  Value<String?> reasoning,
+  Value<DateTime> timestamp,
+  Value<int> rowid,
+});
+
+final class $$CoordinatorVotesTableReferences extends BaseReferences<
+    _$LocalBrain, $CoordinatorVotesTable, CoordinatorVote> {
+  $$CoordinatorVotesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $CoordinatorStatesTable _coordinatorIdTable(_$LocalBrain db) => db
+      .coordinatorStates
+      .createAlias('coordinator_votes__coordinator_id__coordinator_states__id');
+
+  $$CoordinatorStatesTableProcessedTableManager get coordinatorId {
+    final $_column = $_itemColumn<String>('coordinator_id')!;
+
+    final manager =
+        $$CoordinatorStatesTableTableManager($_db, $_db.coordinatorStates)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_coordinatorIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$CoordinatorVotesTableFilterComposer
+    extends Composer<_$LocalBrain, $CoordinatorVotesTable> {
+  $$CoordinatorVotesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get agent => $composableBuilder(
+      column: $table.agent, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get vote => $composableBuilder(
+      column: $table.vote, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get reasoning => $composableBuilder(
+      column: $table.reasoning, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnFilters(column));
+
+  $$CoordinatorStatesTableFilterComposer get coordinatorId {
+    final $$CoordinatorStatesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.coordinatorId,
+        referencedTable: $db.coordinatorStates,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CoordinatorStatesTableFilterComposer(
+              $db: $db,
+              $table: $db.coordinatorStates,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CoordinatorVotesTableOrderingComposer
+    extends Composer<_$LocalBrain, $CoordinatorVotesTable> {
+  $$CoordinatorVotesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get agent => $composableBuilder(
+      column: $table.agent, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get vote => $composableBuilder(
+      column: $table.vote, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get reasoning => $composableBuilder(
+      column: $table.reasoning, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnOrderings(column));
+
+  $$CoordinatorStatesTableOrderingComposer get coordinatorId {
+    final $$CoordinatorStatesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.coordinatorId,
+        referencedTable: $db.coordinatorStates,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CoordinatorStatesTableOrderingComposer(
+              $db: $db,
+              $table: $db.coordinatorStates,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CoordinatorVotesTableAnnotationComposer
+    extends Composer<_$LocalBrain, $CoordinatorVotesTable> {
+  $$CoordinatorVotesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get agent =>
+      $composableBuilder(column: $table.agent, builder: (column) => column);
+
+  GeneratedColumn<String> get vote =>
+      $composableBuilder(column: $table.vote, builder: (column) => column);
+
+  GeneratedColumn<String> get reasoning =>
+      $composableBuilder(column: $table.reasoning, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  $$CoordinatorStatesTableAnnotationComposer get coordinatorId {
+    final $$CoordinatorStatesTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.coordinatorId,
+            referencedTable: $db.coordinatorStates,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$CoordinatorStatesTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.coordinatorStates,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+}
+
+class $$CoordinatorVotesTableTableManager extends RootTableManager<
+    _$LocalBrain,
+    $CoordinatorVotesTable,
+    CoordinatorVote,
+    $$CoordinatorVotesTableFilterComposer,
+    $$CoordinatorVotesTableOrderingComposer,
+    $$CoordinatorVotesTableAnnotationComposer,
+    $$CoordinatorVotesTableCreateCompanionBuilder,
+    $$CoordinatorVotesTableUpdateCompanionBuilder,
+    (CoordinatorVote, $$CoordinatorVotesTableReferences),
+    CoordinatorVote,
+    PrefetchHooks Function({bool coordinatorId})> {
+  $$CoordinatorVotesTableTableManager(
+      _$LocalBrain db, $CoordinatorVotesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CoordinatorVotesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CoordinatorVotesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CoordinatorVotesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> coordinatorId = const Value.absent(),
+            Value<String> agent = const Value.absent(),
+            Value<String> vote = const Value.absent(),
+            Value<String?> reasoning = const Value.absent(),
+            Value<DateTime> timestamp = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CoordinatorVotesCompanion(
+            id: id,
+            coordinatorId: coordinatorId,
+            agent: agent,
+            vote: vote,
+            reasoning: reasoning,
+            timestamp: timestamp,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String coordinatorId,
+            required String agent,
+            required String vote,
+            Value<String?> reasoning = const Value.absent(),
+            Value<DateTime> timestamp = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CoordinatorVotesCompanion.insert(
+            id: id,
+            coordinatorId: coordinatorId,
+            agent: agent,
+            vote: vote,
+            reasoning: reasoning,
+            timestamp: timestamp,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$CoordinatorVotesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({coordinatorId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (coordinatorId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.coordinatorId,
+                    referencedTable: $$CoordinatorVotesTableReferences
+                        ._coordinatorIdTable(db),
+                    referencedColumn: $$CoordinatorVotesTableReferences
+                        ._coordinatorIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$CoordinatorVotesTableProcessedTableManager = ProcessedTableManager<
+    _$LocalBrain,
+    $CoordinatorVotesTable,
+    CoordinatorVote,
+    $$CoordinatorVotesTableFilterComposer,
+    $$CoordinatorVotesTableOrderingComposer,
+    $$CoordinatorVotesTableAnnotationComposer,
+    $$CoordinatorVotesTableCreateCompanionBuilder,
+    $$CoordinatorVotesTableUpdateCompanionBuilder,
+    (CoordinatorVote, $$CoordinatorVotesTableReferences),
+    CoordinatorVote,
+    PrefetchHooks Function({bool coordinatorId})>;
 
 class $LocalBrainManager {
   final _$LocalBrain _db;
@@ -18434,4 +21325,10 @@ class $LocalBrainManager {
       $$AgentThoughtsTableTableManager(_db, _db.agentThoughts);
   $$ConscienceDecisionsTableTableManager get conscienceDecisions =>
       $$ConscienceDecisionsTableTableManager(_db, _db.conscienceDecisions);
+  $$AgentIdentitiesTableTableManager get agentIdentities =>
+      $$AgentIdentitiesTableTableManager(_db, _db.agentIdentities);
+  $$CoordinatorStatesTableTableManager get coordinatorStates =>
+      $$CoordinatorStatesTableTableManager(_db, _db.coordinatorStates);
+  $$CoordinatorVotesTableTableManager get coordinatorVotes =>
+      $$CoordinatorVotesTableTableManager(_db, _db.coordinatorVotes);
 }
