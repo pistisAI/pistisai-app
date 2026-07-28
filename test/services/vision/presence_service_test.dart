@@ -70,8 +70,8 @@ void main() {
       test('returns true and records a check after enable()', () async {
         await service.enable();
         final present = await service.checkNow();
-        expect(present, isTrue);
-        expect(service.isPresent, isTrue);
+        expect(present, PresenceState.present);
+        expect(service.state == PresenceState.present, isTrue);
         expect(service.lastCheck, isNotNull);
       });
 
@@ -89,7 +89,7 @@ void main() {
         await service.checkNow();
         await service.disable();
         expect(service.isEnabled, isFalse);
-        expect(service.isPresent, isFalse);
+        expect(service.state == PresenceState.unknown, isTrue);
         expect(service.lastCheck, isNull);
         expect(fakeCamera.isInitialized, isFalse);
       });
