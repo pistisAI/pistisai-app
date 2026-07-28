@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   gtk
   local_notifier
   record_linux
+  rive_native
   screen_retriever_linux
   sentry_flutter
   tray_manager

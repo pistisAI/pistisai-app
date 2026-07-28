@@ -3,6 +3,7 @@ import 'package:pistisai/features/avatar/avatar_widget.dart';
 import 'package:pistisai/features/avatar/emoji_blending_avatar.dart';
 import 'package:pistisai/features/avatar/rive_animation_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:rive/rive.dart';
 
 /// A Rive-powered avatar that gracefully falls back to [EmojiBlendingAvatar]
 /// when the .riv asset is not yet available.
@@ -37,6 +38,7 @@ class RiveAvatar extends StatefulWidget {
 class _RiveAvatarState extends State<RiveAvatar> {
   bool _riveAvailable = false;
   bool _initialized = false;
+  RiveWidgetController? _controller;
 
   @override
   void initState() {
@@ -44,14 +46,43 @@ class _RiveAvatarState extends State<RiveAvatar> {
     _checkRiveAvailability();
   }
 
+  @override
+  void didUpdateWidget(RiveAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.state != oldWidget.state && _controller != null) {
+      _setStateInput(widget.state);
+    }
+  }
+
+  @override
+  void dispose() {
+    // Controller is disposed by RiveWidgetBuilder
+    super.dispose();
+  }
+
   Future<void> _checkRiveAvailability() async {
-    // Check if the .riv file is available.
-    // Currently returns false since the asset doesn't exist yet.
-    // When the .riv file is added, update RiveAnimationConfig.isAvailable.
     setState(() {
       _riveAvailable = RiveAnimationConfig.isAvailable;
       _initialized = true;
     });
+  }
+
+  void _onRiveLoaded(RiveLoaded state) {
+    _controller = state.controller;
+    _setStateInput(widget.state);
+  }
+
+  void _setStateInput(AgentState state) {
+    final controller = _controller;
+    if (controller == null) return;
+
+    // ignore: deprecated_member_use
+    final numberInput = controller.stateMachine.number(
+      RiveAnimationConfig.stateInputName,
+    );
+    if (numberInput != null) {
+      numberInput.value = RiveAnimationConfig.stateToInput(state).toDouble();
+    }
   }
 
   @override
@@ -65,18 +96,39 @@ class _RiveAvatarState extends State<RiveAvatar> {
     }
 
     if (_riveAvailable) {
-      // TODO: Implement Rive rendering when the .riv file is available.
-      // This will use the rive package:
-      //   RiveAnimation.asset(
-      //     RiveAnimationConfig.assetPath,
-      //     artboard: RiveAnimationConfig.artboardName,
-      //     stateMachines: [RiveAnimationConfig.stateMachineName],
-      //     fit: BoxFit.contain,
-      //   )
-      // And set the state input via a controller:
-      //   final controller = StateMachineController.fromArtboard(...);
-      //   controller?.setNumberInput('state', RiveAnimationConfig.stateToInput(widget.state));
-      return _buildFallback();
+      return SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: RiveWidgetBuilder(
+          fileLoader: FileLoader.fromAsset(
+            RiveAnimationConfig.assetPath,
+            riveFactory: Factory.flutter,
+          ),
+          artboardSelector: ArtboardSelector.byName(
+            RiveAnimationConfig.artboardName,
+          ),
+          stateMachineSelector: StateMachineSelector.byName(
+            RiveAnimationConfig.stateMachineName,
+          ),
+          onLoaded: _onRiveLoaded,
+          onFailed: (error, stackTrace) {
+            debugPrint('Rive load failed: $error');
+            setState(() {
+              _riveAvailable = false;
+            });
+          },
+          builder: (context, state) {
+            return switch (state) {
+              RiveLoading() => _buildFallback(),
+              RiveFailed() => _buildFallback(),
+              RiveLoaded(:final controller) => RiveWidget(
+                  controller: controller,
+                  fit: Fit.contain,
+                ),
+            };
+          },
+        ),
+      );
     }
 
     return _buildFallback();
