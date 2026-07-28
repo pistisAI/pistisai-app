@@ -36,6 +36,7 @@ void main() {
       final json = jsonDecode(body) as Map<String, dynamic>;
       expect(json['status'], equals('healthy'));
       expect(json['dependencies']['database']['status'], equals('healthy'));
+      // ignore: avoid_print
       print('[Test] ✅ Backend healthy: ${json['uptime']}s uptime');
     });
   });
@@ -50,6 +51,7 @@ void main() {
       final json = jsonDecode(body) as Map<String, dynamic>;
       expect(json['status'], equals('ok'));
       expect(json['platform'], equals('hermes-agent'));
+      // ignore: avoid_print
       print('[Test] ✅ Hermes gateway healthy at :8642');
     });
 
@@ -60,8 +62,10 @@ void main() {
       expect(response.statusCode, anyOf(200, 401),
           reason: 'Should either return models or indicate auth needed');
       if (response.statusCode == 401) {
+        // ignore: avoid_print
         print('[Test] ⚠️ Hermes models endpoint requires API key');
       } else {
+        // ignore: avoid_print
         print('[Test] ✅ Models: $body');
       }
     });
@@ -76,6 +80,7 @@ void main() {
       final body = await response.transform(utf8.decoder).join();
       final json = jsonDecode(body) as Map<String, dynamic>;
       final models = json['models'] as List? ?? [];
+      // ignore: avoid_print
       print('[Test] ✅ Ollama reachable at :11434 with ${models.length} models');
     });
   });
@@ -91,11 +96,14 @@ void main() {
         final response = await request.close();
         final body = await response.transform(utf8.decoder).join();
         expect(body, equals('OK'));
+        // ignore: avoid_print
         print('[Test] ✅ App router healthy at :1337');
       } on SocketException {
+        // ignore: avoid_print
         print('[Test] ⚠️  App router on :1337 not reachable — desktop app '
             'not running (skipping)');
       } on TimeoutException {
+        // ignore: avoid_print
         print('[Test] ⚠️  App router on :1337 timed out — desktop app '
             'not running (skipping)');
       }
@@ -133,8 +141,10 @@ void main() {
                   const Duration(seconds: 1),
                 );
         expect(routerRes.statusCode, anyOf(200, 404));
+        // ignore: avoid_print
         print('  - App router       :1337 ✅');
       } catch (_) {
+        // ignore: avoid_print
         print('  - App router       :1337 ⚠️  (desktop app not running — skipped)');
       }
 
@@ -146,9 +156,13 @@ void main() {
         fail('Ollama unreachable: $e');
       }
 
+      // ignore: avoid_print
       print('[Test] ✅ CORE SERVICES RUNNING:');
+      // ignore: avoid_print
       print('  - Hermes gateway   :8642 ✅');
+      // ignore: avoid_print
       print('  - API backend      :8080 ✅');
+      // ignore: avoid_print
       print('  - Ollama provider  :11434 ✅');
     });
   });

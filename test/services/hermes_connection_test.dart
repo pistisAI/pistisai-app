@@ -29,7 +29,7 @@ void main() {
   /// Returns true if a Hermes gateway is reachable at the configured base URL.
   /// These tests require a live local gateway; skip when none is running so
   /// the CI unit gate stays green on machines without Hermes installed.
-  Future<bool> _hermesGatewayReachable() async {
+  Future<bool> hermesGatewayReachable() async {
     try {
       final client = HttpClient();
       final request = await client
@@ -45,7 +45,7 @@ void main() {
 
   group('Hermes Connection', () {
     test('can connect to local Hermes gateway at :8642', () async {
-      final reachable = await _hermesGatewayReachable();
+      final reachable = await hermesGatewayReachable();
       await hermesService.establishConnection();
       expect(hermesService.connection.isActive, isTrue,
           reason: 'Hermes should be reachable at 127.0.0.1:8642',
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('health endpoint returns healthy', () async {
-      final reachable = await _hermesGatewayReachable();
+      final reachable = await hermesGatewayReachable();
       await hermesService.establishConnection();
       final isHealthy = await hermesService.testConnection();
       expect(isHealthy, isTrue,
@@ -64,7 +64,7 @@ void main() {
   group('Hermes Streaming', () {
     test('can stream a simple chat response (requires API key)',
         () async {
-      final reachable = await _hermesGatewayReachable();
+      final reachable = await hermesGatewayReachable();
       await hermesService.establishConnection();
       if (!reachable) {
         // No live gateway on this machine; nothing to stream against.
@@ -83,6 +83,7 @@ void main() {
         model: 'deepseek-v4-flash',
         conversationId: 'test-conv-001',
       )) {
+        // ignore: avoid_print
         print('[Test] received msg: chunk=${msg.chunk.length}ch, '
             'error=${msg.error}, isComplete=${msg.isComplete}');
         if (msg.chunk.isNotEmpty) {
@@ -92,6 +93,7 @@ void main() {
             (msg.error!.contains('401') ||
                 msg.error!.contains('Invalid API key'))) {
           gotAuthError = true;
+          // ignore: avoid_print
           print('[Test] ⚠️  Hermes streaming requires API key (401) — '
               'service reachable, auth missing');
           break;
@@ -102,6 +104,7 @@ void main() {
       expect(gotChunks || gotAuthError, isTrue,
           reason: 'Should either stream chunks or report 401 auth requirement');
       if (gotChunks) {
+        // ignore: avoid_print
         print('[Test] ✅ Streaming succeeded');
       }
     }, timeout: const Timeout(Duration(seconds: 60)));
@@ -109,8 +112,4 @@ void main() {
 }
 
 class _RealHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context);
-  }
 }

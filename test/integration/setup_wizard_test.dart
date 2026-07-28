@@ -37,6 +37,7 @@ void main() {
       final body = await response.transform(utf8.decoder).join();
       final json = jsonDecode(body) as Map<String, dynamic>;
       expect(json['platform'], equals('hermes-agent'));
+      // ignore: avoid_print
       print('[Test] ✅ ProviderDiscovery would find Hermes');
     });
 
@@ -49,6 +50,7 @@ void main() {
       final json = jsonDecode(body) as Map<String, dynamic>;
       final models = json['models'] as List? ?? [];
       final modelNames = models.map((m) => m['name']).join(', ');
+      // ignore: avoid_print
       print('[Test] ✅ Ollama models available: $modelNames');
       expect(models.length, greaterThanOrEqualTo(1),
           reason: 'At least one Ollama model needed for demo');
@@ -58,7 +60,9 @@ void main() {
       // The wizard shows when getAllAgentRuntimes() returns empty.
       // Since Hermes IS available, wizard should be SKIPPED
       // meaning the user goes straight to chat.
+      // ignore: avoid_print
       print('[Test] ℹ️ Hermes is available - setup wizard will be auto-skipped');
+      // ignore: avoid_print
       print('[Test] ℹ️ App will route directly to chat screen');
     });
   });
@@ -71,7 +75,9 @@ void main() {
       final healthRes = await healthReq.close();
       expect(healthRes.statusCode, equals(200));
 
+      // ignore: avoid_print
       print('[Test] ✅ Backend accessible without auth token');
+      // ignore: avoid_print
       print('[Test] ✅ Desktop mode confirmed working locally');
     });
 
@@ -82,8 +88,10 @@ void main() {
       try {
         final response = await request.close();
         final body = await response.transform(utf8.decoder).join();
+        // ignore: avoid_print
         print('[Test] Admin status (${response.statusCode}): ${body.substring(0, min(body.length, 200))}');
       } catch (e) {
+        // ignore: avoid_print
         print('[Test] Admin endpoint may require auth: $e');
       }
     });
