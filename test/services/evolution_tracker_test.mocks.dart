@@ -1762,22 +1762,22 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
       ) as _i5.Future<List<dynamic>>);
 
   @override
-  _i5.Future<dynamic> getProviderById(String? id) => (super.noSuchMethod(
+  _i5.Future<_i2.QueryRow?> getProviderById(String? id) => (super.noSuchMethod(
         Invocation.method(
           #getProviderById,
           [id],
         ),
-        returnValue: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+        returnValue: _i5.Future<_i2.QueryRow?>.value(),
+      ) as _i5.Future<_i2.QueryRow?>);
 
   @override
-  _i5.Future<dynamic> getDefaultProvider() => (super.noSuchMethod(
+  _i5.Future<_i2.QueryRow?> getDefaultProvider() => (super.noSuchMethod(
         Invocation.method(
           #getDefaultProvider,
           [],
         ),
-        returnValue: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+        returnValue: _i5.Future<_i2.QueryRow?>.value(),
+      ) as _i5.Future<_i2.QueryRow?>);
 
   @override
   _i5.Future<List<dynamic>> getProvidersByType(String? type) =>

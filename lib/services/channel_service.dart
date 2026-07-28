@@ -14,7 +14,20 @@ class ChannelService {
   final String _hermesPath;
 
   ChannelService({String? hermesPath})
-      : _hermesPath = hermesPath ?? 'hermes';
+      : _hermesPath = hermesPath ?? 'hermes' {
+    assert(_validateHermesPath(_hermesPath),
+        'Invalid hermes path: $_hermesPath');
+  }
+
+  /// Validate that the hermes path is safe to use with Process.run.
+  /// Accepts 'hermes' (PATH lookup) or an absolute path without shell
+  /// metacharacters.
+  static bool _validateHermesPath(String path) {
+    if (path == 'hermes') return true;
+    if (!path.startsWith('/')) return false;
+    // Reject paths with shell metacharacters
+    return !path.contains(RegExp(r'[;&|`$(){}!<>~\n\r\s]'));
+  }
 
   /// List all communication channels currently connected to the gateway.
   Future<List<GatewayChannel>> listChannels() async {

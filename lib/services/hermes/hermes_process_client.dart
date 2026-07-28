@@ -100,6 +100,13 @@ class HermesProcessClient extends StreamingService {
         'Not found on PATH or common install locations');
   }
 
+  /// Validate that a string is safe to pass as a command argument.
+  /// Rejects strings containing shell metacharacters.
+  static bool _isSafeArg(String value) {
+    return value.isNotEmpty &&
+        !value.contains(RegExp(r'[;&|`$(){}!<>~\n\r]'));
+  }
+
   @override
   Future<void> establishConnection() async {
     if (_disposed) return;
@@ -205,6 +212,19 @@ class HermesProcessClient extends StreamingService {
 
     while (_restartAttempts < 2) {
       try {
+        // Validate prompt is safe before passing to Process.start
+        if (!_isSafeArg(prompt)) {
+          final errorMsg = StreamingMessage.error(
+            id: messageId,
+            conversationId: conversationId,
+            error: 'Invalid prompt: contains unsafe characters',
+            sequence: sequence,
+          );
+          _messageController.add(errorMsg);
+          yield errorMsg;
+          return;
+        }
+
         // Spawn hermes-agent chat -q for a single non-interactive query
         _activeProcess = await Process.start(
           agentPath,

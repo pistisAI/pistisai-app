@@ -89,7 +89,7 @@ class PaymentTransactionModel {
   }
 
   /// Parse amount from dynamic value
-  static double _parseAmount(dynamic value) {
+  static double _parseAmount(Object? value) {
     if (value == null) return 0.0;
     if (value is double) return value;
     if (value is int) return value.toDouble();
@@ -98,7 +98,7 @@ class PaymentTransactionModel {
   }
 
   /// Parse status from string
-  static TransactionStatus _parseStatus(dynamic value) {
+  static TransactionStatus _parseStatus(Object? value) {
     if (value == null) return TransactionStatus.pending;
     final statusStr = value.toString().toLowerCase();
     return TransactionStatus.values.firstWhere(

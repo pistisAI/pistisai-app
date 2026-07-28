@@ -74,7 +74,7 @@ class RefundModel {
   }
 
   /// Parse amount from dynamic value
-  static double _parseAmount(dynamic value) {
+  static double _parseAmount(Object? value) {
     if (value == null) return 0.0;
     if (value is double) return value;
     if (value is int) return value.toDouble();

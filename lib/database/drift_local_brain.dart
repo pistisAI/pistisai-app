@@ -1520,7 +1520,7 @@ class LocalBrain extends _$LocalBrain {
   }
 
   /// Get provider by ID
-  Future<dynamic> getProviderById(String id) {
+  Future<QueryRow?> getProviderById(String id) {
     return customSelect(
       'SELECT * FROM llm_providers WHERE id = ?',
       variables: [Variable(id)],
@@ -1528,7 +1528,7 @@ class LocalBrain extends _$LocalBrain {
   }
 
   /// Get default provider
-  Future<dynamic> getDefaultProvider() {
+  Future<QueryRow?> getDefaultProvider() {
     return customSelect(
       'SELECT * FROM llm_providers WHERE is_default = 1 LIMIT 1',
     ).getSingleOrNull();
