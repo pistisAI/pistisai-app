@@ -17,6 +17,7 @@ import 'desktop_settings_screen.dart';
 import 'about_settings_screen.dart';
 import 'vision_settings_screen.dart';
 import 'llm_provider_settings_screen.dart';
+import 'openclaw_skills_settings_screen.dart';
 
 // Discord settings is desktop-only (requires dart:ffi via nyxx)
 import 'discord_settings_screen.dart' if (dart.library.html) 'discord_settings_screen_web.dart';
@@ -206,6 +207,18 @@ final settingsRoutes = [
       return MaterialPage(
         key: state.pageKey,
         child: const LLMProviderSettingsScreen(),
+      );
+    },
+  ),
+
+  GoRoute(
+    path: '/settings/openclaw-skills',
+    name: 'settings-openclaw-skills',
+    pageBuilder: (context, state) {
+      debugPrint('[Router] Building OpenClawSkillsSettingsScreen');
+      return MaterialPage(
+        key: state.pageKey,
+        child: const OpenClawSkillsSettingsScreen(),
       );
     },
   ),

@@ -58,6 +58,18 @@ class GeneralSettingsScreen extends StatelessWidget {
                     onTap: () => context.go('/settings/downloads'),
                   ),
                 ),
+                const SizedBox(height: 8),
+
+                // OpenClaw Skills
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.extension),
+                    title: const Text('OpenClaw Skills'),
+                    subtitle: const Text('Install and manage OpenClaw skills'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.go('/settings/openclaw-skills'),
+                  ),
+                ),
               ],
             ),
           ),

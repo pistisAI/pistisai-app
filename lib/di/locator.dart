@@ -64,6 +64,7 @@ import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
+import 'package:pistisai/services/coordinator_service.dart';
 import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
 import 'package:pistisai/services/vision/camera_capture_service.dart';
@@ -79,6 +80,7 @@ import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/logging_service.dart';
 import 'package:pistisai/services/skill_service.dart';
+import 'package:pistisai/services/openclaw_skill_install_service.dart';
 import 'package:pistisai/services/cron_service.dart';
 import 'package:pistisai/services/session_service.dart';
 import 'package:pistisai/services/channel_service.dart';
@@ -228,6 +230,14 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<ConscienceStorageService>(
         conscienceStorageService,
+      );
+
+      final coordinatorService = CoordinatorService(
+        database: localBrain,
+        conscienceStorage: conscienceStorageService,
+      );
+      serviceLocator.registerSingleton<CoordinatorService>(
+        coordinatorService,
       );
 
       final routerServer = RouterServer(
@@ -401,6 +411,13 @@ Future<void> setupCoreServices() async {
     debugPrint('[ServiceLocator] Initializing SkillService...');
     final skillService = SkillService();
     serviceLocator.registerSingleton<SkillService>(skillService);
+
+    // OpenClaw skill install service — manages OpenClaw skill installation
+    debugPrint('[ServiceLocator] Initializing OpenClawSkillInstallService...');
+    final openclawSkillInstallService = OpenClawSkillInstallService();
+    serviceLocator.registerSingleton<OpenClawSkillInstallService>(
+      openclawSkillInstallService,
+    );
 
     // Cron service — shells out to `hermes cron list`
     debugPrint('[ServiceLocator] Initializing CronService...');
