@@ -201,6 +201,8 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                 ),
               ),
               const SizedBox(height: 16),
+              // shrinkWrap: true is intentional — this is a small fixed grid (4 stat tiles)
+              // embedded in a non-scrollable Column. No lazy loading needed.
               GridView.count(
                 crossAxisCount: isMobile ? 2 : 4,
                 shrinkWrap: true,

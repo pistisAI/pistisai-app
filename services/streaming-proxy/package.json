@@ -58,6 +58,7 @@
     "@types/ws": "^8.18.1",
     "eslint": "^9.39.4",
     "husky": "^9.1.7",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "brace-expansion": "^2.0.2"
   }
 }

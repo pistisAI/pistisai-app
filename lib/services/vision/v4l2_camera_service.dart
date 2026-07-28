@@ -103,7 +103,9 @@ class V4L2CameraService {
         if (r.exitCode == 0 && r.stdout.toString().trim().isNotEmpty) {
           return r.stdout.toString().trim();
         }
-      } catch (_) {}
+      } catch (_) {
+        // 'which' may fail if ffmpeg is not on PATH; fallback below
+      }
     }
     // fallback: assume on PATH
     return 'ffmpeg';

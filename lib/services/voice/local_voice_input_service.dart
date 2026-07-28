@@ -163,8 +163,8 @@ class LocalVoiceInputService extends ChangeNotifier {
     final pcmBytes = _pcmBuffer.takeBytes();
     if (pcmBytes.isEmpty) return;
 
-    _pendingStt = _pendingStt.then((_) => _transcribePcm(pcmBytes));
     await _pendingStt;
+    _pendingStt = _transcribePcm(pcmBytes);
   }
 
   Future<void> _transcribePcm(List<int> pcmBytes) async {

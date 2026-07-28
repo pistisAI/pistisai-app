@@ -102,7 +102,9 @@ class LocalTtsService {
       while (files.length > 50) {
         files.removeAt(0).deleteSync();
       }
-    } catch (_) {}
+    } catch (_) {
+      // Best-effort cleanup of old TTS cache files; non-critical
+    }
   }
 
   void dispose() {

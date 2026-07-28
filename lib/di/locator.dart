@@ -575,7 +575,9 @@ Future<void> _registerWebFallbackCoreServices() async {
     final tokenStorageService = TokenStorageService();
     try {
       await tokenStorageService.init();
-    } catch (_) {}
+    } catch (_) {
+      // TokenStorageService.init may fail on first run; handled by lazy init later
+    }
     serviceLocator.registerSingleton<TokenStorageService>(tokenStorageService);
   }
 

@@ -514,7 +514,9 @@ class _AppRouterHostState extends State<_AppRouterHost> {
     ThemeProvider? themeProvider;
     try {
       themeProvider = context.watch<ThemeProvider>();
-    } catch (_) {}
+    } catch (_) {
+      // ThemeProvider may not be registered yet; handled by fallback below
+    }
 
     return WindowListenerWidget(
       child: MaterialApp.router(

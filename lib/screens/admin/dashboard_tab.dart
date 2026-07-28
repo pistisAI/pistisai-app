@@ -348,6 +348,9 @@ class _DashboardTabState extends State<DashboardTab> {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: AppTheme.spacingM),
+            // shrinkWrap: true is intentional — recent transactions is a bounded list
+            // (typically 5-20 items from the API) embedded in a Card > Column.
+            // Not suitable for lazy loading since the list is always small.
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

@@ -149,7 +149,9 @@ class HermesProcessClient extends StreamingService {
       }
     } catch (_) {
       // Force kill as last resort
-      try { proc.kill(ProcessSignal.sigkill); } catch (_) {}
+      try { proc.kill(ProcessSignal.sigkill); } catch (_) {
+        // Process may already be dead; nothing more we can do
+      }
     }
   }
 

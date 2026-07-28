@@ -297,6 +297,8 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
 
   /// Build metrics grid with key statistics
   Widget _buildMetricsGrid() {
+    // shrinkWrap: true is intentional — this is a small fixed grid (4 metric cards)
+    // embedded in a non-scrollable Column. No lazy loading needed.
     return GridView.count(
       crossAxisCount: 4,
       shrinkWrap: true,
@@ -550,6 +552,9 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
+            // shrinkWrap: true is intentional — failure reasons is a bounded list
+            // (top N reasons, typically < 20 items) embedded in a Card > Column.
+            // Not suitable for lazy loading since the list is always small.
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

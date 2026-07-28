@@ -352,8 +352,8 @@ class LinuxVoiceInputAdapter implements VoiceInputAdapter {
       return;
     }
 
-    _pendingFlush = _pendingFlush.then((_) => _transcribeChunk(pcmBytes));
     await _pendingFlush;
+    _pendingFlush = _transcribeChunk(pcmBytes);
   }
 
   Future<void> _transcribeChunk(List<int> pcmBytes) async {

@@ -257,15 +257,14 @@ class _AgentListTile extends StatelessWidget {
           backgroundColor: statusColor.withValues(alpha: 0.1),
         ),
         isThreeLine: agent.activity != null || agent.errorMessage != null,
-        onTap: () {
+        onTap: () async {
           // Navigate to agent detail screen
-          Navigator.of(context)
-              .push(
-                MaterialPageRoute(
-                  builder: (context) => _AgentDetailScreen(agent: agent),
-                ),
-              )
-              .then((_) => onRefresh());
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => _AgentDetailScreen(agent: agent),
+            ),
+          );
+          onRefresh();
         },
       ),
     );
