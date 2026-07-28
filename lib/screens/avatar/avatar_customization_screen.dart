@@ -284,6 +284,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 state: _previewState,
                 size: _getAvatarSize(),
                 personality: PersonalityTraits.defaultTraits,
+                showGlow: _glowEnabled,
               ),
             ),
             const SizedBox(height: 16),
@@ -352,7 +353,6 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 ),
                 DropdownMenuItem(
                   value: 'rive',
-                  enabled: false, // Disabled until .riv file exists
                   child: Text('Rive Animation'),
                 ),
               ],
@@ -363,8 +363,9 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
               },
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Rive animations coming soon! Emoji avatar currently available.',
+            Text(
+              'Rive animations provide state-driven vector animations. '
+              'Create avatar.riv in assets/animations/ to enable.',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey,

@@ -164,6 +164,7 @@ flutter:
   assets:
     - assets/images/
     - assets/brand/
+    - assets/animations/
     - assets/images/app_icon.png
     - assets/images/lobster_avatar.png
     - assets/images/lobster_avatar_64.png
