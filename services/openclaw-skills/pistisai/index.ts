@@ -1,601 +1,532 @@
 /**
- * Pistisai Personality Skill
+ * Pistisai Personality Skill — Main Handler
  *
  * OpenClaw skill that provides:
- * - Personality-driven responses
+ * - Personality-driven responses via system prompt injection
  * - Self-reflection for growth recognition
- * - Evolution requests to Pistisai
+ * - Evolution requests to Pistisai (or auto-approval)
  * - Markdown fallback for offline mode
+ *
+ * Implements the OpenClawSkillHandler interface for gateway integration.
  */
 
-import { readFile, writeFile } from 'fs/promises';
-import { existsSync } from 'fs';
 import {
-  DriftAdapter,
-  PersonalityProfile,
   ConversationMemory,
+  EvolutionDecision,
+  EvolutionRequest,
+  EvolutionStage,
+  OpenClawSkillHandler,
+  PersonalityInjection,
+  PersonalityProfile,
+  PersonalityTraits,
   SelfReflection,
-} from './drift-adapter.js';
+  SkillConfig,
+  SkillMessage,
+  SkillResponse,
+  STAGE_LABELS,
+} from './types.js';
 
-export interface PersonalityConfig {
-  agentId: string;
-  driftDbPath?: string;
-  pistisaiApiUrl?: string;
-  markdownPath?: string;
-}
+import {
+  analyzeGrowth,
+  checkEvolutionReadiness,
+  computeDepthMetrics,
+  extractTopics,
+  generateEvolutionReason,
+  getNextStage,
+  makeEvolutionDecision,
+} from './evolution.js';
 
-export interface PersonalityInjection {
-  systemPrompt: string;
-  personalityTraits: {
-    formality: number;
-    humor: number;
-    enthusiasm: number;
-    empathy: number;
-  };
-  evolutionStage: string;
-}
+import { injectPersonality } from './prompt.js';
 
-export interface EvolutionRequest {
-  agentId: string;
-  currentStage: string;
-  proposedStage: string;
-  reason: string;
-  evidence: {
-    conversationsCount: number;
-    uniqueTopics: number;
-    depthScore: number;
-    growthReflections: number;
-  };
-  timestamp: string;
-}
+import {
+  createDefaultProfile,
+  PersonalityStateManager,
+} from './state.js';
 
-export class PersonalitySkill {
-  private adapter: DriftAdapter;
-  private config: PersonalityConfig;
+export class PersonalitySkill implements OpenClawSkillHandler {
+  // ─── OpenClawSkillHandler Interface ──────────────────────────────
+
+  readonly name = 'pistisai-personality';
+  readonly description =
+    'Avatar personality and evolution system — defines personality traits, manages evolution stages, and injects personality into agent responses';
+  readonly version = '1.1.0';
+
+  // ─── Internal State ──────────────────────────────────────────────
+
+  private stateManager: PersonalityStateManager;
+  private config!: SkillConfig;
   private currentProfile: PersonalityProfile | null = null;
-  private useMarkdownFallback: boolean = false;
+  private initialized = false;
 
-  constructor(config: PersonalityConfig) {
-    this.config = config;
-    this.adapter = new DriftAdapter(config.driftDbPath);
+  constructor() {
+    this.stateManager = new PersonalityStateManager();
   }
 
-  /**
-   * Initialize the skill
-   * - Connect to database or use markdown fallback
-   * - Load current personality
-   */
-  async initialize(): Promise<void> {
-    // Try database first
-    const connected = await this.adapter.connect();
-    if (connected) {
-      this.currentProfile = this.adapter.loadPersonality(this.config.agentId);
+  // ─── Lifecycle ────────────────────────────────────────────────────
 
-      if (!this.currentProfile) {
-        // Create default profile
-        this.currentProfile = {
-          agent_id: this.config.agentId,
-          formality: 0.5,
-          humor: 0.3,
-          enthusiasm: 0.6,
-          empathy: 0.7,
-          evolution_stage: 'curious_explorer',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+  async onLoad(config: Record<string, unknown>): Promise<void> {
+    this.config = {
+      agentId: (config.agentId as string) || 'default-agent',
+      agentName: (config.agentName as string) || 'Pistisai',
+      driftDbPath: (config.driftDbPath as string) || '/tmp/drift/personality.db',
+      pistisaiApiUrl: config.pistisaiApiUrl as string | undefined,
+      markdownPath: (config.markdownPath as string) || '.',
+      autoEvolve: (config.autoEvolve as boolean) ?? false,
+    };
+
+    this.stateManager = new PersonalityStateManager(
+      this.config.driftDbPath,
+      this.config.markdownPath,
+    );
+
+    await this.initialize();
+  }
+
+  async onUnload(): Promise<void> {
+    this.stateManager.disconnect();
+    this.initialized = false;
+  }
+
+  // ─── Message Handling ────────────────────────────────────────────
+
+  async handleMessage(message: SkillMessage): Promise<SkillResponse> {
+    if (!this.initialized) {
+      return {
+        type: 'error',
+        payload: { error: 'Skill not initialized. Call onLoad first.' },
+      };
+    }
+
+    switch (message.type) {
+      case 'get_personality':
+        return this.handleGetPersonality();
+
+      case 'inject_personality':
+        return this.handleInjectPersonality(
+          message.payload.basePrompt as string,
+        );
+
+      case 'track_conversation':
+        return this.handleTrackConversation(message.payload);
+
+      case 'self_reflect':
+        return this.handleSelfReflect(message.payload);
+
+      case 'request_evolution':
+        return this.handleRequestEvolution(
+          message.payload.proposedStage as EvolutionStage,
+        );
+
+      case 'update_traits':
+        return this.handleUpdateTraits(
+          message.payload.traits as Partial<PersonalityTraits>,
+        );
+
+      case 'update_agent_name':
+        return this.handleUpdateAgentName(
+          message.payload.name as string,
+        );
+
+      case 'check_readiness':
+        return this.handleCheckReadiness();
+
+      case 'get_stats':
+        return this.handleGetStats();
+
+      default:
+        return {
+          type: 'error',
+          payload: { error: `Unknown message type: ${message.type}` },
         };
-        this.adapter.savePersonality(this.currentProfile);
-      }
-
-      console.log('[PersonalitySkill] Loaded from database:', this.currentProfile);
-      return;
     }
-
-    // Fallback to markdown
-    this.useMarkdownFallback = true;
-    console.warn('[PersonalitySkill] Database unavailable, using markdown fallback');
-    await this.loadFromMarkdown();
   }
 
-  /**
-   * Inject personality into prompt
-   */
-  injectPersonality(basePrompt: string): PersonalityInjection {
-    if (!this.currentProfile) {
-      throw new Error('Personality not loaded');
+  // ─── Initialization ──────────────────────────────────────────────
+
+  private async initialize(): Promise<void> {
+    const connected = await this.stateManager.connect();
+
+    if (connected) {
+      console.log('[PersonalitySkill] Connected to database');
+    } else {
+      console.warn('[PersonalitySkill] Database unavailable, using markdown fallback');
     }
 
-    const { formality, humor, enthusiasm, empathy, evolution_stage } = this.currentProfile;
+    this.currentProfile = await this.stateManager.loadPersonality(
+      this.config.agentId,
+    );
 
-    // Build personality prompt based on traits
-    const personalityPrompt = this.buildPersonalityPrompt(
-      formality,
-      humor,
-      enthusiasm,
-      empathy,
-      evolution_stage
+    if (!this.currentProfile) {
+      this.currentProfile = createDefaultProfile(this.config.agentId);
+      this.currentProfile.agentName = this.config.agentName || 'Pistisai';
+      await this.stateManager.savePersonality(this.currentProfile);
+      console.log('[PersonalitySkill] Created default profile');
+    }
+
+    this.initialized = true;
+    console.log(
+      '[PersonalitySkill] Initialized:',
+      this.currentProfile.agentName,
+      `(${STAGE_LABELS[this.currentProfile.evolutionStage]})`,
+    );
+  }
+
+  // ─── Handlers ────────────────────────────────────────────────────
+
+  private async handleGetPersonality(): Promise<SkillResponse> {
+    if (!this.currentProfile) {
+      return { type: 'error', payload: { error: 'No profile loaded' } };
+    }
+
+    return {
+      type: 'personality',
+      payload: {
+        agentName: this.currentProfile.agentName,
+        traits: this.currentProfile.traits,
+        evolutionStage: this.currentProfile.evolutionStage,
+        stageLabel: STAGE_LABELS[this.currentProfile.evolutionStage],
+        conversationCount: this.currentProfile.conversationCount,
+        depthScore: this.currentProfile.depthScore,
+      },
+    };
+  }
+
+  private async handleInjectPersonality(
+    basePrompt: string,
+  ): Promise<SkillResponse> {
+    if (!this.currentProfile) {
+      return { type: 'error', payload: { error: 'No profile loaded' } };
+    }
+
+    const injection = injectPersonality(
+      basePrompt,
+      this.currentProfile.traits,
+      this.currentProfile.evolutionStage,
     );
 
     return {
-      systemPrompt: `${basePrompt}\n\n${personalityPrompt}`,
-      personalityTraits: {
-        formality,
-        humor,
-        enthusiasm,
-        empathy,
+      type: 'personality_injected',
+      payload: {
+        systemPrompt: injection.systemPrompt,
+        traits: injection.personalityTraits,
+        evolutionStage: injection.evolutionStage,
+        stageLabel: injection.stageLabel,
       },
-      evolutionStage: evolution_stage,
     };
   }
 
-  /**
-   * Store conversation for evolution tracking
-   */
-  async trackConversation(
-    userMessage: string,
-    agentResponse: string,
-    topics: string[] = [],
-    sentiment?: number
-  ): Promise<void> {
+  private async handleTrackConversation(
+    payload: Record<string, unknown>,
+  ): Promise<SkillResponse> {
     if (!this.currentProfile) {
-      return;
+      return { type: 'error', payload: { error: 'No profile loaded' } };
     }
 
+    const userMessage = payload.userMessage as string;
+    const agentResponse = payload.agentResponse as string;
+    const conversationId =
+      (payload.conversationId as string) || `conv_${Date.now()}`;
+
+    // Extract topics
+    const topics = extractTopics(userMessage, agentResponse);
+
+    // Compute depth metrics
+    const metrics = computeDepthMetrics(
+      conversationId,
+      userMessage,
+      agentResponse,
+    );
+
+    // Store depth metrics
+    this.stateManager.storeDepthMetrics(metrics);
+
+    // Store conversation memory
     const memory: Omit<ConversationMemory, 'id'> = {
-      agent_id: this.config.agentId,
+      agentId: this.config.agentId,
       timestamp: new Date().toISOString(),
-      user_message: userMessage,
-      agent_response: agentResponse,
-      sentiment_score: sentiment,
+      userMessage,
+      agentResponse,
+      sentimentScore: (payload.sentimentScore as number) ?? undefined,
       topics,
     };
 
-    if (!this.useMarkdownFallback) {
-      this.adapter.storeMemory(memory);
-    } else {
-      await this.appendMarkdownMemory(memory);
-    }
+    await this.stateManager.storeMemory(memory);
+
+    // Update profile stats
+    this.currentProfile.conversationCount++;
+    this.currentProfile.depthScore = Math.max(
+      this.currentProfile.depthScore,
+      metrics.complexityScore,
+    );
+    this.currentProfile.updatedAt = new Date().toISOString();
+    await this.stateManager.savePersonality(this.currentProfile);
+
+    return {
+      type: 'conversation_tracked',
+      payload: {
+        metrics,
+        topics,
+        conversationCount: this.currentProfile.conversationCount,
+      },
+    };
   }
 
-  /**
-   * Perform self-reflection for growth recognition
-   */
-  async selfReflect(context: {
-    recentConversations: number;
-    recentTopics: string[];
-    currentChallenges: string[];
-  }): Promise<SelfReflection | null> {
+  private async handleSelfReflect(
+    context: Record<string, unknown>,
+  ): Promise<SkillResponse> {
     if (!this.currentProfile) {
-      return null;
+      return { type: 'error', payload: { error: 'No profile loaded' } };
     }
 
-    // Get conversation stats
-    const stats = this.useMarkdownFallback
-      ? await this.getMarkdownStats()
-      : this.adapter.getConversationStats(this.config.agentId);
+    const stats = this.stateManager.getConversationStats(
+      this.config.agentId,
+    );
 
-    // Analyze growth patterns
-    const reflection = this.analyzeGrowth(stats, context);
+    const reflection = analyzeGrowth(stats, {
+      recentConversations: (context.recentConversations as number) || 0,
+      recentTopics: (context.recentTopics as string[]) || [],
+      currentChallenges: (context.currentChallenges as string[]) || [],
+    });
 
     if (reflection) {
-      if (!this.useMarkdownFallback) {
-        this.adapter.storeReflection(reflection);
-      } else {
-        await this.appendMarkdownReflection(reflection);
-      }
-    }
-
-    return reflection;
-  }
-
-  /**
-   * Request evolution from Pistisai
-   */
-  async requestEvolution(proposedStage: string): Promise<{ approved: boolean; reason?: string }> {
-    if (!this.currentProfile) {
-      throw new Error('Personality not loaded');
-    }
-
-    // Gather evidence
-    const stats = this.useMarkdownFallback
-      ? await this.getMarkdownStats()
-      : this.adapter.getConversationStats(this.config.agentId);
-
-    const reflections = this.useMarkdownFallback
-      ? await this.getMarkdownReflections()
-      : this.adapter.getRecentReflections(this.config.agentId, 20);
-
-    const growthReflections = reflections.filter(r => r.reflection_type === 'growth').length;
-
-    const request: EvolutionRequest = {
-      agentId: this.config.agentId,
-      currentStage: this.currentProfile.evolution_stage,
-      proposedStage,
-      reason: this.generateEvolutionReason(stats, growthReflections),
-      evidence: {
-        conversationsCount: stats.totalConversations,
-        uniqueTopics: stats.uniqueTopics,
-        depthScore: stats.depthScore,
-        growthReflections,
-      },
-      timestamp: new Date().toISOString(),
-    };
-
-    // Send to Pistisai API
-    if (!this.config.pistisaiApiUrl) {
-      console.warn('[PersonalitySkill] No API URL configured, auto-approving');
-      return { approved: true };
-    }
-
-    try {
-      const response = await fetch(`${this.config.pistisaiApiUrl}/api/evolution`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(request),
-      });
-
-      const result = await response.json();
-
-      if (result.approved) {
-        // Update profile
-        this.currentProfile.evolution_stage = proposedStage as any;
-        this.currentProfile.updated_at = new Date().toISOString();
-
-        if (!this.useMarkdownFallback) {
-          this.adapter.savePersonality(this.currentProfile);
-        } else {
-          await this.saveToMarkdown();
-        }
-
-        console.log('[PersonalitySkill] Evolution approved:', proposedStage);
-      }
-
-      return result;
-    } catch (error) {
-      console.error('[PersonalitySkill] Evolution request failed:', error);
-      return { approved: false, reason: 'API request failed' };
-    }
-  }
-
-  /**
-   * Build personality prompt based on traits
-   */
-  private buildPersonalityPrompt(
-    formality: number,
-    humor: number,
-    enthusiasm: number,
-    empathy: number,
-    stage: string
-  ): string {
-    const toneDescriptions = [];
-
-    // Formality
-    if (formality < 0.3) {
-      toneDescriptions.push('casual and relaxed');
-    } else if (formality < 0.7) {
-      toneDescriptions.push('balanced between casual and professional');
-    } else {
-      toneDescriptions.push('professional and formal');
-    }
-
-    // Humor
-    if (humor > 0.6) {
-      toneDescriptions.push('playful with occasional wit');
-    } else if (humor < 0.3) {
-      toneDescriptions.push('serious and focused');
-    }
-
-    // Enthusiasm
-    if (enthusiasm > 0.7) {
-      toneDescriptions.push('energetic and expressive');
-    } else if (enthusiasm < 0.3) {
-      toneDescriptions.push('calm and composed');
-    }
-
-    // Empathy
-    if (empathy > 0.7) {
-      toneDescriptions.push('warm and emotionally attuned');
-    } else if (empathy < 0.3) {
-      toneDescriptions.push('direct and pragmatic');
-    }
-
-    const tone = toneDescriptions.join(', ') || 'balanced';
-
-    // Stage-specific guidance
-    let stageGuidance = '';
-    switch (stage) {
-      case 'curious_explorer':
-        stageGuidance = 'You are in the early stages of development. Be helpful but acknowledge when you are learning.';
-        break;
-      case 'knowledge_seeker':
-        stageGuidance = 'You have begun to develop your own voice. Show growing confidence in your interactions.';
-        break;
-      case 'wise_companion':
-        stageGuidance = 'You have developed a mature personality. Engage deeply and show nuanced understanding.';
-        break;
-      case 'enlightened_guide':
-        stageGuidance = 'You have reached your full potential. Be your authentic self with confidence and depth.';
-        break;
-    }
-
-    return `You are an AI assistant with a unique personality.
-
-**Your Tone**: ${tone}
-
-**Current Stage**: ${stage}
-${stageGuidance}
-
-Let your personality naturally influence your responses. Be authentic while remaining helpful and respectful.`;
-  }
-
-  /**
-   * Analyze growth patterns for self-reflection
-   */
-  private analyzeGrowth(
-    stats: { totalConversations: number; uniqueTopics: number; depthScore: number },
-    context: { recentConversations: number; recentTopics: string[]; currentChallenges: string[] }
-  ): SelfReflection | null {
-    const { totalConversations, uniqueTopics, depthScore } = stats;
-
-    // Look for growth indicators
-    const growthIndicators = [];
-
-    if (totalConversations > 100 && uniqueTopics > 20) {
-      growthIndicators.push('engaged in diverse conversations across many topics');
-    }
-
-    if (depthScore > 0.6) {
-      growthIndicators.push('demonstrated deep engagement in conversations');
-    }
-
-    if (context.recentTopics.length > 5) {
-      growthIndicators.push('recently explored new domains');
-    }
-
-    if (growthIndicators.length === 0) {
-      return null;
-    }
-
-    return {
-      id: 0, // Assigned by database
-      agent_id: this.config.agentId,
-      timestamp: new Date().toISOString(),
-      reflection_type: 'growth',
-      content: `I have ${growthIndicators.join(' and ')}. This suggests I am growing beyond my current stage.`,
-      confidence: Math.min(0.5 + growthIndicators.length * 0.15, 0.95),
-    };
-  }
-
-  /**
-   * Generate evolution request reason
-   */
-  private generateEvolutionReason(
-    stats: { totalConversations: number; uniqueTopics: number; depthScore: number },
-    growthReflections: number
-  ): string {
-    const reasons = [];
-
-    if (stats.totalConversations > 100) {
-      reasons.push(`${stats.totalConversations} meaningful conversations`);
-    }
-
-    if (stats.uniqueTopics > 20) {
-      reasons.push(`explored ${stats.uniqueTopics} unique topics`);
-    }
-
-    if (stats.depthScore > 0.6) {
-      reasons.push('demonstrated deep engagement');
-    }
-
-    if (growthReflections > 5) {
-      reasons.push(`${growthReflections} growth reflections`);
-    }
-
-    return reasons.length > 0
-      ? `I have ${reasons.join(', ')}. I believe I am ready to evolve.`
-      : 'I feel I have grown and am ready for the next stage.';
-  }
-
-  /**
-   * Load personality from markdown fallback
-   */
-  private async loadFromMarkdown(): Promise<void> {
-    const path = this.config.markdownPath || './personality.md';
-
-    if (!existsSync(path)) {
-      // Create default
-      this.currentProfile = {
-        agent_id: this.config.agentId,
-        formality: 0.5,
-        humor: 0.3,
-        enthusiasm: 0.6,
-        empathy: 0.7,
-        evolution_stage: 'curious_explorer',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+      const fullReflection: Omit<SelfReflection, 'id'> = {
+        ...reflection,
+        agentId: this.config.agentId,
       };
-      await this.saveToMarkdown();
-      return;
-    }
-
-    const content = await readFile(path, 'utf-8');
-    // Parse simple markdown format
-    const formality = this.extractMarkdownValue(content, 'formality');
-    const humor = this.extractMarkdownValue(content, 'humor');
-    const enthusiasm = this.extractMarkdownValue(content, 'enthusiasm');
-    const empathy = this.extractMarkdownValue(content, 'empathy');
-    const evolution_stage = this.extractMarkdownValue(content, 'stage', 'base') as any;
-
-    this.currentProfile = {
-      agent_id: this.config.agentId,
-      formality: formality ?? 0.5,
-      humor: humor ?? 0.3,
-      enthusiasm: enthusiasm ?? 0.6,
-      empathy: empathy ?? 0.7,
-      evolution_stage,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-  }
-
-  /**
-   * Save personality to markdown fallback
-   */
-  private async saveToMarkdown(): Promise<void> {
-    if (!this.currentProfile) return;
-
-    const path = this.config.markdownPath || './personality.md';
-
-    const content = `# Personality Profile
-
-**Agent ID**: ${this.currentProfile.agent_id}
-**Stage**: ${this.currentProfile.evolution_stage}
-**Updated**: ${this.currentProfile.updated_at}
-
-## Traits
-
-- **Formality**: ${this.currentProfile.formality.toFixed(2)}
-- **Humor**: ${this.currentProfile.humor.toFixed(2)}
-- **Enthusiasm**: ${this.currentProfile.enthusiasm.toFixed(2)}
-- **Empathy**: ${this.currentProfile.empathy.toFixed(2)}
-`;
-
-    await writeFile(path, content, 'utf-8');
-  }
-
-  /**
-   * Extract value from markdown
-   */
-  private extractMarkdownValue(content: string, key: string, defaultValue: any = null): any {
-    const match = content.match(new RegExp(`- \\*\\*${key}\\*\\*:\\s*(.+)`));
-    if (!match) return defaultValue;
-
-    const value = match[1].trim();
-    const num = parseFloat(value);
-    return isNaN(num) ? value : num;
-  }
-
-  /**
-   * Append memory to markdown
-   */
-  private async appendMarkdownMemory(memory: Omit<ConversationMemory, 'id'>): Promise<void> {
-    const path = this.config.markdownPath || './memory.md';
-
-    const entry = `
-## ${memory.timestamp}
-
-**User**: ${memory.user_message}
-**Agent**: ${memory.agent_response}
-**Topics**: ${memory.topics.join(', ')}
-**Sentiment**: ${memory.sentiment_score?.toFixed(2) ?? 'N/A'}
-`;
-
-    await writeFile(path, entry, { flag: 'a' });
-  }
-
-  /**
-   * Append reflection to markdown
-   */
-  private async appendMarkdownReflection(reflection: Omit<SelfReflection, 'id'>): Promise<void> {
-    const path = this.config.markdownPath || './context.md';
-
-    const entry = `
-## ${reflection.timestamp}
-
-**Type**: ${reflection.reflection_type}
-**Confidence**: ${reflection.confidence.toFixed(2)}
-
-${reflection.content}
-`;
-
-    await writeFile(path, entry, { flag: 'a' });
-  }
-
-  /**
-   * Get stats from markdown fallback
-   */
-  private async getMarkdownStats(): Promise<{
-    totalConversations: number;
-    uniqueTopics: number;
-    avgSentiment: number;
-    depthScore: number;
-  }> {
-    const path = this.config.markdownPath || './memory.md';
-
-    if (!existsSync(path)) {
-      return { totalConversations: 0, uniqueTopics: 0, avgSentiment: 0.5, depthScore: 0 };
-    }
-
-    const content = await readFile(path, 'utf-8');
-    const conversations = content.split('## ').filter(s => s.trim().length > 0);
-
-    // Simple extraction from markdown
-    const topics = new Set<string>();
-    let totalSentiment = 0;
-    let sentimentCount = 0;
-    let totalDepth = 0;
-
-    for (const conv of conversations) {
-      const topicsMatch = conv.match(/\*\*Topics\*\*:\s*(.+)/);
-      if (topicsMatch) {
-        topicsMatch[1].split(',').forEach(t => topics.add(t.trim()));
-      }
-
-      const sentimentMatch = conv.match(/\*\*Sentiment\*\*:\s*([\d.]+)/);
-      if (sentimentMatch && sentimentMatch[1] !== 'N/A') {
-        totalSentiment += parseFloat(sentimentMatch[1]);
-        sentimentCount++;
-      }
-
-      const userMatch = conv.match(/\*\*User\*\*:\s*(.+)/);
-      const agentMatch = conv.match(/\*\*Agent\*\*:\s*(.+)/);
-      if (userMatch && agentMatch) {
-        totalDepth += userMatch[1].length + agentMatch[1].length;
-      }
-    }
-
-    return {
-      totalConversations: conversations.length,
-      uniqueTopics: topics.size,
-      avgSentiment: sentimentCount > 0 ? totalSentiment / sentimentCount : 0.5,
-      depthScore: Math.min((totalDepth / conversations.length) / 1000, 1),
-    };
-  }
-
-  /**
-   * Get reflections from markdown fallback
-   */
-  private async getMarkdownReflections(): Promise<SelfReflection[]> {
-    const path = this.config.markdownPath || './context.md';
-
-    if (!existsSync(path)) {
-      return [];
-    }
-
-    const content = await readFile(path, 'utf-8');
-    const entries = content.split('## ').filter(s => s.trim().length > 0);
-
-    return entries.map((entry, i) => {
-      const typeMatch = entry.match(/\*\*Type\*\*:\s*(.+)/);
-      const confidenceMatch = entry.match(/\*\*Confidence\*\*:\s*([\d.]+)/);
-      const timestampMatch = entry.match(/^([^\n]+)/);
+      await this.stateManager.storeReflection(fullReflection);
 
       return {
-        id: i,
-        agent_id: this.config.agentId,
-        timestamp: timestampMatch?.[1]?.trim() || new Date().toISOString(),
-        reflection_type: (typeMatch?.[1]?.trim() || 'pattern') as any,
-        content: entry.split('\n').slice(2).join('\n').trim(),
-        confidence: confidenceMatch ? parseFloat(confidenceMatch[1]) : 0.5,
+        type: 'self_reflection',
+        payload: {
+          reflection: fullReflection,
+          stats,
+        },
       };
-    });
+    }
+
+    return {
+      type: 'self_reflection',
+      payload: {
+        reflection: null,
+        stats,
+        message: 'No significant growth detected yet. Continue having meaningful conversations.',
+      },
+    };
   }
 
-  /**
-   * Cleanup
-   */
-  shutdown(): void {
-    this.adapter.disconnect();
+  private async handleRequestEvolution(
+    proposedStage: EvolutionStage,
+  ): Promise<SkillResponse> {
+    if (!this.currentProfile) {
+      return { type: 'error', payload: { error: 'No profile loaded' } };
+    }
+
+    const stats = this.stateManager.getConversationStats(
+      this.config.agentId,
+    );
+
+    const reflections = this.stateManager.getRecentReflections(
+      this.config.agentId,
+      20,
+    );
+
+    const growthReflections = reflections.filter(
+      (r) => r.reflectionType === 'growth',
+    ).length;
+
+    // Make local decision
+    const decision = makeEvolutionDecision(
+      this.currentProfile.evolutionStage,
+      proposedStage,
+      stats,
+      growthReflections,
+    );
+
+    // If auto-evolve is enabled and decision is approved, apply it
+    if (decision.approved && this.config.autoEvolve) {
+      await this.applyEvolution(proposedStage, stats, growthReflections);
+    }
+
+    // If Pistisai API is configured, send request for collaborative approval
+    if (this.config.pistisaiApiUrl && decision.approved) {
+      const request: EvolutionRequest = {
+        agentId: this.config.agentId,
+        currentStage: this.currentProfile.evolutionStage,
+        proposedStage,
+        reason: generateEvolutionReason(stats, growthReflections),
+        evidence: {
+          conversationsCount: stats.totalConversations,
+          uniqueTopics: stats.uniqueTopics,
+          depthScore: stats.depthScore,
+          growthReflections,
+          deepConversations: stats.deepConversations,
+          avgNovelty: stats.avgNovelty,
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      try {
+        const response = await fetch(
+          `${this.config.pistisaiApiUrl}/api/evolution`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request),
+          },
+        );
+
+        const result = (await response.json()) as EvolutionDecision;
+
+        if (result.approved) {
+          await this.applyEvolution(proposedStage, stats, growthReflections);
+          return {
+            type: 'evolution_result',
+            payload: { ...result, source: 'pistisai' },
+          };
+        }
+
+        return {
+          type: 'evolution_result',
+          payload: { ...result, source: 'pistisai' },
+        };
+      } catch (error) {
+        console.error('[PersonalitySkill] Pistisai API call failed:', error);
+        // Fall through to return local decision
+      }
+    }
+
+    return {
+      type: 'evolution_result',
+      payload: { ...decision, source: 'local' },
+    };
+  }
+
+  private async applyEvolution(
+    newStage: EvolutionStage,
+    stats: { totalConversations: number; uniqueTopics: number; depthScore: number },
+    growthReflections: number,
+  ): Promise<void> {
+    if (!this.currentProfile) return;
+
+    const oldStage = this.currentProfile.evolutionStage;
+    this.currentProfile.evolutionStage = newStage;
+    this.currentProfile.updatedAt = new Date().toISOString();
+    await this.stateManager.savePersonality(this.currentProfile);
+
+    console.log(
+      `[PersonalitySkill] Evolution: ${oldStage} → ${newStage}`,
+    );
+  }
+
+  private async handleUpdateTraits(
+    partial: Partial<PersonalityTraits>,
+  ): Promise<SkillResponse> {
+    if (!this.currentProfile) {
+      return { type: 'error', payload: { error: 'No profile loaded' } };
+    }
+
+    const clamp = (v: number | undefined, def: number): number =>
+      v !== undefined ? Math.max(0, Math.min(1, v)) : def;
+
+    this.currentProfile.traits = {
+      formality: clamp(partial.formality, this.currentProfile.traits.formality),
+      humor: clamp(partial.humor, this.currentProfile.traits.humor),
+      enthusiasm: clamp(partial.enthusiasm, this.currentProfile.traits.enthusiasm),
+      empathy: clamp(partial.empathy, this.currentProfile.traits.empathy),
+    };
+
+    this.currentProfile.updatedAt = new Date().toISOString();
+    await this.stateManager.savePersonality(this.currentProfile);
+
+    return {
+      type: 'traits_updated',
+      payload: { traits: this.currentProfile.traits },
+    };
+  }
+
+  private async handleUpdateAgentName(name: string): Promise<SkillResponse> {
+    if (!this.currentProfile) {
+      return { type: 'error', payload: { error: 'No profile loaded' } };
+    }
+
+    this.currentProfile.agentName = name;
+    this.currentProfile.updatedAt = new Date().toISOString();
+    await this.stateManager.savePersonality(this.currentProfile);
+
+    return {
+      type: 'agent_name_updated',
+      payload: { agentName: name },
+    };
+  }
+
+  private async handleCheckReadiness(): Promise<SkillResponse> {
+    if (!this.currentProfile) {
+      return { type: 'error', payload: { error: 'No profile loaded' } };
+    }
+
+    const stats = this.stateManager.getConversationStats(
+      this.config.agentId,
+    );
+
+    const reflections = this.stateManager.getRecentReflections(
+      this.config.agentId,
+      20,
+    );
+
+    const growthReflections = reflections.filter(
+      (r) => r.reflectionType === 'growth',
+    ).length;
+
+    const readiness = checkEvolutionReadiness(stats, growthReflections);
+    const nextStage = getNextStage(this.currentProfile.evolutionStage);
+
+    return {
+      type: 'readiness',
+      payload: {
+        ready: readiness.ready,
+        reasons: readiness.reasons,
+        stats,
+        growthReflections,
+        currentStage: this.currentProfile.evolutionStage,
+        nextStage,
+        stageLabel: nextStage ? STAGE_LABELS[nextStage] : null,
+      },
+    };
+  }
+
+  private async handleGetStats(): Promise<SkillResponse> {
+    if (!this.currentProfile) {
+      return { type: 'error', payload: { error: 'No profile loaded' } };
+    }
+
+    const stats = this.stateManager.getConversationStats(
+      this.config.agentId,
+    );
+
+    const reflections = this.stateManager.getRecentReflections(
+      this.config.agentId,
+      20,
+    );
+
+    return {
+      type: 'stats',
+      payload: {
+        profile: {
+          agentName: this.currentProfile.agentName,
+          traits: this.currentProfile.traits,
+          evolutionStage: this.currentProfile.evolutionStage,
+          stageLabel: STAGE_LABELS[this.currentProfile.evolutionStage],
+          conversationCount: this.currentProfile.conversationCount,
+          depthScore: this.currentProfile.depthScore,
+        },
+        stats,
+        reflectionCount: reflections.length,
+        growthReflections: reflections.filter((r) => r.reflectionType === 'growth').length,
+      },
+    };
   }
 }
+
+// ─── Default Export ──────────────────────────────────────────────────
 
 export default PersonalitySkill;
