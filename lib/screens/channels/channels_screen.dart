@@ -1,6 +1,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/channel.dart';
@@ -204,8 +205,7 @@ class _ChannelCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to channel detail view
-          debugPrint('Tapped channel: ${channel.id}');
+          context.push('/channels/${channel.id}');
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(

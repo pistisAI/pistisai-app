@@ -37,6 +37,7 @@ import '../screens/dashboard/overview_screen.dart';
 
 // Channels screen
 import '../screens/channels/channels_screen.dart';
+import '../screens/channels/channel_detail_screen.dart';
 
 // Usage screen
 import '../screens/usage/usage_screen.dart';
@@ -225,6 +226,17 @@ class AppRouter {
                     key: state.pageKey,
                     child: const ChannelsScreen(),
                   ),
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (context, state) => MaterialPage(
+                        key: state.pageKey,
+                        child: ChannelDetailScreen(
+                          channelId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
