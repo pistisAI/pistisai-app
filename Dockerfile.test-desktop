@@ -1,0 +1,22 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    unzip \
+    xvfb \
+    openbox \
+    x11vnc \
+    fluxbox \
+    libgl1-mesa-glx \
+    libgl1-mesa-dri \
+    libgtk-3-0 \
+    libsecret-1-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY . /app
+
+CMD ["Xvfb", ":99", "-screen", "0", "1920x1080x24"]
