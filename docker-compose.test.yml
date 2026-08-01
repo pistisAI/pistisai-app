@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  test-desktop:
+    build:
+      context: .
+      dockerfile: Dockerfile.test-desktop
+    environment:
+      - DISPLAY=:99
+    ports:
+      - "5900:5900"   # x11vnc for remote debugging
+    volumes:
+      - test-recordings:/recordings
+      - test-logs:/tmp
+    command: ["/app/start_test_desktop.sh", "--with-app", "--wait", "--record-video", "--video-file", "/recordings/test_run.mp4"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:1337/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+  # Optional: Run integration tests in a separate container that connects to test-desktop
+  integration-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test-desktop
+    environment:
+      - DISPLAY=:99
+    depends_on:
+      test-desktop:
+        condition: service_healthy
+    volumes:
+      - .:/workspace
+      - test-recordings:/recordings
+    working_dir: /workspace
+    command: >
+      sh -c "
+        /run/media/rightguy/data/flutter_sdk/flutter-sdk/bin/flutter test test/integration/ --reporter expanded
+      "
+    profiles:
+      - test
+
+volumes:
+  test-recordings:
+  test-logs:
