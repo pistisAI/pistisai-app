@@ -8,7 +8,6 @@ import '../models/streaming_message.dart';
 
 import 'streaming_service.dart';
 import 'hermes/hermes_streaming_service.dart';
-import 'hermes/hermes_process_client.dart';
 
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
@@ -446,8 +445,6 @@ class StreamingChatService extends ChangeNotifier {
 
     Stream<AgentEvent>? eventStream;
     if (streamingService is HermesStreamingService) {
-      eventStream = streamingService.agentEventStream;
-    } else if (streamingService is HermesProcessClient) {
       eventStream = streamingService.agentEventStream;
     }
 

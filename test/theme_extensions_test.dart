@@ -12,6 +12,6 @@ void main() {
     final colors = theme.extension<AppColorsTheme>() ?? AppColorsTheme.dark;
 
     expect(spacing.m, 16);
-    expect(colors.primary, const Color(0xFFa777e3));
+    expect(colors.primary, AppTheme.primaryColor);
   });
 }

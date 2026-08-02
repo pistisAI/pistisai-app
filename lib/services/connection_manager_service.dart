@@ -8,10 +8,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../config/app_config.dart';
 import 'agent_runtime/agent_runtime_client.dart';
-import 'agent_runtime/hermes_process_backed_runtime_client.dart';
 import 'agent_runtime/hermes_runtime_client.dart';
 import 'cloud_streaming_service.dart';
-import 'hermes/hermes_process_client.dart';
 import 'hermes/hermes_streaming_service.dart';
 import 'hermes_manager/hermes_gateway_control_service.dart';
 import 'openclaw_manager/gateway_control_service.dart';
@@ -274,27 +272,8 @@ class ConnectionManagerService extends ChangeNotifier {
   Future<void> _autoDetectRuntime() async {
     _log.info('Auto-detecting local agent runtimes...');
 
-    // 1. Try Hermes Process Client (hermes-agent on PATH, survives gateway restarts)
-    try {
-      final processClient = HermesProcessClient();
-      await processClient.establishConnection();
-      if (processClient.connection.isActive) {
-        _log.info('Auto-detected hermes-agent on PATH (process mode)');
-        _currentBackend = BackendType.hermes;
-        // Use process-based client
-        final runtimeClient = HermesProcessBackedRuntimeClient(
-          processClient,
-          baseUrl: 'process:hermes-agent',
-        );
-        _activeRuntimeClient = runtimeClient;
-        notifyListeners();
-        return;
-      }
-    } catch (e) {
-      _log.info('hermes-agent process detection: $e');
-    }
-
-    // 2. Try Hermes HTTP gateway
+    // 1. Try the authenticated Hermes HTTP gateway. Chat must use the
+    // canonical API server so it keeps session, tool, and lifecycle semantics.
     try {
       // Read the configured API key so the /v1/models fetch during
       // establishConnection doesn't get 401'd by the API server.
@@ -313,7 +292,7 @@ class ConnectionManagerService extends ChangeNotifier {
       _log.info('Hermes HTTP gateway detection: $e');
     }
 
-    // 3. Try OpenClaw gateway
+    // 2. Try OpenClaw gateway
     try {
       await openclawGatewayService.checkStatus();
       if (openclawGatewayService.isRunning) {

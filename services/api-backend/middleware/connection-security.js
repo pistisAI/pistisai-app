@@ -501,18 +501,40 @@ export class ConnectionSecurityManager {
   }
 
   /**
-   * Check if certificate is revoked (placeholder implementation)
-   * @param {Object} cert - Certificate
+   * Check if certificate is revoked
+   *
+   * Checks the certificate's serial number and SHA-256 fingerprint against
+   * configurable revocation lists. Serial numbers and fingerprints are
+   * normalised to lowercase hex (without colons) before comparison so that
+   * casing/colon differences in either direction are tolerated.
+   *
+   * @param {Object} cert - Certificate object from getPeerCertificate()
    * @returns {boolean} True if revoked
    */
-  isCertificateRevoked(_cert) {
-    // In a real implementation, this would check against:
-    // - Certificate Revocation List (CRL)
-    // - Online Certificate Status Protocol (OCSP)
-    // - Internal revocation database
+  isCertificateRevoked(cert) {
+    if (!cert || !this.config.certificateRevocationCheck) {
+      return false;
+    }
 
-    // For now, return false (not revoked)
-    return false;
+    const serials = new Set(
+      (this.config.revokedCertificateSerials || []).map((s) =>
+        String(s).toLowerCase().replace(/:/g, ''),
+      ),
+    );
+    const fingerprints = new Set(
+      (this.config.revokedCertificateFingerprints || []).map((f) =>
+        String(f).toLowerCase().replace(/:/g, ''),
+      ),
+    );
+
+    const serial = cert.serialNumber
+      ? String(cert.serialNumber).toLowerCase().replace(/:/g, '')
+      : '';
+    const fingerprint = cert.fingerprint
+      ? String(cert.fingerprint).toLowerCase().replace(/:/g, '')
+      : '';
+
+    return serials.has(serial) || fingerprints.has(fingerprint);
   }
 
   /**

@@ -1,4 +1,6 @@
 // Native platform E2E test - requires app to be running or integration test
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,5 +52,5 @@ void main() {
       debugPrint('Keypress result: $result');
       expect(result, contains('successfully'));
     });
-  });
+  }, skip: Platform.environment['PISTISAI_NATIVE_E2E'] != '1');
 }
