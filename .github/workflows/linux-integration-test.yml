@@ -12,6 +12,7 @@ on:
       - "scripts/start_test_desktop.sh"
       - "scripts/cleanup_virtual.sh"
       - "test/integration/**"
+      - "test/services/hermes_gateway_only_transport_test.dart"
       - ".github/workflows/linux-integration-test.yml"
   pull_request:
     branches: [main]
@@ -24,6 +25,7 @@ on:
       - "scripts/start_test_desktop.sh"
       - "scripts/cleanup_virtual.sh"
       - "test/integration/**"
+      - "test/services/hermes_gateway_only_transport_test.dart"
       - ".github/workflows/linux-integration-test.yml"
   workflow_dispatch:
 
@@ -41,7 +43,7 @@ jobs:
     name: "🧪 Build + Integration Test (Linux)"
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    
+
     steps:
       - name: "📥 Checkout"
         uses: actions/checkout@v7
@@ -98,9 +100,9 @@ jobs:
       - name: "🧪 Run integration tests"
         id: integration_tests
         run: |
-          docker compose -f docker-compose.test.yml exec -T test-desktop \
-            /run/media/rightguy/data/flutter_sdk/flutter-sdk/bin/dart test test/integration/app_running_integration_test.dart --reporter expanded
-        continue-on-error: true
+          # Run tests from the host — port 1337 is published from
+          # the test-desktop container. The host has Dart via flutter-action.
+          dart test test/integration/app_running_integration_test.dart --reporter expanded
 
       - name: "📸 Capture failure screenshot"
         if: failure() && steps.integration_tests.outcome == 'failure'
@@ -152,14 +154,3 @@ jobs:
         if: always()
         run: |
           docker compose -f docker-compose.test.yml down -v --remove-orphans 2>/dev/null || true
-
-      - name: "✅ Report result"
-        if: always()
-        run: |
-          if [[ "${{ steps.integration_tests.outcome }}" == "success" ]]; then
-            echo "✅ All integration tests passed!"
-            exit 0
-          else
-            echo "❌ Integration tests failed"
-            exit 1
-          fi

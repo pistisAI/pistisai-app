@@ -1,8 +1,9 @@
-FROM debian:sid
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies for Xvfb, window manager, VNC, screen recording, and Flutter Linux app
+# Install dependencies for Xvfb, window manager, VNC, screen recording,
+# Flutter Linux app runtime, Dart SDK, and image utilities.
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -23,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     ffmpeg \
     procps \
+    imagemagick \
     # GStreamer for Flutter media/plugins
     libgstreamer1.0-0 \
     libgstreamer-plugins-base1.0-0 \
@@ -33,6 +35,15 @@ RUN apt-get update && apt-get install -y \
     gstreamer1.0-plugins-ugly \
     gstreamer1.0-libav \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Dart SDK (stable channel) for running `dart test` inside the container
+ENV DART_VERSION=3.5.4
+RUN curl -fSsL https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_VERSION}/sdk/dartsdk-linux-x64-release.zip -o /tmp/dartsdk.zip && \
+    unzip -q /tmp/dartsdk.zip -d /opt && \
+    mv /opt/dart-sdk /opt/dart && \
+    rm /tmp/dartsdk.zip && \
+    ln -s /opt/dart/bin/dart /usr/local/bin/dart && \
+    ln -s /opt/dart/bin/dartaotruntime /usr/local/bin/dartaotruntime
 
 # Create non-root user for security
 RUN useradd -m -s /bin/bash testuser && \

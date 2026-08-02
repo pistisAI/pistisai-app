@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-set -e
-
 # PistisAI Local Integration Test Runner
-# Runs the full test desktop stack locally using Docker Compose
+# Runs the full test desktop stack locally using Docker Compose.
 # Usage: ./scripts/run_local_integration_tests.sh [options]
+
+# Don't use `set -e` globally — we need to capture the test exit code
+# and perform cleanup / screenshot capture on failure. Instead, we check
+# critical commands explicitly.
+set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -20,8 +23,9 @@ log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# Defaults
-FLUTTER_BIN="${FLUTTER_BIN:-/run/media/rightguy/data/flutter_sdk/flutter-sdk/bin/flutter}"
+# Defaults — overridden by env vars or flags
+FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
+DART_BIN="${DART_BIN:-dart}"
 BUILD_FIRST=true
 RUN_TESTS=true
 KEEP_RUNNING=false
@@ -38,8 +42,13 @@ Options:
   --keep-running      Keep test desktop running after tests (for manual debugging)
   --no-cleanup        Don't stop containers on exit (use with --keep-running)
   --compose-file FILE Docker compose file (default: docker-compose.test.yml)
-  --flutter-bin PATH  Flutter binary path (default: /run/media/rightguy/data/flutter_sdk/flutter-sdk/bin/flutter)
+  --flutter-bin PATH  Flutter binary path (default: from PATH)
+  --dart-bin PATH     Dart binary path (default: from PATH)
   --help              Show this help
+
+Environment:
+  FLUTTER_BIN          Flutter binary path (default: flutter)
+  DART_BIN             Dart binary path (default: dart)
 
 Examples:
   $0                          # Full build + test + cleanup
@@ -74,6 +83,10 @@ while [[ $# -gt 0 ]]; do
             FLUTTER_BIN="$2"
             shift 2
             ;;
+        --dart-bin)
+            DART_BIN="$2"
+            shift 2
+            ;;
         --help)
             usage
             exit 0
@@ -103,6 +116,10 @@ cd "$PROJECT_ROOT"
 if [[ "$BUILD_FIRST" == "true" ]]; then
     log_info "Building Flutter Linux release..."
     "$FLUTTER_BIN" build linux --release
+    if [[ $? -ne 0 ]]; then
+        log_error "Flutter build failed"
+        exit 1
+    fi
     log_success "Build complete"
 else
     log_info "Skipping build (using existing)"
@@ -115,6 +132,10 @@ fi
 # Step 2: Start test desktop stack
 log_info "Starting test desktop stack..."
 docker compose -f "$COMPOSE_FILE" up -d --build test-desktop
+if [[ $? -ne 0 ]]; then
+    log_error "Failed to start test desktop stack"
+    exit 1
+fi
 
 # Step 3: Wait for health
 log_info "Waiting for app health check..."
@@ -134,13 +155,12 @@ done
 # Step 4: Run integration tests
 if [[ "$RUN_TESTS" == "true" ]]; then
     log_info "Running integration tests..."
-    
-    # Run tests inside the test-desktop container (has DISPLAY=:99)
-    docker compose -f "$COMPOSE_FILE" exec -T test-desktop \
-        /run/media/rightguy/data/flutter_sdk/flutter-sdk/bin/dart test test/integration/app_running_integration_test.dart --reporter expanded
-    
+
+    # Run tests from the host. Port 1337 is published from the test-desktop
+    # container, and the host has Dart available (via flutter-action or PATH).
+    "$DART_BIN" test test/integration/app_running_integration_test.dart --reporter expanded
     TEST_EXIT_CODE=$?
-    
+
     if [[ $TEST_EXIT_CODE -eq 0 ]]; then
         log_success "All integration tests passed!"
     else
@@ -156,10 +176,10 @@ fi
 # Step 5: Keep running or exit
 if [[ "$KEEP_RUNNING" == "true" ]]; then
     log_success "Test desktop is running. Access via VNC: localhost:5900"
-    log_info "App health: http://localhost:1337/health (inside container)"
+    log_info "App health: http://localhost:1337/health (published from container)"
     log_info "Recordings: ./recordings/ (mapped to container /recordings)"
     log_info "Press Ctrl+C to stop..."
-    
+
     # Keep script alive
     while true; do sleep 1; done
 else

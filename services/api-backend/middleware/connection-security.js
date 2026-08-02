@@ -25,7 +25,13 @@ const DEFAULT_CONFIG = {
   // Certificate validation
   validateClientCertificates: false, // Set to true for mutual TLS
   allowSelfSignedCerts: process.env.NODE_ENV !== 'production',
+  // When true, client certificate serial numbers and SHA-1 fingerprints are
+  // checked against revokedCertificateSerials / revokedCertificateFingerprints.
+  // This was previously a no-op stub (always returned false). Set to false to
+  // disable revocation checking entirely.
   certificateRevocationCheck: true,
+  revokedCertificateSerials: [],
+  revokedCertificateFingerprints: [],
 
   // Connection security
   maxConnectionsPerIP: 100,
