@@ -18,7 +18,6 @@ import 'package:test/test.dart';
 
 const String appUrl = 'http://127.0.0.1:1337';
 
-@Tag('integration')
 void main() {
   late HttpClient client;
 
@@ -41,7 +40,7 @@ void main() {
         final body = await response.transform(utf8.decoder).join();
         expect(body, equals('OK'));
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
 
@@ -59,7 +58,7 @@ void main() {
           expect(json['data'], isA<List>());
         }
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
 
@@ -75,7 +74,7 @@ void main() {
         // Should respond within 2 seconds in a healthy state
         expect(stopwatch.elapsedMilliseconds, lessThan(2000));
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
 
@@ -89,7 +88,7 @@ void main() {
           await Future.delayed(const Duration(milliseconds: 100));
         }
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
   });

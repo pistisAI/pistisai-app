@@ -1,3 +1,5 @@
+library app_running_integration_test;
+
 /// App Running Integration Tests
 /// These tests run against a REAL Flutter app instance on the virtual display.
 /// They use `dart test` (not `flutter test`) to hit HTTP endpoints and verify the app is running.
@@ -12,7 +14,6 @@ import 'package:test/test.dart';
 
 const String appUrl = 'http://127.0.0.1:1337';
 
-@Tag('integration')
 void main() {
   late HttpClient client;
 
@@ -34,9 +35,9 @@ void main() {
 
         final body = await response.transform(utf8.decoder).join();
         expect(body, equals('OK'));
-        print('[Test] ✅ Health endpoint: OK');
+        print('[Test] ✅ Health endpoint: OK'); // ignore: avoid_print
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
 
@@ -52,12 +53,12 @@ void main() {
           final json = jsonDecode(body) as Map<String, dynamic>;
           expect(json['object'], equals('list'));
           expect(json['data'], isA<List>());
-          print('[Test] ✅ Models endpoint: ${(json['data'] as List).length} models');
+          print('[Test] ✅ Models endpoint: ${(json['data'] as List).length} models'); // ignore: avoid_print
         } else {
-          print('[Test] ⚠️ Models endpoint requires auth (status: ${response.statusCode})');
+          print('[Test] ⚠️ Models endpoint requires auth (status: ${response.statusCode})'); // ignore: avoid_print
         }
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
 
@@ -67,9 +68,9 @@ void main() {
         final response = await request.close();
         // May return 404 if personality engine not enabled, or 200/401
         expect(response.statusCode, anyOf(equals(200), equals(401), equals(404)));
-        print('[Test] ✅ Avatar state endpoint: ${response.statusCode}');
+        print('[Test] ✅ Avatar state endpoint: ${response.statusCode}'); // ignore: avoid_print
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
 
@@ -84,9 +85,9 @@ void main() {
           expect(body, equals('OK'));
           await Future.delayed(const Duration(milliseconds: 100));
         }
-        print('[Test] ✅ App responsive over multiple requests');
+        print('[Test] ✅ App responsive over multiple requests'); // ignore: avoid_print
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
 
@@ -105,9 +106,9 @@ void main() {
           final body = await response.transform(utf8.decoder).join();
           expect(body, equals('OK'));
         }
-        print('[Test] ✅ App handles concurrent requests');
+        print('[Test] ✅ App handles concurrent requests'); // ignore: avoid_print
       } on SocketException {
-        print('⚠️  App not running on $appUrl — skipping (start test desktop first)');
+        print('⚠️  App not running on $appUrl — skipping (start test desktop first)'); // ignore: avoid_print
       }
     });
   });
