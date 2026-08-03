@@ -41,6 +41,9 @@ dependencies:
   # Streaming and WebSocket support
   web_socket_channel: ^3.0.3
 
+  # Inert/in-memory WebSocket channel scaffolding for tunnel components
+  stream_channel: ^2.1.0
+
   # Enhanced HTTP handling for streaming
   dio: ^5.10.0
 

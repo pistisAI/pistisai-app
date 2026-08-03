@@ -2,111 +2,202 @@
 /// Factory methods for creating tunnel service instances
 library;
 
+import 'dart:async';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stream_channel/stream_channel.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import '../auth_service.dart';
+import 'connection_recovery.dart';
+import 'connection_state_tracker.dart';
+import 'error_recovery_strategy.dart';
 import 'interfaces/interfaces.dart';
+import 'metrics_collector.dart' as metrics_impl;
+import 'persistent_request_queue.dart';
+import 'reconnection_manager.dart';
+import 'tunnel_config_manager.dart';
+import 'tunnel_service_impl.dart';
+import 'websocket_heartbeat.dart';
+
+/// An inert [WebSocketChannel] backed by an in-memory [StreamChannelController].
+///
+/// It never opens a real socket, so it is safe to construct in unit tests and
+/// before a transport is established. The real, connected channel should be
+/// supplied by the caller via the factory's `channel` argument once available.
+class _InertWebSocketChannel extends StreamChannelMixin
+    implements WebSocketChannel {
+  final StreamChannelController<dynamic> _controller =
+      StreamChannelController<dynamic>();
+
+  @override
+  Stream get stream => _controller.local.stream;
+
+  @override
+  WebSocketSink get sink => _InertWebSocketSink(_controller.local.sink);
+
+  @override
+  String? get protocol => null;
+
+  @override
+  int? get closeCode => null;
+
+  @override
+  String? get closeReason => null;
+
+  @override
+  Future<void> get ready => Future<void>.value();
+}
+
+/// A [WebSocketSink] that forwards to an in-memory [StreamSink].
+class _InertWebSocketSink implements WebSocketSink {
+  final StreamSink<dynamic> _inner;
+
+  _InertWebSocketSink(this._inner);
+
+  @override
+  void add(dynamic data) => _inner.add(data);
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _inner.addError(error, stackTrace);
+
+  @override
+  Future addStream(Stream stream) => _inner.addStream(stream);
+
+  @override
+  Future close([int? closeCode, String? closeReason]) => _inner.close();
+
+  @override
+  Future get done => _inner.done;
+}
 
 /// Factory for creating tunnel services
 class TunnelServiceFactory {
   /// Create a tunnel service instance
   ///
-  /// This factory method will be used to create the main tunnel service
-  /// with all its dependencies properly configured.
+  /// Wires all resolved tunnel components (reconnection manager, state
+  /// tracker, heartbeat, recovery, request queue, metrics collector, error
+  /// recovery strategy and config manager) into a concrete
+  /// [TunnelServiceImpl].
   ///
-  /// Note: All core components are now COMPLETED:
-  ///
-  /// Task 3 (Connection Resilience) - COMPLETED:
-  /// - ReconnectionManager (lib/services/tunnel/reconnection_manager.dart)
-  /// - ConnectionStateTracker (lib/services/tunnel/connection_state_tracker.dart)
-  /// - WebSocketHeartbeat (lib/services/tunnel/websocket_heartbeat.dart)
-  /// - ConnectionRecovery (lib/services/tunnel/connection_recovery.dart)
-  ///
-  /// Task 4 (Request Queue) - COMPLETED:
-  /// - PersistentRequestQueue (lib/services/tunnel/persistent_request_queue.dart)
-  /// - BackpressureManager (lib/services/tunnel/backpressure_manager.dart)
-  /// - RequestTimeoutHandler (lib/services/tunnel/request_timeout_handler.dart)
-  ///
-  /// Task 6 (Metrics Collection) - COMPLETED:
-  /// - MetricsCollectorImpl (lib/services/tunnel/metrics_collector.dart)
-  /// - ConnectionQualityCalculator (lib/services/tunnel/connection_quality_calculator.dart)
-  /// - MetricsExporter (lib/services/tunnel/metrics_exporter.dart)
-  ///
-  /// The full TunnelService implementation should integrate all these components.
-  static TunnelService createTunnelService({
+  /// [channel] is optional. When absent, an inert disconnect-capable channel
+  /// is used so the service can be constructed and used for config/diagnostics
+  /// without a live socket. The caller should pass a real channel once one is
+  /// established.
+  static Future<TunnelService> createTunnelService({
     required AuthService authService,
     TunnelConfig? config,
-  }) {
-    // All component implementations are available - ready for integration
-    // Next step: Create a concrete TunnelService class that uses:
-    // - ReconnectionManager for connection resilience
-    // - PersistentRequestQueue for request queuing
-    // - MetricsCollectorImpl for metrics tracking
-    throw UnimplementedError(
-      'Full TunnelService integration pending - all components are ready',
+    WebSocketChannel? channel,
+  }) async {
+    final cfg = config ?? const TunnelConfig();
+    final prefs = await SharedPreferences.getInstance();
+
+    final stateTracker = ConnectionStateTracker();
+    final reconnectionManager = ReconnectionManager(
+      maxAttempts: cfg.maxReconnectAttempts,
+      baseDelay: cfg.reconnectBaseDelay,
+      maxDelay: const Duration(seconds: 30),
+    );
+
+    // Build an inert channel when none is supplied so the service can be
+    // constructed without an established transport. The caller can pass a
+    // real, connected channel via [channel] once a transport exists.
+    final wsChannel = channel ?? _InertWebSocketChannel();
+
+    final heartbeat = WebSocketHeartbeat(
+      channel: wsChannel,
+      pingInterval: const Duration(seconds: 30),
+      pongTimeout: const Duration(seconds: 45),
+      onConnectionLost: () {
+        stateTracker.updateState(TunnelConnectionState.reconnecting);
+      },
+    );
+
+    final requestQueue = PersistentRequestQueue(maxSize: cfg.maxQueueSize);
+    final metricsCollector = metrics_impl.MetricsCollector();
+
+    final recovery = ConnectionRecovery(
+      reconnectionManager: reconnectionManager,
+      stateTracker: stateTracker,
+      connectFunction: () async {
+        // Simulated connect for the scaffolded transport. Replace when a
+        // real WebSocket connection is wired in.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      },
+      requestQueue: requestQueue,
+    );
+
+    final configManager = TunnelConfigManager();
+    await configManager.initialize();
+
+    final errorRecovery = ErrorRecoveryStrategy(
+      reconnectionManager: reconnectionManager,
+      testConnection: () async =>
+          stateTracker.currentState == TunnelConnectionState.connected,
+      reconnect: () async => recovery.handleDisconnection(
+        reason: 'Error recovery triggered reconnect',
+        autoReconnect: true,
+      ),
+      flushQueuedRequests: () async {
+        while (true) {
+          final next = await requestQueue.dequeue();
+          if (next == null) break;
+        }
+      },
+    );
+
+    return TunnelServiceImpl(
+      reconnectionManager: reconnectionManager,
+      stateTracker: stateTracker,
+      heartbeat: heartbeat,
+      recovery: recovery,
+      requestQueue: requestQueue,
+      metricsCollector: metricsCollector,
+      errorRecovery: errorRecovery,
+      configManager: configManager,
+      config: cfg,
+      prefs: prefs,
     );
   }
 
   /// Create a request queue instance
-  ///
-  /// Factory method for creating a priority-based request queue
-  /// with optional persistence support.
-  ///
-  /// Task 4 (Request Queue) is COMPLETED. Implementation available in:
-  /// - lib/services/tunnel/persistent_request_queue.dart
-  /// - lib/services/tunnel/request_persistence_manager.dart
-  /// - lib/services/tunnel/backpressure_manager.dart
   static RequestQueue createRequestQueue({
     int maxSize = 100,
     bool enablePersistence = true,
   }) {
-    // Implementation note: Use PersistentRequestQueue directly
-    // Example: return PersistentRequestQueue(maxSize: maxSize);
-    throw UnimplementedError(
-      'Use PersistentRequestQueue directly from lib/services/tunnel/persistent_request_queue.dart',
-    );
+    return PersistentRequestQueue(maxSize: maxSize);
   }
 
   /// Create a metrics collector instance
-  ///
-  /// Factory method for creating a metrics collector that tracks
-  /// connection and request metrics.
-  ///
-  /// Task 6 (Metrics Collection) is COMPLETED. Implementation available in:
-  /// - lib/services/tunnel/metrics_collector.dart
-  /// - lib/services/tunnel/connection_quality_calculator.dart
-  /// - lib/services/tunnel/metrics_exporter.dart
-  static MetricsCollector createMetricsCollector({
+  static metrics_impl.MetricsCollector createMetricsCollector({
     int maxHistorySize = 1000,
   }) {
-    // Implementation note: Use MetricsCollectorImpl directly
-    // Example: return MetricsCollectorImpl(maxHistorySize: maxHistorySize);
-    throw UnimplementedError(
-      'Use MetricsCollectorImpl directly from lib/services/tunnel/metrics_collector.dart',
-    );
+    return metrics_impl.MetricsCollector();
   }
 
-  /// Create a tunnel service with all dependencies
-  ///
-  /// This is a convenience method that creates a fully configured
-  /// tunnel service with request queue and metrics collector.
-  ///
-  /// All components are now COMPLETED and ready for integration.
-  static Map<String, dynamic> createFullTunnelStack({
+  /// Create a tunnel service with all dependencies bundled
+  static Future<Map<String, dynamic>> createFullTunnelStack({
     required AuthService authService,
     TunnelConfig? config,
     int maxQueueSize = 100,
     int maxHistorySize = 1000,
-  }) {
-    // All components are implemented and ready to use:
-    // - PersistentRequestQueue (Task 4 - COMPLETED)
-    // - MetricsCollectorImpl (Task 6 - COMPLETED)
-    // - Connection resilience components (Task 3 - COMPLETED)
-    //
-    // This will return a map with:
-    // - 'service': TunnelService instance
-    // - 'queue': RequestQueue instance
-    // - 'metrics': MetricsCollector instance
-    throw UnimplementedError(
-      'Ready for integration - all components implemented. Create concrete TunnelService class.',
+    WebSocketChannel? channel,
+  }) async {
+    final cfg =
+        config ?? TunnelConfig(maxQueueSize: maxQueueSize);
+    final service = await createTunnelService(
+      authService: authService,
+      config: cfg,
+      channel: channel,
     );
+    final queue = createRequestQueue(maxSize: maxQueueSize);
+    final metrics = createMetricsCollector(maxHistorySize: maxHistorySize);
+
+    return {
+      'service': service,
+      'queue': queue,
+      'metrics': metrics,
+    };
   }
 }

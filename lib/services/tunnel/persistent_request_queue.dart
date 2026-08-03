@@ -65,6 +65,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'interfaces/request_queue.dart';
 import 'interfaces/tunnel_models.dart';
 
 /// Exception thrown when queue is full
@@ -80,34 +81,6 @@ class QueueFullException implements Exception {
 
   @override
   String toString() => 'QueueFullException: $message';
-}
-
-/// Backpressure signal for flow control
-///
-/// Emitted when queue fill percentage reaches threshold (80%).
-/// Signals to the application that it should throttle request rate.
-class BackpressureSignal {
-  /// Queue fill percentage (0.0 to 1.0)
-  final double queueFillPercentage;
-
-  /// Whether application should throttle requests
-  final bool shouldThrottle;
-
-  /// Optional message describing the backpressure condition
-  final String? message;
-
-  /// Create a new BackpressureSignal
-  BackpressureSignal({
-    required this.queueFillPercentage,
-    required this.shouldThrottle,
-    this.message,
-  });
-
-  @override
-  String toString() {
-    return 'BackpressureSignal(fill: ${(queueFillPercentage * 100).toStringAsFixed(1)}%, '
-        'throttle: $shouldThrottle, message: $message)';
-  }
 }
 
 /// Queued request with priority and metadata
@@ -193,7 +166,7 @@ class QueuedRequest implements Comparable<QueuedRequest> {
 }
 
 /// Persistent request queue with priority support
-class PersistentRequestQueue {
+class PersistentRequestQueue implements RequestQueue {
   final int maxSize;
   final String _persistenceKey = 'tunnel_queued_requests';
   final double _backpressureThreshold = 0.8; // 80%
@@ -213,18 +186,23 @@ class PersistentRequestQueue {
   });
 
   /// Get current queue size
+  @override
   int get size => _queue.length;
 
   /// Check if queue is full
+  @override
   bool get isFull => _queue.length >= maxSize;
 
   /// Check if queue is empty
+  @override
   bool get isEmpty => _queue.isEmpty;
 
   /// Get queue fill percentage (0.0 to 1.0)
+  @override
   double get fillPercentage => _queue.length / maxSize;
 
   /// Stream of backpressure signals
+  @override
   Stream<BackpressureSignal> get backpressureStream =>
       _backpressureController.stream;
 
@@ -232,6 +210,7 @@ class PersistentRequestQueue {
   int get timeoutRemovals => _timeoutRemovals;
 
   /// Enqueue a request with priority
+  @override
   Future<void> enqueue(
     TunnelRequest request, {
     RequestPriority priority = RequestPriority.normal,
@@ -266,6 +245,7 @@ class PersistentRequestQueue {
   }
 
   /// Dequeue the highest priority request
+  @override
   Future<TunnelRequest?> dequeue() async {
     if (_queue.isEmpty) return null;
 
@@ -291,6 +271,7 @@ class PersistentRequestQueue {
   }
 
   /// Clear all requests from queue
+  @override
   Future<void> clear() async {
     _queue.clear();
     await _clearPersistence();
@@ -376,6 +357,7 @@ class PersistentRequestQueue {
   }
 
   /// Restore persisted requests from disk
+  @override
   Future<int> restorePersistedRequests() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -423,6 +405,27 @@ class PersistentRequestQueue {
     } catch (e) {
       debugPrint('Failed to restore persisted requests: $e');
       return 0;
+    }
+  }
+
+  /// Persist all high-priority (and normal) queued requests to disk
+  ///
+  /// Implements [RequestQueue.persistHighPriorityRequests]. Persisting is
+  /// best-effort: failures are logged and swallowed so the caller is never
+  /// blocked on durable storage.
+  @override
+  Future<void> persistHighPriorityRequests() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final entries = _queue
+          .where((q) =>
+              q.priority == RequestPriority.high ||
+              q.priority == RequestPriority.normal)
+          .map((q) => jsonEncode(q.toJson()))
+          .toList();
+      await prefs.setStringList(_persistenceKey, entries);
+    } catch (e) {
+      debugPrint('Failed to persist high-priority requests: $e');
     }
   }
 
