@@ -9,6 +9,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../config/app_config.dart';
 import 'agent_runtime/agent_runtime_client.dart';
 import 'agent_runtime/hermes_runtime_client.dart';
+import '../auth/providers/noop_auth_provider.dart';
+import 'auth_service.dart';
 import 'cloud_streaming_service.dart';
 import 'hermes/hermes_streaming_service.dart';
 import 'hermes_manager/hermes_gateway_control_service.dart';
@@ -196,12 +198,38 @@ class ConnectionManagerService extends ChangeNotifier {
 
   Stream<Map<String, dynamic>> _connectToOpenClaw() {
     _log.info('Connecting to OpenClaw gateway');
-    // Stub — delegates to openclaw gateway service when implemented
-    _isConnected = true;
-    _lastSuccessfulConnection = DateTime.now();
-    _lastError = null;
-    notifyListeners();
-    return const Stream.empty();
+
+    // Initialize CloudStreamingService if not already created
+    if (_openclawStreamingService == null) {
+      _openclawStreamingService = CloudStreamingService(
+        baseUrl: 'http://127.0.0.1:8080',
+        authService: AuthService(NoopAuthProvider()),
+      );
+    }
+
+    // Pass the gateway token to the shared WebSocket
+    final ws = SharedWebSocket.instance;
+    ws.setGatewayToken(_gatewayToken);
+
+    // Connect via CloudStreamingService
+    _openclawStreamingService!.establishConnection().then((_) {
+      _isConnected = _openclawStreamingService!.connection.isActive;
+      if (_isConnected) {
+        _lastSuccessfulConnection = DateTime.now();
+        _lastError = null;
+      } else {
+        _lastError = 'Failed to connect to OpenClaw gateway';
+      }
+      notifyListeners();
+    }).catchError((e, st) {
+      _log.severe('OpenClaw connection error', e, st);
+      _isConnected = false;
+      _lastError = e.toString();
+      notifyListeners();
+    });
+
+    return _openclawStreamingService!.messageStream
+        .map((msg) => {'type': 'message', 'data': msg.toJson()});
   }
 
   // ---------------------------------------------------------------------------
