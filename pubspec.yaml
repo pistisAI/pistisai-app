@@ -117,7 +117,7 @@ dependencies:
   record: ^7.1.1
 
   # Rive Animation Runtime
-  rive: ^0.14.10
+  rive: ^0.14.11
 
 dev_dependencies:
   sentry_dart_plugin: ^3.2.1
