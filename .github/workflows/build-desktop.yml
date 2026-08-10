@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
@@ -53,7 +53,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - name: Compute version
         id: version
         run: |
@@ -73,7 +73,7 @@ jobs:
     if: contains(inputs.platforms, 'linux')
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - name: Set Version
         run: |
@@ -119,7 +119,7 @@ jobs:
           ./scripts/packaging/build_installer.sh || echo "Installer script skipped"
 
       - name: Upload Linux Bundles
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: linux-bundles
           path: dist/linux/*
@@ -134,7 +134,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - name: Set Version
         run: |
@@ -193,7 +193,7 @@ jobs:
           fi
 
       - name: Upload Windows Bundles
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: windows-bundles
           path: |
@@ -208,7 +208,7 @@ jobs:
     if: contains(inputs.platforms, 'macos')
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - name: Set Version
         run: |
@@ -238,7 +238,7 @@ jobs:
           echo "✅ macOS bundle packaged"
 
       - name: Upload macOS Bundle
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: macos-bundles
           path: dist/macos/*.zip
@@ -251,7 +251,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - name: Download all artifacts
         uses: actions/download-artifact@v5
