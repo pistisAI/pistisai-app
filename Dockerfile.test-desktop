@@ -86,7 +86,8 @@ WORKDIR /app
 COPY --chown=testuser:testuser . /app
 
 # Build the Flutter Linux app inside the container (matches container's GLIBC)
-RUN chown -R testuser:testuser /app && su -s /bin/bash testuser -c "rm -rf build pubspec.lock .dart_tool && flutter pub get && flutter build linux --release"
+RUN chown -R testuser:testuser /app && su -s /bin/bash testuser -c "rm -rf build pubspec.lock .dart_tool && flutter pub get && flutter build linux --release" \
+ && cp -r /app/build/linux/x64/release/bundle /app/bundle && chown -R testuser:testuser /app/bundle
 
 # Copy test scripts
 COPY scripts/start_test_desktop.sh /app/start_test_desktop.sh
