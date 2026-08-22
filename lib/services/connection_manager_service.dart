@@ -199,12 +199,10 @@ class ConnectionManagerService extends ChangeNotifier {
     _log.info('Connecting to OpenClaw gateway');
 
     // Initialize CloudStreamingService if not already created
-    if (_openclawStreamingService == null) {
-      _openclawStreamingService = CloudStreamingService(
-        baseUrl: 'http://127.0.0.1:8080',
-        authService: AuthService(NoopAuthProvider()),
-      );
-    }
+    _openclawStreamingService ??= CloudStreamingService(
+      baseUrl: 'http://127.0.0.1:8080',
+      authService: AuthService(NoopAuthProvider()),
+    );
 
     // Pass the gateway token to the shared WebSocket
     final ws = SharedWebSocket.instance;

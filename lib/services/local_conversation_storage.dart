@@ -101,7 +101,7 @@ class LocalConversationStorage {
       final file = await _getLocalFile();
       if (!await file.exists()) {
         // Check for legacy plaintext file and migrate
-        return _migrateFromLegacy(key);
+        return await _migrateFromLegacy(key);
       }
 
       final content = await file.readAsString();
