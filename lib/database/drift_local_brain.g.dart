@@ -8695,7 +8695,7 @@ class $AvatarPersonalityProfilesTable extends AvatarPersonalityProfiles
       'evolution_stage', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
-      defaultValue: const Constant('base'));
+      defaultValue: const Constant('curious_explorer'));
   static const VerificationMeta _conversationCountMeta =
       const VerificationMeta('conversationCount');
   @override

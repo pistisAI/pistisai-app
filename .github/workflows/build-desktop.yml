@@ -23,6 +23,9 @@ on:
       - "macos/**"
       - ".github/workflows/build-desktop.yml"
 
+env:
+  PLATFORMS: ${{ inputs.platforms || 'linux,windows,macos' }}
+
 concurrency:
   group: desktop-build-${{ github.ref }}
   cancel-in-progress: false
@@ -71,7 +74,7 @@ jobs:
   build_linux:
     name: Linux Build
     needs: set_version
-    if: contains(inputs.platforms, 'linux')
+    if: contains(env.PLATFORMS, 'linux')
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -130,7 +133,7 @@ jobs:
   build_windows:
     name: Windows Build
     needs: set_version
-    if: contains(inputs.platforms, 'windows')
+    if: contains(env.PLATFORMS, 'windows')
     runs-on: windows-2022
     defaults:
       run:
@@ -208,7 +211,7 @@ jobs:
   build_macos:
     name: macOS Build
     needs: set_version
-    if: contains(inputs.platforms, 'macos')
+    if: contains(env.PLATFORMS, 'macos')
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -250,7 +253,7 @@ jobs:
 
   create_release:
     needs: [set_version, build_linux, build_windows, build_macos]
-    if: always() && github.event_name == 'workflow_dispatch' && (needs.build_linux.result == 'success' || needs.build_windows.result == 'success' || needs.build_macos.result == 'success')
+    if: always() && (needs.build_linux.result == 'success' || needs.build_windows.result == 'success' || needs.build_macos.result == 'success')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -262,15 +265,7 @@ jobs:
 
       - name: Compute version
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-          else
-            VERSION=$(jq -r '.version' assets/version.json)
-            IFS='.' read -r -a v <<< "$VERSION"
-            v[2]=$((v[2] + 1))
-            VERSION="${v[0]}.${v[1]}.${v[2]}"
-            echo "VERSION=$VERSION" >> $GITHUB_ENV
-          fi
+          echo "VERSION=${{ needs.set_version.outputs.version }}" >> $GITHUB_ENV
           echo "tag=v${{ env.VERSION }}" >> $GITHUB_ENV
 
       - name: Organize artifacts for release

@@ -25,6 +25,7 @@ import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/streaming_chat_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
+import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/log_buffer_service.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
@@ -321,6 +322,8 @@ class _PistisaiAppState extends State<PistisaiApp> {
           providersList, 'LocalVoiceInputService');
       _addValueProviderIfAvailable<LangChainPromptService>(
           providersList, 'LangChainPromptService');
+      _addValueProviderIfAvailable<AutoUpdateService>(
+          providersList, 'AutoUpdateService');
       _addProviderIfAvailable<PlatformDetectionService>(
           providersList, 'PlatformDetectionService');
 
