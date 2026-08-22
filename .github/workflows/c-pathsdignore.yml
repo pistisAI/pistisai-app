@@ -1,0 +1,13 @@
+name: WFVAR-C
+
+on:
+  push:
+    branches: [fix/ci-startup-failure]
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo ok
