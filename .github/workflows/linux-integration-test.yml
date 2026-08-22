@@ -76,10 +76,13 @@ jobs:
       - name: "🐧 flutter build linux --release"
         run: flutter build linux --release
 
-      - name: "🐳 Install Docker Compose"
+      - name: "🐳 Ensure Docker Compose"
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq docker-compose-plugin
+          if ! docker compose version >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq docker-compose-v2 || sudo apt-get install -y -qq docker-compose-plugin
+          fi
+          docker compose version
 
       - name: "🚀 Start test desktop stack"
         run: |
