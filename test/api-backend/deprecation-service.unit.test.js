@@ -20,9 +20,7 @@ const {
   getAllDeprecatedEndpoints,
   getAllSunsetEndpoints,
   getDeprecationStatusReport,
-} = await import(
-  "../../services/api-backend/services/deprecation-service.js"
-);
+} = await import("../../services/api-backend/services/deprecation-service.js");
 
 describe("DeprecationService", () => {
   describe("DeprecationStatus enum", () => {
@@ -61,8 +59,8 @@ describe("DeprecationService", () => {
     });
 
     it("should have all v1 endpoints with DEPRECATED status", () => {
-      const v1Endpoints = Object.entries(DEPRECATED_ENDPOINTS).filter(([path]) =>
-        path.startsWith("/v1/")
+      const v1Endpoints = Object.entries(DEPRECATED_ENDPOINTS).filter(
+        ([path]) => path.startsWith("/v1/"),
       );
       for (const [, info] of v1Endpoints) {
         expect(info.status).toBe(DeprecationStatus.DEPRECATED);
@@ -81,7 +79,7 @@ describe("DeprecationService", () => {
     it("should have sunsetAt after deprecatedAt for all entries", () => {
       for (const [, info] of Object.entries(DEPRECATED_ENDPOINTS)) {
         expect(new Date(info.sunsetAt).getTime()).toBeGreaterThan(
-          new Date(info.deprecatedAt).getTime()
+          new Date(info.deprecatedAt).getTime(),
         );
       }
     });

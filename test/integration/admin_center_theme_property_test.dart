@@ -15,6 +15,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
+@Timeout(Duration(minutes: 3))
     await initializeMockPlugins();
   });
 

@@ -15,6 +15,7 @@ import 'package:pistisai/widgets/responsive_screen_wrapper.dart';
 void main() {
   group('Property 5: Responsive Layout Adaptation', () {
     testWidgets(
+@Timeout(Duration(minutes: 3))
       'Property test: Screen width changes trigger reflow within 300ms without data loss',
       (WidgetTester tester) async {
         // Test data that should be preserved

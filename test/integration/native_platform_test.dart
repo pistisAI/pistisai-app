@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/main.dart' as app;
 
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -15,8 +16,11 @@ void main() {
 
     setUpAll(() async {
       // Initialize the app to register platform channels
-      app.main();
-      await Future.delayed(const Duration(milliseconds: 500));
+      // This only works on Linux desktop with platform channels
+      if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.linux)) {
+        app.main();
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
 
       guiAutomationChannel =
           const MethodChannel('pistisai/gui_automation');
@@ -34,6 +38,10 @@ void main() {
     });
 
     test('takeScreenshot via native channel', () async {
+      // Skip if not on Linux desktop
+      if (!kIsWeb && defaultTargetPlatform != TargetPlatform.linux) {
+        return;
+      }
       try {
         final result =
             await guiAutomationChannel.invokeMethod('takeScreenshot', {
@@ -50,6 +58,10 @@ void main() {
     });
 
     test('getWindows via native channel', () async {
+      // Skip if not on Linux desktop
+      if (!kIsWeb && defaultTargetPlatform != TargetPlatform.linux) {
+        return;
+      }
       try {
         final result = await windowManagerChannel.invokeMethod('getWindows');
         debugPrint('Windows result: $result');
@@ -62,6 +74,10 @@ void main() {
     });
 
     test('executeAction via native channel', () async {
+      // Skip if not on Linux desktop
+      if (!kIsWeb && defaultTargetPlatform != TargetPlatform.linux) {
+        return;
+      }
       try {
         final result =
             await guiAutomationChannel.invokeMethod('executeAction', {

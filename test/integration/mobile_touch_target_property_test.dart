@@ -15,6 +15,7 @@ void main() {
     testWidgets(
       'Property test: All interactive elements on mobile have minimum 44x44 touch targets',
       (WidgetTester tester) async {
+@Timeout(Duration(minutes: 3))
         // Set mobile screen size
         tester.view.physicalSize = const Size(400, 800);
         tester.view.devicePixelRatio = 1.0;

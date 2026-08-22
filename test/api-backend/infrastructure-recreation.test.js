@@ -276,11 +276,7 @@ function verifyDNSConsistency(stack1, stack2) {
   }
 
   // DNS should resolve to the same load balancer
-  const domains = [
-    "pistisai.app",
-    "app.pistisai.app",
-    "api.pistisai.app",
-  ];
+  const domains = ["pistisai.app", "app.pistisai.app", "api.pistisai.app"];
 
   for (const domain of domains) {
     const resolution1 = resolveDNS(domain, nlbDns1);
@@ -664,8 +660,10 @@ describe("Infrastructure Recreation Property Test", () => {
           );
 
           // ARNs should be valid format
-          const serviceRoleArn = stack.Outputs.EKSServiceRoleArn.OutputValue.replace(/,/g, '');
-          const nodeRoleArn = stack.Outputs.NodeInstanceRoleArn.OutputValue.replace(/,/g, '');
+          const serviceRoleArn =
+            stack.Outputs.EKSServiceRoleArn.OutputValue.replace(/,/g, "");
+          const nodeRoleArn =
+            stack.Outputs.NodeInstanceRoleArn.OutputValue.replace(/,/g, "");
 
           assert(
             serviceRoleArn.startsWith("arn:aws:iam::"),
@@ -690,7 +688,7 @@ describe("Infrastructure Recreation Property Test", () => {
           assert(stack.Outputs.SubnetIds, "Stack should have SubnetIds");
 
           // VPC ID should be valid format
-          const vpcId = stack.Outputs.VPCId.OutputValue.replace(/,/g, '');
+          const vpcId = stack.Outputs.VPCId.OutputValue.replace(/,/g, "");
           assert(vpcId.startsWith("vpc-"), "VPC ID should start with vpc-");
         }),
         { numRuns: 100 },

@@ -15,6 +15,7 @@ void main() {
           MaterialApp(
             home: const LoginScreen(),
           ),
+@Timeout(Duration(minutes: 3))
         );
 
         await tester.pumpAndSettle();

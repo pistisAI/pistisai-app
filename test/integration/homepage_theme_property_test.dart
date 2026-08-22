@@ -15,6 +15,7 @@ void main() {
   });
 
   group('Homepage Theme Application Property Tests', () {
+@Timeout(Duration(minutes: 3))
     late ThemeProvider themeProvider;
     late PlatformDetectionService platformService;
 

@@ -13,7 +13,6 @@ import '../auth/providers/noop_auth_provider.dart';
 import 'auth_service.dart';
 import 'cloud_streaming_service.dart';
 import 'hermes/hermes_streaming_service.dart';
-import 'hermes_manager/hermes_gateway_control_service.dart';
 import 'openclaw_manager/gateway_control_service.dart';
 import 'settings_preference_service.dart' as preferences;
 import 'streaming_service.dart';
@@ -46,8 +45,8 @@ class ConnectionManagerService extends ChangeNotifier {
   /// The OpenClaw gateway control service.
   final GatewayControlService openclawGatewayService;
 
-  /// The Hermes gateway control service.
-  final HermesGatewayControlService hermesGatewayService;
+  /// The Hermes HTTP/SSE streaming service.
+  final HermesStreamingService hermesStreamingService;
 
   /// The OpenClaw streaming service (for WebSocket connections).
   CloudStreamingService? _openclawStreamingService;
@@ -159,7 +158,7 @@ class ConnectionManagerService extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   ConnectionManagerService({
     required this.openclawGatewayService,
-    required this.hermesGatewayService,
+    required this.hermesStreamingService,
     preferences.SettingsPreferenceService? settingsPreferenceService,
     @visibleForTesting bool autoDetectOnInitialize = true,
   })  : _settingsPreferenceService = settingsPreferenceService,
@@ -383,7 +382,7 @@ class ConnectionManagerService extends ChangeNotifier {
   Map<String, dynamic> getGatewayStatus() {
     final activeBackend = _currentBackend;
     final openclawStatus = openclawGatewayService.state;
-    final hermesStatus = hermesGatewayService.getStatus();
+    final hermesHealthy = hermesStreamingService.connection.isActive;
 
     if (activeBackend == null) {
       return {
@@ -396,7 +395,11 @@ class ConnectionManagerService extends ChangeNotifier {
           'state': openclawStatus.name,
           'isRunning': openclawStatus == GatewayState.running,
         },
-        'hermes': hermesStatus,
+        'hermes': {
+          'service': 'hermes-http',
+          'running': hermesHealthy,
+          'connected': hermesHealthy,
+        },
       };
     }
 
@@ -425,7 +428,11 @@ class ConnectionManagerService extends ChangeNotifier {
         'state': openclawStatus.name,
         'isRunning': openclawStatus == GatewayState.running,
       },
-      'hermes': hermesStatus,
+      'hermes': {
+        'service': 'hermes-http',
+        'running': hermesHealthy,
+        'connected': hermesHealthy,
+      },
     };
   }
 
@@ -441,7 +448,7 @@ class ConnectionManagerService extends ChangeNotifier {
     return switch (_currentBackend) {
       null => Future<bool>.value(false),
       BackendType.openclaw => openclawGatewayService.start(),
-      BackendType.hermes => hermesGatewayService.start(),
+      BackendType.hermes => hermesStreamingService.testConnection(),
     };
   }
 
@@ -449,7 +456,7 @@ class ConnectionManagerService extends ChangeNotifier {
     return switch (_currentBackend) {
       null => Future<bool>.value(false),
       BackendType.openclaw => openclawGatewayService.stop(),
-      BackendType.hermes => hermesGatewayService.stop(),
+      BackendType.hermes => Future<bool>.value(true),
     };
   }
 
@@ -457,7 +464,7 @@ class ConnectionManagerService extends ChangeNotifier {
     return switch (_currentBackend) {
       null => Future<bool>.value(false),
       BackendType.openclaw => openclawGatewayService.restart(),
-      BackendType.hermes => hermesGatewayService.restart(),
+      BackendType.hermes => hermesStreamingService.testConnection(),
     };
   }
 

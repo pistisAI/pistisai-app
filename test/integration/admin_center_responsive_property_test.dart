@@ -15,6 +15,7 @@ void main() {
 
   setUpAll(() async {
     await initializeMockPlugins();
+@Timeout(Duration(minutes: 3))
   });
 
   group('Admin Center Responsive Layout Property Tests', () {

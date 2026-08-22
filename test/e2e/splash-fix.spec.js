@@ -27,7 +27,9 @@ test.describe("Splash fix (PR #416)", () => {
 
     // The splash must be gone. flutter-first-frame is the happy path; the
     // 8s setTimeout is the safety net. We wait up to 10s for either.
-    await expect(page.locator(SPLASH_SELECTOR)).toHaveCount(0, { timeout: 10_000 });
+    await expect(page.locator(SPLASH_SELECTOR)).toHaveCount(0, {
+      timeout: 10_000,
+    });
 
     // No critical console errors. Filter Auth0/Auth CDN noise that is
     // unrelated to the splash fix; surface anything else.
@@ -38,10 +40,15 @@ test.describe("Splash fix (PR #416)", () => {
         !e.includes("auth0") &&
         !/Failed to load resource.*auth0/i.test(e),
     );
-    expect(criticalErrors, `unexpected console errors: ${criticalErrors.join("\n")}`).toHaveLength(0);
+    expect(
+      criticalErrors,
+      `unexpected console errors: ${criticalErrors.join("\n")}`,
+    ).toHaveLength(0);
   });
 
-  test("Flutter actually paints into the DOM (no frozen spinner)", async ({ page }) => {
+  test("Flutter actually paints into the DOM (no frozen spinner)", async ({
+    page,
+  }) => {
     await page.goto("/");
     // Give Flutter a generous window to bootstrap, run main(), and paint.
     // Production build on a fresh CI runner typically paints in 3-6s; the
@@ -51,7 +58,9 @@ test.describe("Splash fix (PR #416)", () => {
     });
   });
 
-  test("hard 8s timeout removes the splash even if first-frame never fires", async ({ page }) => {
+  test("hard 8s timeout removes the splash even if first-frame never fires", async ({
+    page,
+  }) => {
     // Simulate the failure mode the timeout was designed for: never receive
     // flutter-first-frame. We do this by intercepting window events and
     // verifying the setTimeout fallback still cleans the splash.
@@ -68,6 +77,8 @@ test.describe("Splash fix (PR #416)", () => {
     await page.goto("/");
 
     // Splash should still be gone — the setTimeout path is the safety net.
-    await expect(page.locator(SPLASH_SELECTOR)).toHaveCount(0, { timeout: 12_000 });
+    await expect(page.locator(SPLASH_SELECTOR)).toHaveCount(0, {
+      timeout: 12_000,
+    });
   });
 });

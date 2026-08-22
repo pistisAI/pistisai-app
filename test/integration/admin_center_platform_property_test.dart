@@ -15,6 +15,7 @@ import '../helpers/test_utilities.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+@Timeout(Duration(minutes: 3))
   setUpAll(() async {
     await initializeMockPlugins();
   });

@@ -57,7 +57,6 @@ import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
-import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/avatar_state_service.dart';
@@ -455,11 +454,6 @@ Future<void> setupCoreServices() async {
     serviceLocator
         .registerSingleton<GatewayControlService>(gatewayControlService);
 
-    // Hermes gateway control service - HTTP-only health monitor for Hermes Agent
-    final hermesGatewayControlService = HermesGatewayControlService();
-    serviceLocator.registerSingleton<HermesGatewayControlService>(
-        hermesGatewayControlService);
-
     // Setup status service - tracks first-run and setup completion
     final setupStatusService = SetupStatusService(
       authService: authService,
@@ -815,11 +809,10 @@ Future<void> setupAuthenticatedServices() async {
 
     // Connection Manager - requires authentication for tunnel/cloud connections
     final gatewayControlService = serviceLocator.get<GatewayControlService>();
-    final hermesGatewayControlService =
-        serviceLocator.get<HermesGatewayControlService>();
+    final hermesStreamingService = serviceLocator.get<HermesStreamingService>();
     final connectionManager = ConnectionManagerService(
       openclawGatewayService: gatewayControlService,
-      hermesGatewayService: hermesGatewayControlService,
+      hermesStreamingService: hermesStreamingService,
       settingsPreferenceService:
           serviceLocator.get<SettingsPreferenceService>(),
     );

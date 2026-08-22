@@ -25,9 +25,7 @@ describe("Log Aggregation Support", () => {
       expect(logAggregationConfig.loki).toBeDefined();
       expect(logAggregationConfig.loki.url).toBeDefined();
       expect(logAggregationConfig.loki.labels).toBeDefined();
-      expect(logAggregationConfig.loki.labels.service).toBe(
-        "pistisai-api",
-      );
+      expect(logAggregationConfig.loki.labels.service).toBe("pistisai-api");
     });
 
     test("should have default ELK configuration", () => {

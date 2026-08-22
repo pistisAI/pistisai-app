@@ -1,5 +1,5 @@
 import 'package:pistisai/services/connection_manager_service.dart';
-import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart'
     hide BackendType;
@@ -16,7 +16,7 @@ void main() {
         openclawGatewayService: GatewayControlService(
           SettingsPreferenceService(),
         ),
-        hermesGatewayService: HermesGatewayControlService(),
+        hermesStreamingService: HermesStreamingService(),
         settingsPreferenceService: SettingsPreferenceService(),
         autoDetectOnInitialize: false,
       );

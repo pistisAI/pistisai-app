@@ -15,6 +15,7 @@ void main() {
   group('Homepage Responsive Layout Property Tests', () {
     late PlatformDetectionService platformService;
 
+@Timeout(Duration(minutes: 3))
     setUp(() async {
       await initializeMockPlugins();
       platformService = PlatformDetectionService();

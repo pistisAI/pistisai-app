@@ -82,10 +82,10 @@ void main() {
         );
 
         expect(options, isNotEmpty);
-        expect(options.any((option) => option.installationType == 'msi'), true);
+        expect(options.any((option) => option.installationType == 'exe'), true);
         expect(options.any((option) => option.installationType == 'zip'), true);
         expect(options.any((option) => option.isRecommended), true);
-      }, skip: 'Platform-specific test');
+      });
 
       test('should return download options for Linux', () {
         final options = platformDetectionService.getDownloadOptions(
@@ -128,18 +128,17 @@ void main() {
 
           expect(options, isNotEmpty);
           expect(
-            options.any((option) => option.installationType == 'msi'),
+            options.any((option) => option.installationType == 'exe'),
             true,
           );
         },
-        skip: 'Platform-specific test',
       );
     });
 
     group('Installation Instructions', () {
-      test('should return installation instructions for Windows MSI', () {
+      test('should return installation instructions for Windows EXE', () {
         final instructions = platformDetectionService
-            .getInstallationInstructions(PlatformType.windows, 'msi');
+            .getInstallationInstructions(PlatformType.windows, 'exe');
 
         expect(instructions, isNotEmpty);
         expect(instructions.toLowerCase(), contains('installer'));
