@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/main.dart' as app;
-
 @Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

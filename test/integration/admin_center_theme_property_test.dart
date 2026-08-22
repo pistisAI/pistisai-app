@@ -11,11 +11,11 @@ import '../helpers/test_utilities.dart';
 ///
 /// Property: For any theme change, all screens SHALL update within 200 milliseconds
 /// Validates: Requirements 1.2, 4.7, 5.7, 6.6, 7.6, 8.5, 9.5, 10.7, 11.5, 12.5
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
-@Timeout(Duration(minutes: 3))
     await initializeMockPlugins();
   });
 

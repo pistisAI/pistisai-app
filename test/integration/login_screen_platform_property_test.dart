@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/screens/login_screen.dart';
-
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -15,7 +15,6 @@ void main() {
           MaterialApp(
             home: const LoginScreen(),
           ),
-@Timeout(Duration(minutes: 3))
         );
 
         await tester.pumpAndSettle();

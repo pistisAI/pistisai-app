@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 

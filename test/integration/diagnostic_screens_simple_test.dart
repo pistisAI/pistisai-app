@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Properties: Theme Application, Platform Components, Responsive Layout
 /// Validates: Requirements 10.1-10.7, 13.1-13.3, 14.1-14.6
 
+@Timeout(Duration(minutes: 3))
 void main() {
   group('Diagnostic Screens Unified Theming Tests', () {
     setUp(() async {

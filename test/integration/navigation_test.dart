@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

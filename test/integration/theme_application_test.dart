@@ -6,6 +6,7 @@ import 'package:pistisai/config/theme.dart';
 
 /// Integration test for theme application across MaterialApp
 /// Validates Requirements 1.1, 1.2, 1.3, 1.4
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

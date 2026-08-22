@@ -4,7 +4,7 @@ import 'package:pistisai/services/platform_detection_service.dart';
 import '../helpers/mock_services.dart';
 import '../helpers/test_app_wrapper.dart';
 import '../helpers/test_utilities.dart';
-
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -14,8 +14,6 @@ void main() {
 
   group('Homepage Responsive Layout Property Tests', () {
     late PlatformDetectionService platformService;
-
-@Timeout(Duration(minutes: 3))
     setUp(() async {
       await initializeMockPlugins();
       platformService = PlatformDetectionService();

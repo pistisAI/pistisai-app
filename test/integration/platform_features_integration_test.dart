@@ -10,7 +10,6 @@ library;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
 import 'package:pistisai/services/platform_adapter.dart';
-
 @Timeout(Duration(minutes: 3))
 void main() {
   group('Platform Features Integration Tests', () {

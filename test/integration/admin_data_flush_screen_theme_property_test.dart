@@ -7,6 +7,7 @@ import '../helpers/mock_services.dart';
 import '../helpers/test_app_wrapper.dart';
 import '../helpers/test_utilities.dart';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -15,7 +16,6 @@ void main() {
   });
 
   group('Admin Data Flush Screen Theme Application Property Tests', () {
-@Timeout(Duration(minutes: 3))
     late ThemeProvider themeProvider;
     late PlatformDetectionService platformService;
 

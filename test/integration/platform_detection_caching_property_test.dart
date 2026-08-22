@@ -13,7 +13,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
 import 'package:pistisai/models/platform_config.dart';
-
 @Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

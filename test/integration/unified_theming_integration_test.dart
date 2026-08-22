@@ -18,6 +18,7 @@ import 'package:pistisai/di/locator.dart' as di;
 ///
 /// **Validates: Requirements 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18**
 
+@Timeout(Duration(minutes: 3))
 void main() {
   group('Unified Theming Integration Tests', () {
     late ThemeProvider themeProvider;

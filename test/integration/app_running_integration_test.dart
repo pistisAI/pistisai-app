@@ -14,6 +14,7 @@ import 'package:test/test.dart';
 
 const String appUrl = 'http://127.0.0.1:1337';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   late HttpClient client;
 

@@ -9,7 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
-
 @Timeout(Duration(minutes: 3))
 void main() {
   group('Error Recovery Property Tests', () {

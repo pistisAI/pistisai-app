@@ -10,12 +10,12 @@ import '../helpers/test_utilities.dart';
 ///
 /// Property: For any screen width change, content SHALL reflow within 300ms without data loss
 /// Validates: Requirements 3.3, 4.3, 5.3, 6.4, 7.4, 8.4, 9.4, 10.6, 11.4, 12.3, 13.4
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
     await initializeMockPlugins();
-@Timeout(Duration(minutes: 3))
   });
 
   group('Admin Center Responsive Layout Property Tests', () {

@@ -12,10 +12,9 @@ import '../helpers/test_utilities.dart';
 /// Property: For any screen, the rendered components SHALL match the platform
 /// (Material for web/Android, Cupertino for iOS, native for desktop)
 /// Validates: Requirements 2.4, 2.5, 2.6, 2.7
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-
-@Timeout(Duration(minutes: 3))
   setUpAll(() async {
     await initializeMockPlugins();
   });

@@ -11,11 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/utils/accessibility_helpers.dart';
 import 'dart:math';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   group('Property 7: Accessibility Contrast Ratio', () {
     /// **Feature: unified-app-theming, Property 7: Accessibility Contrast Ratio**
     /// **Validates: Requirements 14.4**
-@Timeout(Duration(minutes: 3))
     ///
     /// Property: *For any* text element, the contrast ratio SHALL be at least 4.5:1
     test(

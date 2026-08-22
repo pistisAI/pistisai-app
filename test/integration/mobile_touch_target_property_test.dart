@@ -10,12 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/utils/responsive_layout.dart';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   group('Property 6: Mobile Touch Target Size', () {
     testWidgets(
       'Property test: All interactive elements on mobile have minimum 44x44 touch targets',
       (WidgetTester tester) async {
-@Timeout(Duration(minutes: 3))
         // Set mobile screen size
         tester.view.physicalSize = const Size(400, 800);
         tester.view.devicePixelRatio = 1.0;
