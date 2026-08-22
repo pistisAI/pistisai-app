@@ -1,0 +1,116 @@
+name: WFVAR-E
+true:
+  push:
+    branches:
+    - '**'
+    paths-ignore:
+    - '**.md'
+    - docs/**
+    - images/**
+  pull_request:
+    branches:
+    - main
+    paths-ignore:
+    - '**.md'
+    - docs/**
+    - images/**
+concurrency:
+  group: ci-test-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  checks: write
+jobs:
+  flutter_integration_test:
+    name: "\U0001F9EA Flutter \u2014 integration"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    - name: "\U0001F4E6 flutter pub get"
+      run: flutter pub get
+    - name: "\U0001F9EA flutter test (integration)"
+      run: 'flutter test test/integration/ --reporter expanded --timeout 5m
+
+        '
+  build_web:
+    name: "\U0001F310 Build Web"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    needs:
+    - flutter_analyze
+    - flutter_unit_test
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    - name: "\U0001F4E6 flutter pub get"
+      run: flutter pub get
+    - name: "\U0001F310 flutter build web"
+      run: flutter build web --release --no-web-resources-cdn
+    - name: "\U0001F4E6 Upload web build"
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: build/web/
+        retention-days: 7
+  build_linux:
+    name: "\U0001F427 Build Linux Desktop"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs:
+    - flutter_analyze
+    - flutter_unit_test
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    - name: "\U0001F427 Install Linux deps"
+      run: "sudo apt-get update -qq\nsudo apt-get install -y -qq \\\n  clang cmake\
+        \ ninja-build pkg-config \\\n  libgtk-3-dev liblzma-dev libstdc++-12-dev \\\
+        \n  libsecret-1-dev libjsoncpp-dev \\\n  libnotify-dev libcurl4-openssl-dev\
+        \ \\\n  libayatana-appindicator3-dev\n"
+    - name: "\U0001F4E6 flutter pub get"
+      run: flutter pub get
+    - name: "\U0001F427 flutter build linux --release"
+      run: flutter build linux --release
+    - name: "\U0001F4E6 Package bundle"
+      run: 'cd build/linux/x64/release
+
+        tar -czf /tmp/pistisai-linux-x64.tar.gz bundle/
+
+        '
+    - name: "\U0001F4E6 Upload Linux build"
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-build
+        path: /tmp/pistisai-linux-x64.tar.gz
+        retention-days: 7
+  backend_lint:
+    name: "Backend \u2014 lint"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/api-backend
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - name: "\U0001F4E6 npm install"
+      run: npm install
+    - name: "\U0001F50D npm lint"
+      run: npm run lint
+'on':
+  push:
+    branches:
+    - fix/ci-startup-failure

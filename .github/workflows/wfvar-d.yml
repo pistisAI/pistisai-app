@@ -1,0 +1,58 @@
+name: WFVAR-D
+true:
+  push:
+    branches:
+    - '**'
+    paths-ignore:
+    - '**.md'
+    - docs/**
+    - images/**
+  pull_request:
+    branches:
+    - main
+    paths-ignore:
+    - '**.md'
+    - docs/**
+    - images/**
+concurrency:
+  group: ci-test-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  checks: write
+jobs:
+  flutter_analyze:
+    name: "\U0001F50D Flutter Analyze"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    - name: "\U0001F4E6 flutter pub get"
+      run: flutter pub get
+    - name: "\U0001F50D flutter analyze"
+      run: flutter analyze lib/
+  flutter_unit_test:
+    name: "\U0001F9EA Flutter \u2014 unit tests"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        cache: true
+    - name: "\U0001F4E6 flutter pub get"
+      run: flutter pub get
+    - name: "\U0001F9EA flutter test (unit)"
+      run: "flutter test test/config/ test/models/ test/utils/ test/helpers/ \\\n\
+        \  test/services/ test/services/desktop_control/ test/services/avatar/ \\\n\
+        \  test/services/vision/ test/services/voice/ \\\n  test/screens/ test/widgets/\
+        \ test/widgets/voice/ \\\n  --reporter expanded\n"
+'on':
+  push:
+    branches:
+    - fix/ci-startup-failure
