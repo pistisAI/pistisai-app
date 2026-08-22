@@ -29,7 +29,7 @@ import 'package:pistisai/services/log_buffer_service.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
 import 'package:camera_desktop/camera_desktop.dart'
-    if (dart.library.html) 'package:camera_desktop/camera_desktop_stub.dart';
+    if (dart.library.html) 'package:camera_desktop/src/camera_desktop_stub.dart';
 import 'package:pistisai/services/url_scheme_registration_service.dart'
     if (dart.library.html) 'package:pistisai/services/url_scheme_registration_service_stub.dart';
 import 'web_plugins_stub.dart'
