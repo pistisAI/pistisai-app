@@ -56,8 +56,15 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.version.outputs.version }}
+      platforms: ${{ steps.platforms.outputs.platforms }}
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve platforms
+        id: platforms
+        run: |
+          PLATFORMS="${{ inputs.platforms }}"
+          [ -z "$PLATFORMS" ] && PLATFORMS="linux,windows,macos"
+          echo "platforms=$PLATFORMS" >> $GITHUB_OUTPUT
       - name: Compute version
         id: version
         run: |
@@ -74,7 +81,7 @@ jobs:
   build_linux:
     name: Linux Build
     needs: set_version
-    if: contains(env.PLATFORMS, 'linux')
+    if: contains(needs.set_version.outputs.platforms, 'linux')
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -133,7 +140,7 @@ jobs:
   build_windows:
     name: Windows Build
     needs: set_version
-    if: contains(env.PLATFORMS, 'windows')
+    if: contains(needs.set_version.outputs.platforms, 'windows')
     runs-on: windows-2022
     defaults:
       run:
@@ -211,7 +218,7 @@ jobs:
   build_macos:
     name: macOS Build
     needs: set_version
-    if: contains(env.PLATFORMS, 'macos')
+    if: contains(needs.set_version.outputs.platforms, 'macos')
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
