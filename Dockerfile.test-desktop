@@ -47,7 +47,7 @@ RUN curl -fSsL https://storage.googleapis.com/dart-archive/channels/stable/relea
     ln -s /opt/dart/bin/dartaotruntime /usr/local/bin/dartaotruntime
 
 # Install Flutter SDK (stable channel) for running flutter test inside the container
-ENV FLUTTER_VERSION=3.47.0
+ENV FLUTTER_VERSION=3.44.6
 RUN curl -fSsL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -o /tmp/flutter.tar.xz && \
     tar -xf /tmp/flutter.tar.xz -C /opt && \
     mv /opt/flutter /opt/flutter_${FLUTTER_VERSION} && \
