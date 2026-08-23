@@ -167,7 +167,7 @@ jobs:
           # Pin vcpkg to a baseline that still has cpprestsdk (removed in newer vcpkg)
           cd C:\vcpkg
           git checkout fa9a5b330a
-          .\bootstrap-vcpkg.bat -disableMetrics
+          ./bootstrap-vcpkg.bat -disableMetrics
           vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
           echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $GITHUB_ENV
 
