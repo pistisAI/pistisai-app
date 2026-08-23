@@ -779,10 +779,11 @@ void RegisterPlatformChannels(flutter::PluginRegistrar* registrar) {
             call.method_name(), std::move(call), std::move(result));
       });
 
-  // Prevent channels from being destroyed
-  registrar->AddPlugin(std::move(channel));
-  registrar->AddPlugin(std::move(region_channel));
-  registrar->AddPlugin(std::move(window_channel));
-  registrar->AddPlugin(std::move(camera_channel));
-  registrar->AddPlugin(std::move(ocr_channel));
+  // Channels are not plugins; release ownership so they live for the
+  // process lifetime and their method-call handlers stay valid.
+  (void)channel.release();
+  (void)region_channel.release();
+  (void)window_channel.release();
+  (void)camera_channel.release();
+  (void)ocr_channel.release();
 }
