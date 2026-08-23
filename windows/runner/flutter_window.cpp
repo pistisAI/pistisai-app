@@ -29,7 +29,7 @@ bool FlutterWindow::OnCreate() {
 
   // Register custom platform channels for Vision and Desktop Control
   auto registrar = flutter_controller_->engine()->GetRegistrarForPlugin("PistisaiPlatformChannels");
-  RegisterPlatformChannels(registrar.get());
+  RegisterPlatformChannels(&registrar);
 
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
