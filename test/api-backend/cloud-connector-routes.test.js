@@ -151,6 +151,84 @@ describe('Cloud connector routes', () => {
     });
   });
 
+  describe('POST /relay', () => {
+    it('allows a syncable scope without device targeting', async () => {
+      const res = await request(app)
+        .post('/api/cloud/relay')
+        .send({ scope: 'channel_history', payload: {} })
+        .expect(200);
+      expect(res.body.data.syncable).toBe(true);
+    });
+
+    it('rejects a device-scoped scope missing target with 404', async () => {
+      const res = await request(app)
+        .post('/api/cloud/relay')
+        .send({ scope: 'screen_capture', payload: {} })
+        .expect(404);
+      expect(res.body.code).toBe('MISSING_TARGET_DEVICE');
+    });
+
+    it('rejects unknown target device with 404', async () => {
+      mockPool.query.mockResolvedValueOnce({ rows: [{ id: 'user-uuid' }] });
+      mockPool.query.mockResolvedValueOnce({ rows: [] }); // _getUserDevice
+
+      const res = await request(app)
+        .post('/api/cloud/relay')
+        .send({
+          scope: 'shell_commands',
+          target_device_id: 'unknown000000000',
+          payload: {},
+        })
+        .expect(404);
+      expect(res.body.code).toBe('TARGET_DEVICE_NOT_FOUND');
+    });
+
+    it('allows relay to an online target device', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [{ id: 'user-uuid' }] })
+        .mockResolvedValueOnce({
+          rows: [{ id: 'uuid-1', status: 'online' }],
+        });
+
+      const res = await request(app)
+        .post('/api/cloud/relay')
+        .send({
+          scope: 'clipboard',
+          target_device_id: 'abcdef1234567890',
+          payload: {},
+        })
+        .expect(200);
+      expect(res.body.data.requiresTargetDevice).toBe(true);
+      expect(res.body.data.targetDeviceId).toBe('abcdef1234567890');
+    });
+
+    it('returns 409 for an offline target device', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [{ id: 'user-uuid' }] })
+        .mockResolvedValueOnce({
+          rows: [{ id: 'uuid-1', status: 'offline' }],
+        });
+
+      const res = await request(app)
+        .post('/api/cloud/relay')
+        .send({
+          scope: 'file_operations',
+          target_device_id: 'abcdef1234567890',
+          payload: {},
+        })
+        .expect(409);
+      expect(res.body.code).toBe('TARGET_DEVICE_OFFLINE');
+    });
+  });
+
+  describe('GET /sync-scopes', () => {
+    it('exposes the syncable scope list', async () => {
+      const res = await request(app).get('/api/cloud/sync-scopes').expect(200);
+      expect(res.body.data.syncable).toContain('channel_history');
+      expect(res.body.data.syncable).not.toContain('screen_capture');
+    });
+  });
+
   describe('DELETE /devices/:deviceId', () => {
     it('revokes a device', async () => {
       mockPool.query

@@ -11,6 +11,11 @@ import { z } from 'zod';
 import { authenticateJWT } from '../middleware/auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { CloudConnectorService } from '../services/cloud-connector-service.js';
+import {
+  classifyScope,
+  authorizeRelay,
+  SYNCABLE_SCOPES,
+} from '../services/sync-scope-policy.js';
 import logger from '../logger.js';
 
 const router = express.Router();
@@ -205,6 +210,77 @@ return;
       code: error.code || 'REVOKE_FAILED',
     });
   }
+});
+
+const relayRequestSchema = z.object({
+  scope: z.string().min(1).max(50),
+  target_device_id: z.string().min(8).max(64).optional(),
+  payload: z.record(z.unknown()).default({}),
+});
+
+router.post(
+  '/relay',
+  validateSchema({ body: relayRequestSchema }),
+  async (req, res) => {
+    if (!requireService(res)) {
+return;
+}
+    try {
+      const userId = await resolveUserId(req, res);
+      if (!userId) {
+return;
+      }
+      const classification = classifyScope(req.body.scope);
+      if (classification.syncable) {
+        // Syncable scope — connector may coordinate it globally.
+        return res.json({
+          success: true,
+          data: {
+            scope: req.body.scope,
+            syncable: true,
+            requiresTargetDevice: false,
+          },
+        });
+      }
+      // Device-scoped — require explicit targeting and reachability.
+      const decision = await authorizeRelay(cloudConnectorService, userId, {
+        scope: req.body.scope,
+        targetDeviceId: req.body.target_device_id,
+      });
+      if (!decision.allowed) {
+        const status =
+          decision.reason === 'MISSING_TARGET_DEVICE' ||
+          decision.reason === 'TARGET_DEVICE_NOT_FOUND'
+            ? 404
+            : 409;
+        return res.status(status).json({
+          error: 'Relay not authorized',
+          code: decision.reason,
+        });
+      }
+      res.json({
+        success: true,
+        data: {
+          scope: req.body.scope,
+          syncable: false,
+          requiresTargetDevice: true,
+          targetDeviceId: req.body.target_device_id,
+        },
+      });
+    } catch (error) {
+      logger.error('[CloudConnectorRoutes] Relay check failed', {
+        error: error.message,
+      });
+      res.status(500).json({
+        error: 'Relay check failed',
+        code: 'RELAY_FAILED',
+      });
+    }
+  },
+);
+
+router.get('/sync-scopes', async (req, res) => {
+  res.json({ success: true, data: { syncable: SYNCABLE_SCOPES } });
 });
 
 export default router;
