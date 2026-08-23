@@ -280,12 +280,16 @@ jobs:
       - name: Organize artifacts for release
         run: |
           mkdir -p release-assets
-          # Copy from each artifact dir, flattening
-          for dir in linux-bundles windows-bundles macos-bundles; do
+          # Copy from each artifact dir, flattening (windows artifact nests dist/ and build/)
+          for dir in linux-bundles macos-bundles; do
             if [ -d "$dir" ]; then
               cp "$dir"/* release-assets/ 2>/dev/null || true
             fi
           done
+          if [ -d "windows-bundles" ]; then
+            find windows-bundles -type f \( -name "*.exe" -o -name "*.zip" \) \
+              -exec cp {} release-assets/ \; 2>/dev/null || true
+          fi
           ls -lh release-assets/
 
       - name: Create Release
