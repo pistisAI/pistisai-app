@@ -12,6 +12,7 @@ import '../avatar/achievements_screen.dart';
 import 'general_settings_screen.dart';
 import 'appearance_settings_screen.dart';
 import 'connection_settings_screen.dart';
+import 'device_mesh_settings_screen.dart';
 import '../avatar/avatar_settings_screen.dart';
 import 'desktop_settings_screen.dart';
 import 'about_settings_screen.dart';
@@ -63,6 +64,18 @@ final settingsRoutes = [
       return MaterialPage(
         key: state.pageKey,
         child: const ConnectionSettingsScreen(),
+      );
+    },
+  ),
+
+  GoRoute(
+    path: '/settings/device-mesh',
+    name: 'settings-device-mesh',
+    pageBuilder: (context, state) {
+      debugPrint('[Router] Building DeviceMeshSettingsScreen');
+      return MaterialPage(
+        key: state.pageKey,
+        child: const DeviceMeshSettingsScreen(),
       );
     },
   ),

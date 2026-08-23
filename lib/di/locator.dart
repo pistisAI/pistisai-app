@@ -784,6 +784,11 @@ Future<void> setupAuthenticatedServices() async {
     serviceLocator.registerSingleton<CloudConnectorService>(
       cloudConnectorService,
     );
+    unawaited(
+      cloudConnectorService.registerAndStart().then((registered) {
+        debugPrint('[Locator] Cloud connector registered: $registered');
+      }),
+    );
 
     // LangChain integration service - requires authentication for provider access
     debugPrint('[ServiceLocator] Initializing LangChainIntegrationService...');

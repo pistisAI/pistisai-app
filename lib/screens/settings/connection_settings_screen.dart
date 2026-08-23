@@ -69,6 +69,19 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                 ),
                 const SizedBox(height: 8),
 
+                // Device Mesh
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.devices),
+                    title: const Text('Device Mesh'),
+                    subtitle:
+                        const Text('Registered devices and cloud presence'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.go('/settings/device-mesh'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
                 // Connection Status
                 Card(
                   child: ListTile(

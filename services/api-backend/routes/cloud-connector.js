@@ -19,6 +19,26 @@ let cloudConnectorService = null;
 export async function initializeCloudConnectorService() {
   cloudConnectorService = new CloudConnectorService();
   await cloudConnectorService.initialize();
+  if (!cloudConnectorService._sweeperInterval) {
+    const SWEEP_INTERVAL_MS = 5 * 60 * 1000;
+    cloudConnectorService._sweeperInterval = setInterval(() => {
+      cloudConnectorService
+        .markStaleDevicesOffline()
+        .then((count) => {
+          if (count > 0) {
+            logger.info(
+              `[CloudConnectorRoutes] Marked ${count} stale device(s) offline`,
+            );
+          }
+        })
+        .catch((err) =>
+          logger.warn(
+            `[CloudConnectorRoutes] Stale-device sweep failed: ${err.message}`,
+          ),
+        );
+    }, SWEEP_INTERVAL_MS);
+    cloudConnectorService._sweeperInterval.unref();
+  }
   logger.info('[CloudConnectorRoutes] Cloud connector service initialized');
 }
 
