@@ -621,8 +621,8 @@ static flutter::EncodableValue execute_action(
         vk = static_cast<SHORT>(VkKeyScanA(key[0]));
 
       if (vk != 0) {
-        keybd_event(vk, 0, 0, 0);
-        keybd_event(vk, 0, KEYEVENTF_KEYUP, 0);
+        keybd_event(static_cast<BYTE>(vk), 0, 0, 0);
+        keybd_event(static_cast<BYTE>(vk), 0, KEYEVENTF_KEYUP, 0);
         success = true;
       }
     }
