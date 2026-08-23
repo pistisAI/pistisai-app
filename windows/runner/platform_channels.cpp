@@ -732,7 +732,9 @@ void RegisterPlatformChannels(flutter::PluginRegistrar* registrar) {
   channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            call.method_name(),
+            std::move(const_cast<std::unique_ptr<flutter::MethodCall<flutter::EncodableValue>>&>(call)),
+            std::move(result));
       });
 
   auto region_channel =
@@ -743,7 +745,9 @@ void RegisterPlatformChannels(flutter::PluginRegistrar* registrar) {
   region_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            call.method_name(),
+            std::move(const_cast<std::unique_ptr<flutter::MethodCall<flutter::EncodableValue>>&>(call)),
+            std::move(result));
       });
 
   auto window_channel =
@@ -754,7 +758,9 @@ void RegisterPlatformChannels(flutter::PluginRegistrar* registrar) {
   window_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            call.method_name(),
+            std::move(const_cast<std::unique_ptr<flutter::MethodCall<flutter::EncodableValue>>&>(call)),
+            std::move(result));
       });
 
   auto camera_channel =
@@ -765,7 +771,9 @@ void RegisterPlatformChannels(flutter::PluginRegistrar* registrar) {
   camera_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            call.method_name(),
+            std::move(const_cast<std::unique_ptr<flutter::MethodCall<flutter::EncodableValue>>&>(call)),
+            std::move(result));
       });
 
   auto ocr_channel =
@@ -776,7 +784,9 @@ void RegisterPlatformChannels(flutter::PluginRegistrar* registrar) {
   ocr_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            call.method_name(),
+            std::move(const_cast<std::unique_ptr<flutter::MethodCall<flutter::EncodableValue>>&>(call)),
+            std::move(result));
       });
 
   // Channels are not plugins; release ownership so they live for the
