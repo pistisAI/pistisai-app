@@ -618,7 +618,7 @@ static flutter::EncodableValue execute_action(
       else if (key == "space")
         vk = VK_SPACE;
       else if (key.length() == 1)
-        vk = VkKeyScanA(key[0]);
+        vk = static_cast<SHORT>(VkKeyScanA(key[0]));
 
       if (vk != 0) {
         keybd_event(vk, 0, 0, 0);
@@ -664,10 +664,7 @@ void PlatformChannelsMethodCallHandler(
     const std::string& method,
     std::unique_ptr<flutter::MethodCall<flutter::EncodableValue>> method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  const auto* args =
-      method_call->arguments()
-          ? std::get_if<flutter::EncodableValue>(method_call->arguments())
-          : nullptr;
+  const auto* args = method_call->arguments();
 
   flutter::EncodableValue response;
 

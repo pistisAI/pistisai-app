@@ -2,6 +2,8 @@
 
 #include <optional>
 
+#include <flutter/plugin_registrar_windows.h>
+
 #include "flutter/generated_plugin_registrant.h"
 #include "platform_channels.h"
 
@@ -28,8 +30,9 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
 
   // Register custom platform channels for Vision and Desktop Control
-  auto registrar = flutter_controller_->engine()->GetRegistrarForPlugin("PistisaiPlatformChannels");
-  RegisterPlatformChannels(&registrar);
+  auto registrar = std::make_unique<flutter::PluginRegistrarWindows>(
+      flutter_controller_->engine()->GetRegistrarForPlugin("PistisaiPlatformChannels"));
+  RegisterPlatformChannels(*registrar);
 
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
