@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/screens/login_screen.dart';
-@Timeout(Duration(minutes: 3))
+
+import '../helpers/mock_services.dart';
+import '../helpers/test_app_wrapper.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Login Screen Platform Components Property Tests', () {
-    setUp(() {});
+    setUp(() async {
+      await initializeMockPlugins();
+    });
 
     testWidgets(
       'Login screen renders without errors',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: const LoginScreen(),
+          createFullTestApp(
+            const LoginScreen(),
           ),
         );
 
         await tester.pumpAndSettle();
 
-        // Verify basic components are present
+        // Verify basic components are present (current login UI)
         expect(find.byType(Scaffold), findsOneWidget);
         expect(find.byType(LoginScreen), findsOneWidget);
-        expect(find.byType(ElevatedButton), findsOneWidget);
-        expect(find.text('Sign In'), findsOneWidget);
+        expect(find.text('Hey Christopher!'), findsOneWidget);
+        expect(find.textContaining('Connect to Cloud Relay'), findsOneWidget);
       },
     );
 
@@ -31,11 +36,9 @@ void main() {
       'Login screen components consistent across themes',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            theme: ThemeData.light(),
-            darkTheme: ThemeData.dark(),
+          createFullTestApp(
+            const LoginScreen(),
             themeMode: ThemeMode.light,
-            home: const LoginScreen(),
           ),
         );
 
@@ -46,11 +49,9 @@ void main() {
 
         // Switch to dark theme
         await tester.pumpWidget(
-          MaterialApp(
-            theme: ThemeData.light(),
-            darkTheme: ThemeData.dark(),
+          createFullTestApp(
+            const LoginScreen(),
             themeMode: ThemeMode.dark,
-            home: const LoginScreen(),
           ),
         );
 
@@ -65,8 +66,8 @@ void main() {
       'Login button has proper accessibility features',
       (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: const LoginScreen(),
+          createFullTestApp(
+            const LoginScreen(),
           ),
         );
 
@@ -86,8 +87,8 @@ void main() {
       (WidgetTester tester) async {
         // Test mobile size
         await tester.pumpWidget(
-          MaterialApp(
-            home: const LoginScreen(),
+          createFullTestApp(
+            const LoginScreen(),
           ),
         );
 

@@ -29,6 +29,7 @@ import 'package:pistisai/services/tunnel_service.dart';
 import 'package:pistisai/services/tunnel/tunnel_config_manager.dart';
 import 'package:pistisai/services/unified_connection_service.dart';
 import 'package:pistisai/services/user_container_service.dart';
+import 'package:pistisai/services/cloud_connector_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
@@ -775,6 +776,14 @@ Future<void> setupAuthenticatedServices() async {
     final userContainerService = UserContainerService(authService: authService);
     serviceLocator
         .registerSingleton<UserContainerService>(userContainerService);
+
+    // Cloud connector - device registry + presence for the secure device mesh
+    final cloudConnectorService = CloudConnectorService(
+      authService: authService,
+    );
+    serviceLocator.registerSingleton<CloudConnectorService>(
+      cloudConnectorService,
+    );
 
     // LangChain integration service - requires authentication for provider access
     debugPrint('[ServiceLocator] Initializing LangChainIntegrationService...');

@@ -278,20 +278,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       ),
                                     )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.cloud_queue, size: 20),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Connect to Cloud Relay',
-                                          style: TextStyle(
-                                            fontSize: isMobile ? 16.0 : 18.0,
-                                            fontWeight: FontWeight.w600,
+                                  : FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                              Icons.cloud_queue, size: 20),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Connect to Cloud Relay',
+                                            style: TextStyle(
+                                              fontSize:
+                                                  isMobile ? 16.0 : 18.0,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                             ),
                           ),

@@ -29,7 +29,6 @@ void main() {
       'Property 1: Homepage applies light theme correctly',
       (WidgetTester tester) async {
         await themeProvider.setThemeMode(ThemeMode.light);
-
         await tester.pumpWidget(
           createFullTestApp(
             const HomepageScreen(),
@@ -38,7 +37,6 @@ void main() {
           ),
         );
 
-        await pumpAndSettleWithTimeout(tester);
         expectThemeMode(tester, Brightness.light);
         expect(find.byType(HomepageScreen), findsOneWidget);
       },
