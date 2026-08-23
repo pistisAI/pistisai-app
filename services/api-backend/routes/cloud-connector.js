@@ -16,10 +16,12 @@ import {
   authorizeRelay,
   SYNCABLE_SCOPES,
 } from '../services/sync-scope-policy.js';
+import { TailscaleJoinService } from '../services/tailscale-join-service.js';
 import logger from '../logger.js';
 
 const router = express.Router();
 let cloudConnectorService = null;
+const tailscaleJoinService = new TailscaleJoinService();
 
 export async function initializeCloudConnectorService() {
   cloudConnectorService = new CloudConnectorService();
@@ -281,6 +283,61 @@ return;
 
 router.get('/sync-scopes', async (req, res) => {
   res.json({ success: true, data: { syncable: SYNCABLE_SCOPES } });
+});
+
+const joinTokenSchema = z.object({}).default({});
+const joinRedeemSchema = z.object({
+  token: z.string().min(16).max(128),
+});
+
+// Issue a single-use Tailscale join token for the user's connector.
+router.post('/tailscale/join-token', validateSchema({ body: joinTokenSchema }), async (req, res) => {
+  try {
+    const userId = await resolveUserId(req, res);
+    if (!userId) {
+return;
+    }
+    const { token, expiresAt } = tailscaleJoinService.createJoinToken(userId);
+    res.status(201).json({
+      success: true,
+      data: { token, expiresAt, ttlMinutes: 15 },
+    });
+  } catch (error) {
+    logger.error('[CloudConnectorRoutes] Join token issue failed', {
+      error: error.message,
+    });
+    res.status(500).json({
+      error: 'Join token issue failed',
+      code: 'JOIN_TOKEN_FAILED',
+    });
+  }
+});
+
+// Redeem a join token → connector container spec for this user's tailnet.
+router.post('/tailscale/join', validateSchema({ body: joinRedeemSchema }), async (req, res) => {
+  try {
+    const userId = await resolveUserId(req, res);
+    if (!userId) {
+return;
+    }
+    const result = tailscaleJoinService.redeemJoinToken(userId, req.body.token);
+    if (!result.ok) {
+      const status = result.reason === 'JOIN_TOKEN_EXPIRED' ? 410 : 403;
+      return res.status(status).json({
+        error: 'Join rejected',
+        code: result.reason,
+      });
+    }
+    res.json({ success: true, data: result.spec });
+  } catch (error) {
+    logger.error('[CloudConnectorRoutes] Join redeem failed', {
+      error: error.message,
+    });
+    res.status(500).json({
+      error: 'Join redeem failed',
+      code: 'JOIN_REDEEM_FAILED',
+    });
+  }
 });
 
 export default router;

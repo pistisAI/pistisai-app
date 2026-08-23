@@ -229,6 +229,50 @@ describe('Cloud connector routes', () => {
     });
   });
 
+  describe('POST /tailscale/join-token + /tailscale/join', () => {
+    it('issues a join token, then redeems it for a container spec', async () => {
+      const issued = await request(app)
+        .post('/api/cloud/tailscale/join-token')
+        .send({})
+        .expect(201);
+      expect(issued.body.data.token).toBeDefined();
+
+      const joined = await request(app)
+        .post('/api/cloud/tailscale/join')
+        .send({ token: issued.body.data.token })
+        .expect(200);
+      expect(joined.body.data.containerName).toContain('pistisai-connector-');
+      expect(joined.body.data.tailscale.tags).toContain(
+        'tag:pistisai-connector',
+      );
+      expect(joined.body.data.constraints.scope).toBe('single_user');
+    });
+
+    it('rejects reuse of a join token (single-use)', async () => {
+      const issued = await request(app)
+        .post('/api/cloud/tailscale/join-token')
+        .send({})
+        .expect(201);
+      await request(app)
+        .post('/api/cloud/tailscale/join')
+        .send({ token: issued.body.data.token })
+        .expect(200);
+      const res = await request(app)
+        .post('/api/cloud/tailscale/join')
+        .send({ token: issued.body.data.token })
+        .expect(403);
+      expect(res.body.code).toBe('INVALID_JOIN_TOKEN');
+    });
+
+    it('rejects a bogus token with 403', async () => {
+      const res = await request(app)
+        .post('/api/cloud/tailscale/join')
+        .send({ token: 'not-a-real-token-value' })
+        .expect(403);
+      expect(res.body.code).toBe('INVALID_JOIN_TOKEN');
+    });
+  });
+
   describe('DELETE /devices/:deviceId', () => {
     it('revokes a device', async () => {
       mockPool.query
