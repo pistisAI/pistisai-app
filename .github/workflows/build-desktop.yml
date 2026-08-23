@@ -96,7 +96,8 @@ jobs:
       - name: Install Linux Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++6 libayatana-appindicator3-dev libsecret-1-dev libcurl4-openssl-dev libnotify-dev zip
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++6 libayatana-appindicator3-dev libsecret-1-dev libcurl4-openssl-dev libnotify-dev zip \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
       - uses: subosito/flutter-action@v2
         with:
@@ -166,6 +167,7 @@ jobs:
           # Pin vcpkg to a baseline that still has cpprestsdk (removed in newer vcpkg)
           cd C:\vcpkg
           git checkout fa9a5b330a
+          .\bootstrap-vcpkg.bat -disableMetrics
           vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
           echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $GITHUB_ENV
 
