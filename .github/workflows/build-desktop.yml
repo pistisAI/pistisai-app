@@ -94,10 +94,16 @@ jobs:
           jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
 
       - name: Install Linux Dependencies
+        # Cloud runners need apt; the self-hosted builder has these preinstalled,
+        # so skip when pkg-config already resolves GTK+3 (no passwordless sudo there).
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++6 libayatana-appindicator3-dev libsecret-1-dev libcurl4-openssl-dev libnotify-dev zip \
-            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+          if pkg-config --exists gtk+-3.0 gstreamer-1.0 libsecret-1; then
+            echo "✅ Build deps already present (self-hosted runner) — skipping apt"
+          else
+            sudo apt-get update
+            sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++6 libayatana-appindicator3-dev libsecret-1-dev libcurl4-openssl-dev libnotify-dev zip \
+              libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+          fi
 
       - uses: subosito/flutter-action@v2
         with:
