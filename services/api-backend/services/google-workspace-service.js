@@ -126,7 +126,7 @@ class GoogleWorkspaceService {
     // Absolute expiry (with a 60s safety margin) so getValidAccessToken can
     // refresh proactively instead of discovering the 401 after the fact (#147).
     const tokenExpiresAt =
-      expiresIn != null
+      expiresIn !== null && expiresIn !== undefined
         ? new Date(Date.now() + Math.max(expiresIn - 60, 0) * 1000)
         : new Date(Date.now() - 1000); // unknown expiry -> force refresh
 
