@@ -118,7 +118,9 @@ jobs:
 
       - name: Package Linux Distributions
         run: |
-          sudo apt-get install -y libfuse2
+          # libfuse2 only needed to *execute* AppImages; cloud runners need it,
+          # the self-hosted builder has it (or skips — packaging doesn't run AppImages)
+          pkg-config --exists gtk+-3.0 || sudo -S -p '' apt-get install -y libfuse2
           mkdir -p dist/linux
 
           STAGING_DIR=$(mktemp -d)
