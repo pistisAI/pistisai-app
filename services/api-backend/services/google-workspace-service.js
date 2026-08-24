@@ -118,22 +118,31 @@ class GoogleWorkspaceService {
     accessToken,
     refreshToken,
     userEmail,
+    expiresIn = null,
   }) {
     const configId = uuidv4();
     const encryptedAccessToken = this._encryptToken(accessToken);
     const encryptedRefreshToken = this._encryptToken(refreshToken);
+    // Absolute expiry (with a 60s safety margin) so getValidAccessToken can
+    // refresh proactively instead of discovering the 401 after the fact (#147).
+    const tokenExpiresAt =
+      expiresIn != null
+        ? new Date(Date.now() + Math.max(expiresIn - 60, 0) * 1000)
+        : new Date(Date.now() - 1000); // unknown expiry -> force refresh
 
     try {
       const query = `
         INSERT INTO email_configurations (
           id, user_id, provider, google_oauth_token_encrypted,
           google_oauth_refresh_token_encrypted, from_address,
+          google_oauth_token_expires_at,
           is_active, created_at, updated_at, created_by, updated_by
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW(), $8, $8)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $9, $7, NOW(), NOW(), $8, $8)
         ON CONFLICT (user_id, provider) DO UPDATE SET
           google_oauth_token_encrypted = $4,
           google_oauth_refresh_token_encrypted = $5,
           from_address = $6,
+          google_oauth_token_expires_at = $9,
           is_active = $7,
           updated_at = NOW(),
           updated_by = $8
@@ -149,6 +158,7 @@ class GoogleWorkspaceService {
         userEmail,
         true,
         userId,
+        tokenExpiresAt,
       ]);
 
       logger.info('Stored Google Workspace OAuth configuration', {
@@ -201,6 +211,7 @@ class GoogleWorkspaceService {
       }
 
       config.userEmail = config.from_address;
+      config.tokenExpiresAt = config.google_oauth_token_expires_at || null;
 
       return config;
     } catch (error) {
@@ -225,11 +236,12 @@ class GoogleWorkspaceService {
       throw new Error('No Google Workspace configuration found');
     }
 
-    // Return access token if available (assume it's valid for now)
-    // In production, you'd check expiry_date from the database
-    if (config.accessToken) {
+    // Use the stored access token only while it is still valid (#147).
+    const expiresAt = config.tokenExpiresAt ? new Date(config.tokenExpiresAt) : null;
+    if (config.accessToken && expiresAt && expiresAt.getTime() > Date.now()) {
       return config.accessToken;
     }
+    // Missing or expired -> fall through to refresh below.
 
     // Token not available, need to refresh it
     if (!this.oauth2Client) {
