@@ -82,7 +82,7 @@ jobs:
     name: Linux Build
     needs: set_version
     if: contains(needs.set_version.outputs.platforms, 'linux')
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, desktop-build]
     steps:
       - uses: actions/checkout@v4
 
