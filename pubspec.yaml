@@ -113,7 +113,7 @@ dependencies:
   tesseract_ocr: ^0.5.0
 
   # Image compression and manipulation
-  image: ^4.9.1
+  image: ^4.9.2
 
   # Voice System - Recording
   record: ^7.1.1
