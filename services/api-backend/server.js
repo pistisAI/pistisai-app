@@ -307,12 +307,7 @@ let tunnelRouter = null;
 let monitoringRouter = null;
 if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   // Create WebSocket-based tunnel routes
-  tunnelRouter = createTunnelRoutes(
-    {}, // Config placeholder
-    sshProxy,
-    logger,
-    sshAuthService,
-  );
+  tunnelRouter = createTunnelRoutes(sshProxy, logger, sshAuthService);
 
   // Create monitoring routes
   monitoringRouter = createMonitoringRoutes(sshProxy, logger);

@@ -14,15 +14,12 @@ import { addTierInfo, requireFeature } from '../middleware/tier-check.js';
 
 /**
  * Creates tunnel-related routes, primarily for health and status checks.
- * @param {Object} config - Configuration object.
- * @param {Object} config - Configuration object.
  * @param {Object} tunnelProxy - The tunnel proxy instance (SSHProxy when implemented).
  * @param {winston.Logger} [logger] - Logger instance.
  * @param {AuthService} [authService] - Pre-initialized authentication service.
  * @returns {express.Router} The configured Express router.
  */
 export function createTunnelRoutes(
-  config,
   tunnelProxy,
   logger = winston.createLogger(),
   authService = null,
