@@ -110,7 +110,7 @@ npm run db:validate
 npm run db:stats
 ```
 
-- Node engine: `>=22.0.0 <25.0.0`.
+- Node engine: `>=22.0.0 <27.0.0`.
 - Module type: ESM (`"type": "module"`).
 - Main server: `services/api-backend/server.js`, default port `8080`.
 - Tests live at repo root in `test/api-backend/`, not inside the service directory.
@@ -132,7 +132,7 @@ npm run lint
 npm run format
 ```
 
-- Node engine: `>=22.0.0 <25.0.0`.
+- Node engine: `>=22.0.0 <27.0.0`.
 - Module type: ESM (`"type": "module"`).
 - Runtime entry: `proxy-server.js`, default port `3001`.
 - TypeScript source and tests live under `services/streaming-proxy/src/`.
@@ -323,7 +323,7 @@ import 'thing.dart'
 - Changing Drift schema or queries requires `dart run build_runner build --delete-conflicting-outputs`.
 - Generated Dart files are excluded from analysis and should not be edited manually.
 - API backend tests live in root `test/api-backend/`, not in `services/api-backend/test/`.
-- API backend and streaming proxy enforce Node `>=22 <25`; SDK only requires Node `>=18`; Tailscale Relay has no declared engine.
+- API backend and streaming proxy enforce Node `>=22 <27` (CI runs Node 26); SDK only requires Node `>=18`; Tailscale Relay has no declared engine.
 - Auth backend has no `npm run dev`; use `node handlers.js`.
 - Tailscale Relay uses Express 4 while API backend and auth backend use Express 5.
 - Root `package.json` is not the frontend package; Flutter metadata is in `pubspec.yaml`.
