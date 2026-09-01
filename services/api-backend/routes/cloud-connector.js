@@ -292,6 +292,9 @@ const joinRedeemSchema = z.object({
 
 // Issue a single-use Tailscale join token for the user's connector.
 router.post('/tailscale/join-token', validateSchema({ body: joinTokenSchema }), async (req, res) => {
+  if (!requireService(res)) {
+    return;
+  }
   try {
     const userId = await resolveUserId(req, res);
     if (!userId) {
@@ -315,6 +318,9 @@ return;
 
 // Redeem a join token → connector container spec for this user's tailnet.
 router.post('/tailscale/join', validateSchema({ body: joinRedeemSchema }), async (req, res) => {
+  if (!requireService(res)) {
+    return;
+  }
   try {
     const userId = await resolveUserId(req, res);
     if (!userId) {

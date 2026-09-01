@@ -108,17 +108,10 @@ class CloudConnectorService {
   Future<bool> registerAndStart({
     CloudRuntimeLocation runtimeLocation = CloudRuntimeLocation.local,
   }) async {
-    await DeviceIdentityService.instance.initialize();
-    String deviceId;
-    try {
-      deviceId = DeviceIdentityService.instance.deviceId;
-    } catch (_) {
-      _lastError = 'Device identity unavailable';
-      _setStatus(CloudConnectionStatus.error);
-      return false;
-    }
     _setStatus(CloudConnectionStatus.connecting);
     try {
+      await DeviceIdentityService.instance.initialize();
+      final deviceId = DeviceIdentityService.instance.deviceId;
       final ok = await _register(deviceId, runtimeLocation);
       if (!ok) return false;
       _registered = true;

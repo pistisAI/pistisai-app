@@ -77,8 +77,14 @@ class DeviceIdentityService {
       'createdAt': DateTime.now().toIso8601String(),
     };
 
-    await _storage.write(key: _storageKey, value: jsonEncode(storedJson));
-    debugPrint('🔐 [DeviceIdentity] Identity stored securely');
+    try {
+      await _storage.write(key: _storageKey, value: jsonEncode(storedJson));
+      debugPrint('🔐 [DeviceIdentity] Identity stored securely');
+    } catch (e) {
+      debugPrint(
+        '🔐 [DeviceIdentity] Identity storage unavailable, using in-memory: $e',
+      );
+    }
   }
 
   /// Generate a secure random seed

@@ -54,7 +54,8 @@ export function classifyScope(scope) {
 
 /**
  * Validate a relay request for a device-scoped operation.
- * Throws when the target device is missing or does not belong to the user.
+ * Failures are returned, not thrown: MISSING_TARGET_DEVICE,
+ * TARGET_DEVICE_NOT_FOUND, or TARGET_DEVICE_OFFLINE.
  * @param {CloudConnectorService} service
  * @param {string} userId
  * @param {{scope: string, targetDeviceId?: string}} request

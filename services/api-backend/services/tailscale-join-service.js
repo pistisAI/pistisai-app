@@ -45,7 +45,7 @@ export class TailscaleJoinService {
    */
   redeemJoinToken(userId, token) {
     const entry = this.pendingJoins.get(userId);
-    if (!entry || entry.used || entry.token !== token) {
+    if (!entry || entry.used || !this._tokensEqual(entry.token, token)) {
       return { ok: false, reason: 'INVALID_JOIN_TOKEN' };
     }
     if (Date.now() > entry.expiresAt) {
@@ -82,6 +82,18 @@ export class TailscaleJoinService {
         desktopActionsRequireLocalPermission: true,
       },
     };
+  }
+
+  _tokensEqual(stored, provided) {
+    if (typeof stored !== 'string' || typeof provided !== 'string') {
+      return false;
+    }
+    const storedBuf = Buffer.from(stored);
+    const providedBuf = Buffer.from(provided);
+    if (storedBuf.length !== providedBuf.length) {
+      return false;
+    }
+    return crypto.timingSafeEqual(storedBuf, providedBuf);
   }
 
   _sweep() {

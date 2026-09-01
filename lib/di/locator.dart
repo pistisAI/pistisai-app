@@ -787,6 +787,8 @@ Future<void> setupAuthenticatedServices() async {
     unawaited(
       cloudConnectorService.registerAndStart().then((registered) {
         debugPrint('[Locator] Cloud connector registered: $registered');
+      }).catchError((Object error) {
+        debugPrint('[Locator] Cloud connector registration failed: $error');
       }),
     );
 

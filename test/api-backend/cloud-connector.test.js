@@ -87,3 +87,24 @@ describe('CloudConnectorService', () => {
     expect(result.revoked).toBe(true);
   });
 });
+
+describe('TailscaleJoinService', () => {
+  it('redeems a valid token and rejects a mismatch', async () => {
+    const { default: TailscaleJoinService } = await import(
+      '../../services/api-backend/services/tailscale-join-service.js'
+    );
+    const joinService = new TailscaleJoinService();
+    try {
+      const { token } = joinService.createJoinToken('user-1');
+      expect(joinService.redeemJoinToken('user-1', 'wrong-token-value-xx').ok).toBe(
+        false,
+      );
+      const { token: token2 } = joinService.createJoinToken('user-1');
+      expect(joinService.redeemJoinToken('user-1', token2).ok).toBe(true);
+      expect(joinService.redeemJoinToken('user-1', token2).ok).toBe(false);
+      expect(token).toHaveLength(48);
+    } finally {
+      joinService.destroy();
+    }
+  });
+});

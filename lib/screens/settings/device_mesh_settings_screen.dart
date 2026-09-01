@@ -70,8 +70,13 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
       ),
     );
     if (confirmed != true) return;
-    final ok = await di.serviceLocator<CloudConnectorService>()
-        .revokeDevice(device.deviceId);
+    var ok = false;
+    try {
+      ok = await di.serviceLocator<CloudConnectorService>()
+          .revokeDevice(device.deviceId);
+    } catch (_) {
+      ok = false;
+    }
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(ok ? 'Device revoked' : 'Failed to revoke device')),
