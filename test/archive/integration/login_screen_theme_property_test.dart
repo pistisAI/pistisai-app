@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pistisai/screens/admin/admin_data_flush_screen.dart';
+import 'package:pistisai/screens/login_screen.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
-import '../helpers/mock_services.dart';
-import '../helpers/test_app_wrapper.dart';
-import '../helpers/test_utilities.dart';
+import '../../helpers/mock_services.dart';
+import '../../helpers/test_app_wrapper.dart';
+import '../../helpers/test_utilities.dart';
 
 @Timeout(Duration(minutes: 3))
 void main() {
@@ -15,7 +15,7 @@ void main() {
     await initializeMockPlugins();
   });
 
-  group('Admin Data Flush Screen Theme Application Property Tests', () {
+  group('Login Screen Theme Application Property Tests', () {
     late ThemeProvider themeProvider;
     late PlatformDetectionService platformService;
 
@@ -26,13 +26,13 @@ void main() {
     });
 
     testWidgets(
-      'Property 1: Admin Data Flush screen applies light theme correctly',
+      'Property 1: Login screen applies light theme correctly',
       (WidgetTester tester) async {
         await themeProvider.setThemeMode(ThemeMode.light);
 
         await tester.pumpWidget(
           createFullTestApp(
-            const AdminDataFlushScreen(),
+            const LoginScreen(),
             themeProvider: themeProvider,
             platformService: platformService,
           ),
@@ -40,18 +40,18 @@ void main() {
 
         await pumpAndSettleWithTimeout(tester);
         expectThemeMode(tester, Brightness.light);
-        expect(find.byType(AdminDataFlushScreen), findsOneWidget);
+        expect(find.byType(LoginScreen), findsOneWidget);
       },
     );
 
     testWidgets(
-      'Property 1: Admin Data Flush screen applies dark theme correctly',
+      'Property 1: Login screen applies dark theme correctly',
       (WidgetTester tester) async {
         await themeProvider.setThemeMode(ThemeMode.dark);
 
         await tester.pumpWidget(
           createFullTestApp(
-            const AdminDataFlushScreen(),
+            const LoginScreen(),
             themeProvider: themeProvider,
             platformService: platformService,
           ),
@@ -59,7 +59,7 @@ void main() {
 
         await pumpAndSettleWithTimeout(tester);
         expectThemeMode(tester, Brightness.dark);
-        expect(find.byType(AdminDataFlushScreen), findsOneWidget);
+        expect(find.byType(LoginScreen), findsOneWidget);
       },
     );
   });

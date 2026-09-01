@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/screens/login_screen.dart';
 
-import '../helpers/mock_services.dart';
-import '../helpers/test_app_wrapper.dart';
+import '../../helpers/mock_services.dart';
+import '../../helpers/test_app_wrapper.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

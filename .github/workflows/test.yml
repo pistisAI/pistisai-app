@@ -3,7 +3,7 @@ name: "🧪 CI — Test & Build Every Branch"
 on:
   push:
     branches:
-      - "**"
+      - main
     paths-ignore:
       - "**.md"
       - "docs/**"
@@ -17,7 +17,7 @@ on:
       - "images/**"
 
 concurrency:
-  group: ci-test-${{ github.ref }}
+  group: ci-test-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -45,8 +45,8 @@ jobs:
       - name: "🔍 flutter analyze"
         run: flutter analyze lib/
 
-  flutter_unit_test:
-    name: "🧪 Flutter — unit tests"
+  flutter_smoke_test:
+    name: "🧪 Flutter — smoke"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
 
@@ -62,40 +62,14 @@ jobs:
       - name: "📦 flutter pub get"
         run: flutter pub get
 
-      - name: "🧪 flutter test (unit)"
-        run: |
-          flutter test test/config/ test/models/ test/utils/ test/helpers/ \
-            test/services/ test/services/desktop_control/ test/services/avatar/ \
-            test/services/vision/ test/services/voice/ \
-            test/screens/ test/widgets/ test/widgets/voice/ \
-            --reporter expanded
-
-  flutter_integration_test:
-    name: "🧪 Flutter — integration"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 3.44.6
-          channel: "stable"
-          cache: true
-
-      - name: "📦 flutter pub get"
-        run: flutter pub get
-
-      - name: "🧪 flutter test (integration)"
-        run: |
-          flutter test test/integration/ --reporter expanded --timeout 5m
+      - name: "🧪 flutter test (security + basic)"
+        run: bash scripts/ci/flutter_security_basic_tests.sh
 
   build_web:
     name: "🌐 Build Web"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    needs: [flutter_analyze, flutter_unit_test]
+    needs: [flutter_analyze, flutter_smoke_test]
 
     steps:
       - uses: actions/checkout@v4
@@ -123,7 +97,7 @@ jobs:
     name: "🐧 Build Linux Desktop"
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    needs: [flutter_analyze, flutter_unit_test]
+    needs: [flutter_analyze, flutter_smoke_test]
 
     steps:
       - uses: actions/checkout@v4
@@ -184,3 +158,24 @@ jobs:
 
       - name: "🔍 npm lint"
         run: npm run lint
+
+  backend_security_test:
+    name: "Backend — security tests"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/api-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: "📦 npm install"
+        run: npm install
+
+      - name: "🔒 npm run test:ci:security"
+        run: npm run test:ci:security

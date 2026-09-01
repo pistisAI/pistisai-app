@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/screens/marketing/homepage_screen.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
-import '../helpers/mock_services.dart';
-import '../helpers/test_app_wrapper.dart';
-import '../helpers/test_utilities.dart';
+import '../../helpers/mock_services.dart';
+import '../../helpers/test_app_wrapper.dart';
+import '../../helpers/test_utilities.dart';
 @Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

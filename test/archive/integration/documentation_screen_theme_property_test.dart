@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/config/theme_config.dart';
-import '../test_config.dart';
+import '../../test_config.dart';
 
 @Timeout(Duration(minutes: 3))
 void main() {

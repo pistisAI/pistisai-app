@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pistisai/main.dart';
-import 'test_config.dart';
+import '../test_config.dart';
 
 void main() {
   setUpAll(TestConfig.initialize);

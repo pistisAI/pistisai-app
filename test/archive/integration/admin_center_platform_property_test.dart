@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/screens/admin/admin_center_screen.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_adapter.dart';
-import '../helpers/mock_services.dart';
-import '../helpers/test_app_wrapper.dart';
-import '../helpers/test_utilities.dart';
+import '../../helpers/mock_services.dart';
+import '../../helpers/test_app_wrapper.dart';
+import '../../helpers/test_utilities.dart';
 
 /// **Feature: unified-app-theming, Property 4: Platform-Appropriate Components**
 ///

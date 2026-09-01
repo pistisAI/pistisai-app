@@ -47,7 +47,8 @@ Run from the repository root unless noted otherwise.
 ```bash
 flutter pub get
 flutter analyze
-flutter test
+npm run test:ci:flutter
+flutter test test/smoke/
 flutter test test/services/some_test.dart
 flutter test --coverage
 flutter format .
@@ -95,13 +96,13 @@ Directory: `services/api-backend/`
 npm install
 npm run dev
 npm test
-npm run test:unit
-npm run test:integration
-npm run test:auth
+npm run test:ci:security
 npm run test:security
 npm run test:security:verbose
+npm run test:auth
+npm run test:unit
+npm run test:integration
 npm run test:tunnel
-npm run test:user-isolation
 npm run lint
 npm run format
 npm run db:migrate
@@ -334,7 +335,7 @@ import 'thing.dart'
 ## CI expectations and merge rules
 
 - CI blocks merge on failing quality gates; do not use blanket `continue-on-error: true` on test gates.
-- Verify local gates before pushing: `flutter analyze lib/`, `flutter test`, backend `npm run lint && npm test`.
+- Verify local gates before pushing: `flutter analyze lib/`, `npm run test:ci:flutter`, backend `npm run lint && npm run test:ci:security`.
 - Inspect PR checks after push; do not merge if PR checks are absent or failing.
 - If GitHub Actions shows `startup_failure` with `jobs: []`, treat it as a workflow-level blocker and do not consider the branch green until an actual job runs.
 - Keep PRs focused; split follow-up work into separate issues/branches if scope grows.

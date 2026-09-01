@@ -6,17 +6,10 @@ This directory contains comprehensive security tests for the Pistisai simplified
 
 ## Test Files
 
-### `user-isolation.test.js`
+### `user-isolation.test.js` (planned)
 
-Tests to ensure complete user isolation and prevent cross-user data leakage:
-
-- Cross-user request prevention
-- Connection isolation
-- Request/response isolation
-- Data leakage prevention
-- Rate limiting isolation
-- WebSocket connection isolation
-- Security headers and metadata validation
+Dedicated user-isolation tests are documented here but the file is not in the repo yet.
+Use `authentication-authorization.test.js` and `npm run test:ci:security` until restored.
 
 ### `authentication-authorization.test.js`
 
@@ -32,23 +25,23 @@ Comprehensive tests for JWT validation, rate limiting, and security measures:
 
 ## Running Security Tests
 
-### Run All Security Tests
+### Run CI security gate
 
 ```bash
-npm run test:security
+npm run test:ci:security
 ```
 
-### Run Specific Test Suites
+### Run all security test files
 
 ```bash
-# User isolation tests
-npm run test:user-isolation
+npm run test:security:verbose
+```
 
+### Run specific suites
+
+```bash
 # Authentication and authorization tests
 npm run test:auth
-
-# Verbose output for debugging
-npm run test:security:verbose
 ```
 
 ### Run Individual Test Categories
