@@ -259,8 +259,16 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
-      // Hermes streaming service for direct Hermes API integration
-      final hermesStreamingService = HermesStreamingService();
+      // Hermes streaming service for direct Hermes API integration.
+      // Discover the local gateway key so desktop chat/voice are authenticated.
+      final hermesUrl = await settingsPreferenceService.getHermesUrl();
+      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
+      final hermesStreamingService = HermesStreamingService(
+        baseUrl: (hermesUrl != null && hermesUrl.isNotEmpty)
+            ? hermesUrl
+            : AppConfig.defaultHermesUrl,
+        apiKey: hermesApiKey,
+      );
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);
 
@@ -1031,7 +1039,7 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
           case ProviderType.hermes:
             config = HermesProviderConfiguration(
               providerId: providerId,
-              baseUrl: providerInfo.baseUrl,
+              baseUrl: providerInfo.url,
               timeout: const Duration(seconds: 60),
               enableStreaming: true,
               customSettings: {
@@ -1050,7 +1058,9 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
             try {
               final settings = SettingsPreferenceService();
               await settings.setHermesEnabled(true);
-              await settings.setHermesUrl(providerInfo.baseUrl);
+              // Use the full URL (with port). ProviderInfo.baseUrl strips
+              // the port and breaks chat against :8642.
+              await settings.setHermesUrl(providerInfo.url);
               await settings.setActiveBackend(BackendType.hermes);
               debugPrint(
                   '[ServiceLocator] ✓ Auto-activated Hermes as default runtime');

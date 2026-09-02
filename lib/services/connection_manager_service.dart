@@ -300,14 +300,19 @@ class ConnectionManagerService extends ChangeNotifier {
     // 1. Try the authenticated Hermes HTTP gateway. Chat must use the
     // canonical API server so it keeps session, tool, and lifecycle semantics.
     try {
-      // Read the configured API key so the /v1/models fetch during
-      // establishConnection doesn't get 401'd by the API server.
+      // Keep the injected streaming service and the runtime client on the
+      // same discovered key so /v1/models and chat are authenticated.
       final settings = _settingsPreferenceService;
       final apiKey = settings != null ? await settings.getHermesApiKey() : null;
-      final httpClient = HermesStreamingService(apiKey: apiKey);
-      await httpClient.establishConnection();
-      if (httpClient.connection.isActive) {
-        _log.info('Auto-detected Hermes HTTP gateway at :8642');
+      if (apiKey != null && apiKey.isNotEmpty) {
+        _configuredHermesApiKey = apiKey;
+      }
+      if (_configuredHermesUrl == null || _configuredHermesUrl!.isEmpty) {
+        _configuredHermesUrl = AppConfig.defaultHermesUrl;
+      }
+      await hermesStreamingService.establishConnection();
+      if (hermesStreamingService.connection.isActive) {
+        _log.info('Auto-detected Hermes HTTP gateway at $_configuredHermesUrl');
         _currentBackend = BackendType.hermes;
         _activeRuntimeClient = _createHermesRuntimeClient();
         notifyListeners();
