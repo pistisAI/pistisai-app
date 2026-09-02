@@ -123,6 +123,48 @@ class _SkillsScreenState extends State<SkillsScreen>
     await _loadData();
   }
 
+  Future<void> _showRegisterSkillDialog() async {
+    final service = _skillService;
+    if (service == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Skill service is unavailable on this platform'),
+        ),
+      );
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Register Skill'),
+        content: const Text(
+          'Skills are discovered from your local Hermes skills directory '
+          '(~/.hermes/skills/<category>/<name>/SKILL.md). '
+          'Add a new folder with a SKILL.md file, then refresh the registry.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _onRefresh();
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Skill registry refreshed')),
+              );
+            },
+            child: const Text('Refresh Registry'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _toggleSkill(Skill skill) {
     setState(() {
       final index = _skills.indexWhere((s) => s.id == skill.id);
@@ -164,12 +206,7 @@ class _SkillsScreenState extends State<SkillsScreen>
             ),
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Register new skill - coming soon')),
-                );
-              },
+              onPressed: _showRegisterSkillDialog,
               tooltip: 'Register Skill',
             ),
             PopOutButton(sectionName: 'skills', branchIndex: 8),

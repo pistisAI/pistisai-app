@@ -161,6 +161,123 @@ class _AgentsScreenState extends State<AgentsScreen>
     await _loadData();
   }
 
+  Future<void> _showAddAgentDialog() async {
+    final registry = _subagentRegistry;
+    if (registry == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Agent registry is unavailable until services are ready'),
+        ),
+      );
+      return;
+    }
+
+    final subagentIdController = TextEditingController();
+    final agentIdController = TextEditingController(text: 'main');
+    final labelController = TextEditingController();
+    final taskController = TextEditingController();
+
+    final created = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Register Agent'),
+        content: SizedBox(
+          width: 420,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: subagentIdController,
+                decoration: const InputDecoration(
+                  labelText: 'Subagent ID',
+                  hintText: 'research-bot-1',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: agentIdController,
+                decoration: const InputDecoration(
+                  labelText: 'Parent Agent ID',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: labelController,
+                decoration: const InputDecoration(
+                  labelText: 'Display Label',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: taskController,
+                decoration: const InputDecoration(
+                  labelText: 'Task Description',
+                ),
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Register'),
+          ),
+        ],
+      ),
+    );
+
+    if (created != true) {
+      subagentIdController.dispose();
+      agentIdController.dispose();
+      labelController.dispose();
+      taskController.dispose();
+      return;
+    }
+
+    final subagentId = subagentIdController.text.trim();
+    final agentId = agentIdController.text.trim();
+    final label = labelController.text.trim();
+    final task = taskController.text.trim();
+    subagentIdController.dispose();
+    agentIdController.dispose();
+    labelController.dispose();
+    taskController.dispose();
+
+    if (subagentId.isEmpty || agentId.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Subagent ID and parent agent ID are required')),
+      );
+      return;
+    }
+
+    final result = await registry.registerSubagent(
+      subagentId: subagentId,
+      agentId: agentId,
+      label: label.isEmpty ? null : label,
+      task: task.isEmpty ? null : task,
+    );
+
+    if (!mounted) return;
+
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registered agent ${result.label ?? result.subagentId}')),
+      );
+      await _loadData();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to register agent')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshableScreen(
@@ -175,11 +292,7 @@ class _AgentsScreenState extends State<AgentsScreen>
             ),
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Add new agent - coming soon')),
-                );
-              },
+              onPressed: _showAddAgentDialog,
               tooltip: 'Add Agent',
             ),
             PopOutButton(sectionName: 'agents', branchIndex: 7),
@@ -580,8 +693,11 @@ class _AgentsScreenState extends State<AgentsScreen>
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Agent configuration - coming soon')),
+                  SnackBar(
+                    content: Text(
+                      'Edit ${agent.name} via the subagent registry API or Hermes runtime configuration.',
+                    ),
+                  ),
                 );
               },
             ),

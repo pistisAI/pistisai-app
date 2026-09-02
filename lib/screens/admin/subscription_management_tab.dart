@@ -903,11 +903,21 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
   bool _isLoading = false;
   String? _error;
   double? _proratedCharge;
+  Map<String, String> _stripePrices = {};
 
   @override
   void initState() {
     super.initState();
     _selectedTier = widget.subscription.tier;
+    _loadStripePrices();
+  }
+
+  Future<void> _loadStripePrices() async {
+    final adminService = di.serviceLocator.get<AdminCenterService>();
+    final prices = await adminService.getStripePriceCatalog();
+    if (mounted) {
+      setState(() => _stripePrices = prices);
+    }
   }
 
   /// Calculate prorated charges for tier change
@@ -968,9 +978,16 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
     });
 
     try {
-      // In a real implementation, we would need to get the price ID for the new tier
-      // For now, we'll use a placeholder
-      final newPriceId = 'price_${_selectedTier.name}';
+      final newPriceId = _stripePrices[_selectedTier.name];
+      if (newPriceId == null || newPriceId.isEmpty) {
+        setState(() {
+          _error =
+              'No Stripe price configured for ${_selectedTier.displayName}. '
+              'Set STRIPE_PRICE_${_selectedTier.name.toUpperCase()} on the backend.';
+          _isLoading = false;
+        });
+        return;
+      }
 
       final updatedSubscription = await paymentService.updateSubscription(
         subscriptionId: widget.subscription.id,

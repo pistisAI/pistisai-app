@@ -12,11 +12,37 @@ import { adminAuth } from '../../middleware/admin-auth.js';
 import { logAdminAction } from '../../utils/audit-logger.js';
 import logger from '../../logger.js';
 import {
+  getStripePriceCatalog,
+  getStripePriceIdForTier,
+} from '../../services/stripe-price-catalog.js';
+import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
 
 const router = express.Router();
+
+/**
+ * GET /api/admin/subscriptions/prices
+ *
+ * Returns configured Stripe price IDs per subscription tier.
+ *
+ * Permissions: view_subscriptions
+ */
+router.get(
+  '/prices',
+  adminReadOnlyLimiter,
+  adminAuth(['view_subscriptions']),
+  async (req, res) => {
+    const catalog = getStripePriceCatalog();
+
+    res.json({
+      success: true,
+      configured: Object.keys(catalog).length > 0,
+      prices: catalog,
+    });
+  },
+);
 
 /**
  * GET /api/admin/subscriptions
@@ -439,12 +465,24 @@ router.patch(
       } = req.body;
 
       // Validate required fields
-      if (!tier || !priceId) {
+      if (!tier) {
         return res.status(400).json({
           success: false,
           error: {
             code: 'INVALID_REQUEST',
-            message: 'Missing required fields: tier and priceId',
+            message: 'Missing required field: tier',
+          },
+        });
+      }
+
+      const resolvedPriceId = priceId || getStripePriceIdForTier(tier);
+      if (!resolvedPriceId) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'PRICE_NOT_CONFIGURED',
+            message:
+              'No Stripe price ID configured for this tier. Set STRIPE_PRICE_* env vars or pass priceId.',
           },
         });
       }
@@ -515,7 +553,7 @@ router.patch(
         subscriptionId,
         {
           tier,
-          priceId,
+          priceId: resolvedPriceId,
           prorationBehavior,
         },
       );
@@ -562,7 +600,7 @@ router.patch(
         details: {
           oldTier,
           newTier: tier,
-          priceId,
+          priceId: resolvedPriceId,
           prorationBehavior,
           prorationAmount: prorationDetails?.proratedAmount,
         },

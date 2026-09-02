@@ -45,7 +45,7 @@ export interface AuthMiddleware {
   /**
    * Refresh expired token
    */
-  refreshToken(token: string): Promise<string>;
+  refreshToken(token: string, refreshToken?: string): Promise<string>;
 
   /**
    * Get user context from token

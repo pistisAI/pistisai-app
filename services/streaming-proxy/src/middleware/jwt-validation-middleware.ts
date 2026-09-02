@@ -14,6 +14,7 @@ import {
 } from '../interfaces/auth-middleware';
 import jwt from 'jsonwebtoken';
 import { JWTValidator } from './jwt-validator.interface';
+import { refreshAuth0AccessToken, TokenRefreshError } from './auth0-token-refresh';
 
 import { ConsoleLogger } from '../utils/logger';
 
@@ -66,16 +67,34 @@ export class JWTValidationMiddleware implements AuthMiddleware {
   }
 
   /**
-   * Refresh expired token (placeholder - actual implementation depends on Auth0 setup)
+   * Refresh an expired access token using Auth0 refresh_token grant.
+   * Never returns the original token — callers must re-authenticate on failure.
    */
-  async refreshToken(token: string): Promise<string> {
-    // This would typically involve calling Auth0's token refresh endpoint
-    // For now, throw an error indicating the client should re-authenticate
-    this.logger.warn('Token refresh requested - returning original token for re-authentication');
-    // Auth0 typically uses refresh_token grant type for token refresh
-    // This requires storing refresh_token during initial authentication
-    // For now, return the original token and let client handle re-auth
-    return token;
+  async refreshToken(token: string, refreshToken?: string): Promise<string> {
+    if (!refreshToken) {
+      this.logger.warn('Token refresh requested without refresh token');
+      throw new TokenRefreshError(
+        'Re-authentication required: no refresh token available',
+        'REAUTH_REQUIRED',
+      );
+    }
+
+    try {
+      const refreshed = await refreshAuth0AccessToken(refreshToken);
+      this.validationCache.delete(token);
+      return refreshed.access_token;
+    } catch (error) {
+      this.logger.warn('Token refresh failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      if (error instanceof TokenRefreshError) {
+        throw error;
+      }
+      throw new TokenRefreshError(
+        'Re-authentication required after refresh failure',
+        'REAUTH_REQUIRED',
+      );
+    }
   }
 
   /**

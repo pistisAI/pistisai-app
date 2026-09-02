@@ -447,12 +447,15 @@ export class WebSocketHandlerImpl implements WebSocketHandler {
    * Handle forward request (placeholder for integration)
    */
   private async handleForwardRequest(ws: WebSocket, message: WebSocketMessage): Promise<void> {
-    // This will be implemented during integration with ConnectionPool and SSH forwarding
-    // For now, just echo back
     const response = {
-      type: 'response',
+      type: 'error',
       requestId: message.requestId,
-      payload: { status: 'received' },
+      payload: {
+        status: 501,
+        code: 'TUNNEL_FORWARD_NOT_IMPLEMENTED',
+        message:
+          'SSH tunnel forwarding is not available in streaming-proxy. Use Tailscale or the legacy tunnel stack when explicitly enabled.',
+      },
       timestamp: Date.now(),
     };
 

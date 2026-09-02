@@ -30,6 +30,7 @@ const DEFAULT_CONFIG = {
   // This was previously a no-op stub (always returned false). Set to false to
   // disable revocation checking entirely.
   certificateRevocationCheck: true,
+  revocationFailClosed: process.env.CERT_REVOCATION_FAIL_CLOSED !== 'false',
   revokedCertificateSerials: [],
   revokedCertificateFingerprints: [],
 
@@ -445,11 +446,10 @@ export class ConnectionSecurityManager {
       }
     }
 
-    // Check certificate revocation (simplified check)
     if (this.config.certificateRevocationCheck) {
-      // In a real implementation, you would check against CRL or OCSP
-      // This is a placeholder for demonstration
-      if (this.isCertificateRevoked(cert)) {
+      const revocation = this.evaluateCertificateRevocation(cert);
+
+      if (revocation.revoked) {
         this.connectionTracker.recordSecurityEvent(ip, 'revoked_certificate', {
           correlationId,
           serialNumber: cert.serialNumber,
@@ -460,6 +460,24 @@ export class ConnectionSecurityManager {
           valid: false,
           reason: 'Certificate has been revoked',
           errorCode: 'CLIENT_CERT_REVOKED',
+        };
+      }
+
+      if (revocation.checkFailed && this.config.revocationFailClosed) {
+        this.connectionTracker.recordSecurityEvent(
+          ip,
+          'revocation_check_failed',
+          {
+            correlationId,
+            serialNumber: cert.serialNumber,
+            fingerprint: cert.fingerprint,
+          },
+        );
+
+        return {
+          valid: false,
+          reason: 'Certificate revocation status could not be verified',
+          errorCode: 'CLIENT_CERT_REVOCATION_CHECK_FAILED',
         };
       }
     }
@@ -504,6 +522,28 @@ export class ConnectionSecurityManager {
     return this.config.allowedCiphers.some(
       (allowed) => cipherName.includes(allowed) || allowed.includes(cipherName),
     );
+  }
+
+  /**
+   * Evaluate certificate revocation using static blocklists.
+   * Fails closed when list parsing/checking throws and revocationFailClosed is enabled.
+   *
+   * @param {Object} cert
+   * @returns {{revoked: boolean, checkFailed: boolean}}
+   */
+  evaluateCertificateRevocation(cert) {
+    try {
+      return {
+        revoked: this.isCertificateRevoked(cert),
+        checkFailed: false,
+      };
+    } catch (error) {
+      this.logger.error('Certificate revocation check failed', {
+        error: error.message,
+        serialNumber: cert?.serialNumber,
+      });
+      return { revoked: false, checkFailed: true };
+    }
   }
 
   /**

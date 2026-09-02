@@ -15,7 +15,67 @@
 
 import Docker from 'dockerode';
 import crypto from 'crypto';
+import Redis from 'ioredis';
 import logger from './logger.js';
+import { getPool } from './database/db-pool.js';
+
+function createRedisClient() {
+  const redisUrl = process.env.REDIS_URL;
+  if (!redisUrl) {
+    return null;
+  }
+
+  try {
+    return new Redis(redisUrl, {
+      maxRetriesPerRequest: 1,
+      enableReadyCheck: true,
+      lazyConnect: true,
+    });
+  } catch (error) {
+    logger.warn(' [AdminFlush] Redis unavailable', { error: error.message });
+    return null;
+  }
+}
+
+async function clearRedisKeys(pattern, targetUserId = null) {
+  const redis = createRedisClient();
+  if (!redis) {
+    return { cleared: 0, available: false };
+  }
+
+  try {
+    const searchPattern = targetUserId
+      ? `${pattern}:${targetUserId}:*`
+      : `${pattern}:*`;
+    let cursor = '0';
+    let cleared = 0;
+
+    do {
+      const [nextCursor, keys] = await redis.scan(
+        cursor,
+        'MATCH',
+        searchPattern,
+        'COUNT',
+        100,
+      );
+      cursor = nextCursor;
+      if (keys.length > 0) {
+        cleared += await redis.del(...keys);
+      }
+    } while (cursor !== '0');
+
+    return { cleared, available: true };
+  } catch (error) {
+    logger.warn(' [AdminFlush] Redis key clear failed', {
+      error: error.message,
+      pattern,
+      targetUserId,
+    });
+    return { cleared: 0, available: true, error: error.message };
+  } finally {
+    redis?.disconnect();
+  }
+}
 
 /**
  * Administrative Data Flush Service
@@ -69,21 +129,33 @@ export class AdminDataFlushService {
     };
 
     try {
-      // Note: Pistisai uses zero-storage design
-      // Authentication tokens are stored client-side only
-      // Server-side: Clear any cached JWT validation data
+      const pool = getPool();
+      let sessionResult;
 
-      if (targetUserId) {
-        // Clear specific user's server-side auth cache
-        // Implementation depends on caching strategy (Redis, memory, etc.)
-        logger.info(' [AdminFlush] Clearing auth cache for specific user', {
+      try {
+        if (targetUserId) {
+          sessionResult = await pool.query(
+            'DELETE FROM user_sessions WHERE user_id = $1',
+            [targetUserId],
+          );
+        } else {
+          sessionResult = await pool.query('DELETE FROM user_sessions');
+        }
+        clearedData.sessions = sessionResult.rowCount || 0;
+      } catch (dbError) {
+        logger.warn(' [AdminFlush] Session deletion skipped (database unavailable)', {
+          error: dbError.message,
           targetUserId,
         });
-        clearedData.authCache = 1;
-      } else {
-        // Clear all authentication cache
-        logger.info(' [AdminFlush] Clearing all authentication cache');
-        clearedData.authCache = 1; // Placeholder - implement actual cache clearing
+        clearedData.sessions = 0;
+        clearedData.databaseAvailable = false;
+      }
+
+      const redisResult = await clearRedisKeys('auth', targetUserId);
+      clearedData.authCache = redisResult.cleared;
+      clearedData.redisAvailable = redisResult.available;
+      if (redisResult.error) {
+        clearedData.redisError = redisResult.error;
       }
 
       logger.info(
@@ -116,21 +188,37 @@ export class AdminDataFlushService {
     };
 
     try {
-      // Note: Pistisai stores conversations client-side in SQLite
-      // Server-side: Clear any cached conversation metadata or temporary data
+      let result;
 
-      if (targetUserId) {
-        logger.info(
-          ' [AdminFlush] Clearing conversation cache for specific user',
-          { targetUserId },
+      try {
+        const pool = getPool();
+        if (targetUserId) {
+          result = await pool.query(
+            `DELETE FROM agent_events
+             WHERE agent_id IN (SELECT id FROM agents WHERE user_id = $1)`,
+            [targetUserId],
+          );
+        } else {
+          result = await pool.query('DELETE FROM agent_events');
+        }
+        clearedData.chatHistory = result.rowCount || 0;
+      } catch (dbError) {
+        logger.warn(
+          ' [AdminFlush] Agent event deletion skipped (database unavailable)',
+          { error: dbError.message, targetUserId },
         );
-        // Clear user-specific conversation cache
-        clearedData.conversations = 1; // Placeholder
-      } else {
-        logger.info(' [AdminFlush] Clearing all conversation cache');
-        // Clear all conversation cache
-        clearedData.conversations = 1; // Placeholder
+        clearedData.chatHistory = 0;
+        clearedData.databaseAvailable = false;
       }
+
+      clearedData.conversations = 0;
+      clearedData.messages = 0;
+      clearedData.note =
+        'Conversation content is stored client-side; server agent_events cache cleared when database is available';
+
+      const redisResult = await clearRedisKeys('conversation', targetUserId);
+      clearedData.conversationCache = redisResult.cleared;
+      clearedData.redisAvailable = redisResult.available;
 
       logger.info(
         ' [AdminFlush] Conversation data clearing completed',
@@ -206,16 +294,11 @@ export class AdminDataFlushService {
     };
 
     try {
-      if (targetUserId) {
-        logger.info(' [AdminFlush] Clearing cache for specific user', {
-          targetUserId,
-        });
-        // Clear user-specific cache
-        clearedData.memoryCache = 1;
-      } else {
-        logger.info(' [AdminFlush] Clearing all cache data');
-        // Clear all cache
-        clearedData.memoryCache = 1;
+      const redisResult = await clearRedisKeys('cache', targetUserId);
+      clearedData.memoryCache = redisResult.cleared;
+      clearedData.redisAvailable = redisResult.available;
+      if (!redisResult.available) {
+        clearedData.note = 'Redis not configured; no server cache keys cleared';
       }
 
       logger.info(' [AdminFlush] Cache data clearing completed', clearedData);

@@ -5,6 +5,7 @@ import { getPool } from '../database/db-pool.js';
 import dashboardWSManager from '../websocket/dashboard-ws.js';
 import logger from '../logger.js';
 import { validateSchema } from '../middleware/schema-validation.js';
+import { updateAgentMetrics } from '../services/agent-metrics-service.js';
 
 const router = express.Router();
 
@@ -90,8 +91,7 @@ router.post('/', verifyWebhookSignature, validateSchema({ body: agentEventBodySc
       [agent.id, event_type, JSON.stringify(event_data), correlation_id],
     );
 
-    // 4. Update metrics (placeholder)
-    // updateAgentMetrics(agent.id, event_type, event_data);
+    await updateAgentMetrics(agent.id, event_type, event_data || {});
 
     // 5. Broadcast to WebSocket clients
     dashboardWSManager.broadcast({

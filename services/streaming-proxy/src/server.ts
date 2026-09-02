@@ -1,11 +1,9 @@
 /**
  * Streaming Proxy Server
- * 
- * Main entry point for the WebSocket-based SSH tunnel proxy server.
- * Integrates all components: authentication, rate limiting, connection pool,
- * circuit breaker, WebSocket handling, and metrics collection.
- * 
- * Requirements: All server-side requirements
+ *
+ * Legacy SSH/WebSocket tunnel proxy. Tailscale-first device mesh is the
+ * preferred transport; this service remains for explicit fallback deployments.
+ * WebSocket forward-request returns HTTP 501 when SSH forwarding is unavailable.
  */
 
 // Import Sentry FIRST to catch all errors from the very beginning

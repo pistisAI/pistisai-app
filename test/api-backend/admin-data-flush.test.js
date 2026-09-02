@@ -109,7 +109,8 @@ describe("AdminDataFlushService", () => {
       expect(result).toHaveProperty("tokens");
       expect(result).toHaveProperty("sessions");
       expect(result).toHaveProperty("authCache");
-      expect(result.authCache).toBe(1);
+      expect(result.authCache).toBe(0);
+      expect(result.redisAvailable).toBe(false);
     });
 
     it("should clear authentication data for all users", async () => {
@@ -118,7 +119,8 @@ describe("AdminDataFlushService", () => {
       expect(result).toHaveProperty("tokens");
       expect(result).toHaveProperty("sessions");
       expect(result).toHaveProperty("authCache");
-      expect(result.authCache).toBe(1);
+      expect(result.authCache).toBe(0);
+      expect(result.redisAvailable).toBe(false);
     });
 
     it("should handle authentication clearing errors gracefully", async () => {
