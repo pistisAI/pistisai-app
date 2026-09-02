@@ -996,6 +996,63 @@ class LocalBrain extends _$LocalBrain {
     });
   }
 
+  Future<void> ensureModelCapacityForUsage(String modelId) async {
+    final existing = await getModelCapacity(modelId);
+    if (existing != null) {
+      return;
+    }
+
+    await into(modelCapacity).insert(
+      ModelCapacityCompanion.insert(
+        modelId: modelId,
+        provider: 'local',
+        displayName: Value(modelId),
+        concurrentLimit: 10,
+      ),
+      mode: InsertMode.insertOrIgnore,
+    );
+  }
+
+  Future<void> recordLlmRequest({
+    required String requestId,
+    required String modelId,
+  }) async {
+    await ensureModelCapacityForUsage(modelId);
+    await into(llmRequests).insert(
+      LlmRequestsCompanion.insert(
+        requestId: requestId,
+        modelId: modelId,
+        status: const Value('active'),
+      ),
+      mode: InsertMode.insertOrIgnore,
+    );
+  }
+
+  Future<void> completeLlmRequest({
+    required String requestId,
+    required String status,
+    int? promptTokens,
+    int? completionTokens,
+    String? errorMessage,
+  }) async {
+    await (update(llmRequests)..where((t) => t.requestId.equals(requestId)))
+        .write(
+      LlmRequestsCompanion(
+        status: Value(status),
+        promptTokens: Value(promptTokens),
+        completionTokens: Value(completionTokens),
+        completedAt: Value(DateTime.now()),
+        errorMessage: Value(errorMessage),
+      ),
+    );
+  }
+
+  Future<List<LlmRequest>> getLlmRequestsSince(DateTime since) =>
+      (select(llmRequests)
+            ..where((t) => t.startedAt.isBiggerOrEqualValue(since))
+            ..orderBy([(t) => OrderingTerm.asc(t.startedAt)]))
+          .get();
+
   // ==========================================================================
   // CONVERSATION DAO
   // ==========================================================================

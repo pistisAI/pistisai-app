@@ -46,6 +46,7 @@ import 'package:pistisai/database/local_brain.dart';
 import 'package:pistisai/services/brain_sync_service.dart';
 import 'package:pistisai/services/full_context_indexer.dart';
 import 'package:pistisai/services/rate_limit_manager.dart';
+import 'package:pistisai/services/usage_instrumentation_service.dart';
 import 'package:pistisai/services/router_server.dart';
 import 'package:pistisai/services/providers/zhipu_adapter.dart';
 import 'package:pistisai/services/providers/google_adapter.dart';
@@ -230,6 +231,12 @@ Future<void> setupCoreServices() async {
 
       final rateLimitManager = RateLimitManager(localBrain);
       serviceLocator.registerSingleton<RateLimitManager>(rateLimitManager);
+
+      final usageInstrumentationService =
+          UsageInstrumentationService(localBrain);
+      serviceLocator.registerSingleton<UsageInstrumentationService>(
+        usageInstrumentationService,
+      );
 
       final conscienceStorageService = ConscienceStorageService(
         database: localBrain,
@@ -806,16 +813,21 @@ Future<void> setupAuthenticatedServices() async {
       }),
     );
 
-    // LangChain integration service - requires authentication for provider access
-    debugPrint('[ServiceLocator] Initializing LangChainIntegrationService...');
+    // LangChain integration service - optional; disabled by default
     final langchainIntegrationService = LangChainIntegrationService();
-    try {
-      await langchainIntegrationService
-          .initializeProviders()
-          .timeout(const Duration(seconds: 10));
-    } catch (e) {
+    if (AppConfig.enableLangChainIntegration) {
+      debugPrint('[ServiceLocator] Initializing LangChainIntegrationService...');
+      try {
+        await langchainIntegrationService
+            .initializeProviders()
+            .timeout(const Duration(seconds: 10));
+      } catch (e) {
+        debugPrint(
+            '[ServiceLocator] Warning: LangChainIntegrationService initialization failed: $e');
+      }
+    } else {
       debugPrint(
-          '[ServiceLocator] Warning: LangChainIntegrationService initialization failed: $e');
+          '[ServiceLocator] LangChain integration disabled (AppConfig.enableLangChainIntegration=false)');
     }
     serviceLocator.registerSingleton<LangChainIntegrationService>(
       langchainIntegrationService,
@@ -877,15 +889,17 @@ Future<void> setupAuthenticatedServices() async {
     debugPrint(
         '[ServiceLocator] ✓ GatewayControlService now listens to connection changes');
 
-    // LangChain RAG service - requires connection manager
+    // LangChain RAG service - optional; disabled by default
     final langchainRagService = LangChainRAGService();
-    try {
-      await langchainRagService
-          .initialize()
-          .timeout(const Duration(seconds: 10));
-    } catch (e) {
-      debugPrint(
-          '[ServiceLocator] Warning: LangChainRAGService initialization failed: $e');
+    if (AppConfig.enableLangChainIntegration) {
+      try {
+        await langchainRagService
+            .initialize()
+            .timeout(const Duration(seconds: 10));
+      } catch (e) {
+        debugPrint(
+            '[ServiceLocator] Warning: LangChainRAGService initialization failed: $e');
+      }
     }
     serviceLocator.registerSingleton<LangChainRAGService>(langchainRagService);
 

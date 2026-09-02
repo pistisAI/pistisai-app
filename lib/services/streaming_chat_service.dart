@@ -15,6 +15,7 @@ import 'auth_service.dart';
 import 'agent_display_name.dart';
 import 'avatar/avatar_state_service.dart';
 import '../di/locator.dart' as di;
+import '../services/usage_instrumentation_service.dart';
 import '../utils/logger.dart';
 
 /// Enhanced chat service with real-time streaming support
@@ -269,6 +270,7 @@ class StreamingChatService extends ChangeNotifier {
 
       // Add streaming message placeholder for assistant
       final streamingModel = _selectedModel ?? 'default';
+      _trackUsageStart(streamingModel);
       final streamingMessage = Message.streaming(model: streamingModel);
       _addMessageToCurrentConversation(streamingMessage);
       _currentStreamingMessageId = streamingMessage.id;
@@ -333,6 +335,7 @@ class StreamingChatService extends ChangeNotifier {
         error: e.toString(),
       );
       _addMessageToCurrentConversation(errorMessage);
+      _trackUsageComplete(errorModel, status: 'failed', errorMessage: e.toString());
     } finally {
       _setLoading(false);
       _setStreaming(false);
@@ -391,6 +394,7 @@ class StreamingChatService extends ChangeNotifier {
       error: error.toString(),
     );
     _addMessageToCurrentConversation(errorMessage);
+    _trackUsageComplete(errorModel, status: 'failed', errorMessage: error.toString());
   }
 
   /// Handle streaming completion
@@ -444,6 +448,7 @@ class StreamingChatService extends ChangeNotifier {
             toolCallsMeta.isNotEmpty ? {'tool_calls': toolCallsMeta} : null,
       );
       _addMessageToCurrentConversation(assistantMessage);
+      _trackUsageComplete(_selectedModel ?? 'default', status: 'completed');
 
       // Auto-rename conversation if it's the first message
       _autoRenameConversation();
@@ -780,6 +785,30 @@ class StreamingChatService extends ChangeNotifier {
           },
         )
         .toList();
+  }
+
+  UsageInstrumentationService? get _usageInstrumentation {
+    try {
+      return di.serviceLocator<UsageInstrumentationService>();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void _trackUsageStart(String modelId) {
+    _usageInstrumentation?.startRequest(modelId);
+  }
+
+  void _trackUsageComplete(
+    String modelId, {
+    required String status,
+    String? errorMessage,
+  }) {
+    _usageInstrumentation?.completeRequest(
+      modelId: modelId,
+      status: status,
+      errorMessage: errorMessage,
+    );
   }
 
   /// Set loading state

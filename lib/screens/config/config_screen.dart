@@ -283,6 +283,43 @@ class _ConfigScreenState extends State<ConfigScreen>
     );
   }
 
+  Future<void> _resetToDefaults() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset to Defaults'),
+        content: const Text(
+          'This clears saved runtime preferences on this device. '
+          'Gateway URLs and support provider settings will return to defaults.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await _settingsService.clearAllData();
+      await _loadData();
+      if (mounted) {
+        _showSnackBar('Configuration reset to defaults', isError: false);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Failed to reset configuration: $e', isError: true);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -901,9 +938,7 @@ class _ConfigScreenState extends State<ConfigScreen>
               alignment: WrapAlignment.center,
               children: [
                 OutlinedButton.icon(
-                  onPressed: () => _showSnackBar(
-                      'Reset to defaults - coming soon',
-                      isError: true),
+                  onPressed: _resetToDefaults,
                   icon: const Icon(Icons.restore),
                   label: const Text('Reset to Defaults'),
                 ),

@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,6 +6,7 @@ import '../../widgets/usage/metric_card.dart';
 import '../../widgets/navigation/popout_button.dart';
 
 import 'package:pistisai/services/rate_limit_manager.dart';
+import 'package:pistisai/services/usage_instrumentation_service.dart';
 import 'package:pistisai/database/drift_local_brain.dart';
 import 'package:pistisai/di/locator.dart' as di;
 
@@ -21,13 +21,55 @@ class UsageScreen extends StatefulWidget {
 
 class _UsageScreenState extends State<UsageScreen> {
   TimeRange _selectedTimeRange = TimeRange.today;
+  UsageChartData? _chartData;
 
   RateLimitManager? _rateLimitManager;
+  UsageInstrumentationService? _usageInstrumentation;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChartData();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _rateLimitManager ??= _resolveRateLimitManager(context);
+    _usageInstrumentation ??= _resolveUsageInstrumentation();
+  }
+
+  static UsageInstrumentationService? _resolveUsageInstrumentation() {
+    try {
+      return di.serviceLocator.get<UsageInstrumentationService>();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  DateTime get _rangeStart {
+    final now = DateTime.now();
+    switch (_selectedTimeRange) {
+      case TimeRange.today:
+        return DateTime(now.year, now.month, now.day);
+      case TimeRange.week:
+        return now.subtract(const Duration(days: 7));
+      case TimeRange.month:
+        return now.subtract(const Duration(days: 30));
+    }
+  }
+
+  Future<void> _loadChartData() async {
+    final instrumentation = _usageInstrumentation ?? _resolveUsageInstrumentation();
+    if (instrumentation == null) {
+      if (mounted) setState(() => _chartData = null);
+      return;
+    }
+
+    final data = await instrumentation.buildChartData(_rangeStart);
+    if (mounted) {
+      setState(() => _chartData = data);
+    }
   }
 
   static RateLimitManager? _resolveRateLimitManager(BuildContext context) {
@@ -44,9 +86,8 @@ class _UsageScreenState extends State<UsageScreen> {
   }
 
   Future<void> _onRefresh() async {
-    // Capacities are streamed live via RateLimitManager; refresh triggers a
-    // re-read of the underlying Drift stream through a state bump.
     setState(() {});
+    await _loadChartData();
   }
 
   void _onTimeRangeChanged(Set<TimeRange> newSelection) {
@@ -54,6 +95,7 @@ class _UsageScreenState extends State<UsageScreen> {
       setState(() {
         _selectedTimeRange = newSelection.first;
       });
+      _loadChartData();
     }
   }
 
@@ -231,12 +273,11 @@ class _UsageScreenState extends State<UsageScreen> {
 
                         const SizedBox(height: 24),
 
-                        // Chart placeholders
-                        _buildChartPlaceholder('Token Usage Over Time'),
+                        _buildTokenUsageChart(),
                         const SizedBox(height: 16),
-                        _buildChartPlaceholder('Request Volume'),
+                        _buildRequestVolumeChart(),
                         const SizedBox(height: 16),
-                        _buildChartPlaceholder('Resource Trends'),
+                        _buildResourceTrendsCard(),
                       ],
                     ),
                   ),
@@ -382,46 +423,151 @@ class _UsageScreenState extends State<UsageScreen> {
     );
   }
 
-  Widget _buildChartPlaceholder(String title) {
+  Widget _buildTokenUsageChart() {
     final theme = Theme.of(context);
+    final data = _chartData;
 
     return Card(
       child: Container(
-        height: 200,
+        height: 220,
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              title,
+              'Token Usage Over Time',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.show_chart,
-                      size: 48,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Chart placeholder',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              child: data == null || data.labels.isEmpty
+                  ? _buildEmptyChart(theme, 'No token usage recorded yet')
+                  : LineChart(
+                      LineChartData(
+                        gridData: const FlGridData(show: true),
+                        titlesData: const FlTitlesData(show: false),
+                        borderData: FlBorderData(show: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: [
+                              for (var i = 0; i < data.labels.length; i++)
+                                FlSpot(
+                                  i.toDouble(),
+                                  data.tokenTotals[i].toDouble(),
+                                ),
+                            ],
+                            isCurved: true,
+                            color: theme.colorScheme.primary,
+                            barWidth: 3,
+                            dotData: const FlDotData(show: false),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRequestVolumeChart() {
+    final theme = Theme.of(context);
+    final data = _chartData;
+
+    return Card(
+      child: Container(
+        height: 220,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Request Volume',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: data == null || data.labels.isEmpty
+                  ? _buildEmptyChart(theme, 'No requests recorded yet')
+                  : BarChart(
+                      BarChartData(
+                        gridData: const FlGridData(show: false),
+                        titlesData: const FlTitlesData(show: false),
+                        borderData: FlBorderData(show: false),
+                        barGroups: [
+                          for (var i = 0; i < data.labels.length; i++)
+                            BarChartGroupData(
+                              x: i,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: data.requestCounts[i].toDouble(),
+                                  color: theme.colorScheme.secondary,
+                                  width: 12,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResourceTrendsCard() {
+    final theme = Theme.of(context);
+    final data = _chartData;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Resource Trends',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (data == null)
+              _buildEmptyChart(theme, 'Usage instrumentation unavailable')
+            else ...[
+              _buildMetricRow(
+                'Total requests',
+                '${data.totalRequests}',
+                Icons.api,
+                theme.colorScheme.primary,
+                theme,
+              ),
+              _buildMetricRow(
+                'Total tokens',
+                _formatTokenValue(data.totalTokens),
+                Icons.token,
+                theme.colorScheme.secondary,
+                theme,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyChart(ThemeData theme, String message) {
+    return Center(
+      child: Text(
+        message,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
         ),
       ),
     );

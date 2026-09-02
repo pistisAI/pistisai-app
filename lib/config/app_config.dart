@@ -68,6 +68,8 @@ class AppConfig {
   static const bool enableDirectTunnelMode = false;
   static const bool enableLegacyTunnelServices = false;
   static const bool enableLegacyStreamingProxyServices = false;
+  static const bool enableLangChainIntegration = false;
+  static const bool enableEmbodiment = false;
 
   // ==========================================================================
   // Gateway Configuration (Runtime Configurable)

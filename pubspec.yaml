@@ -50,6 +50,7 @@ dependencies:
 
   # Real-time event handling
   rxdart: ^0.28.0
+  fl_chart: ^0.70.2
 
   # Google APIs for Local Integration
   googleapis: ^16.0.0

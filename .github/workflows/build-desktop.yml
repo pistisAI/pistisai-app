@@ -300,13 +300,37 @@ jobs:
           fi
           ls -lh release-assets/
 
+      - name: Validate release assets
+        run: |
+          set -euo pipefail
+          missing=0
+          for pattern in \
+            "Pistisai-Linux-x64.tar.gz" \
+            "Pistisai-Windows-x64-Setup.exe" \
+            "Pistisai-Windows-x64-portable.zip"; do
+            if ! compgen -G "release-assets/$pattern" > /dev/null; then
+              echo "Missing required asset: $pattern"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Required Linux/Windows desktop assets are missing"
+            exit 1
+          fi
+
+      - name: Generate SHA256 checksums
+        run: |
+          cd release-assets
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: release-assets/*
           tag: "v${{ env.VERSION }}"
           name: "PistisAI v${{ env.VERSION }}"
-          artifactErrorsFailBuild: false
+          artifactErrorsFailBuild: true
           allowUpdates: true
           removeArtifacts: true
           makeLatest: true
