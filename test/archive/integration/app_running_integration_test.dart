@@ -4,7 +4,7 @@ library app_running_integration_test;
 /// These tests run against a REAL Flutter app instance on the virtual display.
 /// They use `dart test` (not `flutter test`) to hit HTTP endpoints and verify the app is running.
 ///
-/// Run with: dart test test/integration/app_running_integration_test.dart
+/// Run with: dart test test/archive/integration/app_running_integration_test.dart
 /// Requires the test desktop to be running: docker compose -f docker-compose.test.yml up
 
 import 'dart:convert';

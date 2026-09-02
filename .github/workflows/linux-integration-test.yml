@@ -110,7 +110,7 @@ jobs:
         run: |
           # Run tests from the host — port 1337 is published from
           # the test-desktop container. The host has Dart via flutter-action.
-          dart test test/integration/app_running_integration_test.dart --reporter expanded
+          dart test test/archive/integration/app_running_integration_test.dart --reporter expanded
 
       - name: "📸 Capture failure screenshot"
         if: failure() && steps.integration_tests.outcome == 'failure'
