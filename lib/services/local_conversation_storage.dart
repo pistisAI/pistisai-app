@@ -13,6 +13,11 @@ class LocalConversationStorage {
   static const String _fileName = 'conversations.json.enc';
   static const String _legacyFileName = 'conversations.json';
   static const String _fileKeyName = '.conversation_key';
+  static const String _dirName = 'Pistisai';
+
+  /// Short-lived support subdirectory used before the migration back to
+  /// [_dirName]. Still probed so those installs do not lose history.
+  static const String _interimDirName = 'chat';
   static const String _keyStorageKey = 'local_conversation_encryption_key';
   static final FlutterSecureStorage _secureStorage =
       const FlutterSecureStorage();
@@ -28,14 +33,18 @@ class LocalConversationStorage {
 
   encrypt.Key? _cachedKey;
 
+  Future<Directory> _ensureDir(Directory dir) async {
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    return dir;
+  }
+
+  /// Canonical on-disk directory for the encrypted conversation store.
   Future<Directory> _pistisaiDir() async {
     if (_documentsDirectory != null) {
       final root = await _documentsDirectory();
-      final dir = Directory(p.join(root.path, 'Pistisai'));
-      if (!await dir.exists()) {
-        await dir.create(recursive: true);
-      }
-      return dir;
+      return _ensureDir(Directory(p.join(root.path, _dirName)));
     }
 
     Directory root;
@@ -44,11 +53,29 @@ class LocalConversationStorage {
     } catch (_) {
       root = await getApplicationDocumentsDirectory();
     }
-    final dir = Directory(p.join(root.path, 'chat'));
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
+    return _ensureDir(Directory(p.join(root.path, _dirName)));
+  }
+
+  /// Older directories that may still hold history after path migrations.
+  Future<List<Directory>> _legacyDirs() async {
+    final dirs = <Directory>[];
+    if (_documentsDirectory != null) {
+      final root = await _documentsDirectory();
+      dirs.add(Directory(p.join(root.path, _interimDirName)));
+      return dirs;
     }
-    return dir;
+
+    try {
+      final support = await getApplicationSupportDirectory();
+      dirs.add(Directory(p.join(support.path, _interimDirName)));
+    } catch (_) {}
+
+    try {
+      final docs = await getApplicationDocumentsDirectory();
+      dirs.add(Directory(p.join(docs.path, _dirName)));
+    } catch (_) {}
+
+    return dirs;
   }
 
   /// Get or generate the AES key for local storage encryption.
@@ -93,20 +120,40 @@ class LocalConversationStorage {
   }
 
   Future<String?> _readFileKey() async {
-    try {
-      final file = File(p.join((await _pistisaiDir()).path, _fileKeyName));
-      if (!await file.exists()) return null;
-      final value = (await file.readAsString()).trim();
-      return value.isEmpty ? null : value;
-    } catch (e) {
-      appLogger.warning('[LocalChatStorage] File key read failed: $e');
-      return null;
+    final candidates = <File>[
+      File(p.join((await _pistisaiDir()).path, _fileKeyName)),
+    ];
+    for (final dir in await _legacyDirs()) {
+      candidates.add(File(p.join(dir.path, _fileKeyName)));
     }
+
+    for (final file in candidates) {
+      try {
+        if (!await file.exists()) continue;
+        final value = (await file.readAsString()).trim();
+        if (value.isEmpty) continue;
+        final primary = File(p.join((await _pistisaiDir()).path, _fileKeyName));
+        if (file.path != primary.path) {
+          await _writeFileKey(value);
+        }
+        return value;
+      } catch (e) {
+        appLogger.warning('[LocalChatStorage] File key read failed: $e');
+      }
+    }
+    return null;
   }
 
   Future<void> _writeFileKey(String keyStr) async {
     final file = File(p.join((await _pistisaiDir()).path, _fileKeyName));
-    await file.writeAsString(keyStr);
+    await file.writeAsString(keyStr, flush: true);
+    if (!Platform.isWindows) {
+      try {
+        await Process.run('chmod', ['600', file.path]);
+      } catch (e) {
+        appLogger.warning('[LocalChatStorage] chmod 600 failed: $e');
+      }
+    }
   }
 
   /// Encrypt data: returns "base64iv:base64ciphertext"
@@ -159,22 +206,25 @@ class LocalConversationStorage {
   }
 
   /// Load all conversations from encrypted local storage,
-  /// with automatic migration from legacy plaintext format.
+  /// with automatic migration from older paths / plaintext format.
   Future<List<Conversation>> loadConversations() async {
     try {
       final key = await _getKey();
       final file = await _getLocalFile();
-      if (!await file.exists()) {
-        // Check for legacy plaintext file and migrate
-        return await _migrateFromLegacy(key);
+      if (await file.exists()) {
+        final content = await file.readAsString();
+        if (content.isEmpty) return [];
+        final plaintext = _decrypt(content, key);
+        final List<dynamic> jsonData = jsonDecode(plaintext);
+        return jsonData.map((data) => Conversation.fromJson(data)).toList();
       }
 
-      final content = await file.readAsString();
-      if (content.isEmpty) return [];
+      final migrated = await _migrateFromOlderLocations(key);
+      if (migrated != null) {
+        return migrated;
+      }
 
-      final plaintext = _decrypt(content, key);
-      final List<dynamic> jsonData = jsonDecode(plaintext);
-      return jsonData.map((data) => Conversation.fromJson(data)).toList();
+      return await _migrateFromLegacy(key);
     } catch (e) {
       appLogger.error(
         '[LocalChatStorage] Error loading conversations: $e',
@@ -184,32 +234,73 @@ class LocalConversationStorage {
     }
   }
 
+  Future<List<Conversation>?> _migrateFromOlderLocations(
+      encrypt.Key key) async {
+    for (final dir in await _legacyDirs()) {
+      final enc = File(p.join(dir.path, _fileName));
+      if (await enc.exists()) {
+        try {
+          final content = await enc.readAsString();
+          if (content.isEmpty) continue;
+          final plaintext = _decrypt(content, key);
+          final List<dynamic> jsonData = jsonDecode(plaintext);
+          final conversations =
+              jsonData.map((data) => Conversation.fromJson(data)).toList();
+          await saveConversations(conversations);
+          appLogger.info(
+            '[LocalChatStorage] Migrated encrypted history from ${enc.path}',
+          );
+          return conversations;
+        } catch (e) {
+          appLogger.warning(
+            '[LocalChatStorage] Could not migrate ${enc.path}: $e',
+          );
+        }
+      }
+
+      final plaintextLegacy = File(p.join(dir.path, _legacyFileName));
+      if (await plaintextLegacy.exists()) {
+        final conversations = await _migratePlaintextFile(plaintextLegacy);
+        if (conversations.isNotEmpty) {
+          return conversations;
+        }
+      }
+    }
+    return null;
+  }
+
   /// Migrate from legacy plaintext conversations.json to encrypted format.
-  /// Reads the old file, saves it encrypted, then deletes the legacy file.
   Future<List<Conversation>> _migrateFromLegacy(encrypt.Key key) async {
     try {
       final legacyFile = await _getLegacyFile();
       if (!await legacyFile.exists()) return [];
-
-      appLogger.info('[LocalChatStorage] Migrating legacy conversations.json → encrypted format');
-      final content = await legacyFile.readAsString();
-      if (content.isEmpty) return [];
-
-      final List<dynamic> jsonData = jsonDecode(content);
-      final conversations =
-          jsonData.map((data) => Conversation.fromJson(data)).toList();
-
-      // Save in new encrypted format
-      await saveConversations(conversations);
-
-      // Delete legacy file
-      await legacyFile.delete();
-      appLogger.info('[LocalChatStorage] Migration complete, legacy file deleted');
-      return conversations;
+      return _migratePlaintextFile(legacyFile);
     } catch (e) {
-      appLogger.error('[LocalChatStorage] Migration from legacy failed', error: e);
+      appLogger.error('[LocalChatStorage] Migration from legacy failed',
+          error: e);
       return [];
     }
+  }
+
+  Future<List<Conversation>> _migratePlaintextFile(File legacyFile) async {
+    appLogger.info(
+      '[LocalChatStorage] Migrating legacy conversations.json → encrypted format',
+    );
+    final content = await legacyFile.readAsString();
+    if (content.isEmpty) return [];
+
+    final List<dynamic> jsonData = jsonDecode(content);
+    final conversations =
+        jsonData.map((data) => Conversation.fromJson(data)).toList();
+
+    await saveConversations(conversations);
+
+    try {
+      await legacyFile.delete();
+    } catch (_) {}
+    appLogger
+        .info('[LocalChatStorage] Migration complete, legacy file deleted');
+    return conversations;
   }
 
   /// Clear all local conversations

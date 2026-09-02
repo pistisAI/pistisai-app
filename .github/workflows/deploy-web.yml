@@ -108,7 +108,7 @@ jobs:
           echo "Upload size: $(wc -c < /tmp/web_build.tar.gz) bytes"
           scp /tmp/web_build.tar.gz pistisai-vps:/tmp/web_build.tar.gz
 
-          ssh pistisai-vps "sudo mkdir -p /opt/Pistisai/build/web && sudo rm -rf /opt/Pistisai/build/web/* && sudo tar -xzf /tmp/web_build.tar.gz -C /opt/Pistisai/build/web/ && sudo rm /tmp/web_build.tar.gz && cd /opt/Pistisai && sudo docker compose -f docker-compose.multi.yml --env-file .env up -d --no-deps flutter-app"
+          ssh pistisai-vps "sudo mkdir -p /opt/Pistisai/build/web && sudo rm -rf /opt/Pistisai/build/web/* && sudo tar -xzf /tmp/web_build.tar.gz -C /opt/Pistisai/build/web/ && sudo rm /tmp/web_build.tar.gz && cd /opt/Pistisai && (sudo docker compose -f docker-compose.multi.yml --env-file .env up -d --no-deps flutter-app || sudo docker compose -f docker-compose.multi.yml --env-file .env up -d --build --no-deps flutter-app)"
 
           sleep 5
           for i in {1..20}; do

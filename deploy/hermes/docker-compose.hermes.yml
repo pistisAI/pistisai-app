@@ -5,7 +5,7 @@ name: pistisai-hermes
 
 services:
   hermes:
-    image: nousresearch/hermes-agent:latest
+    image: nousresearch/hermes-agent:v2026.8.31
     container_name: pistisai-hermes
     restart: unless-stopped
     command: gateway run

@@ -132,7 +132,9 @@ fi
 
 if [[ -n "${HERMES_API_SERVER_KEY:-}" ]]; then
   if grep -q '^HERMES_API_SERVER_KEY=' "$ENV_FILE"; then
-    sed -i "s|^HERMES_API_SERVER_KEY=.*|HERMES_API_SERVER_KEY=${HERMES_API_SERVER_KEY}|" "$ENV_FILE"
+    # Use '|' delimiter and escape sed metacharacters in the key value.
+    local_escaped="$(printf '%s' "$HERMES_API_SERVER_KEY" | sed -e 's/[|&\\]/\\&/g')"
+    sed -i "s|^HERMES_API_SERVER_KEY=.*|HERMES_API_SERVER_KEY=${local_escaped}|" "$ENV_FILE"
   else
     printf '\nHERMES_API_SERVER_KEY=%s\n' "$HERMES_API_SERVER_KEY" >> "$ENV_FILE"
   fi
@@ -142,17 +144,25 @@ elif ! grep -q '^HERMES_API_SERVER_KEY=.\+' "$ENV_FILE"; then
   echo "[deploy-hermes] generated HERMES_API_SERVER_KEY on the VPS (not printed)"
 fi
 
+# Exact container names we may attach / reload. Avoid substring greps.
+PROXY_CONTAINER_ALLOWLIST=(
+  pistisai-nginx-proxy
+  pistisai-web
+  pistisai-flutter-app
+  pistisai-flutter
+)
+
 detect_proxy_network() {
   local name net
-  name="$("${docker_bin[@]}" ps --format '{{.Names}}' | grep -Ei 'nginx|proxy|web|flutter' | grep -vi hermes | head -1 || true)"
-  if [[ -z "$name" ]]; then
-    return 1
-  fi
-  net="$("${docker_bin[@]}" inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}' "$name" | awk 'NF { print; exit }')"
-  if [[ -n "$net" ]]; then
-    printf '%s\n' "$net"
-    return 0
-  fi
+  for name in "${PROXY_CONTAINER_ALLOWLIST[@]}"; do
+    if "${docker_bin[@]}" ps --format '{{.Names}}' | grep -Fxq "$name"; then
+      net="$("${docker_bin[@]}" inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}' "$name" | awk 'NF { print; exit }')"
+      if [[ -n "$net" ]]; then
+        printf '%s\n' "$net"
+        return 0
+      fi
+    fi
+  done
   return 1
 }
 
@@ -185,10 +195,17 @@ for attempt in $(seq 1 30); do
   sleep 2
 done
 
-while IFS= read -r proxy_name; do
-  [[ -z "$proxy_name" ]] && continue
+for proxy_name in "${PROXY_CONTAINER_ALLOWLIST[@]}"; do
+  if ! "${docker_bin[@]}" ps --format '{{.Names}}' | grep -Fxq "$proxy_name"; then
+    continue
+  fi
   "${docker_bin[@]}" network connect "$HERMES_DOCKER_NETWORK" "$proxy_name" 2>/dev/null || true
-  if "${docker_bin[@]}" exec "$proxy_name" test -f /etc/nginx/conf.d/default.conf 2>/dev/null; then
+  if [[ "$proxy_name" == "pistisai-nginx-proxy" ]]; then
+    # Proxy container mounts nginx.conf, not conf.d/default.conf.
+    if [[ -f config/docker/nginx-proxy.conf ]]; then
+      "${docker_bin[@]}" cp config/docker/nginx-proxy.conf "$proxy_name":/etc/nginx/nginx.conf || true
+    fi
+  elif "${docker_bin[@]}" exec "$proxy_name" test -f /etc/nginx/conf.d/default.conf 2>/dev/null; then
     "${docker_bin[@]}" cp config/docker/nginx-web.conf "$proxy_name":/etc/nginx/conf.d/default.conf || true
   fi
   if "${docker_bin[@]}" exec "$proxy_name" nginx -t >/dev/null 2>&1; then
@@ -197,7 +214,7 @@ while IFS= read -r proxy_name; do
   else
     echo "[deploy-hermes] nginx reload skipped for $proxy_name"
   fi
-done < <("${docker_bin[@]}" ps --format '{{.Names}}' | grep -Ei 'nginx|proxy|web|flutter' | grep -vi hermes || true)
+done
 
 if command -v nginx >/dev/null 2>&1; then
   if sudo -n nginx -t >/dev/null 2>&1; then
@@ -206,7 +223,8 @@ if command -v nginx >/dev/null 2>&1; then
   fi
 fi
 
-curl -fsS http://127.0.0.1:8642/health
+# Final health probe is informational — readiness was already looped above.
+curl -fsS http://127.0.0.1:8642/health || echo "[deploy-hermes] final health probe failed (non-fatal)"
 echo
 REMOTE
 

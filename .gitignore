@@ -92,7 +92,7 @@ audit_output.json
 package-lock.json.REMOVED.*
 
 # Deployment generated files
-deploy/*
+deploy/**
 !deploy/hermes/
 !deploy/hermes/**
 publish_desktop_releases/
