@@ -8,7 +8,8 @@ FROM node:24-alpine
 WORKDIR /app
 
 COPY services/streaming-proxy/package*.json ./
-RUN npm ci --omit=dev
+# Lockfiles are gitignored repo-wide, so npm ci cannot run in CI images.
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
 
 COPY services/streaming-proxy/ ./
 
