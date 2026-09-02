@@ -1,0 +1,102 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies for Xvfb, window manager, VNC, screen recording,
+# Flutter Linux app runtime, Dart SDK, and image utilities.
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    unzip \
+    xz-utils \
+    xvfb \
+    openbox \
+    x11vnc \
+    fluxbox \
+    libgl1 \
+    libgl1-mesa-dri \
+    libgtk-3-0 \
+    libsecret-1-0 \
+    libayatana-appindicator3-1 \
+    libnotify4 \
+    libnss3 \
+    libxss1 \
+    libxtst6 \
+    xdg-utils \
+    ffmpeg \
+    procps \
+    imagemagick \
+    # GStreamer for Flutter media/plugins
+    libgstreamer1.0-0 \
+    libgstreamer-plugins-base1.0-0 \
+    libgstreamer-plugins-bad1.0-0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Dart SDK (stable channel) for running `dart test` inside the container
+ENV DART_VERSION=3.13.0
+RUN curl -fSsL https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_VERSION}/sdk/dartsdk-linux-x64-release.zip -o /tmp/dartsdk.zip && \
+    unzip -q /tmp/dartsdk.zip -d /opt && \
+    mv /opt/dart-sdk /opt/dart && \
+    rm /tmp/dartsdk.zip && \
+    ln -s /opt/dart/bin/dart /usr/local/bin/dart && \
+    ln -s /opt/dart/bin/dartaotruntime /usr/local/bin/dartaotruntime
+
+# Install Flutter SDK (stable channel) for running flutter test inside the container
+ENV FLUTTER_VERSION=3.44.6
+RUN curl -fSsL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -o /tmp/flutter.tar.xz && \
+    tar -xf /tmp/flutter.tar.xz -C /opt && \
+    mv /opt/flutter /opt/flutter_${FLUTTER_VERSION} && \
+    ln -sf /opt/flutter_${FLUTTER_VERSION} /opt/flutter && \
+    rm /tmp/flutter.tar.xz && \
+    ln -sf /opt/flutter/bin/flutter /usr/local/bin/flutter && \
+    ln -sf /opt/flutter/bin/flutter /usr/local/bin/flutter && \
+    # Fix Git safe.directory for Flutter SDK
+    git config --global --add safe.directory /opt/flutter_${FLUTTER_VERSION} && \
+    git config --global --add safe.directory /opt/flutter
+
+# Install Linux build dependencies for Flutter
+RUN apt-get update && apt-get install -y \
+    clang cmake ninja-build pkg-config \
+    libgtk-3-dev liblzma-dev libstdc++-12-dev \
+    libsecret-1-dev libjsoncpp-dev \
+    libnotify-dev libcurl4-openssl-dev \
+    libayatana-appindicator3-dev \
+    # GStreamer for camera_desktop plugin
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-bad1.0-dev \
+    # JNI for jni plugin
+    openjdk-21-jdk-headless \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user for security
+RUN useradd -m -s /bin/bash testuser && \
+    echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    # Give testuser ownership of Flutter SDK
+    chown -R testuser:testuser /opt/flutter_${FLUTTER_VERSION} /opt/flutter
+
+WORKDIR /app
+
+# Copy the entire source code for building inside container
+COPY --chown=testuser:testuser . /app
+
+# Build the Flutter Linux app inside the container (matches container's GLIBC)
+RUN chown -R testuser:testuser /app && su -s /bin/bash testuser -c "rm -rf build pubspec.lock .dart_tool && flutter pub get && flutter build linux --release" \
+ && cp -r /app/build/linux/x64/release/bundle /app/bundle && chown -R testuser:testuser /app/bundle
+
+# Copy test scripts
+COPY scripts/start_test_desktop.sh /app/start_test_desktop.sh
+COPY scripts/cleanup_virtual.sh /app/cleanup_virtual.sh
+
+RUN chmod +x /app/start_test_desktop.sh /app/cleanup_virtual.sh && \
+    chown -R testuser:testuser /app
+
+USER testuser
+
+# Default: start test desktop with app
+CMD ["/app/start_test_desktop.sh", "--with-app", "--wait"]

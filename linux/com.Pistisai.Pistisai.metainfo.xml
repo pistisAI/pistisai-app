@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.Pistisai.Pistisai</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Pistisai</name>
+  <summary>Bridge cloud-based AI services with local AI models</summary>
+  
+  <description>
+    <p>
+      Pistisai is a cross-platform application that bridges cloud-based AI services 
+      with local AI models, providing a hybrid AI architecture with privacy-first design.
+    </p>
+    <p>
+      Features:
+    </p>
+    <ul>
+      <li>Seamlessly switch between cloud AI (OpenAI, Anthropic) and local models (Ollama)</li>
+      <li>Privacy-first: sensitive data stays local while leveraging cloud AI when needed</li>
+      <li>Secure tunneling for real-time communication</li>
+      <li>Cross-platform support for Windows, Linux, and Web</li>
+    </ul>
+  </description>
+  
+  <launchable type="desktop-id">com.Pistisai.Pistisai.desktop</launchable>
+  
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main application window</caption>
+      <image>https://raw.githubusercontent.com/pistisAI/pistisai-app/main/docs/app_screenshots/main-window.png</image>
+    </screenshot>
+  </screenshots>
+  
+  <url type="homepage">https://github.com/pistisAI/pistisai-app</url>
+  <url type="bugtracker">https://github.com/pistisAI/pistisai-app/issues</url>
+  <url type="help">https://github.com/pistisAI/pistisai-app/blob/main/README.md</url>
+  
+  <developer_name>Pistisai Contributors</developer_name>
+  
+  <provides>
+    <binary>Pistisai</binary>
+  </provides>
+  
+  <releases>
+    <release version="4.4.0" date="2024-11-15">
+      <description>
+        <p>Latest release with bug fixes and improvements</p>
+      </description>
+    </release>
+  </releases>
+  
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-info">moderate</content_attribute>
+  </content_rating>
+</component>

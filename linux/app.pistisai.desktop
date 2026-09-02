@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Pistisai
+GenericName=AI Desktop Companion
+Comment=Privacy-first local AI workspace with avatar, desktop control, and vision
+Icon=pistisai
+Exec=pistisai %u
+Terminal=false
+Categories=Development;Utility;Network;AI;
+Keywords=AI;LLM;Agent;Avatar;Desktop Control;
+StartupNotify=true
+MimeType=x-scheme-handler/pistisai;

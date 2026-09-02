@@ -1,0 +1,167 @@
+services:
+  # Nginx Reverse Proxy - Entry point for all traffic
+  nginx-proxy:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.nginx-proxy
+    container_name: pistisai-nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx/nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - ./certbot/live:/etc/letsencrypt/live:ro
+      - ./certbot/archive:/etc/letsencrypt/archive:ro
+    networks:
+      - cloudllm-network
+    restart: unless-stopped
+    depends_on:
+      - flutter-app
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # Static Website and Documentation Container - DEPRECATED
+  # This container has been replaced by unified Flutter web architecture
+  # All domains now served by flutter-app container:
+  # - pistisai.online: Flutter marketing pages
+  # - app.pistisai.online: Flutter chat interface
+  # - docs.pistisai.online: Flutter documentation
+  #
+  # Uncomment below if you need to temporarily restore static site functionality
+  # static-site:
+  #   build:
+  #     context: .
+  #     dockerfile: config/docker/Dockerfile.static-site
+  #   container_name: zoidbot-static-site
+  #   volumes:
+  #     - ./static_homepage:/usr/share/nginx/html/static:ro
+  #     - ./docs-site/dist:/usr/share/nginx/html/docs:ro
+  #     - ./config/nginx/nginx-static.conf:/etc/nginx/nginx.conf:ro
+  #   networks:
+  #     - cloudllm-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "--fail", "http://localhost/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
+
+  # Flutter Web Application Container
+  flutter-app:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.flutter-app
+    container_name: pistisai-flutter-app
+    volumes:
+      - ./build/web:/usr/share/nginx/html:ro
+      - ./config/nginx/nginx-flutter.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - cloudllm-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # API Backend Container (for bridge communication and proxy management)
+  api-backend:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.api-backend
+    container_name: pistisai-api-backend
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - AUTH0_DOMAIN=dev-xafu7oedkd5wlrbo.us.auth0.com
+      - AUTH0_AUDIENCE=https://app.pistisai.online
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket for proxy management
+    networks:
+      - cloudllm-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # Tunnel-aware Container Base Image (built but not run directly)
+  tunnel-container-base:
+    build:
+      context: .
+      dockerfile: config/docker/Dockerfile.streaming-proxy
+    image: pistisai-streaming-proxy:latest
+    profiles:
+      - build-only # Only built, not started
+
+  # Hosted test Hermes agent — OpenAI-compatible API on loopback :8642
+  hermes:
+    image: nousresearch/hermes-agent:v2026.8.31
+    container_name: pistisai-hermes
+    restart: unless-stopped
+    command: gateway run
+    environment:
+      HERMES_ACCEPT_HOOKS: "1"
+      API_SERVER_ENABLED: "true"
+      API_SERVER_HOST: "0.0.0.0"
+      API_SERVER_PORT: "8642"
+      API_SERVER_KEY: ${HERMES_API_SERVER_KEY:-}
+      API_SERVER_MODEL_NAME: hermes-agent
+      API_SERVER_CORS_ORIGINS: "https://pistisai.app,https://www.pistisai.app,https://app.pistisai.app,https://api.pistisai.app,https://hermes.pistisai.app"
+    volumes:
+      - hermes-data:/opt/data
+      - ./deploy/hermes/config.yaml:/opt/data/config.yaml
+      - ./deploy/hermes/SOUL.md:/opt/data/SOUL.md
+    expose:
+      - "8642"
+    ports:
+      - "127.0.0.1:8642:8642"
+    networks:
+      cloudllm-network:
+        aliases:
+          - hermes
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8642/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 40s
+
+  # Certbot for SSL certificate management
+  certbot:
+    image: certbot/certbot:latest
+    container_name: pistisai-certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/live:/etc/letsencrypt/live
+      - ./certbot/archive:/etc/letsencrypt/archive
+      - ./certbot/logs:/var/log/letsencrypt
+    networks:
+      - cloudllm-network
+    command: certonly --webroot --webroot-path=/var/www/certbot --email support@pistisai.online --agree-tos --no-eff-email -d pistisai.online -d app.pistisai.online -d api.pistisai.online -d docs.pistisai.online
+    profiles:
+      - ssl-setup
+
+networks:
+  cloudllm-network:
+    driver: bridge
+    name: pistisai-network
+
+volumes:
+  certbot-www:
+  certbot-live:
+  certbot-archive:
+  nginx-logs:
+  static-logs:
+  flutter-logs:
+  api-logs:
+  hermes-data:

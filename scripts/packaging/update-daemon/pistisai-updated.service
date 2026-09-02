@@ -1,0 +1,24 @@
+[Unit]
+Description=Pistisai Update Daemon
+Documentation=https://pistisai.app
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/pistisai/pistisai-updated check
+WorkingDirectory=%h/.local/share/pistisai
+
+# Nice scheduling
+Nice=10
+IOSchedulingClass=2
+IOSchedulingPriority=7
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=%h/.config/pistisai %h/.local/share/pistisai
+
+[Install]
+WantedBy=multi-user.target

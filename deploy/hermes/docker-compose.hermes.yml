@@ -1,0 +1,47 @@
+# Isolated Hermes overlay for the production Pistisai VPS.
+# Joins the existing Docker network used by nginx on pistisai.app.
+# Do not use this against Simon's VPS (31.97.140.7).
+name: pistisai-hermes
+
+services:
+  hermes:
+    image: nousresearch/hermes-agent:v2026.8.31
+    container_name: pistisai-hermes
+    restart: unless-stopped
+    command: gateway run
+    environment:
+      HERMES_ACCEPT_HOOKS: "1"
+      API_SERVER_ENABLED: "true"
+      API_SERVER_HOST: "0.0.0.0"
+      API_SERVER_PORT: "8642"
+      API_SERVER_KEY: ${HERMES_API_SERVER_KEY:?set HERMES_API_SERVER_KEY}
+      API_SERVER_MODEL_NAME: hermes-agent
+      API_SERVER_CORS_ORIGINS: "https://pistisai.app,https://www.pistisai.app,https://app.pistisai.app,https://api.pistisai.app,https://hermes.pistisai.app"
+      TZ: UTC
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - hermes-data:/opt/data
+      - ./config.yaml:/opt/data/config.yaml
+      - ./SOUL.md:/opt/data/SOUL.md
+    expose:
+      - "8642"
+    ports:
+      - "127.0.0.1:8642:8642"
+    networks:
+      pistisai-network:
+        aliases:
+          - hermes
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8642/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 40s
+
+networks:
+  pistisai-network:
+    external: true
+    name: ${HERMES_DOCKER_NETWORK:-pistisai-network}
+
+volumes:
+  hermes-data:

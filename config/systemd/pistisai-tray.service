@@ -1,0 +1,35 @@
+[Unit]
+Description=Pistisai System Tray Daemon
+Documentation=https://github.com/pistisAI/pistisai-app
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+User=%i
+Group=%i
+ExecStart=/usr/bin/pistisai-tray
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=false
+ReadWritePaths=/home/%i/.pistisai
+
+# Environment
+Environment=HOME=/home/%i
+Environment=XDG_CONFIG_HOME=/home/%i/.config
+Environment=DISPLAY=:0
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pistisai-tray
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -euo pipefail
+
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+SCRIPT_FILE="$PROJECT_ROOT/scripts/release/verify_github_release_assets.py"
+
+if [[ ! -f "$SCRIPT_FILE" ]]; then
+  echo "Missing release asset verifier: $SCRIPT_FILE" >&2
+  exit 1
+fi
+
+for needle in \
+  'required_assets = {' \
+  'pistisai-{version}-portable.zip' \
+  'pistisai-{version}-portable.zip.sha256' \
+  'Pistisai-Windows-{version}-Setup.exe' \
+  'Pistisai-Windows-{version}-Setup.exe.sha256' \
+  'pistisai_{version}_amd64.deb' \
+  'pistisai_{version}_amd64.deb.sha256' \
+  'pistisai-{version}-x86_64.AppImage' \
+  'pistisai-{version}-x86_64.AppImage.sha256' \
+  'for attempt in range(1, retry_attempts + 1):' \
+  'time.sleep(retry_delay_seconds)' \
+  'Verified GitHub release assets: ' \
+  'Missing release assets: '; do
+  if ! grep -Fq "$needle" "$SCRIPT_FILE"; then
+    echo "Release asset verifier missing expected string: $needle" >&2
+    exit 1
+  fi
+done
+
+echo "[test_deployment_release_asset_retry_patterns] Passed"

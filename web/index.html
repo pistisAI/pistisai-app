@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Pistisai — Private AI companion. Local-first, four-pillar architecture. A portico for trustworthy AI.">
+
+  <!-- Open Graph / Social preview -->
+  <meta property="og:title" content="Pistisai — Where Trust Returns">
+  <meta property="og:description" content="A portico for private AI — four pillars that know you, run on your machine, and grow with you.">
+  <meta property="og:url" content="https://pistisai.app">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://pistisai.app/icons/Icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pistisai — Where Trust Returns">
+  <meta name="twitter:description" content="A portico for private AI — four pillars that know you, run on your machine, and grow with you.">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval'
+      https://cdn.auth0.com
+      https://accounts.google.com
+      https://static.cloudflareinsights.com;
+    worker-src 'self' blob:;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' data: blob: https:;
+    connect-src 'self'
+      https://*.pistisai.app http://127.0.0.1:* ws://127.0.0.1:* wss://*.pistisai.app
+      https://*.sentry.io https://*.auth0.com https://*.gstatic.com
+      https://fonts.googleapis.com https://fonts.gstatic.com
+      https://accounts.google.com;
+    font-src 'self' data: https://fonts.gstatic.com;
+    frame-src 'self' https://*.auth0.com https://accounts.google.com;
+  ">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Pistisai">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <title>Pistisai — Your Private AI Companion</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Runtime app config -->
+  <script src="config/config.js"></script>
+
+  <!-- Auth0 SPA SDK -->
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+
+  <style id="splash-screen-style">
+    html { height: 100% }
+    body {
+      margin: 0;
+      min-height: 100%;
+      background-color: #181a20;
+      background-size: 100% 100%;
+    }
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+    .contain { display:block; width:100%; height:100%; object-fit: contain; }
+    .stretch { display:block; width:100%; height:100%; }
+    .cover { display:block; width:100%; height:100%; object-fit: cover; }
+    .bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      -ms-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+    }
+    .bottomLeft { position: absolute; bottom: 0; left: 0; }
+    .bottomRight { position: absolute; bottom: 0; right: 0; }
+    @media (prefers-color-scheme: dark) {
+      body { background-color: #181a20; }
+    }
+  </style>
+  <script id="splash-screen-script">
+    function removeSplashFromWeb() {
+      document.getElementById("splash")?.remove();
+      document.getElementById("splash-branding")?.remove();
+      document.body.style.background = "transparent";
+    }
+    window.addEventListener('flutter-first-frame', removeSplashFromWeb);
+    setTimeout(removeSplashFromWeb, 8000);
+  </script>
+</head>
+
+<body>
+  <picture id="splash">
+      <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
+      <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+      <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+
+  <script src="flutter_bootstrap.js?v=$FLUTTER_BUILD_NUMBER" async=""></script>
+</body></html>
