@@ -61,13 +61,23 @@ fi
 
 ssh_opts=(
   -i "$VPS_SSH_KEY_FILE"
+  -4
   -o BatchMode=yes
+  -o ConnectTimeout=15
   -o StrictHostKeyChecking=accept-new
   -o ServerAliveInterval=30
   -o ServerAliveCountMax=6
 )
 
 ssh_target="${VPS_USER}@${SSH_HOST}"
+
+case "$SSH_HOST" in
+  pistisai.app|www.pistisai.app|app.pistisai.app|api.pistisai.app|hermes.pistisai.app)
+    echo "[deploy-hermes] $SSH_HOST is Cloudflare-proxied; GitHub/CI cannot SSH to :22" >&2
+    echo "[deploy-hermes] set PISTISAI_VPS_SSH_HOST to the origin VPS IP (not 31.97.140.7)" >&2
+    exit 1
+    ;;
+esac
 
 echo "[deploy-hermes] target ${ssh_target}:${REMOTE_DIR}"
 

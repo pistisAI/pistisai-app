@@ -58,10 +58,6 @@ jobs:
           HERMES_API_SERVER_KEY: ${{ secrets.HERMES_API_SERVER_KEY }}
         run: |
           set -euo pipefail
-          if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then
-            echo "VM_SSH_PRIVATE_KEY is required to deploy to pistisai.app"
-            exit 1
-          fi
           if [ "${VPS_HOST}" = "31.97.140.7" ]; then
             echo "Ignoring Simon VPS host 31.97.140.7 — deploying to pistisai.app"
             VPS_HOST="pistisai.app"
@@ -74,6 +70,19 @@ jobs:
           if [ "${VPS_USER}" = "pistisai" ]; then
             echo "Ignoring Simon SSH user pistisai — using cloudllm"
             VPS_USER="cloudllm"
+          fi
+
+          case "${PISTISAI_VPS_SSH_HOST:-}" in
+            ''|pistisai.app|www.pistisai.app|app.pistisai.app|api.pistisai.app|hermes.pistisai.app)
+              echo "PISTISAI_VPS_SSH_HOST is unset or Cloudflare-proxied; skipping live VPS deploy."
+              echo "GitHub runners cannot SSH to pistisai.app:22 (Cloudflare anycast). Set PISTISAI_VPS_SSH_HOST to the origin VPS IP, never 31.97.140.7."
+              exit 0
+              ;;
+          esac
+
+          if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then
+            echo "VM_SSH_PRIVATE_KEY is required to deploy to pistisai.app"
+            exit 1
           fi
 
           mkdir -p ~/.ssh && chmod 700 ~/.ssh

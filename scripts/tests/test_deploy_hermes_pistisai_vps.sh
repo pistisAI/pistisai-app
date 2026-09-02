@@ -53,6 +53,7 @@ required_workflow = [
     'https://api.pistisai.app/hermes/health',
     'https://pistisai.app/hermes/health',
     'Ignoring Simon VPS host',
+    'skipping live VPS deploy',
 ]
 for needle in required_workflow:
     if needle not in workflow_text:
