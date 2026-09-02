@@ -158,7 +158,7 @@ if [[ "$RUN_TESTS" == "true" ]]; then
 
     # Run tests from the host. Port 1337 is published from the test-desktop
     # container, and the host has Dart available (via flutter-action or PATH).
-    "$DART_BIN" test test/integration/app_running_integration_test.dart --reporter expanded
+    "$DART_BIN" test test/archive/integration/app_running_integration_test.dart --reporter expanded
     TEST_EXIT_CODE=$?
 
     if [[ $TEST_EXIT_CODE -eq 0 ]]; then

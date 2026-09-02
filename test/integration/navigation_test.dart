@@ -4,7 +4,7 @@ import 'package:pistisai/di/locator.dart';
 import 'package:pistisai/screens/config/config_screen.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
-import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart'
     as settings;
@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -32,7 +33,7 @@ void main() {
 
     connectionManager = ConnectionManagerService(
       openclawGatewayService: GatewayControlService(settingsService),
-      hermesGatewayService: HermesGatewayControlService(),
+      hermesStreamingService: HermesStreamingService(),
       settingsPreferenceService: settingsService,
       autoDetectOnInitialize: false,
     );

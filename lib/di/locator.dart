@@ -29,6 +29,7 @@ import 'package:pistisai/services/tunnel_service.dart';
 import 'package:pistisai/services/tunnel/tunnel_config_manager.dart';
 import 'package:pistisai/services/unified_connection_service.dart';
 import 'package:pistisai/services/user_container_service.dart';
+import 'package:pistisai/services/cloud_connector_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
@@ -57,7 +58,6 @@ import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
-import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/avatar_state_service.dart';
@@ -259,8 +259,16 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
-      // Hermes streaming service for direct Hermes API integration
-      final hermesStreamingService = HermesStreamingService();
+      // Hermes streaming service for direct Hermes API integration.
+      // Discover the local gateway key so desktop chat/voice are authenticated.
+      final hermesUrl = await settingsPreferenceService.getHermesUrl();
+      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
+      final hermesStreamingService = HermesStreamingService(
+        baseUrl: (hermesUrl != null && hermesUrl.isNotEmpty)
+            ? AppConfig.normalizeHermesUrl(hermesUrl)
+            : AppConfig.defaultHermesUrl,
+        apiKey: hermesApiKey,
+      );
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);
 
@@ -454,11 +462,6 @@ Future<void> setupCoreServices() async {
         GatewayControlService(settingsPreferenceService);
     serviceLocator
         .registerSingleton<GatewayControlService>(gatewayControlService);
-
-    // Hermes gateway control service - HTTP-only health monitor for Hermes Agent
-    final hermesGatewayControlService = HermesGatewayControlService();
-    serviceLocator.registerSingleton<HermesGatewayControlService>(
-        hermesGatewayControlService);
 
     // Setup status service - tracks first-run and setup completion
     final setupStatusService = SetupStatusService(
@@ -782,6 +785,14 @@ Future<void> setupAuthenticatedServices() async {
     serviceLocator
         .registerSingleton<UserContainerService>(userContainerService);
 
+    // Cloud connector - device registry + presence for the secure device mesh
+    final cloudConnectorService = CloudConnectorService(
+      authService: authService,
+    );
+    serviceLocator.registerSingleton<CloudConnectorService>(
+      cloudConnectorService,
+    );
+
     // LangChain integration service - requires authentication for provider access
     debugPrint('[ServiceLocator] Initializing LangChainIntegrationService...');
     final langchainIntegrationService = LangChainIntegrationService();
@@ -815,11 +826,10 @@ Future<void> setupAuthenticatedServices() async {
 
     // Connection Manager - requires authentication for tunnel/cloud connections
     final gatewayControlService = serviceLocator.get<GatewayControlService>();
-    final hermesGatewayControlService =
-        serviceLocator.get<HermesGatewayControlService>();
+    final hermesStreamingService = serviceLocator.get<HermesStreamingService>();
     final connectionManager = ConnectionManagerService(
       openclawGatewayService: gatewayControlService,
-      hermesGatewayService: hermesGatewayControlService,
+      hermesStreamingService: hermesStreamingService,
       settingsPreferenceService:
           serviceLocator.get<SettingsPreferenceService>(),
     );
@@ -1029,7 +1039,7 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
           case ProviderType.hermes:
             config = HermesProviderConfiguration(
               providerId: providerId,
-              baseUrl: providerInfo.baseUrl,
+              baseUrl: providerInfo.url,
               timeout: const Duration(seconds: 60),
               enableStreaming: true,
               customSettings: {
@@ -1048,7 +1058,9 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
             try {
               final settings = SettingsPreferenceService();
               await settings.setHermesEnabled(true);
-              await settings.setHermesUrl(providerInfo.baseUrl);
+              // Use the full URL (with port). ProviderInfo.baseUrl strips
+              // the port and breaks chat against :8642.
+              await settings.setHermesUrl(providerInfo.url);
               await settings.setActiveBackend(BackendType.hermes);
               debugPrint(
                   '[ServiceLocator] ✓ Auto-activated Hermes as default runtime');

@@ -11,6 +11,7 @@ on:
       - "Dockerfile.test-desktop"
       - "scripts/start_test_desktop.sh"
       - "scripts/cleanup_virtual.sh"
+      - "test/smoke/**"
       - "test/integration/**"
       - "test/services/hermes_gateway_only_transport_test.dart"
       - ".github/workflows/linux-integration-test.yml"
@@ -24,6 +25,7 @@ on:
       - "Dockerfile.test-desktop"
       - "scripts/start_test_desktop.sh"
       - "scripts/cleanup_virtual.sh"
+      - "test/smoke/**"
       - "test/integration/**"
       - "test/services/hermes_gateway_only_transport_test.dart"
       - ".github/workflows/linux-integration-test.yml"
@@ -46,11 +48,12 @@ jobs:
 
     steps:
       - name: "📥 Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: "🔧 Setup Flutter"
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: "stable"
           cache: true
 
@@ -68,15 +71,20 @@ jobs:
             libgtk-3-dev liblzma-dev libstdc++-12-dev \
             libsecret-1-dev libjsoncpp-dev \
             libnotify-dev libcurl4-openssl-dev \
-            libayatana-appindicator3-dev
+            libayatana-appindicator3-dev \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav
 
       - name: "🐧 flutter build linux --release"
         run: flutter build linux --release
 
-      - name: "🐳 Install Docker Compose"
+      - name: "🐳 Ensure Docker Compose"
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq docker-compose-plugin
+          if ! docker compose version >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq docker-compose-v2 || sudo apt-get install -y -qq docker-compose-plugin
+          fi
+          docker compose version
 
       - name: "🚀 Start test desktop stack"
         run: |
@@ -102,7 +110,7 @@ jobs:
         run: |
           # Run tests from the host — port 1337 is published from
           # the test-desktop container. The host has Dart via flutter-action.
-          dart test test/integration/app_running_integration_test.dart --reporter expanded
+          dart test test/archive/integration/app_running_integration_test.dart --reporter expanded
 
       - name: "📸 Capture failure screenshot"
         if: failure() && steps.integration_tests.outcome == 'failure'
@@ -120,7 +128,7 @@ jobs:
 
       - name: "📤 Upload test recording artifact"
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-recording
           path: test_run.mp4
@@ -129,7 +137,7 @@ jobs:
 
       - name: "📤 Upload failure screenshot artifact"
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: failure-screenshot
           path: failure_screenshot.png
@@ -144,7 +152,7 @@ jobs:
 
       - name: "📤 Upload test desktop logs artifact"
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-desktop-logs
           path: test_desktop_logs.txt

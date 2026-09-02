@@ -6,16 +6,16 @@ import {
   expect,
   it,
   jest,
-} from '@jest/globals';
+} from "@jest/globals";
 
 const mockSyncSession = jest.fn();
 
-jest.unstable_mockModule('express-oauth2-jwt-bearer', () => ({
+jest.unstable_mockModule("express-oauth2-jwt-bearer", () => ({
   auth: jest.fn(() => (_req, _res, next) => next()),
 }));
 
 jest.unstable_mockModule(
-  '../../../services/api-backend/auth/auth-service.js',
+  "../../../services/api-backend/auth/auth-service.js",
   () => ({
     AuthService: jest.fn().mockImplementation(() => ({
       initialize: jest.fn().mockResolvedValue(true),
@@ -27,10 +27,9 @@ jest.unstable_mockModule(
 let syncSession;
 
 beforeAll(async () => {
-  process.env.NODE_ENV = 'development';
-  ({ syncSession } = await import(
-    '../../../services/api-backend/middleware/auth.js'
-  ));
+  process.env.NODE_ENV = "development";
+  ({ syncSession } =
+    await import("../../../services/api-backend/middleware/auth.js"));
 });
 
 beforeEach(() => {
@@ -54,15 +53,15 @@ function authenticatedRequest(headers = {}) {
     headers,
     auth: {
       payload: {
-        sub: 'auth0|user-1',
+        sub: "auth0|user-1",
         exp: 4102444800,
       },
     },
   };
 }
 
-describe('syncSession raw token handling', () => {
-  it('does not synchronize a session without a raw bearer token', async () => {
+describe("syncSession raw token handling", () => {
+  it("does not synchronize a session without a raw bearer token", async () => {
     const req = authenticatedRequest();
     const res = responseDouble();
     const next = jest.fn();
@@ -74,8 +73,8 @@ describe('syncSession raw token handling', () => {
     expect(res.status).not.toHaveBeenCalled();
   });
 
-  it('passes the raw bearer token to session synchronization', async () => {
-    const req = authenticatedRequest({ authorization: 'Bearer unique-token' });
+  it("passes the raw bearer token to session synchronization", async () => {
+    const req = authenticatedRequest({ authorization: "Bearer unique-token" });
     const res = responseDouble();
     const next = jest.fn();
 
@@ -83,15 +82,15 @@ describe('syncSession raw token handling', () => {
 
     expect(mockSyncSession).toHaveBeenCalledWith(
       req.auth.payload,
-      'unique-token',
+      "unique-token",
       req,
     );
     expect(next).toHaveBeenCalledTimes(1);
   });
 
-  it('clears the synchronization timeout after a fast success', async () => {
+  it("clears the synchronization timeout after a fast success", async () => {
     jest.useFakeTimers();
-    const req = authenticatedRequest({ authorization: 'Bearer unique-token' });
+    const req = authenticatedRequest({ authorization: "Bearer unique-token" });
 
     await syncSession(req, responseDouble(), jest.fn());
 

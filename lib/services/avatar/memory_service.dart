@@ -157,14 +157,14 @@ class MemoryService {
       final queryEmbedding = await _generateEmbedding(query);
       if (queryEmbedding.isEmpty) {
         debugPrint('[MemoryService] Embedding generation failed, falling back to keyword search');
-        return searchMemories(query);
+        return await searchMemories(query);
       }
 
       // 2. Load all memories with embeddings
       final memories = await database.getAllMemoriesWithEmbeddings();
       if (memories.isEmpty) {
         debugPrint('[MemoryService] No memories with embeddings found, falling back to keyword search');
-        return searchMemories(query);
+        return await searchMemories(query);
       }
 
       // 3. Compute cosine similarity for each memory

@@ -411,9 +411,7 @@ describe("Image Tag Consistency Property Tests", () => {
 
             // Latest tag should always reflect the last build
             const lastBuild = builds[builds.length - 1];
-            expect(lastBuild.latest).toBe(
-              `Pistisai/${repository}:latest`,
-            );
+            expect(lastBuild.latest).toBe(`Pistisai/${repository}:latest`);
             expect(builds.every((b) => b.latest === lastBuild.latest)).toBe(
               true,
             );

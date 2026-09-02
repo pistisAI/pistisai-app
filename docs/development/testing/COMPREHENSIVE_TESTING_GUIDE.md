@@ -2,123 +2,96 @@
 
 This guide describes the current test entry points for Pistisai.
 
-## Test Layout
+## CI gates (fast path)
+
+Every PR to `main` runs:
+
+| Gate | Command | What it covers |
+| --- | --- | --- |
+| Flutter analyze | `flutter analyze lib/` | Static analysis |
+| Flutter smoke | `npm run test:ci:flutter` | Security + basic allowlist (see `scripts/ci/flutter_security_basic_tests.sh`) |
+| Backend lint | `cd services/api-backend && npm run lint` | ESLint |
+| Backend security | `cd services/api-backend && npm run test:ci:security` | Auth, RBAC, validation, rate limits, connector hardening |
+| Linux desktop smoke | `.github/workflows/linux-integration-test.yml` | Docker desktop boot + `/health` |
+| Web E2E smoke | `.github/workflows/web-e2e.yml` | Playwright splash/smoke |
+
+Workflow triggers: **push to `main`** and **pull requests to `main`** only (no duplicate runs on feature-branch push).
+
+## Test layout
 
 | Path | Purpose |
 | --- | --- |
-| `test/` | Flutter tests, integration tests, E2E specs, root API backend Jest tests |
+| `test/smoke/` | Minimal Flutter smoke tests (app init, pump, main args) |
+| `test/integration/` | Small retained integration tests (navigation, settings, evolution) |
+| `test/archive/` | Legacy property/theming tests — **not in CI** |
 | `test/api-backend/` | API backend Jest tests |
-| `test/services/` | Flutter service tests |
-| `test/widgets/` | Flutter widget tests |
-| `test/integration/` | Flutter integration/property tests and selected JS integration tests |
-| `test/e2e/` | Playwright-style E2E specs |
-| `test/powershell/` | PowerShell test scripts |
-| `services/sdk/tests/` | SDK Jest tests |
-| `services/streaming-proxy/src/` | Streaming proxy TypeScript unit tests |
+| `test/api-backend/security/` | Auth, session sync, cert revocation, developer bypass |
+| `test/services/` | Flutter service unit tests (subset in CI allowlist) |
+| `test/e2e/` | Playwright smoke specs |
 
-## Flutter Tests
-
-Run from the repository root:
+## Flutter tests
 
 ```bash
-flutter analyze
-flutter test
-flutter test test/services/avatar_state_service_test.dart
-flutter test --coverage
+flutter analyze lib/
+
+# CI-equivalent smoke + security/basic allowlist
+npm run test:ci:flutter
+
+# Optional: full archived theming/property suite (slow)
+npm run test:archive:flutter
+
+# Single file
+flutter test test/smoke/widget_test.dart
 ```
 
-Use Flutter tests for app services, widgets, platform abstraction, settings, onboarding, avatar, vision, and desktop-control behavior.
+## Backend tests
 
-## Root Node Tests
-
-Run from the repository root:
+From `services/api-backend/`:
 
 ```bash
-npm test
-```
-
-Root Jest uses `jest.config.js` and matches `**/test/**/*.test.js`. The config intentionally ignores several tests that require live infrastructure.
-
-## API Backend Tests
-
-Run from `services/api-backend/`:
-
-```bash
-npm test
-npm run test:unit
-npm run test:integration
-npm run test:auth
-npm run test:security
-npm run test:tunnel
-npm run test:user-isolation
-```
-
-API backend tests live in `test/api-backend/` at the repository root.
-
-Single test example:
-
-```bash
-cd services/api-backend
-npm test ../../test/api-backend/security/authentication-authorization.test.js
-```
-
-## Streaming Proxy Tests
-
-Run from `services/streaming-proxy/`:
-
-```bash
-npm test
-npm run build
 npm run lint
+npm run test:ci:security          # CI gate
+npm run test:security:verbose     # all files under test/api-backend/security/
+npm run test:auth                 # authentication-authorization only
+npm run test:full                 # from repo root — broader Jest sweep
 ```
 
-The streaming proxy uses Node `>=22 <25`, ESM, TypeScript, and `ts-jest`.
-
-## SDK Tests
-
-Run from `services/sdk/`:
+From repo root:
 
 ```bash
-npm run build
-npm test
-npm run lint
+npm test                          # alias for test:ci:security
+npm run test:full                 # all non-ignored Jest tests under test/
 ```
 
-The SDK supports Node `>=18`.
+Security CI config: `services/api-backend/jest.ci-security.config.js`
 
-## PowerShell Tests
+## Local infrastructure tests
 
-PowerShell tests live under `test/powershell/`.
-
-```powershell
-pwsh test/powershell/CI-TestRunner.ps1
-```
-
-## Documentation Tests
-
-Canonical docs:
+Requires Hermes, Ollama, and/or api-backend running locally:
 
 ```bash
-npm run docs:links
+./scripts/run_local_integration_tests.sh
+dart test test/archive/integration/local_demo_test.dart
+dart test test/archive/integration/setup_wizard_test.dart
 ```
 
-Full markdown tree:
+Use `dart test` (not `flutter test`) for HTTP probes — `flutter test` blocks real `HttpClient`.
 
-```bash
-npm run docs:links:all
-```
+## Other packages
 
-The full-tree command currently covers historical docs as well. It is useful during cleanup, but the canonical command is the quality gate for current docs.
+| Package | Command |
+| --- | --- |
+| Streaming proxy | `cd services/streaming-proxy && npm test` |
+| SDK | `cd services/sdk && npm run build && npm test` |
+| OpenClaw skills | `cd services/openclaw-skills/pistisai && npm test` |
 
-## Environment Notes
+## Notes
 
-- API backend and streaming proxy require Node `>=22 <25`.
-- SDK requires Node `>=18`.
-- Backend database/integration tests may require PostgreSQL, Redis, Auth0-like JWT configuration, or other live services.
-- Flutter web/native tests must respect conditional imports and platform stubs.
+- `user-isolation.test.js` is documented historically but not present yet; user isolation is partially covered by `authentication-authorization.test.js` until a dedicated test is restored.
+- Property/deployment Jest tests and `*-integration.test.js` files are excluded from default runs via `testPathIgnorePatterns` — use `npm run test:full` locally when needed.
+- Archived Flutter tests live under `test/archive/` with rationale in `test/archive/README.md`.
 
-## Related Documentation
+## Related documentation
 
-- [Developer Onboarding](../DEVELOPER_ONBOARDING.md)
+- [API Security Testing](./API_SECURITY_TESTING.md)
 - [Development Workflow](../DEVELOPMENT_WORKFLOW.md)
-- [System Architecture](../../architecture/SYSTEM_ARCHITECTURE.md)

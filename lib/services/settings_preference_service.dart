@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/app_config.dart';
+
 enum BackendType { openclaw, hermes }
 
 class SettingsPreferenceService {
@@ -387,7 +389,11 @@ class SettingsPreferenceService {
   /// Hermes API server URL (default: http://127.0.0.1:8642)
   Future<String?> getHermesUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_hermesUrlKey);
+    final stored = prefs.getString(_hermesUrlKey);
+    if (stored == null || stored.isEmpty) {
+      return stored;
+    }
+    return AppConfig.normalizeHermesUrl(stored);
   }
 
   Future<void> setHermesUrl(String? value) async {
@@ -395,7 +401,7 @@ class SettingsPreferenceService {
     if (value == null || value.isEmpty) {
       await prefs.remove(_hermesUrlKey);
     } else {
-      await prefs.setString(_hermesUrlKey, value);
+      await prefs.setString(_hermesUrlKey, AppConfig.normalizeHermesUrl(value));
     }
   }
 

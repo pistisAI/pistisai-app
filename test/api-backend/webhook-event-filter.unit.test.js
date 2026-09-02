@@ -7,9 +7,8 @@
 
 import { jest, describe, it, expect } from "@jest/globals";
 
-const { WebhookEventFilter } = await import(
-  "../../services/api-backend/services/webhook-event-filter.js"
-);
+const { WebhookEventFilter } =
+  await import("../../services/api-backend/services/webhook-event-filter.js");
 
 describe("WebhookEventFilter", () => {
   let filter;
@@ -57,7 +56,7 @@ describe("WebhookEventFilter", () => {
       const result = filter.validateFilterConfig({ type: "invalid" });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        'Filter type must be "include" or "exclude"'
+        'Filter type must be "include" or "exclude"',
       );
     });
 
@@ -75,7 +74,7 @@ describe("WebhookEventFilter", () => {
       });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Event pattern at index 1 must be a non-empty string"
+        "Event pattern at index 1 must be a non-empty string",
       );
     });
 
@@ -85,7 +84,7 @@ describe("WebhookEventFilter", () => {
       });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Event pattern at index 0 must be a non-empty string"
+        "Event pattern at index 0 must be a non-empty string",
       );
     });
 
@@ -95,7 +94,7 @@ describe("WebhookEventFilter", () => {
       });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Invalid event pattern format: invalid pattern!@#"
+        "Invalid event pattern format: invalid pattern!@#",
       );
     });
 
@@ -154,9 +153,7 @@ describe("WebhookEventFilter", () => {
         rateLimit: { maxEvents: "not-number" },
       });
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain(
-        "Rate limit maxEvents must be a number"
-      );
+      expect(result.errors).toContain("Rate limit maxEvents must be a number");
     });
 
     it("should reject non-number windowSeconds in rate limit", () => {
@@ -165,7 +162,7 @@ describe("WebhookEventFilter", () => {
       });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        "Rate limit windowSeconds must be a number"
+        "Rate limit windowSeconds must be a number",
       );
     });
 
@@ -228,31 +225,31 @@ describe("WebhookEventFilter", () => {
 
     it("should reject invalid operator", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "bad", value: "test" })
+        filter._isValidPropertyFilter({ operator: "bad", value: "test" }),
       ).toBe(false);
     });
 
     it("should accept equals with string value", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "equals", value: "active" })
+        filter._isValidPropertyFilter({ operator: "equals", value: "active" }),
       ).toBe(true);
     });
 
     it("should accept equals with number value", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "equals", value: 42 })
+        filter._isValidPropertyFilter({ operator: "equals", value: 42 }),
       ).toBe(true);
     });
 
     it("should accept equals with boolean value", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "equals", value: true })
+        filter._isValidPropertyFilter({ operator: "equals", value: true }),
       ).toBe(true);
     });
 
     it("should accept contains operator", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "contains", value: "test" })
+        filter._isValidPropertyFilter({ operator: "contains", value: "test" }),
       ).toBe(true);
     });
 
@@ -261,13 +258,13 @@ describe("WebhookEventFilter", () => {
         filter._isValidPropertyFilter({
           operator: "startsWith",
           value: "tun",
-        })
+        }),
       ).toBe(true);
     });
 
     it("should accept endsWith operator", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "endsWith", value: "nel" })
+        filter._isValidPropertyFilter({ operator: "endsWith", value: "nel" }),
       ).toBe(true);
     });
 
@@ -276,25 +273,25 @@ describe("WebhookEventFilter", () => {
         filter._isValidPropertyFilter({
           operator: "in",
           value: ["a", "b"],
-        })
+        }),
       ).toBe(true);
     });
 
     it("should reject in operator with non-array value", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "in", value: "not-array" })
+        filter._isValidPropertyFilter({ operator: "in", value: "not-array" }),
       ).toBe(false);
     });
 
     it("should accept regex operator with valid regex", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "regex", value: "^test.*$" })
+        filter._isValidPropertyFilter({ operator: "regex", value: "^test.*$" }),
       ).toBe(true);
     });
 
     it("should reject regex operator with invalid regex", () => {
       expect(
-        filter._isValidPropertyFilter({ operator: "regex", value: "[invalid" })
+        filter._isValidPropertyFilter({ operator: "regex", value: "[invalid" }),
       ).toBe(false);
     });
   });
@@ -311,7 +308,7 @@ describe("WebhookEventFilter", () => {
     it("should match event with include type", () => {
       const result = filter.matchesFilter(
         { type: "tunnel.created" },
-        { type: "include", eventPatterns: ["tunnel.*"] }
+        { type: "include", eventPatterns: ["tunnel.*"] },
       );
       expect(result).toBe(true);
     });
@@ -319,7 +316,7 @@ describe("WebhookEventFilter", () => {
     it("should reject event not matching include patterns", () => {
       const result = filter.matchesFilter(
         { type: "user.login" },
-        { type: "include", eventPatterns: ["tunnel.*"] }
+        { type: "include", eventPatterns: ["tunnel.*"] },
       );
       expect(result).toBe(false);
     });
@@ -327,7 +324,7 @@ describe("WebhookEventFilter", () => {
     it("should reject event matching exclude patterns", () => {
       const result = filter.matchesFilter(
         { type: "tunnel.created" },
-        { type: "exclude", eventPatterns: ["tunnel.*"] }
+        { type: "exclude", eventPatterns: ["tunnel.*"] },
       );
       expect(result).toBe(false);
     });
@@ -335,7 +332,7 @@ describe("WebhookEventFilter", () => {
     it("should allow event not matching exclude patterns", () => {
       const result = filter.matchesFilter(
         { type: "user.login" },
-        { type: "exclude", eventPatterns: ["tunnel.*"] }
+        { type: "exclude", eventPatterns: ["tunnel.*"] },
       );
       expect(result).toBe(true);
     });
@@ -347,7 +344,7 @@ describe("WebhookEventFilter", () => {
           propertyFilters: {
             status: { operator: "equals", value: "active" },
           },
-        }
+        },
       );
       expect(result).toBe(true);
     });
@@ -359,7 +356,7 @@ describe("WebhookEventFilter", () => {
           propertyFilters: {
             status: { operator: "equals", value: "active" },
           },
-        }
+        },
       );
       expect(result).toBe(false);
     });
@@ -371,7 +368,7 @@ describe("WebhookEventFilter", () => {
           propertyFilters: {
             "data.status": { operator: "equals", value: "active" },
           },
-        }
+        },
       );
       expect(result).toBe(true);
     });
@@ -383,7 +380,7 @@ describe("WebhookEventFilter", () => {
           propertyFilters: {
             "data.status": { operator: "equals", value: "active" },
           },
-        }
+        },
       );
       expect(result).toBe(false);
     });
@@ -391,7 +388,7 @@ describe("WebhookEventFilter", () => {
     it("should default to include type when type is not specified", () => {
       const result = filter.matchesFilter(
         { type: "tunnel.created" },
-        { eventPatterns: ["tunnel.*"] }
+        { eventPatterns: ["tunnel.*"] },
       );
       expect(result).toBe(true);
     });
@@ -399,7 +396,7 @@ describe("WebhookEventFilter", () => {
     it("should match with global wildcard pattern", () => {
       const result = filter.matchesFilter(
         { type: "anything.here" },
-        { eventPatterns: ["*"] }
+        { eventPatterns: ["*"] },
       );
       expect(result).toBe(true);
     });
@@ -413,7 +410,7 @@ describe("WebhookEventFilter", () => {
           propertyFilters: {
             region: { operator: "equals", value: "us-east" },
           },
-        }
+        },
       );
       expect(result).toBe(true);
     });
@@ -427,7 +424,7 @@ describe("WebhookEventFilter", () => {
           propertyFilters: {
             region: { operator: "equals", value: "us-east" },
           },
-        }
+        },
       );
       expect(result).toBe(false);
     });
@@ -436,20 +433,20 @@ describe("WebhookEventFilter", () => {
   describe("_matchesEventPattern", () => {
     it("should match exact event type", () => {
       expect(
-        filter._matchesEventPattern("tunnel.created", ["tunnel.created"])
+        filter._matchesEventPattern("tunnel.created", ["tunnel.created"]),
       ).toBe(true);
     });
 
     it("should match wildcard suffix", () => {
-      expect(
-        filter._matchesEventPattern("tunnel.created", ["tunnel.*"])
-      ).toBe(true);
+      expect(filter._matchesEventPattern("tunnel.created", ["tunnel.*"])).toBe(
+        true,
+      );
     });
 
     it("should match wildcard prefix", () => {
-      expect(
-        filter._matchesEventPattern("tunnel.created", ["*.created"])
-      ).toBe(true);
+      expect(filter._matchesEventPattern("tunnel.created", ["*.created"])).toBe(
+        true,
+      );
     });
 
     it("should match global wildcard", () => {
@@ -457,9 +454,9 @@ describe("WebhookEventFilter", () => {
     });
 
     it("should not match non-matching pattern", () => {
-      expect(
-        filter._matchesEventPattern("user.login", ["tunnel.*"])
-      ).toBe(false);
+      expect(filter._matchesEventPattern("user.login", ["tunnel.*"])).toBe(
+        false,
+      );
     });
 
     it("should match any of multiple patterns", () => {
@@ -467,14 +464,14 @@ describe("WebhookEventFilter", () => {
         filter._matchesEventPattern("tunnel.created", [
           "user.*",
           "tunnel.created",
-        ])
+        ]),
       ).toBe(true);
     });
 
     it("should be case insensitive", () => {
-      expect(
-        filter._matchesEventPattern("TUNNEL.CREATED", ["tunnel.*"])
-      ).toBe(true);
+      expect(filter._matchesEventPattern("TUNNEL.CREATED", ["tunnel.*"])).toBe(
+        true,
+      );
     });
   });
 
@@ -484,15 +481,15 @@ describe("WebhookEventFilter", () => {
     });
 
     it("should get nested property", () => {
-      expect(
-        filter._getNestedProperty({ a: { b: "deep" } }, "a.b")
-      ).toBe("deep");
+      expect(filter._getNestedProperty({ a: { b: "deep" } }, "a.b")).toBe(
+        "deep",
+      );
     });
 
     it("should get deeply nested property", () => {
-      expect(
-        filter._getNestedProperty({ a: { b: { c: 42 } } }, "a.b.c")
-      ).toBe(42);
+      expect(filter._getNestedProperty({ a: { b: { c: 42 } } }, "a.b.c")).toBe(
+        42,
+      );
     });
 
     it("should return undefined for missing property", () => {
@@ -501,7 +498,7 @@ describe("WebhookEventFilter", () => {
 
     it("should return undefined for missing nested path", () => {
       expect(
-        filter._getNestedProperty({ a: { b: 1 } }, "a.c.d")
+        filter._getNestedProperty({ a: { b: 1 } }, "a.c.d"),
       ).toBeUndefined();
     });
   });
@@ -512,7 +509,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("active", {
           operator: "equals",
           value: "active",
-        })
+        }),
       ).toBe(true);
     });
 
@@ -521,7 +518,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("inactive", {
           operator: "equals",
           value: "active",
-        })
+        }),
       ).toBe(false);
     });
 
@@ -530,7 +527,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("hello world", {
           operator: "contains",
           value: "world",
-        })
+        }),
       ).toBe(true);
     });
 
@@ -539,7 +536,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("hello", {
           operator: "contains",
           value: "world",
-        })
+        }),
       ).toBe(false);
     });
 
@@ -548,7 +545,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("tunnel.created", {
           operator: "startsWith",
           value: "tunnel",
-        })
+        }),
       ).toBe(true);
     });
 
@@ -557,7 +554,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("user.login", {
           operator: "startsWith",
           value: "tunnel",
-        })
+        }),
       ).toBe(false);
     });
 
@@ -566,7 +563,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("tunnel.created", {
           operator: "endsWith",
           value: "created",
-        })
+        }),
       ).toBe(true);
     });
 
@@ -575,7 +572,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("active", {
           operator: "in",
           value: ["active", "pending"],
-        })
+        }),
       ).toBe(true);
     });
 
@@ -584,7 +581,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("deleted", {
           operator: "in",
           value: ["active", "pending"],
-        })
+        }),
       ).toBe(false);
     });
 
@@ -593,7 +590,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("tunnel-123", {
           operator: "regex",
           value: "^tunnel-\\d+$",
-        })
+        }),
       ).toBe(true);
     });
 
@@ -602,7 +599,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("user-abc", {
           operator: "regex",
           value: "^tunnel-\\d+$",
-        })
+        }),
       ).toBe(false);
     });
 
@@ -611,7 +608,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter("any", {
           operator: "unknown",
           value: "any",
-        })
+        }),
       ).toBe(false);
     });
 
@@ -620,7 +617,7 @@ describe("WebhookEventFilter", () => {
         filter._matchesPropertyFilter(12345, {
           operator: "contains",
           value: "34",
-        })
+        }),
       ).toBe(true);
     });
   });

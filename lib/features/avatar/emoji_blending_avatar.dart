@@ -41,7 +41,7 @@ class EmojiBlendingAvatar extends StatefulWidget {
 }
 
 class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _bounceController;
 
@@ -322,17 +322,14 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
           child: Center(
             child: AnimatedSwitcher(
               duration: widget.transitionDuration,
-              switchInCurve: Curves.easeOutBack,
+              switchInCurve: Curves.easeOut,
               switchOutCurve: Curves.easeIn,
               transitionBuilder: (Widget child, Animation<double> animation) {
                 return FadeTransition(
                   opacity: animation,
                   child: ScaleTransition(
                     scale: Tween<double>(begin: 0.5, end: 1.0)
-                        .animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.elasticOut,
-                    )),
+                        .animate(animation),
                     child: child,
                   ),
                 );

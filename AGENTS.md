@@ -47,7 +47,8 @@ Run from the repository root unless noted otherwise.
 ```bash
 flutter pub get
 flutter analyze
-flutter test
+npm run test:ci:flutter
+flutter test test/smoke/
 flutter test test/services/some_test.dart
 flutter test --coverage
 flutter format .
@@ -58,7 +59,7 @@ flutter build linux --release
 flutter build web --release
 ```
 
-- Main app package: `pubspec.yaml`, package name `pistisai`, version `1.0.1+1`.
+- Main app package: `pubspec.yaml`, package name `pistisai`, version `1.0.2+2`.
 - Dart SDK constraint: `>=3.5.0 <4.0.0`.
 - Lints: `analysis_options.yaml` includes `flutter_lints`, strong mode, `implicit-casts: false`, `implicit-dynamic: false`, `prefer_single_quotes`, and generated-file excludes.
 - Shared Flutter package: `lib/shared/pubspec.yaml`, package name `pistisai_shared`, Dart SDK `>=3.9.0 <4.0.0`.
@@ -95,13 +96,13 @@ Directory: `services/api-backend/`
 npm install
 npm run dev
 npm test
-npm run test:unit
-npm run test:integration
-npm run test:auth
+npm run test:ci:security
 npm run test:security
 npm run test:security:verbose
+npm run test:auth
+npm run test:unit
+npm run test:integration
 npm run test:tunnel
-npm run test:user-isolation
 npm run lint
 npm run format
 npm run db:migrate
@@ -109,7 +110,7 @@ npm run db:validate
 npm run db:stats
 ```
 
-- Node engine: `>=22.0.0 <25.0.0`.
+- Node engine: `>=22.0.0 <27.0.0`.
 - Module type: ESM (`"type": "module"`).
 - Main server: `services/api-backend/server.js`, default port `8080`.
 - Tests live at repo root in `test/api-backend/`, not inside the service directory.
@@ -131,7 +132,7 @@ npm run lint
 npm run format
 ```
 
-- Node engine: `>=22.0.0 <25.0.0`.
+- Node engine: `>=22.0.0 <27.0.0`.
 - Module type: ESM (`"type": "module"`).
 - Runtime entry: `proxy-server.js`, default port `3001`.
 - TypeScript source and tests live under `services/streaming-proxy/src/`.
@@ -322,7 +323,7 @@ import 'thing.dart'
 - Changing Drift schema or queries requires `dart run build_runner build --delete-conflicting-outputs`.
 - Generated Dart files are excluded from analysis and should not be edited manually.
 - API backend tests live in root `test/api-backend/`, not in `services/api-backend/test/`.
-- API backend and streaming proxy enforce Node `>=22 <25`; SDK only requires Node `>=18`; Tailscale Relay has no declared engine.
+- API backend and streaming proxy enforce Node `>=22 <27` (CI runs Node 26); SDK only requires Node `>=18`; Tailscale Relay has no declared engine.
 - Auth backend has no `npm run dev`; use `node handlers.js`.
 - Tailscale Relay uses Express 4 while API backend and auth backend use Express 5.
 - Root `package.json` is not the frontend package; Flutter metadata is in `pubspec.yaml`.
@@ -334,7 +335,7 @@ import 'thing.dart'
 ## CI expectations and merge rules
 
 - CI blocks merge on failing quality gates; do not use blanket `continue-on-error: true` on test gates.
-- Verify local gates before pushing: `flutter analyze lib/`, `flutter test`, backend `npm run lint && npm test`.
+- Verify local gates before pushing: `flutter analyze lib/`, `npm run test:ci:flutter`, backend `npm run lint && npm run test:ci:security`.
 - Inspect PR checks after push; do not merge if PR checks are absent or failing.
 - If GitHub Actions shows `startup_failure` with `jobs: []`, treat it as a workflow-level blocker and do not consider the branch green until an actual job runs.
 - Keep PRs focused; split follow-up work into separate issues/branches if scope grows.

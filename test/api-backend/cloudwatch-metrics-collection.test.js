@@ -33,8 +33,7 @@ const VALID_NAMESPACES = [
 function generatePodMetric(options = {}) {
   return {
     podName: options.podName !== undefined ? options.podName : "test-pod",
-    namespace:
-      options.namespace !== undefined ? options.namespace : "Pistisai",
+    namespace: options.namespace !== undefined ? options.namespace : "Pistisai",
     containerName:
       options.containerName !== undefined ? options.containerName : "app",
     cpuUsage:

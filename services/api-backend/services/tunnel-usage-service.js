@@ -558,13 +558,21 @@ export class TunnelUsageService {
           connectionCharge: 0,
         };
       } else if (userTier === 'enterprise') {
-        // Enterprise tier: custom pricing (placeholder)
-        billingAmount = 0; // Custom pricing
+        // Enterprise tier: config-driven contract pricing. Defaults mirror the
+        // premium structure at enterprise volume unless overridden via env
+        // (ENTERPRISE_BASE_CHARGE / ENTERPRISE_PER_GB). #145
+        const dataTransferGB =
+          (aggregation.totalDataTransferredBytes +
+            aggregation.totalDataReceivedBytes) /
+          (1024 * 1024 * 1024);
+        const baseCharge = parseFloat(process.env.ENTERPRISE_BASE_CHARGE ?? '25');
+        const perGb = parseFloat(process.env.ENTERPRISE_PER_GB ?? '0.005');
+        billingAmount = baseCharge + dataTransferGB * perGb;
         breakdown = {
-          baseCharge: 0,
-          dataTransferCharge: 0,
+          baseCharge,
+          dataTransferCharge: dataTransferGB * perGb,
           connectionCharge: 0,
-          note: 'Custom pricing - contact sales',
+          customPricing: true,
         };
       }
 

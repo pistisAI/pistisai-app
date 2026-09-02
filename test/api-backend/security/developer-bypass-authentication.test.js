@@ -44,7 +44,8 @@ describe("Developer Mock Bypass Authentication", () => {
     // Set NODE_ENV to development so the bypass code paths are active and testable
     process.env.NODE_ENV = "development";
 
-    const authModule = await import("../../../services/api-backend/middleware/auth.js");
+    const authModule =
+      await import("../../../services/api-backend/middleware/auth.js");
     checkJwt = authModule.checkJwt;
     optionalAuth = authModule.optionalAuth;
 

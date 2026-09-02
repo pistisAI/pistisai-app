@@ -13,6 +13,13 @@ analyzer:
     - lib/**/*.freezed.dart
     # Standalone CLI debug scripts (not tests or app code)
     - test_native_channels.dart
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
     # DO NOT exclude services/ or test/ directories - they must be linted for code quality
 
 linter:

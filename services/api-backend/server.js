@@ -67,6 +67,9 @@ import userRoutes from './routes/users.js';
 import userProfileRoutes, {
   initializeUserProfileService,
 } from './routes/user-profile.js';
+import cloudConnectorRoutes, {
+  initializeCloudConnectorService,
+} from './routes/cloud-connector.js';
 import sessionRoutes from './routes/sessions.js';
 import clientLogRoutes from './routes/client-logs.js';
 import webhookRoutes from './routes/webhooks.js';
@@ -304,12 +307,7 @@ let tunnelRouter = null;
 let monitoringRouter = null;
 if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   // Create WebSocket-based tunnel routes
-  tunnelRouter = createTunnelRoutes(
-    {}, // Config placeholder
-    sshProxy,
-    logger,
-    sshAuthService,
-  );
+  tunnelRouter = createTunnelRoutes(sshProxy, logger, sshAuthService);
 
   // Create monitoring routes
   monitoringRouter = createMonitoringRoutes(sshProxy, logger);
@@ -371,6 +369,7 @@ registerRoutes('/users', userRoutes);
 
 // User profile management routes
 registerRoutes('/users', userProfileRoutes);
+registerRoutes('/cloud', cloudConnectorRoutes);
 
 // API Key management routes (for service-to-service authentication)
 registerRoutes('/api-keys', apiKeysRouter);
@@ -806,6 +805,16 @@ async function initializeTunnelSystem(retries = 10) {
         error: error.message,
       });
       // Don't fail the entire server startup, just log the error
+    }
+
+    // Initialize cloud connector service after database is ready
+    try {
+      await initializeCloudConnectorService();
+      logger.info('Cloud connector service initialized successfully');
+    } catch (error) {
+      logger.error('Failed to initialize cloud connector service', {
+        error: error.message,
+      });
     }
 
     if (LEGACY_TUNNEL_ROUTES_ENABLED) {
