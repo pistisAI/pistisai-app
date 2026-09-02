@@ -56,7 +56,6 @@ static bool save_hbitmap_to_png(HBITMAP hBitmap, const std::string& path) {
   if (!init_gdiplus()) return false;
 
   Gdiplus::Bitmap bitmap(hBitmap, nullptr);
-  CLSID png_clsid;
   CLSID encoder_clsid = {};
 
   // Get PNG encoder CLSID
@@ -619,11 +618,11 @@ static flutter::EncodableValue execute_action(
       else if (key == "space")
         vk = VK_SPACE;
       else if (key.length() == 1)
-        vk = VkKeyScanA(key[0]);
+        vk = static_cast<SHORT>(VkKeyScanA(key[0]));
 
       if (vk != 0) {
-        keybd_event(vk, 0, 0, 0);
-        keybd_event(vk, 0, KEYEVENTF_KEYUP, 0);
+        keybd_event(static_cast<BYTE>(vk), 0, 0, 0);
+        keybd_event(static_cast<BYTE>(vk), 0, KEYEVENTF_KEYUP, 0);
         success = true;
       }
     }
@@ -665,10 +664,7 @@ void PlatformChannelsMethodCallHandler(
     const std::string& method,
     std::unique_ptr<flutter::MethodCall<flutter::EncodableValue>> method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  const auto* args =
-      method_call->arguments()
-          ? std::get_if<flutter::EncodableValue>(method_call->arguments())
-          : nullptr;
+  const auto* args = method_call->arguments();
 
   flutter::EncodableValue response;
 
@@ -724,65 +720,76 @@ void PlatformChannelsMethodCallHandler(
 // Registration
 // ============================================================================
 
-void RegisterPlatformChannels(flutter::PluginRegistrar* registrar) {
+void RegisterPlatformChannels(flutter::PluginRegistrar& registrar) {
   auto channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-      registrar->messenger(), "pistisai/gui_automation",
+      registrar.messenger(), "pistisai/gui_automation",
       &flutter::StandardMethodCodec::GetInstance());
 
   channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
+        auto method_call = std::make_unique<flutter::MethodCall<flutter::EncodableValue>>(
+            call.method_name(), call.arguments() ? std::make_unique<flutter::EncodableValue>(*call.arguments()) : nullptr);
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            method_call->method_name(), std::move(method_call), std::move(result));
       });
 
   auto region_channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "pistisai/region_capture",
+          registrar.messenger(), "pistisai/region_capture",
           &flutter::StandardMethodCodec::GetInstance());
 
   region_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
+        auto method_call = std::make_unique<flutter::MethodCall<flutter::EncodableValue>>(
+            call.method_name(), call.arguments() ? std::make_unique<flutter::EncodableValue>(*call.arguments()) : nullptr);
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            method_call->method_name(), std::move(method_call), std::move(result));
       });
 
   auto window_channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "pistisai/window_manager",
+          registrar.messenger(), "pistisai/window_manager",
           &flutter::StandardMethodCodec::GetInstance());
 
   window_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
+        auto method_call = std::make_unique<flutter::MethodCall<flutter::EncodableValue>>(
+            call.method_name(), call.arguments() ? std::make_unique<flutter::EncodableValue>(*call.arguments()) : nullptr);
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            method_call->method_name(), std::move(method_call), std::move(result));
       });
 
   auto camera_channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "pistisai/camera_capture",
+          registrar.messenger(), "pistisai/camera_capture",
           &flutter::StandardMethodCodec::GetInstance());
 
   camera_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
+        auto method_call = std::make_unique<flutter::MethodCall<flutter::EncodableValue>>(
+            call.method_name(), call.arguments() ? std::make_unique<flutter::EncodableValue>(*call.arguments()) : nullptr);
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            method_call->method_name(), std::move(method_call), std::move(result));
       });
 
   auto ocr_channel =
       std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "pistisai/ocr_engine",
+          registrar.messenger(), "pistisai/ocr_engine",
           &flutter::StandardMethodCodec::GetInstance());
 
   ocr_channel->SetMethodCallHandler(
       [](const auto& call, auto result) {
+        auto method_call = std::make_unique<flutter::MethodCall<flutter::EncodableValue>>(
+            call.method_name(), call.arguments() ? std::make_unique<flutter::EncodableValue>(*call.arguments()) : nullptr);
         PlatformChannelsMethodCallHandler(
-            call.method_name(), std::move(call), std::move(result));
+            method_call->method_name(), std::move(method_call), std::move(result));
       });
 
-  // Prevent channels from being destroyed
-  registrar->AddPlugin(std::move(channel));
-  registrar->AddPlugin(std::move(region_channel));
-  registrar->AddPlugin(std::move(window_channel));
-  registrar->AddPlugin(std::move(camera_channel));
-  registrar->AddPlugin(std::move(ocr_channel));
+  // Channels are not plugins; release ownership so they live for the
+  // process lifetime and their method-call handlers stay valid.
+  (void)channel.release();
+  (void)region_channel.release();
+  (void)window_channel.release();
+  (void)camera_channel.release();
+  (void)ocr_channel.release();
 }

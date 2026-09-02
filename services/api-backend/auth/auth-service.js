@@ -19,8 +19,7 @@ export class AuthService {
       AUTH0_JWKS_URI:
         process.env.AUTH0_JWKS_URI ||
         `https://${process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com'}/.well-known/jwks.json`,
-      AUTH0_AUDIENCE:
-        process.env.AUTH0_AUDIENCE || 'https://api.pistisai.app',
+      AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE || 'https://api.pistisai.app',
       SESSION_TIMEOUT: parseInt(process.env.SESSION_TIMEOUT) || 3600000, // 1 hour
       MAX_SESSIONS_PER_USER: parseInt(process.env.MAX_SESSIONS_PER_USER) || 5,
       ...config,
@@ -215,7 +214,10 @@ export class AuthService {
       if (preValidatedPayload) {
         this.logger.info('Using pre-validated token payload');
         payload = preValidatedPayload;
-      } else if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
+      } else if (
+        token === 'mock_dev_access_token' &&
+        process.env.NODE_ENV !== 'production'
+      ) {
         this.logger.info('Using mock developer token bypass');
         payload = {
           iss: `https://${process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com'}/`,
@@ -307,8 +309,13 @@ export class AuthService {
    */
   async validateTokenForWebSocket(token) {
     try {
-      if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
-        this.logger.info('Bypassing WebSocket token verification for mock developer token');
+      if (
+        token === 'mock_dev_access_token' &&
+        process.env.NODE_ENV !== 'production'
+      ) {
+        this.logger.info(
+          'Bypassing WebSocket token verification for mock developer token',
+        );
         return {
           iss: `https://${process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com'}/`,
           sub: 'google-oauth2|102509433531341542550',
@@ -375,8 +382,12 @@ export class AuthService {
         return existingUser.id;
       }
 
-      // 2. Try to find user by email
-      const userEmail = userInfo.email || `${auth0Id}@placeholder.local`;
+      // 2. Try to find user by email (Auth0 should always provide email)
+      if (!userInfo.email) {
+        this.logger.error('Auth0 userInfo missing email claim', { auth0Id });
+        throw new Error('Invalid token: missing email claim in userInfo');
+      }
+      const userEmail = userInfo.email;
       const existingByEmail = await this.runQuery(
         'SELECT id FROM users WHERE email = ?',
         [userEmail],

@@ -1,0 +1,164 @@
+name: "🐧 Linux Integration Tests"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "pubspec.yaml"
+      - "docker-compose.test.yml"
+      - "Dockerfile.test-desktop"
+      - "scripts/start_test_desktop.sh"
+      - "scripts/cleanup_virtual.sh"
+      - "test/smoke/**"
+      - "test/integration/**"
+      - "test/services/hermes_gateway_only_transport_test.dart"
+      - ".github/workflows/linux-integration-test.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "pubspec.yaml"
+      - "docker-compose.test.yml"
+      - "Dockerfile.test-desktop"
+      - "scripts/start_test_desktop.sh"
+      - "scripts/cleanup_virtual.sh"
+      - "test/smoke/**"
+      - "test/integration/**"
+      - "test/services/hermes_gateway_only_transport_test.dart"
+      - ".github/workflows/linux-integration-test.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: linux-integration-test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  actions: read
+
+jobs:
+  build_and_test:
+    name: "🧪 Build + Integration Test (Linux)"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v7
+
+      - name: "🔧 Setup Flutter"
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: "stable"
+          cache: true
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: "🔍 flutter analyze"
+        run: flutter analyze lib/
+
+      - name: "🐧 Install Linux build dependencies"
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev libjsoncpp-dev \
+            libnotify-dev libcurl4-openssl-dev \
+            libayatana-appindicator3-dev \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav
+
+      - name: "🐧 flutter build linux --release"
+        run: flutter build linux --release
+
+      - name: "🐳 Ensure Docker Compose"
+        run: |
+          if ! docker compose version >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq docker-compose-v2 || sudo apt-get install -y -qq docker-compose-plugin
+          fi
+          docker compose version
+
+      - name: "🚀 Start test desktop stack"
+        run: |
+          docker compose -f docker-compose.test.yml up -d --build test-desktop
+
+      - name: "⏳ Wait for app health"
+        run: |
+          for i in {1..60}; do
+            if docker compose -f docker-compose.test.yml exec -T test-desktop curl -sf "http://127.0.0.1:1337/health" >/dev/null 2>&1; then
+              echo "✅ App is healthy!"
+              exit 0
+            fi
+            if [[ $i -eq 60 ]]; then
+              echo "❌ Health check timeout"
+              docker compose -f docker-compose.test.yml logs test-desktop
+              exit 1
+            fi
+            sleep 2
+          done
+
+      - name: "🧪 Run integration tests"
+        id: integration_tests
+        run: |
+          # Run tests from the host — port 1337 is published from
+          # the test-desktop container. The host has Dart via flutter-action.
+          dart test test/archive/integration/app_running_integration_test.dart --reporter expanded
+
+      - name: "📸 Capture failure screenshot"
+        if: failure() && steps.integration_tests.outcome == 'failure'
+        run: |
+          echo "📸 Capturing failure screenshot..."
+          docker compose -f docker-compose.test.yml exec -T test-desktop \
+            bash -c "DISPLAY=:99 import -window root /recordings/failure_screenshot.png" 2>/dev/null || true
+          docker compose -f docker-compose.test.yml cp test-desktop:/recordings/failure_screenshot.png ./failure_screenshot.png 2>/dev/null || true
+
+      - name: "📹 Download test recording"
+        if: always()
+        run: |
+          echo "📹 Downloading test recording..."
+          docker compose -f docker-compose.test.yml cp test-desktop:/recordings/test_run.mp4 ./test_run.mp4 2>/dev/null || true
+
+      - name: "📤 Upload test recording artifact"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-recording
+          path: test_run.mp4
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: "📤 Upload failure screenshot artifact"
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: failure-screenshot
+          path: failure_screenshot.png
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: "📋 Download test logs"
+        if: always()
+        run: |
+          echo "📋 Collecting test desktop logs..."
+          docker compose -f docker-compose.test.yml logs test-desktop > test_desktop_logs.txt 2>&1 || true
+
+      - name: "📤 Upload test desktop logs artifact"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-desktop-logs
+          path: test_desktop_logs.txt
+          retention-days: 7
+
+      - name: "🧹 Cleanup"
+        if: always()
+        run: |
+          docker compose -f docker-compose.test.yml down -v --remove-orphans 2>/dev/null || true

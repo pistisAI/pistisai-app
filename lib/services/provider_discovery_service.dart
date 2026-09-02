@@ -147,7 +147,7 @@ class ProviderDiscoveryService {
     final configuredUrl = await settings.getHermesUrl();
     final apiKey = await settings.getHermesApiKey();
     final baseUrl = (configuredUrl?.isNotEmpty ?? false)
-        ? configuredUrl!
+        ? AppConfig.normalizeHermesUrl(configuredUrl!)
         : AppConfig.defaultHermesUrl;
     final healthUrl = Uri.parse('$baseUrl/health');
 

@@ -20,7 +20,6 @@ class TunnelService extends ChangeNotifier {
   SSHTunnelClient? _client;
   TunnelState _state = const TunnelState();
   Timer? _healthCheckTimer;
-  Timer? _statsTimer;
 
   TunnelService({required AuthService authService})
       : _authService = authService {
@@ -119,7 +118,6 @@ class TunnelService extends ChangeNotifier {
         ));
 
         _startHealthMonitoring();
-        _startStatsCollection();
       } else {
         throw Exception(
             'Connection established but client reports disconnected');
@@ -156,7 +154,6 @@ class TunnelService extends ChangeNotifier {
 
     try {
       _stopHealthMonitoring();
-      _stopStatsCollection();
 
       await _client?.disconnect();
       _client?.dispose();
@@ -272,14 +269,12 @@ class TunnelService extends ChangeNotifier {
           tunnelPort: _client!.tunnelPort,
         ));
         _startHealthMonitoring();
-        _startStatsCollection();
       } else {
         _updateState(_state.copyWith(
           isConnected: false,
           connectedAt: null,
         ));
         _stopHealthMonitoring();
-        _stopStatsCollection();
       }
     }
   }
@@ -308,19 +303,6 @@ class TunnelService extends ChangeNotifier {
     _healthCheckTimer = null;
   }
 
-  void _startStatsCollection() {
-    _statsTimer?.cancel();
-    _statsTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      // Update stats based on client metrics
-      // This is a placeholder - implement based on actual metrics
-    });
-  }
-
-  void _stopStatsCollection() {
-    _statsTimer?.cancel();
-    _statsTimer = null;
-  }
-
   void _updateState(TunnelState newState) {
     _state = newState;
     notifyListeners();
@@ -330,7 +312,6 @@ class TunnelService extends ChangeNotifier {
   void dispose() {
     _authService.isAuthenticated.removeListener(_onAuthChanged);
     _stopHealthMonitoring();
-    _stopStatsCollection();
     _client?.dispose();
     super.dispose();
   }

@@ -82,8 +82,7 @@ const mockAuthMiddleware = (req, res, next) => {
 const mockRBACMiddlewareFactory = () => {
   return (req, res, next) => {
     // Check for admin role in several places to be compatible with both mock and real RBAC
-    const roles =
-      req.auth?.payload?.["https://pistisai.app/roles"] || [];
+    const roles = req.auth?.payload?.["https://pistisai.app/roles"] || [];
     const role = req.auth?.payload?.role;
 
     if (

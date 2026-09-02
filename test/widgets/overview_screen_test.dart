@@ -1,7 +1,7 @@
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/screens/dashboard/overview_screen.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
-import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
@@ -18,7 +18,7 @@ class _FakeOverviewConnectionManager extends ConnectionManagerService {
           openclawGatewayService: GatewayControlService(
             SettingsPreferenceService(),
           ),
-          hermesGatewayService: HermesGatewayControlService(),
+          hermesStreamingService: HermesStreamingService(),
         );
 
   @override

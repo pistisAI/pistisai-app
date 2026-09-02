@@ -236,9 +236,7 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
       });
       const sa2 = generateServiceAccountConfig({ namespace: "monitoring" });
 
-      expect(validateServiceAccountNamespace(sa1, "Pistisai")).toBe(
-        true,
-      );
+      expect(validateServiceAccountNamespace(sa1, "Pistisai")).toBe(true);
       expect(validateServiceAccountNamespace(sa2, "monitoring")).toBe(true);
       expect(sa1.namespace).not.toBe(sa2.namespace);
     });
@@ -249,9 +247,7 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
         podSelector: { app: "web-app" },
       });
 
-      expect(validateNetworkPolicyNamespace(policy, "Pistisai")).toBe(
-        true,
-      );
+      expect(validateNetworkPolicyNamespace(policy, "Pistisai")).toBe(true);
       expect(validateNetworkPolicyPodSelector(policy)).toBe(true);
     });
 
@@ -414,9 +410,7 @@ describe("Kubernetes Resource Isolation - Property Tests", () => {
         namespace: "Pistisai",
       });
 
-      expect(validateNetworkPolicyNamespace(policy, "Pistisai")).toBe(
-        true,
-      );
+      expect(validateNetworkPolicyNamespace(policy, "Pistisai")).toBe(true);
       expect(validateNetworkPolicyNamespace(policy, "monitoring")).toBe(false);
     });
   });

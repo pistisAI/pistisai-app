@@ -32,12 +32,10 @@ jest.unstable_mockModule("uuid", () => ({
   v4: jest.fn(() => "test-uuid-1234"),
 }));
 
-const { default: SubscriptionService } = await import(
-  "../../services/api-backend/services/subscription-service.js"
-);
-const { default: stripeClient } = await import(
-  "../../services/api-backend/services/stripe-client.js"
-);
+const { default: SubscriptionService } =
+  await import("../../services/api-backend/services/subscription-service.js");
+const { default: stripeClient } =
+  await import("../../services/api-backend/services/stripe-client.js");
 
 function createMockDb(queryResults = {}) {
   const queries = [];
@@ -90,14 +88,18 @@ describe("SubscriptionService", () => {
       expect(service._mapSubscriptionStatus("active")).toBe("active");
       expect(service._mapSubscriptionStatus("canceled")).toBe("canceled");
       expect(service._mapSubscriptionStatus("incomplete")).toBe("incomplete");
-      expect(service._mapSubscriptionStatus("incomplete_expired")).toBe("canceled");
+      expect(service._mapSubscriptionStatus("incomplete_expired")).toBe(
+        "canceled",
+      );
       expect(service._mapSubscriptionStatus("past_due")).toBe("past_due");
       expect(service._mapSubscriptionStatus("trialing")).toBe("trialing");
       expect(service._mapSubscriptionStatus("unpaid")).toBe("past_due");
     });
 
     it("should default unknown statuses to incomplete", () => {
-      expect(service._mapSubscriptionStatus("unknown_status")).toBe("incomplete");
+      expect(service._mapSubscriptionStatus("unknown_status")).toBe(
+        "incomplete",
+      );
       expect(service._mapSubscriptionStatus("")).toBe("incomplete");
     });
   });
@@ -127,7 +129,9 @@ describe("SubscriptionService", () => {
         { id: "sub-1", user_id: "user-1", tier: "premium" },
         { id: "sub-2", user_id: "user-1", tier: "free" },
       ];
-      mockDb = createMockDb({ "WHERE user_id = $1": { rows: subs, rowCount: 2 } });
+      mockDb = createMockDb({
+        "WHERE user_id = $1": { rows: subs, rowCount: 2 },
+      });
       service = new SubscriptionService(mockDb);
 
       const result = await service.getUserSubscriptions("user-1");
@@ -136,7 +140,9 @@ describe("SubscriptionService", () => {
     });
 
     it("should return empty array when user has no subscriptions", async () => {
-      mockDb = createMockDb({ "WHERE user_id = $1": { rows: [], rowCount: 0 } });
+      mockDb = createMockDb({
+        "WHERE user_id = $1": { rows: [], rowCount: 0 },
+      });
       service = new SubscriptionService(mockDb);
 
       const result = await service.getUserSubscriptions("user-no-subs");
@@ -155,7 +161,12 @@ describe("SubscriptionService", () => {
 
   describe("createSubscription", () => {
     it("should successfully create a subscription", async () => {
-      const dbSub = { id: "test-uuid-1234", user_id: "user-1", tier: "premium", status: "active" };
+      const dbSub = {
+        id: "test-uuid-1234",
+        user_id: "user-1",
+        tier: "premium",
+        status: "active",
+      };
       let callIndex = 0;
       mockDb.query.mockImplementation(async () => {
         callIndex++;
@@ -200,8 +211,10 @@ describe("SubscriptionService", () => {
       mockDb.query.mockImplementation(async () => {
         callIndex++;
         if (callIndex === 1) return { rows: [{ email: "test@example.com" }] };
-        if (callIndex === 2) return { rows: [{ stripe_customer_id: "cus_existing" }] };
-        if (callIndex === 3) return { rows: [{ id: "test-uuid-1234", status: "active" }] };
+        if (callIndex === 2)
+          return { rows: [{ stripe_customer_id: "cus_existing" }] };
+        if (callIndex === 3)
+          return { rows: [{ id: "test-uuid-1234", status: "active" }] };
         return { rows: [] };
       });
 
@@ -225,9 +238,12 @@ describe("SubscriptionService", () => {
       });
 
       expect(result.success).toBe(true);
-      expect(mockStripe.paymentMethods.attach).toHaveBeenCalledWith("pm_test123", {
-        customer: "cus_existing",
-      });
+      expect(mockStripe.paymentMethods.attach).toHaveBeenCalledWith(
+        "pm_test123",
+        {
+          customer: "cus_existing",
+        },
+      );
       expect(mockStripe.customers.create).not.toHaveBeenCalled();
     });
 
@@ -253,7 +269,9 @@ describe("SubscriptionService", () => {
         return { rows: [] };
       });
 
-      mockStripe.customers.create.mockRejectedValue(new Error("Stripe API error"));
+      mockStripe.customers.create.mockRejectedValue(
+        new Error("Stripe API error"),
+      );
 
       const result = await service.createSubscription({
         userId: "user-1",
@@ -271,7 +289,9 @@ describe("SubscriptionService", () => {
     it("should return error when subscription not found", async () => {
       mockDb.query.mockResolvedValue({ rows: [] });
 
-      const result = await service.updateSubscription("nonexistent", { tier: "enterprise" });
+      const result = await service.updateSubscription("nonexistent", {
+        tier: "enterprise",
+      });
       expect(result.success).toBe(false);
     });
 
@@ -280,7 +300,15 @@ describe("SubscriptionService", () => {
       mockDb.query.mockImplementation(async (sql) => {
         callIndex++;
         if (sql.includes("WHERE id = $1") && callIndex === 1) {
-          return { rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1", tier: "premium" }] };
+          return {
+            rows: [
+              {
+                id: "sub-1",
+                stripe_subscription_id: "stripe_sub_1",
+                tier: "premium",
+              },
+            ],
+          };
         }
         if (sql.includes("UPDATE")) {
           return { rows: [{ id: "sub-1", tier: "premium", status: "active" }] };
@@ -301,12 +329,16 @@ describe("SubscriptionService", () => {
         canceled_at: null,
       });
 
-      const result = await service.updateSubscription("sub-1", { priceId: "price_new" });
+      const result = await service.updateSubscription("sub-1", {
+        priceId: "price_new",
+      });
 
       expect(result.success).toBe(true);
       expect(mockStripe.subscriptions.update).toHaveBeenCalledWith(
         "stripe_sub_1",
-        expect.objectContaining({ items: [{ id: "si_test", price: "price_new" }] }),
+        expect.objectContaining({
+          items: [{ id: "si_test", price: "price_new" }],
+        }),
       );
     });
 
@@ -315,7 +347,9 @@ describe("SubscriptionService", () => {
       mockDb.query.mockImplementation(async (sql) => {
         callIndex++;
         if (sql.includes("WHERE id = $1") && callIndex === 1) {
-          return { rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }] };
+          return {
+            rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }],
+          };
         }
         if (sql.includes("UPDATE")) {
           return { rows: [{ id: "sub-1", cancel_at_period_end: true }] };
@@ -332,25 +366,36 @@ describe("SubscriptionService", () => {
         canceled_at: null,
       });
 
-      const result = await service.updateSubscription("sub-1", { cancelAtPeriodEnd: true });
+      const result = await service.updateSubscription("sub-1", {
+        cancelAtPeriodEnd: true,
+      });
 
       expect(result.success).toBe(true);
-      expect(mockStripe.subscriptions.update).toHaveBeenCalledWith("stripe_sub_1", {
-        cancel_at_period_end: true,
-      });
+      expect(mockStripe.subscriptions.update).toHaveBeenCalledWith(
+        "stripe_sub_1",
+        {
+          cancel_at_period_end: true,
+        },
+      );
     });
 
     it("should handle Stripe errors during update", async () => {
       mockDb.query.mockImplementation(async (sql) => {
         if (sql.includes("WHERE id = $1")) {
-          return { rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }] };
+          return {
+            rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }],
+          };
         }
         return { rows: [] };
       });
 
-      mockStripe.subscriptions.update.mockRejectedValue(new Error("Stripe update failed"));
+      mockStripe.subscriptions.update.mockRejectedValue(
+        new Error("Stripe update failed"),
+      );
 
-      const result = await service.updateSubscription("sub-1", { cancelAtPeriodEnd: true });
+      const result = await service.updateSubscription("sub-1", {
+        cancelAtPeriodEnd: true,
+      });
 
       expect(result.success).toBe(false);
       expect(stripeClient.handleStripeError).toHaveBeenCalled();
@@ -369,7 +414,9 @@ describe("SubscriptionService", () => {
       mockDb.query.mockImplementation(async (sql) => {
         callIndex++;
         if (sql.includes("WHERE id = $1") && callIndex === 1) {
-          return { rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }] };
+          return {
+            rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }],
+          };
         }
         if (sql.includes("UPDATE")) {
           return { rows: [{ id: "sub-1", status: "canceled" }] };
@@ -387,7 +434,9 @@ describe("SubscriptionService", () => {
       const result = await service.cancelSubscription("sub-1", true);
 
       expect(result.success).toBe(true);
-      expect(mockStripe.subscriptions.cancel).toHaveBeenCalledWith("stripe_sub_1");
+      expect(mockStripe.subscriptions.cancel).toHaveBeenCalledWith(
+        "stripe_sub_1",
+      );
     });
 
     it("should cancel at period end when immediate=false", async () => {
@@ -395,10 +444,16 @@ describe("SubscriptionService", () => {
       mockDb.query.mockImplementation(async (sql) => {
         callIndex++;
         if (sql.includes("WHERE id = $1") && callIndex === 1) {
-          return { rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }] };
+          return {
+            rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }],
+          };
         }
         if (sql.includes("UPDATE")) {
-          return { rows: [{ id: "sub-1", status: "active", cancel_at_period_end: true }] };
+          return {
+            rows: [
+              { id: "sub-1", status: "active", cancel_at_period_end: true },
+            ],
+          };
         }
         return { rows: [] };
       });
@@ -413,9 +468,12 @@ describe("SubscriptionService", () => {
       const result = await service.cancelSubscription("sub-1", false);
 
       expect(result.success).toBe(true);
-      expect(mockStripe.subscriptions.update).toHaveBeenCalledWith("stripe_sub_1", {
-        cancel_at_period_end: true,
-      });
+      expect(mockStripe.subscriptions.update).toHaveBeenCalledWith(
+        "stripe_sub_1",
+        {
+          cancel_at_period_end: true,
+        },
+      );
     });
 
     it("should default to cancel at period end", async () => {
@@ -423,7 +481,9 @@ describe("SubscriptionService", () => {
       mockDb.query.mockImplementation(async (sql) => {
         callIndex++;
         if (sql.includes("WHERE id = $1") && callIndex === 1) {
-          return { rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }] };
+          return {
+            rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }],
+          };
         }
         if (sql.includes("UPDATE")) {
           return { rows: [{ id: "sub-1" }] };
@@ -447,12 +507,16 @@ describe("SubscriptionService", () => {
     it("should handle Stripe errors during cancellation", async () => {
       mockDb.query.mockImplementation(async (sql) => {
         if (sql.includes("WHERE id = $1")) {
-          return { rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }] };
+          return {
+            rows: [{ id: "sub-1", stripe_subscription_id: "stripe_sub_1" }],
+          };
         }
         return { rows: [] };
       });
 
-      mockStripe.subscriptions.update.mockRejectedValue(new Error("Stripe cancel failed"));
+      mockStripe.subscriptions.update.mockRejectedValue(
+        new Error("Stripe cancel failed"),
+      );
 
       const result = await service.cancelSubscription("sub-1", false);
 

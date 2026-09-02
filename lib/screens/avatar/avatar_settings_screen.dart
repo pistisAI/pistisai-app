@@ -29,7 +29,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
   // Form state
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
+  final TextEditingController _nameController =
+      TextEditingController(text: 'Pistisai');
   late double _formality;
   late double _humor;
   late double _enthusiasm;
@@ -115,7 +116,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
   void _initializeFormState() {
     final profile = _avatarStateService.currentProfile;
     if (profile != null) {
-      _nameController = TextEditingController(text: profile.agentName);
+      _nameController.text = profile.agentName;
       _formality = profile.traits.formality;
       _humor = profile.traits.humor;
       _enthusiasm = profile.traits.enthusiasm;
@@ -123,7 +124,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       _selectedEvolutionStage = profile.evolutionStage;
     } else {
       // Default values
-      _nameController = TextEditingController(text: 'Pistisai');
+      _nameController.text = 'Pistisai';
       _formality = PersonalityTraits.defaultTraits.formality;
       _humor = PersonalityTraits.defaultTraits.humor;
       _enthusiasm = PersonalityTraits.defaultTraits.enthusiasm;
@@ -165,6 +166,15 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       }
     }
   }
+
+  static const _validEvolutionStages = {
+    'curious_explorer',
+    'knowledge_seeker',
+    'wise_companion',
+    'enlightened_guide',
+  };
+
+  bool _isValidStage(String stage) => _validEvolutionStages.contains(stage);
 
   /// Build personality traits from current slider values
   PersonalityTraits _buildTraits() => PersonalityTraits(
@@ -1151,7 +1161,10 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
             // Evolution request form
             DropdownButtonFormField<String>(
-              initialValue: _selectedEvolutionStage,
+              initialValue:
+                  _isValidStage(_selectedEvolutionStage)
+                      ? _selectedEvolutionStage
+                      : 'curious_explorer',
               decoration: const InputDecoration(
                 labelText: 'Evolve to Stage',
                 border: OutlineInputBorder(),

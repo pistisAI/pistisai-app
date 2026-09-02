@@ -93,6 +93,28 @@ class AppConfig {
   static const int defaultHermesPort = 8642;
   static String get defaultHermesUrl =>
       'http://$defaultHermesHost:$defaultHermesPort';
+
+  /// Restore the Hermes API port when a loopback URL was saved without one.
+  ///
+  /// `ProviderInfo.baseUrl` strips the port, and that host-only value used to
+  /// be persisted as the Hermes URL. Remote HTTPS URLs are left unchanged.
+  static String normalizeHermesUrl(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) {
+      return defaultHermesUrl;
+    }
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
+      return trimmed;
+    }
+    final isLoopback = uri.host == defaultHermesHost ||
+        uri.host == 'localhost' ||
+        uri.host == '::1';
+    if (isLoopback && uri.scheme == 'http' && !uri.hasPort) {
+      return uri.replace(port: defaultHermesPort).toString();
+    }
+    return trimmed;
+  }
   static const Duration gatewayTimeout = Duration(seconds: 60);
 
   // Runtime values (initialized from env vars or defaults)

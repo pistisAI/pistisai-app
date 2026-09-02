@@ -12,16 +12,42 @@ import 'package:pistisai/services/platform_detection_service.dart';
 import 'package:pistisai/services/platform_adapter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pistisai/services/auth_service.dart';
+import 'package:url_launcher_platform_interface/link.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 import 'package:pistisai/services/admin_center_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/models/user_model.dart';
 import 'package:pistisai/models/admin_role_model.dart';
 
+/// Mock url_launcher platform so tests never hit real channels.
+class _MockUrlLauncherPlatform extends UrlLauncherPlatform {
+  @override
+  LinkDelegate? get linkDelegate => null;
+
+  @override
+  Future<bool> canLaunch(String url) async => true;
+
+  @override
+  Future<bool> launch(
+    String url, {
+    required bool useSafariVC,
+    required bool useWebView,
+    required bool enableJavaScript,
+    required bool enableDomStorage,
+    required bool universalLinksOnly,
+    required Map<String, String> headers,
+    String? webOnlyWindowName,
+  }) async =>
+      true;
+}
+
 /// Initialize mock plugins for testing
 Future<void> initializeMockPlugins() async {
   // Set up SharedPreferences mock
-  // Set up SharedPreferences mock
   SharedPreferences.setMockInitialValues({});
+
+  // Mock url_launcher at the platform-interface level (works on all platforms)
+  UrlLauncherPlatform.instance = _MockUrlLauncherPlatform();
 
   // Reset and setup GetIt
   final locator = GetIt.instance;

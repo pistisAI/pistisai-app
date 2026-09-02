@@ -27,3 +27,8 @@ coverage/
 data/
 *.db
 *.db-journal
+
+# Build artifacts
+build/
+.pub-cache/
+pubspec.lock

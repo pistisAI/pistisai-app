@@ -1,10 +1,12 @@
+import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
-import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
+import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -22,23 +24,32 @@ void main() {
       openclawGatewayService: GatewayControlService(
         SettingsPreferenceService(),
       ),
-      hermesGatewayService: HermesGatewayControlService(),
+      hermesStreamingService: HermesStreamingService(),
       settingsPreferenceService: SettingsPreferenceService(),
       autoDetectOnInitialize: false,
     );
+
+    // NodesScreen resolves services through GetIt, so register fakes there.
     discoveryService = _FakeProviderDiscoveryService();
+    if (di.serviceLocator.isRegistered<ProviderDiscoveryService>()) {
+      di.serviceLocator.unregister<ProviderDiscoveryService>();
+    }
+    di.serviceLocator
+        .registerSingleton<ProviderDiscoveryService>(discoveryService);
+
+    if (!di.serviceLocator.isRegistered<PopOutManager>()) {
+      di.serviceLocator.registerSingleton<PopOutManager>(PopOutManager());
+    }
   });
 
   tearDown(() {
     connectionManager.dispose();
+    if (di.serviceLocator.isRegistered<ProviderDiscoveryService>()) {
+      di.serviceLocator.unregister<ProviderDiscoveryService>();
+    }
   });
 
-  // TODO: Re-enable once NodesScreen integrates ProviderDiscoveryService.
-  // Current NodesScreen implementation is a stub with hardcoded data and does not
-  // consume ProviderDiscoveryService from the widget tree. These tests are the
-  // spec for the intended implementation. Also requires PopOutManager GetIt registration.
   testWidgets('renders discovered runtimes and tailnet devices',
-      skip: true,
       (WidgetTester tester) async {
     discoveryService.providers = <ProviderInfo>[
       ProviderInfo(
@@ -72,13 +83,8 @@ void main() {
     ];
 
     await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          Provider<ProviderDiscoveryService>.value(value: discoveryService),
-          ChangeNotifierProvider<ConnectionManagerService>.value(
-            value: connectionManager,
-          ),
-        ],
+      ChangeNotifierProvider<ConnectionManagerService>.value(
+        value: connectionManager,
         child: const MaterialApp(home: NodesScreen()),
       ),
     );
@@ -94,16 +100,10 @@ void main() {
   });
 
   testWidgets('renders empty states when discovery finds nothing',
-      skip: true,
       (WidgetTester tester) async {
     await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          Provider<ProviderDiscoveryService>.value(value: discoveryService),
-          ChangeNotifierProvider<ConnectionManagerService>.value(
-            value: connectionManager,
-          ),
-        ],
+      ChangeNotifierProvider<ConnectionManagerService>.value(
+        value: connectionManager,
         child: const MaterialApp(home: NodesScreen()),
       ),
     );
@@ -115,19 +115,12 @@ void main() {
     expect(find.text('No Tailscale devices discovered'), findsOneWidget);
   });
 
-  testWidgets('surfaces discovery errors',
-      skip: true,
-      (WidgetTester tester) async {
+  testWidgets('surfaces discovery errors', (WidgetTester tester) async {
     discoveryService.providersError = StateError('boom');
 
     await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          Provider<ProviderDiscoveryService>.value(value: discoveryService),
-          ChangeNotifierProvider<ConnectionManagerService>.value(
-            value: connectionManager,
-          ),
-        ],
+      ChangeNotifierProvider<ConnectionManagerService>.value(
+        value: connectionManager,
         child: const MaterialApp(home: NodesScreen()),
       ),
     );
@@ -152,6 +145,13 @@ class _FakeProviderDiscoveryService extends ProviderDiscoveryService {
     }
     return providers;
   }
+
+  @override
+  Future<List<ProviderInfo>> scanForAgentRuntimes() async => scanForProviders();
+
+  @override
+  Future<List<ProviderInfo>> scanForSupportModelProviders() async =>
+      scanForProviders();
 
   @override
   Future<List<TailscaleDevice>> discoverTailscaleDevices() async {

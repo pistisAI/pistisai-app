@@ -256,15 +256,15 @@ class PlatformDetectionService extends ChangeNotifier {
         InstallationStep(
           title: 'Download the installer',
           description:
-              'Click the download link above to get the MSI installer.',
-          applicableTypes: ['msi'],
+              'Click the download link above to get the Setup.exe installer.',
+          applicableTypes: ['exe'],
           order: 0,
         ),
         InstallationStep(
           title: 'Run the installer',
           description:
-              'Double-click the downloaded MSI file and follow the installation wizard.',
-          applicableTypes: ['msi'],
+              'Double-click the downloaded Setup.exe file and follow the installation wizard.',
+          applicableTypes: ['exe'],
           order: 1,
           troubleshootingTips: [
             'If Windows Defender blocks the installer, click "More info" then "Run anyway"',
@@ -275,7 +275,7 @@ class PlatformDetectionService extends ChangeNotifier {
           title: 'Launch the application',
           description:
               'Find Pistisai in your Start menu or desktop shortcut.',
-          applicableTypes: ['msi'],
+          applicableTypes: ['exe'],
           order: 2,
         ),
         InstallationStep(

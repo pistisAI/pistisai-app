@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -24,5 +25,7 @@ void main() {
     expect(frame.length, V4L2CameraService.frameBytes);
     await svc.stop();
     svc.latestFrame.removeListener(onFrame);
-  }, timeout: const Timeout(Duration(seconds: 30)));
+  },
+      timeout: const Timeout(Duration(seconds: 30)),
+      skip: Platform.environment['PISTISAI_HARDWARE_E2E'] != '1');
 }

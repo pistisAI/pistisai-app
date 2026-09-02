@@ -11,9 +11,11 @@ class MessageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasReasoning =
-        message.reasoning != null && message.reasoning!.isNotEmpty;
     final hasContent = message.content.isNotEmpty;
+    // Hide "Thinking" when Hermes duplicated the reply into reasoning.
+    final hasReasoning = message.reasoning != null &&
+        message.reasoning!.isNotEmpty &&
+        message.reasoning!.trim() != message.content.trim();
     final hasMarkdown = _hasMarkdown(message.content);
     final toolCalls = _extractToolCalls();
     final isAgentRunning = message.metadata?['isAgentRunning'] == true;

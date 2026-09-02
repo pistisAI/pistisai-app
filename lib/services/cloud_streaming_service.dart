@@ -19,8 +19,8 @@ String get _platformName {
 }
 
 /// Shared WebSocket connection for streaming
-class _SharedWebSocket {
-  static _SharedWebSocket? _instance;
+class SharedWebSocket {
+  static SharedWebSocket? _instance;
   WebSocketChannel? _channel;
   bool _isConnected = false;
   final _messageController = StreamController<Map<String, dynamic>>.broadcast();
@@ -34,20 +34,20 @@ class _SharedWebSocket {
   Stream<Map<String, dynamic>> get messages => _messageController.stream;
   bool get isConnected => _isConnected;
 
-  static _SharedWebSocket get instance {
-    return _instance ??= _SharedWebSocket._();
+  static SharedWebSocket get instance {
+    return _instance ??= SharedWebSocket._();
   }
 
-  _SharedWebSocket._();
+  SharedWebSocket._();
 
   /// Set the OpenClaw Gateway token
   void setGatewayToken(String? token) {
     _gatewayToken = token;
     if (token != null && token.isNotEmpty) {
       debugPrint(
-          '☁ [_SharedWebSocket] Gateway token set: YES (${token.substring(0, 8)}...)');
+          '☁ [SharedWebSocket] Gateway token set: YES (${token.substring(0, 8)}...)');
     } else {
-      debugPrint('☁ [_SharedWebSocket] Gateway token set: NO');
+      debugPrint('☁ [SharedWebSocket] Gateway token set: NO');
     }
   }
 
@@ -60,12 +60,12 @@ class _SharedWebSocket {
         .replaceFirst('http://', 'ws://')
         .replaceFirst('https://', 'wss://');
 
-    debugPrint('☁ [_SharedWebSocket] Connecting to: $wsUrl');
+    debugPrint('☁ [SharedWebSocket] Connecting to: $wsUrl');
 
     // Initialize device identity before connecting
     final deviceIdentity = DeviceIdentityService.instance;
     await deviceIdentity.initialize();
-    debugPrint('☁ [_SharedWebSocket] Device ID: ${deviceIdentity.deviceId}');
+    debugPrint('☁ [SharedWebSocket] Device ID: ${deviceIdentity.deviceId}');
 
     // Create completer for challenge before connecting
     _challengeCompleter = Completer<String?>();
@@ -78,11 +78,11 @@ class _SharedWebSocket {
         wsUrl.contains('localhost') ||
         wsUrl.contains('::1');
 
-    debugPrint('☁ [_SharedWebSocket] isLocalConnection: $isLocalConnection');
+    debugPrint('☁ [SharedWebSocket] isLocalConnection: $isLocalConnection');
     debugPrint(
-        '☁ [_SharedWebSocket] _authToken: ${_authToken != null ? "SET" : "NULL"}');
+        '☁ [SharedWebSocket] _authToken: ${_authToken != null ? "SET" : "NULL"}');
     debugPrint(
-        '☁ [_SharedWebSocket] _gatewayToken: ${_gatewayToken != null ? "SET (${_gatewayToken!.substring(0, 8)}...)" : "NULL"}');
+        '☁ [SharedWebSocket] _gatewayToken: ${_gatewayToken != null ? "SET (${_gatewayToken!.substring(0, 8)}...)" : "NULL"}');
 
     // Validate token for local connections
     if (isLocalConnection &&
@@ -101,7 +101,7 @@ class _SharedWebSocket {
           final payload = msg['payload'] as Map<String, dynamic>?;
           final nonce = payload?['nonce'] as String?;
           debugPrint(
-              '☁ [_SharedWebSocket] Received challenge, nonce: ${nonce?.substring(0, 8)}...');
+              '☁ [SharedWebSocket] Received challenge, nonce: ${nonce?.substring(0, 8)}...');
           if (_challengeCompleter != null &&
               !_challengeCompleter!.isCompleted) {
             _challengeCompleter!.complete(nonce);
@@ -110,17 +110,17 @@ class _SharedWebSocket {
 
         _messageController.add(msg);
         debugPrint(
-            '☁ [_SharedWebSocket] Received: ${jsonEncode(msg).substring(0, (jsonEncode(msg).length > 200 ? 200 : jsonEncode(msg).length))}...');
+            '☁ [SharedWebSocket] Received: ${jsonEncode(msg).substring(0, (jsonEncode(msg).length > 200 ? 200 : jsonEncode(msg).length))}...');
       },
       onError: (e) {
-        debugPrint('☁ [_SharedWebSocket] Error: $e');
+        debugPrint('☁ [SharedWebSocket] Error: $e');
         _isConnected = false;
         if (_challengeCompleter != null && !_challengeCompleter!.isCompleted) {
           _challengeCompleter!.completeError(e);
         }
       },
       onDone: () {
-        debugPrint('☁ [_SharedWebSocket] Connection closed');
+        debugPrint('☁ [SharedWebSocket] Connection closed');
         _isConnected = false;
         if (_challengeCompleter != null && !_challengeCompleter!.isCompleted) {
           _challengeCompleter!.completeError('Connection closed');
@@ -129,14 +129,14 @@ class _SharedWebSocket {
     );
 
     // Step 1: Wait for connect.challenge event with timeout
-    debugPrint('☁ [_SharedWebSocket] Waiting for connect.challenge...');
+    debugPrint('☁ [SharedWebSocket] Waiting for connect.challenge...');
 
     String? nonce;
     try {
       nonce = await _challengeCompleter!.future.timeout(Duration(seconds: 10));
     } catch (e) {
       debugPrint(
-          '☁ [_SharedWebSocket] No challenge received, proceeding without device identity: $e');
+          '☁ [SharedWebSocket] No challenge received, proceeding without device identity: $e');
       // If no challenge is received, the gateway might not require device identity
       // Fall back to legacy handshake
       await _sendLegacyHandshake(isLocalConnection);
@@ -145,7 +145,7 @@ class _SharedWebSocket {
 
     if (nonce == null) {
       debugPrint(
-          '☁ [_SharedWebSocket] No nonce in challenge, falling back to legacy handshake');
+          '☁ [SharedWebSocket] No nonce in challenge, falling back to legacy handshake');
       await _sendLegacyHandshake(isLocalConnection);
       return;
     }
@@ -162,7 +162,7 @@ class _SharedWebSocket {
     );
 
     debugPrint(
-        '☁ [_SharedWebSocket] Built device auth: deviceId=${deviceAuth.deviceId.substring(0, 8)}...');
+        '☁ [SharedWebSocket] Built device auth: deviceId=${deviceAuth.deviceId.substring(0, 8)}...');
 
     // Step 3: Send connect request with device identity
     final handshake = {
@@ -191,7 +191,7 @@ class _SharedWebSocket {
     };
 
     debugPrint(
-        '☁ [_SharedWebSocket] Sending handshake with device identity...');
+        '☁ [SharedWebSocket] Sending handshake with device identity...');
     _channel!.sink.add(jsonEncode(handshake));
 
     // Step 4: Wait for hello-ok response
@@ -222,7 +222,7 @@ class _SharedWebSocket {
       }
     };
 
-    debugPrint('☁ [_SharedWebSocket] Sending legacy handshake...');
+    debugPrint('☁ [SharedWebSocket] Sending legacy handshake...');
     _channel!.sink.add(jsonEncode(handshake));
 
     await _waitForHelloOk();
@@ -230,7 +230,7 @@ class _SharedWebSocket {
 
   /// Wait for hello-ok response
   Future<void> _waitForHelloOk() async {
-    debugPrint('☁ [_SharedWebSocket] Waiting for hello-ok...');
+    debugPrint('☁ [SharedWebSocket] Waiting for hello-ok...');
 
     try {
       await for (final msg
@@ -241,20 +241,20 @@ class _SharedWebSocket {
           final errorCode = error?['code'] as String?;
           final errorMessage = error?['message'] ?? 'Handshake failed';
           debugPrint(
-              '☁ [_SharedWebSocket] Handshake error: $errorCode - $errorMessage');
+              '☁ [SharedWebSocket] Handshake error: $errorCode - $errorMessage');
           throw Exception(errorMessage);
         }
 
         // Check for hello-ok
         if (msg['type'] == 'res' && msg['payload']?['type'] == 'hello-ok') {
-          debugPrint('☁ [_SharedWebSocket] Handshake complete!');
+          debugPrint('☁ [SharedWebSocket] Handshake complete!');
 
           // Check for device token in response
           final auth = msg['payload']?['auth'] as Map<String, dynamic>?;
           final deviceToken = auth?['deviceToken'] as String?;
           if (deviceToken != null) {
             debugPrint(
-                '☁ [_SharedWebSocket] Received device token: ${deviceToken.substring(0, 8)}...');
+                '☁ [SharedWebSocket] Received device token: ${deviceToken.substring(0, 8)}...');
             // Future enhancement: Store device token for future connections
           }
 
@@ -263,7 +263,7 @@ class _SharedWebSocket {
         }
       }
     } catch (e) {
-      debugPrint('☁ [_SharedWebSocket] Handshake timeout/error: $e');
+      debugPrint('☁ [SharedWebSocket] Handshake timeout/error: $e');
       rethrow;
     }
   }
@@ -391,7 +391,7 @@ class CloudStreamingService extends StreamingService {
     List<Map<String, String>>? history,
   }) async* {
     // Use shared WebSocket connection
-    final ws = _SharedWebSocket.instance;
+    final ws = SharedWebSocket.instance;
 
     if (!ws.isConnected) {
       // Get auth token from auth service
@@ -603,7 +603,7 @@ class CloudStreamingService extends StreamingService {
 
   /// Set the OpenClaw Gateway token
   void setGatewayToken(String? token) {
-    _SharedWebSocket.instance.setGatewayToken(token);
+    SharedWebSocket.instance.setGatewayToken(token);
   }
 
   @override

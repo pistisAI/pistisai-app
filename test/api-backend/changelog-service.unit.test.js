@@ -5,7 +5,14 @@
  * format validation, and statistics.
  */
 
-import { jest, describe, it, expect, beforeEach, beforeAll } from "@jest/globals";
+import {
+  jest,
+  describe,
+  it,
+  expect,
+  beforeEach,
+  beforeAll,
+} from "@jest/globals";
 
 const mockExistsSync = jest.fn();
 const mockReadFileSync = jest.fn();
@@ -19,9 +26,8 @@ jest.unstable_mockModule("fs", () => ({
   readFileSync: mockReadFileSync,
 }));
 
-const { default: ChangelogService } = await import(
-  "../../services/api-backend/services/changelog-service.js"
-);
+const { default: ChangelogService } =
+  await import("../../services/api-backend/services/changelog-service.js");
 
 const SAMPLE_CHANGELOG = `# Changelog
 
@@ -68,7 +74,8 @@ describe("ChangelogService", () => {
     });
     mockReadFileSync.mockImplementation((p) => {
       if (typeof p === "string" && p.includes("CHANGELOG")) return content;
-      if (typeof p === "string" && p.includes("package.json")) return packageJson;
+      if (typeof p === "string" && p.includes("package.json"))
+        return packageJson;
       throw new Error("Unexpected readFileSync call");
     });
   }
@@ -122,7 +129,9 @@ describe("ChangelogService", () => {
       mockReadFileSync.mockImplementation(() => {
         throw new Error("disk error");
       });
-      expect(() => service.parseChangelog()).toThrow("Failed to parse changelog");
+      expect(() => service.parseChangelog()).toThrow(
+        "Failed to parse changelog",
+      );
     });
   });
 
@@ -203,7 +212,13 @@ describe("ChangelogService", () => {
       const entry = {
         version: "1.0.0",
         date: "2025-01-01",
-        changes: ["### Added", "- Feature A", "- Feature B", "### Fixed", "- Bug fix"],
+        changes: [
+          "### Added",
+          "- Feature A",
+          "- Feature B",
+          "### Fixed",
+          "- Bug fix",
+        ],
       };
       const formatted = service.formatChangelogEntry(entry);
       expect(formatted.version).toBe("1.0.0");

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,5 +14,5 @@ void main() {
     }
     expect(cameras.length, greaterThanOrEqualTo(1),
         reason: 'expected at least one camera from /dev/video*');
-  });
+  }, skip: Platform.environment['PISTISAI_HARDWARE_E2E'] != '1');
 }

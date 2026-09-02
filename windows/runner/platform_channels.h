@@ -5,6 +5,6 @@
 #include <flutter/plugin_registrar.h>
 #include <flutter/standard_method_codec.h>
 
-void RegisterPlatformChannels(flutter::PluginRegistrar* registrar);
+void RegisterPlatformChannels(flutter::PluginRegistrar& registrar);
 
 #endif  // PLATFORM_CHANNELS_H_

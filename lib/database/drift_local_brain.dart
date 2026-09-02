@@ -456,7 +456,8 @@ class AvatarPersonalityProfiles extends Table {
   TextColumn get agentName => text().withDefault(const Constant('Agent'))();
   TextColumn get personalityTraits =>
       text()(); // JSON: {formality, humor, enthusiasm, empathy}
-  TextColumn get evolutionStage => text().withDefault(const Constant('base'))();
+  TextColumn get evolutionStage =>
+      text().withDefault(const Constant('curious_explorer'))();
   IntColumn get conversationCount => integer().withDefault(const Constant(0))();
   RealColumn get depthScore => real().withDefault(const Constant(0.0))();
   IntColumn get createdAt => integer().nullable()();
@@ -1520,7 +1521,7 @@ class LocalBrain extends _$LocalBrain {
   }
 
   /// Get provider by ID
-  Future<dynamic> getProviderById(String id) {
+  Future<QueryRow?> getProviderById(String id) {
     return customSelect(
       'SELECT * FROM llm_providers WHERE id = ?',
       variables: [Variable(id)],
@@ -1528,7 +1529,7 @@ class LocalBrain extends _$LocalBrain {
   }
 
   /// Get default provider
-  Future<dynamic> getDefaultProvider() {
+  Future<QueryRow?> getDefaultProvider() {
     return customSelect(
       'SELECT * FROM llm_providers WHERE is_default = 1 LIMIT 1',
     ).getSingleOrNull();
@@ -1609,7 +1610,7 @@ class LocalBrain extends _$LocalBrain {
         agentName: 'Agent',
         personalityTraits:
             '{"formality":0.5,"humor":0.5,"enthusiasm":0.5,"empathy":0.5}',
-        evolutionStage: 'base',
+        evolutionStage: 'curious_explorer',
         conversationCount: 0,
         depthScore: 0.0,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -1665,7 +1666,7 @@ class LocalBrain extends _$LocalBrain {
           agentName: 'Agent',
           personalityTraits:
               '{"formality":0.5,"humor":0.5,"enthusiasm":0.5,"empathy":0.5}',
-          evolutionStage: 'base',
+          evolutionStage: 'curious_explorer',
           conversationCount: 0,
           depthScore: 0.0,
           createdAt: DateTime.now().millisecondsSinceEpoch,

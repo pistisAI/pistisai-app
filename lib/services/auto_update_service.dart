@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 /// Semantic version components
 class VersionComponents {
@@ -68,6 +69,7 @@ class AutoUpdateService extends ChangeNotifier {
   UpdateInfo? _updateInfo;
   String? _errorMessage;
   Timer? _checkTimer;
+  String? _cachedVersion;
 
   // Getters
   UpdateStatus get status => _status;
@@ -169,7 +171,7 @@ class AutoUpdateService extends ChangeNotifier {
 
       final tagName = data['tag_name'] as String;
       final latestVersion = tagName.replaceFirst('v', '');
-      final currentVersion = _getCurrentVersion();
+      final currentVersion = await _getCurrentVersion();
 
       final updateType = compareVersions(currentVersion, latestVersion);
 
@@ -193,10 +195,13 @@ class AutoUpdateService extends ChangeNotifier {
   }
 
   /// Get current version from package info
-  String _getCurrentVersion() {
-    // This will be implemented using package_info_plus
-    // For now, return a placeholder
-    return '1.0.0';
+  Future<String> _getCurrentVersion() async {
+    if (_cachedVersion != null) return _cachedVersion!;
+    final info = await PackageInfo.fromPlatform();
+    final version = info.version;
+    final normalized = parseVersion(version).toString();
+    _cachedVersion = normalized;
+    return normalized;
   }
 
   /// Download update

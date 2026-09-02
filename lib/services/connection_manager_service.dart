@@ -8,12 +8,11 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../config/app_config.dart';
 import 'agent_runtime/agent_runtime_client.dart';
-import 'agent_runtime/hermes_process_backed_runtime_client.dart';
 import 'agent_runtime/hermes_runtime_client.dart';
+import '../auth/providers/noop_auth_provider.dart';
+import 'auth_service.dart';
 import 'cloud_streaming_service.dart';
-import 'hermes/hermes_process_client.dart';
 import 'hermes/hermes_streaming_service.dart';
-import 'hermes_manager/hermes_gateway_control_service.dart';
 import 'openclaw_manager/gateway_control_service.dart';
 import 'settings_preference_service.dart' as preferences;
 import 'streaming_service.dart';
@@ -46,8 +45,8 @@ class ConnectionManagerService extends ChangeNotifier {
   /// The OpenClaw gateway control service.
   final GatewayControlService openclawGatewayService;
 
-  /// The Hermes gateway control service.
-  final HermesGatewayControlService hermesGatewayService;
+  /// The Hermes HTTP/SSE streaming service.
+  final HermesStreamingService hermesStreamingService;
 
   /// The OpenClaw streaming service (for WebSocket connections).
   CloudStreamingService? _openclawStreamingService;
@@ -159,7 +158,7 @@ class ConnectionManagerService extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   ConnectionManagerService({
     required this.openclawGatewayService,
-    required this.hermesGatewayService,
+    required this.hermesStreamingService,
     preferences.SettingsPreferenceService? settingsPreferenceService,
     @visibleForTesting bool autoDetectOnInitialize = true,
   })  : _settingsPreferenceService = settingsPreferenceService,
@@ -198,12 +197,36 @@ class ConnectionManagerService extends ChangeNotifier {
 
   Stream<Map<String, dynamic>> _connectToOpenClaw() {
     _log.info('Connecting to OpenClaw gateway');
-    // Stub — delegates to openclaw gateway service when implemented
-    _isConnected = true;
-    _lastSuccessfulConnection = DateTime.now();
-    _lastError = null;
-    notifyListeners();
-    return const Stream.empty();
+
+    // Initialize CloudStreamingService if not already created
+    _openclawStreamingService ??= CloudStreamingService(
+      baseUrl: 'http://127.0.0.1:8080',
+      authService: AuthService(NoopAuthProvider()),
+    );
+
+    // Pass the gateway token to the shared WebSocket
+    final ws = SharedWebSocket.instance;
+    ws.setGatewayToken(_gatewayToken);
+
+    // Connect via CloudStreamingService
+    _openclawStreamingService!.establishConnection().then((_) {
+      _isConnected = _openclawStreamingService!.connection.isActive;
+      if (_isConnected) {
+        _lastSuccessfulConnection = DateTime.now();
+        _lastError = null;
+      } else {
+        _lastError = 'Failed to connect to OpenClaw gateway';
+      }
+      notifyListeners();
+    }).catchError((e, st) {
+      _log.severe('OpenClaw connection error', e, st);
+      _isConnected = false;
+      _lastError = e.toString();
+      notifyListeners();
+    });
+
+    return _openclawStreamingService!.messageStream
+        .map((msg) => {'type': 'message', 'data': msg.toJson()});
   }
 
   // ---------------------------------------------------------------------------
@@ -274,36 +297,22 @@ class ConnectionManagerService extends ChangeNotifier {
   Future<void> _autoDetectRuntime() async {
     _log.info('Auto-detecting local agent runtimes...');
 
-    // 1. Try Hermes Process Client (hermes-agent on PATH, survives gateway restarts)
+    // 1. Try the authenticated Hermes HTTP gateway. Chat must use the
+    // canonical API server so it keeps session, tool, and lifecycle semantics.
     try {
-      final processClient = HermesProcessClient();
-      await processClient.establishConnection();
-      if (processClient.connection.isActive) {
-        _log.info('Auto-detected hermes-agent on PATH (process mode)');
-        _currentBackend = BackendType.hermes;
-        // Use process-based client
-        final runtimeClient = HermesProcessBackedRuntimeClient(
-          processClient,
-          baseUrl: 'process:hermes-agent',
-        );
-        _activeRuntimeClient = runtimeClient;
-        notifyListeners();
-        return;
-      }
-    } catch (e) {
-      _log.info('hermes-agent process detection: $e');
-    }
-
-    // 2. Try Hermes HTTP gateway
-    try {
-      // Read the configured API key so the /v1/models fetch during
-      // establishConnection doesn't get 401'd by the API server.
+      // Keep the injected streaming service and the runtime client on the
+      // same discovered key so /v1/models and chat are authenticated.
       final settings = _settingsPreferenceService;
       final apiKey = settings != null ? await settings.getHermesApiKey() : null;
-      final httpClient = HermesStreamingService(apiKey: apiKey);
-      await httpClient.establishConnection();
-      if (httpClient.connection.isActive) {
-        _log.info('Auto-detected Hermes HTTP gateway at :8642');
+      if (apiKey != null && apiKey.isNotEmpty) {
+        _configuredHermesApiKey = apiKey;
+      }
+      if (_configuredHermesUrl == null || _configuredHermesUrl!.isEmpty) {
+        _configuredHermesUrl = AppConfig.defaultHermesUrl;
+      }
+      await hermesStreamingService.establishConnection();
+      if (hermesStreamingService.connection.isActive) {
+        _log.info('Auto-detected Hermes HTTP gateway at $_configuredHermesUrl');
         _currentBackend = BackendType.hermes;
         _activeRuntimeClient = _createHermesRuntimeClient();
         notifyListeners();
@@ -313,7 +322,7 @@ class ConnectionManagerService extends ChangeNotifier {
       _log.info('Hermes HTTP gateway detection: $e');
     }
 
-    // 3. Try OpenClaw gateway
+    // 2. Try OpenClaw gateway
     try {
       await openclawGatewayService.checkStatus();
       if (openclawGatewayService.isRunning) {
@@ -376,7 +385,7 @@ class ConnectionManagerService extends ChangeNotifier {
   Map<String, dynamic> getGatewayStatus() {
     final activeBackend = _currentBackend;
     final openclawStatus = openclawGatewayService.state;
-    final hermesStatus = hermesGatewayService.getStatus();
+    final hermesHealthy = hermesStreamingService.connection.isActive;
 
     if (activeBackend == null) {
       return {
@@ -389,7 +398,11 @@ class ConnectionManagerService extends ChangeNotifier {
           'state': openclawStatus.name,
           'isRunning': openclawStatus == GatewayState.running,
         },
-        'hermes': hermesStatus,
+        'hermes': {
+          'service': 'hermes-http',
+          'running': hermesHealthy,
+          'connected': hermesHealthy,
+        },
       };
     }
 
@@ -418,7 +431,11 @@ class ConnectionManagerService extends ChangeNotifier {
         'state': openclawStatus.name,
         'isRunning': openclawStatus == GatewayState.running,
       },
-      'hermes': hermesStatus,
+      'hermes': {
+        'service': 'hermes-http',
+        'running': hermesHealthy,
+        'connected': hermesHealthy,
+      },
     };
   }
 
@@ -434,7 +451,7 @@ class ConnectionManagerService extends ChangeNotifier {
     return switch (_currentBackend) {
       null => Future<bool>.value(false),
       BackendType.openclaw => openclawGatewayService.start(),
-      BackendType.hermes => hermesGatewayService.start(),
+      BackendType.hermes => hermesStreamingService.testConnection(),
     };
   }
 
@@ -442,7 +459,7 @@ class ConnectionManagerService extends ChangeNotifier {
     return switch (_currentBackend) {
       null => Future<bool>.value(false),
       BackendType.openclaw => openclawGatewayService.stop(),
-      BackendType.hermes => hermesGatewayService.stop(),
+      BackendType.hermes => Future<bool>.value(true),
     };
   }
 
@@ -450,7 +467,7 @@ class ConnectionManagerService extends ChangeNotifier {
     return switch (_currentBackend) {
       null => Future<bool>.value(false),
       BackendType.openclaw => openclawGatewayService.restart(),
-      BackendType.hermes => hermesGatewayService.restart(),
+      BackendType.hermes => hermesStreamingService.testConnection(),
     };
   }
 

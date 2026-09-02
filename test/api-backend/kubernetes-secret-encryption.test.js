@@ -243,12 +243,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretValue = generateRandomSecret();
 
-      store.storeSecret(
-        "test-secret",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("test-secret", secretValue, "Pistisai", "web-app");
       const retrieved = store.retrieveSecret(
         "test-secret",
         "web-app",
@@ -262,12 +257,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretValue = generateRandomSecret();
 
-      store.storeSecret(
-        "test-secret",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("test-secret", secretValue, "Pistisai", "web-app");
 
       // Try to access with different service account
       expect(() => {
@@ -279,12 +269,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretValue = generateRandomSecret();
 
-      store.storeSecret(
-        "test-secret",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("test-secret", secretValue, "Pistisai", "web-app");
 
       // Try to access from different namespace
       expect(() => {
@@ -312,12 +297,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretValue = generateRandomSecret();
 
-      store.storeSecret(
-        "test-secret",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("test-secret", secretValue, "Pistisai", "web-app");
 
       // Successful access
       store.retrieveSecret("test-secret", "web-app", "Pistisai");
@@ -364,12 +344,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretValue = generateRandomSecret();
 
-      store.storeSecret(
-        "test-secret",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("test-secret", secretValue, "Pistisai", "web-app");
       const logs = store.getAccessLogs();
 
       // Logs should not contain the actual secret value
@@ -463,12 +438,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const oldSecret = generateRandomSecret();
       const newSecret = generateRandomSecret();
 
-      store.storeSecret(
-        "rotating-secret",
-        oldSecret,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("rotating-secret", oldSecret, "Pistisai", "web-app");
       const oldRetrieved = store.retrieveSecret(
         "rotating-secret",
         "web-app",
@@ -477,12 +447,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       expect(oldRetrieved).toBe(oldSecret);
 
       // Rotate secret
-      store.storeSecret(
-        "rotating-secret",
-        newSecret,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("rotating-secret", newSecret, "Pistisai", "web-app");
       const newRetrieved = store.retrieveSecret(
         "rotating-secret",
         "web-app",
@@ -495,12 +460,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const largeSecret = generateRandomSecret(4096); // 4KB secret
 
-      store.storeSecret(
-        "large-secret",
-        largeSecret,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("large-secret", largeSecret, "Pistisai", "web-app");
       const retrieved = store.retrieveSecret(
         "large-secret",
         "web-app",
@@ -515,12 +475,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const specialSecret = "p@$$w0rd!#%&*()[]{}|;:,.<>?/~`";
 
-      store.storeSecret(
-        "special-secret",
-        specialSecret,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("special-secret", specialSecret, "Pistisai", "web-app");
       const retrieved = store.retrieveSecret(
         "special-secret",
         "web-app",
@@ -534,12 +489,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const unicodeSecret = "密码🔐🔑🛡️";
 
-      store.storeSecret(
-        "unicode-secret",
-        unicodeSecret,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("unicode-secret", unicodeSecret, "Pistisai", "web-app");
       const retrieved = store.retrieveSecret(
         "unicode-secret",
         "web-app",
@@ -553,12 +503,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretValue = generateRandomSecret();
 
-      store.storeSecret(
-        "tracked-secret",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("tracked-secret", secretValue, "Pistisai", "web-app");
 
       // Multiple accesses
       store.retrieveSecret("tracked-secret", "web-app", "Pistisai");
@@ -667,11 +612,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const results = [];
       for (let i = 0; i < 10; i++) {
         results.push(
-          store.retrieveSecret(
-            "concurrent-secret",
-            "web-app",
-            "Pistisai",
-          ),
+          store.retrieveSecret("concurrent-secret", "web-app", "Pistisai"),
         );
       }
 
@@ -691,12 +632,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const emptySecret = "";
 
-      store.storeSecret(
-        "empty-secret",
-        emptySecret,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("empty-secret", emptySecret, "Pistisai", "web-app");
       const retrieved = store.retrieveSecret(
         "empty-secret",
         "web-app",
@@ -738,12 +674,7 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretWithNull = "before\x00after";
 
-      store.storeSecret(
-        "null-secret",
-        secretWithNull,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("null-secret", secretWithNull, "Pistisai", "web-app");
       const retrieved = store.retrieveSecret(
         "null-secret",
         "web-app",
@@ -800,21 +731,11 @@ describe("Kubernetes Secret Encryption - Property Tests", () => {
       const store = new KubernetesSecretStore();
       const secretValue = generateRandomSecret();
 
-      store.storeSecret(
-        "replay-secret",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("replay-secret", secretValue, "Pistisai", "web-app");
       const encrypted1 = store.secrets.get("replay-secret").encryptedData;
 
       // Store another secret with same value
-      store.storeSecret(
-        "replay-secret-2",
-        secretValue,
-        "Pistisai",
-        "web-app",
-      );
+      store.storeSecret("replay-secret-2", secretValue, "Pistisai", "web-app");
       const encrypted2 = store.secrets.get("replay-secret-2").encryptedData;
 
       // Ciphertexts should be different (due to different IVs)

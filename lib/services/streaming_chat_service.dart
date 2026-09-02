@@ -8,7 +8,6 @@ import '../models/streaming_message.dart';
 
 import 'streaming_service.dart';
 import 'hermes/hermes_streaming_service.dart';
-import 'hermes/hermes_process_client.dart';
 
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
@@ -36,6 +35,7 @@ class StreamingChatService extends ChangeNotifier {
   String? _selectedModel;
   bool _isLoading = false;
   bool _isStreaming = false;
+  bool _storageReady = false;
 
   // Streaming state
   final BehaviorSubject<String> _streamingContentSubject =
@@ -61,6 +61,7 @@ class StreamingChatService extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isStreaming => _isStreaming;
   bool get hasConversations => _mainChannel != null;
+  bool get isStorageReady => _storageReady;
 
   /// Stream of current streaming content for real-time UI updates
   Stream<String> get streamingContentStream => _streamingContentSubject.stream;
@@ -144,6 +145,7 @@ class StreamingChatService extends ChangeNotifier {
       _createWelcomeConversation();
     }
 
+    _storageReady = true;
     notifyListeners();
   }
 
@@ -190,13 +192,12 @@ class StreamingChatService extends ChangeNotifier {
     );
   }
 
-  /// Reset the main channel context
+  /// Reset the main channel context.
+  ///
+  /// Keeps the stable `main-channel` id so Hermes stays on the same session.
+  /// Only the in-app message list is cleared (/new or /reset).
   void resetContext() {
-    if (_mainChannel == null) {
-      _mainChannel = Conversation.mainChannel(model: _selectedModel);
-    } else {
-      _mainChannel = Conversation.mainChannel(model: _selectedModel);
-    }
+    _mainChannel = Conversation.mainChannel(model: _selectedModel);
     _saveConversations();
     notifyListeners();
   }
@@ -414,9 +415,16 @@ class StreamingChatService extends ChangeNotifier {
       // Build metadata with tool call history
       final toolCallsMeta = _serializeToolCalls(includeLive: false);
 
+      // Hermes sometimes emits the final reply as reasoning.available as well
+      // as message deltas. Keep reasoning only when it adds distinct text.
+      final distinctReasoning = finalReasoning.isNotEmpty &&
+              finalReasoning.trim() != finalContent.trim()
+          ? finalReasoning
+          : null;
+
       final assistantMessage = Message.assistant(
-        content: finalContent,
-        reasoning: finalReasoning.isNotEmpty ? finalReasoning : null,
+        content: finalContent.isNotEmpty ? finalContent : finalReasoning,
+        reasoning: distinctReasoning,
         model: completeModel,
         metadata:
             toolCallsMeta.isNotEmpty ? {'tool_calls': toolCallsMeta} : null,
@@ -446,8 +454,6 @@ class StreamingChatService extends ChangeNotifier {
 
     Stream<AgentEvent>? eventStream;
     if (streamingService is HermesStreamingService) {
-      eventStream = streamingService.agentEventStream;
-    } else if (streamingService is HermesProcessClient) {
       eventStream = streamingService.agentEventStream;
     }
 

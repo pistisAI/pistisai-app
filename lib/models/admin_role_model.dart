@@ -64,7 +64,7 @@ class AdminRoleModel {
   }
 
   /// Parse role from string
-  static AdminRole _parseRole(dynamic value) {
+  static AdminRole _parseRole(Object? value) {
     if (value == null) return AdminRole.supportAdmin;
     final roleStr = value.toString().toLowerCase();
     return AdminRole.values.firstWhere(

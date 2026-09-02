@@ -2,6 +2,10 @@ import js from '@eslint/js';
 import globals from 'globals';
 
 export default [
+  // Generated artifacts and dependencies must not be linted.
+  {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
+  },
   // Apply to all JavaScript files
   {
     files: ['**/*.js'],

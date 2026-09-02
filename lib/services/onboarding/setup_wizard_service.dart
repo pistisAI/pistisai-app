@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -386,6 +387,16 @@ class SetupWizardService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set the Hermes API key in wizard state (used when a key is generated
+  /// during the wizard so _persistRuntimeSelection saves it).
+  void setHermesApiKey(String key) {
+    _state = _state.copyWith(
+      hermesApiKey: key.trim(),
+      errorMessage: null,
+    );
+    notifyListeners();
+  }
+
   /// Set Hermes Agent URL
   void setHermesUrl(String url) {
     final trimmedUrl = url.trim();
@@ -419,8 +430,62 @@ class SetupWizardService extends ChangeNotifier {
       );
       notifyListeners();
       appLogger.info('[SetupWizard] Auto-discovered Hermes API key');
+      return key;
     }
-    return key;
+
+    // No key found anywhere — generate one so first-run "just works".
+    // The key is persisted via setHermesApiKey in _persistRuntimeSelection
+    // and is also written to ~/.hermes/.env so the Hermes API server can
+    // accept it (the server reads the same file).
+    appLogger.info(
+        '[SetupWizard] No Hermes API key found — generating a new one');
+    final generated = _generateApiKey();
+    _state = _state.copyWith(hermesApiKey: generated);
+    notifyListeners();
+    return generated;
+  }
+
+  /// Generate a cryptographically random API key (64 hex chars, 'psk_' prefix).
+  static String _generateApiKey() {
+    final random = Random.secure();
+    final values = List<int>.generate(32, (i) => random.nextInt(256));
+    return 'psk_${values.map((v) => v.toRadixString(16).padLeft(2, '0')).join()}';
+  }
+
+  /// Write the API key to the Hermes .env file so the Hermes API server
+  /// accepts it. Creates the file if missing, updates the existing
+  /// API_SERVER_KEY line if present, otherwise appends it.
+  Future<bool> writeApiKeyToHermesEnv(String key) async {
+    if (kIsWeb) return false;
+    try {
+      final envPath = Platform.environment['HERMES_HOME'] != null
+          ? '${Platform.environment['HERMES_HOME']}/.env'
+          : '${Platform.environment['HOME']}/.hermes/.env';
+      final file = File(envPath);
+
+      if (await file.exists()) {
+        final content = await file.readAsString();
+        final lines = content.split('\n');
+        var replaced = false;
+        final updated = lines.map((line) {
+          if (line.trim().startsWith('API_SERVER_KEY=')) {
+            replaced = true;
+            return 'API_SERVER_KEY=$key';
+          }
+          return line;
+        }).toList();
+        if (!replaced) updated.add('API_SERVER_KEY=$key');
+        await file.writeAsString(updated.join('\n'));
+      } else {
+        await file.parent.create(recursive: true);
+        await file.writeAsString('API_SERVER_KEY=$key\n');
+      }
+      appLogger.info('[SetupWizard] API key written to $envPath');
+      return true;
+    } catch (e) {
+      appLogger.warning('[SetupWizard] Failed to write API key to .env: $e');
+      return false;
+    }
   }
 
   /// Complete setup and save configuration

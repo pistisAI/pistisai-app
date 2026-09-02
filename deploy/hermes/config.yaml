@@ -1,0 +1,12 @@
+model:
+  provider: opencode-free
+  default: nemotron-3.5-lightning-free
+
+terminal:
+  backend: local
+
+tool_loop_guardrails:
+  hard_stop_enabled: true
+  hard_stop_after:
+    exact_failure: 5
+    idempotent_no_progress: 5

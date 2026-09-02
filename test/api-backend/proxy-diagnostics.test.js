@@ -251,8 +251,7 @@ describe("Proxy Diagnostics", () => {
       (req, res) => {
         try {
           const { proxyId } = req.params;
-          const userRole =
-            req.user?.["https://pistisai.app/role"] || "user";
+          const userRole = req.user?.["https://pistisai.app/role"] || "user";
 
           if (userRole !== "admin") {
             return res.status(403).json({
@@ -610,8 +609,7 @@ describe("Proxy Diagnostics", () => {
         (req, res) => {
           try {
             const { proxyId } = req.params;
-            const userRole =
-              req.user?.["https://pistisai.app/role"] || "user";
+            const userRole = req.user?.["https://pistisai.app/role"] || "user";
 
             if (userRole !== "admin") {
               return res.status(403).json({

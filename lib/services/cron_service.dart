@@ -4,6 +4,13 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:pistisai/models/cron_job.dart';
 
+/// Validates that a job ID contains only safe characters (alphanumeric,
+/// hyphens, underscores, dots, colons — no shell metacharacters).
+bool _isValidJobId(String id) {
+  return id.isNotEmpty &&
+      !id.contains(RegExp(r'[;&|`$(){}!<>~\n\r\s]'));
+}
+
 class CronService {
   final String _hermesPath;
 
@@ -24,6 +31,7 @@ class CronService {
   }
 
   Future<bool> toggleJob(String jobId, bool active) async {
+    if (!_isValidJobId(jobId)) return false;
     try {
       final action = active ? 'pause' : 'resume';
       final r = await Process.run(_hermesPath, ['cron', action, jobId],
@@ -33,6 +41,7 @@ class CronService {
   }
 
   Future<bool> runJobNow(String jobId) async {
+    if (!_isValidJobId(jobId)) return false;
     try {
       final r = await Process.run(_hermesPath, ['cron', 'run', jobId],
         stdoutEncoding: utf8, stderrEncoding: utf8);
@@ -41,6 +50,7 @@ class CronService {
   }
 
   Future<bool> removeJob(String jobId) async {
+    if (!_isValidJobId(jobId)) return false;
     try {
       final r = await Process.run(_hermesPath, ['cron', 'remove', jobId],
         stdoutEncoding: utf8, stderrEncoding: utf8);
@@ -59,12 +69,25 @@ class CronService {
   }) async {
     try {
       final args = ['cron', 'create'];
-      if (name != null && name.isNotEmpty) args.addAll(['--name', name]);
-      if (script != null && script.isNotEmpty) args.addAll(['--script', script]);
+      if (name != null && name.isNotEmpty) {
+        if (!_isValidJobId(name)) return false;
+        args.addAll(['--name', name]);
+      }
+      if (script != null && script.isNotEmpty) {
+        if (!_isValidJobId(script)) return false;
+        args.addAll(['--script', script]);
+      }
       if (noAgent) args.add('--no-agent');
-      if (workdir != null && workdir.isNotEmpty) args.addAll(['--workdir', workdir]);
+      if (workdir != null && workdir.isNotEmpty) {
+        if (!_isValidJobId(workdir)) return false;
+        args.addAll(['--workdir', workdir]);
+      }
+      if (!_isValidJobId(schedule)) return false;
       args.add(schedule);
-      if (prompt != null && prompt.isNotEmpty) args.add(prompt);
+      if (prompt != null && prompt.isNotEmpty) {
+        if (!_isValidJobId(prompt)) return false;
+        args.add(prompt);
+      }
 
       final r = await Process.run(
         _hermesPath,
@@ -89,16 +112,32 @@ class CronService {
     bool? noAgent,
     String? workdir,
   }) async {
+    if (!_isValidJobId(jobId)) return false;
     try {
       final args = ['cron', 'edit'];
-      if (schedule != null && schedule.isNotEmpty) args.addAll(['--schedule', schedule]);
-      if (prompt != null && prompt.isNotEmpty) args.addAll(['--prompt', prompt]);
-      if (name != null && name.isNotEmpty) args.addAll(['--name', name]);
-      if (script != null && script.isNotEmpty) args.addAll(['--script', script]);
+      if (schedule != null && schedule.isNotEmpty) {
+        if (!_isValidJobId(schedule)) return false;
+        args.addAll(['--schedule', schedule]);
+      }
+      if (prompt != null && prompt.isNotEmpty) {
+        if (!_isValidJobId(prompt)) return false;
+        args.addAll(['--prompt', prompt]);
+      }
+      if (name != null && name.isNotEmpty) {
+        if (!_isValidJobId(name)) return false;
+        args.addAll(['--name', name]);
+      }
+      if (script != null && script.isNotEmpty) {
+        if (!_isValidJobId(script)) return false;
+        args.addAll(['--script', script]);
+      }
       if (noAgent != null) {
         args.add(noAgent ? '--no-agent' : '--agent');
       }
-      if (workdir != null && workdir.isNotEmpty) args.addAll(['--workdir', workdir]);
+      if (workdir != null && workdir.isNotEmpty) {
+        if (!_isValidJobId(workdir)) return false;
+        args.addAll(['--workdir', workdir]);
+      }
       args.add(jobId);
 
       final r = await Process.run(

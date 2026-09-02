@@ -5,54 +5,54 @@
  * adaptive rate limiting behavior, request tracking, and metrics history.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { SystemLoadMonitor } from '../../services/api-backend/services/system-load-monitor.js';
+import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
+import { SystemLoadMonitor } from "../../services/api-backend/services/system-load-monitor.js";
 
-describe('SystemMetricsSnapshot', () => {
-  it('should return low load level when load is under 30', () => {
+describe("SystemMetricsSnapshot", () => {
+  it("should return low load level when load is under 30", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 10;
     monitor.currentMetrics.memoryUsage = 10;
     monitor.currentMetrics.queuedRequests = 0;
-    expect(monitor.currentMetrics.getLoadLevel()).toBe('low');
+    expect(monitor.currentMetrics.getLoadLevel()).toBe("low");
     monitor.destroy();
   });
 
-  it('should return medium load level when load is between 30 and 59', () => {
+  it("should return medium load level when load is between 30 and 59", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 50;
     monitor.currentMetrics.memoryUsage = 40;
     monitor.currentMetrics.queuedRequests = 0;
     // load = 50*0.4 + 40*0.4 = 36, which is medium
-    expect(monitor.currentMetrics.getLoadLevel()).toBe('medium');
+    expect(monitor.currentMetrics.getLoadLevel()).toBe("medium");
     monitor.destroy();
   });
 
-  it('should return high load level when load is between 60 and 79', () => {
+  it("should return high load level when load is between 60 and 79", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 80;
     monitor.currentMetrics.memoryUsage = 80;
     monitor.currentMetrics.queuedRequests = 0;
     // load = 80*0.4 + 80*0.4 = 64, which is high
-    expect(monitor.currentMetrics.getLoadLevel()).toBe('high');
+    expect(monitor.currentMetrics.getLoadLevel()).toBe("high");
     monitor.destroy();
   });
 
-  it('should return critical load level when load is 80 or above', () => {
+  it("should return critical load level when load is 80 or above", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 100;
     monitor.currentMetrics.memoryUsage = 100;
     monitor.currentMetrics.queuedRequests = 0;
     // load = 100*0.4 + 100*0.4 = 80, which is critical
-    expect(monitor.currentMetrics.getLoadLevel()).toBe('critical');
+    expect(monitor.currentMetrics.getLoadLevel()).toBe("critical");
     monitor.destroy();
   });
 
-  it('should calculate load percentage with correct weights', () => {
+  it("should calculate load percentage with correct weights", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 100;
@@ -63,7 +63,7 @@ describe('SystemMetricsSnapshot', () => {
     monitor.destroy();
   });
 
-  it('should cap queuedRequests contribution at 100 in load calculation', () => {
+  it("should cap queuedRequests contribution at 100 in load calculation", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 0;
@@ -74,7 +74,7 @@ describe('SystemMetricsSnapshot', () => {
     monitor.destroy();
   });
 
-  it('should detect high load when percentage >= 60', () => {
+  it("should detect high load when percentage >= 60", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 80;
@@ -84,7 +84,7 @@ describe('SystemMetricsSnapshot', () => {
     monitor.destroy();
   });
 
-  it('should not report high load when percentage < 60', () => {
+  it("should not report high load when percentage < 60", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 10;
@@ -94,7 +94,7 @@ describe('SystemMetricsSnapshot', () => {
     monitor.destroy();
   });
 
-  it('should detect critical load when percentage >= 80', () => {
+  it("should detect critical load when percentage >= 80", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 100;
@@ -104,7 +104,7 @@ describe('SystemMetricsSnapshot', () => {
     monitor.destroy();
   });
 
-  it('should not report critical load when percentage < 80', () => {
+  it("should not report critical load when percentage < 80", () => {
     const monitor = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
     monitor.stop();
     monitor.currentMetrics.cpuUsage = 50;
@@ -115,7 +115,7 @@ describe('SystemMetricsSnapshot', () => {
   });
 });
 
-describe('SystemLoadMonitor', () => {
+describe("SystemLoadMonitor", () => {
   let monitor;
 
   beforeEach(() => {
@@ -130,8 +130,8 @@ describe('SystemLoadMonitor', () => {
     monitor.destroy();
   });
 
-  describe('constructor', () => {
-    it('should initialize with default config values', () => {
+  describe("constructor", () => {
+    it("should initialize with default config values", () => {
       const m = new SystemLoadMonitor({ sampleIntervalMs: 999999 });
       m.stop();
       expect(m.config.sampleIntervalMs).toBe(999999);
@@ -143,7 +143,7 @@ describe('SystemLoadMonitor', () => {
       m.destroy();
     });
 
-    it('should accept custom config values', () => {
+    it("should accept custom config values", () => {
       const m = new SystemLoadMonitor({
         sampleIntervalMs: 999999,
         historySize: 20,
@@ -155,27 +155,27 @@ describe('SystemLoadMonitor', () => {
       m.destroy();
     });
 
-    it('should initialize request counters to zero', () => {
+    it("should initialize request counters to zero", () => {
       expect(monitor.activeRequests).toBe(0);
       expect(monitor.queuedRequests).toBe(0);
       expect(monitor.totalRequests).toBe(0);
       expect(monitor.totalProcessedRequests).toBe(0);
     });
 
-    it('should start with adaptive multiplier of 1.0', () => {
+    it("should start with adaptive multiplier of 1.0", () => {
       expect(monitor.adaptiveMultiplier).toBe(1.0);
     });
   });
 
-  describe('recordActiveRequest', () => {
-    it('should increment active and total request counts', () => {
+  describe("recordActiveRequest", () => {
+    it("should increment active and total request counts", () => {
       monitor.recordActiveRequest();
       expect(monitor.activeRequests).toBe(1);
       expect(monitor.totalRequests).toBe(1);
       expect(monitor.currentMetrics.activeRequests).toBe(1);
     });
 
-    it('should track multiple active requests', () => {
+    it("should track multiple active requests", () => {
       monitor.recordActiveRequest();
       monitor.recordActiveRequest();
       monitor.recordActiveRequest();
@@ -184,8 +184,8 @@ describe('SystemLoadMonitor', () => {
     });
   });
 
-  describe('recordCompletedRequest', () => {
-    it('should decrement active requests and increment processed count', () => {
+  describe("recordCompletedRequest", () => {
+    it("should decrement active requests and increment processed count", () => {
       monitor.recordActiveRequest();
       monitor.recordCompletedRequest();
       expect(monitor.activeRequests).toBe(0);
@@ -193,61 +193,61 @@ describe('SystemLoadMonitor', () => {
       expect(monitor.currentMetrics.activeRequests).toBe(0);
     });
 
-    it('should not go below zero active requests', () => {
+    it("should not go below zero active requests", () => {
       monitor.recordCompletedRequest();
       expect(monitor.activeRequests).toBe(0);
     });
   });
 
-  describe('recordQueuedRequest', () => {
-    it('should increment queued request count', () => {
+  describe("recordQueuedRequest", () => {
+    it("should increment queued request count", () => {
       monitor.recordQueuedRequest();
       expect(monitor.queuedRequests).toBe(1);
       expect(monitor.currentMetrics.queuedRequests).toBe(1);
     });
 
-    it('should track multiple queued requests', () => {
+    it("should track multiple queued requests", () => {
       monitor.recordQueuedRequest();
       monitor.recordQueuedRequest();
       expect(monitor.queuedRequests).toBe(2);
     });
   });
 
-  describe('recordDequeuedRequest', () => {
-    it('should decrement queued request count', () => {
+  describe("recordDequeuedRequest", () => {
+    it("should decrement queued request count", () => {
       monitor.recordQueuedRequest();
       monitor.recordDequeuedRequest();
       expect(monitor.queuedRequests).toBe(0);
       expect(monitor.currentMetrics.queuedRequests).toBe(0);
     });
 
-    it('should not go below zero queued requests', () => {
+    it("should not go below zero queued requests", () => {
       monitor.recordDequeuedRequest();
       expect(monitor.queuedRequests).toBe(0);
     });
   });
 
-  describe('collectMetrics', () => {
-    it('should store snapshot in metrics history', () => {
+  describe("collectMetrics", () => {
+    it("should store snapshot in metrics history", () => {
       monitor.collectMetrics();
       expect(monitor.metricsHistory.length).toBe(1);
       expect(monitor.metricsHistory[0]).toBe(monitor.currentMetrics);
     });
 
-    it('should respect history size limit', () => {
+    it("should respect history size limit", () => {
       for (let i = 0; i < 15; i++) {
         monitor.collectMetrics();
       }
       expect(monitor.metricsHistory.length).toBe(10);
     });
 
-    it('should update currentMetrics with latest snapshot', () => {
+    it("should update currentMetrics with latest snapshot", () => {
       const before = monitor.currentMetrics;
       monitor.collectMetrics();
       expect(monitor.currentMetrics).not.toBe(before);
     });
 
-    it('should capture active and queued request counts in snapshot', () => {
+    it("should capture active and queued request counts in snapshot", () => {
       monitor.recordActiveRequest();
       monitor.recordQueuedRequest();
       monitor.collectMetrics();
@@ -257,8 +257,8 @@ describe('SystemLoadMonitor', () => {
     });
   });
 
-  describe('updateAdaptiveMultiplier', () => {
-    it('should set multiplier to 0.25 for critical load (>= 80)', () => {
+  describe("updateAdaptiveMultiplier", () => {
+    it("should set multiplier to 0.25 for critical load (>= 80)", () => {
       monitor.currentMetrics.cpuUsage = 100;
       monitor.currentMetrics.memoryUsage = 100;
       monitor.currentMetrics.queuedRequests = 0;
@@ -266,7 +266,7 @@ describe('SystemLoadMonitor', () => {
       expect(monitor.adaptiveMultiplier).toBe(0.25);
     });
 
-    it('should set multiplier to 0.5 for high load (>= 60)', () => {
+    it("should set multiplier to 0.5 for high load (>= 60)", () => {
       monitor.currentMetrics.cpuUsage = 80;
       monitor.currentMetrics.memoryUsage = 80;
       monitor.currentMetrics.queuedRequests = 0;
@@ -275,7 +275,7 @@ describe('SystemLoadMonitor', () => {
       expect(monitor.adaptiveMultiplier).toBe(0.5);
     });
 
-    it('should set multiplier to 0.75 for medium load (> 40)', () => {
+    it("should set multiplier to 0.75 for medium load (> 40)", () => {
       monitor.currentMetrics.cpuUsage = 65;
       monitor.currentMetrics.memoryUsage = 40;
       monitor.currentMetrics.queuedRequests = 0;
@@ -284,7 +284,7 @@ describe('SystemLoadMonitor', () => {
       expect(monitor.adaptiveMultiplier).toBe(0.75);
     });
 
-    it('should keep multiplier at 1.0 for low load', () => {
+    it("should keep multiplier at 1.0 for low load", () => {
       monitor.currentMetrics.cpuUsage = 10;
       monitor.currentMetrics.memoryUsage = 10;
       monitor.currentMetrics.queuedRequests = 0;
@@ -292,7 +292,7 @@ describe('SystemLoadMonitor', () => {
       expect(monitor.adaptiveMultiplier).toBe(1.0);
     });
 
-    it('should not update during cooldown period', () => {
+    it("should not update during cooldown period", () => {
       monitor.currentMetrics.cpuUsage = 100;
       monitor.currentMetrics.memoryUsage = 100;
       monitor.currentMetrics.queuedRequests = 0;
@@ -305,7 +305,7 @@ describe('SystemLoadMonitor', () => {
       expect(monitor.adaptiveMultiplier).toBe(0.25);
     });
 
-    it('should use average metrics when history is available', () => {
+    it("should use average metrics when history is available", () => {
       // Manually push high-load history entries
       const proto = Object.getPrototypeOf(monitor.currentMetrics);
       const snap1 = Object.create(proto);
@@ -340,36 +340,36 @@ describe('SystemLoadMonitor', () => {
     });
   });
 
-  describe('getCurrentMetrics', () => {
-    it('should return formatted metrics object', () => {
+  describe("getCurrentMetrics", () => {
+    it("should return formatted metrics object", () => {
       const metrics = monitor.getCurrentMetrics();
-      expect(metrics).toHaveProperty('cpuUsage');
-      expect(metrics).toHaveProperty('memoryUsage');
-      expect(metrics).toHaveProperty('activeRequests');
-      expect(metrics).toHaveProperty('queuedRequests');
-      expect(metrics).toHaveProperty('loadPercentage');
-      expect(metrics).toHaveProperty('loadLevel');
-      expect(metrics).toHaveProperty('adaptiveMultiplier');
-      expect(metrics).toHaveProperty('uptime');
+      expect(metrics).toHaveProperty("cpuUsage");
+      expect(metrics).toHaveProperty("memoryUsage");
+      expect(metrics).toHaveProperty("activeRequests");
+      expect(metrics).toHaveProperty("queuedRequests");
+      expect(metrics).toHaveProperty("loadPercentage");
+      expect(metrics).toHaveProperty("loadLevel");
+      expect(metrics).toHaveProperty("adaptiveMultiplier");
+      expect(metrics).toHaveProperty("uptime");
     });
 
-    it('should return string values for numeric metrics', () => {
+    it("should return string values for numeric metrics", () => {
       const metrics = monitor.getCurrentMetrics();
-      expect(typeof metrics.cpuUsage).toBe('string');
-      expect(typeof metrics.memoryUsage).toBe('string');
-      expect(typeof metrics.loadPercentage).toBe('string');
+      expect(typeof metrics.cpuUsage).toBe("string");
+      expect(typeof metrics.memoryUsage).toBe("string");
+      expect(typeof metrics.loadPercentage).toBe("string");
     });
   });
 
-  describe('getAverageMetrics', () => {
-    it('should return current metrics when no history', () => {
+  describe("getAverageMetrics", () => {
+    it("should return current metrics when no history", () => {
       const avg = monitor.getAverageMetrics();
       expect(avg.cpuUsage).toBeDefined();
       expect(avg.memoryUsage).toBeDefined();
       expect(avg.loadPercentage).toBeDefined();
     });
 
-    it('should compute average from history', () => {
+    it("should compute average from history", () => {
       // Push controlled snapshots instead of using collectMetrics which reads real CPU/mem
       const proto = Object.getPrototypeOf(monitor.currentMetrics);
       const snap1 = Object.create(proto);
@@ -397,52 +397,52 @@ describe('SystemLoadMonitor', () => {
     });
   });
 
-  describe('getAdaptiveLimits', () => {
-    it('should return base limit when multiplier is 1.0', () => {
+  describe("getAdaptiveLimits", () => {
+    it("should return base limit when multiplier is 1.0", () => {
       monitor.adaptiveMultiplier = 1.0;
       const limits = monitor.getAdaptiveLimits(100);
       expect(limits.adaptiveLimit).toBe(100);
-      expect(limits.multiplier).toBe('1.00');
+      expect(limits.multiplier).toBe("1.00");
       expect(limits.baseLimit).toBe(100);
     });
 
-    it('should reduce limit when multiplier is below 1.0', () => {
+    it("should reduce limit when multiplier is below 1.0", () => {
       monitor.adaptiveMultiplier = 0.5;
       const limits = monitor.getAdaptiveLimits(100);
       expect(limits.adaptiveLimit).toBe(50);
-      expect(limits.multiplier).toBe('0.50');
+      expect(limits.multiplier).toBe("0.50");
     });
 
-    it('should include recommendation when under load', () => {
+    it("should include recommendation when under load", () => {
       monitor.adaptiveMultiplier = 0.5;
       const limits = monitor.getAdaptiveLimits(100);
-      expect(limits.recommendation).toContain('reduced');
+      expect(limits.recommendation).toContain("reduced");
     });
 
-    it('should include recommendation when system is normal', () => {
+    it("should include recommendation when system is normal", () => {
       monitor.adaptiveMultiplier = 1.0;
       const limits = monitor.getAdaptiveLimits(100);
-      expect(limits.recommendation).toContain('normal');
+      expect(limits.recommendation).toContain("normal");
     });
 
-    it('should ceil the adaptive limit', () => {
+    it("should ceil the adaptive limit", () => {
       monitor.adaptiveMultiplier = 0.75;
       const limits = monitor.getAdaptiveLimits(10);
       expect(limits.adaptiveLimit).toBe(8); // Math.ceil(10 * 0.75) = 8
     });
   });
 
-  describe('getSystemStatus', () => {
-    it('should return comprehensive status object', () => {
+  describe("getSystemStatus", () => {
+    it("should return comprehensive status object", () => {
       const status = monitor.getSystemStatus();
-      expect(status).toHaveProperty('current');
-      expect(status).toHaveProperty('average');
-      expect(status).toHaveProperty('requests');
-      expect(status).toHaveProperty('adaptive');
-      expect(status).toHaveProperty('system');
+      expect(status).toHaveProperty("current");
+      expect(status).toHaveProperty("average");
+      expect(status).toHaveProperty("requests");
+      expect(status).toHaveProperty("adaptive");
+      expect(status).toHaveProperty("system");
     });
 
-    it('should include request tracking in status', () => {
+    it("should include request tracking in status", () => {
       monitor.recordActiveRequest();
       monitor.recordQueuedRequest();
       const status = monitor.getSystemStatus();
@@ -451,23 +451,23 @@ describe('SystemLoadMonitor', () => {
       expect(status.requests.total).toBe(1);
     });
 
-    it('should include system info', () => {
+    it("should include system info", () => {
       const status = monitor.getSystemStatus();
-      expect(status.system).toHaveProperty('cpus');
-      expect(status.system).toHaveProperty('totalMemory');
-      expect(status.system).toHaveProperty('platform');
+      expect(status.system).toHaveProperty("cpus");
+      expect(status.system).toHaveProperty("totalMemory");
+      expect(status.system).toHaveProperty("platform");
     });
   });
 
-  describe('lifecycle', () => {
-    it('should stop monitoring on stop()', () => {
+  describe("lifecycle", () => {
+    it("should stop monitoring on stop()", () => {
       const m = new SystemLoadMonitor({ sampleIntervalMs: 100 });
       m.stop();
       expect(m.monitoringInterval).toBeNull();
       m.destroy();
     });
 
-    it('should clear history on destroy()', () => {
+    it("should clear history on destroy()", () => {
       monitor.collectMetrics();
       monitor.collectMetrics();
       expect(monitor.metricsHistory.length).toBe(2);
