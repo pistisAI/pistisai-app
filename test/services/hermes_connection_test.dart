@@ -66,6 +66,41 @@ void main() {
   });
 
   group('Hermes Streaming', () {
+    test('lists hermes-agent from the live gateway', () async {
+      final reachable = await hermesGatewayReachable();
+      if (!reachable) {
+        return;
+      }
+      expect(apiKey, isNotNull,
+          reason: 'API_SERVER_KEY must be in ~/.hermes/.env for live chat');
+
+      final hermesService = HermesStreamingService(
+        baseUrl: 'http://127.0.0.1:8642',
+        apiKey: apiKey,
+      );
+      await hermesService.establishConnection();
+      final models = await hermesService.getAvailableModels();
+      expect(models, contains('hermes-agent'));
+      hermesService.dispose();
+    });
+
+    test('omits models when the gateway API key is missing', () async {
+      final reachable = await hermesGatewayReachable();
+      if (!reachable) {
+        return;
+      }
+
+      final hermesService = HermesStreamingService(
+        baseUrl: 'http://127.0.0.1:8642',
+      );
+      await hermesService.establishConnection();
+      // Health is public; /v1/models requires API_SERVER_KEY.
+      expect(hermesService.connection.isActive, isTrue);
+      final models = await hermesService.getAvailableModels();
+      expect(models, isEmpty);
+      hermesService.dispose();
+    });
+
     test('streams a MiniMax chat reply through the app runtime client',
         () async {
       final reachable = await hermesGatewayReachable();
@@ -91,6 +126,81 @@ void main() {
       expect(reply!.toLowerCase(), contains('minimax'));
       await client.disconnect();
     }, timeout: const Timeout(Duration(seconds: 90)));
+
+    test('yields data chunks then completion from streamChat', () async {
+      final reachable = await hermesGatewayReachable();
+      if (!reachable) {
+        return;
+      }
+      expect(apiKey, isNotNull);
+
+      final client = HermesRuntimeClient(
+        baseUrl: 'http://127.0.0.1:8642',
+        apiKey: apiKey,
+      );
+      await client.connect();
+
+      final chunks = <String>[];
+      var sawComplete = false;
+      await for (final message in client.streamChat(
+        prompt: 'Reply with exactly: STREAM_OK',
+        model: 'hermes-agent',
+        conversationId: 'live-stream-ok',
+      )) {
+        expect(message.hasError, isFalse, reason: message.error);
+        if (message.isDataChunk) {
+          chunks.add(message.chunk);
+        }
+        if (message.isComplete) {
+          sawComplete = true;
+        }
+      }
+
+      expect(chunks, isNotEmpty);
+      expect(sawComplete, isTrue);
+      expect(chunks.join().toLowerCase(), contains('stream_ok'));
+      await client.disconnect();
+    }, timeout: const Timeout(Duration(seconds: 90)));
+
+    test('follow-up chat uses conversation history', () async {
+      final reachable = await hermesGatewayReachable();
+      if (!reachable) {
+        return;
+      }
+      expect(apiKey, isNotNull);
+
+      final client = HermesRuntimeClient(
+        baseUrl: 'http://127.0.0.1:8642',
+        apiKey: apiKey,
+      );
+      await client.connect();
+
+      const codeword = 'BANANA-8642';
+      final first = await client.sendChatMessage(
+        prompt: 'Remember this codeword: $codeword. Reply with exactly: ACK.',
+        model: 'hermes-agent',
+      );
+      expect(first, isNotNull);
+
+      final second = await client.sendChatMessage(
+        prompt: 'What is the codeword I just asked you to remember? Reply with only that codeword.',
+        model: 'hermes-agent',
+        history: <Map<String, String>>[
+          <String, String>{
+            'role': 'user',
+            'content':
+                'Remember this codeword: $codeword. Reply with exactly: ACK.',
+          },
+          <String, String>{
+            'role': 'assistant',
+            'content': first!,
+          },
+        ],
+      );
+      expect(second, isNotNull);
+      expect(second!.toUpperCase(), contains('BANANA-8642'));
+      await client.disconnect();
+    }, timeout: const Timeout(Duration(seconds: 180)));
   });
 
   group('HermesProviderAdapter', () {
@@ -119,6 +229,59 @@ void main() {
           contains('adapter-ok'));
       adapter.dispose();
     }, timeout: const Timeout(Duration(seconds: 90)));
+
+    test('streamCompletion() yields OpenAI SSE from MiniMax', () async {
+      final reachable = await hermesGatewayReachable();
+      if (!reachable) {
+        return;
+      }
+      expect(apiKey, isNotNull);
+
+      final adapter = HermesProviderAdapter(
+        baseUrl: 'http://127.0.0.1:8642',
+        apiKey: apiKey,
+      );
+      final events = <String>[];
+      await for (final event in adapter.streamCompletion(
+        CompletionRequest(
+          model: 'hermes-agent',
+          messages: <Map<String, dynamic>>[
+            <String, dynamic>{
+              'role': 'user',
+              'content': 'Reply with exactly: SSE_OK',
+            },
+          ],
+          stream: true,
+        ),
+      )) {
+        events.add(event.data);
+      }
+      expect(events, isNotEmpty);
+      expect(events.join().toLowerCase(), contains('sse_ok'));
+      adapter.dispose();
+    }, timeout: const Timeout(Duration(seconds: 90)));
+
+    test('complete() without API key is rejected', () async {
+      final reachable = await hermesGatewayReachable();
+      if (!reachable) {
+        return;
+      }
+      final adapter = HermesProviderAdapter(
+        baseUrl: 'http://127.0.0.1:8642',
+      );
+      expect(
+        () => adapter.complete(
+          CompletionRequest(
+            model: 'hermes-agent',
+            messages: <Map<String, dynamic>>[
+              <String, dynamic>{'role': 'user', 'content': 'hi'},
+            ],
+          ),
+        ),
+        throwsA(isA<Exception>()),
+      );
+      adapter.dispose();
+    });
   });
 }
 
