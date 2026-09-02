@@ -81,9 +81,10 @@ class DeviceIdentityService {
       await _storage.write(key: _storageKey, value: jsonEncode(storedJson));
       debugPrint('🔐 [DeviceIdentity] Identity stored securely');
     } catch (e) {
-      debugPrint(
-        '🔐 [DeviceIdentity] Identity storage unavailable, using in-memory: $e',
-      );
+      _keyPair = null;
+      _deviceId = null;
+      debugPrint('🔐 [DeviceIdentity] Failed to persist identity: $e');
+      throw StateError('Device identity could not be stored securely: $e');
     }
   }
 
