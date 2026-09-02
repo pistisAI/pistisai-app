@@ -92,7 +92,9 @@ audit_output.json
 package-lock.json.REMOVED.*
 
 # Deployment generated files
-deploy/
+deploy/*
+!deploy/hermes/
+!deploy/hermes/**
 publish_desktop_releases/
 
 # Sentry native
@@ -112,6 +114,7 @@ kilo.json
 
 # Other AI agent session artifacts
 SOUL.md
+!deploy/hermes/SOUL.md
 IDENTITY.md
 MEMORY.md
 USER.md
