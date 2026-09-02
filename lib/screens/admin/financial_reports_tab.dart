@@ -256,20 +256,10 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                             style: Theme.of(context).textTheme.labelMedium,
                           ),
                           const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () => _exportReport('csv'),
-                                icon: const Icon(Icons.file_download),
-                                label: const Text('CSV'),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton.icon(
-                                onPressed: () => _exportReport('pdf'),
-                                icon: const Icon(Icons.picture_as_pdf),
-                                label: const Text('PDF'),
-                              ),
-                            ],
+                          ElevatedButton.icon(
+                            onPressed: () => _exportReport('csv'),
+                            icon: const Icon(Icons.file_download),
+                            label: const Text('CSV'),
                           ),
                         ],
                       ),

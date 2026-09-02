@@ -250,6 +250,28 @@ class AdminCenterService extends ChangeNotifier {
     }
   }
 
+  /// Get configured Stripe price IDs per subscription tier.
+  Future<Map<String, String>> getStripePriceCatalog() async {
+    try {
+      _setLoading(true);
+      final response = await _dio.get('/admin/subscriptions/prices');
+      _setError(null);
+      final prices = response.data['prices'];
+      if (prices is Map) {
+        return prices.map(
+          (key, value) => MapEntry(key.toString(), value.toString()),
+        );
+      }
+      return {};
+    } catch (e) {
+      debugPrint('[AdminCenterService] Error loading Stripe prices: $e');
+      _setError('Failed to load Stripe price catalog: $e');
+      return {};
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   /// Get subscription metrics
   Future<Map<String, dynamic>> getSubscriptionMetrics({
     required DateTime startDate,
@@ -306,7 +328,7 @@ class AdminCenterService extends ChangeNotifier {
       // Trigger file download
       final filename =
           '${type}_report_${startDate.toIso8601String().split('T')[0]}_${endDate.toIso8601String().split('T')[0]}.$format';
-      final mimeType = format == 'pdf' ? 'application/pdf' : 'text/csv';
+      const mimeType = 'text/csv';
 
       downloadFile(response.data as List<int>, filename, mimeType);
 

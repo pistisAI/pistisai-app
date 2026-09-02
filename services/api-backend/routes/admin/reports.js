@@ -561,14 +561,13 @@ async function generateTransactionReportData(pool, startDate, endDate) {
  *
  * Query Parameters:
  * - type: Report type (revenue, subscriptions, transactions) - required
- * - format: Export format (csv, pdf) - required
+ * - format: Export format (csv) - required
  * - startDate: Start date for report (ISO 8601 format, required)
  * - endDate: End date for report (ISO 8601 format, required)
  *
  * Response:
  * - Streams file download with appropriate content type
  * - CSV: text/csv
- * - PDF: application/pdf (placeholder - returns CSV for now)
  */
 router.get(
   '/export',
@@ -600,7 +599,7 @@ router.get(
       }
 
       // Validate format
-      const validFormats = ['csv', 'pdf'];
+      const validFormats = ['csv'];
       if (!validFormats.includes(format)) {
         return res.status(400).json({
           error: 'Invalid format',
@@ -695,32 +694,14 @@ router.get(
       }
 
       // Export based on format
-      if (format === 'csv') {
-        const csv = convertToCSV(reportData, headers);
+      const csv = convertToCSV(reportData, headers);
 
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename="${filename}.csv"`,
-        );
-        res.send(csv);
-      } else if (format === 'pdf') {
-        // PDF export is a placeholder for now
-        // In a production environment, you would use a library like pdfkit or puppeteer
-        // For now, we'll return CSV with a note
-        const csv = convertToCSV(reportData, headers);
-
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename="${filename}.csv"`,
-        );
-        res.setHeader(
-          'X-PDF-Note',
-          'PDF export not yet implemented, returning CSV format',
-        );
-        res.send(csv);
-      }
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}.csv"`,
+      );
+      res.send(csv);
 
       // Log the export action
       await logAdminAction(pool, {

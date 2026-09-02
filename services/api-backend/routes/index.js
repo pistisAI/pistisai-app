@@ -78,6 +78,10 @@ import prometheusMetricsRoutes from './prometheus-metrics.js';
 import changelogRoutes from './changelog.js';
 import agentEventsRoutes from './agent-events.js';
 
+const LEGACY_TUNNEL_ROUTES_ENABLED =
+  process.env.PISTISAI_ENABLE_LEGACY_PROXY_ROUTES === 'true' ||
+  process.env.PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES === 'true';
+
 export function setupRoutes(
   app,
   sshProxy,
@@ -140,9 +144,13 @@ export function setupRoutes(
   //   return authMiddleware(req, res, next);
   // }
 
-  // Create tunnel and monitoring routes
-  const tunnelRouter = createTunnelRoutes(sshProxy, logger, sshAuthService);
-  const monitoringRouter = createMonitoringRoutes(sshProxy, logger);
+  // Create tunnel and monitoring routes (legacy only)
+  const tunnelRouter = LEGACY_TUNNEL_ROUTES_ENABLED
+    ? createTunnelRoutes(sshProxy, logger, sshAuthService)
+    : null;
+  const monitoringRouter = LEGACY_TUNNEL_ROUTES_ENABLED
+    ? createMonitoringRoutes(sshProxy, logger)
+    : null;
 
   // Register routes function
   function registerRoutes(path, ...middlewares) {
@@ -155,8 +163,10 @@ export function setupRoutes(
   app.get('/service-version', serviceVersionHandler);
 
   // Register all routes
-  registerRoutes('/tunnel', tunnelRouter);
-  registerRoutes('/monitoring', monitoringRouter);
+  if (LEGACY_TUNNEL_ROUTES_ENABLED) {
+    registerRoutes('/tunnel', tunnelRouter);
+    registerRoutes('/monitoring', monitoringRouter);
+  }
   registerRoutes('/db/health', dbHealthHandler);
   registerRoutes('/auth', authRoutes);
   registerRoutes('/auth/sessions', sessionRoutes);
