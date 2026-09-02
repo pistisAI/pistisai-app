@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/avatar/avatar_state_service.dart';
+import '../../services/settings_preference_service.dart';
 import '../../models/avatar/personality_models.dart';
+import '../../features/avatar/avatar_widget.dart';
 import '../../di/locator.dart' as di;
 import 'package:go_router/go_router.dart';
 import 'achievements_screen.dart';
@@ -9,7 +11,7 @@ import 'achievements_screen.dart';
 /// Avatar Settings Screen
 ///
 /// Allows users to customize their avatar's personality, name,
-/// and manage evolution stages.
+/// visual appearance, and manage evolution stages.
 class AvatarSettingsScreen extends StatefulWidget {
   const AvatarSettingsScreen({super.key});
 
@@ -19,6 +21,7 @@ class AvatarSettingsScreen extends StatefulWidget {
 
 class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
   late AvatarStateService _avatarStateService;
+  late SettingsPreferenceService _settingsService;
   bool _isInitializing = true;
   bool _isLoading = false;
   String? _errorMessage;
@@ -26,11 +29,22 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
   // Form state
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
+  final TextEditingController _nameController =
+      TextEditingController(text: 'Pistisai');
   late double _formality;
   late double _humor;
   late double _enthusiasm;
   late double _empathy;
+
+  // Appearance state
+  String _colorTheme = 'personality';
+  String _animationStyle = 'bounce';
+  String _avatarType = 'emoji';
+  String _avatarSize = 'medium';
+  bool _glowEnabled = true;
+
+  // Preview state
+  AgentState _previewState = AgentState.idle;
 
   // Evolution state
   String _selectedEvolutionStage = 'curious_explorer';
@@ -38,6 +52,13 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       TextEditingController();
   bool _isRequestingEvolution = false;
   Map<String, dynamic>? _evolutionRequirements;
+
+  /// Size multipliers for avatar
+  static const Map<String, double> _avatarSizeMultipliers = {
+    'small': 0.8,
+    'medium': 1.0,
+    'large': 1.3,
+  };
 
   @override
   void initState() {
@@ -49,12 +70,16 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
   Future<void> _initializeService() async {
     try {
       _avatarStateService = di.serviceLocator.get<AvatarStateService>();
+      _settingsService = di.serviceLocator.get<SettingsPreferenceService>();
 
       // Listen to service changes
       _avatarStateService.addListener(_onAvatarStateChanged);
 
       // Load initial profile
       await _avatarStateService.loadProfile();
+
+      // Load persisted appearance settings
+      await _loadAppearanceSettings();
 
       // Initialize form state from current profile
       _initializeFormState();
@@ -74,11 +99,24 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
     }
   }
 
+  /// Load appearance settings from SettingsPreferenceService
+  Future<void> _loadAppearanceSettings() async {
+    try {
+      _colorTheme = await _settingsService.getAvatarColorTheme();
+      _animationStyle = await _settingsService.getAvatarAnimationStyle();
+      _avatarType = await _settingsService.getAvatarType();
+      _avatarSize = await _settingsService.getAvatarSize();
+      _glowEnabled = await _settingsService.isAvatarGlowEnabled();
+    } catch (e) {
+      debugPrint('Error loading appearance settings: $e');
+    }
+  }
+
   /// Initialize form fields from current profile
   void _initializeFormState() {
     final profile = _avatarStateService.currentProfile;
     if (profile != null) {
-      _nameController = TextEditingController(text: profile.agentName);
+      _nameController.text = profile.agentName;
       _formality = profile.traits.formality;
       _humor = profile.traits.humor;
       _enthusiasm = profile.traits.enthusiasm;
@@ -86,7 +124,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       _selectedEvolutionStage = profile.evolutionStage;
     } else {
       // Default values
-      _nameController = TextEditingController(text: 'Pistisai');
+      _nameController.text = 'Pistisai';
       _formality = PersonalityTraits.defaultTraits.formality;
       _humor = PersonalityTraits.defaultTraits.humor;
       _enthusiasm = PersonalityTraits.defaultTraits.enthusiasm;
@@ -129,6 +167,30 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
     }
   }
 
+  static const _validEvolutionStages = {
+    'curious_explorer',
+    'knowledge_seeker',
+    'wise_companion',
+    'enlightened_guide',
+  };
+
+  bool _isValidStage(String stage) => _validEvolutionStages.contains(stage);
+
+  /// Build personality traits from current slider values
+  PersonalityTraits _buildTraits() => PersonalityTraits(
+        formality: _formality,
+        humor: _humor,
+        enthusiasm: _enthusiasm,
+        empathy: _empathy,
+      );
+
+  /// Get avatar size in pixels
+  double _getAvatarSize() {
+    final baseSize = 150.0;
+    final multiplier = _avatarSizeMultipliers[_avatarSize] ?? 1.0;
+    return baseSize * multiplier;
+  }
+
   /// Save avatar settings
   Future<void> _saveSettings() async {
     if (!_formKey.currentState!.validate()) {
@@ -148,13 +210,21 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       }
 
       // Update personality traits
-      final traits = PersonalityTraits(
-        formality: _formality,
-        humor: _humor,
-        enthusiasm: _enthusiasm,
-        empathy: _empathy,
-      );
+      final traits = _buildTraits();
       await _avatarStateService.updateTraits(traits);
+
+      // Persist personality traits to SettingsPreferenceService
+      await _settingsService.setAvatarFormality(_formality);
+      await _settingsService.setAvatarHumor(_humor);
+      await _settingsService.setAvatarEnthusiasm(_enthusiasm);
+      await _settingsService.setAvatarEmpathy(_empathy);
+
+      // Persist appearance settings
+      await _settingsService.setAvatarColorTheme(_colorTheme);
+      await _settingsService.setAvatarAnimationStyle(_animationStyle);
+      await _settingsService.setAvatarType(_avatarType);
+      await _settingsService.setAvatarSize(_avatarSize);
+      await _settingsService.setAvatarGlowEnabled(_glowEnabled);
 
       setState(() {
         _isLoading = false;
@@ -276,6 +346,11 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                 if (_successMessage != null)
                   _buildSuccessMessage(_successMessage!),
 
+                // Live avatar preview
+                _buildLivePreview(),
+
+                const SizedBox(height: 24),
+
                 // Current status card
                 _buildStatusCard(),
 
@@ -288,6 +363,11 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
                 // Personality traits section
                 _buildPersonalityTraitsSection(),
+
+                const SizedBox(height: 24),
+
+                // Appearance options section
+                _buildAppearanceSection(),
 
                 const SizedBox(height: 24),
 
@@ -323,6 +403,92 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Build live avatar preview section
+  Widget _buildLivePreview() {
+    final traits = _buildTraits();
+
+    return Card(
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Text(
+              'Live Preview',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            // Avatar preview
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withValues(alpha: 0.3),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.3),
+                  width: 2,
+                ),
+              ),
+              padding: const EdgeInsets.all(24),
+              child: AgentAvatar(
+                state: _previewState,
+                size: _getAvatarSize(),
+                personality: traits,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // State switcher for preview
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SegmentedButton<AgentState>(
+                segments: const [
+                  ButtonSegment(
+                    value: AgentState.idle,
+                    label: Text('Idle'),
+                    icon: Icon(Icons.pause_circle_outline),
+                  ),
+                  ButtonSegment(
+                    value: AgentState.thinking,
+                    label: Text('Thinking'),
+                    icon: Icon(Icons.psychology),
+                  ),
+                  ButtonSegment(
+                    value: AgentState.working,
+                    label: Text('Working'),
+                    icon: Icon(Icons.construction),
+                  ),
+                  ButtonSegment(
+                    value: AgentState.happy,
+                    label: Text('Happy'),
+                    icon: Icon(Icons.sentiment_satisfied),
+                  ),
+                  ButtonSegment(
+                    value: AgentState.error,
+                    label: Text('Error'),
+                    icon: Icon(Icons.error_outline),
+                  ),
+                ],
+                selected: {_previewState},
+                onSelectionChanged: (state) {
+                  setState(() => _previewState = state.first);
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -541,7 +707,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Adjust these sliders to customize your avatar\'s personality.',
+              'Adjust these sliders to customize your avatar\'s personality. '
+              'Changes are reflected in the live preview above.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -643,6 +810,206 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
     );
   }
 
+  /// Build appearance options section
+  Widget _buildAppearanceSection() {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.palette, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Appearance',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Customize your avatar\'s visual style and animation.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 16),
+
+            // Color theme selector
+            Text(
+              'Color Theme',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              initialValue: _colorTheme,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                prefixIcon: Icon(Icons.color_lens),
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: 'personality',
+                  child: Text('Personality-Derived'),
+                ),
+                DropdownMenuItem(
+                  value: 'ocean_blue',
+                  child: Text('Ocean Blue'),
+                ),
+                DropdownMenuItem(
+                  value: 'forest_green',
+                  child: Text('Forest Green'),
+                ),
+                DropdownMenuItem(
+                  value: 'sunset_orange',
+                  child: Text('Sunset Orange'),
+                ),
+                DropdownMenuItem(
+                  value: 'royal_purple',
+                  child: Text('Royal Purple'),
+                ),
+                DropdownMenuItem(
+                  value: 'monochrome',
+                  child: Text('Monochrome'),
+                ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _colorTheme = value);
+                }
+              },
+            ),
+
+            const SizedBox(height: 16),
+
+            // Animation style selector
+            Text(
+              'Animation Style',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              initialValue: _animationStyle,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                prefixIcon: Icon(Icons.animation),
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: 'bounce',
+                  child: Text('Bounce'),
+                ),
+                DropdownMenuItem(
+                  value: 'pulse',
+                  child: Text('Pulse'),
+                ),
+                DropdownMenuItem(
+                  value: 'float',
+                  child: Text('Float'),
+                ),
+                DropdownMenuItem(
+                  value: 'shake',
+                  child: Text('Shake'),
+                ),
+                DropdownMenuItem(
+                  value: 'none',
+                  child: Text('None (Static)'),
+                ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _animationStyle = value);
+                }
+              },
+            ),
+
+            const SizedBox(height: 16),
+
+            // Avatar size selector
+            Text(
+              'Avatar Size',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            SegmentedButton<String>(
+              segments: const [
+                ButtonSegment(
+                  value: 'small',
+                  label: Text('Small'),
+                  icon: Icon(Icons.circle, size: 16),
+                ),
+                ButtonSegment(
+                  value: 'medium',
+                  label: Text('Medium'),
+                  icon: Icon(Icons.circle, size: 24),
+                ),
+                ButtonSegment(
+                  value: 'large',
+                  label: Text('Large'),
+                  icon: Icon(Icons.circle, size: 32),
+                ),
+              ],
+              selected: {_avatarSize},
+              onSelectionChanged: (size) {
+                setState(() => _avatarSize = size.first);
+              },
+            ),
+
+            const SizedBox(height: 16),
+
+            // Glow effect toggle
+            Row(
+              children: [
+                Icon(Icons.light_mode, color: colorScheme.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Glow Effect',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Enable pulsing glow effect around avatar',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: _glowEnabled,
+                  onChanged: (value) {
+                    setState(() => _glowEnabled = value);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Build visual customization section
   Widget _buildVisualCustomizationSection() {
     return Card(
@@ -654,19 +1021,19 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
             Row(
               children: [
                 Icon(
-                  Icons.palette,
+                  Icons.brush,
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Visual Customization',
+                  'Advanced Visual Customization',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              'Customize your avatar\'s visual appearance, including type, color, size, and effects.',
+              'Fine-tune your avatar\'s color, type, and effects in the dedicated customization screen.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -677,7 +1044,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               child: OutlinedButton.icon(
                 onPressed: () => context.pushNamed('avatar-customization'),
                 icon: const Icon(Icons.brush),
-                label: const Text('Customize Visual Appearance'),
+                label: const Text('Open Advanced Customization'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -794,7 +1161,10 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
             // Evolution request form
             DropdownButtonFormField<String>(
-              initialValue: _selectedEvolutionStage,
+              initialValue:
+                  _isValidStage(_selectedEvolutionStage)
+                      ? _selectedEvolutionStage
+                      : 'curious_explorer',
               decoration: const InputDecoration(
                 labelText: 'Evolve to Stage',
                 border: OutlineInputBorder(),

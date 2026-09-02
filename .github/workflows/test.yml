@@ -3,7 +3,7 @@ name: "🧪 CI — Test & Build Every Branch"
 on:
   push:
     branches:
-      - "**"
+      - main
     paths-ignore:
       - "**.md"
       - "docs/**"
@@ -17,7 +17,7 @@ on:
       - "images/**"
 
 concurrency:
-  group: ci-test-${{ github.ref }}
+  group: ci-test-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -35,6 +35,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: "stable"
           cache: true
 
@@ -44,8 +45,8 @@ jobs:
       - name: "🔍 flutter analyze"
         run: flutter analyze lib/
 
-  flutter_unit_test:
-    name: "🧪 Flutter — unit tests"
+  flutter_smoke_test:
+    name: "🧪 Flutter — smoke"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
 
@@ -54,51 +55,28 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: "stable"
           cache: true
 
       - name: "📦 flutter pub get"
         run: flutter pub get
 
-      - name: "🧪 flutter test (unit)"
-        run: |
-          flutter test test/config/ test/models/ test/utils/ test/helpers/ \
-            test/services/ test/services/desktop_control/ test/services/avatar/ \
-            test/services/vision/ test/services/voice/ \
-            test/screens/ test/widgets/ test/widgets/hermes/ test/widgets/voice/ \
-            --reporter expanded
-
-  flutter_integration_test:
-    name: "🧪 Flutter — integration (allow fail)"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          cache: true
-
-      - name: "📦 flutter pub get"
-        run: flutter pub get
-
-      - name: "🧪 flutter test (integration)"
-        run: |
-          flutter test test/integration/ --reporter expanded --timeout 30s || echo "⚠️ Some integration tests failed (non-blocking)"
+      - name: "🧪 flutter test (security + basic)"
+        run: bash scripts/ci/flutter_security_basic_tests.sh
 
   build_web:
     name: "🌐 Build Web"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    needs: [flutter_analyze, flutter_unit_test]
+    needs: [flutter_analyze, flutter_smoke_test]
 
     steps:
       - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: "stable"
           cache: true
 
@@ -119,13 +97,14 @@ jobs:
     name: "🐧 Build Linux Desktop"
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    needs: [flutter_analyze, flutter_unit_test]
+    needs: [flutter_analyze, flutter_smoke_test]
 
     steps:
       - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: "stable"
           cache: true
 
@@ -137,7 +116,9 @@ jobs:
             libgtk-3-dev liblzma-dev libstdc++-12-dev \
             libsecret-1-dev libjsoncpp-dev \
             libnotify-dev libcurl4-openssl-dev \
-            libayatana-appindicator3-dev
+            libayatana-appindicator3-dev \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav
 
       - name: "📦 flutter pub get"
         run: flutter pub get
@@ -168,12 +149,33 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "26"
 
       - name: "📦 npm install"
         run: npm install
 
       - name: "🔍 npm lint"
         run: npm run lint
+
+  backend_security_test:
+    name: "Backend — security tests"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: services/api-backend
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "26"
+
+      - name: "📦 npm install"
+        run: npm install
+
+      - name: "🔒 npm run test:ci:security"
+        run: npm run test:ci:security

@@ -81,7 +81,7 @@ void main() {
     addTearDown(service.dispose);
 
     await tester.pumpWidget(buildWidget(service));
-    service.noteWakePhrase('Zoidbot, you there?');
+    service.noteWakePhrase('Hermes, you there?');
     await tester.pump();
 
     expect(find.text('engaged'), findsOneWidget);

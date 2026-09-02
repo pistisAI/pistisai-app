@@ -25,9 +25,12 @@ import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/streaming_chat_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
+import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/log_buffer_service.dart';
 import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
+import 'package:camera_desktop/camera_desktop.dart'
+    if (dart.library.html) 'camera_web_noop.dart';
 import 'package:pistisai/services/url_scheme_registration_service.dart'
     if (dart.library.html) 'package:pistisai/services/url_scheme_registration_service_stub.dart';
 import 'web_plugins_stub.dart'
@@ -43,16 +46,42 @@ import 'package:pistisai/utils/platform_file_utils.dart'
 
 // navigatorKey is now imported from config/navigator_key.dart
 
+/// Resolve the OAuth callback URL from process arguments, if present.
+///
+/// Returns the first argument that looks like a Pistisai callback scheme
+/// (`pistisai://` or `com.pistisai.app://`). Returns `null` when none of the
+/// arguments are a callback URL — including when conventional engine/flutter
+/// flags such as `--enable-logging` or `--verbose` are passed. This prevents
+/// non-callback arguments from ever triggering the early `return` in [main]
+/// that would skip `runApp` and leave the window black.
+String? resolveCallbackUrl(List<String> args) {
+  for (final a in args) {
+    if (a.startsWith('com.pistisai.app://') || a.startsWith('pistisai://')) {
+      return a;
+    }
+  }
+  return null;
+}
+
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Register the desktop camera backend (Linux/macOS/Windows) for the
+  // `camera` plugin. The official plugin has no Linux impl; camera_desktop
+  // provides one via camera_platform_interface. No-op on web (stub).
+  CameraDesktopPlugin.registerWith();
 
   // Immediate logging to verify Dart entry point is reached
   // Build trigger: force new release tag
   debugPrint('----- DART MAIN START ----- v1.0.0');
 
-  // Handle command-line arguments (OAuth callback URLs)
-  if (args.isNotEmpty) {
+  // Handle command-line arguments (OAuth callback URLs).
+  // Only bail out early when an actual callback URL is present; ignore
+  // conventional engine/flutter flags (--enable-logging, --verbose, etc.)
+  // so they cannot prevent the UI from ever starting.
+  final callbackUrl = resolveCallbackUrl(args);
+  if (callbackUrl != null) {
     debugPrint('[Main] Command-line arguments received: $args');
     await _handleCommandLineArgs(args);
     return; // Exit after handling callback
@@ -293,6 +322,8 @@ class _PistisaiAppState extends State<PistisaiApp> {
           providersList, 'LocalVoiceInputService');
       _addValueProviderIfAvailable<LangChainPromptService>(
           providersList, 'LangChainPromptService');
+      _addValueProviderIfAvailable<AutoUpdateService>(
+          providersList, 'AutoUpdateService');
       _addProviderIfAvailable<PlatformDetectionService>(
           providersList, 'PlatformDetectionService');
 
@@ -486,7 +517,9 @@ class _AppRouterHostState extends State<_AppRouterHost> {
     ThemeProvider? themeProvider;
     try {
       themeProvider = context.watch<ThemeProvider>();
-    } catch (_) {}
+    } catch (_) {
+      // ThemeProvider may not be registered yet; handled by fallback below
+    }
 
     return WindowListenerWidget(
       child: MaterialApp.router(
@@ -521,10 +554,12 @@ class _AppRouterHostState extends State<_AppRouterHost> {
   }
 
   void _initializeRouter(AuthService authService) {
+    final setupWizardService = di.serviceLocator.get<SetupWizardService>();
     setState(() {
       _router = AppRouter.createRouter(
         navigatorKey: navigatorKey,
         authService: authService,
+        setupWizardService: setupWizardService,
       );
     });
   }

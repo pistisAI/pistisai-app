@@ -9,6 +9,7 @@ import '../screens/callback_screen.dart';
 import '../screens/onboarding/setup_wizard_screen.dart';
 import '../screens/home/home_layout.dart';
 import '../widgets/navigation/openclaw_navigation_shell.dart';
+import '../services/onboarding/setup_wizard_service.dart';
 
 // Settings screens are lazy-loaded
 import '../screens/settings/settings_lazy.dart' as settings_lazy;
@@ -36,6 +37,7 @@ import '../screens/dashboard/overview_screen.dart';
 
 // Channels screen
 import '../screens/channels/channels_screen.dart';
+import '../screens/channels/channel_detail_screen.dart';
 
 // Usage screen
 import '../screens/usage/usage_screen.dart';
@@ -67,43 +69,6 @@ import '../screens/debug/debug_screen.dart';
 // Config screen
 import '../screens/config/config_screen.dart';
 
-// Placeholder screens - to be implemented in subsequent tasks
-class PlaceholderScreen extends StatelessWidget {
-  final String title;
-  final String route;
-
-  const PlaceholderScreen(
-      {required this.title, required this.route, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.construction,
-                size: 64, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(title, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 8),
-            Text('Route: $route', style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 24),
-            Text(
-              'This screen will be implemented in a subsequent task.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.6),
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 /// Wrapper widget that provides HomeLayout with its required dependencies
 class _HomeLayoutWrapper extends StatefulWidget {
@@ -182,6 +147,7 @@ class AppRouter {
   static GoRouter createRouter({
     GlobalKey<NavigatorState>? navigatorKey,
     required AuthService authService,
+    required SetupWizardService setupWizardService,
   }) {
     debugPrint('[Router] createRouter called');
 
@@ -204,6 +170,7 @@ class AppRouter {
 
     final rootNavigatorKey = navigatorKey ?? GlobalKey<NavigatorState>();
 
+    // Setup wizard redirect is handled in the redirect function below
     return GoRouter(
       navigatorKey: rootNavigatorKey,
       initialLocation: initialLocation,
@@ -259,6 +226,17 @@ class AppRouter {
                     key: state.pageKey,
                     child: const ChannelsScreen(),
                   ),
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (context, state) => MaterialPage(
+                        key: state.pageKey,
+                        child: ChannelDetailScreen(
+                          channelId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -430,12 +408,18 @@ class AppRouter {
         ...gui_automation_lazy.guiAutomationRoutes,
         ...construction_lazy.constructionRoutes,
       ],
-      redirect: (context, state) {
+      redirect: (context, state) async {
         debugPrint('[Router] Redirect check: ${state.matchedLocation}');
+
+        final location = state.matchedLocation;
+        final isAdminRoute = location.startsWith('/admin') || location == '/admin-center';
+        if (isAdminRoute && !kIsWeb) {
+          debugPrint('[Router] Redirecting native/mobile client away from web-only admin routes.');
+          return '/chat';
+        }
 
         final isAuthenticated = authService.isAuthenticated.value;
         final isAuthLoading = authService.isLoading.value;
-        final location = state.matchedLocation;
         final isLoggingIn = location == '/login';
         final isCallback = location == '/callback';
         final isSetup = location == '/setup';
@@ -496,6 +480,14 @@ class AppRouter {
 
         // 6. Unauthenticated state on App domain or Desktop
         if (isLoggingIn || isCallback || isSetup || !kIsWeb) {
+          // Check if first-time user on desktop needs setup wizard
+          if (!kIsWeb && !isAuthenticated && !isSetup) {
+            final shouldShowWizard = await setupWizardService.shouldShowWizard();
+            if (shouldShowWizard) {
+              debugPrint('[Router] First-time desktop user, redirecting to setup wizard');
+              return '/setup';
+            }
+          }
           return null; // Allow these (Desktop is always allowed)
         }
 

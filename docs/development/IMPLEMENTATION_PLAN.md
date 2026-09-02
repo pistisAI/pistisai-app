@@ -4,11 +4,40 @@
 
 > **Orientation note**: This file is a historical implementation plan and progress log. The current product direction is defined in [SPEC.md](../../SPEC.md) and [Agent Runtime Contract](../architecture/AGENT_RUNTIME_CONTRACT.md): there is no universal default runtime, Hermes is the first agent runtime path for current testing, OpenClaw remains supported as the original integration, desktop control is core, avatar and voice belong together as a sidecar companion, and Tailscale is the preferred secure device mesh. Ollama, LM Studio, and similar model servers are support model providers for app-owned memory/background features, not primary app runtimes.
 
-> **Last Updated**: 2026-04-06 | **Overall Progress**: ~95% complete | **Estimated Timeline**: 8 weeks (0 remaining)
+> **Last Updated**: 2026-07-27 | **Overall Progress**: ~96% complete | **Estimated Timeline**: 8 weeks (0 remaining)
 
 ---
 
 ## Recent Updates
+
+### 2026-07-27: Phase 3 Complete — Vector Embeddings, Channel Detail Fix, Dependabot Cleanup
+
+**Status**: ✅ Phase 3 Complete
+
+Final Phase 3 sprint completing vector embedding generation, fixing the broken channel detail screen, and cleaning up stale dependabot PRs:
+
+**Vector Embedding Generation (Pillar 3) - 100% Complete:**
+- ✅ Implemented `_generateEmbedding()` calling LM Studio API at `localhost:1234/v1/embeddings`
+- ✅ `storeMemory()` now auto-generates embeddings when not provided
+- ✅ Configurable embedding endpoint with graceful fallback on API failure
+
+**Channel Detail Screen Fix:**
+- ✅ Fixed 54 compile errors (bracket nesting, missing build() closure, undefined methods)
+- ✅ Replaced `Icons.platform` (non-existent) with `Icons.language`
+- ✅ Replaced deprecated `surfaceVariant` with `surfaceContainerHighest`
+- ✅ Fixed `_loadChannel()` to use `listChannels()` with manual lookup
+
+**Dependabot Cleanup:**
+- ✅ Merged 8 safe semver-patch dependabot PRs
+- ✅ Closed 2 kilo-duplicate issues (#75, #84)
+- ✅ 2 PRs with merge conflicts flagged for manual rebase (#70, #68)
+- ✅ 8 major-version bumps left for review
+
+**Commits:**
+- `ai(Zoid): fix(channel-detail): fix compile errors, bracket nesting, and deprecated surfaceVariant` (92a9143)
+- `ai(Zoid): feat(memory): implement real embedding generation via LM Studio` (63c6378)
+
+---
 
 ### 2026-04-06: Phase 2-3 Complete — Vision, Desktop Control, Avatar Memory, Hermes Integration
 
@@ -37,7 +66,7 @@ Major implementation sprint completing Vision System foundation, Desktop Control
 - ✅ Created MemoryService with semantic search foundation
 - ✅ Added DAO methods: getMemoriesForConversation, insertMemory, searchMemoriesByContent
 - ✅ Database migration v6 → v7
-- 🔲 Vector embedding generation (marked as TODO)
+- ✅ Vector embedding generation (marked as TODO)
 - 🔲 Cosine similarity search (text search implemented as placeholder)
 
 **Commits:**
@@ -201,9 +230,9 @@ Implemented device identity authentication for OpenClaw Gateway WebSocket connec
 | **Setup Wizard** | ✅ Complete | 100% | None |
 | **Chat** | ✅ Phase 1 Complete | 95% | Multi-model attachments |
 | **OpenClaw Manager** | ✅ Phase 1 Complete | 95% | Advanced metrics |
-| **Evolving Avatar** | ✅ Phase 2 Complete | 95% | Achievements, deeper memory |
+| **Evolving Avatar** | ✅ Phase 2 Complete | 96% | Achievements, deeper memory |
 | **Desktop Control** | ✅ Phase 2 Complete | 95% | Advanced automation workflows |
-| **Vision** | ✅ Phase 2 Complete | 90% | Continuous monitoring |
+| **Vision** | ✅ Phase 2 Complete | 91% | Continuous monitoring |
 
 ---
 

@@ -328,6 +328,32 @@ class Macros extends Table {
 }
 
 // ============================================================================
+// AGENT IDENTITY TABLES (Phase 3 - Persistent Agent Identities)
+// ============================================================================
+
+/// Table for persistent agent identities with roles
+@DataClassName('AgentIdentity')
+class AgentIdentities extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get role => text().withDefault(const Constant('secondary'))();
+  // primary, secondary, coordinator, reviewer
+  TextColumn get personalityTraits =>
+      text().nullable()(); // JSON: {formality, humor, enthusiasm, empathy}
+  TextColumn get systemPrompt => text().nullable()();
+  TextColumn get capabilities =>
+      text().nullable()(); // JSON: ["research", "review", "coordination"]
+  TextColumn get avatarConfig =>
+      text().nullable()(); // JSON: visual appearance config
+  BoolColumn get isActive => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+// ============================================================================
 // CONSCIENCE SYSTEM TABLES (Phase 1 - Storage Layer)
 // ============================================================================
 
@@ -338,7 +364,7 @@ class AgentThoughts extends Table {
   DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
   TextColumn get channel => text()
       .withDefault(const Constant('general'))(); // general, review, research
-  TextColumn get agent => text()(); // zoidbot, benjamin, harper
+  TextColumn get agent => text()(); // hermes, benjamin, harper
   TextColumn get thoughtType =>
       text()(); // intention, observation, question, summary
   TextColumn get content => text()(); // The actual thought text
@@ -369,6 +395,57 @@ class ConscienceDecisions extends Table {
 }
 
 // ============================================================================
+// COORDINATOR SYSTEM TABLES (Phase 4 - Consensus & Conflict Resolution)
+// ============================================================================
+
+/// Table for tracking coordinator state - consensus sessions
+@DataClassName('CoordinatorState')
+class CoordinatorStates extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get decisionId =>
+      text().references(ConscienceDecisions, #id)();
+  TextColumn get action => text()(); // The action being coordinated
+  TextColumn get riskLevel => text()(); // low, medium, high, critical
+  TextColumn get status => text()
+      .withDefault(const Constant('open'))(); // open, consensus, conflict, escalated, resolved
+  TextColumn get consensusVerdict =>
+      text().nullable()(); // APPROVED, QUESTION, HOLD, DENIED
+  TextColumn get consensusReasoning =>
+      text().nullable()(); // The consensus reasoning
+  TextColumn get conflictType =>
+      text().nullable()(); // majority_split, tie, escalation_needed
+  TextColumn get resolutionStrategy =>
+      text().nullable()(); // majority_vote, escalation, user_mediation
+  TextColumn get resolvedBy =>
+      text().nullable()(); // agent name or 'user' if user-mediated
+  IntColumn get totalVotes => integer().withDefault(const Constant(0))();
+  IntColumn get approveCount => integer().withDefault(const Constant(0))();
+  IntColumn get questionCount => integer().withDefault(const Constant(0))();
+  IntColumn get holdCount => integer().withDefault(const Constant(0))();
+  IntColumn get denyCount => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Table for storing individual agent votes within a coordinator session
+@DataClassName('CoordinatorVote')
+class CoordinatorVotes extends Table {
+  TextColumn get id => text()();
+  TextColumn get coordinatorId =>
+      text().references(CoordinatorStates, #id)();
+  TextColumn get agent => text()(); // hermes, benjamin, harper
+  TextColumn get vote => text()(); // APPROVED, QUESTION, HOLD, DENIED
+  TextColumn get reasoning => text().nullable()();
+  DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+// ============================================================================
 // AVATAR PERSONALITY ENGINE TABLES
 // ============================================================================
 
@@ -379,7 +456,8 @@ class AvatarPersonalityProfiles extends Table {
   TextColumn get agentName => text().withDefault(const Constant('Agent'))();
   TextColumn get personalityTraits =>
       text()(); // JSON: {formality, humor, enthusiasm, empathy}
-  TextColumn get evolutionStage => text().withDefault(const Constant('base'))();
+  TextColumn get evolutionStage =>
+      text().withDefault(const Constant('curious_explorer'))();
   IntColumn get conversationCount => integer().withDefault(const Constant(0))();
   RealColumn get depthScore => real().withDefault(const Constant(0.0))();
   IntColumn get createdAt => integer().nullable()();
@@ -467,19 +545,23 @@ class ConversationMemories extends Table {
   ConversationMemories,
   AgentThoughts,
   ConscienceDecisions,
+  AgentIdentities,
+  CoordinatorStates,
+  CoordinatorVotes,
 ])
 class LocalBrain extends _$LocalBrain {
   LocalBrain() : super(openConnection());
   LocalBrain.withExecutor(super.executor);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (Migrator m) async {
           await m.createAll();
           await _populateInitialRateLimits();
+          await _createDefaultAgentIdentities();
         },
         onUpgrade: (Migrator m, int from, int to) async {
           if (from < 2) {
@@ -525,6 +607,16 @@ class LocalBrain extends _$LocalBrain {
           if (from < 8) {
             // Add durable main chat timeline persistence.
             await m.createTable(mainChatTimelineRecords);
+          }
+          if (from < 9) {
+            // Add Agent Identity tables for Phase 3
+            await m.createTable(agentIdentities);
+            await _createDefaultAgentIdentities();
+          }
+          if (from < 10) {
+            // Add Coordinator System tables for Phase 4 - Consensus & Conflict Resolution
+            await m.createTable(coordinatorStates);
+            await m.createTable(coordinatorVotes);
           }
         },
       );
@@ -1299,6 +1391,18 @@ class LocalBrain extends _$LocalBrain {
   Future<void> insertMemory(ConversationMemoriesCompanion memory) =>
       into(conversationMemories).insert(memory);
 
+  /// Get all memories that have embeddings (non-empty JSON arrays).
+  Future<List<ConversationMemory>> getAllMemoriesWithEmbeddings() async {
+    final all = await (select(conversationMemories)
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.timestamp, mode: OrderingMode.desc)
+          ]))
+        .get();
+    // Filter out memories with empty or minimal embeddings
+    return all.where((m) => m.embedding.length > 4).toList();
+  }
+
   /// Search memories by content and summary text.
   ///
   /// This is a database-backed fallback until vector similarity search is
@@ -1417,7 +1521,7 @@ class LocalBrain extends _$LocalBrain {
   }
 
   /// Get provider by ID
-  Future<dynamic> getProviderById(String id) {
+  Future<QueryRow?> getProviderById(String id) {
     return customSelect(
       'SELECT * FROM llm_providers WHERE id = ?',
       variables: [Variable(id)],
@@ -1425,7 +1529,7 @@ class LocalBrain extends _$LocalBrain {
   }
 
   /// Get default provider
-  Future<dynamic> getDefaultProvider() {
+  Future<QueryRow?> getDefaultProvider() {
     return customSelect(
       'SELECT * FROM llm_providers WHERE is_default = 1 LIMIT 1',
     ).getSingleOrNull();
@@ -1506,7 +1610,7 @@ class LocalBrain extends _$LocalBrain {
         agentName: 'Agent',
         personalityTraits:
             '{"formality":0.5,"humor":0.5,"enthusiasm":0.5,"empathy":0.5}',
-        evolutionStage: 'base',
+        evolutionStage: 'curious_explorer',
         conversationCount: 0,
         depthScore: 0.0,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -1562,7 +1666,7 @@ class LocalBrain extends _$LocalBrain {
           agentName: 'Agent',
           personalityTraits:
               '{"formality":0.5,"humor":0.5,"enthusiasm":0.5,"empathy":0.5}',
-          evolutionStage: 'base',
+          evolutionStage: 'curious_explorer',
           conversationCount: 0,
           depthScore: 0.0,
           createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -1570,6 +1674,60 @@ class LocalBrain extends _$LocalBrain {
         ),
       );
     }
+  }
+
+  /// Create default agent identities on first run
+  Future<void> _createDefaultAgentIdentities() async {
+    final existing = await select(agentIdentities).get();
+    if (existing.isNotEmpty) return;
+
+    final now = DateTime.now();
+    await batch((batch) {
+      batch.insert(agentIdentities, AgentIdentity(
+        id: 'benjamin',
+        name: 'Benjamin',
+        role: 'reviewer',
+        personalityTraits: '{"formality":0.8,"humor":0.3,"enthusiasm":0.4,"empathy":0.6}',
+        systemPrompt: 'You are Benjamin, a meticulous reviewer. You analyze actions for risks, edge cases, and unintended consequences before approving them. You are cautious, thorough, and value precision over speed.',
+        capabilities: '["review","risk_analysis","audit"]',
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+      ));
+      batch.insert(agentIdentities, AgentIdentity(
+        id: 'harper',
+        name: 'Harper',
+        role: 'secondary',
+        personalityTraits: '{"formality":0.4,"humor":0.7,"enthusiasm":0.8,"empathy":0.9}',
+        systemPrompt: 'You are Harper, a creative and empathetic collaborator. You excel at research, brainstorming, and understanding user needs. You bring warmth and creativity to every interaction.',
+        capabilities: '["research","brainstorming","user_advocacy"]',
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+      ));
+      batch.insert(agentIdentities, AgentIdentity(
+        id: 'hermes',
+        name: 'Hermes',
+        role: 'primary',
+        personalityTraits: '{"formality":0.5,"humor":0.5,"enthusiasm":0.6,"empathy":0.7}',
+        systemPrompt: 'You are Hermes, the primary agent. You coordinate all activities, delegate tasks to other agents, and serve as the main interface with the user. You are balanced, reliable, and efficient.',
+        capabilities: '["coordination","delegation","execution","communication"]',
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+      ));
+      batch.insert(agentIdentities, AgentIdentity(
+        id: 'coordinator',
+        name: 'Coordinator',
+        role: 'coordinator',
+        personalityTraits: '{"formality":0.6,"humor":0.4,"enthusiasm":0.5,"empathy":0.5}',
+        systemPrompt: 'You are the Coordinator agent. You orchestrate multi-agent workflows, manage task queues, and ensure smooth collaboration between agents. You are organized, diplomatic, and strategic.',
+        capabilities: '["orchestration","task_management","workflow_design"]',
+        isActive: false,
+        createdAt: now,
+        updatedAt: now,
+      ));
+    });
   }
 
   // Evolution history operations
@@ -1757,4 +1915,147 @@ class LocalBrain extends _$LocalBrain {
   Future<ConscienceDecision?> getDecisionById(String id) =>
       (select(conscienceDecisions)..where((tbl) => tbl.id.equals(id)))
           .getSingleOrNull();
+
+  // ==========================================================================
+  // AGENT IDENTITY DAO (Phase 3 - Persistent Agent Identities)
+  // ==========================================================================
+
+  /// Insert a new agent identity
+  Future<void> insertAgentIdentity(AgentIdentitiesCompanion entry) =>
+      into(agentIdentities).insert(entry, mode: InsertMode.insertOrReplace);
+
+  /// Get all agent identities
+  Future<List<AgentIdentity>> getAllAgentIdentities() =>
+      select(agentIdentities).get();
+
+  /// Get agent identity by ID
+  Future<AgentIdentity?> getAgentIdentityById(String id) =>
+      (select(agentIdentities)..where((tbl) => tbl.id.equals(id)))
+          .getSingleOrNull();
+
+  /// Get agent identities by role
+  Future<List<AgentIdentity>> getAgentIdentitiesByRole(String role) =>
+      (select(agentIdentities)..where((tbl) => tbl.role.equals(role))).get();
+
+  /// Get active agent identities
+  Future<List<AgentIdentity>> getActiveAgentIdentities() =>
+      (select(agentIdentities)..where((tbl) => tbl.isActive.equals(true)))
+          .get();
+
+  /// Update an agent identity
+  Future<void> updateAgentIdentity(AgentIdentitiesCompanion entry) =>
+      into(agentIdentities).insert(entry, mode: InsertMode.insertOrReplace);
+
+  /// Delete an agent identity
+  Future<int> deleteAgentIdentity(String id) =>
+      (delete(agentIdentities)..where((tbl) => tbl.id.equals(id))).go();
+
+  /// Set an agent as active (deactivates others)
+  Future<void> setActiveAgent(String id) async {
+    await transaction(() async {
+      // Deactivate all
+      await update(agentIdentities).write(
+        AgentIdentitiesCompanion(isActive: const Value(false)),
+      );
+      // Activate the target
+      await (update(agentIdentities)..where((tbl) => tbl.id.equals(id)))
+          .write(
+        AgentIdentitiesCompanion(
+          isActive: const Value(true),
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
+    });
+  }
+
+  /// Get the primary (active) agent identity
+  Future<AgentIdentity?> getPrimaryAgentIdentity() async {
+    final active = await getActiveAgentIdentities();
+    if (active.isNotEmpty) return active.first;
+    // Fallback: get the primary role agent
+    final primaries = await getAgentIdentitiesByRole('primary');
+    return primaries.isNotEmpty ? primaries.first : null;
+  }
+
+  // ==========================================================================
+  // COORDINATOR SYSTEM DAO (Phase 4 - Consensus & Conflict Resolution)
+  // ==========================================================================
+
+  /// Insert a new coordinator state
+  Future<void> insertCoordinatorState(CoordinatorStatesCompanion entry) =>
+      into(coordinatorStates).insert(entry);
+
+  /// Get coordinator state by ID
+  Future<CoordinatorState?> getCoordinatorStateById(String id) =>
+      (select(coordinatorStates)..where((tbl) => tbl.id.equals(id)))
+          .getSingleOrNull();
+
+  /// Get coordinator state by decision ID
+  Future<CoordinatorState?> getCoordinatorStateByDecisionId(
+          String decisionId) =>
+      (select(coordinatorStates)
+            ..where((tbl) => tbl.decisionId.equals(decisionId)))
+          .getSingleOrNull();
+
+  /// Get open coordinator states
+  Future<List<CoordinatorState>> getOpenCoordinatorStates(
+      {int limit = 50}) async {
+    return await (select(coordinatorStates)
+          ..where((tbl) => tbl.status.equals('open'))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+          ])
+          ..limit(limit))
+        .get();
+  }
+
+  /// Get coordinator states by status
+  Future<List<CoordinatorState>> getCoordinatorStatesByStatus(String status,
+      {int limit = 50}) async {
+    return await (select(coordinatorStates)
+          ..where((tbl) => tbl.status.equals(status))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+          ])
+          ..limit(limit))
+        .get();
+  }
+
+  /// Update coordinator state
+  Future<void> updateCoordinatorState(
+      String id, CoordinatorStatesCompanion entry) async {
+    await (update(coordinatorStates)..where((tbl) => tbl.id.equals(id)))
+        .write(entry);
+  }
+
+  /// Insert a new coordinator vote
+  Future<void> insertCoordinatorVote(CoordinatorVotesCompanion entry) =>
+      into(coordinatorVotes).insert(entry);
+
+  /// Get votes for a coordinator session
+  Future<List<CoordinatorVote>> getCoordinatorVotes(String coordinatorId,
+      {int limit = 50}) async {
+    return await (select(coordinatorVotes)
+          ..where((tbl) => tbl.coordinatorId.equals(coordinatorId))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.timestamp, mode: OrderingMode.desc)
+          ])
+          ..limit(limit))
+        .get();
+  }
+
+  /// Get all coordinator states
+  Future<List<CoordinatorState>> getAllCoordinatorStates(
+      {int limit = 50}) async {
+    return await (select(coordinatorStates)
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+          ])
+          ..limit(limit))
+        .get();
+  }
 }

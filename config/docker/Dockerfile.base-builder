@@ -1,4 +1,4 @@
-# Base Builder Image for Zoidbot
+# Base Builder Image for Pistisai
 # Uses standard Fedora image
 
 FROM fedora:40
@@ -12,28 +12,28 @@ RUN dnf -y update && \
     dnf clean all
 
 # Create non-root user
-RUN useradd -u 1000 -m -s /bin/bash zoidbot
+RUN useradd -u 1000 -m -s /bin/bash pistisai
 
 # Install Flutter SDK
 ENV FLUTTER_ROOT=/opt/flutter
 RUN mkdir -p $FLUTTER_ROOT && \
-    chown -R zoidbot:zoidbot $FLUTTER_ROOT
+    chown -R pistisai:pistisai $FLUTTER_ROOT
 
 # Switch back to non-root user
-USER zoidbot
-WORKDIR /home/zoidbot
+USER pistisai
+WORKDIR /home/pistisai
 
 # Install NVM and Node.js (LTS)
-ENV NVM_DIR=/home/zoidbot/.nvm
+ENV NVM_DIR=/home/pistisai/.nvm
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash && \
     . "$NVM_DIR/nvm.sh" && \
     nvm install 24 && \
     nvm alias default 24 && \
     nvm use default && \
-    ln -s $(dirname $(nvm which default)) /home/zoidbot/node-bin
+    ln -s $(dirname $(nvm which default)) /home/pistisai/node-bin
 
 # Add Node.js and Flutter to PATH
-ENV PATH="/home/zoidbot/node-bin:$FLUTTER_ROOT/bin:$FLUTTER_ROOT/bin/cache/dart-sdk/bin:$PATH"
+ENV PATH="/home/pistisai/node-bin:$FLUTTER_ROOT/bin:$FLUTTER_ROOT/bin/cache/dart-sdk/bin:$PATH"
 
 # Download and extract Flutter SDK
 RUN git clone https://github.com/flutter/flutter.git -b stable $FLUTTER_ROOT

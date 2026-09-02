@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Pistisai
+Comment=Manage and run powerful Large Language Models locally
+GenericName=LLM Manager
+Exec=pistisai
+Icon=pistisai
+Terminal=false
+StartupNotify=true
+Categories=Development;Utility;Network;
+Keywords=LLM;AI;Machine Learning;Ollama;Local;Cloud;
+MimeType=application/x-pistisai;
+StartupWMClass=Pistisai
+X-GNOME-SingleWindow=true
+X-Ubuntu-Gettext-Domain=pistisai

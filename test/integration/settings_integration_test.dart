@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import '../test_config.dart';
 
+@Timeout(Duration(minutes: 3))
 void main() {
   group('Settings Integration Tests', () {
     late SettingsPreferenceService settingsService;

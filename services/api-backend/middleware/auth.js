@@ -16,8 +16,7 @@ import { AuthService } from '../auth/auth-service.js';
 // JWT configuration - Requirements 2.1
 const AUTH0_DOMAIN =
   process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com';
-const AUTH0_AUDIENCE =
-  process.env.AUTH0_AUDIENCE || 'https://api.pistisai.app';
+const AUTH0_AUDIENCE = process.env.AUTH0_AUDIENCE || 'https://api.pistisai.app';
 
 const isAuthConfigured = !!(AUTH0_DOMAIN && AUTH0_AUDIENCE);
 
@@ -33,9 +32,15 @@ export const checkJwt = (req, res, next) => {
   }
 
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+  const token =
+    authHeader && authHeader.startsWith('Bearer ')
+      ? authHeader.substring(7)
+      : null;
 
-  if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
+  if (
+    token === 'mock_dev_access_token' &&
+    process.env.NODE_ENV !== 'production'
+  ) {
     logger.info(' [Auth] Bypassing authentication for mock developer token');
     req.auth = {
       token: 'mock_dev_access_token',
@@ -51,7 +56,7 @@ export const checkJwt = (req, res, next) => {
         'https://pistisai.app/roles': ['admin'],
         'https://Pistisai.com/app_metadata': { role: 'admin' },
         scope: 'openid profile email admin',
-      }
+      },
     };
     return next();
   }
@@ -142,26 +147,35 @@ export async function syncSession(req, res, next) {
 
     // Optional: Synchronize session with database
     try {
-      let token = req.headers.authorization?.split(' ')[1] || req.auth?.token;
+      const authHeader = req.headers.authorization || req.headers.Authorization;
+      const bearerToken =
+        typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+          ? authHeader.substring(7)
+          : null;
+      const token = bearerToken || req.auth?.token;
 
-      // If req.auth is the result of express-oauth2-jwt-bearer, the token might be in req.auth.token
-      // but if it's already a validated payload, we might not have the raw token.
-      // However, createOrUpdateSession uses it for hashing.
-
-      if (typeof token !== 'string') {
+      // A validated JWT payload does not necessarily include the original
+      // bearer token. Session rows are keyed by a hash of that raw token, so
+      // using a shared synthetic value would collapse distinct sessions.
+      if (typeof token !== 'string' || token.length === 0) {
         logger.debug(
-          ' [Auth] Raw token not found as string, using placeholder for sync',
-          { tokenType: typeof token },
+          ' [Auth] Raw token unavailable; skipping session synchronization',
         );
-        token = 'validated-payload-no-raw-token';
+        return next();
       }
 
-      const result = await Promise.race([
-        authService.syncSession(req.auth.payload, token, req),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout')), 2000),
-        ),
-      ]);
+      let timeoutId;
+      let result;
+      try {
+        result = await Promise.race([
+          authService.syncSession(req.auth.payload, token, req),
+          new Promise((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Timeout')), 2000);
+          }),
+        ]);
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!result.success) {
         logger.warn(' [Auth] Session sync failed', {
@@ -188,13 +202,17 @@ export async function syncSession(req, res, next) {
  * Attaches user info if token is present and valid, but doesn't require it
  */
 export async function optionalAuth(req, res, next) {
-  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  const authHeader =
+    req.headers['authorization'] || req.headers['Authorization'];
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return next();
   }
 
   const token = authHeader.substring(7);
-  if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
+  if (
+    token === 'mock_dev_access_token' &&
+    process.env.NODE_ENV !== 'production'
+  ) {
     req.auth = {
       token: 'mock_dev_access_token',
       payload: {
@@ -209,7 +227,7 @@ export async function optionalAuth(req, res, next) {
         'https://pistisai.app/roles': ['admin'],
         'https://Pistisai.com/app_metadata': { role: 'admin' },
         scope: 'openid profile email admin',
-      }
+      },
     };
     return syncSession(req, res, () => next());
   }
@@ -377,8 +395,7 @@ export function requireAdmin(req, res, next) {
       });
     }
 
-    const userMetadata =
-      user['https://Pistisai.com/user_metadata'] || {};
+    const userMetadata = user['https://Pistisai.com/user_metadata'] || {};
     const appMetadata = user['https://Pistisai.com/app_metadata'] || {};
     const userRoles = user['https://pistisai.app/roles'] || [];
     const userScopes = user.scope ? user.scope.split(' ') : [];

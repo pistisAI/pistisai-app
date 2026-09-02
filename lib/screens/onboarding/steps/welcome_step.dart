@@ -6,35 +6,44 @@ class WelcomeStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Avatar/Icon
-          _AvatarCircle(),
-          SizedBox(height: 32),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Avatar/Icon
+                  _AvatarCircle(),
+                  SizedBox(height: 32),
 
-          // Title
-          _TitleText(),
-          SizedBox(height: 16),
+                  // Title
+                  _TitleText(),
+                  SizedBox(height: 16),
 
-          // Subtitle
-          _SubtitleText(),
-          SizedBox(height: 32),
+                  // Subtitle
+                  _SubtitleText(),
+                  SizedBox(height: 32),
 
-          // Feature cards
-          _FeatureCards(),
-          SizedBox(height: 32),
+                  // Feature cards
+                  _FeatureCards(),
+                  SizedBox(height: 32),
 
-          // Info text
-          _InfoBox(),
-          SizedBox(height: 24),
+                  // Info text
+                  _InfoBox(),
+                  SizedBox(height: 24),
 
-          // Skip option (small)
-          _SkipButton(),
-        ],
-      ),
+                  // Skip option (small)
+                  _SkipButton(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

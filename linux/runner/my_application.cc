@@ -58,8 +58,8 @@ static void my_application_activate(GApplication* application) {
   const char* icon_paths[] = {
     "data/flutter_assets/assets/images/app_icon.png",
     "assets/images/app_icon.png",
-    "/usr/share/pixmaps/zoidbot.png",
-    "/usr/share/icons/hicolor/128x128/apps/zoidbot.png",
+    "/usr/share/pixmaps/pistisai.png",
+    "/usr/share/icons/hicolor/128x128/apps/pistisai.png",
     nullptr
   };
 

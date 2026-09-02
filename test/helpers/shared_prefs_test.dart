@@ -13,13 +13,10 @@ void main() {
   });
 
   testWidgets('Test shared prefs with setUp', (tester) async {
-    print('Started');
     final prefs = await SharedPreferences.getInstance();
-    print('Got prefs');
     await Future.wait([
       prefs.setString('k1', 'v1'),
       prefs.setInt('k2', 1),
     ]);
-    print('Done');
   });
 }

@@ -33,7 +33,7 @@ void main() {
 
     test('sync gate rules stay explicit in the review document', () {
       final gateDoc = File(
-        'docs/plans/2026-05-09-main-chat-cockpit-transport-review-gate.md',
+        'docs/archive/plans/2026-05-09-main-chat-cockpit-transport-review-gate.md',
       ).readAsStringSync();
 
       expect(gateDoc, contains('No unauthenticated listener.'));

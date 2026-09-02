@@ -633,9 +633,9 @@ describe("Input Validation Utilities", () => {
     });
 
     it("should reject invalid UUID format", () => {
-      expect(() =>
-        validateInput("not-a-uuid", "id", "uuid"),
-      ).toThrow("Invalid id: expected UUID");
+      expect(() => validateInput("not-a-uuid", "id", "uuid")).toThrow(
+        "Invalid id: expected UUID",
+      );
     });
 
     it("should reject non-string UUID input", () => {
@@ -679,13 +679,9 @@ describe("Input Validation Utilities", () => {
     });
 
     it("should accept optional context", () => {
-      logValidationError(
-        "POST /users",
-        "user-1",
-        "age",
-        "too low",
-        { value: -1 },
-      );
+      logValidationError("POST /users", "user-1", "age", "too low", {
+        value: -1,
+      });
     });
   });
 

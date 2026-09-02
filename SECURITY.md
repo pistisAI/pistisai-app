@@ -21,8 +21,12 @@ We aim to acknowledge receipt within 48 hours and provide a fix timeline within 
 | Older releases | ❌ |
 
 ## Security Measures
-
-- ✅ Branch protection — `main` requires PR reviews and passing CI
+- ✅ Every push to `main` is a reviewed commit — the project is owner- and
+  agent-maintained with a direct-push-to-`main` model (no PR gating of the
+  branch); see `AGENTS.md`. No unreviewed third-party change lands without the
+  owner's explicit action.
+- ✅ CI runs on every push — automated build and test gates execute on each
+  commit to `main`.
 - ✅ Secret scanning — automatic detection of leaked credentials
 - ✅ Push protection — blocks commits with known secrets
 - ✅ CodeQL — code analysis on every push

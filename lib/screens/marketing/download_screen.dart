@@ -177,39 +177,50 @@ class DownloadScreen extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Platform-specific download buttons
-          Row(
+          Wrap(
+            spacing: 16,
+            runSpacing: 16,
             children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => _downloadFile(
-                    'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Windows-${AppConfig.appVersion}-portable.zip',
-                    'Pistisai-Windows-${AppConfig.appVersion}-portable.zip',
-                    context,
-                  ),
-                  icon: const Icon(Icons.desktop_windows),
-                  label: const Text('Windows Portable'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00c58e),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai_${AppConfig.appVersion}_amd64.deb',
+                  'Pistisai_${AppConfig.appVersion}_amd64.deb',
+                  context,
+                ),
+                icon: const Icon(Icons.desktop_windows),
+                label: const Text('Linux (.deb)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00c58e),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => _downloadFile(
-                    'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Windows-${AppConfig.appVersion}-portable.zip',
-                    'Pistisai-${AppConfig.appVersion}-portable.zip',
-                    context,
-                  ),
-                  icon: const Icon(Icons.archive),
-                  label: const Text('Windows Portable'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFa777e3),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-x64.tar.gz',
+                  'Pistisai-Linux-x64.tar.gz',
+                  context,
+                ),
+                icon: const Icon(Icons.archive),
+                label: const Text('Linux (.tar.gz)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFa777e3),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-macOS-x64.zip',
+                  'Pistisai-macOS-x64.zip',
+                  context,
+                ),
+                icon: const Icon(Icons.apple),
+                label: const Text('macOS (.zip)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6e8efb),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
               ),
             ],
@@ -219,7 +230,8 @@ class DownloadScreen extends StatelessWidget {
 
           // Info text
           const Text(
-            'For Linux and macOS downloads, visit the GitHub releases page above.',
+            'Prefer a manual install? See the platform sections below for '
+            'Debian, universal installer, and prebuilt binary instructions.',
             style: TextStyle(color: Color(0xFFb0b0b0), fontSize: 14),
             textAlign: TextAlign.center,
           ),
@@ -321,10 +333,10 @@ sudo snap connect Pistisai:system-observe''',
       child: _buildInstallationSection(
         'Installation',
         '''# Download from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux_${AppConfig.appVersion}_amd64.deb
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai_${AppConfig.appVersion}_amd64.deb
 
 # Install with dpkg
-sudo dpkg -i Pistisai-Linux_${AppConfig.appVersion}_amd64.deb
+sudo dpkg -i Pistisai_${AppConfig.appVersion}_amd64.deb
 
 # Install dependencies if needed
 sudo apt-get install -f''',
@@ -335,19 +347,15 @@ sudo apt-get install -f''',
   Widget _buildAppImage(BuildContext context) {
     return _buildCard(
       context,
-      title: '� AppImage (Portable)',
+      title: '🚀 Universal Installer (install.sh)',
       description:
-          'Portable application that runs on any Linux distribution without installation. No root access required.',
+          'One-line installer script that detects your platform and fetches the correct release asset. Works on most Linux distributions.',
       child: _buildInstallationSection(
-        'Download and Run',
-        '''# Download AppImage from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
-
-# Make executable
-chmod +x Pistisai-${AppConfig.appVersion}-x86_64.AppImage
-
-# Run directly
-./Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage''',
+        'Run the installer',
+        '''# Download and run the official installer
+curl -fsSL https://github.com/pistisAI/pistisai-app/releases/latest/download/install.sh -o install.sh
+chmod +x install.sh
+./install.sh''',
       ),
     );
   }
@@ -381,11 +389,11 @@ pamac install Pistisai''',
       child: _buildInstallationSection(
         'Download and Install',
         '''# Download pre-built binary from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.tar.gz
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-x64.tar.gz
 
 # Extract to local directory
-tar -xzf Pistisai-${AppConfig.appVersion}-x86_64.tar.gz
-cd Pistisai-${AppConfig.appVersion}-x86_64
+tar -xzf Pistisai-Linux-x64.tar.gz
+cd Pistisai-Linux-x64
 
 # Run directly
 ./Pistisai''',

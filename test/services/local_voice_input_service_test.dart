@@ -105,7 +105,7 @@ void main() {
 
     test('buildFastAcknowledgement returns response for heard query', () {
       final ack = voiceConversationService
-          .buildFastAcknowledgement('Zoidbot can you hear me?');
+          .buildFastAcknowledgement('Hermes can you hear me?');
       expect(ack, isNotNull);
     });
 

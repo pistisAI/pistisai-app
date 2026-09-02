@@ -197,7 +197,7 @@ class _VoiceConversationStatusCardState
           ),
           OutlinedButton.icon(
             onPressed: () {
-              voiceService.noteWakePhrase('Zoidbot, are you there?');
+              voiceService.noteWakePhrase('Hermes, are you there?');
             },
             icon: const Icon(Icons.record_voice_over),
             label: const Text('Wake'),

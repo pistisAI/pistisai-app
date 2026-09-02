@@ -5,14 +5,14 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
-import 'package:pistisai/database/drift_local_brain.dart' as _i3;
-import 'package:pistisai/models/main_chat_timeline_event.dart' as _i8;
-import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart'
-    as _i7;
 import 'package:drift/drift.dart' as _i2;
 import 'package:drift/src/runtime/executor/stream_queries.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
+import 'package:pistisai/database/drift_local_brain.dart' as _i3;
+import 'package:pistisai/models/main_chat_timeline_event.dart' as _i8;
+import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart'
+    as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -323,9 +323,42 @@ class _Fake$ConscienceDecisionsTable_26 extends _i1.SmartFake
         );
 }
 
-class _FakeGeneratedDatabase_27 extends _i1.SmartFake
+class _Fake$AgentIdentitiesTable_27 extends _i1.SmartFake
+    implements _i3.$AgentIdentitiesTable {
+  _Fake$AgentIdentitiesTable_27(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _Fake$CoordinatorStatesTable_28 extends _i1.SmartFake
+    implements _i3.$CoordinatorStatesTable {
+  _Fake$CoordinatorStatesTable_28(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _Fake$CoordinatorVotesTable_29 extends _i1.SmartFake
+    implements _i3.$CoordinatorVotesTable {
+  _Fake$CoordinatorVotesTable_29(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeGeneratedDatabase_30 extends _i1.SmartFake
     implements _i2.GeneratedDatabase {
-  _FakeGeneratedDatabase_27(
+  _FakeGeneratedDatabase_30(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -334,9 +367,9 @@ class _FakeGeneratedDatabase_27 extends _i1.SmartFake
         );
 }
 
-class _FakeDriftDatabaseOptions_28 extends _i1.SmartFake
+class _FakeDriftDatabaseOptions_31 extends _i1.SmartFake
     implements _i2.DriftDatabaseOptions {
-  _FakeDriftDatabaseOptions_28(
+  _FakeDriftDatabaseOptions_31(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -345,9 +378,9 @@ class _FakeDriftDatabaseOptions_28 extends _i1.SmartFake
         );
 }
 
-class _FakeStreamQueryUpdateRules_29 extends _i1.SmartFake
+class _FakeStreamQueryUpdateRules_32 extends _i1.SmartFake
     implements _i2.StreamQueryUpdateRules {
-  _FakeStreamQueryUpdateRules_29(
+  _FakeStreamQueryUpdateRules_32(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -356,9 +389,9 @@ class _FakeStreamQueryUpdateRules_29 extends _i1.SmartFake
         );
 }
 
-class _FakeDatabaseConnection_30 extends _i1.SmartFake
+class _FakeDatabaseConnection_33 extends _i1.SmartFake
     implements _i2.DatabaseConnection {
-  _FakeDatabaseConnection_30(
+  _FakeDatabaseConnection_33(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -367,8 +400,8 @@ class _FakeDatabaseConnection_30 extends _i1.SmartFake
         );
 }
 
-class _FakeQueryExecutor_31 extends _i1.SmartFake implements _i2.QueryExecutor {
-  _FakeQueryExecutor_31(
+class _FakeQueryExecutor_34 extends _i1.SmartFake implements _i2.QueryExecutor {
+  _FakeQueryExecutor_34(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -377,9 +410,9 @@ class _FakeQueryExecutor_31 extends _i1.SmartFake implements _i2.QueryExecutor {
         );
 }
 
-class _FakeStreamQueryStore_32 extends _i1.SmartFake
+class _FakeStreamQueryStore_35 extends _i1.SmartFake
     implements _i4.StreamQueryStore {
-  _FakeStreamQueryStore_32(
+  _FakeStreamQueryStore_35(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -388,9 +421,9 @@ class _FakeStreamQueryStore_32 extends _i1.SmartFake
         );
 }
 
-class _FakeDatabaseConnectionUser_33 extends _i1.SmartFake
+class _FakeDatabaseConnectionUser_36 extends _i1.SmartFake
     implements _i2.DatabaseConnectionUser {
-  _FakeDatabaseConnectionUser_33(
+  _FakeDatabaseConnectionUser_36(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -399,9 +432,9 @@ class _FakeDatabaseConnectionUser_33 extends _i1.SmartFake
         );
 }
 
-class _FakeAvatarPersonalityProfile_34 extends _i1.SmartFake
+class _FakeAvatarPersonalityProfile_37 extends _i1.SmartFake
     implements _i3.AvatarPersonalityProfile {
-  _FakeAvatarPersonalityProfile_34(
+  _FakeAvatarPersonalityProfile_37(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -410,8 +443,8 @@ class _FakeAvatarPersonalityProfile_34 extends _i1.SmartFake
         );
 }
 
-class _FakeMigrator_35 extends _i1.SmartFake implements _i2.Migrator {
-  _FakeMigrator_35(
+class _FakeMigrator_38 extends _i1.SmartFake implements _i2.Migrator {
+  _FakeMigrator_38(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -420,8 +453,8 @@ class _FakeMigrator_35 extends _i1.SmartFake implements _i2.Migrator {
         );
 }
 
-class _FakeFuture_36<T> extends _i1.SmartFake implements _i5.Future<T> {
-  _FakeFuture_36(
+class _FakeFuture_39<T> extends _i1.SmartFake implements _i5.Future<T> {
+  _FakeFuture_39(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -430,9 +463,9 @@ class _FakeFuture_36<T> extends _i1.SmartFake implements _i5.Future<T> {
         );
 }
 
-class _FakeInsertStatement_37<T1 extends _i2.Table, D1> extends _i1.SmartFake
+class _FakeInsertStatement_40<T1 extends _i2.Table, D1> extends _i1.SmartFake
     implements _i2.InsertStatement<T1, D1> {
-  _FakeInsertStatement_37(
+  _FakeInsertStatement_40(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -441,9 +474,9 @@ class _FakeInsertStatement_37<T1 extends _i2.Table, D1> extends _i1.SmartFake
         );
 }
 
-class _FakeUpdateStatement_38<T extends _i2.Table, D> extends _i1.SmartFake
+class _FakeUpdateStatement_41<T extends _i2.Table, D> extends _i1.SmartFake
     implements _i2.UpdateStatement<T, D> {
-  _FakeUpdateStatement_38(
+  _FakeUpdateStatement_41(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -452,9 +485,9 @@ class _FakeUpdateStatement_38<T extends _i2.Table, D> extends _i1.SmartFake
         );
 }
 
-class _FakeSimpleSelectStatement_39<T1 extends _i2.HasResultSet, D>
+class _FakeSimpleSelectStatement_42<T1 extends _i2.HasResultSet, D>
     extends _i1.SmartFake implements _i2.SimpleSelectStatement<T1, D> {
-  _FakeSimpleSelectStatement_39(
+  _FakeSimpleSelectStatement_42(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -463,9 +496,9 @@ class _FakeSimpleSelectStatement_39<T1 extends _i2.HasResultSet, D>
         );
 }
 
-class _FakeJoinedSelectStatement_40<FirstT extends _i2.HasResultSet, FirstD>
+class _FakeJoinedSelectStatement_43<FirstT extends _i2.HasResultSet, FirstD>
     extends _i1.SmartFake implements _i2.JoinedSelectStatement<FirstT, FirstD> {
-  _FakeJoinedSelectStatement_40(
+  _FakeJoinedSelectStatement_43(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -474,9 +507,9 @@ class _FakeJoinedSelectStatement_40<FirstT extends _i2.HasResultSet, FirstD>
         );
 }
 
-class _FakeBaseSelectStatement_41<Row> extends _i1.SmartFake
+class _FakeBaseSelectStatement_44<Row> extends _i1.SmartFake
     implements _i2.BaseSelectStatement<Row> {
-  _FakeBaseSelectStatement_41(
+  _FakeBaseSelectStatement_44(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -485,9 +518,9 @@ class _FakeBaseSelectStatement_41<Row> extends _i1.SmartFake
         );
 }
 
-class _FakeDeleteStatement_42<T1 extends _i2.Table, D1> extends _i1.SmartFake
+class _FakeDeleteStatement_45<T1 extends _i2.Table, D1> extends _i1.SmartFake
     implements _i2.DeleteStatement<T1, D1> {
-  _FakeDeleteStatement_42(
+  _FakeDeleteStatement_45(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -496,8 +529,8 @@ class _FakeDeleteStatement_42<T1 extends _i2.Table, D1> extends _i1.SmartFake
         );
 }
 
-class _FakeSelectable_43<T> extends _i1.SmartFake implements _i2.Selectable<T> {
-  _FakeSelectable_43(
+class _FakeSelectable_46<T> extends _i1.SmartFake implements _i2.Selectable<T> {
+  _FakeSelectable_46(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -506,9 +539,9 @@ class _FakeSelectable_43<T> extends _i1.SmartFake implements _i2.Selectable<T> {
         );
 }
 
-class _FakeGenerationContext_44 extends _i1.SmartFake
+class _FakeGenerationContext_47 extends _i1.SmartFake
     implements _i2.GenerationContext {
-  _FakeGenerationContext_44(
+  _FakeGenerationContext_47(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -781,6 +814,33 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
       ) as _i3.$ConscienceDecisionsTable);
 
   @override
+  _i3.$AgentIdentitiesTable get agentIdentities => (super.noSuchMethod(
+        Invocation.getter(#agentIdentities),
+        returnValue: _Fake$AgentIdentitiesTable_27(
+          this,
+          Invocation.getter(#agentIdentities),
+        ),
+      ) as _i3.$AgentIdentitiesTable);
+
+  @override
+  _i3.$CoordinatorStatesTable get coordinatorStates => (super.noSuchMethod(
+        Invocation.getter(#coordinatorStates),
+        returnValue: _Fake$CoordinatorStatesTable_28(
+          this,
+          Invocation.getter(#coordinatorStates),
+        ),
+      ) as _i3.$CoordinatorStatesTable);
+
+  @override
+  _i3.$CoordinatorVotesTable get coordinatorVotes => (super.noSuchMethod(
+        Invocation.getter(#coordinatorVotes),
+        returnValue: _Fake$CoordinatorVotesTable_29(
+          this,
+          Invocation.getter(#coordinatorVotes),
+        ),
+      ) as _i3.$CoordinatorVotesTable);
+
+  @override
   Iterable<_i2.TableInfo<_i2.Table, Object?>> get allTables =>
       (super.noSuchMethod(
         Invocation.getter(#allTables),
@@ -796,7 +856,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
   @override
   _i2.GeneratedDatabase get attachedDatabase => (super.noSuchMethod(
         Invocation.getter(#attachedDatabase),
-        returnValue: _FakeGeneratedDatabase_27(
+        returnValue: _FakeGeneratedDatabase_30(
           this,
           Invocation.getter(#attachedDatabase),
         ),
@@ -805,7 +865,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
   @override
   _i2.DriftDatabaseOptions get options => (super.noSuchMethod(
         Invocation.getter(#options),
-        returnValue: _FakeDriftDatabaseOptions_28(
+        returnValue: _FakeDriftDatabaseOptions_31(
           this,
           Invocation.getter(#options),
         ),
@@ -814,7 +874,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
   @override
   _i2.StreamQueryUpdateRules get streamUpdateRules => (super.noSuchMethod(
         Invocation.getter(#streamUpdateRules),
-        returnValue: _FakeStreamQueryUpdateRules_29(
+        returnValue: _FakeStreamQueryUpdateRules_32(
           this,
           Invocation.getter(#streamUpdateRules),
         ),
@@ -823,7 +883,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
   @override
   _i2.DatabaseConnection get connection => (super.noSuchMethod(
         Invocation.getter(#connection),
-        returnValue: _FakeDatabaseConnection_30(
+        returnValue: _FakeDatabaseConnection_33(
           this,
           Invocation.getter(#connection),
         ),
@@ -841,7 +901,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
   @override
   _i2.QueryExecutor get executor => (super.noSuchMethod(
         Invocation.getter(#executor),
-        returnValue: _FakeQueryExecutor_31(
+        returnValue: _FakeQueryExecutor_34(
           this,
           Invocation.getter(#executor),
         ),
@@ -850,7 +910,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
   @override
   _i4.StreamQueryStore get streamQueries => (super.noSuchMethod(
         Invocation.getter(#streamQueries),
-        returnValue: _FakeStreamQueryStore_32(
+        returnValue: _FakeStreamQueryStore_35(
           this,
           Invocation.getter(#streamQueries),
         ),
@@ -859,7 +919,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
   @override
   _i2.DatabaseConnectionUser get resolvedEngine => (super.noSuchMethod(
         Invocation.getter(#resolvedEngine),
-        returnValue: _FakeDatabaseConnectionUser_33(
+        returnValue: _FakeDatabaseConnectionUser_36(
           this,
           Invocation.getter(#resolvedEngine),
         ),
@@ -1527,6 +1587,17 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
       ) as _i5.Future<void>);
 
   @override
+  _i5.Future<List<_i3.ConversationMemory>> getAllMemoriesWithEmbeddings() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllMemoriesWithEmbeddings,
+          [],
+        ),
+        returnValue: _i5.Future<List<_i3.ConversationMemory>>.value(
+            <_i3.ConversationMemory>[]),
+      ) as _i5.Future<List<_i3.ConversationMemory>>);
+
+  @override
   _i5.Future<List<_i3.ConversationMemory>> searchMemoriesByContent(
           String? searchTerm) =>
       (super.noSuchMethod(
@@ -1691,22 +1762,22 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
       ) as _i5.Future<List<dynamic>>);
 
   @override
-  _i5.Future<dynamic> getProviderById(String? id) => (super.noSuchMethod(
+  _i5.Future<_i2.QueryRow?> getProviderById(String? id) => (super.noSuchMethod(
         Invocation.method(
           #getProviderById,
           [id],
         ),
-        returnValue: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+        returnValue: _i5.Future<_i2.QueryRow?>.value(),
+      ) as _i5.Future<_i2.QueryRow?>);
 
   @override
-  _i5.Future<dynamic> getDefaultProvider() => (super.noSuchMethod(
+  _i5.Future<_i2.QueryRow?> getDefaultProvider() => (super.noSuchMethod(
         Invocation.method(
           #getDefaultProvider,
           [],
         ),
-        returnValue: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+        returnValue: _i5.Future<_i2.QueryRow?>.value(),
+      ) as _i5.Future<_i2.QueryRow?>);
 
   @override
   _i5.Future<List<dynamic>> getProvidersByType(String? type) =>
@@ -1765,7 +1836,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           [],
         ),
         returnValue: _i5.Future<_i3.AvatarPersonalityProfile>.value(
-            _FakeAvatarPersonalityProfile_34(
+            _FakeAvatarPersonalityProfile_37(
           this,
           Invocation.method(
             #getAvatarProfile,
@@ -2041,12 +2112,224 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
       ) as _i5.Future<_i3.ConscienceDecision?>);
 
   @override
+  _i5.Future<void> insertAgentIdentity(_i3.AgentIdentitiesCompanion? entry) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #insertAgentIdentity,
+          [entry],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<List<_i3.AgentIdentity>> getAllAgentIdentities() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllAgentIdentities,
+          [],
+        ),
+        returnValue:
+            _i5.Future<List<_i3.AgentIdentity>>.value(<_i3.AgentIdentity>[]),
+      ) as _i5.Future<List<_i3.AgentIdentity>>);
+
+  @override
+  _i5.Future<_i3.AgentIdentity?> getAgentIdentityById(String? id) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAgentIdentityById,
+          [id],
+        ),
+        returnValue: _i5.Future<_i3.AgentIdentity?>.value(),
+      ) as _i5.Future<_i3.AgentIdentity?>);
+
+  @override
+  _i5.Future<List<_i3.AgentIdentity>> getAgentIdentitiesByRole(String? role) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAgentIdentitiesByRole,
+          [role],
+        ),
+        returnValue:
+            _i5.Future<List<_i3.AgentIdentity>>.value(<_i3.AgentIdentity>[]),
+      ) as _i5.Future<List<_i3.AgentIdentity>>);
+
+  @override
+  _i5.Future<List<_i3.AgentIdentity>> getActiveAgentIdentities() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getActiveAgentIdentities,
+          [],
+        ),
+        returnValue:
+            _i5.Future<List<_i3.AgentIdentity>>.value(<_i3.AgentIdentity>[]),
+      ) as _i5.Future<List<_i3.AgentIdentity>>);
+
+  @override
+  _i5.Future<void> updateAgentIdentity(_i3.AgentIdentitiesCompanion? entry) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateAgentIdentity,
+          [entry],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<int> deleteAgentIdentity(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteAgentIdentity,
+          [id],
+        ),
+        returnValue: _i5.Future<int>.value(0),
+      ) as _i5.Future<int>);
+
+  @override
+  _i5.Future<void> setActiveAgent(String? id) => (super.noSuchMethod(
+        Invocation.method(
+          #setActiveAgent,
+          [id],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<_i3.AgentIdentity?> getPrimaryAgentIdentity() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPrimaryAgentIdentity,
+          [],
+        ),
+        returnValue: _i5.Future<_i3.AgentIdentity?>.value(),
+      ) as _i5.Future<_i3.AgentIdentity?>);
+
+  @override
+  _i5.Future<void> insertCoordinatorState(
+          _i3.CoordinatorStatesCompanion? entry) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #insertCoordinatorState,
+          [entry],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<_i3.CoordinatorState?> getCoordinatorStateById(String? id) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getCoordinatorStateById,
+          [id],
+        ),
+        returnValue: _i5.Future<_i3.CoordinatorState?>.value(),
+      ) as _i5.Future<_i3.CoordinatorState?>);
+
+  @override
+  _i5.Future<_i3.CoordinatorState?> getCoordinatorStateByDecisionId(
+          String? decisionId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getCoordinatorStateByDecisionId,
+          [decisionId],
+        ),
+        returnValue: _i5.Future<_i3.CoordinatorState?>.value(),
+      ) as _i5.Future<_i3.CoordinatorState?>);
+
+  @override
+  _i5.Future<List<_i3.CoordinatorState>> getOpenCoordinatorStates(
+          {int? limit = 50}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getOpenCoordinatorStates,
+          [],
+          {#limit: limit},
+        ),
+        returnValue: _i5.Future<List<_i3.CoordinatorState>>.value(
+            <_i3.CoordinatorState>[]),
+      ) as _i5.Future<List<_i3.CoordinatorState>>);
+
+  @override
+  _i5.Future<List<_i3.CoordinatorState>> getCoordinatorStatesByStatus(
+    String? status, {
+    int? limit = 50,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getCoordinatorStatesByStatus,
+          [status],
+          {#limit: limit},
+        ),
+        returnValue: _i5.Future<List<_i3.CoordinatorState>>.value(
+            <_i3.CoordinatorState>[]),
+      ) as _i5.Future<List<_i3.CoordinatorState>>);
+
+  @override
+  _i5.Future<void> updateCoordinatorState(
+    String? id,
+    _i3.CoordinatorStatesCompanion? entry,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateCoordinatorState,
+          [
+            id,
+            entry,
+          ],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> insertCoordinatorVote(
+          _i3.CoordinatorVotesCompanion? entry) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #insertCoordinatorVote,
+          [entry],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<List<_i3.CoordinatorVote>> getCoordinatorVotes(
+    String? coordinatorId, {
+    int? limit = 50,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getCoordinatorVotes,
+          [coordinatorId],
+          {#limit: limit},
+        ),
+        returnValue: _i5.Future<List<_i3.CoordinatorVote>>.value(
+            <_i3.CoordinatorVote>[]),
+      ) as _i5.Future<List<_i3.CoordinatorVote>>);
+
+  @override
+  _i5.Future<List<_i3.CoordinatorState>> getAllCoordinatorStates(
+          {int? limit = 50}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAllCoordinatorStates,
+          [],
+          {#limit: limit},
+        ),
+        returnValue: _i5.Future<List<_i3.CoordinatorState>>.value(
+            <_i3.CoordinatorState>[]),
+      ) as _i5.Future<List<_i3.CoordinatorState>>);
+
+  @override
   _i2.Migrator createMigrator() => (super.noSuchMethod(
         Invocation.method(
           #createMigrator,
           [],
         ),
-        returnValue: _FakeMigrator_35(
+        returnValue: _FakeMigrator_38(
           this,
           Invocation.method(
             #createMigrator,
@@ -2110,7 +2393,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
               ),
               (Ret v) => _i5.Future<Ret>.value(v),
             ) ??
-            _FakeFuture_36<Ret>(
+            _FakeFuture_39<Ret>(
               this,
               Invocation.method(
                 #computeWithDatabase,
@@ -2207,7 +2490,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
               ),
               (T v) => _i5.Future<T>.value(v),
             ) ??
-            _FakeFuture_36<T>(
+            _FakeFuture_39<T>(
               this,
               Invocation.method(
                 #doWhenOpened,
@@ -2224,7 +2507,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           #into,
           [table],
         ),
-        returnValue: _FakeInsertStatement_37<T, D>(
+        returnValue: _FakeInsertStatement_40<T, D>(
           this,
           Invocation.method(
             #into,
@@ -2241,7 +2524,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           #update,
           [table],
         ),
-        returnValue: _FakeUpdateStatement_38<Tbl, R>(
+        returnValue: _FakeUpdateStatement_41<Tbl, R>(
           this,
           Invocation.method(
             #update,
@@ -2261,7 +2544,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           [table],
           {#distinct: distinct},
         ),
-        returnValue: _FakeSimpleSelectStatement_39<T, R>(
+        returnValue: _FakeSimpleSelectStatement_42<T, R>(
           this,
           Invocation.method(
             #select,
@@ -2282,7 +2565,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           [table],
           {#distinct: distinct},
         ),
-        returnValue: _FakeJoinedSelectStatement_40<T, R>(
+        returnValue: _FakeJoinedSelectStatement_43<T, R>(
           this,
           Invocation.method(
             #selectOnly,
@@ -2300,7 +2583,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           #selectExpressions,
           [columns],
         ),
-        returnValue: _FakeBaseSelectStatement_41<_i2.TypedResult>(
+        returnValue: _FakeBaseSelectStatement_44<_i2.TypedResult>(
           this,
           Invocation.method(
             #selectExpressions,
@@ -2317,7 +2600,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           #delete,
           [table],
         ),
-        returnValue: _FakeDeleteStatement_42<T, D>(
+        returnValue: _FakeDeleteStatement_45<T, D>(
           this,
           Invocation.method(
             #delete,
@@ -2399,7 +2682,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
             #readsFrom: readsFrom,
           },
         ),
-        returnValue: _FakeSelectable_43<_i2.QueryRow>(
+        returnValue: _FakeSelectable_46<_i2.QueryRow>(
           this,
           Invocation.method(
             #customSelect,
@@ -2427,7 +2710,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
             #readsFrom: readsFrom,
           },
         ),
-        returnValue: _FakeSelectable_43<_i2.QueryRow>(
+        returnValue: _FakeSelectable_46<_i2.QueryRow>(
           this,
           Invocation.method(
             #customSelectQuery,
@@ -2479,7 +2762,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
               ),
               (T v) => _i5.Future<T>.value(v),
             ) ??
-            _FakeFuture_36<T>(
+            _FakeFuture_39<T>(
               this,
               Invocation.method(
                 #transaction,
@@ -2506,7 +2789,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
               ),
               (T v) => _i5.Future<T>.value(v),
             ) ??
-            _FakeFuture_36<T>(
+            _FakeFuture_39<T>(
               this,
               Invocation.method(
                 #exclusively,
@@ -2548,7 +2831,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
               ),
               (T v) => _i5.Future<T>.value(v),
             ) ??
-            _FakeFuture_36<T>(
+            _FakeFuture_39<T>(
               this,
               Invocation.method(
                 #runWithInterceptor,
@@ -2573,7 +2856,7 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
             #startIndex: startIndex,
           },
         ),
-        returnValue: _FakeGenerationContext_44(
+        returnValue: _FakeGenerationContext_47(
           this,
           Invocation.method(
             #$write,
@@ -2601,10 +2884,38 @@ class MockLocalBrain extends _i1.Mock implements _i3.LocalBrain {
           ],
           {#startIndex: startIndex},
         ),
-        returnValue: _FakeGenerationContext_44(
+        returnValue: _FakeGenerationContext_47(
           this,
           Invocation.method(
             #$writeInsertable,
+            [
+              table,
+              insertable,
+            ],
+            {#startIndex: startIndex},
+          ),
+        ),
+      ) as _i2.GenerationContext);
+
+  @override
+  _i2.GenerationContext $writeUpdateInsertable(
+    _i2.TableInfo<_i2.Table, dynamic>? table,
+    _i2.Insertable<dynamic>? insertable, {
+    int? startIndex,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #$writeUpdateInsertable,
+          [
+            table,
+            insertable,
+          ],
+          {#startIndex: startIndex},
+        ),
+        returnValue: _FakeGenerationContext_47(
+          this,
+          Invocation.method(
+            #$writeUpdateInsertable,
             [
               table,
               insertable,

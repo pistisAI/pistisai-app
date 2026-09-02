@@ -1,33 +1,11 @@
 name: CI
-on:
-  push:
-    branches: ['**']
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'images/**'
-  pull_request:
-    branches: [main]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'images/**'
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
-  checks: write
-
+on: [push, pull_request]
 jobs:
-  flutter_analyze:
-    name: 'Flutter Analyze'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+  lint-test:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+<<<<<<< HEAD
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -74,3 +52,11 @@ jobs:
       - name: test
         run: npm test
 
+=======
+      - name: Setup
+        run: echo "Setup per PistisAI standards"
+      - name: Lint
+        run: echo "Run lint (to be expanded per STANDARDS.md)"
+      - name: Test
+        run: echo "Run tests"
+>>>>>>> origin/main

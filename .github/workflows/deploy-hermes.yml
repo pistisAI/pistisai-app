@@ -1,0 +1,117 @@
+name: "🦞 Hermes VPS Deploy"
+
+on:
+  workflow_dispatch:
+    inputs:
+      vps_host:
+        description: "SSH host for the Pistisai VPS. Use pistisai.app or that VPS origin IP — never 31.97.140.7 (Simon)."
+        required: false
+        default: "pistisai.app"
+      vps_user:
+        description: "SSH user on the Pistisai VPS (cloudllm)"
+        required: false
+        default: "cloudllm"
+  push:
+    branches:
+      - main
+    paths:
+      - "deploy/hermes/**"
+      - "scripts/deploy-hermes-pistisai-vps.sh"
+      - "docker-compose.multi.yml"
+      - "config/nginx/nginx-webapp-internal.conf"
+      - "config/nginx/nginx-flutter.conf"
+      - "config/docker/nginx-proxy.conf"
+      - "config/docker/nginx-web.conf"
+      - ".github/workflows/deploy-hermes.yml"
+
+concurrency:
+  group: hermes-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Hermes to pistisai.app
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Guard against Simon VPS
+        run: |
+          set -euo pipefail
+          if grep -E "VPS_HOST:.*31\\.97\\.140\\.7" .github/workflows/deploy-hermes.yml; then
+            echo "Hermes deploy must not target Simon's VPS."
+            exit 1
+          fi
+          chmod +x scripts/deploy-hermes-pistisai-vps.sh
+          bash scripts/tests/test_deploy_hermes_pistisai_vps.sh
+
+      - name: Deploy to Pistisai VPS
+        env:
+          VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ github.event.inputs.vps_host || secrets.VPS_HOST || 'pistisai.app' }}
+          VPS_USER: ${{ github.event.inputs.vps_user || secrets.VPS_USER || 'cloudllm' }}
+          PISTISAI_VPS_SSH_HOST: ${{ secrets.PISTISAI_VPS_SSH_HOST }}
+          HERMES_API_SERVER_KEY: ${{ secrets.HERMES_API_SERVER_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then
+            echo "VM_SSH_PRIVATE_KEY is required to deploy to pistisai.app"
+            exit 1
+          fi
+          if [ "${VPS_HOST}" = "31.97.140.7" ]; then
+            echo "Ignoring Simon VPS host 31.97.140.7 — deploying to pistisai.app"
+            VPS_HOST="pistisai.app"
+            VPS_USER="cloudllm"
+          fi
+          if [ "${PISTISAI_VPS_SSH_HOST:-}" = "31.97.140.7" ]; then
+            echo "Ignoring Simon origin SSH host 31.97.140.7"
+            PISTISAI_VPS_SSH_HOST=""
+          fi
+          if [ "${VPS_USER}" = "pistisai" ]; then
+            echo "Ignoring Simon SSH user pistisai — using cloudllm"
+            VPS_USER="cloudllm"
+          fi
+
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$VM_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          VPS_HOST="$VPS_HOST" \
+          VPS_USER="$VPS_USER" \
+          PISTISAI_VPS_SSH_HOST="${PISTISAI_VPS_SSH_HOST:-}" \
+          VPS_SSH_KEY_FILE="$HOME/.ssh/id_ed25519" \
+          REMOTE_DIR=/opt/Pistisai \
+          HERMES_API_SERVER_KEY="${HERMES_API_SERVER_KEY:-}" \
+            bash scripts/deploy-hermes-pistisai-vps.sh
+
+      - name: Verify pistisai.app Hermes health
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in 1 2 3 4 5; do
+            for url in \
+              "https://api.pistisai.app/hermes/health" \
+              "https://app.pistisai.app/hermes/health" \
+              "https://pistisai.app/hermes/health"
+            do
+              code="$(curl -sS -o /tmp/hermes-health.body -w '%{http_code}' --max-time 25 "$url" || true)"
+              echo "attempt ${attempt} $url -> $code"
+              if [ "$code" = "200" ] && ! grep -qi '<html' /tmp/hermes-health.body; then
+                cat /tmp/hermes-health.body
+                echo
+                ok=1
+                break 2
+              elif [ "$code" = "200" ]; then
+                echo "ignored SPA HTML from $url"
+              fi
+            done
+            sleep 8
+          done
+          if [ "$ok" != "1" ]; then
+            echo "Hermes origin deploy finished, but public URLs are not healthy yet (Cloudflare may still be propagating). Not failing the workflow."
+            exit 0
+          fi

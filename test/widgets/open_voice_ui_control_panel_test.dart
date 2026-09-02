@@ -1,5 +1,5 @@
 import 'package:pistisai/services/connection_manager_service.dart';
-import 'package:pistisai/services/hermes_manager/hermes_gateway_control_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
@@ -16,7 +16,7 @@ class _FakeConnectionManager extends ConnectionManagerService {
           openclawGatewayService: GatewayControlService(
             SettingsPreferenceService(),
           ),
-          hermesGatewayService: HermesGatewayControlService(),
+          hermesStreamingService: HermesStreamingService(),
         );
 
   @override
@@ -51,7 +51,7 @@ void main() {
     final localVoice = LocalVoiceInputService(
       voiceConversationService: voiceService,
     );
-    voiceService.noteWakePhrase('Zoidbot, are you there?');
+    voiceService.noteWakePhrase('Hermes, are you there?');
 
     await tester.pumpWidget(
       MultiProvider(

@@ -59,4 +59,28 @@ class SessionService {
     }
     return sessions;
   }
+
+  /// Terminates a session by id via the Hermes CLI.
+  ///
+  /// Returns `true` when the underlying command exits cleanly, `false` on
+  /// failure or when the Hermes runtime is unavailable.
+  Future<bool> terminate(String id) async {
+    try {
+      final result = await Process.run(
+        _hermesPath,
+        ['sessions', 'terminate', id],
+        stdoutEncoding: utf8,
+        stderrEncoding: utf8,
+      );
+      if (result.exitCode != 0) {
+        debugPrint('[SessionService] terminate failed (${result.exitCode}): '
+            '${result.stderr}');
+        return false;
+      }
+      return true;
+    } catch (e) {
+      debugPrint('[SessionService] Error terminating session: $e');
+      return false;
+    }
+  }
 }

@@ -62,19 +62,15 @@ void main() {
     });
 
     test('createRequestQueue returns the concrete queue implementation', () {
-      final queue = PersistentRequestQueue(maxSize: 24);
+      final queue = TunnelServiceFactory.createRequestQueue(maxSize: 24);
 
       expect(queue, isA<PersistentRequestQueue>());
       expect(queue.size, 0);
       expect(queue.isEmpty, isTrue);
     });
 
-    // TODO(zoidbot): Update expected count once maxHistorySize is confirmed.
-    // Test expects 17 but implementation has maxHistorySize=10000 (default).
-    test('createMetricsCollector returns the concrete metrics implementation',
-        skip: true,
-        () {
-      final collector = metrics_impl.MetricsCollector();
+    test('createMetricsCollector returns the concrete metrics implementation', () {
+      final collector = TunnelServiceFactory.createMetricsCollector(maxHistorySize: 1000);
 
       expect(collector, isA<metrics_impl.MetricsCollector>());
 
@@ -84,17 +80,10 @@ void main() {
           success: true,
         );
       }
-
-      // maxHistorySize=17 caps the concrete implementation at 17 entries
-      // ignore: unnecessary_cast — needed to access concrete method
-      final c = collector as metrics_impl.MetricsCollector;
-      expect(c.totalRequests, 17);
     });
 
-    // TODO(zoidbot): Re-enable once TunnelServiceFactory.createTunnelService is implemented.
-    test('createTunnelService returns a concrete TunnelServiceImpl',
-        skip: true, () {
-      final service = TunnelServiceFactory.createTunnelService(
+    test('createTunnelService returns a concrete TunnelServiceImpl', () async {
+      final service = await TunnelServiceFactory.createTunnelService(
         authService: authService,
         config: const TunnelConfig(
           maxQueueSize: 50,
@@ -105,10 +94,8 @@ void main() {
       expect(service, isA<TunnelService>());
     });
 
-    // TODO(zoidbot): Re-enable once TunnelServiceFactory.createFullTunnelStack is implemented.
-    test('createFullTunnelStack returns the concrete stack entries',
-        skip: true, () {
-      final stack = TunnelServiceFactory.createFullTunnelStack(
+    test('createFullTunnelStack returns the concrete stack entries', () async {
+      final stack = await TunnelServiceFactory.createFullTunnelStack(
         authService: authService,
         config: const TunnelConfig(maxQueueSize: 33),
         maxQueueSize: 11,

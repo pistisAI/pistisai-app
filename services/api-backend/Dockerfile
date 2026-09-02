@@ -26,17 +26,17 @@ WORKDIR /app
 # Install runtime utilities
 RUN apk add --no-cache curl wget bash
 
-# Create zoidbot user with UID 1001
-RUN addgroup -g 1001 -S zoidbot && \
-    adduser -S -D -H -u 1001 -h /app -s /bin/sh -G zoidbot -g zoidbot zoidbot
+# Create pistisai user with UID 1001
+RUN addgroup -g 1001 -S pistisai && \
+    adduser -S -D -H -u 1001 -h /app -s /bin/sh -G pistisai -g pistisai pistisai
 
 # Copy pruned node_modules and app from builder
 COPY --from=builder /app /app
 
 # Fix permissions
-RUN mkdir -p /app/logs && chown -R zoidbot:zoidbot /app
+RUN mkdir -p /app/logs && chown -R pistisai:pistisai /app
 
-USER zoidbot
+USER pistisai
 
 EXPOSE 8080
 

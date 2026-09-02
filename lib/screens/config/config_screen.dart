@@ -19,7 +19,7 @@ import '../../services/settings_preference_service.dart';
 import '../../di/locator.dart';
 
 /// Configuration screen with tabbed organization for better UX.
-/// TODO: Integrate with SettingsPreferenceService, ConnectionManagerService
+/// Settings are persisted via SettingsPreferenceService and ConnectionManagerService.
 class ConfigScreen extends StatefulWidget {
   const ConfigScreen({super.key});
 
@@ -172,6 +172,34 @@ class _ConfigScreenState extends State<ConfigScreen>
       final autoRestart = await _settingsService.getGatewayAutoRestart();
       if (autoRestart != null) _autoRestart = autoRestart;
 
+      // Load Runtime Settings
+      _selectedSupportProvider = await _settingsService.getSupportProvider();
+      _rateLimit = await _settingsService.getRateLimit();
+      _runtimeTimeout = await _settingsService.getRuntimeTimeout();
+
+      // Load Network Settings
+      _useProxy = await _settingsService.isProxyEnabled();
+      _proxyHost = await _settingsService.getProxyHost();
+      _proxyPort = await _settingsService.getProxyPort();
+      _maxRetries = await _settingsService.getMaxRetries();
+      _requestTimeout = await _settingsService.getRequestTimeout();
+
+      // Load App Settings
+      _encryptLocalData = await _settingsService.isEncryptLocalDataEnabled();
+      _sessionTimeoutMinutes = await _settingsService.getSessionTimeoutMinutes();
+      _rememberTokens = await _settingsService.isRememberTokensEnabled();
+
+      // Load Storage Settings
+      _maxConversationHistory = await _settingsService.getMaxConversationHistory();
+      _enableCache = await _settingsService.isCacheEnabled();
+      _cacheSizeMB = await _settingsService.getCacheSizeMB();
+      _autoCleanup = await _settingsService.isAutoCleanupEnabled();
+
+      // Load Developer Settings
+      _debugMode = await _settingsService.isDebugModeEnabled();
+      _verboseLogging = await _settingsService.isVerboseLoggingEnabled();
+      _showDevTools = await _settingsService.isShowDevToolsEnabled();
+
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) setState(() => _errorMessage = 'Failed to load config: $e');
@@ -202,6 +230,34 @@ class _ConfigScreenState extends State<ConfigScreen>
       await _settingsService.setMinimizeToTrayEnabled(_trayIconEnabled);
       await _settingsService.setBiometricAuthEnabled(_biometricAuth);
       await _settingsService.setGatewayAutoRestart(_autoRestart);
+
+      // Save Runtime Settings
+      await _settingsService.setSupportProvider(_selectedSupportProvider);
+      await _settingsService.setRateLimit(_rateLimit);
+      await _settingsService.setRuntimeTimeout(_runtimeTimeout);
+
+      // Save Network Settings
+      await _settingsService.setProxyEnabled(_useProxy);
+      await _settingsService.setProxyHost(_proxyHost);
+      await _settingsService.setProxyPort(_proxyPort);
+      await _settingsService.setMaxRetries(_maxRetries);
+      await _settingsService.setRequestTimeout(_requestTimeout);
+
+      // Save App Settings
+      await _settingsService.setEncryptLocalDataEnabled(_encryptLocalData);
+      await _settingsService.setSessionTimeoutMinutes(_sessionTimeoutMinutes);
+      await _settingsService.setRememberTokensEnabled(_rememberTokens);
+
+      // Save Storage Settings
+      await _settingsService.setMaxConversationHistory(_maxConversationHistory);
+      await _settingsService.setCacheEnabled(_enableCache);
+      await _settingsService.setCacheSizeMB(_cacheSizeMB);
+      await _settingsService.setAutoCleanupEnabled(_autoCleanup);
+
+      // Save Developer Settings
+      await _settingsService.setDebugModeEnabled(_debugMode);
+      await _settingsService.setVerboseLoggingEnabled(_verboseLogging);
+      await _settingsService.setShowDevToolsEnabled(_showDevTools);
 
       if (mounted) {
         setState(() => _isSaving = false);
@@ -350,7 +406,11 @@ class _ConfigScreenState extends State<ConfigScreen>
               'Preferred Support Provider',
               ['Auto', 'Ollama', 'LM Studio', 'OpenAI-compatible'],
               _selectedSupportProvider,
-              (v) => setState(() => _selectedSupportProvider = v!),
+              (v) async {
+                final val = v!;
+                setState(() => _selectedSupportProvider = val);
+                await _settingsService.setSupportProvider(val);
+              },
             ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 4, 16, 12),
@@ -364,16 +424,25 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Runtime Request Policy',
           children: [
-            _field('Concurrent Requests', '$_rateLimit', (v) {
+            _field('Concurrent Requests', '$_rateLimit', (v) async {
               final l = int.tryParse(v);
-              if (l != null && l > 0) setState(() => _rateLimit = l);
+              if (l != null && l > 0) {
+                setState(() => _rateLimit = l);
+                await _settingsService.setRateLimit(l);
+              }
             }, numeric: true, hint: 'Max concurrent runtime requests'),
-            _field('Runtime Timeout (sec)', '$_runtimeTimeout', (v) {
+            _field('Runtime Timeout (sec)', '$_runtimeTimeout', (v) async {
               final l = int.tryParse(v);
-              if (l != null && l > 0) setState(() => _runtimeTimeout = l);
+              if (l != null && l > 0) {
+                setState(() => _runtimeTimeout = l);
+                await _settingsService.setRuntimeTimeout(l);
+              }
             }, numeric: true),
             _switch('Auto-restart Runtime on Failure', _autoRestart,
-                (v) => setState(() => _autoRestart = v)),
+                (v) async {
+              setState(() => _autoRestart = v);
+              await _settingsService.setGatewayAutoRestart(v);
+            }),
           ],
         ),
       ],
@@ -387,16 +456,20 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Proxy Settings',
           children: [
-            _switch('Use Proxy Server', _useProxy,
-                (v) => setState(() => _useProxy = v)),
+            _switch('Use Proxy Server', _useProxy, (v) async {
+              setState(() => _useProxy = v);
+              await _settingsService.setProxyEnabled(v);
+            }),
             if (_useProxy) ...[
-              _field('Proxy Host', _proxyHost,
-                  (v) => setState(() => _proxyHost = v),
-                  hint: 'e.g., proxy.example.com'),
-              _field('Proxy Port', '$_proxyPort', (v) {
+              _field('Proxy Host', _proxyHost, (v) async {
+                setState(() => _proxyHost = v);
+                await _settingsService.setProxyHost(v);
+              }, hint: 'e.g., proxy.example.com'),
+              _field('Proxy Port', '$_proxyPort', (v) async {
                 final p = int.tryParse(v);
                 if (p != null && p > 0 && p < 65536) {
                   setState(() => _proxyPort = p);
+                  await _settingsService.setProxyPort(p);
                 }
               }, numeric: true),
             ],
@@ -406,13 +479,19 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Connection Settings',
           children: [
-            _field('Request Timeout (sec)', '$_requestTimeout', (v) {
+            _field('Request Timeout (sec)', '$_requestTimeout', (v) async {
               final t = int.tryParse(v);
-              if (t != null && t > 0) setState(() => _requestTimeout = t);
+              if (t != null && t > 0) {
+                setState(() => _requestTimeout = t);
+                await _settingsService.setRequestTimeout(t);
+              }
             }, numeric: true),
-            _field('Max Retries', '$_maxRetries', (v) {
+            _field('Max Retries', '$_maxRetries', (v) async {
               final r = int.tryParse(v);
-              if (r != null && r >= 0) setState(() => _maxRetries = r);
+              if (r != null && r >= 0) {
+                setState(() => _maxRetries = r);
+                await _settingsService.setMaxRetries(r);
+              }
             }, numeric: true),
           ],
         ),
@@ -428,12 +507,33 @@ class _ConfigScreenState extends State<ConfigScreen>
           title: 'Appearance',
           children: [
             _dropdown('Theme', ['System', 'Light', 'Dark'], _selectedTheme,
-                (v) => setState(() => _selectedTheme = v!)),
+                (v) async {
+              final val = v!;
+              setState(() => _selectedTheme = val);
+              await _settingsService.setTheme(
+                switch (val) {
+                  'Light' => 'light',
+                  'Dark' => 'dark',
+                  _ => 'system',
+                },
+              );
+            }),
             _dropdown(
                 'Language',
                 ['English', 'Spanish', 'French', 'German'],
                 _selectedLanguage,
-                (v) => setState(() => _selectedLanguage = v!)),
+                (v) async {
+              final val = v!;
+              setState(() => _selectedLanguage = val);
+              await _settingsService.setLanguage(
+                switch (val) {
+                  'Spanish' => 'es',
+                  'French' => 'fr',
+                  'German' => 'de',
+                  _ => 'en',
+                },
+              );
+            }),
           ],
         ),
         const SizedBox(height: 16),
@@ -441,10 +541,16 @@ class _ConfigScreenState extends State<ConfigScreen>
           title: 'Notifications',
           children: [
             _switch('Enable Notifications', _notificationsEnabled,
-                (v) => setState(() => _notificationsEnabled = v)),
+                (v) async {
+              setState(() => _notificationsEnabled = v);
+              await _settingsService.setNotificationsEnabled(v);
+            }),
             if (!kIsWeb)
               _switch('Show Tray Icon', _trayIconEnabled,
-                  (v) => setState(() => _trayIconEnabled = v)),
+                  (v) async {
+                setState(() => _trayIconEnabled = v);
+                await _settingsService.setMinimizeToTrayEnabled(v);
+              }),
           ],
         ),
         const SizedBox(height: 16),
@@ -452,20 +558,30 @@ class _ConfigScreenState extends State<ConfigScreen>
           title: 'Security',
           children: [
             _switch('Encrypt Local Data', _encryptLocalData,
-                (v) => setState(() => _encryptLocalData = v),
+                (v) async {
+              setState(() => _encryptLocalData = v);
+              await _settingsService.setEncryptLocalDataEnabled(v);
+            },
                 subtitle: 'Encrypt conversation history and settings'),
             if (!kIsWeb)
               _switch('Require Biometric Auth', _biometricAuth,
-                  (v) => setState(() => _biometricAuth = v),
+                  (v) async {
+                setState(() => _biometricAuth = v);
+                await _settingsService.setBiometricAuthEnabled(v);
+              },
                   subtitle: 'Require fingerprint/auth to open app'),
-            _field('Session Timeout (min)', '$_sessionTimeoutMinutes', (v) {
+            _field('Session Timeout (min)', '$_sessionTimeoutMinutes', (v) async {
               final t = int.tryParse(v);
               if (t != null && t > 0) {
                 setState(() => _sessionTimeoutMinutes = t);
+                await _settingsService.setSessionTimeoutMinutes(t);
               }
             }, numeric: true, hint: 'Auto-lock after inactivity'),
             _switch('Remember Authentication Tokens', _rememberTokens,
-                (v) => setState(() => _rememberTokens = v)),
+                (v) async {
+              setState(() => _rememberTokens = v);
+              await _settingsService.setRememberTokensEnabled(v);
+            }),
           ],
         ),
         const SizedBox(height: 16),
@@ -473,13 +589,22 @@ class _ConfigScreenState extends State<ConfigScreen>
           title: 'Developer Options',
           children: [
             _switch(
-                'Debug Mode', _debugMode, (v) => setState(() => _debugMode = v),
+                'Debug Mode', _debugMode, (v) async {
+              setState(() => _debugMode = v);
+              await _settingsService.setDebugModeEnabled(v);
+            },
                 subtitle: 'Enable additional debugging information'),
             _switch('Verbose Logging', _verboseLogging,
-                (v) => setState(() => _verboseLogging = v),
+                (v) async {
+              setState(() => _verboseLogging = v);
+              await _settingsService.setVerboseLoggingEnabled(v);
+            },
                 subtitle: 'Log detailed diagnostic information'),
             _switch('Show Developer Tools', _showDevTools,
-                (v) => setState(() => _showDevTools = v),
+                (v) async {
+              setState(() => _showDevTools = v);
+              await _settingsService.setShowDevToolsEnabled(v);
+            },
                 subtitle: 'Enable development tools and inspectors'),
           ],
         ),
@@ -494,16 +619,20 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Data Retention',
           children: [
-            _field('Max Conversation History', '$_maxConversationHistory', (v) {
+            _field('Max Conversation History', '$_maxConversationHistory', (v) async {
               final h = int.tryParse(v);
               if (h != null && h >= 0) {
                 setState(() => _maxConversationHistory = h);
+                await _settingsService.setMaxConversationHistory(h);
               }
             },
                 numeric: true,
                 hint: 'Maximum number of conversations to store locally'),
             _switch('Auto-cleanup Old Data', _autoCleanup,
-                (v) => setState(() => _autoCleanup = v)),
+                (v) async {
+              setState(() => _autoCleanup = v);
+              await _settingsService.setAutoCleanupEnabled(v);
+            }),
           ],
         ),
         const SizedBox(height: 16),
@@ -511,11 +640,17 @@ class _ConfigScreenState extends State<ConfigScreen>
           title: 'Cache Management',
           children: [
             _switch('Enable Response Cache', _enableCache,
-                (v) => setState(() => _enableCache = v)),
+                (v) async {
+              setState(() => _enableCache = v);
+              await _settingsService.setCacheEnabled(v);
+            }),
             if (_enableCache)
-              _field('Cache Size Limit (MB)', '$_cacheSizeMB', (v) {
+              _field('Cache Size Limit (MB)', '$_cacheSizeMB', (v) async {
                 final c = int.tryParse(v);
-                if (c != null && c > 0) setState(() => _cacheSizeMB = c);
+                if (c != null && c > 0) {
+                  setState(() => _cacheSizeMB = c);
+                  await _settingsService.setCacheSizeMB(c);
+                }
               }, numeric: true),
             if (_enableCache)
               Padding(

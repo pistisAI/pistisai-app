@@ -10,6 +10,7 @@ import 'package:pistisai/services/theme_provider.dart';
 import 'package:pistisai/services/platform_detection_service.dart';
 import 'package:pistisai/services/platform_adapter.dart';
 import 'package:pistisai/config/theme.dart';
+import 'package:pistisai/services/auth_service.dart';
 import 'mock_services.dart';
 
 /// Wraps a widget with MaterialApp and theme providers for testing
@@ -50,6 +51,8 @@ class TestAppWrapper extends StatelessWidget {
           Provider<PlatformAdapter>.value(value: platformAdapter!),
         if (authService != null)
           ChangeNotifierProvider<MockAuthService>.value(value: authService!),
+        if (authService != null)
+          ChangeNotifierProvider<AuthService>.value(value: authService!),
         if (adminService != null)
           ChangeNotifierProvider<MockAdminCenterService>.value(
             value: adminService!,

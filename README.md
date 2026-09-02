@@ -10,13 +10,16 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 ## Try It Now
 
-🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. Log in, that's it.
+🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. One-liner:
+`open https://pistisai.app && log in`. No build step. That's the fastest way to try Pistisai.
 
-🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (coming soon)
+🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (AppImage + auto-update daemon; rolling out).
 
 📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/pistisAI/pistisai-app/releases/latest).
 
 **You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work.
+
+> 🚀 **Public launch is live.** Full quick-start, supported runtimes, and self-hosting steps → [docs/LAUNCH.md](docs/LAUNCH.md). Primary CTA: clone the repo, run a workflow, and open an issue or discussion with your real use case. Track the launch → [GitHub issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
 
 ---
 
@@ -71,8 +74,8 @@ Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECT
 | 🐧 Linux | ✅ AppImage + auto-update daemon |
 | 🌐 Web | [pistisai.app](https://pistisai.app) |
 | 📱 Android | ✅ APK builds from CI |
-| 🪟 Windows | 🚧 Installer in development |
-| 🍎 macOS | 📋 Planned |
+| 🪟 Windows | ✅ Installer (InnoSetup) + CI |
+| 🍎 macOS | ✅ Installer + CI |
 
 ---
 
@@ -80,8 +83,11 @@ Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECT
 
 ```bash
 git clone https://github.com/pistisAI/pistisai-app.git
-cd Pistisai
+cd pistisai-app
 flutter pub get
+
+# The app depends on a separate shared package — get its deps too:
+cd lib/shared && flutter pub get && cd ../..
 
 # Run
 
@@ -95,6 +101,8 @@ flutter run -d chrome  # Web
 flutter build linux --release
 flutter build web --release
 flutter build apk --release --split-per-abi
+flutter build windows --release
+flutter build macos --release
 ```
 
 ### Backend Services
@@ -119,7 +127,9 @@ Full developer guide → [docs/development/BUILD_SCRIPTS.md](docs/development/BU
 | [Troubleshooting](docs/user-guide/TROUBLESHOOTING.md) | Common issues |
 | [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical deep-dive |
 | [Deployment Guide](docs/operations/backend/) | Production setup |
-| [Security Guide](docs/operations/security/SECURITY.md) | |
+| [Security Guide](SECURITY.md) | Reporting policy + security posture |
+| [Public Launch Guide](docs/LAUNCH.md) | Quick-start, runtimes, self-hosting |
+| [Contributing](CONTRIBUTING.md) | How to file issues, set up, and open PRs |
 
 ---
 

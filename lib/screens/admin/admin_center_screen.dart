@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/admin_center_service.dart';
@@ -162,10 +161,10 @@ class _AdminCenterScreenState extends State<AdminCenterScreen> {
       debugPrint(
           '[AdminCenterScreen] Checking admin authorization for: $userEmail');
 
-      // Check if user email matches the authorized admin admin email
-      // On Desktop, we allow access in Guest Mode
-      final isAuthorized = userEmail == 'christopher.maltais@gmail.com' ||
-          (!kIsWeb && userEmail == null);
+      // Check if user email matches the authorized admin email.
+      // The Admin Center is only available on Web (Cloud).
+      final isAuthorized = _platformAdapter.platformService.isWeb &&
+          userEmail == 'christopher.maltais@gmail.com';
 
       if (isAuthorized) {
         // Initialize admin service to load roles

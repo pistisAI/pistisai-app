@@ -32,6 +32,8 @@ class TunnelDetailsCard extends StatelessWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
+        // shrinkWrap: true is intentional — this is a small fixed grid (6 items, 3 rows)
+        // embedded in a Column, not a scrollable list. No lazy loading needed.
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,

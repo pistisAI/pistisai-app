@@ -2,11 +2,23 @@ import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/screens/agents/agents_screen.dart';
 import 'package:pistisai/screens/cron/cron_jobs_screen.dart';
 import 'package:pistisai/screens/skills/skills_screen.dart';
+import 'package:pistisai/services/cron_service.dart';
+import 'package:pistisai/models/cron_job.dart';
 import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:pistisai/widgets/common/loading_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Fake CronService that resolves with an empty list after a microtask, so the
+/// screen shows its loading skeleton at first pump before settling to empty.
+class _FakeCronService extends CronService {
+  @override
+  Future<List<CronJob>> listJobs() async {
+    await Future<void>.delayed(Duration.zero);
+    return [];
+  }
+}
 
 void main() {
   setUpAll(() {
@@ -15,6 +27,10 @@ void main() {
       di.serviceLocator.unregister<PopOutManager>();
     }
     di.serviceLocator.registerSingleton<PopOutManager>(PopOutManager());
+    if (di.serviceLocator.isRegistered<CronService>()) {
+      di.serviceLocator.unregister<CronService>();
+    }
+    di.serviceLocator.registerSingleton<CronService>(_FakeCronService());
   });
 
   group('AgentsScreen', () {

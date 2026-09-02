@@ -141,7 +141,7 @@ export function setupRoutes(
   // }
 
   // Create tunnel and monitoring routes
-  const tunnelRouter = createTunnelRoutes({}, sshProxy, logger, sshAuthService);
+  const tunnelRouter = createTunnelRoutes(sshProxy, logger, sshAuthService);
   const monitoringRouter = createMonitoringRoutes(sshProxy, logger);
 
   // Register routes function

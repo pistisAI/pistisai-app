@@ -123,7 +123,6 @@ class VoiceConversationService extends ChangeNotifier {
     }
 
     if (_containsAny(cleaned, const [
-      'zoidbot',
       'hermes',
       'hey bot',
       'hello bot',
@@ -217,7 +216,6 @@ class VoiceConversationService extends ChangeNotifier {
 
   bool _looksDirectAddress(String cleaned) {
     return _containsAny(cleaned.toLowerCase(), const [
-      'zoidbot',
       'hermes',
       'hey',
       'hello',
