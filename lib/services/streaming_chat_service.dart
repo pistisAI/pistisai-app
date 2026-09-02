@@ -415,9 +415,16 @@ class StreamingChatService extends ChangeNotifier {
       // Build metadata with tool call history
       final toolCallsMeta = _serializeToolCalls(includeLive: false);
 
+      // Hermes sometimes emits the final reply as reasoning.available as well
+      // as message deltas. Keep reasoning only when it adds distinct text.
+      final distinctReasoning = finalReasoning.isNotEmpty &&
+              finalReasoning.trim() != finalContent.trim()
+          ? finalReasoning
+          : null;
+
       final assistantMessage = Message.assistant(
-        content: finalContent,
-        reasoning: finalReasoning.isNotEmpty ? finalReasoning : null,
+        content: finalContent.isNotEmpty ? finalContent : finalReasoning,
+        reasoning: distinctReasoning,
         model: completeModel,
         metadata:
             toolCallsMeta.isNotEmpty ? {'tool_calls': toolCallsMeta} : null,
