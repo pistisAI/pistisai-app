@@ -19,9 +19,12 @@ import '../config/app_config.dart';
 class ThemeProvider extends ChangeNotifier {
   static const String _themePreferenceKey = 'theme_mode';
   static const String _themeCacheKey = 'theme_cache_timestamp';
+  static const String _accentPreferenceKey = 'theme_accent_color';
   static const Duration _cacheValidityDuration = Duration(hours: 1);
+  static const Color defaultAccentColor = Color(0xFFFFD700);
 
   ThemeMode _themeMode = ThemeMode.system;
+  Color _accentColor = defaultAccentColor;
   ThemeMode? _cachedThemeMode;
   DateTime? _cacheTimestamp;
   bool _isLoading = false;
@@ -39,6 +42,9 @@ class ThemeProvider extends ChangeNotifier {
 
   /// Get current theme mode
   ThemeMode get themeMode => _themeMode;
+
+  /// Brand accent / seed color used by Material color schemes
+  Color get accentColor => _accentColor;
 
   /// Get cached theme mode (for performance optimization)
   ThemeMode? get cachedThemeMode => _cachedThemeMode;
@@ -127,6 +133,19 @@ class ThemeProvider extends ChangeNotifier {
     }
   }
 
+  /// Persist and apply an accent / seed color
+  Future<void> setAccentColor(Color color) async {
+    if (_accentColor == color) return;
+    _accentColor = color;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_accentPreferenceKey, _colorToArgb(color));
+    } catch (e) {
+      debugPrint('[ThemeProvider] Error saving accent color: $e');
+    }
+  }
+
   /// Set theme mode from string (for settings UI)
   Future<void> setThemeModeFromString(String themeString) async {
     ThemeMode mode;
@@ -181,6 +200,10 @@ class ThemeProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final themeString = prefs.getString(_themePreferenceKey);
       final cacheTimestampMs = prefs.getInt(_themeCacheKey);
+      final storedAccent = prefs.getInt(_accentPreferenceKey);
+      if (storedAccent != null) {
+        _accentColor = Color(storedAccent);
+      }
 
       if (themeString != null) {
         switch (themeString.toLowerCase()) {
@@ -296,6 +319,12 @@ class ThemeProvider extends ChangeNotifier {
       debugPrint('[ThemeProvider] Error clearing theme cache: $e');
     }
   }
+
+  int _colorToArgb(Color color) =>
+      (color.a * 255).round() << 24 |
+      (color.r * 255).round() << 16 |
+      (color.g * 255).round() << 8 |
+      (color.b * 255).round();
 
   /// Reload theme preference from storage (bypasses cache)
   Future<void> reloadThemePreference() async {

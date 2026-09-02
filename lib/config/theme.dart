@@ -74,15 +74,23 @@ class AppTheme {
 
   /// Dark theme for the application
   /// Delegates to ThemeConfig for unified theme management
-  static ThemeData get darkTheme => ThemeConfig.loadThemeConfiguration(
-        ThemeMode.dark,
-        null,
-      );
+  static ThemeData get darkTheme => darkThemeFor();
 
   /// Light theme for the application
   /// Delegates to ThemeConfig for unified theme management
-  static ThemeData get lightTheme => ThemeConfig.loadThemeConfiguration(
+  static ThemeData get lightTheme => lightThemeFor();
+
+  static ThemeData darkThemeFor([Color? seedColor]) =>
+      ThemeConfig.loadThemeConfiguration(
+        ThemeMode.dark,
+        null,
+        seedColor: seedColor,
+      );
+
+  static ThemeData lightThemeFor([Color? seedColor]) =>
+      ThemeConfig.loadThemeConfiguration(
         ThemeMode.light,
         null,
+        seedColor: seedColor,
       );
 }

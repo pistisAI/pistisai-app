@@ -327,7 +327,7 @@ class _PistisaiAppState extends State<PistisaiApp> {
       _addProviderIfAvailable<PlatformDetectionService>(
           providersList, 'PlatformDetectionService');
 
-        // Add Setup Wizard Service
+      // Add Setup Wizard Service
       _addProviderIfAvailable<SetupWizardService>(
           providersList, 'SetupWizardService');
 
@@ -525,8 +525,8 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       child: MaterialApp.router(
         title: AppConfig.appName,
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
+        theme: AppTheme.lightThemeFor(themeProvider?.accentColor),
+        darkTheme: AppTheme.darkThemeFor(themeProvider?.accentColor),
         themeMode: themeProvider?.themeMode ?? ThemeMode.system,
         routerConfig: router,
         builder: (context, child) {

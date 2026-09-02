@@ -60,8 +60,7 @@ class SkillService {
 
         await for (final skillEntity in categoryEntity.list()) {
           if (skillEntity is! Directory) continue;
-          final skillName =
-              skillEntity.path.split(Platform.pathSeparator).last;
+          final skillName = skillEntity.path.split(Platform.pathSeparator).last;
 
           final skillMd = File('${skillEntity.path}/SKILL.md');
           if (!await skillMd.exists()) continue;
@@ -70,12 +69,14 @@ class SkillService {
             final content = await skillMd.readAsString();
             final metadata = _parseFrontmatter(content);
             final fileCount = await _countFiles(skillEntity);
+            final disabledMarker =
+                File('${skillEntity.path}${Platform.pathSeparator}.disabled');
 
             skills.add(SkillInfo(
               name: metadata['name'] ?? skillName,
               description: metadata['description'] ?? '',
               category: categoryName,
-              enabled: true,
+              enabled: !await disabledMarker.exists(),
               lastModified: await _lastModified(skillMd),
               fileCount: fileCount,
             ));
@@ -147,4 +148,78 @@ class SkillService {
       return null;
     }
   }
+
+  /// Creates a new skill directory and SKILL.md under the local skills root.
+  Future<SkillInfo> registerSkill({
+    required String name,
+    required String description,
+    String category = 'custom',
+  }) async {
+    final safeName = sanitizeSkillPathSegment(name);
+    if (safeName.isEmpty) {
+      throw ArgumentError('Skill name is required');
+    }
+    final safeCategory = sanitizeSkillPathSegment(category);
+    final categoryName = safeCategory.isEmpty ? 'custom' : safeCategory;
+    final dir = Directory(
+      '$_skillsDir${Platform.pathSeparator}$categoryName${Platform.pathSeparator}$safeName',
+    );
+    await dir.create(recursive: true);
+
+    final skillMd = File('${dir.path}${Platform.pathSeparator}SKILL.md');
+    final quotedName = _yamlDoubleQuote(name.trim());
+    final quotedDescription = _yamlDoubleQuote(description.trim());
+    await skillMd.writeAsString(
+      '---\n'
+      'name: $quotedName\n'
+      'description: $quotedDescription\n'
+      '---\n\n'
+      '# ${name.trim()}\n\n'
+      '${description.trim()}\n',
+    );
+
+    return SkillInfo(
+      name: name.trim().isEmpty ? safeName : name.trim(),
+      description: description.trim(),
+      category: categoryName,
+      enabled: true,
+      lastModified: await _lastModified(skillMd),
+      fileCount: await _countFiles(dir),
+    );
+  }
+
+  /// Persists enabled/disabled state with a `.disabled` marker file.
+  Future<void> setSkillEnabled({
+    required String name,
+    required String category,
+    required bool enabled,
+  }) async {
+    final safeName = sanitizeSkillPathSegment(name);
+    final safeCategory = sanitizeSkillPathSegment(category);
+    if (safeName.isEmpty || safeCategory.isEmpty) return;
+    final marker = File(
+      '$_skillsDir${Platform.pathSeparator}$safeCategory${Platform.pathSeparator}$safeName${Platform.pathSeparator}.disabled',
+    );
+    if (enabled) {
+      if (await marker.exists()) {
+        await marker.delete();
+      }
+    } else {
+      await marker.parent.create(recursive: true);
+      await marker.writeAsString('');
+    }
+  }
+}
+
+String sanitizeSkillPathSegment(String input) {
+  final slug = input
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+  return slug;
+}
+
+String _yamlDoubleQuote(String value) {
+  return '"${value.replaceAll(r'\', r'\\').replaceAll('"', r'\"')}"';
 }

@@ -1,6 +1,8 @@
 /// Screen displaying skills management with three tabs
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../services/skill_service.dart';
 import '../../di/locator.dart' as di;
@@ -85,21 +87,22 @@ class _SkillsScreenState extends State<SkillsScreen>
       final service = _skillService;
       if (service != null) {
         final skillInfos = await service.getSkills();
-        _skills = skillInfos.map((s) => Skill(
-          id: s.name,
-          name: s.name,
-          description: s.description,
-          category: s.category,
-          enabled: s.enabled,
-          lastUsed: s.lastModified ?? DateTime.now(),
-          fileCount: s.fileCount,
-          lastModified: s.lastModified ?? DateTime.now(),
-        )).toList();
+        _skills = skillInfos
+            .map((s) => Skill(
+                  id: s.name,
+                  name: s.name,
+                  description: s.description,
+                  category: s.category,
+                  enabled: s.enabled,
+                  lastUsed: s.lastModified ?? DateTime.now(),
+                  fileCount: s.fileCount,
+                  lastModified: s.lastModified ?? DateTime.now(),
+                ))
+            .toList();
 
         final usageByCategory = <String, int>{};
         for (final s in skillInfos) {
-          usageByCategory[s.category] =
-              (usageByCategory[s.category] ?? 0) + 1;
+          usageByCategory[s.category] = (usageByCategory[s.category] ?? 0) + 1;
         }
         _skillUsage = usageByCategory;
       } else {
@@ -123,7 +126,44 @@ class _SkillsScreenState extends State<SkillsScreen>
     await _loadData();
   }
 
+  Future<void> _showRegisterSkillDialog() async {
+    final result = await showDialog<_SkillFormResult>(
+      context: context,
+      builder: (context) => const _RegisterSkillDialog(),
+    );
+    if (result == null || !mounted) return;
+
+    final service = _skillService;
+    if (service == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Skill service is unavailable on this platform'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await service.registerSkill(
+        name: result.name,
+        description: result.description,
+        category: result.category,
+      );
+      await _loadData();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${result.name} registered')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not register skill: $e')),
+      );
+    }
+  }
+
   void _toggleSkill(Skill skill) {
+    final enabled = !skill.enabled;
     setState(() {
       final index = _skills.indexWhere((s) => s.id == skill.id);
       if (index != -1) {
@@ -132,7 +172,7 @@ class _SkillsScreenState extends State<SkillsScreen>
           name: skill.name,
           description: skill.description,
           category: skill.category,
-          enabled: !skill.enabled,
+          enabled: enabled,
           usageCount: skill.usageCount,
           avgResponseTime: skill.avgResponseTime,
           lastUsed: skill.lastUsed,
@@ -141,10 +181,14 @@ class _SkillsScreenState extends State<SkillsScreen>
         );
       }
     });
+    unawaited(_skillService?.setSkillEnabled(
+      name: skill.name,
+      category: skill.category,
+      enabled: enabled,
+    ));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content:
-            Text('${skill.name} ${!skill.enabled ? 'enabled' : 'disabled'}'),
+        content: Text('${skill.name} ${enabled ? 'enabled' : 'disabled'}'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -164,12 +208,7 @@ class _SkillsScreenState extends State<SkillsScreen>
             ),
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Register new skill - coming soon')),
-                );
-              },
+              onPressed: _showRegisterSkillDialog,
               tooltip: 'Register Skill',
             ),
             PopOutButton(sectionName: 'skills', branchIndex: 8),
@@ -201,10 +240,12 @@ class _SkillsScreenState extends State<SkillsScreen>
 
   Widget _buildRegistryTab() {
     if (_skills.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.extension,
         title: 'No Skills Registered',
-        message: 'Skills will appear here when registered',
+        message: 'Create a SKILL.md in your local skills directory',
+        actionLabel: 'Register Skill',
+        onAction: _showRegisterSkillDialog,
       );
     }
 
@@ -514,5 +555,101 @@ class _SkillsScreenState extends State<SkillsScreen>
     } else {
       return '${dt.month}/${dt.day}';
     }
+  }
+}
+
+class _SkillFormResult {
+  const _SkillFormResult({
+    required this.name,
+    required this.description,
+    required this.category,
+  });
+
+  final String name;
+  final String description;
+  final String category;
+}
+
+class _RegisterSkillDialog extends StatefulWidget {
+  const _RegisterSkillDialog();
+
+  @override
+  State<_RegisterSkillDialog> createState() => _RegisterSkillDialogState();
+}
+
+class _RegisterSkillDialogState extends State<_RegisterSkillDialog> {
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _categoryController = TextEditingController(text: 'custom');
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _categoryController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Register Skill'),
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Skill name',
+                hintText: 'summarize-notes',
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _categoryController,
+              decoration: const InputDecoration(
+                labelText: 'Category',
+                hintText: 'custom',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                hintText: 'What this skill does',
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () {
+            final name = _nameController.text.trim();
+            if (name.isEmpty) return;
+            Navigator.pop(
+              context,
+              _SkillFormResult(
+                name: name,
+                description: _descriptionController.text.trim(),
+                category: _categoryController.text.trim().isEmpty
+                    ? 'custom'
+                    : _categoryController.text.trim(),
+              ),
+            );
+          },
+          child: const Text('Register'),
+        ),
+      ],
+    );
   }
 }

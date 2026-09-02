@@ -101,6 +101,16 @@ void main() {
       expect(notificationCount, 0);
     });
 
+    test('persists and restores accent color', () async {
+      const coral = Color(0xFFFF7043);
+      await themeProvider.setAccentColor(coral);
+      expect(themeProvider.accentColor, coral);
+
+      final reloaded = ThemeProvider();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(reloaded.accentColor, coral);
+    });
+
     test('isDarkMode returns correct value', () async {
       await themeProvider.setThemeMode(ThemeMode.dark);
       expect(themeProvider.isDarkMode, isTrue);

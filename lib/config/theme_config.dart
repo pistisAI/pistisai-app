@@ -299,9 +299,14 @@ class ThemeConfig {
 
   /// Load theme configuration for a specific mode
   static ThemeData loadThemeConfiguration(
-      ThemeMode mode, Brightness? systemBrightness) {
+    ThemeMode mode,
+    Brightness? systemBrightness, {
+    Color? seedColor,
+  }) {
     final bool isDark = _shouldUseDarkMode(mode, systemBrightness);
-    return isDark ? _loadDarkTheme() : _loadLightTheme();
+    return isDark
+        ? _loadDarkTheme(seedColor: seedColor)
+        : _loadLightTheme(seedColor: seedColor);
   }
 
   /// Determine if dark mode should be used
@@ -317,11 +322,12 @@ class ThemeConfig {
   }
 
   /// Load dark theme configuration
-  static ThemeData _loadDarkTheme() {
+  static ThemeData _loadDarkTheme({Color? seedColor}) {
+    final seed = seedColor ?? primaryColor;
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: primaryColor,
+      seedColor: seed,
       brightness: Brightness.dark,
-      primary: primaryColor,
+      primary: seed,
       secondary: secondaryColor,
       surface: darkBackgroundCard,
       onSurface: darkTextColor,
@@ -372,11 +378,12 @@ class ThemeConfig {
   }
 
   /// Load light theme configuration
-  static ThemeData _loadLightTheme() {
+  static ThemeData _loadLightTheme({Color? seedColor}) {
+    final seed = seedColor ?? primaryColor;
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: primaryColor,
+      seedColor: seed,
       brightness: Brightness.light,
-      primary: primaryColor,
+      primary: seed,
       secondary: secondaryColor,
       surface: lightBackgroundLight,
       onSurface: lightTextColor,

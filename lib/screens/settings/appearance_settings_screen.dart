@@ -75,15 +75,96 @@ class AppearanceSettingsScreen extends StatelessWidget {
 
                 // Accent Color
                 Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.color_lens),
-                    title: const Text('Accent Color'),
-                    subtitle: const Text('Coming soon'),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(Icons.color_lens),
+                          title: Text('Accent Color'),
+                          subtitle: Text('Used as the app color scheme seed'),
+                        ),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            for (final option in _accentOptions)
+                              _AccentSwatch(
+                                color: option.color,
+                                label: option.label,
+                                selected:
+                                    themeProvider.accentColor == option.color,
+                                onTap: () =>
+                                    themeProvider.setAccentColor(option.color),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AccentOption {
+  const _AccentOption(this.label, this.color);
+  final String label;
+  final Color color;
+}
+
+const _accentOptions = [
+  _AccentOption('Gold', Color(0xFFFFD700)),
+  _AccentOption('Warm gold', Color(0xFFD4A017)),
+  _AccentOption('Teal', Color(0xFF26A69A)),
+  _AccentOption('Blue', Color(0xFF42A5F5)),
+  _AccentOption('Coral', Color(0xFFFF7043)),
+  _AccentOption('Purple', Color(0xFFAB47BC)),
+];
+
+class _AccentSwatch extends StatelessWidget {
+  const _AccentSwatch({
+    required this.color,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Color color;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Column(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected
+                    ? Theme.of(context).colorScheme.onSurface
+                    : Colors.transparent,
+                width: 2,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: Theme.of(context).textTheme.labelSmall),
         ],
       ),
     );

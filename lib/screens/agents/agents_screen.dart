@@ -16,6 +16,7 @@ class Agent {
   final String id;
   final String name;
   final String description;
+  final String parentAgentId;
   final AgentStatus status;
   final int taskCount;
   final double avgLatency;
@@ -25,6 +26,7 @@ class Agent {
     required this.id,
     required this.name,
     required this.description,
+    this.parentAgentId = 'hermes',
     required this.status,
     this.taskCount = 0,
     this.avgLatency = 0.0,
@@ -108,29 +110,33 @@ class _AgentsScreenState extends State<AgentsScreen>
     try {
       final subagents = await registry.listSubagents();
 
-      _agents = subagents.map((s) => Agent(
-        id: s.subagentId,
-        name: s.label ?? s.subagentId,
-        description: s.task ?? 'No task assigned',
-        status: _mapStatus(s.status),
-        taskCount: 0,
-        avgLatency: 0.0,
-        lastActive: s.completedAt ?? s.startedAt ?? s.createdAt,
-      )).toList();
+      _agents = subagents
+          .map((s) => Agent(
+                id: s.subagentId,
+                name: s.label ?? s.subagentId,
+                description: s.task ?? 'No task assigned',
+                parentAgentId: s.agentId,
+                status: _mapStatus(s.status),
+                taskCount: 0,
+                avgLatency: 0.0,
+                lastActive: s.completedAt ?? s.startedAt ?? s.createdAt,
+              ))
+          .toList();
 
       _activityFeed = subagents
           .where((s) => s.completedAt != null || s.startedAt != null)
           .map((s) => ActivityEvent(
-            agentId: s.subagentId,
-            agentName: s.label ?? s.subagentId,
-            action: s.status == SubagentStatus.completed
-                ? 'Completed: ${s.task ?? "task"}'
-                : s.status == SubagentStatus.failed
-                    ? 'Failed: ${s.errorMessage ?? "unknown error"}'
-                    : 'Started: ${s.task ?? "task"}',
-            timestamp: s.completedAt ?? s.startedAt ?? s.createdAt,
-            success: s.status != SubagentStatus.failed,
-          )).toList();
+                agentId: s.subagentId,
+                agentName: s.label ?? s.subagentId,
+                action: s.status == SubagentStatus.completed
+                    ? 'Completed: ${s.task ?? "task"}'
+                    : s.status == SubagentStatus.failed
+                        ? 'Failed: ${s.errorMessage ?? "unknown error"}'
+                        : 'Started: ${s.task ?? "task"}',
+                timestamp: s.completedAt ?? s.startedAt ?? s.createdAt,
+                success: s.status != SubagentStatus.failed,
+              ))
+          .toList();
 
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
@@ -161,6 +167,59 @@ class _AgentsScreenState extends State<AgentsScreen>
     await _loadData();
   }
 
+  Future<void> _showAddAgentDialog() async {
+    await _showAgentFormDialog();
+  }
+
+  Future<void> _showEditAgentDialog(Agent agent) async {
+    await _showAgentFormDialog(existing: agent);
+  }
+
+  Future<void> _showAgentFormDialog({Agent? existing}) async {
+    final result = await showDialog<_AgentFormResult>(
+      context: context,
+      builder: (context) => _AgentFormDialog(existing: existing),
+    );
+    if (result == null || !mounted) return;
+
+    final registry = _subagentRegistry;
+    if (registry == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Agent registry is unavailable until services are ready'),
+        ),
+      );
+      return;
+    }
+
+    final saved = await registry.registerSubagent(
+      subagentId: result.subagentId,
+      agentId: result.agentId,
+      label: result.label,
+      task: result.task,
+    );
+    if (!mounted) return;
+    if (saved == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Could not save agent. Check the admin API.')),
+      );
+      return;
+    }
+    await _loadData();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          existing == null
+              ? '${result.label} registered'
+              : '${result.label} updated',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshableScreen(
@@ -175,11 +234,7 @@ class _AgentsScreenState extends State<AgentsScreen>
             ),
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Add new agent - coming soon')),
-                );
-              },
+              onPressed: _showAddAgentDialog,
               tooltip: 'Add Agent',
             ),
             PopOutButton(sectionName: 'agents', branchIndex: 7),
@@ -211,10 +266,12 @@ class _AgentsScreenState extends State<AgentsScreen>
 
   Widget _buildRegistryTab() {
     if (_agents.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.people,
         title: 'No Agents Registered',
-        message: 'Agents will appear here when registered',
+        message: 'Register a subagent to see it in the registry',
+        actionLabel: 'Add Agent',
+        onAction: _showAddAgentDialog,
       );
     }
 
@@ -579,10 +636,7 @@ class _AgentsScreenState extends State<AgentsScreen>
               title: const Text('Edit Configuration'),
               onTap: () {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Agent configuration - coming soon')),
-                );
+                _showEditAgentDialog(agent);
               },
             ),
             ListTile(
@@ -611,12 +665,24 @@ class _AgentsScreenState extends State<AgentsScreen>
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              setState(() {
-                _agents.removeWhere((a) => a.id == agent.id);
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(this.context);
+              final registry = _subagentRegistry;
+              var removed = registry == null;
+              if (registry != null) {
+                removed = await registry.deleteSubagent(agent.id);
+              }
+              if (!mounted) return;
+              if (!removed) {
+                messenger.showSnackBar(
+                  SnackBar(content: Text('Could not remove ${agent.name}')),
+                );
+                return;
+              }
+              await _loadData();
+              if (!mounted) return;
+              messenger.showSnackBar(
                 SnackBar(content: Text('${agent.name} removed')),
               );
             },
@@ -671,5 +737,163 @@ class _AgentsScreenState extends State<AgentsScreen>
 
   String _formatTimestamp(DateTime dt) {
     return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+class _AgentFormResult {
+  const _AgentFormResult({
+    required this.subagentId,
+    required this.agentId,
+    required this.label,
+    this.task,
+  });
+
+  final String subagentId;
+  final String agentId;
+  final String label;
+  final String? task;
+}
+
+class _AgentFormDialog extends StatefulWidget {
+  const _AgentFormDialog({this.existing});
+
+  final Agent? existing;
+
+  @override
+  State<_AgentFormDialog> createState() => _AgentFormDialogState();
+}
+
+class _AgentFormDialogState extends State<_AgentFormDialog> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _taskController;
+  late final TextEditingController _parentController;
+  late final TextEditingController _idController;
+
+  @override
+  void initState() {
+    super.initState();
+    final existing = widget.existing;
+    _nameController = TextEditingController(text: existing?.name ?? '');
+    _taskController = TextEditingController(
+      text: existing == null || existing.description == 'No task assigned'
+          ? ''
+          : existing.description,
+    );
+    _parentController = TextEditingController(
+      text: existing?.parentAgentId ?? 'hermes',
+    );
+    _idController = TextEditingController(text: existing?.id ?? '');
+    if (existing == null) {
+      _nameController.addListener(_syncGeneratedId);
+    }
+  }
+
+  void _syncGeneratedId() {
+    if (_idController.text.isNotEmpty &&
+        _idController.text != _slugFor(_previousName)) {
+      return;
+    }
+    _idController.text = _slugFor(_nameController.text);
+    _previousName = _nameController.text;
+  }
+
+  String _previousName = '';
+
+  String _slugFor(String input) {
+    final slug = input
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+        .replaceAll(RegExp(r'^-+|-+$'), '');
+    return slug.isEmpty ? 'agent' : slug;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _taskController.dispose();
+    _parentController.dispose();
+    _idController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isEdit = widget.existing != null;
+    return AlertDialog(
+      title: Text(isEdit ? 'Edit Agent' : 'Add Agent'),
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Display name',
+                hintText: 'Research helper',
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _taskController,
+              decoration: const InputDecoration(
+                labelText: 'Task / role',
+                hintText: 'What this subagent should do',
+              ),
+              maxLines: 2,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _parentController,
+              decoration: const InputDecoration(
+                labelText: 'Parent agent ID',
+                hintText: 'hermes',
+              ),
+              enabled: !isEdit,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _idController,
+              decoration: const InputDecoration(
+                labelText: 'Subagent ID',
+              ),
+              enabled: !isEdit,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () {
+            final label = _nameController.text.trim();
+            final subagentId = _idController.text.trim().isEmpty
+                ? _slugFor(label)
+                : _idController.text.trim();
+            final agentId = _parentController.text.trim().isEmpty
+                ? 'hermes'
+                : _parentController.text.trim();
+            if (label.isEmpty) return;
+            Navigator.pop(
+              context,
+              _AgentFormResult(
+                subagentId: subagentId,
+                agentId: agentId,
+                label: label,
+                task: _taskController.text.trim().isEmpty
+                    ? null
+                    : _taskController.text.trim(),
+              ),
+            );
+          },
+          child: Text(isEdit ? 'Save' : 'Register'),
+        ),
+      ],
+    );
   }
 }
