@@ -80,7 +80,7 @@ dependencies:
   cryptography: ^2.9.0
 
   # SSH tunneling
-  dartssh2: '>=2.12.0 <2.13.0'
+  dartssh2: ^2.14.0
 
   get_it: ^9.2.1
   logger: ^2.7.0
