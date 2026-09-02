@@ -29,10 +29,22 @@ class LocalConversationStorage {
   encrypt.Key? _cachedKey;
 
   Future<Directory> _pistisaiDir() async {
-    final root = _documentsDirectory != null
-        ? await _documentsDirectory()
-        : await getApplicationDocumentsDirectory();
-    final dir = Directory(p.join(root.path, 'Pistisai'));
+    if (_documentsDirectory != null) {
+      final root = await _documentsDirectory();
+      final dir = Directory(p.join(root.path, 'Pistisai'));
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+      return dir;
+    }
+
+    Directory root;
+    try {
+      root = await getApplicationSupportDirectory();
+    } catch (_) {
+      root = await getApplicationDocumentsDirectory();
+    }
+    final dir = Directory(p.join(root.path, 'chat'));
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
@@ -41,16 +53,20 @@ class LocalConversationStorage {
 
   /// Get or generate the AES key for local storage encryption.
   ///
-  /// Prefers the OS keychain. When libsecret/keyring is unavailable (common
-  /// on headless desktops), persist the key next to the conversation file so
-  /// the main channel survives app restarts.
+  /// The file-backed key is the source of truth so the main channel survives
+  /// restarts when libsecret/keyring is unavailable. Keyring is a best-effort
+  /// cache only and must never block save/load.
   Future<encrypt.Key> _getKey() async {
     if (_cachedKey != null) return _cachedKey!;
 
-    String? keyStr;
-    if (!_skipKeyring) {
+    String? keyStr = await _readFileKey();
+
+    if ((keyStr == null || keyStr.isEmpty) && !_skipKeyring) {
       try {
         keyStr = await _secureStorage.read(key: _keyStorageKey);
+        if (keyStr != null && keyStr.isNotEmpty) {
+          await _writeFileKey(keyStr);
+        }
       } catch (e) {
         appLogger.warning(
           '[LocalChatStorage] Keyring read failed, using file-backed key: $e',
@@ -59,25 +75,16 @@ class LocalConversationStorage {
     }
 
     if (keyStr == null || keyStr.isEmpty) {
-      keyStr = await _readFileKey();
-    }
-
-    if (keyStr == null || keyStr.isEmpty) {
-      final key = encrypt.Key.fromSecureRandom(32);
-      keyStr = key.base64;
-      var storedInKeyring = false;
+      keyStr = encrypt.Key.fromSecureRandom(32).base64;
+      await _writeFileKey(keyStr);
       if (!_skipKeyring) {
         try {
           await _secureStorage.write(key: _keyStorageKey, value: keyStr);
-          storedInKeyring = true;
         } catch (e) {
           appLogger.warning(
-            '[LocalChatStorage] Keyring write failed, persisting key to disk: $e',
+            '[LocalChatStorage] Keyring write skipped: $e',
           );
         }
-      }
-      if (!storedInKeyring) {
-        await _writeFileKey(keyStr);
       }
     }
 
@@ -140,12 +147,12 @@ class LocalConversationStorage {
       final plaintext = jsonEncode(jsonData);
       final encrypted = _encrypt(plaintext, key);
       await file.writeAsString(encrypted);
-      appLogger.debug(
+      appLogger.info(
         '[LocalChatStorage] Saved ${conversations.length} conversations to ${file.path}',
       );
     } catch (e) {
       appLogger.error(
-        '[LocalChatStorage] Error saving conversations',
+        '[LocalChatStorage] Error saving conversations: $e',
         error: e,
       );
     }
@@ -170,7 +177,7 @@ class LocalConversationStorage {
       return jsonData.map((data) => Conversation.fromJson(data)).toList();
     } catch (e) {
       appLogger.error(
-        '[LocalChatStorage] Error loading conversations',
+        '[LocalChatStorage] Error loading conversations: $e',
         error: e,
       );
       return [];

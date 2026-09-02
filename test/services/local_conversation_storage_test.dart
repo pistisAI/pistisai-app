@@ -40,6 +40,10 @@ void main() {
     expect(loaded.first.id, 'main-channel');
     expect(loaded.first.messages, hasLength(1));
     expect(loaded.first.messages.first.content, contains('Who are you?'));
+    expect(
+      File('${tempDir.path}/Pistisai/.conversation_key').existsSync(),
+      isTrue,
+    );
   });
 
   test('Conversation.mainChannel always uses the stable session id', () {
