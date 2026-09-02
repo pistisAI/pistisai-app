@@ -265,7 +265,7 @@ Future<void> setupCoreServices() async {
       final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
       final hermesStreamingService = HermesStreamingService(
         baseUrl: (hermesUrl != null && hermesUrl.isNotEmpty)
-            ? hermesUrl
+            ? AppConfig.normalizeHermesUrl(hermesUrl)
             : AppConfig.defaultHermesUrl,
         apiKey: hermesApiKey,
       );
