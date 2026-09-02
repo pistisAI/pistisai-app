@@ -83,11 +83,10 @@ class _ChatPaneState extends State<_ChatPane> {
   }
 
   void _ensureChannelExists() {
+    // Storage load creates or restores the single main-channel session.
+    // Do not call resetContext() here — that wipes persisted history.
     try {
-      final chatService = context.read<StreamingChatService>();
-      if (chatService.currentConversation == null) {
-        chatService.resetContext();
-      }
+      context.read<StreamingChatService>();
     } catch (_) {
       // StreamingChatService not registered on this platform (web).
     }
@@ -327,7 +326,8 @@ class _ChatPaneState extends State<_ChatPane> {
         builder: (context, chatService, connectionManager, child) {
           final conversation = chatService.currentConversation;
           final spacing = AppTheme.spacingOf(context);
-          final hasMessages = conversation != null && conversation.messages.isNotEmpty;
+          final hasMessages =
+              conversation != null && conversation.messages.isNotEmpty;
 
           return Column(
             children: [
@@ -335,14 +335,16 @@ class _ChatPaneState extends State<_ChatPane> {
               if (!connectionManager.isConnected && hasMessages)
                 _buildConnectionWarning(context),
               Expanded(
-                child: hasMessages
-                    ? _MessageList(
-                        conversation: conversation,
-                        controller: widget.scrollController,
-                      )
-                    : WelcomeScreen(
-                        onNewChat: () => chatService.resetContext(),
-                      ),
+                child: !chatService.isStorageReady
+                    ? const Center(child: CircularProgressIndicator())
+                    : hasMessages
+                        ? _MessageList(
+                            conversation: conversation,
+                            controller: widget.scrollController,
+                          )
+                        : WelcomeScreen(
+                            onNewChat: () => chatService.resetContext(),
+                          ),
               ),
               // 5-pillar action bar — always visible
               const _ActionBar(),

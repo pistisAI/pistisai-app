@@ -12,26 +12,94 @@ import '../utils/logger.dart';
 class LocalConversationStorage {
   static const String _fileName = 'conversations.json.enc';
   static const String _legacyFileName = 'conversations.json';
+  static const String _fileKeyName = '.conversation_key';
   static const String _keyStorageKey = 'local_conversation_encryption_key';
   static final FlutterSecureStorage _secureStorage =
       const FlutterSecureStorage();
 
+  LocalConversationStorage({
+    Future<Directory> Function()? documentsDirectory,
+    bool skipKeyring = false,
+  })  : _documentsDirectory = documentsDirectory,
+        _skipKeyring = skipKeyring;
+
+  final Future<Directory> Function()? _documentsDirectory;
+  final bool _skipKeyring;
+
   encrypt.Key? _cachedKey;
 
+  Future<Directory> _pistisaiDir() async {
+    final root = _documentsDirectory != null
+        ? await _documentsDirectory()
+        : await getApplicationDocumentsDirectory();
+    final dir = Directory(p.join(root.path, 'Pistisai'));
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    return dir;
+  }
+
   /// Get or generate the AES key for local storage encryption.
-  /// The key is stored in the OS keychain via flutter_secure_storage.
+  ///
+  /// Prefers the OS keychain. When libsecret/keyring is unavailable (common
+  /// on headless desktops), persist the key next to the conversation file so
+  /// the main channel survives app restarts.
   Future<encrypt.Key> _getKey() async {
     if (_cachedKey != null) return _cachedKey!;
 
-    String? keyStr = await _secureStorage.read(key: _keyStorageKey);
-    if (keyStr == null) {
+    String? keyStr;
+    if (!_skipKeyring) {
+      try {
+        keyStr = await _secureStorage.read(key: _keyStorageKey);
+      } catch (e) {
+        appLogger.warning(
+          '[LocalChatStorage] Keyring read failed, using file-backed key: $e',
+        );
+      }
+    }
+
+    if (keyStr == null || keyStr.isEmpty) {
+      keyStr = await _readFileKey();
+    }
+
+    if (keyStr == null || keyStr.isEmpty) {
       final key = encrypt.Key.fromSecureRandom(32);
       keyStr = key.base64;
-      await _secureStorage.write(key: _keyStorageKey, value: keyStr);
+      var storedInKeyring = false;
+      if (!_skipKeyring) {
+        try {
+          await _secureStorage.write(key: _keyStorageKey, value: keyStr);
+          storedInKeyring = true;
+        } catch (e) {
+          appLogger.warning(
+            '[LocalChatStorage] Keyring write failed, persisting key to disk: $e',
+          );
+        }
+      }
+      if (!storedInKeyring) {
+        await _writeFileKey(keyStr);
+      }
     }
 
     _cachedKey = encrypt.Key.fromBase64(keyStr);
     return _cachedKey!;
+  }
+
+  Future<String?> _readFileKey() async {
+    try {
+      final file = File(p.join((await _pistisaiDir()).path, _fileKeyName));
+      if (!await file.exists()) return null;
+      final value = (await file.readAsString()).trim();
+      return value.isEmpty ? null : value;
+    } catch (e) {
+      appLogger.warning('[LocalChatStorage] File key read failed: $e');
+      return null;
+    }
+  }
+
+  Future<void> _writeFileKey(String keyStr) async {
+    final file = File(p.join((await _pistisaiDir()).path, _fileKeyName));
+    await file.writeAsString(keyStr);
   }
 
   /// Encrypt data: returns "base64iv:base64ciphertext"
@@ -55,22 +123,12 @@ class LocalConversationStorage {
 
   /// Get the local file for storing conversations
   Future<File> _getLocalFile() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = p.join(directory.path, 'Pistisai', _fileName);
-    final file = File(path);
-
-    // Ensure directory exists
-    if (!await file.parent.exists()) {
-      await file.parent.create(recursive: true);
-    }
-
-    return file;
+    return File(p.join((await _pistisaiDir()).path, _fileName));
   }
 
   /// Get the legacy plaintext file path (for migration from old format)
   Future<File> _getLegacyFile() async {
-    final directory = await getApplicationDocumentsDirectory();
-    return File(p.join(directory.path, 'Pistisai', _legacyFileName));
+    return File(p.join((await _pistisaiDir()).path, _legacyFileName));
   }
 
   /// Save all conversations to encrypted local storage
