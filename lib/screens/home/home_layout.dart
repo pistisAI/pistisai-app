@@ -13,6 +13,7 @@ import '../../components/welcome_screen.dart';
 import '../../components/animated_background.dart';
 import '../../models/avatar/personality_models.dart';
 import '../../di/locator.dart' as di;
+import '../../services/agent_display_name.dart';
 import '../../services/avatar/personality_engine.dart';
 
 /// Main layout — clean chat interface, nothing else.
@@ -203,7 +204,8 @@ class _ChatPaneState extends State<_ChatPane> {
                   Text(
                     'Configure an agent runtime in Settings to enable AI responses and desktop control.',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.8),
+                      color: theme.textTheme.bodySmall?.color
+                          ?.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -218,7 +220,8 @@ class _ChatPaneState extends State<_ChatPane> {
                 backgroundColor: Colors.amber,
                 foregroundColor: Colors.black87,
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 textStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
@@ -291,7 +294,8 @@ class _ChatPaneState extends State<_ChatPane> {
                   backgroundColor: Colors.amber,
                   foregroundColor: Colors.black87,
                   elevation: 2,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -360,7 +364,8 @@ class _ChatPaneState extends State<_ChatPane> {
                   onSendMessage: (message) =>
                       widget.onSendMessage(chatService, message),
                   isLoading: chatService.isLoading,
-                  placeholder: 'Message Zoid... (/new to reset)',
+                  placeholder:
+                      'Message ${configuredAgentName()}... (/new to reset)',
                 ),
               ),
             ],
@@ -463,7 +468,7 @@ class _ActionBar extends StatelessWidget {
             icon: Icons.handyman,
             label: 'Tools',
             enabled: true,
-            onTap: () => _showTools(context),
+            onTap: () => _showTools(context, configuredAgentName()),
           ),
           _PillarButton(
             icon: Icons.favorite,
@@ -480,10 +485,10 @@ class _ActionBar extends StatelessWidget {
     context.push('/settings/avatar');
   }
 
-  void _showTools(BuildContext context) {
+  void _showTools(BuildContext context, String agentName) {
     showModalBottomSheet(
       context: context,
-      builder: (ctx) => const _ToolsPanel(),
+      builder: (ctx) => _ToolsPanel(agentName: agentName),
     );
   }
 
@@ -501,11 +506,11 @@ class _ActionBar extends StatelessWidget {
           }
           if (snapshot.hasError || !snapshot.hasData) {
             return AlertDialog(
-              title: const Row(
+              title: Row(
                 children: [
-                  Icon(Icons.favorite, size: 24),
-                  SizedBox(width: 8),
-                  Text("Zoid's Mood"),
+                  const Icon(Icons.favorite, size: 24),
+                  const SizedBox(width: 8),
+                  Text('${agentPossessive(configuredAgentName())} Mood'),
                 ],
               ),
               content: const Text('Personality engine not ready yet.'),
@@ -520,11 +525,11 @@ class _ActionBar extends StatelessWidget {
           final profile = snapshot.data!;
           final traits = profile.traits;
           return AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(Icons.favorite, size: 24),
-                SizedBox(width: 8),
-                Text("Zoid's Mood"),
+                const Icon(Icons.favorite, size: 24),
+                const SizedBox(width: 8),
+                Text('${agentPossessive(profile.agentName)} Mood'),
               ],
             ),
             content: Column(
@@ -540,7 +545,8 @@ class _ActionBar extends StatelessWidget {
                 _TraitBar('Empathy', traits.empathy),
                 const SizedBox(height: 8),
                 Text('Evolution: ${profile.evolutionStage}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                    style:
+                        TextStyle(fontSize: 12, color: Colors.grey.shade600)),
               ],
             ),
             actions: [
@@ -639,9 +645,11 @@ class _PillarButton extends StatelessWidget {
   }
 }
 
-/// Bottom sheet showing Zoid's available capabilities.
+/// Bottom sheet showing the configured agent's available capabilities.
 class _ToolsPanel extends StatelessWidget {
-  const _ToolsPanel();
+  const _ToolsPanel({required this.agentName});
+
+  final String agentName;
 
   @override
   Widget build(BuildContext context) {
@@ -658,7 +666,7 @@ class _ToolsPanel extends StatelessWidget {
                 Icon(Icons.handyman, size: 24, color: Colors.amber),
                 const SizedBox(width: 12),
                 Text(
-                  'What Zoid Can Do',
+                  'What $agentName Can Do',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -760,7 +768,8 @@ class _ToolRow extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: available
                             ? Colors.green.withValues(alpha: 0.15)

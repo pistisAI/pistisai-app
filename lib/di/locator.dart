@@ -11,7 +11,8 @@ import 'package:pistisai/services/admin_service.dart';
 import 'package:pistisai/services/app_initialization_service.dart';
 import 'package:pistisai/services/auth_service.dart';
 import 'package:pistisai/services/session_storage_service.dart';
-import 'package:pistisai/services/connection_manager_service.dart' hide BackendType;
+import 'package:pistisai/services/connection_manager_service.dart'
+    hide BackendType;
 import 'package:pistisai/auth/auth_provider.dart';
 import 'package:pistisai/auth/providers/auth0_auth_provider.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
@@ -214,6 +215,11 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator
           .registerLazySingleton<AvatarStateService>(() => avatarStateService);
+      try {
+        await avatarStateService.loadProfile();
+      } catch (e) {
+        debugPrint('[ServiceLocator] Avatar profile load skipped: $e');
+      }
 
       final brainSyncService = BrainSyncService(localBrain);
       serviceLocator.registerSingleton<BrainSyncService>(brainSyncService);
@@ -976,7 +982,8 @@ Future<void> setupAuthenticatedServices() async {
     final presenceService = PresenceService(
       cameraCaptureService: cameraCaptureService,
     );
-    serviceLocator.registerLazySingleton<PresenceService>(() => presenceService);
+    serviceLocator
+        .registerLazySingleton<PresenceService>(() => presenceService);
 
     // Desktop control services - window management
     debugPrint('[ServiceLocator] Initializing Desktop Control services...');
@@ -1072,8 +1079,7 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
               debugPrint(
                   '[ServiceLocator] ✓ Auto-activated Hermes as default runtime');
             } catch (e) {
-              debugPrint(
-                  '[ServiceLocator] Could not auto-activate Hermes: $e');
+              debugPrint('[ServiceLocator] Could not auto-activate Hermes: $e');
             }
             break;
 
@@ -1150,7 +1156,8 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
       }
     }
 
-    debugPrint('[ServiceLocator] Provider discovery completed (periodic scan disabled)');
+    debugPrint(
+        '[ServiceLocator] Provider discovery completed (periodic scan disabled)');
   } catch (e) {
     debugPrint(
         '[ServiceLocator] Error during provider discovery initialization: $e');

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../config/app_config.dart';
 import '../../config/theme.dart';
 import '../../config/theme_config.dart';
+import '../../services/agent_display_name.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 
 /// About Settings Screen — Pistisai identity, mythology, and 4 pillars
@@ -47,7 +48,8 @@ class AboutSettingsScreen extends StatelessWidget {
                   theme: theme,
                   icon: Icons.flaky,
                   title: 'The Four Pillars',
-                  subtitle: 'Four Titans held the cosmos aloft at the four corners of the world. '
+                  subtitle:
+                      'Four Titans held the cosmos aloft at the four corners of the world. '
                       'Four pillars hold Pistisai together.',
                   child: Column(
                     children: [
@@ -59,9 +61,10 @@ class AboutSettingsScreen extends StatelessWidget {
                         direction: 'EAST — Dawn',
                         symbol: '☀️',
                         title: 'AIMAN — The Face',
-                        description: '"He who watches from above." God of heavenly light, '
+                        description:
+                            '"He who watches from above." God of heavenly light, '
                             'father of the Sun, Moon, and Dawn. The watcher, the welcoming '
-                            'presence — Zoid\'s face to the world.',
+                            'presence — ${agentPossessive(configuredAgentName())} face to the world.',
                         color: ThemeConfig.primaryColor,
                       ),
                       const SizedBox(height: 12),
@@ -73,9 +76,10 @@ class AboutSettingsScreen extends StatelessWidget {
                         direction: 'NORTH — Axis',
                         symbol: '⚙️',
                         title: 'AIGENT — The Engine',
-                        description: '"Query / Questioning." God of intellect, the axis of '
+                        description:
+                            '"Query / Questioning." God of intellect, the axis of '
                             'heaven around which the constellations turn. The mind, the '
-                            'engine — Zoid\'s capability to reason and execute.',
+                            'engine — ${agentPossessive(configuredAgentName())} capability to reason and execute.',
                         color: ThemeConfig.secondaryColor,
                       ),
                       const SizedBox(height: 12),
@@ -87,8 +91,9 @@ class AboutSettingsScreen extends StatelessWidget {
                         direction: 'SOUTH — Measure',
                         symbol: '✦',
                         title: 'AIDRATION — The Flow',
-                        description: '"The Ram / Master." God of constellations, measurement, '
-                            'and the cycles of time. The order, the rhythm — Zoid\'s '
+                        description:
+                            '"The Ram / Master." God of constellations, measurement, '
+                            'and the cycles of time. The order, the rhythm — ${agentPossessive(configuredAgentName())} '
                             'orchestration of complexity.',
                         color: ThemeConfig.accentColor,
                       ),
@@ -101,9 +106,10 @@ class AboutSettingsScreen extends StatelessWidget {
                         direction: 'WEST — Craft',
                         symbol: '🔥',
                         title: 'AIMOTIONS — The Heart',
-                        description: '"The Piercer." Father of Prometheus (forethought), '
+                        description:
+                            '"The Piercer." Father of Prometheus (forethought), '
                             'Epimetheus (afterthought), and Atlas (endurance). The wound '
-                            'that creates — Zoid\'s emotional core and humanity.',
+                            'that creates — ${agentPossessive(configuredAgentName())} emotional core and humanity.',
                         color: ThemeConfig.dangerColor,
                       ),
                     ],
@@ -188,8 +194,7 @@ class AboutSettingsScreen extends StatelessWidget {
                             style: theme.textTheme.titleMedium),
                         const SizedBox(height: 12),
                         _buildInfoRow('Version', AppConfig.appVersion),
-                        _buildInfoRow('Repository',
-                            'pistisAI/pistisai-app'),
+                        _buildInfoRow('Repository', 'pistisAI/pistisai-app'),
                       ],
                     ),
                   ),

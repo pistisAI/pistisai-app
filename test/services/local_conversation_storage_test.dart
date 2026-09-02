@@ -93,4 +93,13 @@ void main() {
     expect(Conversation.mainChannel().id, 'main-channel');
     expect(Conversation.mainChannel(model: 'hermes-agent').id, 'main-channel');
   });
+
+  test('Conversation.mainChannel titles the thread with the setup agent', () {
+    expect(Conversation.mainChannel().title, 'Agent');
+    expect(
+      Conversation.mainChannel(agentName: 'Hermes MiniMax').title,
+      'Hermes MiniMax',
+    );
+    expect(Conversation.mainChannel(agentName: '  ').title, 'Agent');
+  });
 }

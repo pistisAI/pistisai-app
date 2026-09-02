@@ -12,6 +12,9 @@ import 'hermes/hermes_streaming_service.dart';
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
 import 'auth_service.dart';
+import 'agent_display_name.dart';
+import 'avatar/avatar_state_service.dart';
+import '../di/locator.dart' as di;
 import '../utils/logger.dart';
 
 /// Enhanced chat service with real-time streaming support
@@ -27,10 +30,13 @@ class StreamingChatService extends ChangeNotifier {
     AuthService authService,
   ) : _storageService = ConversationStorageService(authService: authService) {
     _initializeService();
+    _bindAgentNameListener();
   }
 
-  /// The main channel — a single persistent conversation with Zoid.
+  /// The main channel — a single persistent conversation with the
+  /// user-configured agent.
   Conversation? _mainChannel;
+  AvatarStateService? _avatarState;
 
   String? _selectedModel;
   bool _isLoading = false;
@@ -131,9 +137,13 @@ class StreamingChatService extends ChangeNotifier {
         // Find or create the main channel
         final existing = loaded.firstWhere(
           (c) => c.id == 'main-channel',
-          orElse: () => Conversation.mainChannel(model: _selectedModel),
+          orElse: () => Conversation.mainChannel(
+            model: _selectedModel,
+            agentName: configuredAgentName(),
+          ),
         );
         _mainChannel = existing;
+        _applyAgentNameToMainChannel();
         appLogger.info(
           '[StreamingChat] Loaded main channel (${existing.messages.length} messages)',
         );
@@ -164,7 +174,10 @@ class StreamingChatService extends ChangeNotifier {
       );
     }
 
-    _mainChannel = Conversation.mainChannel(model: modelToUse);
+    _mainChannel = Conversation.mainChannel(
+      model: modelToUse,
+      agentName: configuredAgentName(),
+    );
 
     final welcomeMessage = Message.system(
       content:
@@ -197,12 +210,13 @@ class StreamingChatService extends ChangeNotifier {
   /// Keeps the stable `main-channel` id so Hermes stays on the same session.
   /// Only the in-app message list is cleared (/new or /reset).
   void resetContext() {
-    _mainChannel = Conversation.mainChannel(model: _selectedModel);
+    _mainChannel = Conversation.mainChannel(
+      model: _selectedModel,
+      agentName: configuredAgentName(),
+    );
     _saveConversations();
     notifyListeners();
   }
-
-
 
   /// Update conversation title
   void updateConversationTitle(Conversation conversation, String newTitle) {
@@ -301,8 +315,7 @@ class StreamingChatService extends ChangeNotifier {
       appLogger.error('[StreamingChat] Error in sendMessage', error: e);
 
       // Remove streaming message if it was added
-      if (_mainChannel != null &&
-          _mainChannel!.messages.isNotEmpty) {
+      if (_mainChannel != null && _mainChannel!.messages.isNotEmpty) {
         final lastMessage = _mainChannel!.messages.last;
         if (lastMessage.isStreaming) {
           _removeLastMessage();
@@ -384,7 +397,8 @@ class StreamingChatService extends ChangeNotifier {
   void _handleStreamingComplete() {
     // Guard against re-entrant calls (isComplete + onDone double-fire)
     if (_currentStreamingMessageId.isEmpty) {
-      appLogger.debug('[StreamingChat] Skipping duplicate _handleStreamingComplete');
+      appLogger
+          .debug('[StreamingChat] Skipping duplicate _handleStreamingComplete');
       return;
     }
 
@@ -588,7 +602,8 @@ class StreamingChatService extends ChangeNotifier {
     Message Function(Message) updater,
   ) {
     if (_mainChannel == null || messageId.isEmpty) return false;
-    final msgIndex = _mainChannel!.messages.indexWhere((m) => m.id == messageId);
+    final msgIndex =
+        _mainChannel!.messages.indexWhere((m) => m.id == messageId);
     if (msgIndex == -1) return false;
     final updatedMessage = updater(_mainChannel!.messages[msgIndex]);
     final updatedMessages = List<Message>.from(_mainChannel!.messages);
@@ -605,7 +620,7 @@ class StreamingChatService extends ChangeNotifier {
   Future<void> _autoRenameConversation() async {
     final conversation = _mainChannel;
     if (conversation == null || conversation.title != 'New Chat') return;
-    // Main channel (title: 'Zoid Maltek') will never match — this only fires
+    // Main channel title is the configured agent name, so this only fires
     // if a conversation was created with the 'New Chat' default title.
     if (conversation.userMessageCount != 1) return;
 
@@ -699,8 +714,7 @@ class StreamingChatService extends ChangeNotifier {
       appLogger.error('[StreamingChat] Fallback chat error', error: e);
 
       // Remove loading message if it exists
-      if (_mainChannel != null &&
-          _mainChannel!.messages.isNotEmpty) {
+      if (_mainChannel != null && _mainChannel!.messages.isNotEmpty) {
         final lastMessage = _mainChannel!.messages.last;
         if (lastMessage.isLoading) {
           _removeLastMessage();
@@ -737,7 +751,8 @@ class StreamingChatService extends ChangeNotifier {
     try {
       if (_mainChannel == null || _mainChannel!.messages.isEmpty) return;
       final updated = _mainChannel!.copyWith(
-        messages: _mainChannel!.messages.sublist(0, _mainChannel!.messages.length - 1),
+        messages: _mainChannel!.messages
+            .sublist(0, _mainChannel!.messages.length - 1),
         updatedAt: DateTime.now(),
       );
       _mainChannel = updated;
@@ -800,8 +815,30 @@ class StreamingChatService extends ChangeNotifier {
     _streamingContentSubject.close();
     _streamingReasoningSubject.close();
     _connectionManager.removeListener(_onConnectionManagerChanged);
+    _avatarState?.removeListener(_onAgentNameChanged);
     _storageService.dispose();
 
     super.dispose();
+  }
+
+  void _bindAgentNameListener() {
+    try {
+      if (!di.serviceLocator.isRegistered<AvatarStateService>()) return;
+      _avatarState = di.serviceLocator<AvatarStateService>();
+      _avatarState!.addListener(_onAgentNameChanged);
+    } catch (_) {}
+  }
+
+  void _onAgentNameChanged() {
+    _applyAgentNameToMainChannel();
+  }
+
+  void _applyAgentNameToMainChannel({bool persist = true}) {
+    if (_mainChannel == null) return;
+    final name = configuredAgentName();
+    if (_mainChannel!.title == name) return;
+    _mainChannel = _mainChannel!.updateTitle(name);
+    if (persist) _saveConversations();
+    notifyListeners();
   }
 }

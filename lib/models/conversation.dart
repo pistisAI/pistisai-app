@@ -33,12 +33,16 @@ class Conversation {
     );
   }
 
-  /// Create the main channel (persistent, fixed ID)
-  factory Conversation.mainChannel({String? model}) {
+  /// Create the main channel (persistent, fixed ID).
+  ///
+  /// [agentName] is the companion the user set up — never a hardcoded
+  /// personal name like "Zoid Maltek".
+  factory Conversation.mainChannel({String? model, String? agentName}) {
     final now = DateTime.now();
+    final name = (agentName ?? '').trim();
     return Conversation(
       id: 'main-channel',
-      title: 'Zoid Maltek',
+      title: name.isEmpty ? 'Agent' : name,
       messages: [],
       createdAt: now,
       updatedAt: now,
