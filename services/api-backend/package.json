@@ -47,7 +47,7 @@
     "express-rate-limit": "^8.5.2",
     "googleapis": "^174.0.1",
     "helmet": "^8.1.0",
-    "ioredis": "^5.11.1",
+    "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
     "jwks-rsa": "^4.1.0",
     "node-fetch": "^3.3.2",
