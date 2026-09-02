@@ -69,6 +69,7 @@ required_web = [
     "secrets.VPS_USER || 'cloudllm'",
     '/opt/Pistisai',
     'https://app.pistisai.app/health',
+    'skipping live VPS deploy',
 ]
 for needle in required_web:
     if needle not in web_text:
