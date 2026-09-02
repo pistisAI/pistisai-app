@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.44.6
@@ -58,7 +58,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
       platforms: ${{ steps.platforms.outputs.platforms }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Resolve platforms
         id: platforms
         run: |
@@ -84,7 +84,7 @@ jobs:
     if: contains(needs.set_version.outputs.platforms, 'linux')
     runs-on: [self-hosted, linux, desktop-build]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set Version
         run: |
@@ -140,7 +140,7 @@ jobs:
           ./scripts/packaging/build_installer.sh || echo "Installer script skipped"
 
       - name: Upload Linux Bundles
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux-bundles
           path: dist/linux/*
@@ -155,7 +155,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set Version
         run: |
@@ -216,7 +216,7 @@ jobs:
           fi
 
       - name: Upload Windows Bundles
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-bundles
           path: |
@@ -231,7 +231,7 @@ jobs:
     if: contains(needs.set_version.outputs.platforms, 'macos')
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set Version
         run: |
@@ -262,7 +262,7 @@ jobs:
           echo "✅ macOS bundle packaged"
 
       - name: Upload macOS Bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: macos-bundles
           path: dist/macos/*.zip
@@ -275,7 +275,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Download all artifacts
         uses: actions/download-artifact@v5

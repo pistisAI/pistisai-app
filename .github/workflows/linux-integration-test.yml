@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: "📥 Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: "🔧 Setup Flutter"
         uses: subosito/flutter-action@v2
@@ -128,7 +128,7 @@ jobs:
 
       - name: "📤 Upload test recording artifact"
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-recording
           path: test_run.mp4
@@ -137,7 +137,7 @@ jobs:
 
       - name: "📤 Upload failure screenshot artifact"
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: failure-screenshot
           path: failure_screenshot.png
@@ -152,7 +152,7 @@ jobs:
 
       - name: "📤 Upload test desktop logs artifact"
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-desktop-logs
           path: test_desktop_logs.txt

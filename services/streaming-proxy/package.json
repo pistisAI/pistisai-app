@@ -41,10 +41,12 @@
     "ws": "^8.21.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.4.0",
     "@types/ws": "^8.18.1",
     "eslint": "^10.9.1",
+    "globals": "^17.7.0",
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11",
     "typescript": "^5.9.3"
