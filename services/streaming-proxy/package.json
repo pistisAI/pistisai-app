@@ -50,13 +50,8 @@
     "eslint": "^10.9.1",
     "globals": "^17.7.0",
     "jest": "^30.4.2",
-<<<<<<< HEAD
-    "ts-jest": "^29.4.11",
-    "typescript": "^7.0.2"
-=======
     "ts-jest": "^29.4.12",
-    "typescript": "npm:@typescript/typescript6@^6.0.2"
->>>>>>> origin/main
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=22.0.0 <27.0.0"
@@ -67,10 +62,7 @@
     "@types/ws": "^8.18.1",
     "eslint": "^10.9.1",
     "husky": "^9.1.7",
-<<<<<<< HEAD
     "typescript": "^7.0.2",
-=======
->>>>>>> origin/main
     "brace-expansion": "^5.0.8"
   }
 }
