@@ -294,6 +294,12 @@ class StreamingChatService extends ChangeNotifier {
         appLogger.warning(
           '[StreamingChat] No streaming service available, falling back to non-streaming chat',
         );
+        if (_mainChannel != null && _mainChannel!.messages.isNotEmpty) {
+          final lastMessage = _mainChannel!.messages.last;
+          if (lastMessage.isStreaming) {
+            _removeLastMessage();
+          }
+        }
         await _fallbackToNonStreamingChat(content.trim());
         return;
       }
