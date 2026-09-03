@@ -291,8 +291,9 @@ class _ConfigScreenState extends State<ConfigScreen>
       builder: (context) => AlertDialog(
         title: const Text('Reset to Defaults'),
         content: const Text(
-          'This clears saved runtime preferences on this device. '
-          'Gateway URLs and support provider settings will return to defaults.',
+          'This resets runtime preferences (theme, language, timeouts, proxy, '
+          'developer flags) to their defaults.\n\n'
+          'Gateway URLs, API keys, and avatar settings are not affected.',
         ),
         actions: [
           TextButton(
@@ -310,7 +311,8 @@ class _ConfigScreenState extends State<ConfigScreen>
     if (confirmed != true) return;
 
     try {
-      await _settingsService.clearAllData();
+      await _settingsService.clearRuntimePreferences();
+      if (!mounted) return;
       await _loadData();
       if (mounted) {
         _showSnackBar('Configuration reset to defaults', isError: false);

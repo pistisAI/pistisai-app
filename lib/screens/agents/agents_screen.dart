@@ -238,21 +238,20 @@ class _AgentsScreenState extends State<AgentsScreen>
     );
     if (updated == null) return;
 
-    final result = await registry.registerSubagent(
-      subagentId: updated.subagentId,
-      agentId: updated.agentId,
+    final ok = await registry.updateMetadata(
+      agent.id,
       label: updated.label,
       task: updated.task,
     );
 
     if (!mounted) return;
-    if (result == null) {
+    if (!ok) {
       _showUnavailable('Failed to update ${agent.name}');
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Updated ${result.label ?? result.subagentId}')),
+      SnackBar(content: Text('Updated ${updated.label ?? agent.id}')),
     );
     await _loadData();
   }

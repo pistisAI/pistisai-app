@@ -44,10 +44,15 @@ class SkillService {
 
   static String defaultSkillsDir() {
     try {
-      final home = Platform.environment['LOCALAPPDATA'] ??
-          Platform.environment['HOME'] ??
-          Platform.environment['USERPROFILE'] ??
-          '.';
+      // On Windows, Hermes uses %LOCALAPPDATA%\hermes\skills (no leading dot).
+      // On macOS/Linux it is ~/.hermes/skills.
+      if (Platform.isWindows) {
+        final appData = Platform.environment['LOCALAPPDATA'] ??
+            Platform.environment['USERPROFILE'] ??
+            '.';
+        return '$appData\\hermes\\skills';
+      }
+      final home = Platform.environment['HOME'] ?? '.';
       return '$home/.hermes/skills';
     } catch (_) {
       return '.hermes/skills';
@@ -124,6 +129,14 @@ class SkillService {
     await dir.create(recursive: true);
 
     final skillMd = File('${dir.path}/SKILL.md');
+    if (await skillMd.exists()) {
+      throw StateError(
+        'A skill named "${trimmedDescription.isEmpty ? trimmedName : trimmedName}" '
+        'already exists at ${skillMd.path}. '
+        'Delete or rename the existing skill before registering again.',
+      );
+    }
+
     final yamlName = _yamlQuote(trimmedName);
     final yamlDescription = _yamlQuote(trimmedDescription);
     await skillMd.writeAsString(
@@ -146,7 +159,15 @@ class SkillService {
   }
 
   String _yamlQuote(String value) {
-    return '"${value.replaceAll(r'\', r'\\').replaceAll('"', r'\"')}"';
+    // Escape backslashes and double-quotes, then strip characters that would
+    // break YAML inline double-quoted scalars (newlines, tabs, NUL).
+    final safe = value
+        .replaceAll(r'\', r'\\')
+        .replaceAll('"', r'\"')
+        .replaceAll('\n', ' ')
+        .replaceAll('\r', '')
+        .replaceAll('\t', ' ');
+    return '"$safe"';
   }
 
   /// Parse YAML-like frontmatter from a SKILL.md file.
