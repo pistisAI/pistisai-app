@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
 /// Welcome step - First screen of the setup wizard
 class WelcomeStep extends StatelessWidget {
@@ -37,10 +34,6 @@ class WelcomeStep extends StatelessWidget {
 
                   // Info text
                   _InfoBox(),
-                  SizedBox(height: 24),
-
-                  // Skip option (small)
-                  _SkipButton(),
                 ],
               ),
             ),
@@ -166,23 +159,6 @@ class _InfoBox extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SkipButton extends StatelessWidget {
-  const _SkipButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () async {
-        await context.read<SetupWizardService>().deferSetup();
-        if (context.mounted) {
-          context.go('/chat');
-        }
-      },
-      child: const Text('Set up later'),
     );
   }
 }
