@@ -503,10 +503,12 @@ Future<void> setupCoreServices() async {
 
     // Don't initialize yet - wait for auth token
 
-    // Auto Update Service - manages application auto-updates for Linux
+    // Auto Update Service - manages application auto-updates for Linux.
+    // Must be an eager singleton so ChangeNotifierProvider in main.dart always
+    // finds it — a lazy singleton registered after the widget tree builds causes
+    // the System tab Consumer to throw "Provider not found".
     final autoUpdateService = AutoUpdateService();
-    serviceLocator
-        .registerLazySingleton<AutoUpdateService>(() => autoUpdateService);
+    serviceLocator.registerSingleton<AutoUpdateService>(autoUpdateService);
 
     debugPrint('[ServiceLocator] Core services registered successfully');
 

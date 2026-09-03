@@ -7,23 +7,34 @@ import '../database/local_brain.dart';
 
 /// Service to synchronize local Drift database with cloud PostgreSQL
 class BrainSyncService {
-  final LocalBrain _db;
+  final LocalBrain? _db;
   final String _backendUrl;
   final String? _authToken;
   Timer? _syncTimer;
   bool _isSyncing = false;
+  bool _syncStarted = false;
   final _syncController = StreamController<SyncStatus>.broadcast();
 
-  BrainSyncService(this._db, {String? backendUrl, String? authToken})
-      : _backendUrl = backendUrl ?? 'https://api.pistisai.app',
+  BrainSyncService(LocalBrain db, {String? backendUrl, String? authToken})
+      : _db = db,
+        _backendUrl = backendUrl ?? 'https://api.pistisai.app',
         _authToken = authToken;
+
+  @visibleForTesting
+  BrainSyncService.forTest()
+      : _db = null,
+        _backendUrl = '',
+        _authToken = null;
 
   /// Stream of sync status updates
   Stream<SyncStatus> get syncStatus => _syncController.stream;
 
-  /// Start periodic sync
+  /// Start periodic sync. Idempotent — calling more than once has no effect.
   void startSync({Duration interval = const Duration(minutes: 5)}) {
-    stopSync();
+    if (_syncStarted) return;
+    _syncStarted = true;
+    _syncTimer?.cancel();
+    _syncTimer = null;
     debugPrint(
         '[BrainSync] Starting periodic sync (interval: ${interval.inMinutes}m)');
 
@@ -36,6 +47,7 @@ class BrainSyncService {
 
   /// Stop sync
   void stopSync() {
+    _syncStarted = false;
     _syncTimer?.cancel();
     _syncTimer = null;
     debugPrint('[BrainSync] Sync stopped');
@@ -57,29 +69,39 @@ class BrainSyncService {
     int failed = 0;
 
     try {
-      debugPrint('[BrainSync] Starting sync...');
+      final db = _db;
+      if (db == null) {
+        _isSyncing = false;
+        return SyncResult(
+          success: true,
+          uploaded: 0,
+          downloaded: 0,
+          failed: 0,
+          duration: Duration.zero,
+        );
+      }
 
       // 1. Upload unsynced local events
-      final unsynced = await _db.getUnsyncedEvents(limit: 100);
+      final unsynced = await db.getUnsyncedEvents(limit: 100);
       if (unsynced.isNotEmpty) {
         debugPrint('[BrainSync] Uploading ${unsynced.length} events...');
         final uploadedIds = await _uploadEvents(unsynced);
-        await _db.markEventsSynced(uploadedIds);
+        await db.markEventsSynced(uploadedIds);
         uploaded = uploadedIds.length;
         failed = unsynced.length - uploaded;
       }
 
       // 2. Process sync queue (pending operations)
-      final pendingOps = await _db.getPendingSyncItems(limit: 50);
+      final pendingOps = await db.getPendingSyncItems(limit: 50);
       if (pendingOps.isNotEmpty) {
         debugPrint(
             '[BrainSync] Processing ${pendingOps.length} pending operations...');
         for (final op in pendingOps) {
           final success = await _processSyncOperation(op);
           if (success) {
-            await _db.dequeueSync(op.id);
+            await db.dequeueSync(op.id);
           } else {
-            await _db.incrementRetry(op.id);
+            await db.incrementRetry(op.id);
             failed++;
           }
         }
@@ -91,10 +113,12 @@ class BrainSyncService {
       }
 
       stopwatch.stop();
-      debugPrint(
-          '[BrainSync] Sync completed in ${stopwatch.elapsedMilliseconds}ms');
-      debugPrint(
-          '[BrainSync] Uploaded: $uploaded, Downloaded: $downloaded, Failed: $failed');
+      // Suppress no-op sync log noise; only log when something happened.
+      if (uploaded > 0 || downloaded > 0 || failed > 0) {
+        debugPrint(
+            '[BrainSync] Sync completed in ${stopwatch.elapsedMilliseconds}ms — '
+            'up:$uploaded down:$downloaded fail:$failed');
+      }
 
       final result = SyncResult(
         success: true,
@@ -217,7 +241,7 @@ class BrainSyncService {
         final events = data['events'] as List<dynamic>? ?? [];
 
         for (final eventJson in events) {
-          await _db.addAgentEvent(AgentEventsCompanion(
+          await _db?.addAgentEvent(AgentEventsCompanion(
             id: Value(eventJson['id'] as String),
             agentId: Value(eventJson['agent_id'] as String),
             eventType: Value(eventJson['event_type'] as String),
@@ -247,7 +271,7 @@ class BrainSyncService {
     required Map<String, dynamic> eventData,
     String? correlationId,
   }) async {
-    await _db.addAgentEvent(AgentEventsCompanion(
+    await _db?.addAgentEvent(AgentEventsCompanion(
       id: Value(_generateId()),
       agentId: Value(agentId),
       eventType: Value(eventType),
@@ -264,7 +288,7 @@ class BrainSyncService {
     required String recordId,
     required Map<String, dynamic> payload,
   }) async {
-    await _db.enqueueSync(SyncQueueCompanion(
+    await _db?.enqueueSync(SyncQueueCompanion(
       targetTable: Value(targetTable),
       operation: Value(operation),
       recordId: Value(recordId),
@@ -277,13 +301,13 @@ class BrainSyncService {
 
   /// Get local unsynced count
   Future<int> getUnsyncedCount() async {
-    final events = await _db.getUnsyncedEvents(limit: 10000);
-    return events.length;
+    final events = await _db?.getUnsyncedEvents(limit: 10000);
+    return events?.length ?? 0;
   }
 
   /// Cleanup old synced events
   Future<int> cleanup({Duration maxAge = const Duration(days: 7)}) async {
-    return _db.deleteOldSyncedEvents(maxAge);
+    return (await _db?.deleteOldSyncedEvents(maxAge)) ?? 0;
   }
 
   /// Generate unique ID
