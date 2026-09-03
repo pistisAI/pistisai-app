@@ -224,8 +224,12 @@ router.patch('/:subagentId/metadata', async (req, res) => {
 
   const updates = [];
   const params = [subagentId];
-  if (label !== undefined) { updates.push(`label = $${params.push(label)}`); }
-  if (task !== undefined)  { updates.push(`task  = $${params.push(task)}`); }
+  if (label !== undefined) {
+    updates.push(`label = $${params.push(label)}`);
+  }
+  if (task !== undefined) {
+    updates.push(`task = $${params.push(task)}`);
+  }
 
   if (updates.length === 0) {
     return res.status(400).json({ success: false, error: 'No fields to update' });
