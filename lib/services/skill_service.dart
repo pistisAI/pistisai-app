@@ -21,6 +21,15 @@ class SkillInfo {
   });
 }
 
+String skillFolderSlug(String input) {
+  final slug = input
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+  return slug.isEmpty ? 'skill' : slug;
+}
+
 /// Reads the local Hermes skills directory and parses skill metadata.
 ///
 /// Skills live at `~/.hermes/skills/<category>/<name>/SKILL.md`.
@@ -29,17 +38,19 @@ class SkillService {
   final String _skillsDir;
 
   SkillService({String? skillsDir})
-      : _skillsDir = skillsDir ?? _defaultSkillsDir();
+      : _skillsDir = skillsDir ?? defaultSkillsDir();
 
-  static String _defaultSkillsDir() {
+  String get skillsDirectory => _skillsDir;
+
+  static String defaultSkillsDir() {
     try {
       final home = Platform.environment['LOCALAPPDATA'] ??
           Platform.environment['HOME'] ??
           Platform.environment['USERPROFILE'] ??
           '.';
-      return '$home/hermes/skills';
+      return '$home/.hermes/skills';
     } catch (_) {
-      return '.';
+      return '.hermes/skills';
     }
   }
 
@@ -60,8 +71,7 @@ class SkillService {
 
         await for (final skillEntity in categoryEntity.list()) {
           if (skillEntity is! Directory) continue;
-          final skillName =
-              skillEntity.path.split(Platform.pathSeparator).last;
+          final skillName = skillEntity.path.split(Platform.pathSeparator).last;
 
           final skillMd = File('${skillEntity.path}/SKILL.md');
           if (!await skillMd.exists()) continue;
@@ -90,6 +100,53 @@ class SkillService {
 
     skills.sort((a, b) => a.name.compareTo(b.name));
     return skills;
+  }
+
+  /// Writes a new `SKILL.md` under the local Hermes skills directory.
+  Future<SkillInfo> registerSkill({
+    required String name,
+    required String description,
+    String category = 'custom',
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) {
+      throw ArgumentError('Skill name is required');
+    }
+
+    final trimmedDescription = description.trim();
+    if (trimmedDescription.isEmpty) {
+      throw ArgumentError('Skill description is required');
+    }
+
+    final categorySlug = skillFolderSlug(category);
+    final nameSlug = skillFolderSlug(trimmedName);
+    final dir = Directory('$_skillsDir/$categorySlug/$nameSlug');
+    await dir.create(recursive: true);
+
+    final skillMd = File('${dir.path}/SKILL.md');
+    final yamlName = _yamlQuote(trimmedName);
+    final yamlDescription = _yamlQuote(trimmedDescription);
+    await skillMd.writeAsString(
+      '---\n'
+      'name: $yamlName\n'
+      'description: $yamlDescription\n'
+      '---\n\n'
+      '# $trimmedName\n\n'
+      '$trimmedDescription\n',
+    );
+
+    return SkillInfo(
+      name: trimmedName,
+      description: trimmedDescription,
+      category: categorySlug,
+      enabled: true,
+      lastModified: await _lastModified(skillMd),
+      fileCount: await _countFiles(dir),
+    );
+  }
+
+  String _yamlQuote(String value) {
+    return '"${value.replaceAll(r'\', r'\\').replaceAll('"', r'\"')}"';
   }
 
   /// Parse YAML-like frontmatter from a SKILL.md file.
