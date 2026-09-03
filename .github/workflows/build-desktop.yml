@@ -70,11 +70,16 @@ jobs:
         run: |
           if [ -n "${{ inputs.version }}" ]; then
             VERSION=${{ inputs.version }}
-          else
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             VERSION=$(jq -r '.version' assets/version.json)
             IFS='.' read -r -a v <<< "$VERSION"
             v[2]=$((v[2] + 1))
             VERSION="${v[0]}.${v[1]}.${v[2]}"
+          else
+            # Push to main: ship the version already in the tree. Auto-bumping
+            # here would publish v1.0.4 after a PR that already set 1.0.3, and
+            # Dependabot pubspec bumps must not invent a new release number.
+            VERSION=$(jq -r '.version' assets/version.json)
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -82,7 +87,10 @@ jobs:
     name: Linux Build
     needs: set_version
     if: contains(needs.set_version.outputs.platforms, 'linux')
-    runs-on: [self-hosted, linux, desktop-build]
+    # GitHub-hosted: the previous self-hosted desktop-build runner lost
+    # communication mid-compile (run 33776998037). ubuntu-24.04 matches CI.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
 
@@ -94,16 +102,16 @@ jobs:
           jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
 
       - name: Install Linux Dependencies
-        # Cloud runners need apt; the self-hosted builder has these preinstalled,
-        # so skip when pkg-config already resolves GTK+3 (no passwordless sudo there).
         run: |
-          if pkg-config --exists gtk+-3.0 gstreamer-1.0 libsecret-1; then
-            echo "✅ Build deps already present (self-hosted runner) — skipping apt"
-          else
-            sudo apt-get update
-            sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++6 libayatana-appindicator3-dev libsecret-1-dev libcurl4-openssl-dev libnotify-dev zip \
-              libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
-          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            clang cmake ninja-build pkg-config zip \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            libayatana-appindicator3-dev libsecret-1-dev \
+            libcurl4-openssl-dev libnotify-dev libjsoncpp-dev \
+            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+            gstreamer1.0-libav libfuse2 dpkg-dev
 
       - uses: subosito/flutter-action@v2
         with:
@@ -117,10 +125,9 @@ jobs:
           flutter build linux --release
 
       - name: Package Linux Distributions
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
         run: |
-          # libfuse2 only needed to *execute* AppImages; cloud runners need it,
-          # the self-hosted builder has it (or skips — packaging doesn't run AppImages)
-          pkg-config --exists gtk+-3.0 || sudo -S -p '' apt-get install -y libfuse2
           mkdir -p dist/linux
 
           STAGING_DIR=$(mktemp -d)
@@ -128,11 +135,15 @@ jobs:
           cp -r build/linux/x64/release/bundle/* $STAGING_DIR/pistisai/
           tar -czf dist/linux/Pistisai-Linux-x64.tar.gz -C $STAGING_DIR pistisai
 
-          chmod +x scripts/packaging/build_deb.sh || true
-          ./scripts/packaging/build_deb.sh || echo "Deb build skipped"
+          chmod +x scripts/packaging/build_deb.sh
+          ./scripts/packaging/build_deb.sh
 
-          chmod +x scripts/packaging/build_appimage.sh || true
-          ./scripts/packaging/build_appimage.sh || echo "AppImage build skipped"
+          chmod +x scripts/packaging/build_appimage.sh
+          ./scripts/packaging/build_appimage.sh
+
+          ls -lh dist/linux/
+          test -n "$(find dist/linux -maxdepth 1 -name '*.AppImage' -print -quit)"
+          test -n "$(find dist/linux -maxdepth 1 -name '*.AppImage.sha256' -print -quit)"
 
       - name: Generate Installer Script
         run: |
@@ -210,10 +221,18 @@ jobs:
               echo "✅ Installer built"
             else
               echo "ISCC not found" >&2
+              exit 1
             fi
           else
             echo "No Pistisai.iss found" >&2
+            exit 1
           fi
+
+      - name: Require Windows download assets
+        run: |
+          test -f dist/windows/Pistisai-Windows-x64-portable.zip
+          test -n "$(find dist/windows -maxdepth 1 -name '*.exe' -print -quit)"
+          ls -lh dist/windows/
 
       - name: Upload Windows Bundles
         uses: actions/upload-artifact@v7
@@ -270,7 +289,13 @@ jobs:
 
   create_release:
     needs: [set_version, build_linux, build_windows, build_macos]
-    if: always() && (needs.build_linux.result == 'success' || needs.build_windows.result == 'success' || needs.build_macos.result == 'success')
+    # Issue #155: never publish a partial desktop release. Dependabot / lib
+    # pushes still build artifacts; GitHub Releases are explicit dispatches.
+    if: >
+      always() &&
+      github.event_name == 'workflow_dispatch' &&
+      needs.build_linux.result == 'success' &&
+      needs.build_windows.result == 'success'
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -283,12 +308,10 @@ jobs:
       - name: Compute version
         run: |
           echo "VERSION=${{ needs.set_version.outputs.version }}" >> $GITHUB_ENV
-          echo "tag=v${{ env.VERSION }}" >> $GITHUB_ENV
 
       - name: Organize artifacts for release
         run: |
           mkdir -p release-assets
-          # Copy from each artifact dir, flattening (windows artifact nests dist/ and build/)
           for dir in linux-bundles macos-bundles; do
             if [ -d "$dir" ]; then
               cp "$dir"/* release-assets/ 2>/dev/null || true
@@ -300,13 +323,35 @@ jobs:
           fi
           ls -lh release-assets/
 
+      - name: Require Linux and Windows desktop assets
+        run: |
+          missing=0
+          require() {
+            local pattern="$1"
+            local label="$2"
+            if ! compgen -G "release-assets/$pattern" > /dev/null; then
+              echo "❌ missing required asset: $label ($pattern)"
+              missing=1
+            else
+              echo "✅ $label"
+            fi
+          }
+          require "*.AppImage" "Linux x86_64 AppImage"
+          require "*.AppImage.sha256" "Linux AppImage SHA-256"
+          require "*portable*.zip" "Windows x64 portable ZIP"
+          require "*.exe" "Windows x64 Setup installer"
+          if [ "$missing" -ne 0 ]; then
+            echo "Refusing to publish a partial desktop release (issue #155)"
+            exit 1
+          fi
+
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: release-assets/*
           tag: "v${{ env.VERSION }}"
           name: "PistisAI v${{ env.VERSION }}"
-          artifactErrorsFailBuild: false
+          artifactErrorsFailBuild: true
           allowUpdates: true
           removeArtifacts: true
           makeLatest: true
