@@ -17,6 +17,18 @@ import 'avatar/avatar_state_service.dart';
 import '../di/locator.dart' as di;
 import '../utils/logger.dart';
 
+/// User-facing chat error. Never include Dart exception types.
+String userFacingChatError(Object error, {required bool isConnected}) {
+  if (!isConnected) {
+    return 'No agent runtime connected. Open Settings to configure Hermes or another gateway.';
+  }
+  final raw = error.toString();
+  if (error is TimeoutException || raw.contains('TimeoutException')) {
+    return 'The agent did not respond in time. Check that your runtime is running and try again.';
+  }
+  return 'The agent could not complete that request. Check Settings and try again.';
+}
+
 /// Enhanced chat service with real-time streaming support
 ///
 /// Provides progressive message streaming, real-time UI updates,
@@ -327,7 +339,7 @@ class StreamingChatService extends ChangeNotifier {
 
       final errorModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: 'Sorry, I encountered an error: ${e.toString()}',
+        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
         model: errorModel,
         status: MessageStatus.error,
         error: e.toString(),
@@ -384,8 +396,7 @@ class StreamingChatService extends ChangeNotifier {
 
     final errorModel = _selectedModel ?? 'default';
     final errorMessage = Message.assistant(
-      content:
-          'Sorry, I encountered an error while streaming: ${error.toString()}',
+      content: userFacingChatError(error, isConnected: _connectionManager.isConnected),
       model: errorModel,
       status: MessageStatus.error,
       error: error.toString(),
@@ -723,7 +734,7 @@ class StreamingChatService extends ChangeNotifier {
 
       final fallbackModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: 'Sorry, I encountered an error: ${e.toString()}',
+        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
         model: fallbackModel,
         status: MessageStatus.error,
         error: e.toString(),
