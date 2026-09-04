@@ -135,6 +135,19 @@ class SetupStatusService extends ChangeNotifier {
     }
   }
 
+  /// Returns true when the user has finished the setup wizard.
+  Future<bool> hasCompletedSetup(String userId) async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+
+    if (_currentStatus?.userId != userId) {
+      await _loadSetupStatusForUser(userId);
+    }
+
+    return _currentStatus?.setupCompleted ?? false;
+  }
+
   /// Check if the user is a first-time user
   Future<bool> isFirstTimeUser(String userId) async {
     try {

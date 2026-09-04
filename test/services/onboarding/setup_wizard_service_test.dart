@@ -171,6 +171,22 @@ void main() {
       expect(await service.shouldShowWizard(), isFalse);
       expect(await settings.isSetupWizardDeferred(), isTrue);
     });
+
+    test('auto-discovered runtime does not skip first-run wizard', () async {
+      await configManager.setConfiguration(
+        HermesProviderConfiguration(
+          providerId: 'auto_hermes_discovered',
+          baseUrl: 'http://127.0.0.1:8642',
+          customSettings: const {
+            'role': 'agentRuntime',
+            'auto_configured': true,
+          },
+        ),
+      );
+
+      expect(await configManager.getAllAgentRuntimes(), isNotEmpty);
+      expect(await service.shouldShowWizard(), isTrue);
+    });
   });
 }
 
