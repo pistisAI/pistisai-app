@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/app_config.dart';
 import '../../services/payment_gateway_service.dart';
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
@@ -968,9 +969,17 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
     });
 
     try {
-      // In a real implementation, we would need to get the price ID for the new tier
-      // For now, we'll use a placeholder
-      final newPriceId = 'price_${_selectedTier.name}';
+      // Use the Stripe price ID from AppConfig for the selected tier
+      final newPriceId = SubscriptionTierConfig.getPriceId(_selectedTier.name);
+
+      // Check if a Stripe price ID is required (not for free tier)
+      if (SubscriptionTierConfig.requiresStripePriceId(_selectedTier.name) &&
+          newPriceId.contains('placeholder')) {
+        setState(() {
+          _error = 'Stripe price ID not configured. Please set the STRIPE_PRICE_${_selectedTier.name.toUpperCase()} environment variable.';
+        });
+        return;
+      }
 
       final updatedSubscription = await paymentService.updateSubscription(
         subscriptionId: widget.subscription.id,

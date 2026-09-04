@@ -253,3 +253,30 @@ enum AuthProviderType {
   supabase,
   none,
 }
+
+/// Subscription tier pricing configuration
+class SubscriptionTierConfig {
+  /// Get Stripe price ID for a tier name
+  static String getPriceId(String tierName) {
+    switch (tierName) {
+      case 'premium':
+        return const String.fromEnvironment(
+          'STRIPE_PRICE_PREMIUM',
+          defaultValue: 'price_premium_placeholder',
+        );
+      case 'enterprise':
+        return const String.fromEnvironment(
+          'STRIPE_PRICE_ENTERPRISE',
+          defaultValue: 'price_enterprise_placeholder',
+        );
+      case 'free':
+      default:
+        return '';
+    }
+  }
+
+  /// Check if a tier requires a Stripe price ID
+  static bool requiresStripePriceId(String tierName) {
+    return tierName != 'free';
+  }
+}
