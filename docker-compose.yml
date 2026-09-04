@@ -129,8 +129,9 @@ services:
       - PGDATABASE=pistisai
       - PGUSER=postgres
       - PGPASSWORD=postgres
-      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
-      - AUTH0_AUDIENCE=https://app.pistisai.app
+      - SUPABASE_URL=${SUPABASE_URL:-https://bpqwsjshoqxvtdttzvbr.supabase.co}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET:-your-jwt-secret}
+      - SUPABASE_AUDIENCE=authenticated
     restart: unless-stopped
     depends_on:
       database:
