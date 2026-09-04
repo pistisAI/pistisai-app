@@ -134,7 +134,7 @@ bool _isMarketingPath(String location) {
       location == '/docs';
 }
 
-/// Helper to check for Auth0 callback parameters
+/// Helper to check for OAuth callback parameters (Supabase/generic)
 bool _hasCallbackParameters(Uri uri) {
   return uri.queryParameters.containsKey('code') ||
       uri.queryParameters.containsKey('state') ||
@@ -464,8 +464,8 @@ class AppRouter {
         // 4. Handle root route redirect
         if (location == '/') {
           // If authenticated, on native desktop, or on the app subdomain web landing page,
-          // redirect to '/chat' (which will trigger standard Auth0 login if unauthenticated).
-          // This ensures that accessing https://app.pistisai.app/ correctly redirects to Auth0 login.
+          // redirect to '/chat' (which will trigger standard Supabase login if unauthenticated).
+          // This ensures that accessing https://app.pistisai.app/ correctly redirects to Supabase login.
           if (isAuthenticated || !kIsWeb || isAppSubdomain) {
             return '/chat';
           }
