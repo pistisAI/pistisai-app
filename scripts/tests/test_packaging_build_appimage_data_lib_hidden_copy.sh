@@ -81,7 +81,7 @@ APPIMAGETOOL_CMD="$FAKE_TOOL" \
 "$SCRIPT_COPY" >/dev/null 2>&1
 
 APPIMAGE_VERSION="$(grep '^version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)"
-APPIMAGE_FILE="$OUTPUT_DIR/pistisai-${APPIMAGE_VERSION}-x86_64.AppImage"
+APPIMAGE_FILE="$OUTPUT_DIR/Pistisai-Linux-${APPIMAGE_VERSION}-x86_64.AppImage"
 [[ -f "$APPIMAGE_FILE" ]]
 [[ -x "$APPIMAGE_FILE" ]]
 

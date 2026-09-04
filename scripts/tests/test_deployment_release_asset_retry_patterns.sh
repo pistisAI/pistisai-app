@@ -18,8 +18,8 @@ for needle in \
   'Pistisai-Windows-{version}-Setup.exe.sha256' \
   'pistisai_{version}_amd64.deb' \
   'pistisai_{version}_amd64.deb.sha256' \
-  'pistisai-{version}-x86_64.AppImage' \
-  'pistisai-{version}-x86_64.AppImage.sha256' \
+  'Pistisai-Linux-{version}-x86_64.AppImage' \
+  'Pistisai-Linux-{version}-x86_64.AppImage.sha256' \
   'for attempt in range(1, retry_attempts + 1):' \
   'time.sleep(retry_delay_seconds)' \
   'Verified GitHub release assets: ' \

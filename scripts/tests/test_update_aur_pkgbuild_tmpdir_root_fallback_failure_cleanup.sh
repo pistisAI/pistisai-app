@@ -27,7 +27,7 @@ EOF
 
 cp "$PROJECT_ROOT/build-tools/packaging/aur/PKGBUILD" "$WORK_DIR/build-tools/packaging/aur/PKGBUILD"
 echo 'keep-me' > "$OUTPUT_DIR/original.txt"
-: > "$APPIMAGE_DIR/pistisai-10.1.200-x86_64.AppImage"
+: > "$APPIMAGE_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage"
 
 cat > "$BIN_DIR/mktemp" <<EOF
 #!/bin/bash

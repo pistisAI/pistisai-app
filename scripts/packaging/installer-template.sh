@@ -153,7 +153,7 @@ download_appimage() {
     local output_dir="$3"
 
     local base_url="https://github.com/pistisAI/pistisai-app/releases/download/v${version}"
-    local appimage_name="Pistisai-${version}-x86_64.AppImage"
+    local appimage_name="Pistisai-Linux-${version}-x86_64.AppImage"
     local download_url="${base_url}/${appimage_name}"
 
     echo "📦 Downloading Pistisai v${version}..." >&2
