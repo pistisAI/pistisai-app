@@ -2,7 +2,10 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+
+import 'package:file_selector/file_selector.dart' as file_selector;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +20,9 @@ import '../../config/app_config.dart';
 import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
 import '../../services/settings_preference_service.dart';
+import '../../services/settings_import_export_service.dart';
 import '../../services/theme_provider.dart';
+import '../../utils/file_download_helper.dart';
 import '../../di/locator.dart';
 
 /// Configuration screen with tabbed organization for better UX.
@@ -81,6 +86,7 @@ class _ConfigScreenState extends State<ConfigScreen>
   // Active Backend
   BackendType? _activeBackend;
   final _settingsService = serviceLocator<SettingsPreferenceService>();
+  final _importExportService = serviceLocator<SettingsImportExportService>();
 
   @override
   void initState() {
@@ -327,6 +333,62 @@ class _ConfigScreenState extends State<ConfigScreen>
     } catch (e) {
       if (mounted) {
         _showSnackBar('Failed to reset configuration: $e', isError: true);
+      }
+    }
+  }
+
+  Future<void> _exportSettings() async {
+    try {
+      final jsonString = await _importExportService.exportSettingsToJson();
+      final filename = _importExportService.generateExportFilename();
+
+      if (kIsWeb) {
+        final bytes = utf8.encode(jsonString);
+        downloadFile(bytes, filename, 'application/json');
+      } else {
+        final saveLocation = await file_selector.getSaveLocation(
+          acceptedTypeGroups: [
+            file_selector.XTypeGroup(label: 'JSON', extensions: ['json']),
+          ],
+          suggestedName: filename,
+        );
+        if (saveLocation != null) {
+          await File(saveLocation.path).writeAsString(jsonString);
+        }
+      }
+
+      if (mounted) {
+        _showSnackBar('Settings exported to $filename', isError: false);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Export failed: $e', isError: true);
+      }
+    }
+  }
+
+  Future<void> _importSettings() async {
+    try {
+      final file = await file_selector.openFile(
+        acceptedTypeGroups: [
+          file_selector.XTypeGroup(
+            label: 'JSON',
+            extensions: ['json'],
+          ),
+        ],
+      );
+      if (file == null) return;
+
+      final content = await file.readAsString();
+      final settings = await _importExportService.importSettingsFromJson(content);
+      await _importExportService.applyImportedSettings(settings);
+      if (mounted) {
+        await _loadData();
+        _showSnackBar('Settings imported successfully', isError: false);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Import failed: $e', isError: true);
       }
     }
   }
@@ -939,15 +1001,12 @@ class _ConfigScreenState extends State<ConfigScreen>
                   label: const Text('Reset to Defaults'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: () => _showSnackBar(
-                      'Configuration exported to clipboard',
-                      isError: false),
+                  onPressed: _exportSettings,
                   icon: const Icon(Icons.download),
                   label: const Text('Export'),
                 ),
                 OutlinedButton.icon(
-                  onPressed: () => _showSnackBar('Import not yet implemented',
-                      isError: true),
+                  onPressed: _importSettings,
                   icon: const Icon(Icons.upload),
                   label: const Text('Import'),
                 ),
