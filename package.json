@@ -48,7 +48,7 @@
     "cross-env": "^10.1.0",
     "dockerode": "^5.0.0",
     "fast-check": "^4.7.0",
-    "jest": "30.5.0",
+    "jest": "30.5.1",
     "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.4",
