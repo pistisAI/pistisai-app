@@ -43,7 +43,7 @@ done
 
 if [[ "\$url" == *'api.github.com'* ]]; then
   cat > "\$out_file" <<'JSON'
-{"assets":[{"name":"pistisai-1.2.3-x86_64.AppImage","browser_download_url":"https://example.com/pistisai-1.2.3.AppImage"}]}
+{"assets":[{"name":"Pistisai-Linux-1.2.3-x86_64.AppImage","browser_download_url":"https://example.com/pistisai-1.2.3.AppImage"}]}
 JSON
 else
   printf 'appimage-binary' > "\$out_file"

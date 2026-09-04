@@ -27,7 +27,7 @@ pkgver=VERSION
 sha256sums=('SKIP')
 EOF
 
-: > "$WORK_DIR/dist/linux/pistisai-10.1.200-x86_64.AppImage"
+: > "$WORK_DIR/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage"
 
 cat > "$WORK_DIR/makepkg-wrapper" <<'EOF'
 #!/bin/bash

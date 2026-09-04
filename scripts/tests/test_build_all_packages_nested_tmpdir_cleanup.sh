@@ -53,7 +53,7 @@ proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 version="$(grep '^version:' "$proj_root/pubspec.yaml" | sed 's/version: *//g' | cut -d'+' -f1)"
 dist_dir="$proj_root/dist/linux"
 mkdir -p "$dist_dir"
-package="$dist_dir/pistisai-${version}-x86_64.AppImage"
+package="$dist_dir/Pistisai-Linux-${version}-x86_64.AppImage"
 printf 'appimage' > "$package"
 chmod +x "$package"
 sha256sum "$package" > "$package.sha256"
@@ -75,13 +75,13 @@ FLUTTER_CMD="$FAKE_FLUTTER" \
 BUILD_APPIMAGE_CMD="$FAKE_BUILD_APPIMAGE" \
 "$SCRIPT_COPY_DIR/build_all_packages.sh" --packages appimage > "$LOG_FILE" 2>&1
 
-if [[ ! -f "$FAKE_PROJECT_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
+if [[ ! -f "$FAKE_PROJECT_ROOT/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected AppImage package output" >&2
   cat "$LOG_FILE" >&2
   exit 1
 fi
 
-if [[ ! -f "$FAKE_PROJECT_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256" ]]; then
+if [[ ! -f "$FAKE_PROJECT_ROOT/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256" ]]; then
   echo "Expected AppImage checksum output" >&2
   cat "$LOG_FILE" >&2
   exit 1

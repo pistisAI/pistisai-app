@@ -171,7 +171,7 @@ APPIMAGE_TARGET="$INSTALL_DIR/pistisai"
 get_release_asset_url() {
     local version="$1"
     local api_url="https://api.github.com/repos/pistisAI/pistisai-app/releases/tags/v${version}"
-    local asset_name="pistisai-${version}-x86_64.AppImage"
+    local asset_name="Pistisai-Linux-${version}-x86_64.AppImage"
     local response_file
 
     if ! command -v curl &> /dev/null; then

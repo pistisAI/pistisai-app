@@ -10,12 +10,12 @@ from pathlib import Path
 import sys
 
 script = Path(sys.argv[1]).read_text()
-expected = 'pistisai-${version}-x86_64.AppImage'
+expected = 'Pistisai-Linux-${version}-x86_64.AppImage'
 if expected not in script:
     raise SystemExit(f'missing AppImage filename hardening string: {expected}')
 
-if 'Pistisai-${version}-x86_64.AppImage' in script:
-    raise SystemExit('stale AppImage filename string still present')
+if 'pistisai-${version}-x86_64.AppImage' in script:
+    raise SystemExit('stale lowercase AppImage filename string still present')
 
 print('[test_build_all_packages_appimage_filename] Passed')
 PY

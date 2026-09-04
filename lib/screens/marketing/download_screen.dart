@@ -132,6 +132,8 @@ class DownloadScreen extends StatelessWidget {
           const SizedBox(height: 40),
           _buildAppImage(context),
           const SizedBox(height: 40),
+          _buildUniversalInstaller(context),
+          const SizedBox(height: 40),
           _buildAURPackage(context),
           const SizedBox(height: 40),
           _buildPrebuiltBinary(context),
@@ -180,6 +182,21 @@ class DownloadScreen extends StatelessWidget {
             spacing: 16,
             runSpacing: 16,
             children: [
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage',
+                  'Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage',
+                  context,
+                ),
+                icon: const Icon(Icons.apps),
+                label: const Text('Linux (AppImage)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00c58e),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
               ElevatedButton.icon(
                 onPressed: () => _downloadFile(
                   'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai_${AppConfig.appVersion}_amd64.deb',
@@ -344,6 +361,26 @@ sudo apt-get install -f''',
   }
 
   Widget _buildAppImage(BuildContext context) {
+    return _buildCard(
+      context,
+      title: '📦 AppImage (Universal Linux)',
+      description:
+          'Portable application that runs on any Linux distribution. No installation required — just download, make executable, and run.',
+      child: _buildInstallationSection(
+        'Download and run',
+        '''# Download from GitHub releases
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
+
+# Make executable
+chmod +x Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
+
+# Run
+./Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage''',
+      ),
+    );
+  }
+
+  Widget _buildUniversalInstaller(BuildContext context) {
     return _buildCard(
       context,
       title: '🚀 Universal Installer (install.sh)',

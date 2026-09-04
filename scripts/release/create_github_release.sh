@@ -114,7 +114,7 @@ verify_packages() {
         missing_packages+=("Linux .deb package")
     fi
 
-    if [[ ! -f "$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage" ]]; then
+    if [[ ! -f "$PROJECT_ROOT/dist/linux/Pistisai-Linux-$version-x86_64.AppImage" ]]; then
         missing_packages+=("Linux AppImage")
     fi
 
@@ -255,9 +255,9 @@ create_release() {
         assets+=("$PROJECT_ROOT/dist/linux/pistisai_${version}_amd64.deb.sha256")
     fi
 
-    if [[ -f "$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage" ]]; then
-        assets+=("$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage")
-        assets+=("$PROJECT_ROOT/dist/linux/pistisai-$version-x86_64.AppImage.sha256")
+    if [[ -f "$PROJECT_ROOT/dist/linux/Pistisai-Linux-$version-x86_64.AppImage" ]]; then
+        assets+=("$PROJECT_ROOT/dist/linux/Pistisai-Linux-$version-x86_64.AppImage")
+        assets+=("$PROJECT_ROOT/dist/linux/Pistisai-Linux-$version-x86_64.AppImage.sha256")
     fi
 
     # Create release with multi-platform assets

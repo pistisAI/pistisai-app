@@ -90,8 +90,8 @@ cat > "$FAKE_TOOLS/build_appimage.sh" <<'EOF'
 set -euo pipefail
 printf 'build_appimage %s\n' "$*" >> "$BUILD_APPIMAGE_LOG"
 mkdir -p "$PROJECT_ROOT_OVERRIDE/dist/linux"
-printf 'appimage\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/pistisai-10.1.200-x86_64.AppImage"
-printf 'checksum\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
+printf 'appimage\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage"
+printf 'checksum\n' > "$PROJECT_ROOT_OVERRIDE/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256"
 EOF
 chmod +x "$FAKE_TOOLS/build_appimage.sh"
 
@@ -103,13 +103,13 @@ FLUTTER_CMD="$FAKE_TOOLS/flutter.sh" \
 BUILD_APPIMAGE_CMD="$FAKE_TOOLS/build_appimage.sh" \
 "$PROJECT_ROOT/scripts/packaging/build_all_packages.sh" --skip-increment >"$WORK_DIR/output.log" 2>&1
 
-if [[ ! -f "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
+if [[ ! -f "$FAKE_ROOT/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected final AppImage artifact at the fake root output path" >&2
   cat "$WORK_DIR/output.log" >&2
   exit 1
 fi
 
-if [[ ! -f "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256" ]]; then
+if [[ ! -f "$FAKE_ROOT/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256" ]]; then
   echo "Expected AppImage checksum artifact at the fake root output path" >&2
   cat "$WORK_DIR/output.log" >&2
   exit 1

@@ -74,13 +74,13 @@ if [[ -d "$APPIMAGE_WORKDIR" ]]; then
   exit 1
 fi
 
-if [[ -f "$OUTPUT_DIR/pistisai-1.0.0-x86_64.AppImage" ]]; then
+if [[ -f "$OUTPUT_DIR/Pistisai-Linux-1.0.0-x86_64.AppImage" ]]; then
   echo "Expected failed AppImage output cleanup, but output file still exists" >&2
   cat /tmp/test_packaging_build_appimage_failure_cleanup.log >&2
   exit 1
 fi
 
-if [[ -f "$OUTPUT_DIR/pistisai-1.0.0-x86_64.AppImage.sha256" ]]; then
+if [[ -f "$OUTPUT_DIR/Pistisai-Linux-1.0.0-x86_64.AppImage.sha256" ]]; then
   echo "Expected failed AppImage checksum cleanup, but checksum file still exists" >&2
   cat /tmp/test_packaging_build_appimage_failure_cleanup.log >&2
   exit 1

@@ -26,8 +26,8 @@ cat > "$SERVER_STATE" <<'EOF'
   {"name": "Pistisai-Windows-9.9.9-Setup.exe.sha256"},
   {"name": "pistisai_9.9.9_amd64.deb"},
   {"name": "pistisai_9.9.9_amd64.deb.sha256"},
-  {"name": "pistisai-9.9.9-x86_64.AppImage"},
-  {"name": "pistisai-9.9.9-x86_64.AppImage.sha256"}
+  {"name": "Pistisai-Linux-9.9.9-x86_64.AppImage"},
+  {"name": "Pistisai-Linux-9.9.9-x86_64.AppImage.sha256"}
 ]}
 EOF
 

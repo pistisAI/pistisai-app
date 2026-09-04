@@ -66,8 +66,8 @@ def main() -> int:
         f"Pistisai-Windows-{version}-Setup.exe.sha256",
         f"pistisai_{version}_amd64.deb",
         f"pistisai_{version}_amd64.deb.sha256",
-        f"pistisai-{version}-x86_64.AppImage",
-        f"pistisai-{version}-x86_64.AppImage.sha256",
+        f"Pistisai-Linux-{version}-x86_64.AppImage",
+        f"Pistisai-Linux-{version}-x86_64.AppImage.sha256",
     }
 
     last_error: Exception | None = None

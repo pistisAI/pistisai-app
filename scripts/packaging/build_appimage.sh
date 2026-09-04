@@ -87,7 +87,7 @@ download_appimagetool() {
 
 # Variables
 VERSION=$(get_version)
-PACKAGE_NAME="pistisai-${VERSION}-x86_64.AppImage"
+PACKAGE_NAME="Pistisai-Linux-${VERSION}-x86_64.AppImage"
 BUILD_DIR="/tmp/pistisai-appimage-build"
 OUTPUT_DIR="$PROJECT_ROOT/dist/linux"
 OUTPUT_PATH="$OUTPUT_DIR/$PACKAGE_NAME"
