@@ -1,6 +1,7 @@
 /// Configuration screen for gateway, app, and system settings.
 library;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -16,6 +17,7 @@ import '../../config/app_config.dart';
 import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
 import '../../services/settings_preference_service.dart';
+import '../../services/theme_provider.dart';
 import '../../di/locator.dart';
 
 /// Configuration screen with tabbed organization for better UX.
@@ -211,13 +213,18 @@ class _ConfigScreenState extends State<ConfigScreen>
   Future<void> _saveConfig() async {
     setState(() => _isSaving = true);
     try {
-      await _settingsService.setTheme(
-        switch (_selectedTheme) {
-          'Light' => 'light',
-          'Dark' => 'dark',
-          _ => 'system',
-        },
-      );
+      final themeString = switch (_selectedTheme) {
+        'Light' => 'light',
+        'Dark' => 'dark',
+        _ => 'system',
+      };
+      await _settingsService.setTheme(themeString);
+      // Keep ThemeProvider in sync so the live UI and persistence agree.
+      if (mounted) {
+        unawaited(
+          context.read<ThemeProvider>().setThemeModeFromString(themeString),
+        );
+      }
 
       await _settingsService.setLanguage(
         switch (_selectedLanguage) {

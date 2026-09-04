@@ -34,10 +34,6 @@ class WelcomeStep extends StatelessWidget {
 
                   // Info text
                   _InfoBox(),
-                  SizedBox(height: 24),
-
-                  // Skip option (small)
-                  _SkipButton(),
                 ],
               ),
             ),
@@ -163,20 +159,6 @@ class _InfoBox extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SkipButton extends StatelessWidget {
-  const _SkipButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      },
-      child: const Text('Set up later'),
     );
   }
 }

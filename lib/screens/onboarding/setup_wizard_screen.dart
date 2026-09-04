@@ -210,58 +210,75 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
           ),
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (!isFirstStep)
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  wizard.previousStep();
-                  // PageController animation handled by state change listener in build()
-                },
-                child: const Text('Back'),
-              ),
-            ),
-          if (!isFirstStep) const SizedBox(width: 16),
-          Expanded(
-            child: FilledButton(
-              onPressed: wizard.state.isLoading
-                  ? null
-                  : () async {
-                      if (isLastStep) {
-                        _lastErrorSnackbarMessage = null;
-                        final success = await wizard.completeSetup();
-
-                        if (!success) {
-                          final message = wizard.state.errorMessage ??
-                              'Setup could not be completed right now. Please try again.';
-                          _showCompletionError(message);
-                          appLogger.warning(
-                            '[SetupWizard] Setup completion failed at final step: $message',
-                          );
-                          return;
-                        }
-
-                        _lastErrorSnackbarMessage = null;
-
-                        // Navigate to home on success
+          if (isFirstStep)
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: wizard.state.isLoading
+                    ? null
+                    : () async {
+                        await wizard.deferSetup();
                         if (mounted) {
-                          context.go('/');
+                          context.go('/chat');
                         }
-                        return;
-                      }
-
-                      wizard.nextStep();
-                      // PageController animation handled by state change listener in build()
-                    },
-              child: Text(
-                isLastStep
-                    ? 'Complete'
-                    : wizard.state.isLoading
-                        ? 'Loading...'
-                        : 'Next',
+                      },
+                child: const Text('Set up later'),
               ),
             ),
+          Row(
+            children: [
+              if (!isFirstStep)
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      wizard.previousStep();
+                    },
+                    child: const Text('Back'),
+                  ),
+                ),
+              if (!isFirstStep) const SizedBox(width: 16),
+              Expanded(
+                child: FilledButton(
+                  onPressed: wizard.state.isLoading
+                      ? null
+                      : () async {
+                          if (isLastStep) {
+                            _lastErrorSnackbarMessage = null;
+                            final success = await wizard.completeSetup();
+
+                            if (!success) {
+                              final message = wizard.state.errorMessage ??
+                                  'Setup could not be completed right now. Please try again.';
+                              _showCompletionError(message);
+                              appLogger.warning(
+                                '[SetupWizard] Setup completion failed at final step: $message',
+                              );
+                              return;
+                            }
+
+                            _lastErrorSnackbarMessage = null;
+
+                            if (mounted) {
+                              context.go('/');
+                            }
+                            return;
+                          }
+
+                          wizard.nextStep();
+                        },
+                  child: Text(
+                    isLastStep
+                        ? 'Complete'
+                        : wizard.state.isLoading
+                            ? 'Loading...'
+                            : 'Next',
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

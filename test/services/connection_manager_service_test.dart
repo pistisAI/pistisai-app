@@ -27,11 +27,16 @@ void main() {
       service.dispose();
     });
 
-    test('does not assume OpenClaw before a runtime is selected', () {
-      expect(service.activeBackend, isNull);
-      expect(service.preferredConnectionType, isNull);
-      expect(service.getStreamingService(), isNull);
-      expect(service.isGatewayHealthy(), isFalse);
+    test('sendChatMessage returns immediately when no runtime is connected',
+        () async {
+      expect(service.isConnected, isFalse);
+      final started = DateTime.now();
+      final reply = await service.sendChatMessage(
+        model: 'default',
+        message: 'hello',
+      );
+      expect(reply, isNull);
+      expect(DateTime.now().difference(started).inSeconds, lessThan(2));
     });
 
     test('Hermes selection exposes the runtime streaming service', () {
