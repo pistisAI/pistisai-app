@@ -11,7 +11,12 @@ on:
       - "web/**"
       - "pubspec.yaml"
       - "pubspec.lock"
+      - "config/nginx/**"
       - "config/docker/Dockerfile.web"
+      - "scripts/packaging/stage_web_installers.sh"
+      - "scripts/packaging/installer-template.ps1"
+      - "scripts/packaging/build_installer.sh"
+      - "scripts/packaging/installer-template.sh"
       - ".github/workflows/deploy-web.yml"
   workflow_dispatch:
 
@@ -61,6 +66,15 @@ jobs:
         run: |
           flutter pub get
           flutter build web --release --no-tree-shake-icons --no-web-resources-cdn
+
+      - name: Stage web installer scripts
+        run: |
+          chmod +x scripts/packaging/stage_web_installers.sh
+          ./scripts/packaging/stage_web_installers.sh
+          head -3 build/web/install.sh
+          test -f build/web/install.sh
+          test -f build/web/install.ps1
+          test "$(head -c 2 build/web/install.sh)" = "#!"
 
       - name: Upload web build artifact
         uses: actions/upload-artifact@v7
