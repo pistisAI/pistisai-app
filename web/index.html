@@ -19,7 +19,6 @@
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval'
-      https://cdn.auth0.com
       https://accounts.google.com
       https://static.cloudflareinsights.com;
     worker-src 'self' blob:;
@@ -27,11 +26,11 @@
     img-src 'self' data: blob: https:;
     connect-src 'self'
       https://*.pistisai.app http://127.0.0.1:* ws://127.0.0.1:* wss://*.pistisai.app
-      https://*.sentry.io https://*.auth0.com https://*.gstatic.com
+      https://*.sentry.io https://*.gstatic.com
       https://fonts.googleapis.com https://fonts.gstatic.com
       https://accounts.google.com;
     font-src 'self' data: https://fonts.gstatic.com;
-    frame-src 'self' https://*.auth0.com https://accounts.google.com;
+    frame-src 'self' https://accounts.google.com;
   ">
 
   <!-- iOS meta tags & icons -->
@@ -48,9 +47,6 @@
 
   <!-- Runtime app config -->
   <script src="config/config.js"></script>
-
-  <!-- Auth0 SPA SDK -->
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
 
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 
