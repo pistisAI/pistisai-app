@@ -87,7 +87,7 @@ jobs:
           retention-days: 1
 
       - name: Discover Pistisai VPS origin IP
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' || github.event_name == 'workflow_dispatch'
         id: discover_vps
         env:
           VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
@@ -113,7 +113,7 @@ jobs:
           fi
 
       - name: Persist discovered VPS origin IP
-        if: github.ref_name == 'main' && steps.discover_vps.outputs.host != ''
+        if: (github.ref_name == 'main' || github.event_name == 'workflow_dispatch') && steps.discover_vps.outputs.host != ''
         env:
           DISCOVERED_HOST: ${{ steps.discover_vps.outputs.host }}
         run: |
@@ -122,7 +122,7 @@ jobs:
           echo "Updated PISTISAI_VPS_SSH_HOST secret"
 
       - name: Deploy to VPS
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' || github.event_name == 'workflow_dispatch'
         env:
           VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST || 'pistisai.app' }}
@@ -225,7 +225,7 @@ jobs:
             || echo "Cloudflare install redirect sync skipped"
 
       - name: Verify live install scripts
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' || github.event_name == 'workflow_dispatch'
         run: |
           set -euo pipefail
           ok=0
