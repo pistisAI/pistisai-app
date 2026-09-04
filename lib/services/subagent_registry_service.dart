@@ -111,6 +111,30 @@ class SubagentRegistryService {
     }
   }
 
+  /// Update display label and/or task without touching execution state.
+  Future<bool> updateMetadata(
+    String subagentId, {
+    String? label,
+    String? task,
+  }) async {
+    try {
+      final response = await _client
+          .patch(
+            Uri.parse('$_apiBaseUrl/api/admin/subagents/$subagentId/metadata'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              if (label != null) 'label': label,
+              if (task != null) 'task': task,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
+      return response.statusCode == 200;
+    } catch (e) {
+      debugPrint('Error updating subagent metadata: $e');
+      return false;
+    }
+  }
+
   /// Update subagent status
   Future<bool> updateStatus(
     String subagentId, {

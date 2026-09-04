@@ -101,8 +101,7 @@ class _PricingScreenState extends State<PricingScreen> {
           FilledButton(
             onPressed: () {
               Navigator.pop(context);
-              // Future enhancement: Integration with payment gateway
-              _showComingSoonDialog();
+              _showBillingUnavailableDialog();
             },
             child: const Text('Continue'),
           ),
@@ -111,14 +110,16 @@ class _PricingScreenState extends State<PricingScreen> {
     );
   }
 
-  /// Show coming soon dialog
-  void _showComingSoonDialog() {
+  /// Paid checkout is not wired; do not pretend the upgrade will succeed.
+  void _showBillingUnavailableDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Coming Soon'),
+        title: const Text('Billing is not connected'),
         content: const Text(
-            'Online payment processing will be available soon. Please contact support to upgrade your subscription.'),
+          'Paid plan checkout is not wired to Stripe yet. Stay on Free, '
+          'or contact support to change plans.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

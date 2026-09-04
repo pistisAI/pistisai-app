@@ -214,6 +214,43 @@ router.patch('/:subagentId/status', validateSchema(updateSubagentStatusSchema), 
 });
 
 /**
+ * PATCH /api/admin/subagents/:subagentId/metadata
+ * Update label and/or task without touching execution state.
+ * Accessible to all agents.
+ */
+router.patch('/:subagentId/metadata', async (req, res) => {
+  const { subagentId } = req.params;
+  const { label, task } = req.body;
+
+  const updates = [];
+  const params = [subagentId];
+  if (label !== undefined) {
+    updates.push(`label = $${params.push(label)}`);
+  }
+  if (task !== undefined) {
+    updates.push(`task = $${params.push(task)}`);
+  }
+
+  if (updates.length === 0) {
+    return res.status(400).json({ success: false, error: 'No fields to update' });
+  }
+
+  try {
+    const result = await db.query(
+      `UPDATE subagent_registry SET ${updates.join(', ')} WHERE subagent_id = $1 RETURNING *`,
+      params,
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Subagent not found' });
+    }
+    res.json({ success: true, subagent: result.rows[0] });
+  } catch (error) {
+    logger.error('Failed to update subagent metadata', { error: error.message, subagentId });
+    res.status(500).json({ success: false, error: 'Failed to update subagent metadata' });
+  }
+});
+
+/**
  * DELETE /api/admin/subagents/:subagentId
  * Remove a subagent from registry
  * Accessible to all agents

@@ -186,11 +186,13 @@ class _ConfigScreenState extends State<ConfigScreen>
 
       // Load App Settings
       _encryptLocalData = await _settingsService.isEncryptLocalDataEnabled();
-      _sessionTimeoutMinutes = await _settingsService.getSessionTimeoutMinutes();
+      _sessionTimeoutMinutes =
+          await _settingsService.getSessionTimeoutMinutes();
       _rememberTokens = await _settingsService.isRememberTokensEnabled();
 
       // Load Storage Settings
-      _maxConversationHistory = await _settingsService.getMaxConversationHistory();
+      _maxConversationHistory =
+          await _settingsService.getMaxConversationHistory();
       _enableCache = await _settingsService.isCacheEnabled();
       _cacheSizeMB = await _settingsService.getCacheSizeMB();
       _autoCleanup = await _settingsService.isAutoCleanupEnabled();
@@ -281,6 +283,45 @@ class _ConfigScreenState extends State<ConfigScreen>
         duration: const Duration(seconds: 3),
       ),
     );
+  }
+
+  Future<void> _resetToDefaults() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset to Defaults'),
+        content: const Text(
+          'This resets runtime preferences (theme, language, timeouts, proxy, '
+          'developer flags) to their defaults.\n\n'
+          'Gateway URLs, API keys, and avatar settings are not affected.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await _settingsService.clearRuntimePreferences();
+      if (!mounted) return;
+      await _loadData();
+      if (mounted) {
+        _showSnackBar('Configuration reset to defaults', isError: false);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Failed to reset configuration: $e', isError: true);
+      }
+    }
   }
 
   @override
@@ -438,8 +479,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                 await _settingsService.setRuntimeTimeout(l);
               }
             }, numeric: true),
-            _switch('Auto-restart Runtime on Failure', _autoRestart,
-                (v) async {
+            _switch('Auto-restart Runtime on Failure', _autoRestart, (v) async {
               setState(() => _autoRestart = v);
               await _settingsService.setGatewayAutoRestart(v);
             }),
@@ -518,11 +558,8 @@ class _ConfigScreenState extends State<ConfigScreen>
                 },
               );
             }),
-            _dropdown(
-                'Language',
-                ['English', 'Spanish', 'French', 'German'],
-                _selectedLanguage,
-                (v) async {
+            _dropdown('Language', ['English', 'Spanish', 'French', 'German'],
+                _selectedLanguage, (v) async {
               final val = v!;
               setState(() => _selectedLanguage = val);
               await _settingsService.setLanguage(
@@ -540,14 +577,12 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Notifications',
           children: [
-            _switch('Enable Notifications', _notificationsEnabled,
-                (v) async {
+            _switch('Enable Notifications', _notificationsEnabled, (v) async {
               setState(() => _notificationsEnabled = v);
               await _settingsService.setNotificationsEnabled(v);
             }),
             if (!kIsWeb)
-              _switch('Show Tray Icon', _trayIconEnabled,
-                  (v) async {
+              _switch('Show Tray Icon', _trayIconEnabled, (v) async {
                 setState(() => _trayIconEnabled = v);
                 await _settingsService.setMinimizeToTrayEnabled(v);
               }),
@@ -557,20 +592,17 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Security',
           children: [
-            _switch('Encrypt Local Data', _encryptLocalData,
-                (v) async {
+            _switch('Encrypt Local Data', _encryptLocalData, (v) async {
               setState(() => _encryptLocalData = v);
               await _settingsService.setEncryptLocalDataEnabled(v);
-            },
-                subtitle: 'Encrypt conversation history and settings'),
+            }, subtitle: 'Encrypt conversation history and settings'),
             if (!kIsWeb)
-              _switch('Require Biometric Auth', _biometricAuth,
-                  (v) async {
+              _switch('Require Biometric Auth', _biometricAuth, (v) async {
                 setState(() => _biometricAuth = v);
                 await _settingsService.setBiometricAuthEnabled(v);
-              },
-                  subtitle: 'Require fingerprint/auth to open app'),
-            _field('Session Timeout (min)', '$_sessionTimeoutMinutes', (v) async {
+              }, subtitle: 'Require fingerprint/auth to open app'),
+            _field('Session Timeout (min)', '$_sessionTimeoutMinutes',
+                (v) async {
               final t = int.tryParse(v);
               if (t != null && t > 0) {
                 setState(() => _sessionTimeoutMinutes = t);
@@ -588,24 +620,18 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Developer Options',
           children: [
-            _switch(
-                'Debug Mode', _debugMode, (v) async {
+            _switch('Debug Mode', _debugMode, (v) async {
               setState(() => _debugMode = v);
               await _settingsService.setDebugModeEnabled(v);
-            },
-                subtitle: 'Enable additional debugging information'),
-            _switch('Verbose Logging', _verboseLogging,
-                (v) async {
+            }, subtitle: 'Enable additional debugging information'),
+            _switch('Verbose Logging', _verboseLogging, (v) async {
               setState(() => _verboseLogging = v);
               await _settingsService.setVerboseLoggingEnabled(v);
-            },
-                subtitle: 'Log detailed diagnostic information'),
-            _switch('Show Developer Tools', _showDevTools,
-                (v) async {
+            }, subtitle: 'Log detailed diagnostic information'),
+            _switch('Show Developer Tools', _showDevTools, (v) async {
               setState(() => _showDevTools = v);
               await _settingsService.setShowDevToolsEnabled(v);
-            },
-                subtitle: 'Enable development tools and inspectors'),
+            }, subtitle: 'Enable development tools and inspectors'),
           ],
         ),
       ],
@@ -619,7 +645,8 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Data Retention',
           children: [
-            _field('Max Conversation History', '$_maxConversationHistory', (v) async {
+            _field('Max Conversation History', '$_maxConversationHistory',
+                (v) async {
               final h = int.tryParse(v);
               if (h != null && h >= 0) {
                 setState(() => _maxConversationHistory = h);
@@ -628,8 +655,7 @@ class _ConfigScreenState extends State<ConfigScreen>
             },
                 numeric: true,
                 hint: 'Maximum number of conversations to store locally'),
-            _switch('Auto-cleanup Old Data', _autoCleanup,
-                (v) async {
+            _switch('Auto-cleanup Old Data', _autoCleanup, (v) async {
               setState(() => _autoCleanup = v);
               await _settingsService.setAutoCleanupEnabled(v);
             }),
@@ -639,8 +665,7 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Cache Management',
           children: [
-            _switch('Enable Response Cache', _enableCache,
-                (v) async {
+            _switch('Enable Response Cache', _enableCache, (v) async {
               setState(() => _enableCache = v);
               await _settingsService.setCacheEnabled(v);
             }),
@@ -674,7 +699,8 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: 'Application',
           children: [
-            _readOnly('Version', '${AppConfig.appVersion} (build $_buildNumber)'),
+            _readOnly(
+                'Version', '${AppConfig.appVersion} (build $_buildNumber)'),
             _readOnly('Platform',
                 '${Platform.operatingSystem} ${Platform.operatingSystemVersion}'),
             _readOnly('Dart Version', Platform.version.split(' ').first),
@@ -901,9 +927,7 @@ class _ConfigScreenState extends State<ConfigScreen>
               alignment: WrapAlignment.center,
               children: [
                 OutlinedButton.icon(
-                  onPressed: () => _showSnackBar(
-                      'Reset to defaults - coming soon',
-                      isError: true),
+                  onPressed: _resetToDefaults,
                   icon: const Icon(Icons.restore),
                   label: const Text('Reset to Defaults'),
                 ),

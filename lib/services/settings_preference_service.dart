@@ -166,10 +166,51 @@ class SettingsPreferenceService {
     await prefs.setBool(_usageStatsKey, value);
   }
 
-  /// Clear all stored preferences
+  /// Clear all stored preferences.
+  ///
+  /// WARNING: this deletes every SharedPreferences key including credentials.
+  /// Prefer [clearRuntimePreferences] for the in-app "Reset to Defaults" flow.
   Future<void> clearAllData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+
+  /// Clear only the runtime / display preferences that belong to the
+  /// Config screen's "Reset to Defaults" action. Does NOT touch gateway URLs,
+  /// Hermes API key, Discord bot token, user-tier, or avatar settings — those
+  /// are credentials or user-customised data that a settings reset must not
+  /// delete silently.
+  Future<void> clearRuntimePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final runtimeKeys = [
+      _themeKey,
+      _languageKey,
+      _supportProviderKey,
+      _rateLimitKey,
+      _runtimeTimeoutKey,
+      _useProxyKey,
+      _proxyHostKey,
+      _proxyPortKey,
+      _maxRetriesKey,
+      _requestTimeoutKey,
+      _encryptLocalDataKey,
+      _sessionTimeoutMinutesKey,
+      _rememberTokensKey,
+      _maxConversationHistoryKey,
+      _enableCacheKey,
+      _cacheSizeMBKey,
+      _autoCleanupKey,
+      _debugModeKey,
+      _verboseLoggingKey,
+      _showDevToolsKey,
+      _notificationsKey,
+      _notificationSoundKey,
+      _launchOnStartupKey,
+      _minimizeToTrayKey,
+      _alwaysOnTopKey,
+      _gatewayAutoRestartKey,
+    ];
+    await Future.wait(runtimeKeys.map(prefs.remove));
   }
 
   // Desktop Settings

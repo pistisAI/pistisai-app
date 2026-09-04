@@ -153,7 +153,7 @@ class DocumentationScreen extends StatelessWidget {
           Semantics(
             header: true,
             child: Text(
-              'Documentation Coming Soon',
+              'Documentation',
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: titleFontSize,
@@ -289,8 +289,7 @@ class DocumentationScreen extends StatelessWidget {
             icon: Icons.new_releases,
             title: 'Release Notes',
             description: 'Latest updates and changelog',
-            url:
-                'https://github.com/pistisAI/pistisai-app/releases',
+            url: 'https://github.com/pistisAI/pistisai-app/releases',
             textColor: textColor,
             bodyFontSize: bodyFontSize,
             verticalSpacing: verticalSpacing,

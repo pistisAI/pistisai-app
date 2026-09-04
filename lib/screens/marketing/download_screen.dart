@@ -146,8 +146,7 @@ class DownloadScreen extends StatelessWidget {
     return _buildCard(
       context,
       title: '� Quick Downloads',
-      description:
-          'Download the latest version of Pistisai for your platform',
+      description: 'Download the latest version of Pistisai for your platform',
       child: Column(
         children: [
           const SizedBox(height: 24),
@@ -192,7 +191,8 @@ class DownloadScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00c58e),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
               ),
               ElevatedButton.icon(
@@ -206,7 +206,8 @@ class DownloadScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFa777e3),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
               ),
               ElevatedButton.icon(
@@ -220,7 +221,8 @@ class DownloadScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6e8efb),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
               ),
             ],
@@ -310,16 +312,13 @@ class DownloadScreen extends StatelessWidget {
   Widget _buildSnapPackage(BuildContext context) {
     return _buildCard(
       context,
-      title: '� Snap Package (Universal)',
+      title: 'Snap Package',
       description:
-          'Universal Linux package with automatic updates and sandboxed security. Works on most Linux distributions.',
+          'A Snap Store listing is not published. Use the Debian or archive packages from GitHub Releases.',
       child: _buildInstallationSection(
-        'Installation from Snap Store (Coming Soon)',
-        '''# Install from Snap Store (when available)
-sudo snap install Pistisai
-
-# Enable system tray access
-sudo snap connect Pistisai:system-observe''',
+        'Not listed on Snap Store',
+        '''# Use GitHub Releases instead of Snap
+# https://github.com/pistisAI/pistisai-app/releases/latest''',
       ),
     );
   }

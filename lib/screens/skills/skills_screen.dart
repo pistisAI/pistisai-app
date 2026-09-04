@@ -85,21 +85,22 @@ class _SkillsScreenState extends State<SkillsScreen>
       final service = _skillService;
       if (service != null) {
         final skillInfos = await service.getSkills();
-        _skills = skillInfos.map((s) => Skill(
-          id: s.name,
-          name: s.name,
-          description: s.description,
-          category: s.category,
-          enabled: s.enabled,
-          lastUsed: s.lastModified ?? DateTime.now(),
-          fileCount: s.fileCount,
-          lastModified: s.lastModified ?? DateTime.now(),
-        )).toList();
+        _skills = skillInfos
+            .map((s) => Skill(
+                  id: s.name,
+                  name: s.name,
+                  description: s.description,
+                  category: s.category,
+                  enabled: s.enabled,
+                  lastUsed: s.lastModified ?? DateTime.now(),
+                  fileCount: s.fileCount,
+                  lastModified: s.lastModified ?? DateTime.now(),
+                ))
+            .toList();
 
         final usageByCategory = <String, int>{};
         for (final s in skillInfos) {
-          usageByCategory[s.category] =
-              (usageByCategory[s.category] ?? 0) + 1;
+          usageByCategory[s.category] = (usageByCategory[s.category] ?? 0) + 1;
         }
         _skillUsage = usageByCategory;
       } else {
@@ -121,6 +122,45 @@ class _SkillsScreenState extends State<SkillsScreen>
 
   Future<void> _onRefresh() async {
     await _loadData();
+  }
+
+  Future<void> _showRegisterSkillDialog() async {
+    final service = _skillService;
+    if (service == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Skill service is unavailable on this platform'),
+        ),
+      );
+      return;
+    }
+
+    final created = await showDialog<_SkillDraft>(
+      context: context,
+      builder: (context) => _RegisterSkillDialog(
+        skillsDirectory: service.skillsDirectory,
+      ),
+    );
+    if (created == null) return;
+
+    try {
+      final skill = await service.registerSkill(
+        name: created.name,
+        description: created.description,
+        category: created.category,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registered skill ${skill.name}')),
+      );
+      await _loadData();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to register skill: $e')),
+      );
+    }
   }
 
   void _toggleSkill(Skill skill) {
@@ -164,12 +204,7 @@ class _SkillsScreenState extends State<SkillsScreen>
             ),
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Register new skill - coming soon')),
-                );
-              },
+              onPressed: _showRegisterSkillDialog,
               tooltip: 'Register Skill',
             ),
             PopOutButton(sectionName: 'skills', branchIndex: 8),
@@ -514,5 +549,122 @@ class _SkillsScreenState extends State<SkillsScreen>
     } else {
       return '${dt.month}/${dt.day}';
     }
+  }
+}
+
+class _SkillDraft {
+  const _SkillDraft({
+    required this.name,
+    required this.description,
+    required this.category,
+  });
+
+  final String name;
+  final String description;
+  final String category;
+}
+
+class _RegisterSkillDialog extends StatefulWidget {
+  const _RegisterSkillDialog({required this.skillsDirectory});
+
+  final String skillsDirectory;
+
+  @override
+  State<_RegisterSkillDialog> createState() => _RegisterSkillDialogState();
+}
+
+class _RegisterSkillDialogState extends State<_RegisterSkillDialog> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _categoryController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _categoryController = TextEditingController(text: 'custom');
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _categoryController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _nameController.text.trim();
+    final description = _descriptionController.text.trim();
+    if (name.isEmpty || description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Name and description are required')),
+      );
+      return;
+    }
+
+    Navigator.pop(
+      context,
+      _SkillDraft(
+        name: name,
+        description: description,
+        category: _categoryController.text.trim(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Register Skill'),
+      content: SizedBox(
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Creates SKILL.md under ${widget.skillsDirectory}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                hintText: 'summarize-selection',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _categoryController,
+              decoration: const InputDecoration(
+                labelText: 'Category',
+                hintText: 'custom',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: const Text('Register'),
+        ),
+      ],
+    );
   }
 }
