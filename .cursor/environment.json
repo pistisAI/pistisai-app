@@ -5,6 +5,10 @@
     {
       "name": "github",
       "serverUrl": "https://api.githubcopilot.com/mcp/"
+    },
+    {
+      "name": "supabase",
+      "serverUrl": "https://mcp.supabase.com/mcp"
     }
   ]
 }
