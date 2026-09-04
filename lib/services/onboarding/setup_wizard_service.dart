@@ -21,12 +21,19 @@ enum ConnectionMethod {
   hermes,
 }
 
+/// Where a Hermes runtime is reachable during setup.
+enum HermesLocation {
+  local,
+  tailscale,
+}
+
 /// Setup wizard state
 class WizardState {
   static const Object _unset = Object();
 
   final int currentStep;
   final ConnectionMethod? selectedMethod;
+  final HermesLocation? hermesLocation;
   final List<ProviderInfo> discoveredProviders;
   final List<TailscaleDevice> tailscaleDevices;
   final String? customUrl;
@@ -40,6 +47,7 @@ class WizardState {
   const WizardState({
     this.currentStep = 0,
     this.selectedMethod,
+    this.hermesLocation,
     this.discoveredProviders = const [],
     this.tailscaleDevices = const [],
     this.customUrl,
@@ -54,6 +62,7 @@ class WizardState {
   WizardState copyWith({
     int? currentStep,
     ConnectionMethod? selectedMethod,
+    Object? hermesLocation = _unset,
     List<ProviderInfo>? discoveredProviders,
     List<TailscaleDevice>? tailscaleDevices,
     Object? customUrl = _unset,
@@ -67,6 +76,9 @@ class WizardState {
     return WizardState(
       currentStep: currentStep ?? this.currentStep,
       selectedMethod: selectedMethod ?? this.selectedMethod,
+      hermesLocation: identical(hermesLocation, _unset)
+          ? this.hermesLocation
+          : hermesLocation as HermesLocation?,
       discoveredProviders: discoveredProviders ?? this.discoveredProviders,
       tailscaleDevices: tailscaleDevices ?? this.tailscaleDevices,
       customUrl:
@@ -92,6 +104,16 @@ enum _WizardOperation {
   tailscaleDiscovery,
   connectionTest,
   completeSetup,
+}
+
+enum _HermesStepKind {
+  welcome,
+  connectionMethod,
+  location,
+  tailscaleDiscovery,
+  hermesUrl,
+  connectionTest,
+  completion,
 }
 
 /// Service managing the setup wizard flow
@@ -156,6 +178,7 @@ class SetupWizardService extends ChangeNotifier {
     ProviderInfo? updatedProvider = _state.selectedProvider;
     String? updatedCustomUrl = _state.customUrl;
     String? updatedHermesUrl = _state.hermesUrl;
+    HermesLocation? updatedHermesLocation = _state.hermesLocation;
 
     if (method != ConnectionMethod.custom) {
       updatedCustomUrl = null;
@@ -166,6 +189,7 @@ class SetupWizardService extends ChangeNotifier {
 
     if (method != ConnectionMethod.hermes) {
       updatedHermesUrl = null;
+      updatedHermesLocation = null;
       if (updatedProvider?.type == ProviderType.hermes) {
         updatedProvider = null;
       }
@@ -176,6 +200,7 @@ class SetupWizardService extends ChangeNotifier {
       selectedProvider: updatedProvider,
       customUrl: updatedCustomUrl,
       hermesUrl: updatedHermesUrl,
+      hermesLocation: updatedHermesLocation,
       errorMessage: null,
     );
 
@@ -213,8 +238,93 @@ class SetupWizardService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Record whether Hermes is local or on a Tailscale-reachable device/VPS.
+  void selectHermesLocation(HermesLocation location) {
+    _state = _state.copyWith(
+      hermesLocation: location,
+      hermesUrl: location == HermesLocation.local ? _state.hermesUrl : null,
+      hermesApiKey:
+          location == HermesLocation.local ? _state.hermesApiKey : null,
+      selectedProvider:
+          location == HermesLocation.local ? _state.selectedProvider : null,
+      tailscaleDevices: location == HermesLocation.local
+          ? const []
+          : _state.tailscaleDevices,
+      errorMessage: null,
+    );
+
+    final totalSteps = _getTotalSteps();
+    if (_state.currentStep >= totalSteps) {
+      _state = _state.copyWith(currentStep: 2);
+    }
+
+    notifyListeners();
+  }
+
+  /// Select a Hermes runtime on a Tailscale device (VPS, home server, etc.).
+  void selectHermesTailscaleDevice(TailscaleDevice device) {
+    final ip = device.primaryIP;
+    if (ip == null || ip.isEmpty) {
+      return;
+    }
+
+    final url = 'http://$ip:${AppConfig.defaultHermesPort}';
+    _state = _state.copyWith(
+      hermesUrl: url,
+      selectedProvider: ProviderInfo(
+        id: 'hermes_tailscale_${device.hostname}',
+        type: ProviderType.hermes,
+        name: 'Hermes (${device.name})',
+        url: url,
+        isLocal: false,
+        isAvailable: device.isOnline,
+        role: ProviderRole.agentRuntime,
+      ),
+      errorMessage: null,
+    );
+    notifyListeners();
+  }
+
+  bool get isHermesTailscaleSetup =>
+      _state.selectedMethod == ConnectionMethod.hermes &&
+      _state.hermesLocation == HermesLocation.tailscale;
+
+  /// Returns a user-visible error when Next should be blocked, or null if OK.
+  String? validateCurrentStep() {
+    if (_state.selectedMethod != ConnectionMethod.hermes) {
+      return null;
+    }
+
+    final steps = _hermesStepKinds();
+    if (_state.currentStep >= steps.length) {
+      return null;
+    }
+
+    switch (steps[_state.currentStep]) {
+      case _HermesStepKind.location:
+        if (_state.hermesLocation == null) {
+          return 'Choose where Hermes is running before continuing.';
+        }
+        return null;
+      case _HermesStepKind.tailscaleDiscovery:
+        if (_state.hermesUrl == null || _state.hermesUrl!.trim().isEmpty) {
+          return 'Select a Tailscale device running Hermes.';
+        }
+        return null;
+      default:
+        return null;
+    }
+  }
+
   /// Go to next step
   void nextStep() {
+    final validationError = validateCurrentStep();
+    if (validationError != null) {
+      _state = _state.copyWith(errorMessage: validationError);
+      notifyListeners();
+      return;
+    }
+
     final totalSteps = _getTotalSteps();
     if (_state.currentStep < totalSteps - 1) {
       _state = _state.copyWith(
@@ -423,18 +533,18 @@ class SetupWizardService extends ChangeNotifier {
   /// Set Hermes Agent URL
   void setHermesUrl(String url) {
     final trimmedUrl = url.trim();
+    final isLocal = _state.hermesLocation != HermesLocation.tailscale;
     _state = _state.copyWith(
       hermesUrl: trimmedUrl,
       errorMessage: null,
     );
 
-    // Create/update a Hermes ProviderInfo from the URL
     final hermesProvider = ProviderInfo(
       id: 'hermes_wizard',
       type: ProviderType.hermes,
-      name: 'Hermes Agent',
+      name: isLocal ? 'Hermes Agent' : 'Hermes Agent (remote)',
       url: trimmedUrl.isNotEmpty ? trimmedUrl : AppConfig.defaultHermesUrl,
-      isLocal: true,
+      isLocal: isLocal,
       isAvailable: false,
       role: ProviderRole.agentRuntime,
     );
@@ -446,6 +556,7 @@ class SetupWizardService extends ChangeNotifier {
   /// Auto-discover the Hermes API key from the local .env file
   Future<String?> discoverHermesApiKey() async {
     if (_settings == null) return null;
+
     final key = await _settings.getHermesApiKey();
     if (key != null && key.isNotEmpty) {
       _state = _state.copyWith(
@@ -456,10 +567,13 @@ class SetupWizardService extends ChangeNotifier {
       return key;
     }
 
-    // No key found anywhere — generate one so first-run "just works".
-    // The key is persisted via setHermesApiKey in _persistRuntimeSelection
-    // and is also written to ~/.hermes/.env so the Hermes API server can
-    // accept it (the server reads the same file).
+    if (_state.hermesLocation == HermesLocation.tailscale) {
+      appLogger.info(
+        '[SetupWizard] Remote Hermes — API key must be entered manually',
+      );
+      return null;
+    }
+
     appLogger.info(
         '[SetupWizard] No Hermes API key found — generating a new one');
     final generated = _generateApiKey();
@@ -613,21 +727,37 @@ class SetupWizardService extends ChangeNotifier {
   }
 
   int _getTotalSteps() {
-    // Hermes flow: Welcome, Connection Method, Hermes URL, Test, Complete = 5
     if (_state.selectedMethod == ConnectionMethod.hermes) {
-      return 5;
+      return _hermesStepKinds().length;
     }
 
     // OpenClaw steps: Welcome, Connection Method, Detection, Password, Test, Complete = 6
     // Optional: Tailscale (1), Remote (1)
     int steps = 6;
     if (_state.selectedMethod == ConnectionMethod.tailscale) {
-      steps++; // TailscaleDiscoveryStep
+      steps++;
     }
     if (_state.selectedMethod == ConnectionMethod.custom) {
-      steps++; // RemoteConnectionStep
+      steps++;
     }
     return steps;
+  }
+
+  List<_HermesStepKind> _hermesStepKinds() {
+    final kinds = <_HermesStepKind>[
+      _HermesStepKind.welcome,
+      _HermesStepKind.connectionMethod,
+      _HermesStepKind.location,
+    ];
+    if (_state.hermesLocation == HermesLocation.tailscale) {
+      kinds.add(_HermesStepKind.tailscaleDiscovery);
+    }
+    kinds.addAll([
+      _HermesStepKind.hermesUrl,
+      _HermesStepKind.connectionTest,
+      _HermesStepKind.completion,
+    ]);
+    return kinds;
   }
 
   ProviderInfo? _selectPreferredRuntime(List<ProviderInfo> providers) {
@@ -675,6 +805,12 @@ class SetupWizardService extends ChangeNotifier {
           (uri.scheme != 'http' && uri.scheme != 'https') ||
           uri.host.isEmpty) {
         return 'Enter a valid Hermes URL that starts with http:// or https://.';
+      }
+      if (_state.hermesLocation == HermesLocation.tailscale) {
+        final key = _state.hermesApiKey?.trim() ?? '';
+        if (key.isEmpty) {
+          return 'Enter the Hermes API key from your Tailscale server.';
+        }
       }
       return null;
     }
