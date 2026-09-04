@@ -29,7 +29,6 @@ concurrency:
 permissions:
   contents: read
   packages: write
-  secrets: write
 
 jobs:
   analyze:
@@ -108,18 +107,14 @@ jobs:
           if origin_ip="$(scripts/deploy/discover_pistisai_vps_origin.sh)"; then
             echo "host=${origin_ip}" >> "$GITHUB_OUTPUT"
             echo "Discovered Pistisai VPS origin IP"
+            if [ "${GITHUB_REF_NAME}" = "main" ] && command -v gh >/dev/null 2>&1; then
+              gh secret set PISTISAI_VPS_SSH_HOST --body "$origin_ip" \
+                && echo "Updated PISTISAI_VPS_SSH_HOST secret" \
+                || echo "Could not persist PISTISAI_VPS_SSH_HOST (needs admin token)"
+            fi
           else
             echo "Could not discover Pistisai VPS origin IP"
           fi
-
-      - name: Persist discovered VPS origin IP
-        if: (github.ref_name == 'main' || github.event_name == 'workflow_dispatch') && steps.discover_vps.outputs.host != ''
-        env:
-          DISCOVERED_HOST: ${{ steps.discover_vps.outputs.host }}
-        run: |
-          set -euo pipefail
-          gh secret set PISTISAI_VPS_SSH_HOST --body "$DISCOVERED_HOST"
-          echo "Updated PISTISAI_VPS_SSH_HOST secret"
 
       - name: Deploy to VPS
         if: github.ref_name == 'main' || github.event_name == 'workflow_dispatch'

@@ -25,7 +25,6 @@ checks = [
     "sync_cloudflare_install_redirects.py",
     "Verify live install scripts",
     "PISTISAI_VPS_SSH_HOST",
-    "secrets: write",
 ]
 for needle in checks:
     if needle not in text:
