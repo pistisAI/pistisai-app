@@ -1,6 +1,5 @@
 // Simple auth logger for Pistisai
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import '../utils/file_download_helper.dart';
 
 class AuthLogger {

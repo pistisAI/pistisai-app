@@ -6,6 +6,7 @@ import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
+import 'package:pistisai/services/settings_import_export_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart'
     as settings;
 import 'package:flutter/material.dart';
@@ -29,6 +30,9 @@ void main() {
     await settingsService.setActiveBackend(settings.BackendType.hermes);
     serviceLocator.registerSingleton<settings.SettingsPreferenceService>(
       settingsService,
+    );
+    serviceLocator.registerSingleton<SettingsImportExportService>(
+      SettingsImportExportService(preferencesService: settingsService),
     );
 
     connectionManager = ConnectionManagerService(
