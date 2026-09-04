@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:logging/logging.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
 final Logger _log = Logger('HermesUrlStep');
+
+/// Command to run on the Hermes host when you already have shell access.
+String hermesRemoteApiKeyOnServerCommand() =>
+    "grep '^API_SERVER_KEY=' ~/.hermes/.env | cut -d= -f2-";
+
+/// Command to run from this machine over SSH (replace YOUR_USER).
+String hermesRemoteApiKeySshCommand(String host) =>
+    'ssh YOUR_USER@$host "grep \'^API_SERVER_KEY=\' ~/.hermes/.env | cut -d= -f2-"';
+
+String? hermesHostFromUrl(String url) {
+  final uri = Uri.tryParse(url.trim());
+  if (uri == null || uri.host.isEmpty) {
+    return null;
+  }
+  return uri.host;
+}
 
 class HermesUrlStep extends StatefulWidget {
   const HermesUrlStep({super.key});
@@ -123,6 +140,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                 ),
                 onChanged: (value) {
                   wizard.setHermesUrl(value);
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 20),
@@ -194,18 +212,8 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
               ],
               if (isRemote) ...[
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue.shade200),
-                  ),
-                  child: Text(
-                    'On the VPS, the API key is in ~/.hermes/.env as API_SERVER_KEY=.... '
-                    'Copy that value here. Tailscale must be running on both this device and the server.',
-                    style: TextStyle(color: Colors.blue.shade900, height: 1.35),
-                  ),
+                _RemoteApiKeyHelp(
+                  host: hermesHostFromUrl(_urlController.text),
                 ),
               ],
               const SizedBox(height: 24),
@@ -235,6 +243,132 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
           ),
         );
       },
+    );
+  }
+}
+
+class _RemoteApiKeyHelp extends StatelessWidget {
+  const _RemoteApiKeyHelp({required this.host});
+
+  final String? host;
+
+  Future<void> _copyCommand(BuildContext context, String command) async {
+    await Clipboard.setData(ClipboardData(text: command));
+    if (!context.mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Command copied — paste it in your terminal'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sshHost = host ?? '100.x.y.z';
+    final sshCommand = hermesRemoteApiKeySshCommand(sshHost);
+    final onServerCommand = hermesRemoteApiKeyOnServerCommand();
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'The API key lives in ~/.hermes/.env as API_SERVER_KEY on the server. '
+            'Tailscale must be running on both this device and the server.',
+            style: TextStyle(color: Colors.blue.shade900, height: 1.35),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'From this machine (SSH over Tailscale)',
+            style: TextStyle(
+              color: Colors.blue.shade900,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          _CommandBlock(
+            command: sshCommand,
+            onCopy: () => _copyCommand(context, sshCommand),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Already logged into the server',
+            style: TextStyle(
+              color: Colors.blue.shade900,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          _CommandBlock(
+            command: onServerCommand,
+            onCopy: () => _copyCommand(context, onServerCommand),
+          ),
+          if (host == null) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Enter the Hermes URL above to fill in the Tailscale IP in the SSH command.',
+              style: TextStyle(
+                color: Colors.blue.shade800,
+                fontSize: 12,
+                height: 1.3,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _CommandBlock extends StatelessWidget {
+  const _CommandBlock({
+    required this.command,
+    required this.onCopy,
+  });
+
+  final String command;
+  final VoidCallback onCopy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.blue.shade100),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: SelectableText(
+              command,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 12,
+                height: 1.35,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Copy command',
+            onPressed: onCopy,
+            icon: Icon(Icons.copy, size: 18, color: Colors.blue.shade700),
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
+      ),
     );
   }
 }
