@@ -257,33 +257,57 @@ class ProviderDiscoveryService {
   }
 
   /// Test connectivity to a specific URL
-  Future<ConnectionTestResult> testConnection(String url) async {
-    try {
-      final uri = Uri.parse(url);
-      final response = await http.get(uri).timeout(const Duration(seconds: 5));
+  Future<ConnectionTestResult> testConnection(
+    String url, {
+    String? apiKey,
+  }) async {
+    final trimmed = url.trim().replaceAll(RegExp(r'/+$'), '');
+    final headers = (apiKey != null && apiKey.isNotEmpty)
+        ? {'Authorization': 'Bearer $apiKey'}
+        : null;
 
-      if (response.statusCode == 200) {
-        return ConnectionTestResult(
-          isConnected: true,
-          url: url,
-          statusCode: response.statusCode,
-          message: 'Connected successfully',
-        );
-      } else {
-        return ConnectionTestResult(
-          isConnected: false,
-          url: url,
-          statusCode: response.statusCode,
-          message: 'Server returned ${response.statusCode}',
-        );
+    final candidates = <Uri>[
+      Uri.parse('$trimmed/health'),
+      Uri.parse(trimmed),
+    ];
+
+    Object? lastError;
+    int? lastStatusCode;
+
+    for (final uri in candidates) {
+      try {
+        final response =
+            await http.get(uri, headers: headers).timeout(const Duration(seconds: 5));
+
+        if (response.statusCode == 200) {
+          return ConnectionTestResult(
+            isConnected: true,
+            url: trimmed,
+            statusCode: response.statusCode,
+            message: 'Connected successfully',
+          );
+        }
+
+        lastStatusCode = response.statusCode;
+      } catch (e) {
+        lastError = e;
       }
-    } catch (e) {
+    }
+
+    if (lastStatusCode != null) {
       return ConnectionTestResult(
         isConnected: false,
-        url: url,
-        message: 'Connection failed: ${e.toString()}',
+        url: trimmed,
+        statusCode: lastStatusCode,
+        message: 'Server returned $lastStatusCode',
       );
     }
+
+    return ConnectionTestResult(
+      isConnected: false,
+      url: trimmed,
+      message: 'Connection failed: ${lastError ?? 'unknown error'}',
+    );
   }
 
   /// Start periodic scanning for new providers
