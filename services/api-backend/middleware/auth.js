@@ -3,7 +3,7 @@
  *
  * Provides JWT authentication and authorization for API endpoints
  * with user ID extraction utilities.
- * 
+ *
  * Migrated from Auth0 to Supabase Auth.
  */
 
@@ -56,7 +56,7 @@ export const authenticateJwt = async (req, res, next) => {
           iss: `${SUPABASE_URL}/auth/v1`,
           sub: '00000000-0000-0000-0000-000000000000',
           aud: 'authenticated',
-          email: '<EMAIL>',
+          email: 'dev@pistisai.app',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
@@ -130,6 +130,73 @@ export const extractUserId = (req, res, next) => {
 };
 
 /**
+ * Synchronize validated JWT sessions with the auth service when a raw bearer
+ * token is available on the request.
+ */
+export async function syncSession(req, res, next) {
+  try {
+    if (process.env.NODE_ENV === 'test') {
+      return next();
+    }
+
+    if (req.auth?.payload) {
+      req.user = req.auth.payload;
+      req.userId = req.auth.payload.sub;
+    }
+
+    const userId = req.userId || req.auth?.payload?.sub;
+    if (!userId) {
+      logger.warn(' [Auth] No sub claim in token');
+      return res.status(401).json({ error: 'Invalid token: missing sub' });
+    }
+
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const bearerToken =
+      typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+        ? authHeader.substring(7)
+        : null;
+    const token = bearerToken || req.auth?.token;
+
+    if (typeof token !== 'string' || token.length === 0) {
+      logger.debug(
+        ' [Auth] Raw token unavailable; skipping session synchronization',
+      );
+      return next();
+    }
+
+    const service = getAuthService();
+    let timeoutId;
+    try {
+      const result = await Promise.race([
+        service.syncSession(req.auth.payload, token, req),
+        new Promise((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error('Timeout')), 2000);
+        }),
+      ]);
+
+      if (!result.success) {
+        logger.warn(' [Auth] Session sync failed', {
+          userId,
+          reason: result.error,
+        });
+      }
+    } catch (syncError) {
+      logger.error(' [Auth] Session sync error or timeout (continuing)', {
+        userId,
+        error: syncError.message,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    next();
+  } catch (error) {
+    logger.error(' [Auth] syncSession error', { error: error.message });
+    res.status(401).json({ error: 'Authentication failed' });
+  }
+}
+
+/**
  * Require admin role middleware (requires authenticateJwt first)
  */
 export const requireAdmin = (req, res, next) => {
@@ -171,6 +238,28 @@ export const optionalAuth = async (req, res, next) => {
       return next();
     }
 
+    if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
+      req.auth = {
+        token: 'mock_dev_access_token',
+        payload: {
+          iss: `${SUPABASE_URL}/auth/v1`,
+          sub: '00000000-0000-0000-0000-000000000000',
+          aud: 'authenticated',
+          email: 'dev@pistisai.app',
+          name: 'Christopher (Dev)',
+          nickname: 'rightguy',
+          exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
+          iat: Math.floor(Date.now() / 1000),
+          role: 'authenticated',
+          app_metadata: { role: 'admin' },
+          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          scope: 'openid profile email admin',
+        },
+      };
+      req.user = req.auth.payload;
+      return next();
+    }
+
     const service = getAuthService();
     const result = await service.validateToken(token, req);
 
@@ -185,22 +274,13 @@ export const optionalAuth = async (req, res, next) => {
       req.auth = null;
       req.user = null;
     }
-  } catch (error) {
+  } catch {
     req.auth = null;
     req.user = null;
   }
   next();
 };
 
-/**
- * Check if a route matches a pattern (for public routes list)
- */
-function matchRoute(pattern, path) {
-  // Convert wildcard pattern to regex
-  const regexStr = pattern
-    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
-    .replace(/\*/g, '.*');
-  return new RegExp(`^${regexStr}$`).test(path);
-}
+export const checkJwt = authenticateJwt;
 
 export { getAuthService };

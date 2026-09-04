@@ -6,7 +6,6 @@ import FlutterMacOS
 import Foundation
 
 import app_links
-import auth0_flutter
 import camera_desktop
 import device_info_plus
 import file_selector_macos
@@ -26,7 +25,6 @@ import window_manager
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AppLinksMacosPlugin.register(with: registry.registrar(forPlugin: "AppLinksMacosPlugin"))
-  Auth0FlutterPlugin.register(with: registry.registrar(forPlugin: "Auth0FlutterPlugin"))
   CameraDesktopPlugin.register(with: registry.registrar(forPlugin: "CameraDesktopPlugin"))
   DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))

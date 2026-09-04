@@ -1,140 +1,106 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:pistisai/auth/auth_provider.dart';
-import 'package:pistisai/models/user_model.dart';
-import 'package:pistisai/services/secure_storage_service.dart';
 import 'package:pistisai/config/app_config.dart';
+import 'package:pistisai/models/user_model.dart';
 
-/// Supabase Auth Provider
-/// Handles authentication via Supabase (email/password, magic link, OAuth).
+/// Supabase Auth provider for web and cloud-enabled desktop builds.
 class SupabaseAuthProvider extends AuthProvider {
-  final SecureStorageService _secureStorage =
-      SecureStorageService.instance;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final StreamController<bool> _authStateController =
+      StreamController<bool>.broadcast();
 
-  SupabaseAuthProvider() {
-    _init();
-  }
+  UserModel? _currentUser;
+  StreamSubscription<AuthState>? _authSubscription;
 
-  Future<void> _init() async {
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+  @override
+  Stream<bool> get authStateChanges => _authStateController.stream;
+
+  @override
+  UserModel? get currentUser => _currentUser;
+
+  @override
+  Future<void> initialize() async {
+    await _authSubscription?.cancel();
+    _authSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final session = data.session;
       if (session != null) {
-        _persistSession(session);
+        _currentUser = _mapSupabaseUser(session.user);
+        _authStateController.add(true);
+        unawaited(_persistSession(session));
       } else {
-        _clearPersistedSession();
+        _currentUser = null;
+        _authStateController.add(false);
+        unawaited(_clearPersistedSession());
       }
     });
-  }
 
-  @override
-  Future<bool> get isLoggedIn async {
     final session = Supabase.instance.client.auth.currentSession;
-    return session != null;
-  }
-
-  @override
-  Future<UserModel?> get currentUser async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) return null;
-    return _mapSupabaseUser(user);
-  }
-
-  @override
-  Future<AuthResult> login(String email, String password) async {
-    try {
-      final response = await Supabase.instance.client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-      if (response.session == null) {
-        return AuthResult('Login failed: no session returned');
-      }
-      await _persistSession(response.session!);
-      return AuthResult(null, _mapSupabaseUser(response.user!));
-    } on AuthException catch (e) {
-      return AuthResult(e.message);
-    } catch (e) {
-      return AuthResult('Unexpected error: $e');
+    if (session != null) {
+      _currentUser = _mapSupabaseUser(session.user);
+      _authStateController.add(true);
+    } else {
+      _authStateController.add(false);
     }
   }
 
   @override
-  Future<AuthResult> loginWithGoogle() async {
-    try {
-      final result = await Supabase.instance.client.auth.signInWithOAuth(
-        Provider.google,
-        redirectTo: _getRedirectUri(),
-      );
-      if (!result) {
-        return AuthResult('Google sign-in failed');
-      }
-      // Session will be set via auth state change listener
-      return AuthResult(null);
-    } catch (e) {
-      return AuthResult('Google sign-in error: $e');
-    }
-  }
-
-  @override
-  Future<AuthResult> sendMagicLink(String email) async {
-    try {
-      await Supabase.instance.client.auth.signInWithOtp(
-        email: email,
-        emailRedirectTo: _getRedirectUri(),
-      );
-      return AuthResult(null);
-    } on AuthException catch (e) {
-      return AuthResult(e.message);
-    } catch (e) {
-      return AuthResult('Magic link error: $e');
-    }
-  }
-
-  @override
-  Future<AuthResult> register(String email, String password) async {
-    try {
-      final response = await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-        emailRedirectTo: _getRedirectUri(),
-      );
-      if (response.user == null) {
-        return AuthResult('Registration failed');
-      }
-      return AuthResult(null, _mapSupabaseUser(response.user!));
-    } on AuthException catch (e) {
-      return AuthResult(e.message);
-    } catch (e) {
-      return AuthResult('Registration error: $e');
-    }
+  Future<void> login() async {
+    await Supabase.instance.client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: _redirectUri,
+    );
   }
 
   @override
   Future<void> logout() async {
-    try {
-      await Supabase.instance.client.auth.signOut();
-      await _clearPersistedSession();
-    } catch (e) {
-      debugPrint('Logout error: $e');
-    }
+    await Supabase.instance.client.auth.signOut();
+    _currentUser = null;
+    _authStateController.add(false);
+    await _clearPersistedSession();
   }
 
   @override
-  Future<AuthResult> refreshSession() async {
-    try {
-      final session = Supabase.instance.client.auth.currentSession;
-      if (session == null) {
-        return AuthResult('No session to refresh');
-      }
-      final response = await Supabase.instance.client.auth.refreshSession();
-      if (response.session == null) {
-        return AuthResult('Session refresh failed');
-      }
-      await _persistSession(response.session!);
-      return AuthResult(null);
-    } catch (e) {
-      return AuthResult('Refresh error: $e');
+  Future<bool> handleCallback({String? url}) async {
+    if (url == null || url.isEmpty) {
+      return Supabase.instance.client.auth.currentSession != null;
     }
+
+    try {
+      await Supabase.instance.client.auth.getSessionFromUrl(Uri.parse(url));
+      final session = Supabase.instance.client.auth.currentSession;
+      if (session != null) {
+        _currentUser = _mapSupabaseUser(session.user);
+        _authStateController.add(true);
+        await _persistSession(session);
+        return true;
+      }
+    } catch (e) {
+      debugPrint('[SupabaseAuthProvider] Callback handling failed: $e');
+    }
+    return false;
+  }
+
+  @override
+  Future<void> loginMockDeveloper() async {
+    if (kReleaseMode) {
+      return;
+    }
+
+    _currentUser = UserModel(
+      id: '00000000-0000-0000-0000-000000000000',
+      email: 'dev@pistisai.app',
+      name: 'Christopher (Dev)',
+      nickname: 'rightguy',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    _authStateController.add(true);
   }
 
   @override
@@ -142,12 +108,7 @@ class SupabaseAuthProvider extends AuthProvider {
     return Supabase.instance.client.auth.currentSession?.accessToken;
   }
 
-  @override
-  Future<String?> getUserId() async {
-    return Supabase.instance.client.auth.currentUser?.id;
-  }
-
-  String _getRedirectUri() {
+  String get _redirectUri {
     if (kIsWeb) {
       return AppConfig.appUrl;
     }
@@ -155,43 +116,47 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   UserModel _mapSupabaseUser(User user) {
+    final createdAt =
+        DateTime.tryParse(user.createdAt) ?? DateTime.now();
+    final updatedAt =
+        DateTime.tryParse(user.updatedAt ?? user.createdAt) ?? createdAt;
+
     return UserModel(
       id: user.id,
       email: user.email ?? '',
-      name: user.userMetadata?['name'] ??
-          user.userMetadata?['full_name'] ??
-          user.email ??
-          '',
-      nickname: user.userMetadata?['nickname'] ?? '',
-      avatarUrl: user.userMetadata?['avatar_url'] ?? '',
-      createdAt: user.createdAt,
-      lastSignInAt: user.lastSignInAt ?? user.createdAt,
+      name: user.userMetadata?['name'] as String? ??
+          user.userMetadata?['full_name'] as String?,
+      nickname: user.userMetadata?['nickname'] as String?,
+      picture: user.userMetadata?['avatar_url'] as String?,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
   }
 
   Future<void> _persistSession(Session session) async {
     try {
-      await _secureStorage.setString(
-        'supabase_access_token',
-        session.accessToken,
+      await _storage.write(
+        key: 'supabase_access_token',
+        value: session.accessToken,
       );
-      if (session.refreshToken != null) {
-        await _secureStorage.setString(
-          'supabase_refresh_token',
-          session.refreshToken!,
+      final refreshToken = session.refreshToken;
+      if (refreshToken != null) {
+        await _storage.write(
+          key: 'supabase_refresh_token',
+          value: refreshToken,
         );
       }
     } catch (e) {
-      debugPrint('Failed to persist session: $e');
+      debugPrint('[SupabaseAuthProvider] Failed to persist session: $e');
     }
   }
 
   Future<void> _clearPersistedSession() async {
     try {
-      await _secureStorage.delete('supabase_access_token');
-      await _secureStorage.delete('supabase_refresh_token');
+      await _storage.delete(key: 'supabase_access_token');
+      await _storage.delete(key: 'supabase_refresh_token');
     } catch (e) {
-      debugPrint('Failed to clear session: $e');
+      debugPrint('[SupabaseAuthProvider] Failed to clear session: $e');
     }
   }
 }

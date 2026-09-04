@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
-  auth0_flutter
   camera_desktop
   file_selector_windows
   flutter_secure_storage_windows
