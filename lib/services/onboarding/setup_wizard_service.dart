@@ -124,6 +124,12 @@ class SetupWizardService extends ChangeNotifier {
         return false;
       }
 
+      final settings = _settings;
+      if (settings != null && await settings.isSetupWizardDeferred()) {
+        debugPrint('[SetupWizard] Setup deferred by user');
+        return false;
+      }
+
       // Force wizard in test mode
       if (AppConfig.forceSetupWizard) {
         debugPrint('[SetupWizard] Force setup wizard enabled, showing wizard');
@@ -232,6 +238,16 @@ class SetupWizardService extends ChangeNotifier {
       );
       notifyListeners();
     }
+  }
+
+  /// Skip setup for now — user can configure an agent runtime later.
+  Future<void> deferSetup() async {
+    _setupCompleted = true;
+    final settings = _settings;
+    if (settings != null) {
+      await settings.setSetupWizardDeferred(true);
+    }
+    notifyListeners();
   }
 
   /// Scan for local providers
@@ -539,6 +555,7 @@ class SetupWizardService extends ChangeNotifier {
 
       // Mark setup as completed in this session
       _setupCompleted = true;
+      await _settings?.setSetupWizardDeferred(false);
       appLogger.info('[SetupWizard] Setup completed successfully');
 
       _state = _state.copyWith(isLoading: false, errorMessage: null);

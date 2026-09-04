@@ -178,13 +178,11 @@ class NativeTrayService with TrayListener {
 
       await trayManager.setContextMenu(menu);
 
-      // setToolTip not implemented on Linux, wrap in try-catch
       try {
         await trayManager
             .setToolTip('Pistisai - ${_getStatusLabel(status)}');
-      } catch (e) {
-        // setToolTip not supported on this platform, ignore
-        appLogger.debug('[NativeTray] setToolTip not supported: $e');
+      } catch (_) {
+        // setToolTip is not implemented on Linux — ignore silently.
       }
     } catch (e) {
       appLogger.error('[NativeTray] Failed to update tray menu', error: e);

@@ -24,16 +24,16 @@ class WindowManagerService {
       if (!kIsWeb) {
         await windowManager.ensureInitialized();
 
-        // Set minimum window size to prevent too small windows
-        await windowManager.setMinimumSize(Size(1200, 800));
+        // Set minimum window size (720 height aligns with virtual framebuffers).
+        await windowManager.setMinimumSize(const Size(1200, 720));
 
         // Check current window size and set initial if too small
         final size = await windowManager.getSize();
-        if (size.width < 1200 || size.height < 800) {
-          await windowManager.setSize(Size(1400, 900));
+        if (size.width < 1200 || size.height < 720) {
+          await windowManager.setSize(const Size(1280, 720));
           await windowManager.center();
           appLogger
-              .info('[WindowManager] Window resized to 1400x900 and centered');
+              .info('[WindowManager] Window resized to 1280x720 and centered');
         }
 
         await windowManager.setPreventClose(true);

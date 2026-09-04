@@ -322,7 +322,7 @@ class _PistisaiAppState extends State<PistisaiApp> {
           providersList, 'LocalVoiceInputService');
       _addValueProviderIfAvailable<LangChainPromptService>(
           providersList, 'LangChainPromptService');
-      _addValueProviderIfAvailable<AutoUpdateService>(
+      _addChangeNotifierProviderIfAvailable<AutoUpdateService>(
           providersList, 'AutoUpdateService');
       _addProviderIfAvailable<PlatformDetectionService>(
           providersList, 'PlatformDetectionService');
@@ -428,6 +428,21 @@ class _PistisaiAppState extends State<PistisaiApp> {
       if (di.serviceLocator.isRegistered<T>()) {
         final service = di.serviceLocator.get<T>();
         providers.add(Provider<T>.value(value: service));
+        debugPrint('[App] $name added');
+      } else {
+        debugPrint('[App] $name not registered, skipping');
+      }
+    } catch (e) {
+      debugPrint('[App] Error adding $name: $e');
+    }
+  }
+
+  void _addChangeNotifierProviderIfAvailable<T extends ChangeNotifier>(
+      List<SingleChildWidget> providers, String name) {
+    try {
+      if (di.serviceLocator.isRegistered<T>()) {
+        final service = di.serviceLocator.get<T>();
+        providers.add(ChangeNotifierProvider<T>.value(value: service));
         debugPrint('[App] $name added');
       } else {
         debugPrint('[App] $name not registered, skipping');

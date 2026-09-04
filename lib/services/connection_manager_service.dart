@@ -487,6 +487,9 @@ class ConnectionManagerService extends ChangeNotifier {
     required String message,
     List<Map<String, dynamic>>? history,
   }) async {
+    if (!_isConnected) {
+      return null;
+    }
     try {
       if (_currentBackend == BackendType.hermes) {
         final client = _ensureHermesRuntimeClient();

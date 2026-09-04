@@ -34,10 +34,10 @@ class MessageContent extends StatelessWidget {
               ? _buildMarkdownContent(context, message.content)
               : SelectableText(
                   message.content,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: AppTheme.textColor, height: 1.5),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        height: 1.5,
+                      ),
                 ),
         if (message.isStreaming && !hasContent && !isAgentRunning)
           _buildTypingIndicator(context),

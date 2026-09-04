@@ -204,7 +204,7 @@ build_appimage_package() {
     cd "$BUILD_DIR"
     
     # Build the AppImage
-    if appimagetool Pistisai.AppDir "$OUTPUT_PATH"; then
+    if APPIMAGE_EXTRACT_AND_RUN=1 appimagetool Pistisai.AppDir "$OUTPUT_PATH"; then
         log_success "AppImage package built successfully"
     else
         log_error "Failed to build AppImage package"

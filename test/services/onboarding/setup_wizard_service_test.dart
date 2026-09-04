@@ -4,8 +4,10 @@ import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/provider_configuration_manager.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SetupWizardService P0-1 hardening', () {
@@ -15,6 +17,7 @@ void main() {
     late SetupWizardService service;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       discovery = _FakeProviderDiscoveryService();
       setupStatus = _FakeSetupStatusService();
       configManager = _FakeProviderConfigurationManager();
@@ -150,6 +153,23 @@ void main() {
 
       expect(service.state.discoveredProviders, hasLength(2));
       expect(service.state.selectedProvider?.type, ProviderType.hermes);
+    });
+
+    test('deferSetup hides wizard until user completes setup', () async {
+      final settings = SettingsPreferenceService();
+      service = SetupWizardService(
+        discovery,
+        setupStatus,
+        configManager,
+        settings: settings,
+      );
+
+      expect(await service.shouldShowWizard(), isTrue);
+
+      await service.deferSetup();
+
+      expect(await service.shouldShowWizard(), isFalse);
+      expect(await settings.isSetupWizardDeferred(), isTrue);
     });
   });
 }

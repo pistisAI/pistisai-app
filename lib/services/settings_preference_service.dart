@@ -78,6 +78,7 @@ class SettingsPreferenceService {
   static const String _hermesEnabledKey = 'settings_hermes_enabled';
   static const String _hermesUrlKey = 'settings_hermes_url';
   static const String _hermesApiKeyKey = 'settings_hermes_api_key';
+  static const String _setupWizardDeferredKey = 'settings_setup_wizard_deferred';
 
   // Mobile Settings
   static const String _biometricAuthKey = 'settings_biometric_auth_enabled';
@@ -509,6 +510,20 @@ class SettingsPreferenceService {
       await prefs.remove(_hermesApiKeyKey);
     } else {
       await prefs.setString(_hermesApiKeyKey, value);
+    }
+  }
+
+  Future<bool> isSetupWizardDeferred() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_setupWizardDeferredKey) ?? false;
+  }
+
+  Future<void> setSetupWizardDeferred(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value) {
+      await prefs.setBool(_setupWizardDeferredKey, true);
+    } else {
+      await prefs.remove(_setupWizardDeferredKey);
     }
   }
 
