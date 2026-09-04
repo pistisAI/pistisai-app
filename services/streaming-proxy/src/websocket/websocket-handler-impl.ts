@@ -10,6 +10,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { WebSocketHandler, HealthStatus } from '../interfaces/websocket-handler';
 import { AuthMiddleware } from '../interfaces/auth-middleware';
 import { RateLimiter } from '../interfaces/rate-limiter';
+import { ConnectionPoolImpl } from '../connection-pool/connection-pool-impl';
 
 interface ConnectionMetadata {
   id: string;
@@ -39,6 +40,7 @@ export class WebSocketHandlerImpl implements WebSocketHandler {
   private readonly wss: WebSocketServer;
   private readonly authMiddleware: AuthMiddleware;
   private readonly rateLimiter: RateLimiter;
+  private readonly connectionPool: ConnectionPoolImpl;
   private readonly connections: Map<WebSocket, ConnectionMetadata> = new Map();
   private readonly pingInterval = 30000; // 30 seconds
   private readonly pongTimeout = 5000; // 5 seconds
@@ -48,11 +50,13 @@ export class WebSocketHandlerImpl implements WebSocketHandler {
   constructor(
     wss: WebSocketServer,
     authMiddleware: AuthMiddleware,
-    rateLimiter: RateLimiter
+    rateLimiter: RateLimiter,
+    connectionPool: ConnectionPoolImpl
   ) {
     this.wss = wss;
     this.authMiddleware = authMiddleware;
     this.rateLimiter = rateLimiter;
+    this.connectionPool = connectionPool;
 
     // Configure WebSocket server
     this.configureWebSocketServer();
