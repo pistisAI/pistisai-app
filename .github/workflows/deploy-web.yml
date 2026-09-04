@@ -251,6 +251,7 @@ jobs:
           done
           if [ "$ok" -eq 0 ]; then
             echo "Live install URLs still broken after deploy"
+            bash scripts/deploy/install_url_publish_requirements.sh
             exit 1
           fi
           echo "Live install script verification passed"

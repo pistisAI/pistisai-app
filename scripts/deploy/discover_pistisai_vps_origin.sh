@@ -71,25 +71,31 @@ except urllib.error.HTTPError as exc:
 PY
 }
 
+parse_json_field() {
+  local response="$1"
+  local py="$2"
+  RESPONSE="$response" python3 -c "$py"
+}
+
 log_cf_api_status() {
   local label="$1"
   local response="$2"
   local status
-  status="$(printf '%s' "$response" | python3 - <<'PY'
-import json, sys
+  status="$(parse_json_field "$response" '
+import json, os
+raw = os.environ.get("RESPONSE", "")
 try:
-    data = json.load(sys.stdin)
+    data = json.loads(raw)
 except json.JSONDecodeError:
     print("invalid-json")
-    sys.exit(0)
-if "http_status" in data:
-    print(data["http_status"])
-elif data.get("success") is True:
-    print("ok")
 else:
-    print("error")
-PY
-)"
+    if "http_status" in data:
+        print(data["http_status"])
+    elif data.get("success") is True:
+        print("ok")
+    else:
+        print("error")
+')"
   log "${label}: ${status}"
 }
 
@@ -106,18 +112,17 @@ collect_tunnel_origin_ips() {
     while IFS= read -r ip; do
       [[ -n "$ip" ]] && add_candidate "$ip"
     done < <(
-      printf '%s' "$response" | python3 - <<'PY'
-import json, sys
-
-data = json.load(sys.stdin)
+      parse_json_field "$response" '
+import json, os
+data = json.loads(os.environ["RESPONSE"])
 if not data.get("success", False):
-    sys.exit(0)
+    raise SystemExit(0)
 for connector in data.get("result") or []:
     for conn in connector.get("conns") or []:
         ip = conn.get("origin_ip")
         if ip:
             print(ip)
-PY
+'
     )
   done
 }
@@ -132,20 +137,20 @@ collect_dns_a_records() {
       log_cf_api_status "dns records" "$response"
     fi
     mapfile -t dns_batch < <(
-      printf '%s' "$response" | python3 - <<'PY'
-import json, sys
-
-data = json.load(sys.stdin)
+      parse_json_field "$response" '
+import json, os
+data = json.loads(os.environ["RESPONSE"])
 if not data.get("success", False):
-    sys.exit(0)
+    raise SystemExit(0)
 records = data.get("result") or []
 for record in records:
     content = record.get("content")
     proxied = record.get("proxied", False)
-    if content and not proxied:
+    rtype = record.get("type")
+    if content and not proxied and rtype == "A":
         print(content)
 print(f"__COUNT__:{len(records)}")
-PY
+'
     )
     record_count=0
     for line in "${dns_batch[@]}"; do
