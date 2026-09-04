@@ -14,7 +14,7 @@ import 'package:pistisai/services/session_storage_service.dart';
 import 'package:pistisai/services/connection_manager_service.dart'
     hide BackendType;
 import 'package:pistisai/auth/auth_provider.dart';
-import 'package:pistisai/auth/providers/auth0_auth_provider.dart';
+import 'package:pistisai/auth/providers/supabase_auth_provider.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
 import 'package:pistisai/services/enhanced_user_tier_service.dart';
 import 'package:pistisai/services/langchain_integration_service.dart';
@@ -323,19 +323,19 @@ Future<void> setupCoreServices() async {
       // Check if we're on web first
       if (kIsWeb) {
         debugPrint(
-            '[Locator] ✓ Web platform detected, using Auth0AuthProvider');
-        authProvider = Auth0AuthProvider();
+            '[Locator] ✓ Web platform detected, using SupabaseAuthProvider');
+        authProvider = SupabaseAuthProvider();
       } else {
-        // Use Auth0AuthProvider for all desktop platforms
-        debugPrint('[Locator] Using Auth0AuthProvider for desktop');
-        authProvider = Auth0AuthProvider();
+        // Use SupabaseAuthProvider for all desktop platforms
+        debugPrint('[Locator] Using SupabaseAuthProvider for desktop');
+        authProvider = SupabaseAuthProvider();
       }
     } catch (e, stack) {
       debugPrint('[Locator] ERROR during platform detection: $e');
       debugPrint('[Locator] Stack trace: $stack');
-      // Fallback to Auth0 if platform detection fails
-      debugPrint('[Locator] Falling back to Auth0AuthProvider');
-      authProvider = Auth0AuthProvider();
+      // Fallback to Supabase if platform detection fails
+      debugPrint('[Locator] Falling back to SupabaseAuthProvider');
+      authProvider = SupabaseAuthProvider();
     }
 
     debugPrint('[Locator] Selected auth provider: ${authProvider.runtimeType}');
@@ -605,7 +605,7 @@ Future<void> _registerWebFallbackCoreServices() async {
   }
 
   if (!serviceLocator.isRegistered<AuthProvider>()) {
-    serviceLocator.registerSingleton<AuthProvider>(Auth0AuthProvider());
+    serviceLocator.registerSingleton<AuthProvider>(SupabaseAuthProvider());
   }
 
   if (!serviceLocator.isRegistered<AuthService>()) {

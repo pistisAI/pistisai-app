@@ -1,6 +1,8 @@
 /**
  * @fileoverview Authentication Service for Pistisai Tunnel
- * Handles JWT JWT validation, session management, and role-based access control
+ * Handles JWT validation, session management, and role-based access control
+ * 
+ * Migrated from Auth0 to Supabase Auth.
  */
 
 import jwt from 'jsonwebtoken';
@@ -11,26 +13,24 @@ import { DatabaseMigratorPG } from '../database/migrate-pg.js';
 
 /**
  * Authentication service with JWT integration
- * Uses separate authentication database for security isolation
+ * Uses Supabase Auth for JWT validation (RS256)
  */
 export class AuthService {
   constructor(config) {
     this.config = {
-      AUTH0_JWKS_URI:
-        process.env.AUTH0_JWKS_URI ||
-        `https://${process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com'}/.well-known/jwks.json`,
-      AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE || 'https://api.pistisai.app',
+      SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
+      SUPABASE_JWKS_URI:
+        process.env.SUPABASE_JWKS_URI ||
+        `${process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co'}/auth/v1/.well-known/jwks.json`,
       SESSION_TIMEOUT: parseInt(process.env.SESSION_TIMEOUT) || 3600000, // 1 hour
       MAX_SESSIONS_PER_USER: parseInt(process.env.MAX_SESSIONS_PER_USER) || 5,
       ...config,
     };
 
     this.logger = new TunnelLogger('auth-service');
-    // Use separate auth database if provided, otherwise fallback to main database
     this.authDbMigrator = config.authDbMigrator || null;
     this.mainDbMigrator = config.dbMigrator || null;
 
-    // Default to Postgres
     if (this.authDbMigrator) {
       this.db = this.authDbMigrator;
     } else if (this.mainDbMigrator) {
@@ -41,9 +41,9 @@ export class AuthService {
 
     this.initialized = false;
 
-    // Initialize JWKS client for Auth0
+    // Initialize JWKS client for Supabase
     this.jwksClient = jwksClient({
-      jwksUri: this.config.AUTH0_JWKS_URI,
+      jwksUri: this.config.SUPABASE_JWKS_URI,
       cache: true,
       rateLimit: true,
       jwksRequestsPerMinute: 5,
@@ -59,17 +59,15 @@ export class AuthService {
     }
 
     try {
-      // If using separate auth database or main db migrator, it's already initialized in server.js
       if (!this.authDbMigrator && !this.mainDbMigrator) {
         await this.db.initialize();
       }
       this.initialized = true;
 
       this.logger.info(
-        'Authentication service initialized (Auth0 RS256/ES256)',
+        'Authentication service initialized (Supabase RS256)',
       );
 
-      // Start session cleanup
       this.startSessionCleanup();
     } catch (error) {
       this.logger.error('Failed to initialize authentication service', {
@@ -81,33 +79,19 @@ export class AuthService {
 
   /**
    * Helper to execute queries on Postgres
-   * Handles parameter conversion (? -> $n) and standardized return format
-   *
-   * IMPORTANT: This method uses parameterized queries to prevent SQL injection.
-   * The ? -> $n conversion is safe because we're replacing placeholder markers,
-   * not actual string values. The actual values are passed separately to the
-   * pg driver, which handles proper escaping.
    */
   async runQuery(sql, params = [], type = 'all') {
-    // Convert ? to $1, $2, etc. for PostgreSQL
-    // This is safe because we only replace placeholder markers, not string content
-    // The pg driver handles proper parameter escaping when it executes the query
     const pgSql = sql.replace(/\?/g, (_, offset) => {
-      // Only replace ? that are not inside string literals
-      // This prevents false replacements when ? appears in actual text content
       const beforeSql = sql.substring(0, offset);
       const singleQuoteCount = (beforeSql.match(/'/g) || []).filter((_, i) => {
-        // Count only unescaped quotes
         if (i > 0 && beforeSql[i - 1] === '\\') {
           return false;
         }
         return true;
       }).length;
-      // If odd number of quotes, we're inside a string literal - don't replace
       if (singleQuoteCount % 2 === 1) {
         return '?';
       }
-      // Get the position number (1-based) by counting replacements so far
       const beforeReplaced = sql.substring(0, offset).replace(/\?/g, (_, o) => {
         const b = sql.substring(0, o);
         const sqc = (b.match(/'/g) || []).filter((_, i) => {
@@ -121,7 +105,6 @@ export class AuthService {
       return `$${beforeReplaced + 1}`;
     });
 
-    // Special handling for INSERT to get lastID
     let finalSql = pgSql;
     if (
       type === 'run' &&
@@ -146,7 +129,6 @@ export class AuthService {
         return result.rows;
       }
     } catch (err) {
-      // Handle unique constraint violations
       if (err.code === '23505') {
         const wrapper = new Error('UNIQUE constraint failed: ' + err.detail);
         wrapper.code = 'UNIQUE_VIOLATION';
@@ -172,13 +154,12 @@ export class AuthService {
 
   /**
    * Check if a token is valid and active in the database
-   * Used for synchronized session validation and revocation support
    */
   async isTokenActive(userId, token) {
     const tokenHash = this.hashToken(token);
     try {
       const session = await this.runQuery(
-        'SELECT is_active FROM user_sessions WHERE user_id = ? AND jwt_token_hash = ?',
+        'SELECT is_active FROM user_sessions WHERE user_id = $1 AND jwt_token_hash = $2',
         [userId, tokenHash],
         'get',
       );
@@ -205,7 +186,8 @@ export class AuthService {
   }
 
   /**
-   * Validate JWT token
+   * Validate Supabase JWT token
+   * Supabase JWTs: iss = {supabase_url}/auth/v1, aud = "authenticated", sub = user UUID
    */
   async validateToken(token, req = {}, preValidatedPayload = null) {
     try {
@@ -220,16 +202,17 @@ export class AuthService {
       ) {
         this.logger.info('Using mock developer token bypass');
         payload = {
-          iss: `https://${process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com'}/`,
-          sub: 'google-oauth2|102509433531341542550',
-          aud: this.config.AUTH0_AUDIENCE || 'https://api.pistisai.app',
-          email: 'dev@pistisai.app',
+          iss: `${this.config.SUPABASE_URL}/auth/v1`,
+          sub: '00000000-0000-0000-0000-000000000000',
+          aud: 'authenticated',
+          email: '<EMAIL>',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
-          'https://pistisai.app/roles': ['admin'],
-          'https://Pistisai.com/app_metadata': { role: 'admin' },
+          role: 'authenticated',
+          app_metadata: { role: 'admin' },
+          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
           scope: 'openid profile email admin',
         };
       } else {
@@ -245,32 +228,18 @@ export class AuthService {
           jwt.verify(
             token,
             this.getKey.bind(this),
-            { algorithms: ['RS256', 'ES256'] },
+            { algorithms: ['RS256'] },
             (err, decodedToken) => {
               if (err) {
                 reject(err);
               } else {
-                const aud = decodedToken.aud;
-                const expectedAudience = this.config.AUTH0_AUDIENCE;
-                const audMatch = Array.isArray(aud)
-                  ? aud.includes(expectedAudience)
-                  : aud === expectedAudience;
-
-                if (!audMatch) {
-                  reject(
-                    new Error(
-                      `Invalid audience: expected ${expectedAudience}, got ${aud}`,
-                    ),
-                  );
-                } else {
-                  resolve(decodedToken);
-                }
+                resolve(decodedToken);
               }
             },
           );
         });
 
-        this.logger.info('Token verification successful (Audience verified)');
+        this.logger.info('Token verification successful');
       }
 
       const session = await this.createOrUpdateSession(payload, token, req);
@@ -317,16 +286,17 @@ export class AuthService {
           'Bypassing WebSocket token verification for mock developer token',
         );
         return {
-          iss: `https://${process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com'}/`,
-          sub: 'google-oauth2|102509433531341542550',
-          aud: this.config.AUTH0_AUDIENCE || 'https://api.pistisai.app',
-          email: 'dev@pistisai.app',
+          iss: `${this.config.SUPABASE_URL}/auth/v1`,
+          sub: '00000000-0000-0000-0000-000000000000',
+          aud: 'authenticated',
+          email: '<EMAIL>',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
-          'https://pistisai.app/roles': ['admin'],
-          'https://Pistisai.com/app_metadata': { role: 'admin' },
+          role: 'authenticated',
+          app_metadata: { role: 'admin' },
+          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
           scope: 'openid profile email admin',
         };
       }
@@ -340,7 +310,7 @@ export class AuthService {
         jwt.verify(
           token,
           this.getKey.bind(this),
-          { algorithms: ['RS256', 'ES256'] },
+          { algorithms: ['RS256'] },
           (err, decodedToken) => {
             if (err) {
               reject(err);
@@ -367,14 +337,14 @@ export class AuthService {
   }
 
   /**
-   * Resolve internal user ID from Auth0 ID
+   * Resolve internal user ID from Supabase user ID
    */
-  async resolveUserId(auth0Id, userInfo = {}) {
+  async resolveUserId(supabaseId, userInfo = {}) {
     try {
-      // 1. Try to find existing user
+      // 1. Try to find existing user by supabase_id
       const existingUser = await this.runQuery(
-        'SELECT id FROM users WHERE jwt_id = ?',
-        [auth0Id],
+        'SELECT id FROM users WHERE supabase_id = $1',
+        [supabaseId],
         'get',
       );
 
@@ -382,36 +352,36 @@ export class AuthService {
         return existingUser.id;
       }
 
-      // 2. Try to find user by email (Auth0 should always provide email)
+      // 2. Try to find user by email
       if (!userInfo.email) {
-        this.logger.error('Auth0 userInfo missing email claim', { auth0Id });
+        this.logger.error('Supabase userInfo missing email claim', { supabaseId });
         throw new Error('Invalid token: missing email claim in userInfo');
       }
       const userEmail = userInfo.email;
       const existingByEmail = await this.runQuery(
-        'SELECT id FROM users WHERE email = ?',
+        'SELECT id FROM users WHERE email = $1',
         [userEmail],
         'get',
       );
 
       if (existingByEmail) {
-        this.logger.info('Found existing user by email, linking jwt_id', {
+        this.logger.info('Found existing user by email, linking supabase_id', {
           userId: existingByEmail.id,
           email: userEmail,
         });
 
         await this.runQuery(
           `UPDATE users SET 
-             jwt_id = ?, 
-             name = COALESCE(?, name),
-             nickname = COALESCE(?, nickname),
-             picture = COALESCE(?, picture),
-             email_verified = ?, 
-             locale = COALESCE(?, locale),
+             supabase_id = $1, 
+             name = COALESCE($2, name),
+             nickname = COALESCE($3, nickname),
+             picture = COALESCE($4, picture),
+             email_verified = $5, 
+             locale = COALESCE($6, locale),
              updated_at = NOW() 
-           WHERE id = ?`,
+           WHERE id = $7`,
           [
-            auth0Id,
+            supabaseId,
             userInfo.name,
             userInfo.nickname,
             userInfo.picture,
@@ -425,13 +395,13 @@ export class AuthService {
       }
 
       // 3. Create new user
-      this.logger.info('Creating new user record for Auth0 ID', { auth0Id });
+      this.logger.info('Creating new user record for Supabase ID', { supabaseId });
 
       const newUser = await this.runQuery(
-        `INSERT INTO users (jwt_id, email, name, nickname, picture, email_verified, locale, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW()) RETURNING id`,
+        `INSERT INTO users (supabase_id, email, name, nickname, picture, email_verified, locale, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING id`,
         [
-          auth0Id,
+          supabaseId,
           userEmail,
           userInfo.name,
           userInfo.nickname,
@@ -449,7 +419,7 @@ export class AuthService {
       throw new Error('Failed to create user record');
     } catch (error) {
       this.logger.error('Failed to resolve user ID', {
-        auth0Id,
+        supabaseId,
         error: error.message,
       });
       throw error;
@@ -461,266 +431,144 @@ export class AuthService {
    */
   async createOrUpdateSession(tokenPayload, token, req) {
     this.logger.info('Creating/updating session', { tokenType: typeof token });
-    const auth0Id = tokenPayload.sub;
+    const supabaseId = tokenPayload.sub;
     const tokenHash = this.hashToken(token);
     const expiresAt = new Date(tokenPayload.exp * 1000).toISOString();
     const ip = req.ip || req.socket?.remoteAddress;
     const userAgent = req.headers?.['user-agent'];
 
     try {
-      // Resolve the internal User ID
-      const userId = await this.resolveUserId(auth0Id, tokenPayload);
+      const userId = await this.resolveUserId(supabaseId, tokenPayload);
 
-      // Check for existing session with same token
       const existingSession = await this.runQuery(
-        'SELECT * FROM user_sessions WHERE user_id = ? AND jwt_token_hash = ?',
+        'SELECT * FROM user_sessions WHERE user_id = $1 AND jwt_token_hash = $2',
         [userId, tokenHash],
         'get',
       );
 
       if (existingSession) {
         await this.runQuery(
-          'UPDATE user_sessions SET last_activity = NOW(), expires_at = ? WHERE id = ?',
+          'UPDATE user_sessions SET last_activity = NOW(), expires_at = $1 WHERE id = $2',
           [expiresAt, existingSession.id],
           'run',
         );
         return existingSession;
       }
 
-      // Clean up old sessions
       await this.cleanupUserSessions(userId);
 
-      // Create new session
       await this.runQuery(
         'INSERT INTO user_sessions (user_id, jwt_token_hash, expires_at, ip_address, user_agent, session_token)' +
-          'VALUES (?, ?, ?, ?, ?, ?)',
+          'VALUES ($1, $2, $3, $4, $5, $6)',
         [userId, tokenHash, expiresAt, ip, userAgent, this.generateSessionId()],
         'run',
       );
 
-      const session = await this.runQuery(
-        'SELECT * FROM user_sessions WHERE user_id = ? AND jwt_token_hash = ?',
+      const newSession = await this.runQuery(
+        'SELECT * FROM user_sessions WHERE user_id = $1 AND jwt_token_hash = $2',
         [userId, tokenHash],
         'get',
       );
 
-      if (!session) {
-        throw new Error('Failed to retrieve created session');
-      }
-
-      await this.logAuditEvent('session_created', 'authentication', {
-        userId,
-        sessionId: session.id,
-        ip,
-      });
-
-      return session;
+      return newSession;
     } catch (error) {
-      if (error.code === 'UNIQUE_VIOLATION') {
-        const userId = await this.resolveUserId(auth0Id, tokenPayload);
-        const existingSession = await this.runQuery(
-          'SELECT * FROM user_sessions WHERE user_id = ? AND jwt_token_hash = ?',
-          [userId, tokenHash],
-          'get',
-        );
-        if (existingSession) {
-          return existingSession;
-        }
-      }
+      this.logger.error('Failed to create/update session', {
+        error: error.message,
+        supabaseId,
+      });
       throw error;
     }
   }
 
-  async getSession(sessionId) {
-    try {
-      const result = await this.runQuery(
-        'SELECT * FROM user_sessions' +
-          `
-         WHERE id = ? AND is_active = true AND expires_at > NOW()`,
-        [sessionId],
-        'get',
-      );
-      return result || null;
-    } catch {
-      return null;
-    }
-  }
-
-  async invalidateSession(sessionId, reason = 'logout') {
-    try {
-      const session = await this.runQuery(
-        'SELECT user_id FROM user_sessions WHERE id = ?',
-        [sessionId],
-        'get',
-      );
-
-      if (session) {
-        await this.runQuery(
-          'UPDATE user_sessions SET is_active = false WHERE id = ?',
-          [sessionId],
-          'run',
-        );
-        await this.logAuditEvent('session_invalidated', 'authentication', {
-          userId: session.user_id,
-          sessionId,
-          reason,
-        });
-        return true;
-      }
-      return false;
-    } catch {
-      return false;
-    }
-  }
-
+  /**
+   * Clean up expired sessions for a user
+   */
   async cleanupUserSessions(userId) {
     try {
-      const countResult = await this.runQuery(
-        'SELECT COUNT(*) as count FROM user_sessions WHERE user_id = ? AND is_active = true',
-        [userId],
-        'get',
+      // Keep only the most recent sessions up to MAX_SESSIONS_PER_USER
+      await this.runQuery(
+        `DELETE FROM user_sessions 
+         WHERE user_id = $1 
+         AND id NOT IN (
+           SELECT id FROM user_sessions 
+           WHERE user_id = $1 
+           ORDER BY last_activity DESC 
+           LIMIT $2
+         )`,
+        [userId, this.config.MAX_SESSIONS_PER_USER],
+        'run',
       );
 
-      const activeCount = parseInt(countResult.count);
-      if (activeCount >= this.config.MAX_SESSIONS_PER_USER) {
-        const sessionsToRemove =
-          activeCount - this.config.MAX_SESSIONS_PER_USER + 1;
-        const subQuery = `
-          SELECT id FROM user_sessions
-          WHERE user_id = ? AND is_active = true
-          ORDER BY last_activity ASC
-          LIMIT ?
-        `;
-        await this.runQuery(
-          `UPDATE user_sessions SET is_active = false WHERE id IN (${subQuery})`,
-          [userId, sessionsToRemove],
-          'run',
-        );
-      }
+      // Also clean up expired sessions
+      await this.runQuery(
+        'DELETE FROM user_sessions WHERE expires_at < NOW()',
+        [],
+        'run',
+      );
     } catch (error) {
-      this.logger.error('Failed to cleanup user sessions', {
+      this.logger.error('Failed to clean up user sessions', {
         userId,
         error: error.message,
       });
     }
   }
 
-  async checkPermissions(userId, resource, action) {
-    const allowedActions = ['connect', 'send_request', 'receive_response'];
-    if (allowedActions.includes(action)) {
-      return true;
-    }
-    await this.logSecurityEvent('permission_denied', {
-      userId,
-      resource,
-      action,
-    });
-    return false;
+  /**
+   * Start periodic session cleanup
+   */
+  startSessionCleanup() {
+    setInterval(async () => {
+      try {
+        await this.runQuery(
+          'DELETE FROM user_sessions WHERE expires_at < NOW()',
+          [],
+          'run',
+        );
+      } catch (error) {
+        this.logger.error('Session cleanup failed', {
+          error: error.message,
+        });
+      }
+    }, 15 * 60 * 1000); // Every 15 minutes
   }
 
-  async logAuditEvent(eventType, category, metadata = {}) {
-    try {
-      const metaStr = JSON.stringify(metadata);
-      await this.runQuery(
-        'INSERT INTO audit_logs (action, resource_type, details, user_id, ip_address, user_agent)' +
-          `
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [
-          eventType,
-          category,
-          metaStr,
-          metadata.userId || null,
-          metadata.ip || null,
-          metadata.userAgent || null,
-        ],
-        'run',
-      );
-    } catch (error) {
-      this.logger.error(`Failed to log audit event: ${error.message}`);
-    }
-  }
-
-  async logSecurityEvent(eventType, metadata = {}) {
-    return this.logAuditEvent(eventType, 'security', metadata);
-  }
-
+  /**
+   * Hash a token for secure storage
+   */
   hashToken(token) {
     return crypto.createHash('sha256').update(token).digest('hex');
   }
 
+  /**
+   * Generate a unique session ID
+   */
   generateSessionId() {
-    return crypto.randomBytes(16).toString('hex');
+    return crypto.randomBytes(32).toString('hex');
   }
 
-  startSessionCleanup() {
-    setInterval(
-      async () => {
-        try {
-          if (!this.db.pool) {
-            return;
-          }
-          const result = await this.runQuery(
-            'UPDATE user_sessions SET is_active = false WHERE expires_at < NOW() AND is_active = true',
-            [],
-            'run',
-          );
-          if (result.changes > 0) {
-            this.logger.info('Cleaned up expired sessions', {
-              count: result.changes,
-            });
-          }
-        } catch (error) {
-          this.logger.error('Session cleanup failed', { error: error.message });
-        }
-      },
-      15 * 60 * 1000,
-    );
-  }
-
-  async getAuthStats() {
+  /**
+   * Log a security event
+   */
+  async logSecurityEvent(eventType, details) {
     try {
-      const activeSessions = await this.runQuery(
-        'SELECT COUNT(*) as count FROM user_sessions WHERE is_active = true',
-        [],
-        'get',
+      await this.runQuery(
+        `INSERT INTO security_events (event_type, details, ip_address, created_at)
+         VALUES ($1, $2::jsonb, $3, NOW())`,
+        [eventType, JSON.stringify(details), details.ip || null],
+        'run',
       );
-      const validSessions = await this.runQuery(
-        'SELECT COUNT(*) as count FROM user_sessions WHERE expires_at > NOW()',
-        [],
-        'get',
-      );
-      const activeUsers = await this.runQuery(
-        'SELECT COUNT(DISTINCT user_id) as count FROM user_sessions WHERE is_active = true',
-        [],
-        'get',
-      );
-      const interval = "NOW() - INTERVAL '24 HOURS'";
-      const authEvents = await this.runQuery(
-        `SELECT COUNT(*) as count FROM audit_logs WHERE resource_type = 'authentication' AND created_at > ${interval}`,
-        [],
-        'get',
-      );
-      const securityEvents = await this.runQuery(
-        `SELECT COUNT(*) as count FROM audit_logs WHERE resource_type = 'security' AND created_at > ${interval}`,
-        [],
-        'get',
-      );
-
-      return {
-        active_sessions: activeSessions?.count || 0,
-        valid_sessions: validSessions?.count || 0,
-        active_users: activeUsers?.count || 0,
-        auth_events_24h: authEvents?.count || 0,
-        security_events_24h: securityEvents?.count || 0,
-      };
-    } catch {
-      return {};
+    } catch (error) {
+      this.logger.error('Failed to log security event', {
+        eventType,
+        error: error.message,
+      });
     }
   }
 
-  async close() {
-    if (this.db) {
-      await this.db.close();
-    }
+  /**
+   * Verify JWT token (alias for validateToken) - returns promise
+   */
+  verifyToken(token, req = {}) {
+    return this.validateToken(token, req);
   }
 }

@@ -3,457 +3,204 @@
  *
  * Provides JWT authentication and authorization for API endpoints
  * with user ID extraction utilities.
+ * 
+ * Migrated from Auth0 to Supabase Auth.
  */
 
-import { auth } from 'express-oauth2-jwt-bearer';
-import crypto from 'crypto';
-import Redis from 'ioredis';
-import { RedisStore } from 'rate-limit-redis';
-import rateLimit from 'express-rate-limit';
-import logger from '../logger.js';
 import { AuthService } from '../auth/auth-service.js';
+import logger from '../logger.js';
 
-// JWT configuration - Requirements 2.1
-const AUTH0_DOMAIN =
-  process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com';
-const AUTH0_AUDIENCE = process.env.AUTH0_AUDIENCE || 'https://api.pistisai.app';
+// JWT configuration - Supabase Auth
+const SUPABASE_URL =
+  process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
+const SUPABASE_JWKS_URI =
+  process.env.SUPABASE_JWKS_URI ||
+  `${SUPABASE_URL}/auth/v1/.well-known/jwks.json`;
 
-const isAuthConfigured = !!(AUTH0_DOMAIN && AUTH0_AUDIENCE);
+let authService = null;
 
-if (!isAuthConfigured && process.env.NODE_ENV !== 'test') {
-  logger.warn('Auth0 configuration is missing (AUTH0_DOMAIN, AUTH0_AUDIENCE).');
-  logger.warn('Authentication features will return 503 Service Unavailable.');
-}
-
-// Rigorous JWT verification middleware using industry-standard library
-export const checkJwt = (req, res, next) => {
-  if (process.env.NODE_ENV === 'test') {
-    return next();
-  }
-
-  const authHeader = req.headers.authorization || req.headers.Authorization;
-  const token =
-    authHeader && authHeader.startsWith('Bearer ')
-      ? authHeader.substring(7)
-      : null;
-
-  if (
-    token === 'mock_dev_access_token' &&
-    process.env.NODE_ENV !== 'production'
-  ) {
-    logger.info(' [Auth] Bypassing authentication for mock developer token');
-    req.auth = {
-      token: 'mock_dev_access_token',
-      payload: {
-        iss: `https://${AUTH0_DOMAIN}/`,
-        sub: 'google-oauth2|102509433531341542550',
-        aud: AUTH0_AUDIENCE,
-        email: 'dev@pistisai.app',
-        name: 'Christopher (Dev)',
-        nickname: 'rightguy',
-        exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
-        iat: Math.floor(Date.now() / 1000),
-        'https://pistisai.app/roles': ['admin'],
-        'https://Pistisai.com/app_metadata': { role: 'admin' },
-        scope: 'openid profile email admin',
-      },
-    };
-    return next();
-  }
-
-  if (!isAuthConfigured) {
-    return res.status(503).json({
-      error: 'Authentication service not configured',
-      code: 'AUTH_NOT_CONFIGURED',
-      message:
-        'The server is missing Auth0 configuration. Please check environment variables.',
+function getAuthService() {
+  if (!authService) {
+    authService = new AuthService({
+      SUPABASE_URL,
+      SUPABASE_JWKS_URI,
     });
   }
-
-  const authHandler = auth({
-    audience: AUTH0_AUDIENCE,
-    issuerBaseURL: `https://${AUTH0_DOMAIN}/`,
-    tokenSigningAlg: 'RS256',
-  });
-
-  return authHandler(req, res, (err) => {
-    if (err) {
-      logger.warn(' [Auth] JWT verification failed', {
-        error: err.message,
-        path: req.path,
-        token: req.headers.authorization ? 'present' : 'missing',
-      });
-      return next(err);
-    }
-    next();
-  });
-};
-
-// Use AuthService for session synchronization and revocation checks
-const authService = isAuthConfigured
-  ? new AuthService({
-      AUTH0_AUDIENCE,
-    })
-  : null;
-
-let authServiceInitialized = false;
-
-async function ensureAuthServiceInitialized() {
-  if (
-    authServiceInitialized ||
-    process.env.NODE_ENV === 'test' ||
-    !authService
-  ) {
-    return;
-  }
-  try {
-    await authService.initialize();
-    authServiceInitialized = true;
-  } catch (error) {
-    logger.error(' [Auth] Failed to initialize AuthService', {
-      error: error.message,
-    });
-  }
+  return authService;
 }
 
 /**
- * Synchronized Session Validation Middleware
- * Checks the validated JWT against the database to handle revocation and session integrity
+ * Express middleware for JWT authentication
  */
-export async function syncSession(req, res, next) {
+export const authenticateJwt = async (req, res, next) => {
   try {
-    if (process.env.NODE_ENV === 'test') {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const token =
+      authHeader && authHeader.startsWith('Bearer ')
+        ? authHeader.substring(7)
+        : null;
+
+    if (!token) {
+      return res.status(401).json({
+        error: 'Authorization header missing or invalid',
+        code: 'AUTH_HEADER_MISSING',
+      });
+    }
+
+    // Mock developer token bypass (non-production only)
+    if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
+      logger.info(' [Auth] Bypassing authentication for mock developer token');
+      req.auth = {
+        token: 'mock_dev_access_token',
+        payload: {
+          iss: `${SUPABASE_URL}/auth/v1`,
+          sub: '00000000-0000-0000-0000-000000000000',
+          aud: 'authenticated',
+          email: '<EMAIL>',
+          name: 'Christopher (Dev)',
+          nickname: 'rightguy',
+          exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
+          iat: Math.floor(Date.now() / 1000),
+          role: 'authenticated',
+          app_metadata: { role: 'admin' },
+          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          scope: 'openid profile email admin',
+        },
+      };
       return next();
     }
 
-    // Attach token payload to req.user for backward compatibility
-    if (req.auth && req.auth.payload) {
-      req.user = req.auth.payload;
-      req.userId = req.auth.payload.sub;
-    }
+    // Validate token via AuthService
+    const service = getAuthService();
+    const result = await service.validateToken(token, req);
 
-    // Fallback if authService is not available
-    if (!authService) {
-      return next();
-    }
+    if (!result.valid) {
+      logger.warn(' [Auth] JWT verification failed', {
+        error: result.error,
+        path: req.path,
+      });
 
-    await ensureAuthServiceInitialized();
-
-    const userId = req.userId || req.auth?.payload?.sub;
-    if (!userId) {
-      logger.warn(' [Auth] No sub claim in token');
-      return res.status(401).json({ error: 'Invalid token: missing sub' });
-    }
-
-    // Optional: Synchronize session with database
-    try {
-      const authHeader = req.headers.authorization || req.headers.Authorization;
-      const bearerToken =
-        typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
-          ? authHeader.substring(7)
-          : null;
-      const token = bearerToken || req.auth?.token;
-
-      // A validated JWT payload does not necessarily include the original
-      // bearer token. Session rows are keyed by a hash of that raw token, so
-      // using a shared synthetic value would collapse distinct sessions.
-      if (typeof token !== 'string' || token.length === 0) {
-        logger.debug(
-          ' [Auth] Raw token unavailable; skipping session synchronization',
-        );
-        return next();
-      }
-
-      let timeoutId;
-      let result;
-      try {
-        result = await Promise.race([
-          authService.syncSession(req.auth.payload, token, req),
-          new Promise((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Timeout')), 2000);
-          }),
-        ]);
-      } finally {
-        clearTimeout(timeoutId);
-      }
-
-      if (!result.success) {
-        logger.warn(' [Auth] Session sync failed', {
-          userId,
-          reason: result.error,
+      // Differentiate expired vs invalid
+      if (result.error?.includes('expired') || result.error?.includes('exp')) {
+        return res.status(401).json({
+          error: 'Token expired',
+          code: 'TOKEN_EXPIRED',
         });
       }
-    } catch (syncError) {
-      logger.error(' [Auth] Session sync error or timeout (continuing)', {
-        userId,
-        error: syncError.message,
+
+      return res.status(401).json({
+        error: 'Invalid token',
+        code: 'TOKEN_INVALID',
       });
     }
 
+    req.auth = {
+      token,
+      payload: result.payload,
+      session: result.session,
+    };
+    req.user = result.payload;
+
     next();
   } catch (error) {
-    logger.error(' [Auth] syncSession error', { error: error.message });
-    res.status(401).json({ error: 'Authentication failed' });
+    logger.error(' [Auth] Middleware error', {
+      error: error.message,
+      path: req.path,
+    });
+    return res.status(500).json({
+      error: 'Authentication error',
+      code: 'AUTH_ERROR',
+    });
   }
-}
+};
 
 /**
- * Optional authentication middleware
- * Attaches user info if token is present and valid, but doesn't require it
+ * Extract user ID from request (set by authenticateJwt middleware)
  */
-export async function optionalAuth(req, res, next) {
-  const authHeader =
-    req.headers['authorization'] || req.headers['Authorization'];
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return next();
+export const extractUserId = (req, res, next) => {
+  if (!req.auth?.payload?.sub) {
+    return res.status(401).json({
+      error: 'User ID not available',
+      code: 'USER_ID_MISSING',
+    });
   }
 
-  const token = authHeader.substring(7);
-  if (
-    token === 'mock_dev_access_token' &&
-    process.env.NODE_ENV !== 'production'
-  ) {
-    req.auth = {
-      token: 'mock_dev_access_token',
-      payload: {
-        iss: `https://${AUTH0_DOMAIN}/`,
-        sub: 'google-oauth2|102509433531341542550',
-        aud: AUTH0_AUDIENCE,
-        email: 'dev@pistisai.app',
-        name: 'Christopher (Dev)',
-        nickname: 'rightguy',
-        exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
-        iat: Math.floor(Date.now() / 1000),
-        'https://pistisai.app/roles': ['admin'],
-        'https://Pistisai.com/app_metadata': { role: 'admin' },
-        scope: 'openid profile email admin',
-      },
-    };
-    return syncSession(req, res, () => next());
+  req.userId = req.auth.payload.sub;
+  next();
+};
+
+/**
+ * Require admin role middleware (requires authenticateJwt first)
+ */
+export const requireAdmin = (req, res, next) => {
+  const roles = req.auth?.payload?.['https://pistisai.app/roles'] || [];
+  const appRole = req.auth?.payload?.app_metadata?.role;
+  const isAdmin =
+    roles.includes('admin') === true ||
+    appRole === 'admin' ||
+    req.auth?.payload?.role === 'admin';
+
+  if (!isAdmin) {
+    logger.warn(' [Auth] Admin access denied', {
+      userId: req.auth?.payload?.sub,
+      path: req.path,
+    });
+    return res.status(403).json({
+      error: 'Admin access required',
+      code: 'FORBIDDEN',
+    });
   }
 
-  // Use checkJwt but handle failure gracefully without sending response
-  const authHandler = auth({
-    audience: AUTH0_AUDIENCE,
-    issuerBaseURL: `https://${AUTH0_DOMAIN}/`,
-    tokenSigningAlg: 'RS256',
-  });
+  next();
+};
 
-  authHandler(req, res, (err) => {
-    if (err) {
-      logger.debug(
-        ' [Auth] Optional auth failed verification (skipping):',
-        err.message,
-      );
+/**
+ * Optional auth middleware — attaches user if token present, does not reject
+ */
+export const optionalAuth = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const token =
+      authHeader && authHeader.startsWith('Bearer ')
+        ? authHeader.substring(7)
+        : null;
+
+    if (!token) {
+      req.auth = null;
+      req.user = null;
       return next();
     }
 
-    // If JWT is valid, also try to sync/check session but don't block on error
-    syncSession(req, res, (_syncErr) => {
-      // Ignore sync errors in optional auth
-      next();
-    });
-  });
-}
+    const service = getAuthService();
+    const result = await service.validateToken(token, req);
 
-/**
- * Combined JWT Authentication Middleware
- * Performs rigorous JWT verification AND synchronized session validation
- */
-export const authenticateJWT = [
-  // 1. Enforce HTTPS in production
-  (req, res, next) => {
-    if (
-      process.env.NODE_ENV === 'production' &&
-      req.get('x-forwarded-proto') !== 'https' &&
-      req.protocol !== 'https'
-    ) {
-      return res.status(403).json({
-        error: 'HTTPS required',
-        code: 'HTTPS_REQUIRED',
-      });
+    if (result.valid) {
+      req.auth = {
+        token,
+        payload: result.payload,
+        session: result.session,
+      };
+      req.user = result.payload;
+    } else {
+      req.auth = null;
+      req.user = null;
     }
-    next();
-  },
-  // 2. Rigorous JWT verification (Audience, Issuer, Signature)
-  checkJwt,
-  // 3. Synchronized session check (Revocation, Integrity, DB Sync)
-  syncSession,
-];
-
-/**
- * Extract user ID from authenticated request
- * @param {Object} req - Express request object
- * @returns {string} User ID from JWT token
- */
-export function extractUserId(req) {
-  const userId = req.userId || req.user?.sub || req.auth?.payload?.sub;
-  if (!userId) {
-    throw new Error('User not authenticated or user ID not available');
-  }
-  return userId;
-}
-
-/**
- * Extract user email from authenticated request
- * @param {Object} req - Express request object
- * @returns {string|null} User email from JWT token
- */
-export function extractUserEmail(req) {
-  return req.user?.email || req.auth?.payload?.email || null;
-}
-
-/**
- * Check if user has specific permission/scope
- * @param {string} requiredScope - Required scope/permission
- * @returns {Function} Express middleware function
- */
-export function requireScope(requiredScope) {
-  return (req, res, next) => {
-    const user = req.user || req.auth?.payload;
-    if (!user) {
-      return res.status(401).json({
-        error: 'Authentication required',
-        code: 'AUTHENTICATION_REQUIRED',
-      });
-    }
-
-    const userScopes = user.scope ? user.scope.split(' ') : [];
-
-    if (!userScopes.includes(requiredScope)) {
-      logger.warn(
-        ` [Auth] User ${user.sub} missing required scope: ${requiredScope}`,
-      );
-      return res.status(403).json({
-        error: 'Insufficient permissions',
-        code: 'INSUFFICIENT_PERMISSIONS',
-        requiredScope,
-      });
-    }
-
-    next();
-  };
-}
-
-/**
- * Container authentication middleware
- */
-export function authenticateContainer(req, res, next) {
-  const timestamp = req.headers['x-timestamp'];
-  const signature = req.headers['x-signature'];
-  const containerId = req.headers['x-container-id'];
-  const sharedSecret = process.env.CONTAINER_SHARED_SECRET;
-
-  if (!timestamp || !signature || !containerId) {
-    return res.status(401).json({
-      error: 'Container authentication headers required',
-      code: 'CONTAINER_AUTH_HEADERS_REQUIRED',
-    });
-  }
-
-  const now = Date.now();
-  const requestTime = new Date(timestamp).getTime();
-  if (isNaN(requestTime) || Math.abs(now - requestTime) > 300000) {
-    return res.status(403).json({
-      error: 'Invalid or expired timestamp',
-      code: 'INVALID_TIMESTAMP',
-    });
-  }
-
-  const message = `${timestamp}.${req.method}.${req.path}`;
-  const expectedSignature = crypto
-    .createHmac('sha256', sharedSecret)
-    .update(message)
-    .digest('hex');
-
-  if (
-    !crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature),
-    )
-  ) {
-    return res.status(403).json({
-      error: 'Invalid signature',
-      code: 'INVALID_SIGNATURE',
-    });
-  }
-
-  req.containerId = containerId;
-  next();
-}
-
-/**
- * Admin authentication middleware
- */
-export function requireAdmin(req, res, next) {
-  try {
-    const user = req.user || req.auth?.payload;
-    if (!user) {
-      return res.status(401).json({
-        error: 'Authentication required',
-        code: 'AUTH_REQUIRED',
-      });
-    }
-
-    const userMetadata = user['https://Pistisai.com/user_metadata'] || {};
-    const appMetadata = user['https://Pistisai.com/app_metadata'] || {};
-    const userRoles = user['https://pistisai.app/roles'] || [];
-    const userScopes = user.scope ? user.scope.split(' ') : [];
-
-    const hasAdminRole =
-      userMetadata.role === 'admin' ||
-      appMetadata.role === 'admin' ||
-      userRoles.includes('admin') ||
-      userScopes.includes('admin') ||
-      (user.permissions && user.permissions.includes('admin')) ||
-      user.role === 'admin';
-
-    if (!hasAdminRole) {
-      return res.status(403).json({
-        error: 'Admin access required',
-        code: 'ADMIN_ACCESS_REQUIRED',
-        message: 'This operation requires administrative privileges',
-      });
-    }
-
-    next();
   } catch (error) {
-    logger.error(' [AdminAuth] Admin role check failed', {
-      error: error.message,
-    });
-    res.status(500).json({
-      error: 'Admin role verification failed',
-      code: 'ADMIN_CHECK_FAILED',
-    });
+    req.auth = null;
+    req.user = null;
   }
-}
+  next();
+};
 
 /**
- * Rate limiting by user ID
+ * Check if a route matches a pattern (for public routes list)
  */
-export function rateLimitByUser(options = {}) {
-  const { windowMs = 15 * 60 * 1000, max = 100 } = options;
-
-  const redisClient = new Redis({
-    host: process.env.REDIS_HOST || 'localhost',
-    port: process.env.REDIS_PORT || 6379,
-    password: process.env.REDIS_PASSWORD,
-  });
-
-  const store = new RedisStore({
-    sendCommand: (...args) => redisClient.call(...args),
-  });
-
-  return rateLimit({
-    store,
-    windowMs,
-    max,
-    keyGenerator: (req) => req.userId || req.ip,
-    handler: (req, res) => {
-      res.status(429).json({
-        error: 'Too many requests',
-        code: 'RATE_LIMIT_EXCEEDED',
-      });
-    },
-  });
+function matchRoute(pattern, path) {
+  // Convert wildcard pattern to regex
+  const regexStr = pattern
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*');
+  return new RegExp(`^${regexStr}$`).test(path);
 }
+
+export { getAuthService };

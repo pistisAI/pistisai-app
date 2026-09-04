@@ -47,7 +47,7 @@ export class CloudConnectorService {
   async resolveUserUuid(authSub) {
     this._assertPool();
     const result = await this.pool.query(
-      'SELECT id FROM users WHERE auth0_sub = $1 OR id::text = $1 LIMIT 1',
+      'SELECT id FROM users WHERE supabase_id = $1 OR id::text = $1 LIMIT 1',
       [authSub],
     );
     return result.rows[0]?.id || null;

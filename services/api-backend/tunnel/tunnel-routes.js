@@ -32,7 +32,7 @@ export function createTunnelRoutes(
   // Use provided auth service or create a new one (fallback)
   if (!authService) {
     authService = new AuthService({
-      AUTH0_ISSUER_URL: process.env.AUTH0_ISSUER_URL,
+      SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
     });
   }
 

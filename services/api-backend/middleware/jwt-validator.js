@@ -146,9 +146,8 @@ export class JWTValidator {
     const key = 'default';
     if (!this.authServices.has(key)) {
       const authService = new AuthService({
-        AUTH_ISSUER_URL:
-          process.env.AUTH0_ISSUER_URL || process.env.AUTH_ISSUER_URL,
-        AUTH_AUDIENCE: process.env.AUTH0_AUDIENCE || process.env.AUTH_AUDIENCE,
+        SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
+        SUPABASE_JWKS_URI: process.env.SUPABASE_JWKS_URI || `${process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co'}/auth/v1/.well-known/jwks.json`,
       });
 
       this.authServices.set(key, authService);
@@ -301,9 +300,9 @@ export class JWTValidator {
       if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
         this.logger.info('Using mock developer token bypass in validator', { correlationId });
         verified = {
-          iss: process.env.AUTH0_ISSUER_URL || `https://${process.env.AUTH0_DOMAIN || 'dev-vivn1fcgzi0c2czy.us.auth0.com'}/`,
-          sub: 'google-oauth2|102509433531341542550',
-          aud: process.env.AUTH0_AUDIENCE || 'https://api.pistisai.app',
+          iss: `${process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co'}/auth/v1`,
+          sub: '00000000-0000-0000-0000-000000000000',
+          aud: 'authenticated',
           email: 'dev@pistisai.app',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',

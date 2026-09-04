@@ -19,7 +19,14 @@ class AppConfig {
       'https://github.com/pistisAI/pistisai-app/releases/latest';
 
   // Configured Authentication Provider
-  static const AuthProviderType authProvider = AuthProviderType.auth0;
+  static const AuthProviderType authProvider = AuthProviderType.supabase;
+
+  // Supabase Configuration
+  static const String supabaseUrl = 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
+  static const String supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue: 'sb_publishable_3LxSfJDzDUKaf9_8t7SI7Q_fIgrFd0I',
+  );
 
   // Sentry Configuration
   // Override at compile time: flutter build --dart-define=SENTRY_DSN=your_dsn
@@ -243,5 +250,6 @@ class AppConfig {
 }
 
 enum AuthProviderType {
-  auth0,
+  supabase,
+  none,
 }
