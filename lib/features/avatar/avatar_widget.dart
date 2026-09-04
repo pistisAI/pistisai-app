@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pistisai/features/avatar/rive_avatar.dart';
+import 'package:pistisai/features/avatar/emoji_blending_avatar.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
 
 /// Represents the current expression/state of the agent.
@@ -13,9 +13,7 @@ enum AgentState {
 
 /// An expressive avatar for Pistisai that reacts to the agent's state.
 ///
-/// Automatically selects the best available rendering backend:
-/// - [RiveAvatar] when the .riv asset is available (state-driven vector animations)
-/// - [EmojiBlendingAvatar] as the graceful fallback
+/// Uses [EmojiBlendingAvatar] for smooth transitions between states.
 ///
 /// This is the primary avatar widget used throughout the app.
 class AgentAvatar extends StatelessWidget {
@@ -41,7 +39,7 @@ class AgentAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RiveAvatar(
+    return EmojiBlendingAvatar(
       state: state,
       size: size,
       personality: personality,
