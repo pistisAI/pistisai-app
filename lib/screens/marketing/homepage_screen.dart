@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Marketing homepage screen - web-only
@@ -646,7 +647,7 @@ class HomepageScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          _buildCodeBlock(context, 'Linux / macOS (Bash)',
+          _buildCodeBlock(context, 'Linux',
             'curl -fsSL https://pistisai.app/install.sh | bash', isMobile),
           const SizedBox(height: 24),
           _buildCodeBlock(context, 'Windows (PowerShell)',
@@ -692,7 +693,18 @@ class HomepageScreen extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.copy, size: 16, color: Color(0xFF6A5E4A)),
-                onPressed: () {},
+                tooltip: 'Copy command',
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: code));
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Copied to clipboard'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),
