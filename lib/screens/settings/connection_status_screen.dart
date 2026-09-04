@@ -189,7 +189,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                 isAuthenticated ? Colors.green : Colors.red,
               ),
               if (isAuthenticated) ...[
-                _buildStatusRow('Provider', 'Auth0', Colors.blue),
+                _buildStatusRow('Provider', 'Supabase', Colors.blue),
               ],
               SizedBox(height: AppTheme.spacingM),
               if (!isAuthenticated)
