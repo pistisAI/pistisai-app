@@ -1,5 +1,7 @@
 // Simple auth logger for Pistisai
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import '../utils/file_download_helper.dart';
 
 class AuthLogger {
   static final List<String> _logs = [];
@@ -38,5 +40,17 @@ class AuthLogger {
 
   static List<String> getLogs() => List.from(_logs);
   static void clearLogs() => _logs.clear();
-  static void downloadLogs() {} // Stub
+
+  static Future<void> downloadLogs() async {
+    final buffer = StringBuffer();
+    buffer.writeln('# Pistisai Auth Debug Log');
+    buffer.writeln('Generated at: ${DateTime.now().toIso8601String()}');
+    buffer.writeln('Log entries: ${_logs.length}');
+    buffer.writeln('');
+    for (final log in _logs) {
+      buffer.writeln(log);
+    }
+    final bytes = buffer.toString().codeUnits;
+    downloadFile(bytes, 'pistisai_auth_debug_${DateTime.now().millisecondsSinceEpoch}.log', 'text/plain');
+  }
 }
