@@ -478,7 +478,13 @@ class SetupWizardService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await _discovery.testConnection(url);
+      final apiKey = _state.selectedMethod == ConnectionMethod.hermes
+          ? _state.hermesApiKey
+          : null;
+      final result = await _discovery.testConnection(
+        url,
+        apiKey: apiKey,
+      );
       _state = _state.copyWith(
         isLoading: false,
         errorMessage: result.isConnected
