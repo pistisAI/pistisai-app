@@ -6,7 +6,7 @@ set -euo pipefail
 
 PISTISAI_CF_ACCOUNT_ID="${PISTISAI_CF_ACCOUNT_ID:-35fa09929e656c4e96e4aa79909d11b7}"
 PISTISAI_CF_TUNNEL_IDS="${PISTISAI_CF_TUNNEL_IDS:-b0aebd5d-5fdf-4dc1-b64c-932c4ee8b400 62da6c19-947b-4bf6-acad-100a73de4e0d}"
-PISTISAI_VPS_SSH_USER="${PISTISAI_VPS_SSH_USER:-cloudllm}"
+PISTISAI_VPS_SSH_USERS="${PISTISAI_VPS_SSH_USERS:-cloudllm root}"
 VPS_SSH_KEY_FILE="${VPS_SSH_KEY_FILE:-}"
 CLOUDFLARE_ZONE_ID="${CLOUDFLARE_ZONE_ID:-}"
 CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN:-${CLOUDFLARE_CACHE_PURGE_TOKEN:-}}"
@@ -71,11 +71,34 @@ except urllib.error.HTTPError as exc:
 PY
 }
 
+log_cf_api_status() {
+  local label="$1"
+  local response="$2"
+  local status
+  status="$(printf '%s' "$response" | python3 - <<'PY'
+import json, sys
+try:
+    data = json.load(sys.stdin)
+except json.JSONDecodeError:
+    print("invalid-json")
+    sys.exit(0)
+if "http_status" in data:
+    print(data["http_status"])
+elif data.get("success") is True:
+    print("ok")
+else:
+    print("error")
+PY
+)"
+  log "${label}: ${status}"
+}
+
 collect_tunnel_origin_ips() {
   [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]] && return 0
   for tunnel_id in $PISTISAI_CF_TUNNEL_IDS; do
     response="$(cf_api GET "/accounts/${PISTISAI_CF_ACCOUNT_ID}/cfd_tunnel/${tunnel_id}/connections")"
     [[ -z "$response" ]] && continue
+    log_cf_api_status "tunnel ${tunnel_id} connections" "$response"
     if ! printf '%s' "$response" | python3 -c 'import json,sys; json.load(sys.stdin)' >/dev/null 2>&1; then
       log "Cloudflare tunnel connections API returned non-JSON for tunnel ${tunnel_id}"
       continue
@@ -103,8 +126,11 @@ collect_dns_a_records() {
   [[ -z "${CLOUDFLARE_API_TOKEN:-}" || -z "${CLOUDFLARE_ZONE_ID:-}" ]] && return 0
   page=1
   while :; do
-    response="$(cf_api GET "/zones/${CLOUDFLARE_ZONE_ID}/dns_records?type=A&per_page=100&page=${page}")"
+    response="$(cf_api GET "/zones/${CLOUDFLARE_ZONE_ID}/dns_records?per_page=100&page=${page}")"
     [[ -z "$response" ]] && break
+    if [[ "$page" -eq 1 ]]; then
+      log_cf_api_status "dns records" "$response"
+    fi
     mapfile -t dns_batch < <(
       printf '%s' "$response" | python3 - <<'PY'
 import json, sys
@@ -135,7 +161,8 @@ PY
 }
 
 probe_ssh() {
-  local ip="$1"
+  local user="$1"
+  local ip="$2"
   [[ -z "$VPS_SSH_KEY_FILE" || ! -f "$VPS_SSH_KEY_FILE" ]] && return 1
   ssh -4 \
     -i "$VPS_SSH_KEY_FILE" \
@@ -143,7 +170,7 @@ probe_ssh() {
     -o ConnectTimeout=10 \
     -o StrictHostKeyChecking=no \
     -o UserKnownHostsFile=/dev/null \
-    "${PISTISAI_VPS_SSH_USER}@${ip}" \
+    "${user}@${ip}" \
     'test -d /opt/Pistisai || test -d /opt/pistisai' \
     >/dev/null 2>&1
 }
@@ -163,12 +190,14 @@ fi
 
 log "Probing ${#CANDIDATES[@]} SSH candidate(s)..."
 for ip in "${CANDIDATES[@]}"; do
-  log "Trying ${PISTISAI_VPS_SSH_USER}@${ip}"
-  if probe_ssh "$ip"; then
-    log "Origin VPS reachable at ${ip}"
-    printf '%s\n' "$ip"
-    exit 0
-  fi
+  for user in $PISTISAI_VPS_SSH_USERS; do
+    log "Trying ${user}@${ip}"
+    if probe_ssh "$user" "$ip"; then
+      log "Origin VPS reachable at ${ip} (${user})"
+      printf '%s\n' "$ip"
+      exit 0
+    fi
+  done
 done
 
 log "No candidate accepted SSH with /opt/Pistisai present"

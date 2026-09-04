@@ -103,7 +103,10 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           export VPS_SSH_KEY_FILE="$HOME/.ssh/id_ed25519"
           export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_CACHE_PURGE_TOKEN:-}"
-          chmod +x scripts/deploy/discover_pistisai_vps_origin.sh
+          chmod +x scripts/deploy/discover_pistisai_vps_origin.sh scripts/deploy/probe_cloudflare_token.sh
+          if [ -n "${CLOUDFLARE_ZONE_ID:-}" ] && [ -n "${CLOUDFLARE_CACHE_PURGE_TOKEN:-}" ]; then
+            scripts/deploy/probe_cloudflare_token.sh "$CLOUDFLARE_ZONE_ID" "$CLOUDFLARE_CACHE_PURGE_TOKEN" || true
+          fi
           if origin_ip="$(scripts/deploy/discover_pistisai_vps_origin.sh)"; then
             echo "host=${origin_ip}" >> "$GITHUB_OUTPUT"
             echo "Discovered Pistisai VPS origin IP"
