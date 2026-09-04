@@ -17,6 +17,8 @@ on:
       - "scripts/packaging/installer-template.ps1"
       - "scripts/packaging/build_installer.sh"
       - "scripts/packaging/installer-template.sh"
+      - "scripts/deploy/discover_pistisai_vps_origin.sh"
+      - "scripts/deploy/sync_cloudflare_install_redirects.py"
       - ".github/workflows/deploy-web.yml"
   workflow_dispatch:
 
@@ -27,6 +29,7 @@ concurrency:
 permissions:
   contents: read
   packages: write
+  secrets: write
 
 jobs:
   analyze:
@@ -83,13 +86,48 @@ jobs:
           path: build/web/
           retention-days: 1
 
+      - name: Discover Pistisai VPS origin IP
+        if: github.ref_name == 'main'
+        id: discover_vps
+        env:
+          VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_CACHE_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then
+            echo "No SSH key; skipping origin discovery"
+            exit 0
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$VM_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          export VPS_SSH_KEY_FILE="$HOME/.ssh/id_ed25519"
+          export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_CACHE_PURGE_TOKEN:-}"
+          chmod +x scripts/deploy/discover_pistisai_vps_origin.sh
+          if origin_ip="$(scripts/deploy/discover_pistisai_vps_origin.sh)"; then
+            echo "host=${origin_ip}" >> "$GITHUB_OUTPUT"
+            echo "Discovered Pistisai VPS origin IP"
+          else
+            echo "Could not discover Pistisai VPS origin IP"
+          fi
+
+      - name: Persist discovered VPS origin IP
+        if: github.ref_name == 'main' && steps.discover_vps.outputs.host != ''
+        env:
+          DISCOVERED_HOST: ${{ steps.discover_vps.outputs.host }}
+        run: |
+          set -euo pipefail
+          gh secret set PISTISAI_VPS_SSH_HOST --body "$DISCOVERED_HOST"
+          echo "Updated PISTISAI_VPS_SSH_HOST secret"
+
       - name: Deploy to VPS
         if: github.ref_name == 'main'
         env:
           VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST || 'pistisai.app' }}
           VPS_USER: ${{ secrets.VPS_USER || 'cloudllm' }}
-          PISTISAI_VPS_SSH_HOST: ${{ secrets.PISTISAI_VPS_SSH_HOST }}
+          PISTISAI_VPS_SSH_HOST: ${{ steps.discover_vps.outputs.host || secrets.PISTISAI_VPS_SSH_HOST }}
         run: |
           set -euo pipefail
           if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then
@@ -181,52 +219,40 @@ jobs:
             echo "Missing Cloudflare secrets, skipping install redirect sync"
             exit 0
           fi
-          INSTALL_SH_URL="https://github.com/pistisAI/pistisai-app/releases/latest/download/install.sh"
-          python3 - <<'PY' "$CLOUDFLARE_ZONE_ID" "$CLOUDFLARE_CACHE_PURGE_TOKEN" "$INSTALL_SH_URL"
-          import json, sys, urllib.request
+          python3 scripts/deploy/sync_cloudflare_install_redirects.py \
+            "$CLOUDFLARE_ZONE_ID" \
+            "$CLOUDFLARE_CACHE_PURGE_TOKEN" \
+            || echo "Cloudflare install redirect sync skipped"
 
-          zone_id, token, install_sh = sys.argv[1:4]
-          api = f"https://api.cloudflare.com/client/v4/zones/{zone_id}/rulesets/phases/http_request_dynamic_redirect/entrypoint"
-          headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-
-          def cf(method, url, payload=None):
-              data = None if payload is None else json.dumps(payload).encode()
-              req = urllib.request.Request(url, data=data, headers=headers, method=method)
-              with urllib.request.urlopen(req, timeout=30) as resp:
-                  return json.load(resp)
-
-          def redirect_rule(name, expression, target):
-              return {
-                  "action": "redirect",
-                  "expression": expression,
-                  "description": name,
-                  "action_parameters": {
-                      "from_value": {
-                          "target_url": {"value": target},
-                          "status_code": {"value": 302},
-                          "preserve_query_string": {"value": True},
-                      }
-                  },
-                  "enabled": True,
-              }
-
-          host_expr = '(http.host eq "pistisai.app" or http.host eq "www.pistisai.app" or http.host eq "app.pistisai.app")'
-          rules = [
-              redirect_rule(
-                  "Pistisai install.sh",
-                  f'{host_expr} and http.request.uri.path eq "/install.sh"',
-                  install_sh,
-              ),
-          ]
-          payload = {"rules": rules}
-          try:
-              existing = cf("GET", api)
-              ruleset_id = existing.get("result", {}).get("id")
-              if ruleset_id:
-                  cf("PUT", f"https://api.cloudflare.com/client/v4/zones/{zone_id}/rulesets/{ruleset_id}", payload)
-              else:
-                  cf("PUT", api, payload)
-              print("Cloudflare install.sh redirect synced")
-          except Exception as exc:
-              print(f"Cloudflare redirect sync skipped: {exc}")
-          PY
+      - name: Verify live install scripts
+        if: github.ref_name == 'main'
+        run: |
+          set -euo pipefail
+          ok=0
+          for url in \
+            "https://pistisai.app/install.sh" \
+            "https://pistisai.app/install.ps1"
+          do
+            headers="$(curl -sSI --max-time 25 "$url" || true)"
+            ctype="$(printf '%s\n' "$headers" | awk -F': ' 'tolower($1)=="content-type"{print tolower($2); exit}')"
+            body="$(curl -fsSL --max-time 25 "$url" | head -c 200 || true)"
+            echo "$url -> content-type=${ctype:-unknown}"
+            if printf '%s' "$body" | grep -qi '<html'; then
+              echo "Still serving SPA HTML for $url"
+              continue
+            fi
+            case "$url" in
+              *install.sh)
+                printf '%s' "$body" | grep -q '^#!/' || continue
+                ;;
+              *install.ps1)
+                printf '%s' "$body" | grep -qi 'Pistisai\|github.com/pistisAI/pistisai-app' || continue
+                ;;
+            esac
+            ok=1
+          done
+          if [ "$ok" -eq 0 ]; then
+            echo "Live install URLs still broken after deploy"
+            exit 1
+          fi
+          echo "Live install script verification passed"
