@@ -32,8 +32,8 @@ for file in \
   "dist/windows/Pistisai-Windows-2.3.4-Setup.exe.sha256" \
   "dist/linux/pistisai_2.3.4_amd64.deb" \
   "dist/linux/pistisai_2.3.4_amd64.deb.sha256" \
-  "dist/linux/pistisai-2.3.4-x86_64.AppImage" \
-  "dist/linux/pistisai-2.3.4-x86_64.AppImage.sha256"; do
+  "dist/linux/Pistisai-Linux-2.3.4-x86_64.AppImage" \
+  "dist/linux/Pistisai-Linux-2.3.4-x86_64.AppImage.sha256"; do
   printf 'artifact\n' > "$REPO_DIR/$file"
 done
 
@@ -102,8 +102,8 @@ for asset in \
   'dist/windows/Pistisai-Windows-2.3.4-Setup.exe.sha256' \
   'dist/linux/pistisai_2.3.4_amd64.deb' \
   'dist/linux/pistisai_2.3.4_amd64.deb.sha256' \
-  'dist/linux/pistisai-2.3.4-x86_64.AppImage' \
-  'dist/linux/pistisai-2.3.4-x86_64.AppImage.sha256'; do
+  'dist/linux/Pistisai-Linux-2.3.4-x86_64.AppImage' \
+  'dist/linux/Pistisai-Linux-2.3.4-x86_64.AppImage.sha256'; do
   if ! grep -Fq "$asset" "$LOG_FILE"; then
     echo "Expected gh override to include asset: $asset" >&2
     cat "$LOG_FILE" >&2

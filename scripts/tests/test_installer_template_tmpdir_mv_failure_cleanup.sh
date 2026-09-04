@@ -80,12 +80,12 @@ if [[ -e "$temp_path" ]]; then
   exit 1
 fi
 
-if [[ -e "$INSTALL_DIR/pistisai-10.1.200-x86_64.AppImage" ]]; then
+if [[ -e "$INSTALL_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected installer output file cleanup on mv failure" >&2
   exit 1
 fi
 
-if ! grep -Fq "$INSTALL_DIR/pistisai-10.1.200-x86_64.AppImage" "$MV_LOG"; then
+if ! grep -Fq "$INSTALL_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage" "$MV_LOG"; then
   echo "Expected mv failure path to be exercised" >&2
   cat "$MV_LOG" >&2
   exit 1

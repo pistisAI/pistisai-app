@@ -201,9 +201,9 @@ validate_packages() {
     fi
 
     # Check AppImage package
-    if [[ -f "$dist_dir/pistisai-${version}-x86_64.AppImage" ]]; then
-        log_success "AppImage package found: Pistisai-${version}-x86_64.AppImage"
-        if [[ -f "$dist_dir/pistisai-${version}-x86_64.AppImage.sha256" ]]; then
+    if [[ -f "$dist_dir/Pistisai-Linux-${version}-x86_64.AppImage" ]]; then
+        log_success "AppImage package found: Pistisai-Linux-${version}-x86_64.AppImage"
+        if [[ -f "$dist_dir/Pistisai-Linux-${version}-x86_64.AppImage.sha256" ]]; then
             log_success "AppImage package checksum found"
         else
             log_error "AppImage package checksum missing"
@@ -246,9 +246,9 @@ generate_summary() {
         echo "  Debian: Pistisai_${version}_amd64.deb ($size)"
     fi
 
-    if [[ -f "$dist_dir/pistisai-${version}-x86_64.AppImage" ]]; then
-        local size=$(du -h "$dist_dir/pistisai-${version}-x86_64.AppImage" | cut -f1)
-        echo "  AppImage: Pistisai-${version}-x86_64.AppImage ($size)"
+    if [[ -f "$dist_dir/Pistisai-Linux-${version}-x86_64.AppImage" ]]; then
+        local size=$(du -h "$dist_dir/Pistisai-Linux-${version}-x86_64.AppImage" | cut -f1)
+        echo "  AppImage: Pistisai-Linux-${version}-x86_64.AppImage ($size)"
     fi
 
     echo

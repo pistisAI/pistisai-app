@@ -142,8 +142,8 @@ jobs:
           ./scripts/packaging/build_appimage.sh
 
           ls -lh dist/linux/
-          test -n "$(find dist/linux -maxdepth 1 -name '*.AppImage' -print -quit)"
-          test -n "$(find dist/linux -maxdepth 1 -name '*.AppImage.sha256' -print -quit)"
+          test -f "dist/linux/Pistisai-Linux-${VERSION}-x86_64.AppImage"
+          test -f "dist/linux/Pistisai-Linux-${VERSION}-x86_64.AppImage.sha256"
 
       - name: Generate Installer Script
         run: |

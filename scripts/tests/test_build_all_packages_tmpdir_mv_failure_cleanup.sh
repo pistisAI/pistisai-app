@@ -70,8 +70,8 @@ cat > "$FAKE_TOOLS/build_appimage.sh" <<'EOF'
 set -euo pipefail
 printf 'build_appimage %s\n' "$*" >> "$LOG_FILE"
 mkdir -p "$FAKE_DIST_DIR"
-printf 'appimage\n' > "$FAKE_DIST_DIR/pistisai-2.3.4-x86_64.AppImage"
-printf 'checksum\n' > "$FAKE_DIST_DIR/pistisai-2.3.4-x86_64.AppImage.sha256"
+printf 'appimage\n' > "$FAKE_DIST_DIR/Pistisai-Linux-2.3.4-x86_64.AppImage"
+printf 'checksum\n' > "$FAKE_DIST_DIR/Pistisai-Linux-2.3.4-x86_64.AppImage.sha256"
 EOF
 chmod +x "$FAKE_TOOLS/build_appimage.sh"
 

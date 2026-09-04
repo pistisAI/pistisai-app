@@ -104,8 +104,8 @@ set -euo pipefail
 printf '%s\n' "$0 $*" >> "$LOG_FILE"
 proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 mkdir -p "$proj_root/dist/linux"
-printf '%s\n' 'appimage' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
-printf '%s\n' 'checksum' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
+printf '%s\n' 'appimage' > "$proj_root/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage"
+printf '%s\n' 'checksum' > "$proj_root/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256"
 exit 0
 EOF
 chmod +x "$FAKE_BUILD_APPIMAGE"
@@ -118,7 +118,7 @@ FLUTTER_CMD="$FAKE_FLUTTER" \
 BUILD_APPIMAGE_CMD="$FAKE_BUILD_APPIMAGE" \
 "$TARGET_SCRIPT" --skip-increment >"$WORK_DIR/output.log" 2>&1
 
-APPIMAGE_FILE="$FAKE_DIST_DIR/pistisai-10.1.200-x86_64.AppImage"
+APPIMAGE_FILE="$FAKE_DIST_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage"
 APPIMAGE_SHA="$APPIMAGE_FILE.sha256"
 
 if [[ ! -f "$APPIMAGE_FILE" ]]; then

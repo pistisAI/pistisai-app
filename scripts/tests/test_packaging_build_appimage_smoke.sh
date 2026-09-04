@@ -51,7 +51,7 @@ DESKTOP_TEMPLATE="$DESKTOP_TEMPLATE" \
 FAKE_TOOL_LOG="$FAKE_TOOL_LOG" \
 "$TARGET_SCRIPT"
 
-APPIMAGE_FILE="$OUTPUT_DIR/pistisai-$(grep 'version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)-x86_64.AppImage"
+APPIMAGE_FILE="$OUTPUT_DIR/Pistisai-Linux-$(grep 'version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)-x86_64.AppImage"
 CHECKSUM_FILE="$APPIMAGE_FILE.sha256"
 
 [[ -f "$APPIMAGE_FILE" ]]

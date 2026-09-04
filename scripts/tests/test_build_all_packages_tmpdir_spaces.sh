@@ -79,8 +79,8 @@ set -euo pipefail
 printf 'build_appimage %s\n' "$*" >> "$APPIMAGE_LOG"
 proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 mkdir -p "$proj_root/dist/linux"
-printf '%s\n' 'appimage' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
-printf '%s\n' 'checksum' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
+printf '%s\n' 'appimage' > "$proj_root/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage"
+printf '%s\n' 'checksum' > "$proj_root/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256"
 EOF
 chmod +x "$FAKE_BUILD_APPIMAGE"
 
@@ -92,14 +92,14 @@ FLUTTER_CMD="$FAKE_FLUTTER" \
 BUILD_APPIMAGE_CMD="$FAKE_BUILD_APPIMAGE" \
 "$TARGET_SCRIPT" --skip-increment >/tmp/test_build_all_packages_tmpdir_spaces.log 2>&1
 
-if [[ ! -f "$FAKE_DIST_DIR/pistisai-10.1.200-x86_64.AppImage" ]]; then
-  echo "Expected AppImage at $FAKE_DIST_DIR/pistisai-10.1.200-x86_64.AppImage" >&2
+if [[ ! -f "$FAKE_DIST_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage" ]]; then
+  echo "Expected AppImage at $FAKE_DIST_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage" >&2
   cat /tmp/test_build_all_packages_tmpdir_spaces.log >&2
   exit 1
 fi
 
-if [[ ! -f "$FAKE_DIST_DIR/pistisai-10.1.200-x86_64.AppImage.sha256" ]]; then
-  echo "Expected AppImage checksum at $FAKE_DIST_DIR/pistisai-10.1.200-x86_64.AppImage.sha256" >&2
+if [[ ! -f "$FAKE_DIST_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256" ]]; then
+  echo "Expected AppImage checksum at $FAKE_DIST_DIR/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256" >&2
   cat /tmp/test_build_all_packages_tmpdir_spaces.log >&2
   exit 1
 fi

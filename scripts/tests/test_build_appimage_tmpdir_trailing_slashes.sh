@@ -6,7 +6,7 @@ WORK_DIR="$(mktemp -d)"
 FAKE_BUILD_DIR="$WORK_DIR/bundle"
 FAKE_TOOLS="$WORK_DIR/bin"
 TMPDIR_BASE="$WORK_DIR/trailing/tmpdir/base"
-TMP_OUTPUT="$WORK_DIR/dist/linux/pistisai-1.2.3-x86_64.AppImage"
+TMP_OUTPUT="$WORK_DIR/dist/linux/Pistisai-Linux-1.2.3-x86_64.AppImage"
 TMP_DESKTOP_TEMPLATE="$WORK_DIR/pistisai.desktop"
 LOG_FILE="$WORK_DIR/appimagetool.log"
 export LOG_FILE

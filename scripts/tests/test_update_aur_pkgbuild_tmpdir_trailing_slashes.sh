@@ -28,7 +28,7 @@ pkgver=VERSION
 sha256sums=('SKIP')
 EOF
 
-printf 'appimage' > "$FAKE_ROOT/dist/linux/pistisai-1.2.3-x86_64.AppImage"
+printf 'appimage' > "$FAKE_ROOT/dist/linux/Pistisai-Linux-1.2.3-x86_64.AppImage"
 
 cat > "$FAKE_TOOLS/makepkg" <<'EOF'
 #!/bin/bash

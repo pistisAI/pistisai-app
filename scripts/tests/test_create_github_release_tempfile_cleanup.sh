@@ -32,10 +32,10 @@ for file in \
   "dist/windows/Pistisai-Windows-2.3.4-Setup.exe.sha256" \
   "dist/linux/pistisai_2.3.4_amd64.deb" \
   "dist/linux/pistisai_2.3.4_amd64.deb.sha256" \
-  "dist/linux/pistisai-2.3.4-amd64.deb" \
-  "dist/linux/pistisai-2.3.4-amd64.deb.sha256" \
-  "dist/linux/pistisai-2.3.4-x86_64.AppImage" \
-  "dist/linux/pistisai-2.3.4-x86_64.AppImage.sha256"; do
+  "dist/linux/Pistisai-Linux-2.3.4-amd64.deb" \
+  "dist/linux/Pistisai-Linux-2.3.4-amd64.deb.sha256" \
+  "dist/linux/Pistisai-Linux-2.3.4-x86_64.AppImage" \
+  "dist/linux/Pistisai-Linux-2.3.4-x86_64.AppImage.sha256"; do
   printf 'artifact\n' > "$REPO_DIR/$file"
 done
 

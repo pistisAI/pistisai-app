@@ -367,7 +367,7 @@ class PlatformDetectionService extends ChangeNotifier {
           title: 'Make executable',
           description: 'Open terminal and make the AppImage executable.',
           commands: [
-            'chmod +x Pistisai-${AppConfig.appVersion}-x86_64.AppImage',
+            'chmod +x Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage',
           ],
           applicableTypes: ['appimage'],
           order: 1,

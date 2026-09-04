@@ -72,9 +72,9 @@ set -euo pipefail
 printf '%s\n' "$0 $*" >> "${APPIMAGE_LOG:?missing APPIMAGE_LOG}"
 proj_root="${PROJECT_ROOT_OVERRIDE:?missing PROJECT_ROOT_OVERRIDE}"
 mkdir -p "$proj_root/dist/linux"
-printf '%s\n' 'appimage-built' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
-printf '%s\n' 'checksum-built' > "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage.sha256"
-chmod +x "$proj_root/dist/linux/pistisai-10.1.200-x86_64.AppImage"
+printf '%s\n' 'appimage-built' > "$proj_root/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage"
+printf '%s\n' 'checksum-built' > "$proj_root/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage.sha256"
+chmod +x "$proj_root/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage"
 exit 0
 EOF
 chmod +x "$FAKE_BUILD_APPIMAGE"
@@ -127,7 +127,7 @@ if ! grep -Fq "$FAKE_BUILD_APPIMAGE" "$APPIMAGE_LOG"; then
   exit 1
 fi
 
-if [[ ! -f "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
+if [[ ! -f "$FAKE_ROOT/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected final AppImage artifact on success" >&2
   cat /tmp/test_build_all_packages_command_paths_spaces.log >&2
   exit 1

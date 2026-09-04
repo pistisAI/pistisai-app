@@ -135,7 +135,7 @@ if compgen -G "$FAKE_ROOT/assets/.version.json.*" > /dev/null; then
   exit 1
 fi
 
-if [[ -e "$FAKE_ROOT/dist/linux/pistisai-10.1.200-x86_64.AppImage" ]]; then
+if [[ -e "$FAKE_ROOT/dist/linux/Pistisai-Linux-10.1.200-x86_64.AppImage" ]]; then
   echo "Expected no final AppImage output after failure" >&2
   exit 1
 fi

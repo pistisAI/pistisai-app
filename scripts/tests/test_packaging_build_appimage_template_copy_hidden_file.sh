@@ -75,7 +75,7 @@ DESKTOP_TEMPLATE="$DESKTOP_TEMPLATE" \
 APPIMAGETOOL_CMD="$FAKE_TOOL" \
 "$SCRIPT_COPY" >/dev/null 2>&1
 
-APPIMAGE_FILE="$OUTPUT_DIR/pistisai-$(grep 'version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)-x86_64.AppImage"
+APPIMAGE_FILE="$OUTPUT_DIR/Pistisai-Linux-$(grep 'version:' "$PROJECT_ROOT/pubspec.yaml" | awk '{print $2}' | cut -d '+' -f 1)-x86_64.AppImage"
 [[ -f "$APPIMAGE_FILE" ]]
 [[ -x "$APPIMAGE_FILE" ]]
 grep -Fq 'ARCH=x86_64' "$FAKE_TOOL_LOG"
