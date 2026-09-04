@@ -87,7 +87,8 @@ const wss = new WebSocketServer({ server: httpServer, path: WEBSOCKET_PATH });
 const wsHandler = new WebSocketHandlerImpl(
   wss,
   authMiddleware,
-  rateLimiter
+  rateLimiter,
+  connectionPool
 );
 
 // Initialize health checker with all components
