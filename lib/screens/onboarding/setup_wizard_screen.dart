@@ -9,6 +9,7 @@ import 'package:pistisai/screens/onboarding/steps/local_detection_step.dart';
 import 'package:pistisai/screens/onboarding/steps/gateway_password_step.dart';
 import 'package:pistisai/screens/onboarding/steps/tailscale_discovery_step.dart';
 import 'package:pistisai/screens/onboarding/steps/remote_connection_step.dart';
+import 'package:pistisai/screens/onboarding/steps/hermes_location_step.dart';
 import 'package:pistisai/screens/onboarding/steps/hermes_url_step.dart';
 import 'package:pistisai/screens/onboarding/steps/connection_test_step.dart';
 import 'package:pistisai/screens/onboarding/steps/completion_step.dart';
@@ -26,6 +27,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   final PageController _pageController = PageController();
   int _lastStep = 0;
   ConnectionMethod? _lastMethod;
+  HermesLocation? _lastHermesLocation;
   String? _lastErrorSnackbarMessage;
 
   @override
@@ -35,13 +37,12 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   }
 
   /// Get total steps based on connection method
-  int _getTotalSteps(ConnectionMethod? method) {
-    return _buildSteps(method).length;
+  int _getTotalSteps(ConnectionMethod? method, HermesLocation? hermesLocation) {
+    return _buildSteps(method, hermesLocation).length;
   }
 
-  /// Check if step list changed (method changed)
-  bool _stepListChanged(ConnectionMethod? method) {
-    return _lastMethod != method;
+  bool _stepListChanged(ConnectionMethod? method, HermesLocation? hermesLocation) {
+    return _lastMethod != method || _lastHermesLocation != hermesLocation;
   }
 
   @override
@@ -49,12 +50,13 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     return Consumer<SetupWizardService>(
       builder: (context, wizard, child) {
         final method = wizard.state.selectedMethod;
-        final totalSteps = _getTotalSteps(method);
+        final hermesLocation = wizard.state.hermesLocation;
+        final totalSteps = _getTotalSteps(method, hermesLocation);
         final currentStep = wizard.state.currentStep;
 
-        // Handle method change - need to rebuild PageView with correct initial page
-        if (_stepListChanged(method)) {
+        if (_stepListChanged(method, hermesLocation)) {
           _lastMethod = method;
+          _lastHermesLocation = hermesLocation;
           _lastStep = currentStep;
           // Don't animate on method change, just jump to current step
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -84,16 +86,25 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                 _buildProgressIndicator(currentStep, totalSteps),
                 Expanded(
                   child: PageView(
-                    key: ValueKey(
-                        'pageview_$method'), // Rebuild when method changes
+                    key: ValueKey('pageview_${method}_$hermesLocation'),
                     controller: _pageController,
                     physics: const NeverScrollableScrollPhysics(),
                     onPageChanged: (index) {
                       wizard.goToStep(index);
                     },
-                    children: _buildSteps(method),
+                    children: _buildSteps(method, hermesLocation),
                   ),
                 ),
+                if (wizard.state.errorMessage != null &&
+                    method == ConnectionMethod.hermes)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                    child: Text(
+                      wizard.state.errorMessage!,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 _buildNavigationButtons(wizard, totalSteps),
               ],
             ),
@@ -105,7 +116,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
 
   Widget _buildProgressIndicator(int currentStep, int totalSteps) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
       child: Column(
         children: [
           Row(
@@ -137,16 +148,25 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     );
   }
 
-  List<Widget> _buildSteps(ConnectionMethod? method) {
-    // Hermes has a simplified flow: Welcome → Connection Method → Hermes URL → Connection Test → Completion
+  List<Widget> _buildSteps(
+    ConnectionMethod? method,
+    HermesLocation? hermesLocation,
+  ) {
     if (method == ConnectionMethod.hermes) {
-      return <Widget>[
+      final steps = <Widget>[
         const WelcomeStep(),
         const ConnectionMethodStep(),
-        const HermesUrlStep(),
-        const ConnectionTestStep(),
-        const CompletionStep(),
+        const HermesLocationStep(),
       ];
+      if (hermesLocation == HermesLocation.tailscale) {
+        steps.add(const TailscaleDiscoveryStep());
+      }
+      steps.addAll(const [
+        HermesUrlStep(),
+        ConnectionTestStep(),
+        CompletionStep(),
+      ]);
+      return steps;
     }
 
     // OpenClaw flow
@@ -201,7 +221,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     final isLastStep = currentStep == totalSteps - 1;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
@@ -210,75 +230,67 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
           ),
         ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
           if (isFirstStep)
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: wizard.state.isLoading
-                    ? null
-                    : () async {
-                        await wizard.deferSetup();
-                        if (mounted) {
-                          context.go('/chat');
-                        }
-                      },
-                child: const Text('Set up later'),
+            TextButton(
+              onPressed: wizard.state.isLoading
+                  ? null
+                  : () async {
+                      await wizard.deferSetup();
+                      if (mounted) {
+                        context.go('/chat');
+                      }
+                    },
+              child: const Text('Set up later'),
+            )
+          else
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  wizard.previousStep();
+                },
+                child: const Text('Back'),
               ),
             ),
-          Row(
-            children: [
-              if (!isFirstStep)
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      wizard.previousStep();
+          if (!isFirstStep) const SizedBox(width: 16),
+          Expanded(
+            child: FilledButton(
+              onPressed: wizard.state.isLoading
+                  ? null
+                  : () async {
+                      if (isLastStep) {
+                        _lastErrorSnackbarMessage = null;
+                        final success = await wizard.completeSetup();
+
+                        if (!success) {
+                          final message = wizard.state.errorMessage ??
+                              'Setup could not be completed right now. Please try again.';
+                          _showCompletionError(message);
+                          appLogger.warning(
+                            '[SetupWizard] Setup completion failed at final step: $message',
+                          );
+                          return;
+                        }
+
+                        _lastErrorSnackbarMessage = null;
+
+                        if (mounted) {
+                          context.go('/');
+                        }
+                        return;
+                      }
+
+                      wizard.nextStep();
                     },
-                    child: const Text('Back'),
-                  ),
-                ),
-              if (!isFirstStep) const SizedBox(width: 16),
-              Expanded(
-                child: FilledButton(
-                  onPressed: wizard.state.isLoading
-                      ? null
-                      : () async {
-                          if (isLastStep) {
-                            _lastErrorSnackbarMessage = null;
-                            final success = await wizard.completeSetup();
-
-                            if (!success) {
-                              final message = wizard.state.errorMessage ??
-                                  'Setup could not be completed right now. Please try again.';
-                              _showCompletionError(message);
-                              appLogger.warning(
-                                '[SetupWizard] Setup completion failed at final step: $message',
-                              );
-                              return;
-                            }
-
-                            _lastErrorSnackbarMessage = null;
-
-                            if (mounted) {
-                              context.go('/');
-                            }
-                            return;
-                          }
-
-                          wizard.nextStep();
-                        },
-                  child: Text(
-                    isLastStep
-                        ? 'Complete'
-                        : wizard.state.isLoading
-                            ? 'Loading...'
-                            : 'Next',
-                  ),
-                ),
+              child: Text(
+                isLastStep
+                    ? 'Complete'
+                    : wizard.state.isLoading
+                        ? 'Loading...'
+                        : 'Next',
               ),
-            ],
+            ),
           ),
         ],
       ),

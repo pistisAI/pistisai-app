@@ -116,6 +116,7 @@ void main() {
       service.setCustomUrl('not-a-valid-url');
 
       service.selectConnectionMethod(ConnectionMethod.hermes);
+      service.selectHermesLocation(HermesLocation.local);
       service.setHermesUrl('http://127.0.0.1:8642');
 
       final bool success = await service.completeSetup();
@@ -170,6 +171,60 @@ void main() {
 
       expect(await service.shouldShowWizard(), isFalse);
       expect(await settings.isSetupWizardDeferred(), isTrue);
+    });
+
+    test('Hermes tailscale setup requires API key before completion', () async {
+      service.selectConnectionMethod(ConnectionMethod.hermes);
+      service.selectHermesLocation(HermesLocation.tailscale);
+      service.setHermesUrl('http://100.64.0.5:8642');
+      service.selectProvider(_hermesRuntimeProvider().copyWith(
+        url: 'http://100.64.0.5:8642',
+        isLocal: false,
+      ));
+
+      final bool success = await service.completeSetup();
+
+      expect(success, isFalse);
+      expect(
+        service.state.errorMessage,
+        'Enter the Hermes API key from your Tailscale server.',
+      );
+    });
+
+    test('Hermes tailscale setup completes with URL and API key', () async {
+      service.selectConnectionMethod(ConnectionMethod.hermes);
+      service.selectHermesLocation(HermesLocation.tailscale);
+      service.setHermesUrl('http://100.64.0.5:8642');
+      service.setHermesApiKey('psk_test_key');
+      service.selectProvider(_hermesRuntimeProvider().copyWith(
+        url: 'http://100.64.0.5:8642',
+        isLocal: false,
+      ));
+
+      final bool success = await service.completeSetup();
+
+      expect(success, isTrue);
+      expect(configManager.lastSavedUrl, 'http://100.64.0.5:8642');
+    });
+
+    test('nextStep blocks Hermes location step until a location is chosen',
+        () {
+      service.selectConnectionMethod(ConnectionMethod.hermes);
+      service.goToStep(2);
+
+      service.nextStep();
+
+      expect(service.state.currentStep, 2);
+      expect(
+        service.state.errorMessage,
+        'Choose where Hermes is running before continuing.',
+      );
+
+      service.selectHermesLocation(HermesLocation.local);
+      service.nextStep();
+
+      expect(service.state.currentStep, 3);
+      expect(service.state.errorMessage, isNull);
     });
 
     test('auto-discovered runtime does not skip first-run wizard', () async {

@@ -1,3 +1,4 @@
+import 'package:pistisai/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
@@ -20,10 +21,13 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final wizard = context.read<SetupWizardService>();
       debugPrint(
-          '[TailscaleDiscoveryStep] initState - selectedMethod: ${wizard.state.selectedMethod}');
+          '[TailscaleDiscoveryStep] initState - selectedMethod: ${wizard.state.selectedMethod}, hermesLocation: ${wizard.state.hermesLocation}');
 
-      // Only discover if this step is actually shown (tailscale method selected)
-      if (wizard.state.selectedMethod == ConnectionMethod.tailscale) {
+      final shouldDiscover = wizard.state.selectedMethod ==
+              ConnectionMethod.tailscale ||
+          wizard.isHermesTailscaleSetup;
+
+      if (shouldDiscover) {
         debugPrint('[TailscaleDiscoveryStep] Starting Tailscale discovery');
         wizard.discoverTailscaleDevices();
       } else {
@@ -110,6 +114,7 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
   }
 
   Widget _buildDeviceList(BuildContext context, SetupWizardService wizard) {
+    final isHermes = wizard.isHermesTailscaleSetup;
     return Column(
       children: [
         Icon(
@@ -119,15 +124,20 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
         ),
         const SizedBox(height: 24),
         Text(
-          'Select your OpenClaw Gateway device',
+          isHermes
+              ? 'Select your Hermes server'
+              : 'Select your OpenClaw Gateway device',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 8),
         Text(
-          'Found ${wizard.state.tailscaleDevices.length} device(s) on your tailnet',
+          isHermes
+              ? 'Pick the VPS or machine running Hermes on your tailnet (port ${AppConfig.defaultHermesPort})'
+              : 'Found ${wizard.state.tailscaleDevices.length} device(s) on your tailnet',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.grey.shade600,
               ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
         ConstrainedBox(
@@ -147,17 +157,29 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
 
   Widget _buildDeviceCard(
       BuildContext context, TailscaleDevice device, SetupWizardService wizard) {
-    final isSelected =
-        wizard.state.selectedProvider?.url.contains(device.primaryIP ?? '') ??
+    final isHermes = wizard.isHermesTailscaleSetup;
+    final runtimePort =
+        isHermes ? AppConfig.defaultHermesPort : AppConfig.defaultGatewayPort;
+    final deviceUrl = device.primaryIP != null
+        ? 'http://${device.primaryIP}:$runtimePort'
+        : '';
+    final isSelected = isHermes
+        ? wizard.state.hermesUrl == deviceUrl
+        : wizard.state.selectedProvider?.url.contains(device.primaryIP ?? '') ??
             false;
 
     return InkWell(
       onTap: () {
+        if (isHermes) {
+          wizard.selectHermesTailscaleDevice(device);
+          return;
+        }
+
         wizard.selectProvider(ProviderInfo(
           id: 'tailscale_${device.name.toLowerCase().replaceAll(' ', '_')}',
           type: ProviderType.openclaw,
           name: device.name,
-          url: 'http://${device.primaryIP}:18789',
+          url: deviceUrl,
           isLocal: false,
           isAvailable: device.isOnline,
         ));
