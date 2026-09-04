@@ -46,7 +46,7 @@ class ConnectionMethodStep extends StatelessWidget {
                     icon: Icons.smart_toy,
                     title: 'Hermes Agent',
                     description:
-                        'First supported path for a local or private runtime',
+                        'On this device or a Tailscale VPS / private server',
                     selected:
                         wizard.state.selectedMethod == ConnectionMethod.hermes,
                     onTap: () =>
