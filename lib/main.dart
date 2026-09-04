@@ -71,7 +71,7 @@ void main([List<String> args = const []]) async {
   // Initialize Supabase before any other async operations
   await Supabase.initialize(
     url: AppConfig.supabaseUrl,
-    anonKey: AppConfig.supabaseAnonKey,
+    publishableKey: AppConfig.supabaseAnonKey,
     debug: kDebugMode,
   );
 

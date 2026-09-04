@@ -1,7 +1,6 @@
 /**
  * @fileoverview Authentication Service for Pistisai Tunnel
  * Handles JWT validation, session management, and role-based access control
- * 
  * Migrated from Auth0 to Supabase Auth.
  */
 

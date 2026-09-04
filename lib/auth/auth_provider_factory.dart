@@ -2,7 +2,6 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 
 import 'auth_provider.dart';
-import 'providers/auth0_auth_provider.dart';
 import 'providers/supabase_auth_provider.dart';
 import 'providers/local_auth_provider.dart';
 
