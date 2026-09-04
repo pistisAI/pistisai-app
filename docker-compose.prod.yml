@@ -19,8 +19,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
-      - AUTH0_AUDIENCE=${AUTH0_AUDIENCE}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - SUPABASE_AUDIENCE=authenticated
       - SENTRY_DSN=${SENTRY_DSN}
       - SENTRY_ENVIRONMENT=production
       - OTLP_ENDPOINT=http://jaeger:4318

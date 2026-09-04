@@ -80,8 +80,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - AUTH0_DOMAIN=dev-xafu7oedkd5wlrbo.us.auth0.com
-      - AUTH0_AUDIENCE=https://app.pistisai.online
+      - SUPABASE_URL=https://bpqwsjshoqxvtdttzvbr.supabase.co
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - SUPABASE_AUDIENCE=authenticated
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket for proxy management
     networks:
