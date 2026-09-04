@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Persist and restore a *user* GitHub token for `gh` / GitHub MCP.
+# Persist and restore a *user* GitHub token for `gh` / GitHub MCP, and wire the
+# runtime MCP config for Cloud Agents.
 # Cloud Agent boot injects a `ghs_` GitHub App token that can push git but
 # cannot write issues. A user OAuth token (`gho_`) or PAT (`ghp_` /
 # `github_pat_`) must win, and must be rewritten into gh's hosts.yml on
 # every boot because Cursor may reset ~/.config/gh to the App account.
+#
+# It also injects the Supabase MCP server into the runtime config when a
+# SUPABASE_ACCESS_TOKEN secret is present: the hosted server uses browser OAuth
+# that a headless agent cannot complete, so the token is passed as a Bearer
+# header instead. When the secret is absent, Supabase is simply skipped.
 
 ENV_FILE="${HOME}/.cursor/cloud-agent.env"
 TOKEN_FILE="${HOME}/.config/gh/pistisai-user.token"
@@ -108,26 +114,61 @@ python3 - <<'PY'
 import json
 import os
 
-token = os.environ["GITHUB_MCP_TOKEN"]
-entry = {
-    "type": "http",
-    "url": "https://api.githubcopilot.com/mcp/",
-    "headers": {"Authorization": f"Bearer {token}"},
-}
-
 repo_root = os.environ["REPO_ROOT"]
-paths = [
+runtime_paths = [
     os.path.expanduser("~/.cursor/mcp.json"),
     os.path.join(repo_root, ".cursor", "mcp-runtime.json"),
 ]
 
-for path in paths:
+servers: dict = {}
+
+# GitHub MCP: inject the resolved user/App token as a Bearer header.
+github_token = os.environ.get("GITHUB_MCP_TOKEN")
+if github_token:
+    servers["github"] = {
+        "type": "http",
+        "url": "https://api.githubcopilot.com/mcp/",
+        "headers": {"Authorization": f"Bearer {github_token}"},
+    }
+
+# Supabase MCP: the hosted server uses browser OAuth for interactive clients,
+# which a headless Cloud Agent cannot complete. When a personal access token is
+# provided (SUPABASE_ACCESS_TOKEN secret), authenticate non-interactively by
+# passing it as a Bearer header. The URL/features are taken from the committed
+# .cursor/mcp.json so the runtime follows whatever the project config declares.
+supabase_token = os.environ.get("SUPABASE_ACCESS_TOKEN")
+if supabase_token:
+    supabase_url = None
+    committed = os.path.join(repo_root, ".cursor", "mcp.json")
+    if os.path.exists(committed):
+        try:
+            with open(committed, encoding="utf-8") as handle:
+                declared = json.load(handle)
+            supabase_url = (
+                declared.get("mcpServers", {}).get("supabase", {}).get("url")
+            )
+        except (OSError, ValueError):
+            supabase_url = None
+    servers["supabase"] = {
+        "type": "http",
+        "url": supabase_url or "https://mcp.supabase.com/mcp",
+        "headers": {"Authorization": f"Bearer {supabase_token}"},
+    }
+else:
+    print("SUPABASE_ACCESS_TOKEN not set; skipping Supabase MCP sync")
+
+for path in runtime_paths:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     config: dict = {"mcpServers": {}}
     if os.path.exists(path):
-        with open(path, encoding="utf-8") as handle:
-            config = json.load(handle)
-    config.setdefault("mcpServers", {})["github"] = entry
+        try:
+            with open(path, encoding="utf-8") as handle:
+                config = json.load(handle)
+        except ValueError:
+            config = {"mcpServers": {}}
+    config.setdefault("mcpServers", {})
+    for name, entry in servers.items():
+        config["mcpServers"][name] = entry
     with open(path, "w", encoding="utf-8") as handle:
         json.dump(config, handle, indent=2)
         handle.write("\n")
