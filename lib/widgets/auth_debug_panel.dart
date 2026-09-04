@@ -134,15 +134,15 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () async {
+                            final messenger = ScaffoldMessenger.of(context);
                             await AuthLogger.downloadLogs();
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Debug log downloaded'),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            }
+                            if (!mounted) return;
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text('Debug log downloaded'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
