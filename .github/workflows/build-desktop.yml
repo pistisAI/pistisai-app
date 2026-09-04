@@ -63,7 +63,11 @@ jobs:
         id: platforms
         run: |
           PLATFORMS="${{ inputs.platforms }}"
+          if [ -z "$PLATFORMS" ]; then
+            PLATFORMS="${{ env.PLATFORMS }}"
+          fi
           [ -z "$PLATFORMS" ] && PLATFORMS="linux,windows,macos"
+          echo "Resolved platforms: $PLATFORMS"
           echo "platforms=$PLATFORMS" >> $GITHUB_OUTPUT
       - name: Compute version
         id: version
@@ -181,15 +185,6 @@ jobs:
           channel: "stable"
           cache: true
 
-      - name: Install vcpkg dependencies (auth0_flutter)
-        run: |
-          # Pin vcpkg to a baseline that still has cpprestsdk (removed in newer vcpkg)
-          cd C:\vcpkg
-          git checkout fa9a5b330a
-          ./bootstrap-vcpkg.bat -disableMetrics
-          vcpkg install cpprestsdk boost-system boost-date-time boost-regex --triplet x64-windows
-          echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" >> $GITHUB_ENV
-
       - name: Flutter Build Windows
         run: |
           flutter pub get
@@ -239,9 +234,8 @@ jobs:
         with:
           name: windows-bundles
           path: |
-            dist/windows/*.exe
-            dist/windows/*.zip
-            build/windows/x64/runner/Release/Pistisai.exe
+            dist/windows/*Setup*.exe
+            dist/windows/*portable*.zip
           retention-days: 7
 
   build_macos:
@@ -312,13 +306,14 @@ jobs:
       - name: Organize artifacts for release
         run: |
           mkdir -p release-assets
-          for dir in linux-bundles macos-bundles; do
-            if [ -d "$dir" ]; then
-              cp "$dir"/* release-assets/ 2>/dev/null || true
-            fi
-          done
+          if [ -d "linux-bundles" ]; then
+            cp linux-bundles/* release-assets/ 2>/dev/null || true
+          fi
+          if [ -d "macos-bundles" ]; then
+            cp macos-bundles/* release-assets/ 2>/dev/null || true
+          fi
           if [ -d "windows-bundles" ]; then
-            find windows-bundles -type f \( -name "*.exe" -o -name "*.zip" \) \
+            find windows-bundles -type f \( -name "*Setup*.exe" -o -name "*portable*.zip" \) \
               -exec cp {} release-assets/ \; 2>/dev/null || true
           fi
           ls -lh release-assets/
@@ -336,14 +331,39 @@ jobs:
               echo "✅ $label"
             fi
           }
-          require "*.AppImage" "Linux x86_64 AppImage"
-          require "*.AppImage.sha256" "Linux AppImage SHA-256"
-          require "*portable*.zip" "Windows x64 portable ZIP"
-          require "*.exe" "Windows x64 Setup installer"
+          require "Pistisai-Linux-${VERSION}-x86_64.AppImage" "Linux x86_64 AppImage"
+          require "Pistisai-Linux-${VERSION}-x86_64.AppImage.sha256" "Linux AppImage SHA-256"
+          require "Pistisai_${VERSION}_amd64.deb" "Debian/Ubuntu package"
+          require "Pistisai-Linux-x64.tar.gz" "Linux portable tarball"
+          require "install.sh" "Linux install.sh"
+          require "Pistisai-Windows-x64-portable.zip" "Windows x64 portable ZIP"
+          require "Pistisai-Windows-x64-Setup.exe" "Windows x64 Setup installer"
           if [ "$missing" -ne 0 ]; then
             echo "Refusing to publish a partial desktop release (issue #155)"
             exit 1
           fi
+
+      - name: Generate release notes
+        run: |
+          {
+            echo "## PistisAI Desktop v${VERSION}"
+            echo ""
+            echo "### Linux"
+            echo "- **AppImage**: \`Pistisai-Linux-${VERSION}-x86_64.AppImage\`"
+            echo "- **Debian/Ubuntu**: \`Pistisai_${VERSION}_amd64.deb\`"
+            echo "- **Portable**: \`Pistisai-Linux-x64.tar.gz\`"
+            echo "- **Installer script**: \`install.sh\`"
+            echo ""
+            echo "### Windows"
+            echo "- **Installer**: \`Pistisai-Windows-x64-Setup.exe\`"
+            echo "- **Portable ZIP**: \`Pistisai-Windows-x64-portable.zip\`"
+            if compgen -G "release-assets/Pistisai-macOS*.zip" > /dev/null; then
+              echo ""
+              echo "### macOS"
+              echo "- **ZIP**: \`Pistisai-macOS-x64.zip\`"
+            fi
+          } > release-notes.md
+          cat release-notes.md
 
       - name: Create Release
         uses: ncipollo/release-action@v1
@@ -355,18 +375,15 @@ jobs:
           allowUpdates: true
           removeArtifacts: true
           makeLatest: true
-          body: |
-            ## PistisAI Desktop v${{ env.VERSION }}
-
-            ### Linux
-            - **AppImage**: `Pistisai-Linux-${{ env.VERSION }}-x86_64.AppImage`
-            - **Debian/Ubuntu**: `Pistisai-Linux_${{ env.VERSION }}_amd64.deb`
-            - **Portable**: `Pistisai-Linux-x64.tar.gz`
-
-            ### Windows
-            - **Installer**: `Pistisai-Windows-x64-Setup.exe`
-            - **Portable ZIP**: `Pistisai-Windows-x64-portable.zip`
-
-            ### macOS
-            - **ZIP**: `Pistisai-macOS-x64.zip`
+          bodyFile: release-notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify GitHub release assets published
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RELEASE_TAG: v${{ env.VERSION }}
+          VERSION: ${{ env.VERSION }}
+          RETRY_ATTEMPTS: 12
+          RETRY_DELAY_SECONDS: 10
+        run: python3 scripts/release/verify_github_release_assets.py

@@ -4,6 +4,7 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_FILE="$PROJECT_ROOT/scripts/release/verify_github_release_assets.py"
+WORKFLOW_FILE="$PROJECT_ROOT/.github/workflows/build-desktop.yml"
 WORK_DIR="$(mktemp -d)"
 SERVER_LOG="$WORK_DIR/server.log"
 SERVER_STATE="$WORK_DIR/state.json"
@@ -18,16 +19,20 @@ cleanup() {
 }
 trap cleanup EXIT
 
+if ! grep -Fq 'python3 scripts/release/verify_github_release_assets.py' "$WORKFLOW_FILE"; then
+  echo "build-desktop workflow missing release asset verifier step" >&2
+  exit 1
+fi
+
 cat > "$SERVER_STATE" <<'EOF'
 {"assets": [
-  {"name": "pistisai-9.9.9-portable.zip"},
-  {"name": "pistisai-9.9.9-portable.zip.sha256"},
-  {"name": "Pistisai-Windows-9.9.9-Setup.exe"},
-  {"name": "Pistisai-Windows-9.9.9-Setup.exe.sha256"},
-  {"name": "pistisai_9.9.9_amd64.deb"},
-  {"name": "pistisai_9.9.9_amd64.deb.sha256"},
   {"name": "Pistisai-Linux-9.9.9-x86_64.AppImage"},
-  {"name": "Pistisai-Linux-9.9.9-x86_64.AppImage.sha256"}
+  {"name": "Pistisai-Linux-9.9.9-x86_64.AppImage.sha256"},
+  {"name": "Pistisai_9.9.9_amd64.deb"},
+  {"name": "Pistisai-Linux-x64.tar.gz"},
+  {"name": "Pistisai-Windows-x64-portable.zip"},
+  {"name": "Pistisai-Windows-x64-Setup.exe"},
+  {"name": "install.sh"}
 ]}
 EOF
 
@@ -97,7 +102,7 @@ if ! grep -Fq 'Verified GitHub release assets:' "$WORK_DIR/script.log"; then
   exit 1
 fi
 
-if ! grep -Fq 'Pistisai-Windows-9.9.9-Setup.exe' "$WORK_DIR/script.log"; then
+if ! grep -Fq 'Pistisai-Windows-x64-Setup.exe' "$WORK_DIR/script.log"; then
   echo "Expected installer name in verifier output" >&2
   cat "$WORK_DIR/script.log" >&2
   exit 1

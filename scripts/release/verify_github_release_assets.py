@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Verify GitHub release assets for a Pistisai release.
+"""Verify GitHub release assets for a Pistisai desktop release.
 
-The script polls the GitHub release API until the expected Windows and Linux
-artifacts are visible or a retry budget is exhausted.
+Polls the GitHub release API until the expected Windows and Linux artifacts
+from `.github/workflows/build-desktop.yml` are visible or a retry budget
+is exhausted.
 
 Environment:
   GITHUB_TOKEN            GitHub token used for API authentication
   GITHUB_REPOSITORY       Repository in owner/name form
-  RELEASE_TAG             Release tag to inspect (e.g. v10.1.201)
-  VERSION                 Semantic version (e.g. 10.1.201)
+  RELEASE_TAG             Release tag to inspect (e.g. v1.0.4)
+  VERSION                 Semantic version (e.g. 1.0.4)
   GITHUB_API_BASE_URL     Optional API base (default: https://api.github.com)
   RETRY_ATTEMPTS          Optional retry count (default: 6)
   RETRY_DELAY_SECONDS     Optional delay between retries (default: 10)
@@ -49,6 +50,18 @@ def _release_url(api_base: str, repo: str, release_tag: str) -> str:
     return f"{api_base.rstrip('/')}/repos/{repo}/releases/tags/{release_tag}"
 
 
+def _required_assets(version: str) -> set[str]:
+    return {
+        f"Pistisai-Linux-{version}-x86_64.AppImage",
+        f"Pistisai-Linux-{version}-x86_64.AppImage.sha256",
+        f"Pistisai_{version}_amd64.deb",
+        "Pistisai-Linux-x64.tar.gz",
+        "Pistisai-Windows-x64-portable.zip",
+        "Pistisai-Windows-x64-Setup.exe",
+        "install.sh",
+    }
+
+
 def main() -> int:
     token = _env("GITHUB_TOKEN")
     repo = _env("GITHUB_REPOSITORY")
@@ -59,16 +72,7 @@ def main() -> int:
     retry_delay_seconds = _int_env("RETRY_DELAY_SECONDS", "10", 0)
 
     url = _release_url(api_base, repo, release_tag)
-    required_assets = {
-        f"pistisai-{version}-portable.zip",
-        f"pistisai-{version}-portable.zip.sha256",
-        f"Pistisai-Windows-{version}-Setup.exe",
-        f"Pistisai-Windows-{version}-Setup.exe.sha256",
-        f"pistisai_{version}_amd64.deb",
-        f"pistisai_{version}_amd64.deb.sha256",
-        f"Pistisai-Linux-{version}-x86_64.AppImage",
-        f"Pistisai-Linux-{version}-x86_64.AppImage.sha256",
-    }
+    required_assets = _required_assets(version)
 
     last_error: Exception | None = None
     for attempt in range(1, retry_attempts + 1):
@@ -87,7 +91,10 @@ def main() -> int:
             asset_names = {asset["name"] for asset in release.get("assets", [])}
             missing = sorted(required_assets - asset_names)
             if not missing:
-                print("Verified GitHub release assets: " + ", ".join(sorted(required_assets)))
+                print(
+                    "Verified GitHub release assets: "
+                    + ", ".join(sorted(required_assets))
+                )
                 return 0
 
             last_error = RuntimeError("Missing release assets: " + ", ".join(missing))
