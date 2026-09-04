@@ -1,7 +1,7 @@
 {
-  "version": "1.0.3",
-  "build_number": "3",
-  "build_date": "2026-09-03T00:00:00Z",
-  "git_commit": "unknown",
+  "version": "1.0.4",
+  "build_number": "31",
+  "build_date": "2026-09-04T18:24:07Z",
+  "git_commit": "a428292",
   "buildTimestamp": "2026-09-03 00:00:00"
 }
