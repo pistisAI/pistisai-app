@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import 'auth_service.dart';
 import 'conversation_storage_service.dart';
@@ -362,6 +363,16 @@ class AdminDataFlushService extends ChangeNotifier {
         debugPrint(' [DataFlush] Service cache cleared');
       } catch (e) {
         debugPrint(' [DataFlush] Error clearing service cache: $e');
+      }
+
+      // 6. Clear shared preferences (app settings cache)
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+        results['sharedPreferences'] = true;
+        debugPrint(' [DataFlush] Shared preferences cleared');
+      } catch (e) {
+        debugPrint(' [DataFlush] Error clearing shared preferences: $e');
       }
 
       final successCount = results.values.where((v) => v == true).length;
