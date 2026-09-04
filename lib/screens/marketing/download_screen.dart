@@ -389,9 +389,7 @@ chmod +x Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
       child: _buildInstallationSection(
         'Run the installer',
         '''# Download and run the official installer
-curl -fsSL https://github.com/pistisAI/pistisai-app/releases/latest/download/install.sh -o install.sh
-chmod +x install.sh
-./install.sh''',
+curl -fsSL https://pistisai.app/install.sh | bash''',
       ),
     );
   }
