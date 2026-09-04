@@ -83,111 +83,67 @@ jobs:
           path: build/web/
           retention-days: 1
 
-      - name: Deploy to VPS
+      - name: Trigger VPS deploy via webhook
         if: github.ref_name == 'main'
         env:
-          VM_SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          VPS_HOST: ${{ secrets.VPS_HOST || 'pistisai.app' }}
-          VPS_USER: ${{ secrets.VPS_USER || 'cloudllm' }}
-          PISTISAI_VPS_SSH_HOST: ${{ secrets.PISTISAI_VPS_SSH_HOST }}
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL || 'https://deploy.pistisai.app/deploy' }}
+          DEPLOY_WEBHOOK_SECRET: ${{ secrets.DEPLOY_WEBHOOK_SECRET || 'pistisai-deploy-secret' }}
         run: |
           set -euo pipefail
-          if [ -z "${VM_SSH_PRIVATE_KEY:-}" ]; then
-            echo "No SSH key available, skipping VPS deploy"
-            exit 0
+          PAYLOAD="{\"ref\":\"$GITHUB_SHA\",\"repository\":\"$GITHUB_REPOSITORY\",\"workflow\":\"$GITHUB_WORKFLOW\"}"
+          SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$DEPLOY_WEBHOOK_SECRET" | awk '{print $2}')
+          echo "🚀 Triggering deploy webhook..."
+          HTTP_CODE=$(curl -s -o /tmp/deploy_response.txt -w "%{http_code}" -X POST "$DEPLOY_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-Hub-Signature-256: sha256=$SIGNATURE" \
+            -d "$PAYLOAD" 2>&1) || true
+          echo "Webhook HTTP status: $HTTP_CODE"
+          cat /tmp/deploy_response.txt 2>/dev/null || true
+          if [ "$HTTP_CODE" = "202" ]; then
+            echo "✅ Deploy webhook triggered successfully"
+          else
+            echo "⚠️ Webhook returned HTTP $HTTP_CODE (artifact still uploaded; deploy may be delayed)"
           fi
-          if [ "${VPS_HOST}" = "31.97.140.7" ]; then
-            echo "Ignoring Simon VPS host 31.97.140.7 — deploying to pistisai.app"
-            VPS_HOST="pistisai.app"
-            VPS_USER="cloudllm"
-          fi
-          if [ "${PISTISAI_VPS_SSH_HOST:-}" = "31.97.140.7" ]; then
-            echo "Ignoring Simon origin SSH host 31.97.140.7"
-            PISTISAI_VPS_SSH_HOST=""
-          fi
-          if [ "${VPS_USER}" = "pistisai" ]; then
-            echo "Ignoring Simon SSH user pistisai — using cloudllm"
-            VPS_USER="cloudllm"
-          fi
-
-          case "${PISTISAI_VPS_SSH_HOST:-}" in
-            ''|pistisai.app|www.pistisai.app|app.pistisai.app|api.pistisai.app|hermes.pistisai.app)
-              echo "PISTISAI_VPS_SSH_HOST is unset or Cloudflare-proxied; skipping live VPS deploy."
-              echo "GitHub runners cannot SSH to pistisai.app:22 (Cloudflare anycast). Set PISTISAI_VPS_SSH_HOST to the origin VPS IP, never 31.97.140.7."
-              echo "Web build artifact was uploaded; live VPS publish is skipped."
-              exit 0
-              ;;
-          esac
-
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          printf '%s\n' "$VM_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          cat > ~/.ssh/config <<EOF
-          Host pistisai-vps
-            HostName ${PISTISAI_VPS_SSH_HOST}
-            User ${VPS_USER}
-            IdentityFile ~/.ssh/id_ed25519
-            StrictHostKeyChecking no
-            UserKnownHostsFile /dev/null
-            ConnectTimeout 15
-          EOF
-          chmod 600 ~/.ssh/config
-
-          tar -czf /tmp/web_build.tar.gz -C build/web .
-          echo "Upload size: $(wc -c < /tmp/web_build.tar.gz) bytes"
-          scp /tmp/web_build.tar.gz pistisai-vps:/tmp/web_build.tar.gz
-
-          ssh pistisai-vps "sudo mkdir -p /opt/Pistisai/build/web && sudo rm -rf /opt/Pistisai/build/web/* && sudo tar -xzf /tmp/web_build.tar.gz -C /opt/Pistisai/build/web/ && sudo rm /tmp/web_build.tar.gz && cd /opt/Pistisai && (sudo docker compose -f docker-compose.multi.yml --env-file .env up -d --no-deps flutter-app || sudo docker compose -f docker-compose.multi.yml --env-file .env up -d --build --no-deps flutter-app)"
-
-          sleep 5
-          for i in {1..20}; do
-            if curl -sf "https://app.pistisai.app/health" > /dev/null 2>&1 || curl -sf "https://pistisai.app/health" > /dev/null 2>&1; then
-              echo "✅ Pistisai web service healthy"
-              exit 0
-            fi
-            echo "Waiting for health check to propagate... attempt $i/20"
-            sleep 3
-          done
-          echo "❌ Pistisai web service health check failed"
-          exit 1
 
 
       - name: Purge Cloudflare cache
         if: always()
         env:
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-          CLOUDFLARE_CACHE_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          CF_API_EMAIL: ${{ secrets.CF_API_EMAIL || 'cmaltais@cloudtolocalllm.online' }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID || '8261c24001b81e3513d82aef76fef90f' }}
         run: |
           set -euo pipefail
-          if [ -z "${CLOUDFLARE_ZONE_ID:-}" ] || [ -z "${CLOUDFLARE_CACHE_PURGE_TOKEN:-}" ]; then
-            echo "Missing Cloudflare secrets, skipping cache purge"
+          if [ -z "${CF_API_KEY:-}" ] || [ -z "${CF_API_EMAIL:-}" ]; then
+            echo "Missing Cloudflare API credentials, skipping cache purge"
             exit 0
           fi
-          curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/purge_cache" \
-            -H "Authorization: Bearer ${CLOUDFLARE_CACHE_PURGE_TOKEN}" \
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "X-Auth-Key: ${CF_API_KEY}" \
+            -H "X-Auth-Email: ${CF_API_EMAIL}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}' \
-            || echo "Cloudflare cache purge failed"
-          echo "Cloudflare cache purged"
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print('✅ Cache purge' if d.get('success') else f\"❌ {d.get('errors')}\")" \
+            || echo "Cloudflare cache purge failed (ignored)"
 
       - name: Sync Cloudflare install script redirects
         if: always()
         env:
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-          CLOUDFLARE_CACHE_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          CF_API_EMAIL: ${{ secrets.CF_API_EMAIL || 'cmaltais@cloudtolocalllm.online' }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID || '8261c24001b81e3513d82aef76fef90f' }}
         run: |
           set -euo pipefail
-          if [ -z "${CLOUDFLARE_ZONE_ID:-}" ] || [ -z "${CLOUDFLARE_CACHE_PURGE_TOKEN:-}" ]; then
-            echo "Missing Cloudflare secrets, skipping install redirect sync"
+          if [ -z "${CF_API_KEY:-}" ] || [ -z "${CF_API_EMAIL:-}" ]; then
+            echo "Missing Cloudflare API credentials, skipping redirect sync"
             exit 0
           fi
           INSTALL_SH_URL="https://github.com/pistisAI/pistisai-app/releases/latest/download/install.sh"
-          python3 - <<'PY' "$CLOUDFLARE_ZONE_ID" "$CLOUDFLARE_CACHE_PURGE_TOKEN" "$INSTALL_SH_URL"
+          python3 - <<'PY' "$CF_ZONE_ID" "$CF_API_KEY" "$CF_API_EMAIL" "$INSTALL_SH_URL"
           import json, sys, urllib.request
-
-          zone_id, token, install_sh = sys.argv[1:4]
+          zone_id, api_key, api_email, install_sh = sys.argv[1:5]
           api = f"https://api.cloudflare.com/client/v4/zones/{zone_id}/rulesets/phases/http_request_dynamic_redirect/entrypoint"
-          headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+          headers = {"X-Auth-Key": api_key, "X-Auth-Email": api_email, "Content-Type": "application/json"}
 
           def cf(method, url, payload=None):
               data = None if payload is None else json.dumps(payload).encode()
