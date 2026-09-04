@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:file_selector/file_selector.dart' as file_selector;
 import '../config/theme.dart';
 import '../models/conversation.dart';
+import '../services/local_conversation_storage.dart';
 
 /// A sidebar component showing the list of conversations
 class ConversationList extends StatefulWidget {
@@ -218,32 +219,56 @@ class _ConversationListState extends State<ConversationList> {
             .map((item) => Conversation.fromJson(item as Map<String, dynamic>))
             .toList();
       } else if (file.path.endsWith('.csv')) {
-        // Simple CSV parsing - for now just show a message
+        // Parse CSV: ID,Title,Model,Messages,User Messages,Assistant Messages,Created At,Updated At
         final lines = content.split('\n').where((l) => l.trim().isNotEmpty).toList();
         if (lines.length < 2) {
           throw Exception('CSV file appears empty or invalid');
         }
-        // CSV parsing would be more complex; for now show a placeholder
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('CSV import not yet fully implemented. Use JSON for now.'),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        return;
+        // Skip header row
+        for (var i = 1; i < lines.length; i++) {
+          final row = lines[i].split(',');
+          if (row.length >= 8) {
+            importedConversations.add(Conversation(
+              id: row[0].trim(),
+              title: row[1].trim().replaceAll('"', ''),
+              messages: [],
+              model: row[2].trim(),
+              createdAt: DateTime.tryParse(row[6].trim()) ?? DateTime.now(),
+              updatedAt: DateTime.tryParse(row[7].trim()) ?? DateTime.now(),
+            ));
+          }
+        }
       }
 
       if (importedConversations.isNotEmpty) {
-        // Pass imported conversations back via callback - for now just show count
+        // Persist imported conversations to local storage
+        final localStorage = LocalConversationStorage();
+        final existingConversations = await localStorage.loadConversations();
+        // Merge: imported conversations first, then existing (avoid duplicates by ID)
+        final merged = <String, Conversation>{};
+        for (final conv in importedConversations) {
+          merged[conv.id] = conv;
+        }
+        for (final conv in existingConversations) {
+          merged.putIfAbsent(conv.id, () => conv);
+        }
+        await localStorage.saveConversations(merged.values.toList());
+
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Imported ${importedConversations.length} conversations from ${file.path.split('/').last}'),
+            content: Text('Imported ${importedConversations.length} conversations (${merged.values.length} total)'),
             duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: 'View',
+              onPressed: () {
+                if (merged.values.isNotEmpty) {
+                  widget.onConversationSelected(merged.values.first.id);
+                }
+              },
+            ),
           ),
         );
-        // TODO: Wire up to actual conversation store/state management
       }
     } catch (e) {
       if (!mounted) return;
