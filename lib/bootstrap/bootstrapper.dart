@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/app_config.dart';
 import '../di/locator.dart';
 
 /// Data returned by [AppBootstrapper] after the core environment is ready.
@@ -20,6 +22,8 @@ class AppBootstrapper {
   Future<AppBootstrapData> load() async {
     try {
       debugPrint('[Bootstrapper] Starting bootstrap process...');
+
+      await _initializeSupabase();
 
       debugPrint('[Bootstrapper] Setting up service locator...');
       await setupServiceLocator().timeout(
@@ -40,5 +44,17 @@ class AppBootstrapper {
       // Re-throw to let the caller handle it
       rethrow;
     }
+  }
+
+  /// Initialize Supabase before the service locator builds the auth provider.
+  /// `Supabase.initialize` is idempotent — it skips re-initialization on a
+  /// subsequent call (e.g. hot restart).
+  Future<void> _initializeSupabase() async {
+    debugPrint('[Bootstrapper] Initializing Supabase...');
+    await Supabase.initialize(
+      url: AppConfig.supabaseUrl,
+      publishableKey: AppConfig.supabasePublishableKey,
+    );
+    debugPrint('[Bootstrapper] Supabase initialized');
   }
 }

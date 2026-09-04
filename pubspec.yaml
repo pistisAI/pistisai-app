@@ -25,6 +25,9 @@ dependencies:
   provider: ^6.1.2
   jwt_decoder: ^2.0.1
   auth0_flutter: ^2.4.0
+  # Supabase Auth (migration from Auth0 — issue #219). auth0_flutter is removed
+  # in the follow-up cleanup (issue #218) once the old provider files are gone.
+  supabase_flutter: ^2.8.0
   shared_preferences: ^2.5.4
 
   # Database - Local Brain
