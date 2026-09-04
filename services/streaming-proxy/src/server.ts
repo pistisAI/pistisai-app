@@ -47,7 +47,7 @@ import { TokenBucketRateLimiter } from './rate-limiter/token-bucket-rate-limiter
 import { CircuitBreakerImpl } from './circuit-breaker/circuit-breaker-impl';
 import { WebSocketHandlerImpl } from './websocket/websocket-handler-impl';
 import { JWTValidationMiddleware } from './middleware/jwt-validation-middleware';
-import { Auth0JWTValidator } from './middleware/auth0-validator';
+import { SupabaseJWTValidator } from './middleware/supabase-validator';
 import { AuthAuditLogger } from './middleware/auth-audit-logger';
 import { loadAuthConfig, validateAuthConfig } from './middleware/auth-config';
 import { createAdminAuthMiddleware } from './middleware/admin-auth.middleware';
@@ -59,16 +59,16 @@ import { HTTP_STATUS, TIME_MS, WEBSOCKET_CLOSE_CODES } from './utils/http-consta
 const authConfig = loadAuthConfig();
 validateAuthConfig(authConfig);
 
-// Initialize Auth0 Validator
-const auth0Validator = new Auth0JWTValidator(
-  authConfig.auth0.jwksUri,
-  authConfig.auth0.audience
+// Initialize Supabase Validator
+const supabaseValidator = new SupabaseJWTValidator(
+  authConfig.supabase.jwksUri,
+  authConfig.supabase.audience
 );
 
 // ... (pool and rate limiter initialization)
 
 // Authentication middleware - Requirement 26.2: Connect AuthMiddleware to all protected endpoints
-const authMiddleware = new JWTValidationMiddleware(auth0Validator);
+const authMiddleware = new JWTValidationMiddleware(supabaseValidator);
 const authAuditLogger = new AuthAuditLogger();
 
 const requireAdminAuth = createAdminAuthMiddleware({

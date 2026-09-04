@@ -1,24 +1,52 @@
 import { TokenValidationResult } from '../interfaces/auth-middleware';
 import { JWTValidator } from './jwt-validator.interface';
 import jwt from 'jsonwebtoken';
+import jwksClient from 'jwks-rsa';
+
+interface JWTPayload {
+  sub: string;
+  iss: string;
+  aud: string | string[];
+  exp: number;
+  iat: number;
+  [key: string]: any;
+}
 
 export class SupabaseJWTValidator implements JWTValidator {
-  private readonly jwtSecret: string;
+  private readonly client: jwksClient.JwksClient;
+  private readonly audience: string;
 
-  constructor(jwtSecret: string) {
-    this.jwtSecret = jwtSecret;
+  constructor(jwksUri: string, audience: string) {
+    this.audience = audience;
+    this.client = jwksClient({
+      jwksUri,
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+    });
+  }
+
+  private getKey(header: jwt.JwtHeader, callback: jwt.SigningKeyCallback) {
+    this.client.getSigningKey(header.kid, (err: Error | null, key?: jwksClient.SigningKey) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+      const signingKey = key?.getPublicKey();
+      callback(null, signingKey);
+    });
   }
 
   async validateToken(token: string): Promise<TokenValidationResult> {
     return new Promise((resolve) => {
       jwt.verify(
         token,
-        this.jwtSecret,
-        { algorithms: ['HS256'] },
-        (err: jwt.VerifyErrors | null, decoded: any) => {
+        this.getKey.bind(this),
+        { algorithms: ['ES256'] },
+        (err: jwt.VerifyErrors | null, decoded: string | jwt.JwtPayload | undefined) => {
           if (err) {
             if (err instanceof jwt.TokenExpiredError) {
-              const decodedToken = jwt.decode(token) as any;
+              const decodedToken = jwt.decode(token) as JWTPayload;
               resolve({
                 valid: false,
                 error: 'Token expired',
@@ -34,10 +62,20 @@ export class SupabaseJWTValidator implements JWTValidator {
             return;
           }
 
+          const payload = decoded as JWTPayload;
+
+          if (payload.aud !== this.audience) {
+            resolve({
+              valid: false,
+              error: `Invalid audience: expected ${this.audience}, got ${payload.aud}`,
+            });
+            return;
+          }
+
           resolve({
             valid: true,
-            userId: decoded.sub,
-            expiresAt: new Date(decoded.exp * 1000),
+            userId: payload.sub,
+            expiresAt: new Date(payload.exp * 1000),
           });
         }
       );

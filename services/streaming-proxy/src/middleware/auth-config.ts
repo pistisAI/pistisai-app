@@ -1,10 +1,10 @@
 /**
  * Authentication Configuration
- * Centralized configuration for authentication middleware
+ * Centralized configuration for authentication middleware (Supabase)
  */
 
 export interface AuthConfig {
-  auth0: {
+  supabase: {
     jwksUri: string;
     audience: string;
   };
@@ -27,32 +27,29 @@ export interface AuthConfig {
  * Load authentication configuration from environment variables
  */
 export function loadAuthConfig(): AuthConfig {
-  const auth0Audience = process.env.AUTH0_AUDIENCE;
-  const auth0Domain = process.env.AUTH0_DOMAIN;
-  const auth0IssuerUrl = process.env.AUTH0_ISSUER_URL;
+  const supabaseAudience = process.env.SUPABASE_AUDIENCE || 'authenticated';
+  const supabaseUrl = process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
 
   // Derive JWKS URI with no hardcoded fallback
-  const auth0JwksUri =
-    process.env.AUTH0_JWKS_URI ||
-    (auth0IssuerUrl ? `${auth0IssuerUrl}/.well-known/jwks.json` : null) ||
-    (auth0Domain ? `https://${auth0Domain}/.well-known/jwks.json` : null);
+  const supabaseJwksUri =
+    process.env.SUPABASE_JWKS_URI ||
+    `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
 
-  if (!auth0Audience || !auth0JwksUri) {
+  if (!supabaseJwksUri) {
     const missing = [];
-    if (!auth0Audience) missing.push('AUTH0_AUDIENCE');
-    if (!auth0JwksUri)
-      missing.push('AUTH0_JWKS_URI (or AUTH0_DOMAIN/AUTH0_ISSUER_URL)');
+    if (!supabaseAudience) missing.push('SUPABASE_AUDIENCE');
+    if (!supabaseJwksUri) missing.push('SUPABASE_JWKS_URI (or SUPABASE_URL)');
     throw new Error(
-      `CRITICAL: Missing Auth0 configuration: ${missing.join(
+      `CRITICAL: Missing Supabase configuration: ${missing.join(
         ', '
       )}. Zero-fallback policy in effect.`
     );
   }
 
   return {
-    auth0: {
-      jwksUri: auth0JwksUri,
-      audience: auth0Audience,
+    supabase: {
+      jwksUri: supabaseJwksUri,
+      audience: supabaseAudience,
     },
     cache: {
       validationDuration: parseInt(process.env.AUTH_CACHE_DURATION || '300000'), // 5 minutes

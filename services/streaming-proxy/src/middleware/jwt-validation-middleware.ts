@@ -1,6 +1,6 @@
 /**
  * JWT Validation Middleware Implementation
- * Integrates with Supabase JWKS for token validation (RS256)
+ * Integrates with Supabase JWKS for token validation (ES256)
  * Implements caching and distinguishes between expired and invalid tokens
  */
 
@@ -66,13 +66,13 @@ export class JWTValidationMiddleware implements AuthMiddleware {
   }
 
   /**
-   * Refresh expired token (placeholder - actual implementation depends on Auth0 setup)
+   * Refresh expired token (placeholder - actual implementation depends on Supabase setup)
    */
   async refreshToken(token: string): Promise<string> {
-    // This would typically involve calling Auth0's token refresh endpoint
-    // For now, throw an error indicating the client should re-authenticate
+    // This would typically involve calling Supabase's token refresh endpoint
+    // Supabase handles token refresh automatically via its SDK on the client
     this.logger.warn('Token refresh requested - returning original token for re-authentication');
-    // Auth0 typically uses refresh_token grant type for token refresh
+    // Supabase typically uses refresh_token grant type for token refresh
     // This requires storing refresh_token during initial authentication
     // For now, return the original token and let client handle re-auth
     return token;
