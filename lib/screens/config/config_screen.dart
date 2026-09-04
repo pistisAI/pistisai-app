@@ -73,7 +73,7 @@ class _ConfigScreenState extends State<ConfigScreen>
   bool _showDevTools = false;
 
   // System Info
-  final String _buildNumber = '20260304';
+  final String _buildNumber = '3';
   String _appPath = '';
   String _configPath = '';
   String _dataPath = '';

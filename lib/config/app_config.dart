@@ -5,7 +5,7 @@ import 'package:pistisai/services/settings_preference_service.dart';
 class AppConfig {
   // App Information
   static const String appName = 'Pistisai';
-  static const String appVersion = '1.0.2';
+  static const String appVersion = '1.0.3';
   static const String appDescription =
       'Local-first agent companion. Offline until you choose to connect.';
 

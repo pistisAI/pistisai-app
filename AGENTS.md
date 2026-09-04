@@ -59,7 +59,7 @@ flutter build linux --release
 flutter build web --release
 ```
 
-- Main app package: `pubspec.yaml`, package name `pistisai`, version `1.0.2+2`.
+- Main app package: `pubspec.yaml`, package name `pistisai`, version `1.0.3+3`.
 - Dart SDK constraint: `>=3.5.0 <4.0.0`.
 - Lints: `analysis_options.yaml` includes `flutter_lints`, strong mode, `implicit-casts: false`, `implicit-dynamic: false`, `prefer_single_quotes`, and generated-file excludes.
 - Shared Flutter package: `lib/shared/pubspec.yaml`, package name `pistisai_shared`, Dart SDK `>=3.9.0 <4.0.0`.
