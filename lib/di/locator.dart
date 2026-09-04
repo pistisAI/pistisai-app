@@ -475,6 +475,7 @@ Future<void> setupCoreServices() async {
       clientDetectionService: desktopClientDetectionService,
     );
     serviceLocator.registerSingleton<SetupStatusService>(setupStatusService);
+    await setupStatusService.initialize();
 
     // Setup wizard service - manages the onboarding wizard flow
     final setupWizardService = SetupWizardService(

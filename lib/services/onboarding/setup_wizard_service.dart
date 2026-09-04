@@ -136,8 +136,15 @@ class SetupWizardService extends ChangeNotifier {
         return true;
       }
 
-      final runtimes = await _configManager.getAllAgentRuntimes();
-      return runtimes.isEmpty;
+      const userId = 'local_user';
+      final setupComplete = await _setupStatus.hasCompletedSetup(userId);
+      if (setupComplete) {
+        debugPrint('[SetupWizard] Setup already completed for $userId');
+        return false;
+      }
+
+      debugPrint('[SetupWizard] Setup not completed — showing wizard');
+      return true;
     } catch (e) {
       debugPrint('[SetupWizard] Error checking wizard status: $e');
       return true; // Show wizard on error
