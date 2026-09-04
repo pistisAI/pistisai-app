@@ -12,7 +12,7 @@ import { DatabaseMigratorPG } from '../database/migrate-pg.js';
 
 /**
  * Authentication service with JWT integration
- * Uses Supabase Auth for JWT validation (RS256)
+ * Uses Supabase Auth for JWT validation (ES256)
  */
 export class AuthService {
   constructor(config) {
@@ -64,7 +64,7 @@ export class AuthService {
       this.initialized = true;
 
       this.logger.info(
-        'Authentication service initialized (Supabase RS256)',
+        'Authentication service initialized (Supabase ES256)',
       );
 
       this.startSessionCleanup();
@@ -227,7 +227,7 @@ export class AuthService {
           jwt.verify(
             token,
             this.getKey.bind(this),
-            { algorithms: ['RS256'] },
+            { algorithms: ['ES256'] },
             (err, decodedToken) => {
               if (err) {
                 reject(err);
@@ -309,7 +309,7 @@ export class AuthService {
         jwt.verify(
           token,
           this.getKey.bind(this),
-          { algorithms: ['RS256'] },
+          { algorithms: ['ES256'] },
           (err, decodedToken) => {
             if (err) {
               reject(err);
