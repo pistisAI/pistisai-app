@@ -274,7 +274,7 @@ class LocalConversationStorage {
     try {
       final legacyFile = await _getLegacyFile();
       if (!await legacyFile.exists()) return [];
-      return _migratePlaintextFile(legacyFile);
+      return await _migratePlaintextFile(legacyFile);
     } catch (e) {
       appLogger.error('[LocalChatStorage] Migration from legacy failed',
           error: e);

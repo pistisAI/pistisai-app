@@ -482,11 +482,9 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
         // Process the OAuth callback directly
         // This completes the authentication flow
         final session = await Supabase.instance.client.auth.getSessionFromUrl(Uri.parse(callbackUrl));
-        debugPrint('[Main] OAuth callback processed, session: ${session != null}');
+        debugPrint('[Main] OAuth callback processed, session: ${session.session}');
 
-        if (session != null && session.user != null) {
-          debugPrint('[Main] User authenticated: ${session.user.email}');
-        }
+        debugPrint('[Main] OAuth session user: ${session.session.user.email}');
       } catch (e) {
         debugPrint('[Main] Error processing OAuth callback: $e');
       }
