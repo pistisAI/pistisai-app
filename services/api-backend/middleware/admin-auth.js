@@ -5,9 +5,21 @@
  * permission checking and database-backed role verification.
  */
 
-import jwt from 'jsonwebtoken';
 import logger from '../logger.js';
 import { getPool, closePool } from '../database/db-pool.js';
+import { AuthService } from '../auth/auth-service.js';
+
+// Singleton AuthService for admin-auth middleware
+let adminAuthService = null;
+function getAdminAuthService() {
+  if (!adminAuthService) {
+    adminAuthService = new AuthService({
+      SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
+      SUPABASE_JWKS_URI: process.env.SUPABASE_JWKS_URI || `${process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co'}/auth/v1/.well-known/jwks.json`,
+    });
+  }
+  return adminAuthService;
+}
 
 /**
  * Permission mapping for each admin role
@@ -82,11 +94,21 @@ export function adminAuth(requiredPermissions = []) {
         });
       }
 
-      // Decode and verify token
+      // Verify JWT token signature using JWKS (ES256)
       let decoded;
       try {
-        // For JWT tokens, we just decode without verification since JWT SDK already verified it
-        decoded = jwt.decode(token);
+        const authService = getAdminAuthService();
+        const validationResult = await authService.validateToken(token, req);
+        if (!validationResult.valid) {
+          logger.warn('🔴 [AdminAuth] Token verification failed', {
+            error: validationResult.error,
+          });
+          return res.status(401).json({
+            error: 'Invalid token',
+            code: 'INVALID_TOKEN',
+          });
+        }
+        decoded = validationResult.payload;
         if (!decoded) {
           return res.status(401).json({
             error: 'Invalid token',
@@ -94,7 +116,7 @@ export function adminAuth(requiredPermissions = []) {
           });
         }
       } catch (error) {
-        logger.error('🔴 [AdminAuth] Token decode failed', {
+        logger.error('🔴 [AdminAuth] Token verification failed', {
           error: error.message,
         });
         return res.status(401).json({
