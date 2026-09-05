@@ -23,9 +23,12 @@ class AppConfig {
 
   // Supabase Configuration
   static const String supabaseUrl = 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
+  // SECURITY: key removed from source — must be provided at build time:
+  //   flutter run --dart-define=SUPABASE_ANON_KEY=your_key
+  //   flutter build --dart-define=SUPABASE_ANON_KEY=your_key
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: 'sb_publishable_3LxSfJDzDUKaf9_8t7SI7Q_fIgrFd0I',
+    defaultValue: '',
   );
 
   // Sentry Configuration

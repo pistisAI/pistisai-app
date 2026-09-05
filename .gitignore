@@ -144,3 +144,4 @@ site/
 .codex
 .crush-mcp-config.json
 telemetry-id
+scripts/run_init.sh
