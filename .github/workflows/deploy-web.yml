@@ -127,21 +127,20 @@ jobs:
       - name: Sync Cloudflare install script redirects
         if: always()
         env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          CF_API_EMAIL: ${{ secrets.CF_API_EMAIL || 'cmaltais@cloudtolocalllm.online' }}
+          CLOUDFLARE_CACHE_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID || '8261c24001b81e3513d82aef76fef90f' }}
         run: |
           set -euo pipefail
-          if [ -z "${CF_API_KEY:-}" ] || [ -z "${CF_API_EMAIL:-}" ]; then
-            echo "Missing Cloudflare API credentials, skipping redirect sync"
+          if [ -z "${CLOUDFLARE_CACHE_PURGE_TOKEN:-}" ]; then
+            echo "Missing Cloudflare cache purge token, skipping redirect sync"
             exit 0
           fi
           INSTALL_SH_URL="https://github.com/pistisAI/pistisai-app/releases/latest/download/install.sh"
-          python3 - <<'PY' "$CF_ZONE_ID" "$CF_API_KEY" "$CF_API_EMAIL" "$INSTALL_SH_URL"
+          python3 - <<'PY' "$CF_ZONE_ID" "$CLOUDFLARE_CACHE_PURGE_TOKEN" "$INSTALL_SH_URL"
           import json, sys, urllib.request
-          zone_id, api_key, api_email, install_sh = sys.argv[1:5]
+          zone_id, api_token, install_sh = sys.argv[1:4]
           api = f"https://api.cloudflare.com/client/v4/zones/{zone_id}/rulesets/phases/http_request_dynamic_redirect/entrypoint"
-          headers = {"X-Auth-Key": api_key, "X-Auth-Email": api_email, "Content-Type": "application/json"}
+          headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
 
           def cf(method, url, payload=None):
               data = None if payload is None else json.dumps(payload).encode()
