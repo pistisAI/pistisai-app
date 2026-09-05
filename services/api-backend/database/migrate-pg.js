@@ -24,7 +24,7 @@ export class DatabaseMigratorPG {
       password: process.env.DB_PASSWORD,
       ssl:
         process.env.DB_SSL === 'true'
-          ? { rejectUnauthorized: false }
+          ? { rejectUnauthorized: true }
           : undefined,
       max: parseInt(process.env.DB_POOL_MAX || '10', 10),
       idleTimeoutMillis: parseInt(process.env.DB_POOL_IDLE || '30000', 10),

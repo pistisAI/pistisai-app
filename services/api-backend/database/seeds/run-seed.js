@@ -31,7 +31,7 @@ const pool = new Pool({
   database: process.env.PGDATABASE || 'Pistisai',
   user: process.env.PGUSER || 'postgres',
   password: process.env.PGPASSWORD,
-  ssl: process.env.PGSSL === 'true' ? { rejectUnauthorized: false } : false,
+  ssl: process.env.PGSSL === 'true' ? { rejectUnauthorized: true } : false,
 });
 
 // Apply seed data

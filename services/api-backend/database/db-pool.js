@@ -41,9 +41,9 @@ const getPoolConfig = () => ({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
 
-  // SSL configuration
+  // SSL configuration — always verify server certificate when SSL is enabled
   ssl:
-    process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+    process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : undefined,
 
   // Pool settings (Requirement 17)
   max: parseInt(process.env.DB_POOL_MAX || '50', 10), // Maximum pool size: 50 connections

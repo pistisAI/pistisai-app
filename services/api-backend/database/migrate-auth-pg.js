@@ -23,9 +23,10 @@ export class AuthDatabaseMigratorPG {
         process.env.AUTH_DB_NAME || config.database || 'pistisai_auth',
       user: process.env.AUTH_DB_USER || config.user,
       password: process.env.AUTH_DB_PASSWORD || config.password,
+
       ssl:
         process.env.AUTH_DB_SSL === 'true'
-          ? { rejectUnauthorized: false }
+          ? { rejectUnauthorized: true }
           : undefined,
       max: parseInt(process.env.AUTH_DB_POOL_MAX || '5', 10), // Smaller pool for auth DB
       idleTimeoutMillis: parseInt(process.env.AUTH_DB_POOL_IDLE || '30000', 10),
