@@ -22,6 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
 import logger from '../logger.js';
 import { getPool } from '../database/db-pool.js';
+import { isUrlSafe } from '../utils/ssrf-protection.js';
 
 export class ProxyWebhookService {
   constructor() {
@@ -75,10 +76,9 @@ export class ProxyWebhookService {
         throw new Error('Webhook URL is required');
       }
 
-      try {
-        new URL(url);
-      } catch {
-        throw new Error('Invalid webhook URL format');
+      const urlSafety = await isUrlSafe(url);
+      if (!urlSafety.safe) {
+        throw new Error(`Webhook URL blocked: ${urlSafety.reason}`);
       }
 
       // Validate events
