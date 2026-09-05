@@ -1,6 +1,6 @@
 /**
  * Global Teardown for Pistisai E2E Tests
- * Cleans up ephemeral Auth0 test users.
+ * Cleans up test artifacts.
  */
 import fs from "fs";
 import path from "path";
@@ -53,7 +53,6 @@ async function globalTeardown(_config) {
         }
       }
     } else if (auth0Manager && hasCredentials) {
-      // Run general cleanup for any stale users > 60 mins old as safety net
       console.log("\n🧹 Running maintenance cleanup for stale users...");
       await auth0Manager.cleanupStaleUsers(60);
     } else {

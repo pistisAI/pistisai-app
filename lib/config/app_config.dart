@@ -256,23 +256,51 @@ enum AuthProviderType {
 
 /// Subscription tier pricing configuration
 class SubscriptionTierConfig {
-  /// Get Stripe price ID for a tier name
+  /// Sentinel returned when a price ID is not configured.
+  ///
+  /// The admin UI checks for this exact string before allowing a checkout,
+  /// but it must NEVER reach Stripe. Use [_getRequiredPriceId] for any call
+  /// path that actually talks to Stripe.
+  static const String unconfiguredPriceId = 'price_unconfigured';
+
+  /// Get Stripe price ID for a tier name.
+  ///
+  /// Returns [unconfiguredPriceId] if the corresponding `--dart-define` was
+  /// not provided. Callers must check for this value before sending to Stripe.
   static String getPriceId(String tierName) {
     switch (tierName) {
       case 'premium':
         return const String.fromEnvironment(
           'STRIPE_PRICE_PREMIUM',
-          defaultValue: 'price_premium_placeholder',
+          defaultValue: unconfiguredPriceId,
         );
       case 'enterprise':
         return const String.fromEnvironment(
           'STRIPE_PRICE_ENTERPRISE',
-          defaultValue: 'price_enterprise_placeholder',
+          defaultValue: unconfiguredPriceId,
         );
       case 'free':
       default:
         return '';
     }
+  }
+
+  /// True if [priceId] is the unconfigured sentinel.
+  static bool isUnconfigured(String priceId) =>
+      priceId.isEmpty || priceId == unconfiguredPriceId;
+
+  /// Get a Stripe price ID and assert it is configured. Use this from any
+  /// call site that actually calls the Stripe API.
+  static String requirePriceId(String tierName) {
+    final id = getPriceId(tierName);
+    if (isUnconfigured(id)) {
+      throw StateError(
+        'Stripe price ID for tier "$tierName" is not configured. '
+        'Set --dart-define=STRIPE_PRICE_${tierName.toUpperCase()}=price_xxx '
+        'at build time.',
+      );
+    }
+    return id;
   }
 
   /// Check if a tier requires a Stripe price ID

@@ -1,6 +1,6 @@
 /**
- * Pistisai v10.1.147 Global Test Setup
- * Prepares environment for authentication loop analysis
+ * Global Setup for Pistisai E2E Tests
+ * Prepares environment for authentication testing.
  */
 
 import fs from "fs";
@@ -16,7 +16,7 @@ async function globalSetup(config) {
     "================================================================",
   );
 
-  // Create test results directory
+  // Test results directory
   const testResultsDir = "test-results";
   if (!fs.existsSync(testResultsDir)) {
     fs.mkdirSync(testResultsDir, { recursive: true });
@@ -30,58 +30,6 @@ async function globalSetup(config) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
   });
-
-  // --- Auth0 Test User Creation ---
-  let testUser = null;
-  // Dynamic import to handle optional dependency
-  let auth0Manager = null;
-
-  try {
-    // We need to construct the URL for dynamic import
-    const scriptPath = path.resolve(
-      __dirname,
-      "../../services/api-backend/scripts/auth0-test-user-manager.js",
-    );
-    if (fs.existsSync(scriptPath)) {
-      auth0Manager = await import(scriptPath);
-    } else {
-      console.log(
-        `[WARN] Auth0 User Manager script not found at ${scriptPath}`,
-      );
-    }
-  } catch (e) {
-    console.log("[WARN] Failed to load Auth0 User Manager:", e.message);
-  }
-
-  if (
-    process.env.AUTH0_CLIENT_ID &&
-    process.env.AUTH0_CLIENT_SECRET &&
-    auth0Manager
-  ) {
-    console.log("\n Creating Ephemeral Test User...");
-    try {
-      // Create a specialized e2e-test user
-      testUser = await auth0Manager.createTestUser("e2e-user");
-
-      // Set environment variables for the test run
-      process.env.JWT_TEST_EMAIL = testUser.email;
-      process.env.JWT_TEST_PASSWORD = testUser.password;
-
-      // Save to file for other processes/tests to access if needed
-      fs.writeFileSync(
-        path.join(testResultsDir, "user-config.json"),
-        JSON.stringify(testUser, null, 2),
-      );
-      console.log(`  User created: ${testUser.email}`);
-    } catch (error) {
-      console.error("  Failed to create test user:", error.message);
-      console.log("  Falling back to manual credentials if provided.");
-    }
-  } else {
-    console.log(
-      "\n Skipping automatic test user creation (Missing credentials or script)",
-    );
-  }
 
   // Validate environment variables
   const requiredEnvVars = ["DEPLOYMENT_URL"];

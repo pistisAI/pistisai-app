@@ -28,7 +28,7 @@ Project-specific conventions
 - GitHub issues are the work-tracking source of truth: `https://github.com/pistisAI/pistisai-app/issues`. Treat issue bodies, comments, labels, milestones, and linked PRs as canonical for active work state and priority. Do not let local notes, chat context, or stale plans override a live issue without updating the issue.
 
 Integration & cross-component notes
-- Auth: Auth0 is used; web uses a JS bridge (`auth0-bridge.js`) while desktop uses native flows. See `auth_service.dart` and `auth0_*_service.dart`.
+- Auth: Supabase is used (web + desktop when CLOUD_ENABLED); local mode (default desktop) uses `LocalAuthProvider`. See `lib/auth/auth_provider.dart`, `lib/auth/auth_provider_factory.dart`, and the providers under `lib/auth/providers/`.
 - Local models: Ollama/LM Studio integrations are in `lib/services/` and `llm_providers/`. They use OpenAI-compatible APIs; follow provider config in `provider_configuration.dart`.
 - MCP servers: repo includes `config/mcp` and a workspace `mcp.json`. VS Code may also use a user `mcp.json`. Avoid editing user-level files in commits; add or update workspace `mcp.json` when you intend the team to share MCP server definitions.
 
@@ -76,7 +76,7 @@ Agent MCP tools (built-in to the AI assistant):
 - `aitk-evaluation_agent_runner_best_practices`: Guidance for using agent runners in evaluation.
 
 Where to look for more context
-- `config/mcp/` and `config/mcp/servers/` — local server wiring (Auth0, DigitalOcean, Kubernetes, Docker, GitHub integrations)
+- `config/mcp/` and `config/mcp/servers/` — local server wiring (DigitalOcean, Kubernetes, Docker, GitHub integrations)
 - `.github/workflows/` — CI build and deploy flows (`build-release.yml`, `deploy-aks.yml`)
 - `lib/` and `services/` — implementation surfaces for feature work
 

@@ -88,7 +88,7 @@ export function getUserTier(user) {
   }
 
   try {
-    // Safely extract metadata with validation (Supabase and Auth0 structures)
+    // Safely extract metadata with validation (Supabase structure)
     const userMetadata =
       user.user_metadata ||
       user['https://Pistisai.com/user_metadata'] ||

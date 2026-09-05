@@ -2,7 +2,7 @@
  * Authentication Routes for Pistisai API Backend
  *
  * Provides JWT token validation and user information endpoints.
- * Note: Authentication is handled by provider-agnostic JWT validation (e.g., Auth0).
+ * Note: Authentication is handled by Supabase JWT validation.
  *
  * Requirements: 2.1, 2.2, 2.9, 2.10
  */

@@ -974,7 +974,7 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
 
       // Check if a Stripe price ID is required (not for free tier)
       if (SubscriptionTierConfig.requiresStripePriceId(_selectedTier.name) &&
-          newPriceId.contains('placeholder')) {
+          SubscriptionTierConfig.isUnconfigured(newPriceId)) {
         setState(() {
           _error = 'Stripe price ID not configured. Please set the STRIPE_PRICE_${_selectedTier.name.toUpperCase()} environment variable.';
         });
