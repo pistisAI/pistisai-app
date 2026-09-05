@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 /// Service for registering custom URL schemes on Windows desktop
 /// This is required for OAuth callbacks to work properly
 class UrlSchemeRegistrationService {
-  static const String _customScheme = 'pistisai.app';
+  static const String _customScheme = 'pistisai';
 
   /// Registers the custom URL scheme in Windows Registry
   /// This allows the OS to launch our app when OAuth redirects to our custom scheme
