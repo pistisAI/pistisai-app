@@ -39,9 +39,13 @@ function isInCidr(ip, cidr) {
 }
 
 function isPrivateIp(ip) {
-  if (!net.isIPv4(ip)) return false;
+  if (!net.isIPv4(ip)) {
+    return false;
+  }
   for (const { cidr, label } of BLOCKED_NETWORKS) {
-    if (isInCidr(ip, cidr)) return label;
+    if (isInCidr(ip, cidr)) {
+      return label;
+    }
   }
   return false;
 }
