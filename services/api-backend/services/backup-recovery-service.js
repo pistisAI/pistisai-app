@@ -7,11 +7,13 @@
  * Requirements: 9.6 (Database backup and recovery procedures)
  */
 
-import { execFile } from 'child_process';
+import { execFile, spawn } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import zlib from 'zlib';
+import { pipeline } from 'stream/promises';
 import logger from '../logger.js';
 import { getClient } from '../database/db-pool.js';
 
@@ -126,7 +128,7 @@ export class BackupRecoveryService {
 
       const startTime = Date.now();
 
-      // Execute pg_dump using execFile (no shell, no injection)
+      // Execute pg_dump (no shell, no injection)
       const host = process.env.DB_HOST || 'localhost';
       const port = process.env.DB_PORT || '5432';
       const database = process.env.DB_NAME || 'Pistisai';
@@ -137,13 +139,18 @@ export class BackupRecoveryService {
         '-p', port,
         '-U', user,
         '-d', database,
-        '-f', backupFile,
       ];
 
-      await execFileAsync('pg_dump', dumpArgs, {
-        env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
-        timeout: 300000, // 5 min timeout
-      });
+      if (this.compressionEnabled) {
+        // Use spawn + zlib for streaming compression (no shell, no injection)
+        await this._spawnWithCompression('pg_dump', dumpArgs, backupFile);
+      } else {
+        // Uncompressed: use execFile with -f flag
+        await execFileAsync('pg_dump', [...dumpArgs, '-f', backupFile], {
+          env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
+          timeout: 300000, // 5 min timeout
+        });
+      }
 
       const endTime = Date.now();
       const duration = endTime - startTime;
@@ -314,13 +321,21 @@ export class BackupRecoveryService {
         '-p', port,
         '-U', user,
         '-d', database,
-        '-f', backupFile,
       ];
 
-      await execFileAsync('psql', restoreArgs, {
-        env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
-        timeout: 300000,
-      });
+      // Check if backup is compressed
+      const isCompressed = backupFile.endsWith('.gz');
+
+      if (isCompressed) {
+        // Use spawn + gunzip stream to psql stdin (no shell, no injection)
+        await this._spawnRestoreWithDecompression(backupFile, restoreArgs);
+      } else {
+        // Uncompressed: use execFile with -f flag
+        await execFileAsync('psql', [...restoreArgs, '-f', backupFile], {
+          env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
+          timeout: 300000,
+        });
+      }
 
       const endTime = Date.now();
       const duration = endTime - startTime;
@@ -431,6 +446,110 @@ export class BackupRecoveryService {
 
       throw error;
     }
+  }
+
+  /**
+   * Spawn a command and stream its stdout through zlib gzip to a file
+   * @private
+   * @param {string} command - Command to spawn
+   * @param {string[]} args - Command arguments
+   * @param {string} outputFile - Output file path
+   * @returns {Promise<void>}
+   */
+  async _spawnWithCompression(command, args, outputFile) {
+    return new Promise((resolve, reject) => {
+      const child = spawn(command, args, {
+        env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
+      });
+
+      const gzip = zlib.createGzip();
+      const output = fs.createWriteStream(outputFile);
+
+      const cleanup = (error) => {
+        try { output.end(); } catch (e) { /* ignore */ }
+        try { gzip.destroy(); } catch (e) { /* ignore */ }
+        try { child.kill(); } catch (e) { /* ignore */ }
+        if (error) reject(error);
+      };
+
+      child.on('error', cleanup);
+      gzip.on('error', cleanup);
+      output.on('error', cleanup);
+
+      child.stdout.pipe(gzip).pipe(output);
+
+      output.on('finish', () => {
+        if (child.exitCode !== 0 && child.exitCode !== null) {
+          reject(new Error(`${command} exited with code ${child.exitCode}`));
+        } else {
+          resolve();
+        }
+      });
+
+      child.on('exit', (code) => {
+        if (code !== 0) {
+          cleanup(new Error(`${command} exited with code ${code}`));
+        }
+      });
+
+      // Timeout safeguard
+      const timeout = setTimeout(() => {
+        cleanup(new Error(`${command} timed out after 300s`));
+      }, 300000);
+
+      output.on('finish', () => clearTimeout(timeout));
+    });
+  }
+
+  /**
+   * Spawn psql and pipe a file (optionally gunzipped) to its stdin
+   * @private
+   * @param {string} backupFile - Backup file path (may be .gz)
+   * @param {string[]} args - psql arguments
+   * @returns {Promise<void>}
+   */
+  async _spawnRestoreWithDecompression(backupFile, args) {
+    return new Promise((resolve, reject) => {
+      const isCompressed = backupFile.endsWith('.gz');
+      const child = spawn('psql', args, {
+        env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
+      });
+
+      const input = fs.createReadStream(backupFile);
+      const gunzip = isCompressed ? zlib.createGunzip() : null;
+
+      const cleanup = (error) => {
+        try { input.destroy(); } catch (e) { /* ignore */ }
+        if (gunzip) try { gunzip.destroy(); } catch (e) { /* ignore */ }
+        try { child.kill(); } catch (e) { /* ignore */ }
+        if (error) reject(error);
+      };
+
+      child.on('error', cleanup);
+      input.on('error', cleanup);
+      if (gunzip) gunzip.on('error', cleanup);
+
+      if (isCompressed) {
+        input.pipe(gunzip).pipe(child.stdin);
+      } else {
+        input.pipe(child.stdin);
+      }
+
+      child.on('exit', (code) => {
+        if (code !== 0) {
+          reject(new Error(`psql exited with code ${code}`));
+        } else {
+          resolve();
+        }
+      });
+
+      // Timeout safeguard
+      const timeout = setTimeout(() => {
+        cleanup(new Error(`psql restore timed out after 300s`));
+      }, 300000);
+
+      child.on('exit', () => clearTimeout(timeout));
+    });
   }
 
   /**

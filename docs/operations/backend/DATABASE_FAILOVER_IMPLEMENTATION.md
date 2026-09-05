@@ -237,7 +237,7 @@ const standbyConfigs = [
     database: 'Pistisai',
     user: 'postgres',
     password: 'password',
-    ssl: { rejectUnauthorized: false },
+    ssl: { rejectUnauthorized: true },
   },
   {
     host: 'standby2.example.com',
@@ -245,10 +245,15 @@ const standbyConfigs = [
     database: 'Pistisai',
     user: 'postgres',
     password: 'password',
-    ssl: { rejectUnauthorized: false },
+    ssl: { rejectUnauthorized: true },
   },
 ];
 ```
+
+> **Note:** For self-signed certificates, use the `ca` option to provide a custom CA certificate rather than disabling verification:
+> ```javascript
+> ssl: { rejectUnauthorized: true, ca: fs.readFileSync('/path/to/ca-cert.pem') }
+> ```
 
 ## Testing
 
