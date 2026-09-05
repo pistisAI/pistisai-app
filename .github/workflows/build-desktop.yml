@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release version (e.g. 1.0.1). Leave empty for auto-bump."
+        description: "Release version (e.g. 1.1.0). Leave empty for auto-bump."
         required: false
         default: ""
         type: string
@@ -13,6 +13,14 @@ on:
         required: false
         default: "linux,windows,macos"
         type: string
+      bump:
+        description: "Version bump type"
+        required: false
+        default: "minor"
+        type: choice
+        options:
+          - patch
+          - minor
   push:
     branches: [main]
     paths:
@@ -22,6 +30,8 @@ on:
       - "linux/**"
       - "macos/**"
       - ".github/workflows/build-desktop.yml"
+    tags:
+      - "v*"
 
 env:
   PLATFORMS: ${{ inputs.platforms || 'linux,windows,macos' }}
@@ -72,20 +82,30 @@ jobs:
       - name: Compute version
         id: version
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
+          if [[ "${{ github.ref }}" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # Full release tag (v1.1.0): extract version, use as-is
+            VERSION=${GITHUB_REF#refs/tags/v}
+          elif [ -n "${{ inputs.version }}" ]; then
+            # workflow_dispatch with explicit version
             VERSION=${{ inputs.version }}
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            VERSION=$(jq -r '.version' assets/version.json)
-            IFS='.' read -r -a v <<< "$VERSION"
-            v[2]=$((v[2] + 1))
-            VERSION="${v[0]}.${v[1]}.${v[2]}"
+            # workflow_dispatch without version: auto-bump based on input
+            BUMP="${{ inputs.bump || 'minor' }}"
+            CURRENT=$(jq -r '.version' assets/version.json | cut -d+ -f1)
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+            if [ "$BUMP" = "minor" ]; then
+              MINOR=$((MINOR + 1))
+              PATCH=0
+            elif [ "$BUMP" = "patch" ]; then
+              PATCH=$((PATCH + 1))
+            fi
+            VERSION="${MAJOR}.${MINOR}.${PATCH}"
           else
-            # Push to main: ship the version already in the tree. Auto-bumping
-            # here would publish v1.0.4 after a PR that already set 1.0.3, and
-            # Dependabot pubspec bumps must not invent a new release number.
+            # Push to main or tag push: read version from tree
             VERSION=$(jq -r '.version' assets/version.json)
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Resolved version: $VERSION"
 
   build_linux:
     name: Linux Build
@@ -283,11 +303,12 @@ jobs:
 
   create_release:
     needs: [set_version, build_linux, build_windows, build_macos]
-    # Issue #155: never publish a partial desktop release. Dependabot / lib
-    # pushes still build artifacts; GitHub Releases are explicit dispatches.
-    if: >
+    # Issue #155: never publish a partial desktop release.
+    # Auto-publish on version tags (v*.*.*) or manual dispatch.
+    # Push-to-main builds do NOT auto-publish releases.
+    if: >-
       always() &&
-      github.event_name == 'workflow_dispatch' &&
+      (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))) &&
       needs.build_linux.result == 'success' &&
       needs.build_windows.result == 'success'
     runs-on: ubuntu-24.04
