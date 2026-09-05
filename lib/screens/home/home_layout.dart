@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/chat_model.dart';
 import '../../services/streaming_chat_service.dart';
+import '../../services/avatar/personality_engine.dart';
 import '../../services/connection_manager_service.dart';
+import '../../features/avatar/avatar_widget.dart';
+import '../../widgets/common/status_badge.dart';
 import '../../components/message_bubble.dart';
 import '../../components/message_input.dart' as msg_input;
 import '../../components/glass_container.dart';
@@ -14,7 +17,6 @@ import '../../components/animated_background.dart';
 import '../../models/avatar/personality_models.dart';
 import '../../di/locator.dart' as di;
 import '../../services/agent_display_name.dart';
-import '../../services/avatar/personality_engine.dart';
 
 /// Main layout — clean chat interface, nothing else.
 class HomeLayout extends StatefulWidget {
@@ -132,23 +134,20 @@ class _ChatPaneState extends State<_ChatPane> {
           children: [
             Row(
               children: [
-                Image.asset(
-                  'assets/images/app_icon.png',
-                  width: 28,
-                  height: 28,
-                  errorBuilder: (ctx, _, __) => const Icon(
-                    Icons.hub_outlined,
-                    size: 28,
-                    color: Colors.amber,
-                  ),
-                ),
+                _buildHeaderAvatar(context),
                 const SizedBox(width: 10),
-                Text(
-                  'Pistisai',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Pistisai',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    _buildConnectionStatus(context),
+                  ],
                 ),
               ],
             ),
@@ -231,6 +230,47 @@ class _ChatPaneState extends State<_ChatPane> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeaderAvatar(BuildContext context) {
+    final chatService = context.watch<StreamingChatService>();
+    final AgentState state;
+    if (chatService.isLoading) {
+      state = AgentState.working;
+    } else if (chatService.currentConversation?.messages.any((m) => m.hasError) ?? false) {
+      state = AgentState.error;
+    } else {
+      state = AgentState.idle;
+    }
+
+    return AgentAvatar(
+      state: state,
+      size: 32,
+      showGlow: false,
+    );
+  }
+
+  Widget _buildConnectionStatus(BuildContext context) {
+    final connectionManager = context.watch<ConnectionManagerService>();
+    final StatusType status;
+    final String label;
+
+    if (connectionManager.isConnected) {
+      status = StatusType.healthy;
+      label = 'Connected';
+    } else if (connectionManager.currentBackend != null) {
+      status = StatusType.idle;
+      label = 'Configured';
+    } else {
+      status = StatusType.stopped;
+      label = 'Offline';
+    }
+
+    return StatusBadge(
+      status: status,
+      label: label,
+      showIcon: true,
     );
   }
 
