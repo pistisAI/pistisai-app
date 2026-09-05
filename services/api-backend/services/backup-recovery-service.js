@@ -7,7 +7,7 @@
  * Requirements: 9.6 (Database backup and recovery procedures)
  */
 
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
@@ -15,7 +15,7 @@ import crypto from 'crypto';
 import logger from '../logger.js';
 import { getClient } from '../database/db-pool.js';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 const fsPromises = fs.promises;
 
 /**
@@ -126,9 +126,24 @@ export class BackupRecoveryService {
 
       const startTime = Date.now();
 
-      // Execute pg_dump command
-      const dumpCommand = this._buildDumpCommand(backupFile);
-      await execAsync(dumpCommand);
+      // Execute pg_dump using execFile (no shell, no injection)
+      const host = process.env.DB_HOST || 'localhost';
+      const port = process.env.DB_PORT || '5432';
+      const database = process.env.DB_NAME || 'Pistisai';
+      const user = process.env.DB_USER;
+
+      const dumpArgs = [
+        '-h', host,
+        '-p', port,
+        '-U', user,
+        '-d', database,
+        '-f', backupFile,
+      ];
+
+      await execFileAsync('pg_dump', dumpArgs, {
+        env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
+        timeout: 300000, // 5 min timeout
+      });
 
       const endTime = Date.now();
       const duration = endTime - startTime;
@@ -288,9 +303,24 @@ export class BackupRecoveryService {
         throw new Error(`Backup file not found: ${backupFile}`);
       }
 
-      // Execute restore command
-      const restoreCommand = this._buildRestoreCommand(backupFile);
-      await execAsync(restoreCommand);
+      // Execute restore using execFile (no shell, no injection)
+      const host = process.env.DB_HOST || 'localhost';
+      const port = process.env.DB_PORT || '5432';
+      const database = process.env.DB_NAME || 'Pistisai';
+      const user = process.env.DB_USER;
+
+      const restoreArgs = [
+        '-h', host,
+        '-p', port,
+        '-U', user,
+        '-d', database,
+        '-f', backupFile,
+      ];
+
+      await execFileAsync('psql', restoreArgs, {
+        env: { ...process.env, PGPASSWORD: process.env.DB_PASSWORD || '' },
+        timeout: 300000,
+      });
 
       const endTime = Date.now();
       const duration = endTime - startTime;
@@ -401,54 +431,6 @@ export class BackupRecoveryService {
 
       throw error;
     }
-  }
-
-  /**
-   * Build pg_dump command
-   * @private
-   * @param {string} backupFile - Backup file path
-   * @returns {string} pg_dump command
-   */
-  _buildDumpCommand(backupFile) {
-    const host = process.env.DB_HOST || 'localhost';
-    const port = process.env.DB_PORT || '5432';
-    const database = process.env.DB_NAME || 'Pistisai';
-    const user = process.env.DB_USER;
-    const password = process.env.DB_PASSWORD;
-
-    let command = `PGPASSWORD="${password}" pg_dump -h ${host} -p ${port} -U ${user} -d ${database}`;
-
-    if (this.compressionEnabled) {
-      command += ` | gzip > ${backupFile}`;
-    } else {
-      command += ` > ${backupFile}`;
-    }
-
-    return command;
-  }
-
-  /**
-   * Build restore command
-   * @private
-   * @param {string} backupFile - Backup file path
-   * @returns {string} Restore command
-   */
-  _buildRestoreCommand(backupFile) {
-    const host = process.env.DB_HOST || 'localhost';
-    const port = process.env.DB_PORT || '5432';
-    const database = process.env.DB_NAME || 'Pistisai';
-    const user = process.env.DB_USER;
-    const password = process.env.DB_PASSWORD;
-
-    let command;
-
-    if (this.compressionEnabled) {
-      command = `gunzip -c ${backupFile} | PGPASSWORD="${password}" psql -h ${host} -p ${port} -U ${user} -d ${database}`;
-    } else {
-      command = `PGPASSWORD="${password}" psql -h ${host} -p ${port} -U ${user} -d ${database} < ${backupFile}`;
-    }
-
-    return command;
   }
 
   /**
