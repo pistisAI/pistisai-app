@@ -13,7 +13,6 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import zlib from 'zlib';
-import { pipeline } from 'stream/promises';
 import logger from '../logger.js';
 import { getClient } from '../database/db-pool.js';
 
@@ -466,10 +465,24 @@ export class BackupRecoveryService {
       const output = fs.createWriteStream(outputFile);
 
       const cleanup = (error) => {
-        try { output.end(); } catch (e) { /* ignore */ }
-        try { gzip.destroy(); } catch (e) { /* ignore */ }
-        try { child.kill(); } catch (e) { /* ignore */ }
-        if (error) reject(error);
+        try {
+          output.end();
+        } catch {
+          // ignore
+        }
+        try {
+          gzip.destroy();
+        } catch {
+          // ignore
+        }
+        try {
+          child.kill();
+        } catch {
+          // ignore
+        }
+        if (error) {
+          reject(error);
+        }
       };
 
       child.on('error', cleanup);
@@ -519,15 +532,33 @@ export class BackupRecoveryService {
       const gunzip = isCompressed ? zlib.createGunzip() : null;
 
       const cleanup = (error) => {
-        try { input.destroy(); } catch (e) { /* ignore */ }
-        if (gunzip) try { gunzip.destroy(); } catch (e) { /* ignore */ }
-        try { child.kill(); } catch (e) { /* ignore */ }
-        if (error) reject(error);
+        try {
+          input.destroy();
+        } catch {
+          // ignore
+        }
+        if (gunzip) {
+          try {
+            gunzip.destroy();
+          } catch {
+            // ignore
+          }
+        }
+        try {
+          child.kill();
+        } catch {
+          // ignore
+        }
+        if (error) {
+          reject(error);
+        }
       };
 
       child.on('error', cleanup);
       input.on('error', cleanup);
-      if (gunzip) gunzip.on('error', cleanup);
+      if (gunzip) {
+        gunzip.on('error', cleanup);
+      }
 
       if (isCompressed) {
         input.pipe(gunzip).pipe(child.stdin);
