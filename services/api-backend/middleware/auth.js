@@ -32,7 +32,7 @@ function getAuthService() {
 /**
  * Express middleware for JWT authentication
  */
-export const authenticateJwt = async (req, res, next) => {
+export const authenticateJWT = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
     const token =
@@ -115,7 +115,7 @@ export const authenticateJwt = async (req, res, next) => {
 };
 
 /**
- * Extract user ID from request (set by authenticateJwt middleware)
+ * Extract user ID from request (set by authenticateJWT middleware)
  */
 export const extractUserId = (req, res, next) => {
   if (!req.auth?.payload?.sub) {
@@ -197,7 +197,7 @@ export async function syncSession(req, res, next) {
 }
 
 /**
- * Require admin role middleware (requires authenticateJwt first)
+ * Require admin role middleware (requires authenticateJWT first)
  */
 export const requireAdmin = (req, res, next) => {
   const roles = req.auth?.payload?.['https://pistisai.app/roles'] || [];
@@ -281,6 +281,6 @@ export const optionalAuth = async (req, res, next) => {
   next();
 };
 
-export const checkJwt = authenticateJwt;
+export const checkJwt = authenticateJWT;
 
 export { getAuthService };
