@@ -55,13 +55,10 @@ class ThemeConfig {
 
   // Status Colors (same for both themes)
   static const Color successColor = Color(0xFF4caf50);
-  static const Color successColorLight = Color(0xFF2E7D32);
   static const Color warningColor = Color(0xFFffa726);
-  static const Color warningColorLight = Color(0xFFF57C00);
   static const Color dangerColor = Color(0xFFff5252);
   static const Color dangerColorLight = Color(0xFFD32F2F);
   static const Color infoColor = Color(0xFF2196f3);
-  static const Color infoColorLight = Color(0xFF1976D2);
 
   // ============================================================================
   // Typography Definitions
@@ -344,6 +341,7 @@ class ThemeConfig {
           textColor: darkTextColor,
           textColorLight: darkTextColorLight,
           textColorDark: lightTextColor,
+          borderColor: darkBorderColor,
           success: successColor,
           warning: warningColor,
           danger: dangerColor,
@@ -399,6 +397,7 @@ class ThemeConfig {
           textColor: lightTextColor,
           textColorLight: lightTextColorLight,
           textColorDark: lightTextColorDark,
+          borderColor: lightBorderColor,
           success: successColor,
           warning: warningColor,
           danger: dangerColor,

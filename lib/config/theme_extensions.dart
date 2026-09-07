@@ -71,6 +71,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     required this.textColor,
     required this.textColorLight,
     required this.textColorDark,
+    required this.borderColor,
     required this.success,
     required this.warning,
     required this.danger,
@@ -88,6 +89,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
   final Color textColor;
   final Color textColorLight;
   final Color textColorDark;
+  final Color borderColor;
   final Color success;
   final Color warning;
   final Color danger;
@@ -105,6 +107,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     textColor: Color(0xFFF5E6C8),
     textColorLight: Color(0xFFB8A88A),
     textColorDark: Color(0xFF2c3e50),
+    borderColor: Color(0xFF2A2A3E),
     success: Color(0xFF4caf50),
     warning: Color(0xFFffa726),
     danger: Color(0xFFff5252),
@@ -123,6 +126,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     textColor: Color(0xFF2c3e50),
     textColorLight: Color(0xFF6F7B8A),
     textColorDark: Color(0xFF263238),
+    borderColor: Color(0xFFE0E0E0),
     success: Color(0xFF2E7D32),
     warning: Color(0xFFF57C00),
     danger: Color(0xFFD32F2F),
@@ -142,6 +146,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
     Color? textColor,
     Color? textColorLight,
     Color? textColorDark,
+    Color? borderColor,
     Color? success,
     Color? warning,
     Color? danger,
@@ -159,6 +164,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
       textColor: textColor ?? this.textColor,
       textColorLight: textColorLight ?? this.textColorLight,
       textColorDark: textColorDark ?? this.textColorDark,
+      borderColor: borderColor ?? this.borderColor,
       success: success ?? this.success,
       warning: warning ?? this.warning,
       danger: danger ?? this.danger,
@@ -181,6 +187,7 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
       textColor: Color.lerp(textColor, other.textColor, t)!,
       textColorLight: Color.lerp(textColorLight, other.textColorLight, t)!,
       textColorDark: Color.lerp(textColorDark, other.textColorDark, t)!,
+      borderColor: Color.lerp(borderColor, other.borderColor, t)!,
       success: Color.lerp(success, other.success, t)!,
       warning: Color.lerp(warning, other.warning, t)!,
       danger: Color.lerp(danger, other.danger, t)!,
