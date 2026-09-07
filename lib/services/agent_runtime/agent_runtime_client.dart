@@ -5,6 +5,7 @@ import 'package:pistisai/services/streaming_service.dart';
 enum AgentRuntimeKind {
   hermes,
   openclaw,
+  pi,
   custom,
   hosted,
 }

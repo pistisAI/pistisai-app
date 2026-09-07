@@ -309,19 +309,14 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
   }
 
   IconData _getProviderIcon(ProviderType type) {
-    switch (type) {
-      case ProviderType.openclaw:
-        return Icons.hub;
-      case ProviderType.hermes:
-        return Icons.smart_toy;
-      case ProviderType.lmStudio:
-        return Icons.science;
-      case ProviderType.ollama:
-        return Icons.terminal;
-      case ProviderType.openAICompatible:
-        return Icons.smart_toy;
-      case ProviderType.custom:
-        return Icons.extension;
-    }
+    return switch (type) {
+      ProviderType.openclaw => Icons.hub,
+      ProviderType.hermes => Icons.smart_toy,
+      ProviderType.pi => Icons.smart_toy_outlined,
+      ProviderType.lmStudio => Icons.science,
+      ProviderType.ollama => Icons.terminal,
+      ProviderType.openAICompatible => Icons.smart_toy,
+      ProviderType.custom => Icons.extension,
+    };
   }
 }

@@ -9,6 +9,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../config/app_config.dart';
 import 'agent_runtime/agent_runtime_client.dart';
 import 'agent_runtime/hermes_runtime_client.dart';
+import 'agent_runtime/pi_runtime_client.dart';
 import '../auth/providers/noop_auth_provider.dart';
 import 'auth_service.dart';
 import 'cloud_streaming_service.dart';
@@ -23,6 +24,7 @@ final Logger _log = Logger('ConnectionManagerService');
 enum BackendType {
   openclaw,
   hermes,
+  pi,
 }
 
 /// Connection type preference (used by UI).
@@ -30,6 +32,7 @@ enum ConnectionType {
   local,
   hermes,
   openclaw,
+  pi,
 }
 
 /// Manages the selected agent runtime session.
@@ -190,6 +193,7 @@ class ConnectionManagerService extends ChangeNotifier {
       case BackendType.openclaw:
         return _connectToOpenClaw();
       case BackendType.hermes:
+      case BackendType.pi:
         unawaited(_connectToActiveRuntime());
         return _messageStreamController.stream;
     }
@@ -238,6 +242,8 @@ class ConnectionManagerService extends ChangeNotifier {
     _currentBackend = newBackend;
     if (newBackend == BackendType.hermes) {
       _activeRuntimeClient = _createHermesRuntimeClient();
+    } else if (newBackend == BackendType.pi) {
+      _activeRuntimeClient = PiRuntimeClient();
     } else {
       _activeRuntimeClient = null;
     }
@@ -365,6 +371,16 @@ class ConnectionManagerService extends ChangeNotifier {
           _lastError = health.isHealthy ? null : health.message;
           notifyListeners();
           return health.isHealthy;
+        case BackendType.pi:
+          if (_activeRuntimeClient is! PiRuntimeClient) {
+            _activeRuntimeClient = PiRuntimeClient();
+          }
+          final piClient = _activeRuntimeClient!;
+          final piHealth = await piClient.health();
+          _isConnected = piHealth.isHealthy;
+          _lastError = piHealth.isHealthy ? null : piHealth.message;
+          notifyListeners();
+          return piHealth.isHealthy;
         case BackendType.openclaw:
           await openclawGatewayService.checkStatus();
           break;
@@ -557,6 +573,8 @@ class ConnectionManagerService extends ChangeNotifier {
         switchBackend(BackendType.hermes);
       case ConnectionType.openclaw:
         switchBackend(BackendType.openclaw);
+      case ConnectionType.pi:
+        switchBackend(BackendType.pi);
       case ConnectionType.local:
         clearActiveRuntime();
     }
@@ -644,6 +662,9 @@ class ConnectionManagerService extends ChangeNotifier {
     } else if (configuredBackend == preferences.BackendType.openclaw) {
       _currentBackend = BackendType.openclaw;
       _activeRuntimeClient = null;
+    } else if (configuredBackend == preferences.BackendType.pi) {
+      _currentBackend = BackendType.pi;
+      _activeRuntimeClient = PiRuntimeClient();
     } else {
       _currentBackend = null;
       _activeRuntimeClient = null;
@@ -659,6 +680,7 @@ class ConnectionManagerService extends ChangeNotifier {
     final preferences.BackendType? preferenceBackend = switch (backend) {
       BackendType.hermes => preferences.BackendType.hermes,
       BackendType.openclaw => preferences.BackendType.openclaw,
+      BackendType.pi => preferences.BackendType.pi,
       null => null,
     };
     unawaited(settings.setActiveBackend(preferenceBackend));

@@ -129,6 +129,9 @@ class _ConfigScreenState extends State<ConfigScreen>
       case BackendType.openclaw:
         connectionManager.switchBackend(runtime.BackendType.openclaw);
         await connectionManager.testConnection();
+      case BackendType.pi:
+        connectionManager.switchBackend(runtime.BackendType.pi);
+        await connectionManager.testConnection();
       case null:
         connectionManager.clearActiveRuntime();
     }
@@ -138,6 +141,7 @@ class _ConfigScreenState extends State<ConfigScreen>
     return switch (backend) {
       BackendType.hermes => 'Hermes Agent',
       BackendType.openclaw => 'OpenClaw Gateway',
+      BackendType.pi => 'Pi Agent',
       null => 'None',
     };
   }

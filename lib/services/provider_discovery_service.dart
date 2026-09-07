@@ -39,6 +39,7 @@ class ProviderDiscoveryService {
     final List<Future<ProviderInfo?>> scans = [
       _scanHermes(),
       _scanOpenClawGateway(),
+      _scanPi(),
     ];
 
     try {
@@ -137,6 +138,47 @@ class ProviderDiscoveryService {
       }
     } catch (_) {
       // Not available — expected on this machine
+    }
+    return null;
+  }
+
+  /// Scan for Pi coding agent binary on PATH.
+  /// Pi runs as a subprocess (RPC mode), so we just check if `pi` is available.
+  Future<ProviderInfo?> _scanPi() async {
+    try {
+      // Check common Pi binary locations
+      final candidates = <String>[
+        'pi',
+        '${Platform.environment['HOME'] ?? ''}/.local/bin/pi',
+        '${Platform.environment['HOME'] ?? ''}/.bun/bin/pi',
+        '/usr/local/bin/pi',
+        '/usr/bin/pi',
+      ];
+
+      for (final candidate in candidates) {
+        if (candidate.isEmpty) continue;
+        final result = await Process.run(
+          candidate.contains('/') ? candidate : 'which',
+          candidate.contains('/') ? ['--version'] : [candidate],
+        ).timeout(const Duration(seconds: 5));
+
+        if (result.exitCode == 0) {
+          debugPrint('[ProviderDiscovery] Found Pi Agent at $candidate');
+          return ProviderInfo(
+            id: 'pi_discovered',
+            type: ProviderType.pi,
+            name: 'Pi Agent',
+            url: 'pi://local',
+            isLocal: true,
+            isAvailable: true,
+            version: result.stdout.toString().trim(),
+            availableModels: [],
+            role: ProviderRole.agentRuntime,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('[ProviderDiscovery] Pi Agent not available: $e');
     }
     return null;
   }

@@ -171,19 +171,14 @@ class _CompletionStepState extends State<CompletionStep> {
   }
 
   String _getProviderTypeLabel(ProviderType type) {
-    switch (type) {
-      case ProviderType.openclaw:
-        return 'OpenClaw Gateway';
-      case ProviderType.hermes:
-        return 'Hermes Agent';
-      case ProviderType.lmStudio:
-        return 'LM Studio';
-      case ProviderType.ollama:
-        return 'Ollama';
-      case ProviderType.openAICompatible:
-        return 'OpenAI Compatible';
-      case ProviderType.custom:
-        return 'Custom';
-    }
+    return switch (type) {
+      ProviderType.openclaw => 'OpenClaw Gateway',
+      ProviderType.hermes => 'Hermes Agent',
+      ProviderType.pi => 'Pi Agent',
+      ProviderType.lmStudio => 'LM Studio',
+      ProviderType.ollama => 'Ollama',
+      ProviderType.openAICompatible => 'OpenAI Compatible',
+      ProviderType.custom => 'Custom',
+    };
   }
 }

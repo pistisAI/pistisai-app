@@ -51,6 +51,7 @@ import 'package:pistisai/services/providers/zhipu_adapter.dart';
 import 'package:pistisai/services/providers/google_adapter.dart';
 import 'package:pistisai/services/providers/moonshot_adapter.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/pi/pi_streaming_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/agent_status_service.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
@@ -277,6 +278,15 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);
+
+      // Pi streaming service (RPC mode subprocess) — registered as a singleton
+      // so the same instance is reused across the app lifecycle.
+      final piStreamingService = PiStreamingService(
+        model: 'pi-default',
+        provider: 'local',
+      );
+      serviceLocator
+          .registerSingleton<PiStreamingService>(piStreamingService);
 
       final voiceConversationService = VoiceConversationService();
       serviceLocator.registerLazySingleton<VoiceConversationService>(
@@ -1083,6 +1093,32 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
                   '[ServiceLocator] ✓ Auto-activated Hermes as default runtime');
             } catch (e) {
               debugPrint('[ServiceLocator] Could not auto-activate Hermes: $e');
+            }
+            break;
+
+          case ProviderType.pi:
+            // Pi runs as a subprocess (RPC mode), not HTTP.
+            // Auto-activate as agent runtime when discovered.
+            config = OpenAICompatibleProviderConfiguration(
+              providerId: providerId,
+              baseUrl: 'pi://local',
+              port: 0,
+              timeout: const Duration(seconds: 120),
+              enableStreaming: true,
+              customSettings: {
+                'auto_configured': true,
+                'discovered_at': DateTime.now().toIso8601String(),
+                'role': ProviderRole.agentRuntime.name,
+                'type': providerInfo.type.name,
+              },
+            );
+            try {
+              final settings = SettingsPreferenceService();
+              await settings.setActiveBackend(BackendType.pi);
+              debugPrint(
+                  '[ServiceLocator] ✓ Auto-activated Pi as default runtime');
+            } catch (e) {
+              debugPrint('[ServiceLocator] Could not auto-activate Pi: $e');
             }
             break;
 

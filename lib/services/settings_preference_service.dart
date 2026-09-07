@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/app_config.dart';
 
-enum BackendType { openclaw, hermes }
+enum BackendType { openclaw, hermes, pi }
 
 class SettingsPreferenceService {
   static const String _proModeKey = 'settings_pro_mode';

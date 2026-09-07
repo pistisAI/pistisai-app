@@ -19,6 +19,7 @@ enum ConnectionMethod {
   tailscale,
   custom,
   hermes,
+  pi,
 }
 
 /// Where a Hermes runtime is reachable during setup.
@@ -774,6 +775,7 @@ class SetupWizardService extends ChangeNotifier {
     for (final type in [
       ProviderType.hermes,
       ProviderType.openclaw,
+      ProviderType.pi,
       ProviderType.custom,
     ]) {
       final matches = providers.where((provider) => provider.type == type);
@@ -867,6 +869,9 @@ class SetupWizardService extends ChangeNotifier {
         break;
       case ProviderType.custom:
         await settings.setActiveBackend(null);
+        break;
+      case ProviderType.pi:
+        await settings.setActiveBackend(BackendType.pi);
         break;
       case ProviderType.ollama:
       case ProviderType.lmStudio:

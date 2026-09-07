@@ -12,6 +12,7 @@ enum ProviderType {
   lmStudio,
   openAICompatible,
   custom,
+  pi,
 }
 
 /// High-level role for a discovered or configured backend endpoint.
@@ -25,7 +26,8 @@ extension ProviderTypeRole on ProviderType {
     return switch (this) {
       ProviderType.openclaw ||
       ProviderType.hermes ||
-      ProviderType.custom =>
+      ProviderType.custom ||
+      ProviderType.pi =>
         true,
       ProviderType.ollama ||
       ProviderType.lmStudio ||
