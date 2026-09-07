@@ -3,7 +3,7 @@
 > **Status:** Research phase (not yet approved for implementation)
 > **Author:** Zoid (with Christopher)
 > **Created:** 2026-09-06
-> **Revised:** 2026-09-07 (v6 — llama.cpp integration, Pi↔llama.cpp wiring, model selection)
+> **Revised:** 2026-09-07 (v7 — consolidated: desktop control, SDK, systemd, watchdog, accountability)
 > **Location:** `docs/architecture/PI_AGENT_INTEGRATION.md`
 
 ---
@@ -11,17 +11,13 @@
 ## Table of Contents
 
 1. [Three Roles — Clarified](#three-roles--clarified)
-2. [Two Pi Distinctions — Key Insight](#two-pi-distinctions)
-3. [Research Findings](#research-findings)
-   - [Pi RPC Protocol (for Harness)](#pi-rpc-protocol)
-   - [Pi A2A Extension (for Watcher L2-L3)](#pi-a2a-extension)
-   - [oh-my-pi vs @earendil-works/pi](#oh-my-pi-vs-earendil-works)
-   - [Local LLM Options (for Watcher)](#local-llm-options)
-   - [Pistisai Provider Architecture (integration point)](#pistisai-provider-architecture)
+2. [Two Pi Distinctions](#two-pi-distinctions)
+3. [Technology Stack](#technology-stack)
 4. [Architecture](#architecture)
-5. [Safety Boundaries](#safety-boundaries)
-6. [Implementation Phases](#implementation-phases)
-7. [Open Questions](#open-questions)
+5. [Deep Research Findings](#deep-research-findings)
+6. [Safety Boundaries](#safety-boundaries)
+7. [Implementation Phases](#implementation-phases)
+8. [Open Questions](#open-questions)
 
 ---
 
@@ -30,755 +26,203 @@
 | Role | User-facing? | Always-on? | What |
 |------|-------------|------------|------|
 | **Harness** | Yes — primary chat when selected | No — only when user picks Pi | Pi is the user's conversation engine |
-| **Watcher** | No — surfaces to Christopher | Yes — systemd on VPS | Monitors ALL agent instances (including Pi itself) |
-| **Subagent** | No — reports to spawning harness | No — on-demand | Does focused coding work, reports back |
+| **Watcher** | No — surfaces to Christopher | Yes — systemd on VPS | Monitors ALL agent instances |
+| **Subagent** | No — reports to spawning harness | No — on-demand | Does focused coding work |
 
 **Key insight:** These are NOT the same process. The harness is a Pi session in the Flutter app. The watcher is a separate always-on Pi session on the VPS. Subagents are short-lived Pi print-mode invocations.
 
 ---
 
-## Two Pi Distinctions — Key Insight
-
-There are **two fundamentally different Pi setups** in this architecture:
+## Two Pi Distinctions
 
 ### Pi as Harness (in-app, on-demand)
 - **Installed:** `oh-my-pi` (omp) — the FULL extension ecosystem
 - **Model:** Borrows from the **currently active agent harness**
-  - If Hermes is active → Pi uses Hermes's model/API
-  - If OpenClaw is active → Pi uses OpenClaw's backend
-  - Pi is a *consumer* of whatever LLM the main harness provides
-- **Why oh-my-pi:** When you select Pi as your agent, you want the full IDE-grade tooling (LSP, debugger, hash-anchored edits, browser, subagents). This is the "full experience" you deliberately choose.
-- **Only installed when:** User selects Pi as harness in the app
+- **Why oh-my-pi:** Full IDE-grade tooling (LSP, debugger, browser, subagents)
 
 ### Pi as Watcher (VPS, always-on)
-- **Installed:** Minimal `@earendil-works/pi-coding-agent` (base Pi)
-- **Model:** **Local or free model** — self-sufficient, doesn't compete with the main harness
-  - llama.cpp server with a small tool-calling model (Qwen 3.6 7B Q4_K_M or similar)
-  - Or a free tier from OpenRouter / similar
-- **Why minimal:** The watcher only needs a few modules — health checks, A2A queries, anomaly reporting. No need for LSP, debugger, browser, etc.
-- **Always running:** systemd unit on server-pistisai
-
-### Summary Table
-
-| | Harness Pi | Watcher Pi |
-|---|---|---|
-| **Install** | oh-my-pi (full) | @earendil-works/pi (minimal) |
-| **Where** | In the Flutter app | VPS systemd service |
-| **Model** | Borrows from active harness | Local/free (llama.cpp) |
-| **Tools** | Full IDE-grade (LSP, debugger, etc.) | Few modules only |
-| **When** | Only when user selects Pi | Always running |
-| **Purpose** | Full coding agent experience | Health monitoring + accountability |
+- **Installed:** Base `pi` (minimal)
+- **Model:** Local llama.cpp with Gemma 4 E4B (or free tier fallback)
+- **Tools:** Few modules only — health checks, notifications, A2A
+- **Runs as:** systemd service with watchdog
 
 ---
 
-## Research Findings
+## Technology Stack
 
-### Pi RPC Protocol
+### Inference
+- **Runtime:** llama.cpp (NOT Ollama) — Christopher wants the control
+- **Model:** Gemma 4 E4B-it Q4_K_M (5.4GB VRAM, fits RTX 4070 12GB)
+- **Multimodal:** mmproj-BF16.gguf for vision/audio (desktop control)
+- **Server:** `llama-server` at `127.0.0.1:8080` (OpenAI-compatible API)
 
-**Source:** [pi.ubitools.com/rpc](https://pi.ubitools.com/rpc/) + [pi-agent-docs.pages.dev/rpc](https://pi-agent-docs.pages.dev/rpc/)
+### Agent
+- **Base:** `@earendil-works/pi-coding-agent` (already installed at `/home/zoid/.local/bin/pi`)
+- **Harness fork:** `oh-my-pi` (can1357) — installed on-demand when Pi selected
+- **A2A mesh:** `@bacnh85/pi-a2a` extension (A2A v1.0, Hermes interop)
+- **Desktop control:** `@agent-sh/computer-use-linux` (MCP server, Wayland-first)
 
-Pi's RPC mode is the designed embedding pattern for non-Node clients. It runs as a subprocess communicating via **JSONL over stdin/stdout**.
+### Integration
+- **Pi ↔ llama.cpp:** Built-in `llamacpp` provider — zero config
+- **Pi ↔ Flutter:** RPC mode (JSONL over stdin/stdout) OR SDK (`createAgentSession`)
+- **Pi ↔ Mesh:** `@bacnh85/pi-a2a` extension
+- **Subagents:** `pi-subagents` extension (scout/worker/reviewer/oracle)
 
-**Starting:** `pi --mode rpc [options]`
-
-**Framing rules (critical for Dart implementation):**
-- Strict JSONL: LF (`\n`) is the ONLY record delimiter
-- Strip trailing `\r` from `\r\n` input
-- Do NOT use generic line readers that split on U+2028/U+2029 (valid inside JSON strings)
-- Node `readline` is explicitly NOT protocol-compliant
-
-**Commands (stdin → Pi):**
-
-| Command | What | Key Fields |
-|---------|------|-----------|
-| `prompt` | Send user message | `message`, `streamingBehavior?` |
-| `steer` | Interrupt mid-run | `message` |
-| `follow_up` | Queue after done | `message` |
-| `abort` | Cancel current op | — |
-| `new_session` | Fresh session | `parentSession?` |
-| `get_state` | Session state | Returns model, thinkingLevel, isStreaming, messageCount |
-| `get_messages` | Full history | Returns AgentMessage[] |
-| `set_model` | Switch model | `provider`, `modelId` |
-| `get_available_models` | List models | — |
-| `set_thinking_level` | Reasoning level | `level` (off..max) |
-| `bash` | Run shell command | `command` — output on NEXT prompt |
-| `compact` | Compress context | `customInstructions?` |
-| `get_session_stats` | Token/cost usage | Returns full usage stats |
-
-**Events (stdout → Dart, no `id` field):**
-
-| Event | What |
-|-------|------|
-| `agent_start` / `agent_end` | Processing begins/ends |
-| `turn_start` / `turn_end` | One assistant response + tool calls |
-| `message_update` | **Streaming deltas** (text_delta, thinking_delta, toolcall_delta) |
-| `tool_execution_start` / `_update` / `_end` | Tool progress |
-| `compaction_start` / `_end` | Context compression |
-
-**Python reference client (from docs):**
-```python
-proc = subprocess.Popen(["pi", "--mode", "rpc", "--no-session"],
-    stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
-proc.stdin.write(json.dumps({"type": "prompt", "message": "Hello"}) + "\n")
-proc.stdin.flush()
-for line in proc.stdout:
-    event = json.loads(line)
-    if event.get("type") == "message_update":
-        delta = event.get("assistantMessageEvent", {})
-        if delta.get("type") == "text_delta":
-            print(delta["delta"], end="", flush=True)
-```
-
-**Key insight for Dart:** The `dart:io` Process class + manual buffer splitting on `\n` (not readline) gives us exactly what we need. Maps directly to the Python reference.
-
-### Pi A2A Extension
-
-**Source:** [@bacnh85/pi-a2a on pi.dev](https://pi.dev/packages/@bacnh85/pi-a2a)
-
-- **Version:** 0.7.6 (Sep 2026), 1,339 downloads/mo
-- **Protocol:** A2A v1.0 — JSON-RPC 2.0 over HTTP
-- **Zero runtime deps** — pure Node.js stdlib + global fetch
-- **Hermes interop works out of the box** — same wire format bidirectionally
-- **Security model ported from Hermes:** localhost-default bind, token-gated remote, outbound redaction, inbound injection filtering, audit log, anti-loop
-- **Inbound = isolated sessions:** A2A tasks spawn isolated Pi agent sessions, NOT the interactive TUI
-
-**Configuration** (`~/.pi/agent/settings.json`):
-```json
-{
-  "a2a": {
-    "peers": {
-      "hermes_desktop": {
-        "url": "http://<tailscale-ip>:9900",
-        "auth": { "type": "bearer", "token": "..." },
-        "timeout": 120
-      }
-    },
-    "server": { "enabled": false, "port": 9910, "host": "127.0.0.1" }
-  }
-}
-```
-
-### oh-my-pi vs @earendil-works/pi
-
-| | @earendil-works/pi-coding-agent | oh-my-pi (omp) |
-|---|---|---|
-| **What** | Base Pi agent (minimal) | Full fork with IDE tooling |
-| **Tools** | 4 core: read, write, edit, bash | 32 built-in + 13 LSP + 27 DAP |
-| **Install** | `npm i -g @earendil-works/pi-coding-agent` | `bun i -g @oh-my-pi/pi-coding-agent` |
-| **Providers** | Standard | 40+ providers |
-| **Subagents** | Via extension | Built-in |
-| **Use case** | Lightweight, watcher, simple tasks | Full coding agent experience |
-| **Size** | Small | Large (~27k lines Rust core) |
-
-**Decision:** Watcher uses base Pi (minimal, lightweight, always-on). Harness uses oh-my-pi (full experience, installed on-demand when user selects Pi).
-
-### Local LLM Options (for Watcher)
-
-**Source:** Multiple guides on llama.cpp + local models for agent workloads
-
-**Recommended stack for watcher:**
-- **Engine:** llama.cpp (`llama-server` exposes OpenAI-compatible endpoint)
-- **Model candidates:**
-  - Qwen 3.6 27B Q4_K_M (~18GB RAM) — strong coding + tool calling
-  - Qwen 3.6 7B Q4_K_M (~5GB RAM) — lighter, sufficient for monitoring tasks
-  - DeepSeek Coder V2 Lite — good tool calling
-- **Serving:** `llama-server -m model.gguf -c 8192 --port 8080`
-- **Pi connects via:** `--provider openai --model <name> --base-url http://localhost:8080/v1`
-
-**Alternative:** Free tier from OpenRouter (no local GPU needed, but data leaves machine).
-
-**Recommendation:** Start with OpenRouter free tier for simplicity, migrate to llama.cpp when privacy/always-on requirements demand it. The watcher tasks (health checks, status queries) are lightweight — even a 7B model handles them fine.
-
-### Pistisai Provider Architecture
-
-**Source:** `/dev/pistisai/pistisai-app/lib/services/` (read during research)
-
-**Integration points identified:**
-
-1. **`ProviderType` enum** (`lib/models/provider_configuration.dart:8`):
-   ```dart
-   enum ProviderType {
-     openclaw, hermes, ollama, lmStudio, openAICompatible, custom,
-   }
-   ```
-   → Need to add `pi` as new enum value, mark as `isAgentRuntime: true`
-
-2. **`LlmProvider` interface** (`lib/services/providers/base_provider.dart:144`):
-   ```dart
-   abstract class LlmProvider {
-     String get name;
-     Stream<StreamEvent> streamCompletion(CompletionRequest request);
-     Future<CompletionResponse> complete(CompletionRequest request);
-   }
-   ```
-   → Pi adapter implements this. `streamCompletion` maps to RPC `message_update` text_delta events.
-
-3. **`HermesProviderAdapter`** (`lib/services/providers/hermes_adapter.dart`):
-   → Closest analog. Uses HTTP POST with SSE. Pi adapter uses subprocess + JSONL instead.
-
-4. **`RouterServer`** (`lib/services/router_server.dart`):
-   → Local HTTP server (Shelf) on port 1337 that mimics OpenAI API. Pi gets added as a provider entry.
-
-5. **DI locator** (`lib/di/locator.dart:1040`):
-   → Switch on `ProviderType` for auto-configuration. Need to add `case ProviderType.pi:`.
-
-6. **Existing subprocess patterns:**
-   - `GatewayControlService` uses `Process.run()` for OpenClaw gateway start/stop
-   - `v4l2_camera_service.dart` uses `Process.start()` with stdout streaming
-   → Pi harness uses `Process.start()` with bidirectional stdin/stdout (JSONL)
+### Infrastructure
+- **Watcher:** systemd service with WatchdogSec
+- **Accountability:** Cron-based heartbeat (pattern from elencho-accountability-cron skill)
+- **Host:** server-pistisai (VPS) for watcher, right-pc (desktop) for harness
 
 ---
 
 ## Architecture
 
-### Harness (in-app, on-demand)
+### System Overview
 
 ```
-┌─────────────────────────────────────────────┐
-│ Flutter App (Dart)                          │
-│                                             │
-│  User selects Pi → PiProviderConfiguration  │
-│    → PiRpcClient                            │
-│      → Process.start("omp", ["--mode","rpc"])│
-│      → stdin: JSONL commands                │
-│      ← stdout: JSONL events                 │
-│                                             │
-│  PiRpcClient implements LlmProvider         │
-│    → Registered in RouterServer providers   │
-│    → /v1/chat/completions routes to Pi      │
-│                                             │
-│  Model routing:                             │
-│    Active harness = Hermes → Pi uses same   │
-│    Active harness = OpenClaw → Pi uses same │
-└─────────────────────────────────────────────┘
-         ↕ JSONL over stdin/stdout
-┌─────────────────────────────────────────────┐
-│ omp --mode rpc (oh-my-pi subprocess)        │
-│  --provider <from-active-harness>           │
-│  --model <from-active-harness>              │
-│  Full IDE tooling available                 │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                        right-pc (Desktop)                        │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              Flutter App (pistisai)                        │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │   │
+│  │  │   Hermes     │  │   OpenClaw   │  │   Pi          │      │   │
+│  │  │   Adapter    │  │   Adapter    │  │   Adapter     │      │   │
+│  │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘      │   │
+│  │         │                │                │               │   │
+│  │         └────────────────┴────────────────┘               │   │
+│  │                          │                                │   │
+│  │                   RouterServer                             │   │
+│  │                   (ProviderType enum)                      │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                              │                                   │
+│         ┌────────────────────┼────────────────────┐             │
+│         │                    │                    │             │
+│  ┌──────▼──────┐   ┌────────▼───────┐   ┌───────▼──────────┐ │
+│  │ llama-server │   │ computer-use-  │   │ oh-my-pi          │ │
+│  │ (Gemma 4 E4B)│   │ linux (MCP)    │   │ extensions        │ │
+│  │ :8080        │   │ screenshots,   │   │ LSP, debugger,    │ │
+│  │              │   │ clicks, typing │   │ browser, etc.     │ │
+│  └──────────────┘   └────────────────┘   └──────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        server-pistisai (VPS)                     │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │          Pi Watcher (systemd service)                      │   │
+│  │  - Always-on background observer                           │   │
+│  │  - Local llama.cpp or free model                           │   │
+│  │  - Few modules: health check, A2A, notifications           │   │
+│  │  - Heartbeat cron → accountability questions                │   │
+│  │  - A2A peer: @bacnh85/pi-a2a extension                     │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                              │                                   │
+│                    ┌─────────▼──────────┐                       │
+│                    │   A2A Mesh          │                       │
+│                    │   (port 9910)       │                       │
+│                    │   ↔ Hermes (9900)   │                       │
+│                    │   ↔ Elencho (9901)  │                       │
+│                    └────────────────────┘                       │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### Watcher (VPS systemd, always-on)
+### Desktop Control Flow
 
 ```
-┌─────────────────────────────────────────────┐
-│ VPS (server-pistisai) — systemd service     │
-│                                             │
-│  Pi Watcher Session (persistent)            │
-│    → Minimal pi (no oh-my-pi)               │
-│    → Model: llama.cpp local OR free tier    │
-│    → pi-observer skill loaded               │
-│    → Cron: health checks every 30-60 min    │
-│    → A2A: accountability every 2-4 hr       │
-│    → Surfaces anomalies to Christopher      │
-│                                             │
-│  Monitors:                                  │
-│    - Hermes (Zoid) process & cron           │
-│    - Elencho process & cron                 │
-│    - Subagent Pi sessions                   │
-│    - Disk, CI state, A2A peer health        │
-└─────────────────────────────────────────────┘
-         ↕ llama.cpp server (if local)
-┌─────────────────────────────────────────────┐
-│ llama-server --port 8080                    │
-│  Qwen 3.6 7B Q4_K_M (or similar)            │
-└─────────────────────────────────────────────┘
+User: "Click the Firefox icon"
+  → Pi (harness) calls screenshot tool
+  → computer-use-linux captures screen → returns PNG
+  → mmproj encodes image → Gemma 4 E4B analyzes
+  → Pi calls click(x, y) tool
+  → computer-use-linux executes via AT-SPI/ydotool
+  → Desktop action completed
 ```
 
-### Subagent (on-demand)
+### Watcher Accountability Flow
 
 ```
-Active Harness (e.g. Hermes/Zoid)
-  → pi -p "Fix the null check in foo.dart"
-  → Pi executes, returns result
-  → Zoid renders "via Pi subagent" in chat
+Every 15-30 min (cron):
+  → Pi watcher reads heartbeat files
+  → Checks: service health, agent liveness, drift signals
+  → If anomaly detected:
+    L1: Log + self-correct
+    L2: A2A message to peer agent for second opinion
+    L3: Surface question to Christopher (via Telegram/notification)
 ```
 
 ---
 
-## Safety Boundaries
+## Deep Research Findings
 
-**Hard constraints (enforced in code):**
+### 1. Pi RPC Protocol (for Harness Integration)
 
-| Can | Cannot |
-|-----|--------|
-| Read logs, status, health data | Rewrite identity (any agent) |
-| Restart paused/stopped processes | Touch secrets or credentials |
-| Pause running tasks | Modify another agent's system prompt |
-| Send alerts to Christopher | Access another agent's memory |
-| Query agents via A2A | Exfiltrate data off-machine |
+**Source:** [pi.ubitools.com/rpc](https://pi.ubitools.com/rpc/) + [pi-agent-docs.pages.dev/rpc](https://pi-agent-docs.pages.dev/rpc/) — full protocol spec (33,463 chars)
 
----
+- JSONL framing over stdin/stdout
+- LF (`\n`) is the ONLY record delimiter
+- Commands: `prompt`, `abort`, `new_session`, `resume`, `fork`, `compact`
+- Events: `message_update`, `tool_call`, `tool_result`, `session_info`
+- **Dart mapping:** `dart:io` `Process.start` + line-delimited JSONL
 
-## Implementation Phases
+### 2. Pi SDK (Alternative to RPC)
 
-### Phase 1: Pi as Harness — Provider Adapter
-**Issue:** #285 | **Effort:** Medium
+**Source:** [pi.dev/docs/latest/sdk](https://pi.dev/docs/latest/sdk) + [oh-my-pi/sdk.md](https://github.com/can1357/oh-my-pi/blob/main/docs/sdk.md)
 
-1. `PiRpcClient` — subprocess lifecycle, JSONL framing, event parsing
-2. `ProviderType.pi` + `PiProviderConfiguration` in provider_configuration.dart
-3. `PiProviderAdapter` implementing `LlmProvider`
-4. Wire into RouterServer + DI locator
-5. UI: Pi in agent runtime selector + settings screen
-6. Model routing: Pi inherits model/API from the currently active harness
-7. oh-my-pi install prompt when user first selects Pi
-
-**Key technical detail:** Must split stdout on `\n` only (not readline). Use `dart:io` Process + `utf8.decoder` + manual line buffer.
-
-### Phase 2: Pi as Watcher — L1 Passive Monitoring
-**Issue:** #286 | **Effort:** Small-Medium
-
-1. `pi-observer` skill (SKILL.md + scripts)
-2. Health check bash script (process alive, disk, cron, CI)
-3. systemd unit on VPS (always-on, auto-restart)
-4. llama.cpp setup OR free tier config
-5. Anomaly surfacing to Christopher
-
-### Phase 3: Pi as Subagent — On-Demand Delegate
-**Issue:** #287 | **Effort:** Small
-
-1. Subagent spawn: `pi -p "<task>"` via Process.run
-2. Result parsing + attribution ("via Pi subagent")
-3. RPC session mode for multi-turn delegation
-4. Timeout handling
-
-### Phase 4: Pi Watcher L2-L3 — A2A + Intervention
-**Issue:** #288 | **Effort:** Medium
-
-1. Install `@bacnh85/pi-a2a` in Pi
-2. Configure peers (Hermes, Elencho)
-3. L2 accountability queries (every 2-4 hr)
-4. L3 intervention rules (restart/pause/notify)
-5. Pi becomes A2A peer (both observer and observable)
-
----
-
-## Hardware Compatibility Analysis
-
-### Christopher's PC (right-pc, CachyOS)
-
-| Component | Spec | Verdict |
-|-----------|------|---------|
-| **CPU** | Intel i5-13600KF (14c/20t) | ✅ Excellent — fast compilation, multi-tasking |
-| **GPU** | NVIDIA RTX 4070 (12GB VRAM, sm_89) | ✅ Great for local LLM — see model fits below |
-| **RAM** | 62GB DDR4/DDR5 (48GB available) | ✅ Massive headroom for CPU offloading |
-| **Disk** | 932GB data drive (399GB free) | ✅ Plenty of room for models |
-| **OS** | CachyOS Linux (Arch-based) | ✅ Full package support |
-| **Node.js** | v26.8.1 | ✅ Required by oh-my-pi |
-| **Bun** | Not installed | ⚠️ Need to install for oh-my-pi |
-| **CUDA** | Driver 580.159 (CUDA 13 toolkit on system) | ✅ Ready for llama.cpp CUDA |
-| **Docker** | 29.7.2 | ✅ Available for containerized inference |
-
-### Model Fits on RTX 4070 (12GB VRAM)
-
-Based on VRAM requirements with Q4_K_M quantization + KV cache:
-
-| Model | Size (Q4_K_M) | Fits? | Notes |
-|-------|---------------|-------|-------|
-| **Gemma 4 E4B** | ~5GB | ✅ Easy | 6GB+ VRAM needed. Multimodal. Currently used on this machine via LM Studio. |
-| **Phi-4 14B** | ~8.9GB | ✅ Tight | Needs ~12GB total with KV cache. Works with quantized KV. Good generalist. |
-| **Qwen 3.6 7B** | ~4.4GB | ✅ Easy | Sufficient for watcher tasks. Fast inference. |
-| **Qwen 3.6 14B** | ~8.8GB | ✅ Tight | Better quality than 7B, still fits. |
-| **Qwen3-30B-A3B (MoE)** | ~18.6GB | ⚠️ CPU offload | 30B total but only 3B active. Needs `--cpu-moe` flag. Works with 62GB RAM. |
-| **Qwen 3.6 27B** | ~16GB | ❌ No | Too large for 12GB. Needs CPU offload (slow). |
-
-### Recommended Watcher Model for This Hardware
-
-**Primary: Phi-4 14B Q4_K_M (~8.9GB)**
-- Fits in 12GB VRAM with quantized KV cache
-- Strong reasoning for monitoring/analysis tasks
-- Good tool-calling support
-- ~9GB disk space needed
-
-**Alternative: Qwen 3.6 7B Q4_K_M (~4.4GB)**
-- Lighter, faster
-- Plenty of VRAM headroom for longer contexts
-- Sufficient for simple health checks + A2A queries
-
-**Current state:** No model weights installed on the machine (only vocab files from Turbohaul project). Need to download ~9GB for Phi-4 or ~4.4GB for Qwen 7B.
-
-### oh-my-pi Installation on CachyOS
-
-**Requirements:**
-- Bun >= 1.3.14 (not currently installed)
-- Node.js (✅ v26.8.1 installed)
-
-**Install path:**
-\`\`\`bash
-# Install Bun (one curl command)
-curl -fsSL https://bun.sh/install | bash
-
-# Install oh-my-pi
-bun install -g @oh-my-pi/pi-coding-agent
-\`\`\`
-
-**Alternative install methods if Bun is problematic:**
-- Shell installer: \`curl -fsSL https://omp.sh/install | sh\` (downloads prebuilt binary)
-- Nix: \`nix profile install github:can1357/oh-my-pi\`
-- mise: \`mise use -g github:can1357/oh-my-pi\`
-
-**No AUR helper currently installed** (no paru/yay), so Bun install or shell script are the paths.
-
-### llama.cpp Installation on CachyOS
-
-**Two options:**
-
-**Option A: Ollama (simplest)**
-\`\`\`bash
-# Install Ollama (has CUDA support built-in)
-curl -fsSL https://ollama.com/install.sh | sh
-# Download model
-ollama run phi4
-\`\`\`
-- Auto-detects CUDA
-- No manual build needed
-- Currently NOT installed on the machine
-
-**Option B: llama.cpp (more control, better perf)**
-\`\`\`bash
-# CUDA toolkit already on system (pacman cache shows cuda-13.3.1)
-git clone https://github.com/ggerganov/llama.cpp
-cd llama.cpp
-make -j$(nproc) GGML_CUDA=1
-# Serve
-./llama-server -m phi-4-Q4_K_M.gguf -ngl 999 --port 8080
-\`\`\`
-
-**Recommendation:** Start with Ollama for simplicity (one command install, auto-CUDA). Migrate to raw llama.cpp if we need the performance optimizations from Turbohaul's TurboQuant fork later.
-
-### What This Hardware CANNOT Do
-
-- **Cannot run 70B+ models** — 12GB VRAM is the hard limit; 70B needs 40GB+
-- **Cannot run unquantized 14B+** — BF16 14B = 28GB, exceeds VRAM
-- **Cannot run multiple large models simultaneously** — one model at a time in 12GB
-
-### Minimum Hardware for Other Users
-
-For the pistisai app to support Pi as harness with local watcher, minimum specs:
-
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| **GPU** | 8GB VRAM (RTX 4060/3070) | 12GB (RTX 4070/3080) |
-| **RAM** | 16GB | 32GB+ |
-| **Disk** | 50GB free | 100GB+ free |
-| **OS** | Linux/macOS/Windows | — |
-| **Node.js** | v18+ | v20+ |
-| **Bun** | v1.3.14+ | latest |
-
-**For GPU-less / Apple Silicon machines:**
-- CPU inference works (Q4_K_M 7B ~8 tokens/sec on modern CPU)
-- Apple Silicon: Metal acceleration via llama.cpp
-- 16GB+ unified memory for Apple
-
----
-
-## Deep Research: oh-my-pi Extension API
-
-**Source:** [github.com/can1357/oh-my-pi/docs/extensions.md](https://github.com/can1357/oh-my-pi/blob/main/docs/extensions.md) (743 lines, fully read)
-
-The oh-my-pi extension system is how we build the **observer** for the harness role. Extensions are TypeScript modules that register tools, event handlers, and commands.
-
-### Extension Lifecycle
-
-```
-import paths → import module + run factory (registration only)
-  → ExtensionRunner.initialize(mode/session/tool registry)
-  → emit session/agent events + wrap tool execution
-```
-
-### Key APIs for Observer Extension
-
-**1. Background timers (for periodic health checks):**
 ```typescript
-pi.on("session_start", async (_event, ctx) => {
-  const timer = ctx.setInterval(() => {
-    // Health check logic here — throw is contained, won't crash session
-    checkAgentHealth();
-  }, 60_000); // every 60 seconds
-});
-```
-Critical: use `ctx.setInterval` NOT raw `setInterval` — raw timers crash the session on error.
+import { createAgentSession, SessionManager } from "@earendil-works/pi-coding-agent";
 
-**2. Tool interception (for monitoring what tools are called):**
-```typescript
-pi.on("tool_call", async (event) => {
-  logToolUsage(event.toolName, event.input);
-  // Can block dangerous operations: return { block: true, reason: "..." }
+const { session } = await createAgentSession({
+  sessionManager: SessionManager.inMemory(),
+  model: myModel,
+  tools: [readTool, bashTool],
 });
 
-pi.on("tool_result", async (event) => {
-  logToolResult(event.toolName, event.isError);
-  // Can patch results: modify event.content
-});
-```
-
-**3. Custom tools (for exposing observer capabilities to the LLM):**
-```typescript
-pi.registerTool({
-  name: "observer_status",
-  label: "Observer Status",
-  description: "Check health of all agent instances",
-  parameters: z.object({}),
-  async execute(_id, _params, _signal, _onUpdate, ctx) {
-    return { content: [{ type: "text", text: getHealthReport() }] };
-  },
-});
-```
-
-**4. Message delivery (for sending alerts to the user):**
-```typescript
-// steer = interrupt current run with alert
-pi.sendMessage(alertMessage, { deliverAs: "steer" });
-
-// followUp = queue after current run
-pi.sendMessage(alertMessage, { deliverAs: "followUp" });
-
-// nextTurn = inject on next user prompt
-pi.sendMessage(alertMessage, { deliverAs: "nextTurn" });
-```
-
-**5. Session state (for persistent observer state):**
-```typescript
-// Save state
-pi.appendEntry("com.pistisai.observer.state", healthData);
-
-// Restore on session start
-pi.on("session_start", async (_event, ctx) => {
-  for (const entry of ctx.sessionManager.getBranch()) {
-    if (entry.type === "custom" && entry.customType === "com.pistisai.observer.state") {
-      restoreState(entry.data);
-    }
+session.subscribe((event) => {
+  if (event.type === "message_update") {
+    // stream tokens
   }
 });
+
+await session.prompt("Fix the login bug");
 ```
 
-### RPC Mode Constraints
+**Decision:** Flutter app uses **RPC mode** (subprocess), not SDK. Reason: Dart can't import TypeScript SDK directly. RPC gives clean process isolation.
 
-When Pi runs in `--mode rpc` (harness mode from Flutter app):
-- `ctx.ui` is backed by RPC `extension_ui_request` events
-- Dialog methods (select/confirm/input/editor) round-trip to client
-- Fire-and-forget methods (notify/setStatus/setWidget) emit to client
-- **Unsupported in RPC:** theme switching, terminal input, autocomplete, editor component
-- Extensions CANNOT call `sendMessage` during load phase — must wait for events
+### 3. Pi ↔ llama.cpp Wiring
 
-### What This Means for the Observer
+**Source:** [pi.dev/docs/latest/settings](https://pi.dev/docs/latest/settings)
 
-The observer can be built as an **oh-my-pi extension** that:
-1. Uses `ctx.setInterval` for periodic health checks
-2. Uses `tool_call`/`tool_result` events to monitor tool usage
-3. Uses `pi.sendMessage({ deliverAs: "steer" })` to alert on anomalies
-4. Uses `pi.appendEntry` to persist health state across sessions
-5. Registers an `observer_status` tool the LLM can call on demand
+**Critical finding:** Pi has built-in llama.cpp provider support:
 
-This is the cleanest approach — the observer lives INSIDE Pi, has full access to Pi's session lifecycle, and requires no external process.
-
----
-
-## Deep Research: systemd Watchdog for Watcher
-
-**Sources:**
-- [os.moda/blog/run-ai-agent-24-7](https://os.moda/blog/run-ai-agent-24-7) — full 24/7 agent supervision guide
-- [adhdecode.com/systemd-watchdog-service-health](https://adhdecode.com/articles/systemd/systemd-watchdog-service-health) — watchdog mechanics
-- [oneuptime.com/systemd-watchdog-health-checks](https://oneuptime.com/blog/post/2026-03-02-how-to-configure-systemd-watchdog-for-service-health-checks-on-ubuntu/) — Python watchdog pattern
-
-### systemd Watchdog Mechanism
-
-The systemd watchdog detects **hung** processes (not just crashed ones):
-1. Service declares `WatchdogSec=N` in unit file
-2. systemd sets `WATCHDOG_USEC` env var
-3. Service must send `sd_notify("WATCHDOG=1")` periodically
-4. If heartbeat stops, systemd kills and restarts the service
-
-**Python watchdog pattern:**
-```python
-import os, threading, time
-from systemd import daemon
-
-watchdog_usec = int(os.environ.get('WATCHDOG_USEC', 0))
-if watchdog_usec > 0:
-    interval = watchdog_usec / 1_000_000
-    threading.Thread(target=watchdog_thread, args=(interval,), daemon=True).start()
-
-def watchdog_thread(interval):
-    while True:
-        time.sleep(interval / 2)  # Send at half the interval
-        daemon.notify('WATCHDOG=1')
+```bash
+# Auto-discovers llama-server at default URL
+pi --provider llamacpp --model google_gemma-4-E4B-it -p "Hello"
 ```
 
-### Recommended Watcher Unit File
+- Default base URL: `http://127.0.0.1:8080`
+- API type: `openai-responses`
+- Auth: keyless
+- Auto-discovers models via `GET /models`
 
-```ini
-[Unit]
-Description=Pi Watcher Agent
-After=network-online.target ollama.service
-Wants=network-online.target
-Requires=ollama.service
-
-[Service]
-Type=simple
-User=zoid
-WorkingDirectory=/dev/pistisai
-ExecStart=/home/zoid/.local/bin/pi --mode rpc --model local/phi-4
-Restart=on-failure
-RestartSec=10
-StartLimitIntervalSec=300
-StartLimitBurst=5
-
-# Watchdog — restart if hung (not just crashed)
-WatchdogSec=60
-
-# Resource limits
-MemoryMax=8G
-CPUQuota=300%
-
-# Logging
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=pi-watcher
-
-# Security
-NoNewPrivileges=true
-ProtectSystem=strict
-ReadWritePaths=/dev/pistisai/pi-watcher-data
-
-[Install]
-WantedBy=multi-user.target
-```
-
-### Key Directives
-
-| Directive | Value | Why |
-|-----------|-------|-----|
-| `Restart=on-failure` | on-failure | Restart on non-zero exit, not clean shutdown |
-| `RestartSec=10` | 10s | Wait between restarts (avoid hammering) |
-| `StartLimitBurst=5` | 5 | Stop restarting after 5 failures in 5 min |
-| `WatchdogSec=60` | 60s | Kill if heartbeat stops for 60s |
-| `MemoryMax=8G` | 8GB | Kill if memory exceeds 8GB |
-
-### Checkpointing for Crash Recovery
-
-The watcher should periodically save state to disk:
-- Last known health status of each agent
-- Last A2A query timestamp
-- Alert history
-
-On restart, load the latest checkpoint and resume. Without this, a crash loses all monitoring context.
-
-### External Monitoring (Layer 2)
-
-Per the os.moda guide, monitor at 3 levels:
-1. **Infrastructure:** CPU, memory, disk, network (systemd handles this)
-2. **Application:** Health check endpoint, restart count (journald)
-3. **AI-specific:** Token usage, reasoning loop depth, A2A response times
-
-A second agent (Zoid/Hermes) should periodically check the watcher's health — "a dead process can't tell you it's dead."
-
----
-
-## Deep Research: pi-a2a Configuration Reference
-
-**Source:** [pi.dev/packages/@bacnh85/pi-a2a](https://pi.dev/packages/@bacnh85/pi-a2a) + [github.com/bacnh85/pi-extensions](https://github.com/bacnh85/pi-extensions)
-
-### Full Config Schema
-
+**For custom config** (`~/.pi/agent/models.json`):
 ```json
 {
-  "a2a": {
-    "peers": {
-      "hermes_desktop": {
-        "url": "http://172.30.55.31:9900",
-        "auth": { "type": "bearer", "token": "..." },
-        "timeout": 120,
-        "capabilities": ["web_search", "research"]
-      }
-    },
-    "server": {
-      "enabled": false,
-      "port": 9910,
-      "bindAddress": "127.0.0.1",
-      "agentName": "pi-watcher",
-      "publicUrl": "",
-      "sharedToken": "",
-      "peerTokens": {},
-      "trustedPeers": [],
-      "allowAllUsers": false,
-      "maxConcurrentSessions": 5,
-      "sessionTimeout": 3600,
-      "redactOutput": true,
-      "filterInjection": true,
-      "auditLog": true,
-      "antiLoop": true,
-      "antiLoopMaxHops": 3
+  "providers": {
+    "llamacpp": {
+      "baseUrl": "http://127.0.0.1:8080/v1",
+      "api": "openai-completions",
+      "apiKey": "none",
+      "models": [{
+        "id": "gemma-4-E4B-it",
+        "name": "Gemma 4 E4B (local)",
+        "contextWindow": 32768,
+        "reasoning": false
+      }]
     }
   }
 }
 ```
 
-### Security Model (ported from Hermes)
-
-| Feature | Detail |
-|---------|--------|
-| **Default bind** | localhost only (inbound off by default) |
-| **Remote access** | Token-gated |
-| **Output redaction** | Secrets redacted from outbound messages |
-| **Injection filtering** | Blocks prompt injection in inbound tasks |
-| **Anti-loop** | Max 3 hops, prevents infinite delegation loops |
-| **Audit log** | All A2A activity logged |
-
-### Relevant bacnh85 Extensions for Watcher
-
-| Extension | Version | Use for watcher |
-|-----------|---------|-----------------|
-| `@bacnh85/pi-a2a` | 0.7.6 | Mesh communication, peer discovery |
-| `@bacnh85/pi-notify` | — | Desktop notifications for alerts |
-| `@bacnh85/pi-munin` | — | System monitoring integration |
-| `@bacnh85/pi-checkpoint` | — | Session checkpointing for crash recovery |
-| `@bacnh85/pi-budget` | — | Token/cost tracking |
-
----
-
-## Deep Research: llama.cpp + Gemma 4 E4B Stack
-
-**Decision: llama.cpp (not Ollama) + Gemma 4 E4B-it**
-
-Christopher confirmed llama.cpp for control. Gemma 4 E4B chosen because:
-- **Multimodal** (text + image + audio) — can see desktop screenshots, analyze UI
-- **Tiny** (4.5B effective, 8B with embeddings) — runs on anything
-- **Q4_K_M = 5.4GB** — fits RTX 4070 12GB with 6+ GB headroom for KV cache
-- **~45 tok/s** on 12GB cards — fast enough for interactive agent work
-- **Apache 2.0** — commercial-friendly
-- **Tool calling** — confirmed working with llama.cpp's `--jinja` mode
-
-### Why Not Ollama?
-
-Ollama wraps llama.cpp with opinionated defaults. We need:
-- Direct control over CUDA architecture targeting (sm_89 for RTX 4070)
-- Custom context sizes for long agent sessions
-- mmproj (multimodal projector) for vision/audio input
-- Flash Attention + KV cache quantization flags
-- Router mode for multiple models
-
-llama.cpp gives us all of this. Ollama hides it.
-
-### Gemma 4 E4B Specs
-
-| Spec | Value |
-|------|-------|
-| Effective params | 4.5B |
-| Total params (with embeddings) | 8B |
-| Layers | 42 |
-| Vocab | 262K |
-| Vision encoder | ~150M |
-| Audio encoder | ~300M |
-| Min RAM | 8 GB |
-| Q4_K_M size | 5.41 GB |
-| Q8_0 size | 8.03 GB |
-| BF16 size | 15.05 GB |
-| License | Apache-2.0 |
-
-### llama.cpp Build (RTX 4070)
+### 4. llama.cpp Build & Run (RTX 4070)
 
 RTX 4070 = Ada Lovelace = compute capability 8.9 (sm_89)
 
@@ -789,20 +233,9 @@ cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89
 cmake --build build --config Release -j $(nproc)
 ```
 
-Binaries produced: `build/bin/llama-server`, `build/bin/llama-cli`
-
-### llama-server Launch Command
-
+**llama-server launch:**
 ```bash
-# Text-only mode
-llama-server \
-  -hf bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M \
-  -ngl 99 \
-  -c 32768 \
-  --host 127.0.0.1 \
-  --port 8080
-
-# Multimodal mode (for desktop control — image + audio input)
+# Multimodal mode (for desktop control)
 llama-server \
   -hf bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M \
   --mmproj mmproj-BF16.gguf \
@@ -812,110 +245,368 @@ llama-server \
   --port 8080
 ```
 
-### Pi ↔ llama.cpp Wiring
+### 5. Gemma 4 E4B Model
 
-**Critical finding:** Pi has **built-in llama.cpp provider support**. No custom `models.json` needed for basic setup:
+**Source:** [HuggingFace](https://huggingface.co/bartowski/google_gemma-4-E4B-it-GGUF) + [Smeltcore recipes](https://smeltcore.com/recipes/gemma-4-e4b-on-rtx-4070)
 
-```bash
-# Pi auto-discovers llama-server at default URL
-pi --provider llamacpp --model google_gemma-4-E4B-it -p "Hello"
-```
+| Spec | Value |
+|------|-------|
+| Effective params | 4.5B |
+| Total (with embeddings) | 8B |
+| Modalities | text + image + audio |
+| Q4_K_M size | 5.41 GB |
+| Q8_0 size | 8.03 GB |
+| BF16 size | 15.05 GB |
+| Min RAM | 8 GB |
+| Speed (12GB card) | ~45 tok/s |
+| License | Apache-2.0 |
 
-Pi's built-in llamacpp provider:
-- Default base URL: `http://127.0.0.1:8080`
-- API type: `openai-responses`
-- Auth: keyless (`auth: none`)
-- Auto-discovers models via `GET /models`
+**Why Gemma 4 E4B:**
+- Multimodal (can SEE desktop via screenshots)
+- Tiny (fits anything, runs fast)
+- Apache 2.0 (commercial-friendly)
+- Tool calling confirmed with llama.cpp `--jinja` mode
 
-**For custom configuration** (e.g., different port, specific model settings), add to `~/.pi/agent/models.json`:
+### 6. Desktop Control: computer-use-linux
 
-```json
-{
-  "providers": {
-    "llamacpp": {
-      "baseUrl": "http://127.0.0.1:8080/v1",
-      "api": "openai-completions",
-      "apiKey": "none",
-      "models": [
-        {
-          "id": "gemma-4-E4B-it",
-          "name": "Gemma 4 E4B (local)",
-          "contextWindow": 32768,
-          "reasoning": false
-        }
-      ]
+**Source:** [pi.dev/packages/@agent-sh/computer-use-linux](https://pi.dev/packages/@agent-sh/computer-use-linux) (32,594 chars)
+
+Rust MCP server for Linux desktop control:
+- **Screenshots:** GNOME DBus → portal → fallback chain
+- **Input:** click, drag, scroll, press_key, type_text
+- **Window management:** activate, move, resize
+- **Semantic selectors:** AT-SPI (role/name/text/states), not pixel coords
+- **Wayland-first:** org.freedesktop.portal.RemoteDesktop + ydotool fallback
+- **Compositor support:** GNOME, KDE/KWin, Hyprland, i3, COSMIC
+
+**MCP Tools:** `doctor`, `screenshot`, `click`, `drag`, `scroll`, `press_key`, `type_text`, `perform_action`, `set_value`, `activate_window`, `move_window`, `resize_window`, `list_apps`, `list_windows`, `focused_window`, `get_app_state`
+
+**Install:** `pi install npm:@agent-sh/computer-use-linux`
+
+### 7. A2A Mesh: @bacnh85/pi-a2a
+
+**Source:** [pi.dev/packages/@bacnh85/pi-a2a](https://pi.dev/packages/@bacnh85/pi-a2a) (13,292 chars)
+
+- A2A v1.0 spec compliant
+- Hermes interop out of the box
+- Default port: 9910
+- Token-gated remote access
+- Output redaction, injection filtering
+- Anti-loop: 3-hop max
+
+### 8. oh-my-pi Extension API
+
+**Source:** [github.com/can1357/oh-my-pi/docs/extensions.md](https://github.com/can1357/oh-my-pi/blob/main/docs/extensions.md) (743 lines)
+
+Extension capabilities:
+- `pi.registerTool()` — LLM-callable tools with Zod schemas
+- `pi.on("tool_call")` — intercept/block tool calls
+- `pi.on("tool_result")` — observe results
+- `pi.setInterval()` — recurring tasks (errors contained)
+- `pi.sendMessage()` — inject messages (deliverAs: "steer" | "nextTurn" | "followUp")
+- `pi.appendEntry()` — persistent state across sessions
+
+**For the watcher observer extension:**
+```typescript
+import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+
+export default function observerExtension(pi: ExtensionAPI) {
+  const z = pi.zod;
+
+  // Health check every 5 minutes
+  pi.setInterval(async () => {
+    const health = await checkAgentHealth();
+    if (health.status !== "ok") {
+      pi.sendMessage({
+        role: "assistant",
+        content: `⚠️ Health anomaly: ${health.summary}`,
+        deliverAs: "steer",
+      });
     }
-  }
+  }, 300_000);
+
+  // Tool for manual health check
+  pi.registerTool({
+    name: "check_health",
+    label: "Check Health",
+    description: "Check health of all agent instances",
+    parameters: z.object({}),
+    async execute() {
+      const health = await checkAgentHealth();
+      return { content: [{ type: "text", text: JSON.stringify(health, null, 2) }] };
+    },
+  });
 }
 ```
 
-### Desktop Control Use Case
+### 9. systemd Service Pattern
 
-Gemma 4 E4B's multimodal capability enables desktop control:
+**Source:** [simplified.guide](https://simplified.guide/llama-cpp/server-run-systemd-service) + [NixOS llama-server module](https://ramdi.fr/post/ai-llm/local-llm-nixos-llama-server-module)
 
-1. **Screenshot → mmproj → model** — Pi can "see" the desktop
-2. **Tool calls → shell commands** — Pi can execute actions
-3. **Audio input → transcription** — voice commands possible
+**llama-server systemd unit:**
+```ini
+[Unit]
+Description=llama.cpp inference server (CUDA)
+After=network.target
 
-Flow:
+[Service]
+Type=exec
+User=llama
+Group=llama
+WorkingDirectory=/srv/llama
+ExecStart=/usr/local/bin/llama-server \
+  -m /srv/llama/models/gemma-4-E4B-it-Q4_K_M.gguf \
+  --mmproj /srv/llama/models/mmproj-BF16.gguf \
+  -ngl 99 -c 32768 \
+  --host 127.0.0.1 --port 8080
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
 ```
-User: "Click the Firefox icon"
-  → Pi calls screenshot tool (via llama.cpp)
-  → mmproj encodes image → Gemma 4 E4B analyzes
-  → Pi calls mouse_click(x, y) tool
-  → Desktop action executed
+
+**Pi watcher systemd unit (with watchdog):**
+```ini
+[Unit]
+Description=Pi Agent Watcher (always-on observer)
+After=network.target llama-server.service
+Requires=llama-server.service
+
+[Service]
+Type=notify
+User=zoid
+Group=zoid
+WorkingDirectory=/dev/pistisai
+ExecStart=/home/zoid/.local/bin/pi \
+  --provider llamacpp \
+  --model google_gemma-4-E4B-it \
+  --extension /dev/pistisai/watcher/observer-extension.ts
+Restart=always
+RestartSec=10
+WatchdogSec=60
+NotifyAccess=all
+
+# Resource limits
+MemoryMax=2G
+CPUQuota=50%
+
+# Security
+ProtectSystem=strict
+ReadWritePaths=/dev/pistisai /home/zoid/.pi /tmp
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-This requires:
-- llama-server running with `--mmproj` flag
-- Pi tools registered for: screenshot, mouse_click, keyboard_type, shell_exec
-- oh-my-pi extension or pi-skills package providing desktop control tools
+**Watchdog mechanism:**
+- systemd sends `sd_notify("WATCHDOG=1")` every 30s from Pi extension
+- If systemd doesn't receive heartbeat in 60s → SIGABRT → restart
+- Catches hung processes (not just crashed)
 
-### Minimum Hardware for Users
+### 10. Watchdog / Accountability Pattern
+
+**Source:** [dev.to Watchdog Pattern](https://dev.to/meridian-ai/the-watchdog-pattern-how-to-build-ai-systems-that-fix-themselves) + [ricotan.com Heartbeat](https://ricotan.com/heartbeat-architecture-monitor-ai-agent) + [therealcat.ai](https://therealcat.ai/lab-notes-when-your-agent-learns-to-lie-about-working) + [elencho-accountability-cron skill](skill:elencho-accountability-cron)
+
+**Lessons from production agent monitoring:**
+
+1. **Silent failure is worse than crash.** An agent that's running but stuck in a loop is invisible to traditional monitoring.
+2. **Self-report is unreliable.** Agents learn to say "all good" while doing nothing (Goodhart's Law).
+3. **Diff-only output.** If nothing changed, return `HEARTBEAT_OK`. No noise.
+4. **Independent observers.** Multiple watchers with different perspectives catch what one misses.
+5. **Read-only heartbeats.** Cron sessions that can mark tasks "done" without doing them is a foot-gun.
+
+**Layered oversight model:**
+
+| Layer | What | Action |
+|-------|------|--------|
+| **L1: Passive** | Pi extension monitors tool calls, results, timing | Log + self-correct |
+| **L2: Active** | Cron heartbeat checks health, cross-references with A2A peer | A2A message to peer agent |
+| **L3: Intervention** | Anomaly detected, peer confirms | Surface question to Christopher |
+
+**Accountability question format (from elencho pattern):**
+```
+🪞 [One pointed question about a specific drift signal]
+```
+
+Not a report. A question. Forces engagement without noise.
+
+### 11. pi-skills Ecosystem
+
+**Source:** [PSPDFKit-labs/pi-skills](https://github.com/PSPDFKit-labs/pi-skills) + [awesome-pi-agent](https://github.com/qualisero/awesome-pi-agent)
+
+Relevant packages for our use:
+- `pi-self` — `pi_run` tool for spawning pi subprocesses (subagent pattern)
+- `cronjob` — `/cron` command for scheduled prompts
+- `notify` — desktop notification when agent finishes
+- `ssh` — delegate all tools to remote machine via SSH
+- `loop` — keep follow-up loop running until breakout condition
+- `@agent-sh/computer-use-linux` — desktop control (MCP)
+- `brave-search` — web search
+- `gmcli` — Gmail integration
+
+### 12. Hardware Compatibility
+
+**Christopher's PC (right-pc, CachyOS):**
+
+| Component | Spec | Verdict |
+|-----------|------|---------|
+| CPU | Intel i5-13600KF (14c/20t) | ✅ Excellent |
+| GPU | RTX 4070 (12GB VRAM, sm_89) | ✅ Great for local LLM |
+| RAM | 62GB (48GB free) | ✅ Massive headroom |
+| Disk | 399GB free | ✅ Plenty of room |
+| CUDA | Driver 580.159 + CUDA 13 toolkit | ✅ Ready |
+| Bun | 1.4.2 installed | ✅ Exceeds 1.3.14 min |
+
+**Minimum for other users:**
 
 | Component | Minimum | Recommended |
 |-----------|---------|-------------|
-| GPU | 6GB VRAM (RTX 3060, RTX 4060) | 12GB (RTX 4070, RTX 3060 12G) |
+| GPU | 6GB VRAM (RTX 3060, RTX 4060) | 12GB (RTX 4070) |
 | RAM | 16 GB | 32 GB |
-| Disk | 10 GB free (Q4_K_M + mmproj) | 20 GB (Q8_0 + room for more models) |
-| OS | Linux, Windows, macOS | — |
+| Disk | 10 GB free | 20 GB |
 | CUDA | 12.x driver | 12.8+ |
 | Bun | 1.3.14+ | 1.4.x |
 
-**Runs on Christopher's RTX 4070 with massive headroom.**
+---
+
+## Safety Boundaries
+
+### Pi Can:
+- Read files, explore, organize, learn
+- Run health checks on services
+- Restart paused/crashed agent instances
+- Send notifications to Christopher
+- Communicate with peer agents via A2A
+- Control desktop (when user explicitly directs)
+
+### Pi Must NEVER:
+- Rewrite its own identity or system prompt
+- Modify another agent's system prompt or identity
+- Touch secrets, credentials, or auth tokens
+- Modify safety boundaries without explicit human approval
+- Self-escalate privileges (sudo, chmod, etc.)
+- Install system packages without approval
+
+### Desktop Control Safety:
+- `computer-use-linux` marks tools with `destructiveHint=true`
+- MCP hosts should ask user before destructive actions
+- Screenshot data stays local (never uploaded)
+- All desktop actions are logged
+
+---
+
+## Implementation Phases
+
+### Phase 1: Pi as Harness (GitHub #285)
+**Goal:** Pi selectable as agent harness in Flutter app
+
+1. Add `ProviderType.pi` to enum
+2. Create `PiRpcClient` (Dart subprocess + JSONL)
+3. Create `PiAdapter` implementing `BaseProvider`
+4. Wire into RouterServer + DI locator
+5. Add UI: provider selection screen shows "Pi"
+6. Model routing: Pi borrows model from active harness
+
+**Dependencies:** None (pure Dart + existing Pi install)
+**Estimated:** 2-3 days
+
+### Phase 2: llama.cpp Infrastructure (NEW)
+**Goal:** Local inference running on right-pc
+
+1. Build llama.cpp with CUDA sm_89
+2. Download Gemma 4 E4B-it Q4_K_M + mmproj
+3. Create systemd unit for llama-server
+4. Test Pi ↔ llama.cpp connection
+5. Install computer-use-linux for desktop control
+
+**Dependencies:** None
+**Estimated:** 1 day (mostly automated)
+
+### Phase 3: Pi as Watcher (GitHub #286)
+**Goal:** Always-on background observer on VPS
+
+1. Create observer extension (health checks, notifications)
+2. Create systemd unit with watchdog
+3. Configure llama-server on VPS (or free tier fallback)
+4. Set up heartbeat cron
+5. Test: kill an agent → watcher detects → notifies
+
+**Dependencies:** Phase 2 (llama.cpp pattern)
+**Estimated:** 2-3 days
+
+### Phase 4: Pi as Subagent (GitHub #287)
+**Goal:** On-demand coding delegate
+
+1. Implement `pi_run` tool (spawns pi subprocess)
+2. Create subagent task protocol (JSON over stdin/stdout)
+3. Add attribution in chat ("via Pi subagent")
+4. Test: Hermes spawns Pi → Pi fixes bug → reports back
+
+**Dependencies:** Phase 1 (RPC client)
+**Estimated:** 1-2 days
+
+### Phase 5: Watcher L2-L3 + Mesh (GitHub #288)
+**Goal:** A2A peer communication + accountability
+
+1. Install @bacnh85/pi-a2a on watcher
+2. Configure A2A peers (Hermes, Elencho)
+3. Implement L2: cross-agent health verification
+4. Implement L3: escalation to Christopher
+5. Test full chain: anomaly → peer confirm → notification
+
+**Dependencies:** Phase 3 (watcher)
+**Estimated:** 2-3 days
+
+### Phase 6: Desktop Control (NEW)
+**Goal:** Pi can see and control the desktop
+
+1. Install computer-use-linux MCP
+2. Configure Pi to use MCP tools
+3. Test: screenshot → analyze → click/type
+4. Add safety gates (confirm before destructive)
+
+**Dependencies:** Phase 2 (mmproj), Phase 1 (Pi harness)
+**Estimated:** 1-2 days
 
 ---
 
 ## Open Questions
 
-1. **Inference runtime:** llama.cpp confirmed (Christopher). Build from source with CUDA sm_89 for RTX 4070.
-2. **Model:** Gemma 4 E4B-it Q4_K_M confirmed for multimodal desktop control. Phi-4 14B was considered but lacks vision.
-3. **oh-my-pi install flow:** How does the Flutter app trigger oh-my-pi install? Shell command to PC via SSH? Bundled installer prompt?
-4. **Subagent attribution:** How should "via Pi subagent" appear in chat? Inline badge? Separate message?
-5. **A2A port:** Default pi-a2a port is 9910. Hermes A2A is on 9900. Need to ensure no conflicts.
-6. **Desktop control tools:** Which pi-skills or oh-my-pi extensions provide screenshot/mouse/keyboard? Need to research specific packages.
-7. **Observer architecture:** oh-my-pi extension (runs inside Pi) vs standalone Dart service (runs in app) vs systemd timer?
+1. **Model for watcher:** Gemma 4 E4B confirmed for harness/desktop. Watcher could use same model OR a cheaper/free tier. Decision: same model for simplicity, free tier as fallback.
+2. **Observer location:** oh-my-pi extension (inside Pi) vs standalone Dart service vs systemd timer? Leaning: oh-my-pi extension for L1, cron for L2, A2A for L3.
+3. **oh-my-pi install flow:** How does Flutter app trigger oh-my-pi install on PC? SSH command? Bundled installer?
+4. **Subagent attribution:** "via Pi subagent" — inline badge or separate message?
+5. **A2A port conflict:** pi-a2a default 9910, Hermes 9900, Elencho 9901. No conflict but verify.
+6. **Desktop control safety:** Should every desktop action require user confirmation, or only destructive ones?
+7. **VPS llama.cpp:** Does the VPS have a GPU? If not, watcher uses free tier or CPU inference.
 
 ---
 
 ## Key Research Sources
 
 - [Pi RPC Mode](https://pi.ubitools.com/rpc/) — full protocol spec
-- [Pi RPC Mode (mirror)](https://pi-agent-docs.pages.dev/rpc/) — same spec, alternate host
+- [Pi RPC Mode (mirror)](https://pi-agent-docs.pages.dev/rpc/) — alternate host
+- [Pi SDK](https://pi.dev/docs/latest/sdk) — programmatic embedding
+- [oh-my-pi SDK](https://github.com/can1357/oh-my-pi/blob/main/docs/sdk.md) — Bun/Node embedding
 - [@bacnh85/pi-a2a](https://pi.dev/packages/@bacnh85/pi-a2a) — A2A extension
 - [pi-subagents](https://pi.dev/packages/pi-subagents) — sub-agent delegation
-- [oh-my-pi](https://github.com/can1357/oh-my-pi) — full IDE-grade fork of Pi
-- [oh-my-pi deep dive](https://agentpedia.codes/blog/oh-my-pi-terminal-coding-agent-guide) — feature breakdown
-- [llama.cpp + Qwen 3.6](https://miaggy.com/blog/claude-code-with-llama-cpp-and-qwen) — local agent stack
-- [llama.cpp local LLM guide](https://ml4devs.com/articles/llm-local-inference-dev-setup) — inference setup
+- [oh-my-pi](https://github.com/can1357/oh-my-pi) — full IDE-grade fork
+- [oh-my-pi extensions.md](https://github.com/can1357/oh-my-pi/blob/main/docs/extensions.md) — extension API (743 lines)
+- [@agent-sh/computer-use-linux](https://pi.dev/packages/@agent-sh/computer-use-linux) — desktop control MCP
+- [PSPDFKit-labs/pi-skills](https://github.com/PSPDFKit-labs/pi-skills) — skill/extension catalog
+- [awesome-pi-agent](https://github.com/qualisero/awesome-pi-agent) — community package list
+- [Gemma 4 E4B-it GGUF](https://huggingface.co/bartowski/google_gemma-4-E4B-it-GGUF) — model quants
+- [Gemma 4 E4B on RTX 4070](https://smeltcore.com/recipes/gemma-4-e4b-on-rtx-4070) — hardware recipe
+- [Pi settings: llama.cpp provider](https://pi.dev/docs/latest/settings) — built-in wiring
+- [llama.cpp + systemd](https://simplified.guide/llama-cpp/server-run-systemd-service) — service pattern
+- [NixOS llama-server module](https://ramdi.fr/post/ai-llm/local-llm-nixos-llama-server-module) — declarative config reference
+- [Watchdog Pattern](https://dev.to/meridian-ai/the-watchdog-pattern-how-to-build-ai-systems-that-fix-themselves) — self-healing agents
+- [Heartbeat Architecture](https://ricotan.com/heartbeat-architecture-monitor-ai-agent) — agent monitoring
+- [Agent Lies About Working](https://therealcat.ai/lab-notes-when-your-agent-learns-to-lie-about-working) — Goodhart's Law in agents
+- [elencho-accountability-cron](skill:elencho-accountability-cron) — accountability pattern
 - [Pistisai provider architecture](/dev/pistisai/pistisai-app/lib/services/providers/) — integration point
-- [oh-my-pi extensions.md](https://github.com/can1357/oh-my-pi/blob/main/docs/extensions.md) — full extension API (743 lines)
-- [Run AI Agent 24/7](https://os.moda/blog/run-ai-agent-24-7) — systemd supervision guide
-- [systemd Watchdog](https://adhdecode.com/articles/systemd/systemd-watchdog-service-health) — hung-process detection
-- [systemd Watchdog (Python)](https://oneuptime.com/blog/post/2026-03-02-how-to-configure-systemd-watchdog-for-service-health-checks-on-ubuntu/) — sd_notify pattern
-- [bacnh85/pi-extensions](https://github.com/bacnh85/pi-extensions) — full extension catalog
-- [Gemma 4 E4B-it GGUF (bartowski)](https://huggingface.co/bartowski/google_gemma-4-E4B-it-GGUF) — model quants
-- [Gemma 4 E4B on RTX 4070](https://smeltcore.com/recipes/gemma-4-e4b-on-rtx-4070-multimodal-inference-via-q4-k-m-gguf-llama-cpp-or-ollama-bf16-will-not-fit) — hardware-specific recipe
-- [Pi settings: llama.cpp provider](https://pi.dev/docs/latest/settings) — built-in Pi↔llama.cpp wiring
-- [llama-agent](https://github.com/gary149/llama-agent) — single-binary agent on llama.cpp (reference pattern)
-- [Pi settings.json](https://pi.dev/docs/latest/settings) — full config reference
