@@ -393,12 +393,23 @@ class SetupWizardService extends ChangeNotifier {
 
       final selectedRuntime = _selectPreferredRuntime(providers);
 
-      _state = _state.copyWith(
-        discoveredProviders: providers,
-        selectedProvider: selectedRuntime,
-        isLoading: false,
-        errorMessage: null,
-      );
+      // Auto-detect Pi method when Pi is the selected provider
+      if (selectedRuntime?.type == ProviderType.pi) {
+        _state = _state.copyWith(
+          discoveredProviders: providers,
+          selectedProvider: selectedRuntime,
+          selectedMethod: ConnectionMethod.pi,
+          isLoading: false,
+          errorMessage: null,
+        });
+      } else {
+        _state = _state.copyWith(
+          discoveredProviders: providers,
+          selectedProvider: selectedRuntime,
+          isLoading: false,
+          errorMessage: null,
+        );
+      }
       notifyListeners();
 
       appLogger.info(
