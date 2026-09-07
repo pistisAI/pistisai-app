@@ -65,7 +65,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
             maxHeight: size.height * 0.8,
           ),
           decoration: BoxDecoration(
-            color: AppTheme.backgroundCard,
+            color: AppTheme.colorsOf(context).backgroundCard,
             borderRadius: BorderRadius.circular(AppTheme.borderRadiusL),
             boxShadow: [
               BoxShadow(
@@ -126,7 +126,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                       Text(
                         'To use Pistisai with your local AI models, you need to download and install the desktop application.',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: AppTheme.textColor,
+                              color: AppTheme.colorsOf(context).textColor,
                               height: 1.5,
                             ),
                       ),
@@ -144,7 +144,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                           icon: const Icon(Icons.download),
                           label: const Text('Download Desktop App'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
+                            backgroundColor: AppTheme.colorsOf(context).primary,
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.all(AppTheme.spacingM),
                             textStyle: const TextStyle(
@@ -162,7 +162,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                         child: TextButton(
                           onPressed: _dismissPrompt,
                           style: TextButton.styleFrom(
-                            foregroundColor: AppTheme.textColorLight,
+                            foregroundColor: AppTheme.colorsOf(context).textColorLight,
                           ),
                           child: const Text('Continue without desktop app'),
                         ),
@@ -192,7 +192,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
         Text(
           'Why download the desktop app?',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: AppTheme.textColor,
+                color: AppTheme.colorsOf(context).textColor,
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -210,7 +210,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                     benefit,
                     style: Theme.of(
                       context,
-                    ).textTheme.bodyMedium?.copyWith(color: AppTheme.textColor),
+                    ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColor),
                   ),
                 ),
               ],

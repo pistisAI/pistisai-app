@@ -60,8 +60,8 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBackgroundColor = backgroundColor ?? AppTheme.secondaryColor;
-    final effectiveBorderColor = borderColor ?? AppTheme.primaryColor;
+    final effectiveBackgroundColor = backgroundColor ?? AppTheme.colorsOf(context).secondary;
+    final effectiveBorderColor = borderColor ?? AppTheme.colorsOf(context).primary;
     final borderWidth = size * 0.04;
 
     // Pistisai logos (4-column stoa portico)
@@ -211,7 +211,7 @@ class GradientAppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBorderColor = borderColor ?? AppTheme.primaryColor;
+    final effectiveBorderColor = borderColor ?? AppTheme.colorsOf(context).primary;
     final borderWidth = size * 0.04;
 
     // Pistisai lobster avatar
@@ -235,7 +235,7 @@ class GradientAppLogo extends StatelessWidget {
             : null,
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+            color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
             blurRadius: size * 0.15,
             offset: Offset(0, size * 0.05),
           ),

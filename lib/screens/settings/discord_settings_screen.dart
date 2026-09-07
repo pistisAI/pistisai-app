@@ -133,7 +133,7 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Discord Bot Settings'),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: AppTheme.colorsOf(context).primary,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -195,7 +195,7 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.key, color: AppTheme.accentColor),
+                      Icon(Icons.key, color: AppTheme.colorsOf(context).accent),
                       const SizedBox(width: 8),
                       Text(
                         'Bot Configuration',
@@ -356,8 +356,8 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.help_outline,
-                          color: AppTheme.accentColor),
+                      Icon(Icons.help_outline,
+                          color: AppTheme.colorsOf(context).accent),
                       const SizedBox(width: 8),
                       Text(
                         'How to Get Your Bot Token',

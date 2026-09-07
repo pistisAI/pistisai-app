@@ -177,11 +177,11 @@ class AboutSettingsScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 // App info
                 Card(
-                  color: AppTheme.backgroundCard,
+                  color: theme.colorScheme.surface,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusM),
                     side: BorderSide(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -316,7 +316,7 @@ class AboutSettingsScreen extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.backgroundCard,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppTheme.borderRadiusM),
         border: Border.all(
           color: color.withValues(alpha: 0.4),
@@ -396,8 +396,8 @@ class AboutSettingsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppTheme.textColorLight)),
-          Text(value, style: const TextStyle(color: AppTheme.textColor)),
+          Text(label, style: TextStyle(color: AppTheme.textColorLight)),
+          Text(value, style: TextStyle(color: AppTheme.textColor)),
         ],
       ),
     );

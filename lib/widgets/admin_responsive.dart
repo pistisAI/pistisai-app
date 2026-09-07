@@ -225,7 +225,7 @@ class AdminResponsiveSidebar extends StatelessWidget {
         Container(
           width: AdminResponsive.sidebarWidth(context),
           decoration: BoxDecoration(
-            color: AppTheme.backgroundCard,
+            color: AppTheme.colorsOf(context).backgroundCard,
             border: Border(
               right: BorderSide(
                 color: AppTheme.borderColor,

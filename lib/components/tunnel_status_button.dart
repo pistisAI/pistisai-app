@@ -33,7 +33,7 @@ class TunnelStatusButton extends StatelessWidget {
       tooltip = 'Tunnel Connecting';
     } else {
       icon = Icons.gpp_bad;
-      color = AppTheme.dangerColor;
+      color = AppTheme.colorsOf(context).danger;
       tooltip = 'Tunnel Disconnected';
     }
 

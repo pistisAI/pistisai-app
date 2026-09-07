@@ -22,10 +22,10 @@ class AppTheme {
   static const Color backgroundLight = Color(0xFFf5f5f5); // --bg-light: #f5f5f5
 
   // Text colors
-  static const Color textColor = Color(0xFFf1f1f1); // --text-color: #f1f1f1
+  static const Color textColor = Color(0xFFF5E6C8); // Pistisai cream
   static const Color textColorLight = Color(
-    0xFFb0b0b0,
-  ); // --text-color-light: #b0b0b0
+    0xFFB8A88A,
+  ); // Pistisai muted gold
   static const Color textColorDark = Color(
     0xFF2c3e50,
   ); // --text-color-dark: #2c3e50

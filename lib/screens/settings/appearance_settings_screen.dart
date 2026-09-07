@@ -82,8 +82,8 @@ class AppearanceSettingsScreen extends StatelessWidget {
                     trailing: Container(
                       width: 24,
                       height: 24,
-                      decoration: const BoxDecoration(
-                        color: AppTheme.accentColor,
+                      decoration: BoxDecoration(
+                        color: AppTheme.colorsOf(context).accent,
                         shape: BoxShape.circle,
                       ),
                     ),

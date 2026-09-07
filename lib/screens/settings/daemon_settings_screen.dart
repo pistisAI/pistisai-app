@@ -176,7 +176,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                   Text(
                     'System Tray Configuration',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppTheme.textColor,
+                          color: AppTheme.colorsOf(context).textColor,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
@@ -188,7 +188,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                     )
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(color: AppTheme.textColorLight),
+                        ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
                   ),
                   SizedBox(height: AppTheme.spacingXL),
 
@@ -255,19 +255,19 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
               _buildStatusRow(
                 'Connection Type',
                 _connectionStatus!['connection_type'].toString().toUpperCase(),
-                AppTheme.textColorLight,
+                AppTheme.colorsOf(context).textColorLight,
               ),
             if (_connectionStatus!['version'] != null)
               _buildStatusRow(
                 'Version',
                 _connectionStatus!['version'].toString(),
-                AppTheme.textColorLight,
+                AppTheme.colorsOf(context).textColorLight,
               ),
             if (_connectionStatus!['models'] != null)
               _buildStatusRow(
                 'Available Models',
                 '${(_connectionStatus!['models'] as List).length} models',
-                AppTheme.textColorLight,
+                AppTheme.colorsOf(context).textColorLight,
               ),
             if (_connectionStatus!['error'] != null &&
                 _connectionStatus!['error'].toString().isNotEmpty)
@@ -282,7 +282,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                 'Last updated: ${_formatDateTime(_lastStatusUpdate!)}',
                 style: Theme.of(
                   context,
-                ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+                ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ] else ...[
@@ -398,7 +398,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                   icon: const Icon(Icons.refresh),
                   label: const Text('Restart Daemon'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.secondaryColor,
+                    backgroundColor: AppTheme.colorsOf(context).secondary,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.all(AppTheme.spacingM),
                   ),
@@ -414,12 +414,12 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
   Widget _buildSectionHeader(String title, IconData icon) {
     return Row(
       children: [
-        Icon(icon, color: AppTheme.primaryColor, size: 24),
+        Icon(icon, color: AppTheme.colorsOf(context).primary, size: 24),
         SizedBox(width: AppTheme.spacingS),
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.textColor,
+                color: AppTheme.colorsOf(context).textColor,
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -444,7 +444,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppTheme.textColor,
+                        color: AppTheme.colorsOf(context).textColor,
                         fontWeight: FontWeight.w500,
                       ),
                 ),
@@ -452,7 +452,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textColorLight,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
               ],
@@ -479,7 +479,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
           Text(
             title,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppTheme.textColor,
+                  color: AppTheme.colorsOf(context).textColor,
                   fontWeight: FontWeight.w500,
                 ),
           ),
@@ -488,7 +488,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             subtitle,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           SizedBox(height: AppTheme.spacingS),
           DropdownButtonFormField<String>(
@@ -534,14 +534,14 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.textColor,
+                      color: AppTheme.colorsOf(context).textColor,
                       fontWeight: FontWeight.w500,
                     ),
               ),
               Text(
                 '${value.round()}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.primaryColor,
+                      color: AppTheme.colorsOf(context).primary,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -552,7 +552,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             subtitle,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           SizedBox(height: AppTheme.spacingS),
           Slider(
@@ -577,7 +577,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             label,
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.textColor),
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColor),
           ),
           Flexible(
             child: Text(

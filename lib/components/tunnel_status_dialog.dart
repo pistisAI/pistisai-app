@@ -45,7 +45,7 @@ class TunnelStatusDialog extends StatelessWidget {
                       state.isConnected ? Icons.gpp_good : Icons.gpp_bad,
                       color: state.isConnected
                           ? Colors.green
-                          : AppTheme.dangerColor,
+                          : AppTheme.colorsOf(context).danger,
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -53,7 +53,7 @@ class TunnelStatusDialog extends StatelessWidget {
                       style: TextStyle(
                         color: state.isConnected
                             ? Colors.green
-                            : AppTheme.dangerColor,
+                            : AppTheme.colorsOf(context).danger,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -62,7 +62,7 @@ class TunnelStatusDialog extends StatelessWidget {
                 if (state.error != null) ...[
                   const SizedBox(height: 8),
                   Text('Error: ${state.error}',
-                      style: TextStyle(color: AppTheme.dangerColor)),
+                      style: TextStyle(color: AppTheme.colorsOf(context).danger)),
                 ],
               ],
             ],
@@ -90,7 +90,7 @@ class TunnelStatusDialog extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => tunnelService.disconnect(),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.dangerColor),
+                      backgroundColor: AppTheme.colorsOf(context).danger),
                   child: const Text('Disconnect'),
                 ),
             ],

@@ -109,7 +109,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                   Text(
                     'System Connection Status',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppTheme.textColor,
+                          color: AppTheme.colorsOf(context).textColor,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
@@ -121,7 +121,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                     )
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(color: AppTheme.textColorLight),
+                        ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
                   ),
                   if (_lastRefresh != null) ...[
                     SizedBox(height: AppTheme.spacingS),
@@ -132,7 +132,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                       )
                           .textTheme
                           .bodySmall
-                          ?.copyWith(color: AppTheme.textColorLight),
+                          ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
                     ),
                   ],
                   SizedBox(height: AppTheme.spacingXL),
@@ -258,7 +258,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                 Text(
                   'Configure backends in Settings > Backend.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textColorLight,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
               ],
@@ -295,12 +295,12 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildStatusRow(
                 'URL',
                 gatewayUrl,
-                AppTheme.textColorLight,
+                AppTheme.colorsOf(context).textColorLight,
               ),
               _buildStatusRow(
                 'Platform',
                 kIsWeb ? 'Web (via relay)' : 'Desktop (direct)',
-                AppTheme.textColorLight,
+                AppTheme.colorsOf(context).textColorLight,
               ),
               SizedBox(height: AppTheme.spacingM),
               ElevatedButton.icon(
@@ -310,7 +310,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                 icon: const Icon(Icons.analytics),
                 label: const Text('View Agent Status'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
+                  backgroundColor: AppTheme.colorsOf(context).primary,
                   foregroundColor: Colors.white,
                 ),
               ),
@@ -344,19 +344,19 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildStatusRow(
                 'Endpoint',
                 'api.pistisai.app',
-                AppTheme.textColorLight,
+                AppTheme.colorsOf(context).textColorLight,
               ),
               _buildStatusRow(
                 'Protocol',
                 'HTTPS/WebSocket',
-                AppTheme.textColorLight,
+                AppTheme.colorsOf(context).textColorLight,
               ),
               if (isAuthenticated) ...[
                 SizedBox(height: AppTheme.spacingM),
                 Text(
                   'Cloud proxy allows secure access to local Ollama instances from web browsers and remote clients.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textColorLight,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
               ],
@@ -388,7 +388,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
             _buildStatusRow(
               'Icon Theme',
               'Monochrome',
-              AppTheme.textColorLight,
+              AppTheme.colorsOf(context).textColorLight,
             ),
             SizedBox(height: AppTheme.spacingM),
             ElevatedButton.icon(
@@ -399,7 +399,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               icon: const Icon(Icons.settings),
               label: const Text('Daemon Settings'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.secondaryColor,
+                backgroundColor: AppTheme.colorsOf(context).secondary,
                 foregroundColor: Colors.white,
               ),
             ),
@@ -424,7 +424,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
             'Network connectivity is required for authentication and cloud proxy features.',
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
         ],
       ),
@@ -439,7 +439,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.textColor,
+                color: AppTheme.colorsOf(context).textColor,
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -457,7 +457,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
             label,
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.textColor),
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColor),
           ),
           Text(
             value,

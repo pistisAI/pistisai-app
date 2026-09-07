@@ -68,7 +68,7 @@ class _LoadingAnimationState extends State<LoadingAnimation>
               widget.message,
               style: Theme.of(
                 context,
-              ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
               textAlign: TextAlign.center,
             ),
           ],
@@ -85,9 +85,9 @@ class _LoadingAnimationState extends State<LoadingAnimation>
           value: _animation.value,
           strokeWidth: 3.0,
           valueColor: AlwaysStoppedAnimation<Color>(
-            widget.color ?? AppTheme.primaryColor,
+            widget.color ?? AppTheme.colorsOf(context).primary,
           ),
-          backgroundColor: AppTheme.backgroundMain,
+          backgroundColor: AppTheme.colorsOf(context).backgroundMain,
         );
       },
     );
@@ -100,7 +100,7 @@ class _LoadingAnimationState extends State<LoadingAnimation>
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: widget.color ?? AppTheme.primaryColor,
+          color: widget.color ?? AppTheme.colorsOf(context).primary,
           width: 3.0,
         ),
       ),
@@ -110,7 +110,7 @@ class _LoadingAnimationState extends State<LoadingAnimation>
           height: widget.size * 0.3,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: widget.color ?? AppTheme.primaryColor,
+            color: widget.color ?? AppTheme.colorsOf(context).primary,
           ),
         ),
       ),
@@ -151,7 +151,7 @@ class AccessibleProgressIndicator extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textColor,
+                      color: AppTheme.colorsOf(context).textColor,
                       fontWeight: FontWeight.w500,
                     ),
               ),
@@ -159,7 +159,7 @@ class AccessibleProgressIndicator extends StatelessWidget {
                 Text(
                   '$percentage%',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textColorLight,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
             ],
@@ -167,9 +167,9 @@ class AccessibleProgressIndicator extends StatelessWidget {
           SizedBox(height: AppTheme.spacingXS),
           LinearProgressIndicator(
             value: value,
-            backgroundColor: AppTheme.backgroundMain,
+            backgroundColor: AppTheme.colorsOf(context).backgroundMain,
             valueColor: AlwaysStoppedAnimation<Color>(
-              color ?? AppTheme.primaryColor,
+              color ?? AppTheme.colorsOf(context).primary,
             ),
             minHeight: height,
           ),
@@ -267,10 +267,10 @@ class _SuccessAnimationState extends State<SuccessAnimation>
                   height: widget.size,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppTheme.successColor,
+                    color: AppTheme.colorsOf(context).success,
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.successColor.withValues(alpha: 0.3),
+                        color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3),
                         blurRadius: 12,
                         spreadRadius: 2,
                       ),
@@ -295,7 +295,7 @@ class _SuccessAnimationState extends State<SuccessAnimation>
           Text(
             widget.message,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.successColor,
+                  color: AppTheme.colorsOf(context).success,
                   fontWeight: FontWeight.bold,
                 ),
             textAlign: TextAlign.center,
@@ -418,10 +418,10 @@ class _ErrorAnimationState extends State<ErrorAnimation>
                   height: widget.size,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppTheme.dangerColor,
+                    color: AppTheme.colorsOf(context).danger,
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.dangerColor.withValues(alpha: 0.3),
+                        color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3),
                         blurRadius: 12,
                         spreadRadius: 2,
                       ),
@@ -440,7 +440,7 @@ class _ErrorAnimationState extends State<ErrorAnimation>
           Text(
             widget.message,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.dangerColor,
+                  color: AppTheme.colorsOf(context).danger,
                   fontWeight: FontWeight.bold,
                 ),
             textAlign: TextAlign.center,
@@ -455,7 +455,7 @@ class _ErrorAnimationState extends State<ErrorAnimation>
                 icon: const Icon(Icons.refresh),
                 label: const Text('Retry'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.dangerColor,
+                  backgroundColor: AppTheme.colorsOf(context).danger,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(100, 44),
                 ),

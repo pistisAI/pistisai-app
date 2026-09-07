@@ -66,7 +66,7 @@ class AdminAccessibility {
             decoration: isFocused
                 ? BoxDecoration(
                     border: Border.all(
-                      color: AppTheme.primaryColor,
+                      color: AppTheme.colorsOf(context).primary,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
@@ -88,6 +88,7 @@ class AdminAccessibility {
 
   /// Build a semantically labeled icon button
   static Widget iconButton({
+    required BuildContext context,
     required IconData icon,
     required VoidCallback onPressed,
     required String tooltip,
@@ -103,7 +104,7 @@ class AdminAccessibility {
         child: IconButton(
           icon: Icon(icon, size: size),
           onPressed: onPressed,
-          color: color ?? AppTheme.textColor,
+          color: color ?? AppTheme.colorsOf(context).textColor,
           tooltip: tooltip,
         ),
       ),
@@ -194,6 +195,7 @@ class AdminAccessibility {
 
   /// Build a skip link for keyboard navigation
   static Widget skipLink({
+    required BuildContext context,
     required String label,
     required GlobalKey targetKey,
   }) {
@@ -213,7 +215,7 @@ class AdminAccessibility {
         },
         child: Container(
           padding: EdgeInsets.all(AppTheme.spacingS),
-          color: AppTheme.primaryColor,
+          color: AppTheme.colorsOf(context).primary,
           child: Text(
             label,
             style: TextStyle(

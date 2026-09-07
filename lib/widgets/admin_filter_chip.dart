@@ -31,14 +31,14 @@ class AdminFilterChip extends StatelessWidget {
             Icon(
               icon,
               size: 16,
-              color: selected ? Colors.white : AppTheme.textColorLight,
+              color: selected ? Colors.white : AppTheme.colorsOf(context).textColorLight,
             ),
             SizedBox(width: AppTheme.spacingXS),
           ],
           Text(
             label,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: selected ? Colors.white : AppTheme.textColor,
+              color: selected ? Colors.white : AppTheme.colorsOf(context).textColor,
               fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -46,13 +46,13 @@ class AdminFilterChip extends StatelessWidget {
       ),
       selected: selected,
       onSelected: (_) => onSelected(),
-      backgroundColor: AppTheme.backgroundCard,
-      selectedColor: selectedColor ?? AppTheme.primaryColor,
+      backgroundColor: AppTheme.colorsOf(context).backgroundCard,
+      selectedColor: selectedColor ?? AppTheme.colorsOf(context).primary,
       checkmarkColor: Colors.white,
       side: BorderSide(
         color: selected
-            ? (selectedColor ?? AppTheme.primaryColor)
-            : AppTheme.secondaryColor.withValues(alpha: 0.3),
+            ? (selectedColor ?? AppTheme.colorsOf(context).primary)
+            : AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
         width: selected ? 2 : 1,
       ),
       shape: RoundedRectangleBorder(
@@ -96,7 +96,7 @@ class AdminDropdownFilter<T> extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: AppTheme.textColorLight,
+            color: AppTheme.colorsOf(context).textColorLight,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -109,29 +109,29 @@ class AdminDropdownFilter<T> extends StatelessWidget {
               ? Text(
                   hint!,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textColorLight,
+                    color: AppTheme.colorsOf(context).textColorLight,
                   ),
                 )
               : null,
           decoration: InputDecoration(
             filled: true,
-            fillColor: AppTheme.backgroundCard,
+            fillColor: AppTheme.colorsOf(context).backgroundCard,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
               borderSide: BorderSide(
-                color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
               borderSide: BorderSide(
-                color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
               borderSide: BorderSide(
-                color: AppTheme.primaryColor,
+                color: AppTheme.colorsOf(context).primary,
                 width: 2,
               ),
             ),
@@ -140,7 +140,7 @@ class AdminDropdownFilter<T> extends StatelessWidget {
               vertical: AppTheme.spacingS,
             ),
           ),
-          dropdownColor: AppTheme.backgroundCard,
+          dropdownColor: AppTheme.colorsOf(context).backgroundCard,
           style: theme.textTheme.bodyMedium,
         ),
       ],

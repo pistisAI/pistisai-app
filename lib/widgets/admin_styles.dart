@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
+import '../config/theme_extensions.dart';
 
 /// Admin Center styling utilities and constants
 /// Provides consistent styling across all admin components
@@ -7,27 +8,27 @@ class AdminStyles {
   // Prevent instantiation
   AdminStyles._();
 
-  /// Status badge colors
-  static const Map<String, Color> statusColors = {
-    'active': AppTheme.successColor,
-    'inactive': AppTheme.textColorLight,
-    'suspended': AppTheme.warningColor,
-    'deleted': AppTheme.dangerColor,
-    'pending': AppTheme.infoColor,
-    'succeeded': AppTheme.successColor,
-    'failed': AppTheme.dangerColor,
-    'refunded': AppTheme.warningColor,
-    'canceled': AppTheme.textColorLight,
-    'past_due': AppTheme.dangerColor,
-    'trialing': AppTheme.infoColor,
-  };
+  /// Status badge colors (theme-aware)
+  static Map<String, Color> statusColorsOf(AppColorsTheme c) => {
+        'active': c.success,
+        'inactive': c.textColorLight,
+        'suspended': c.warning,
+        'deleted': c.danger,
+        'pending': c.info,
+        'succeeded': c.success,
+        'failed': c.danger,
+        'refunded': c.warning,
+        'canceled': c.textColorLight,
+        'past_due': c.danger,
+        'trialing': c.info,
+      };
 
-  /// Subscription tier colors
-  static const Map<String, Color> tierColors = {
-    'free': AppTheme.textColorLight,
-    'premium': AppTheme.primaryColor,
-    'enterprise': AppTheme.accentColor,
-  };
+  /// Subscription tier colors (theme-aware)
+  static Map<String, Color> tierColorsOf(AppColorsTheme c) => {
+        'free': c.textColorLight,
+        'premium': c.primary,
+        'enterprise': c.accent,
+      };
 
   /// Build a status badge widget
   static Widget statusBadge(
@@ -36,7 +37,9 @@ class AdminStyles {
     bool showIcon = true,
   }) {
     final theme = Theme.of(context);
-    final color = statusColors[status.toLowerCase()] ?? AppTheme.textColorLight;
+    final colors = AppTheme.colorsOf(context);
+    final color = statusColorsOf(colors)[status.toLowerCase()] ??
+        colors.textColorLight;
     final icon = _getStatusIcon(status);
 
     return Container(
@@ -82,7 +85,9 @@ class AdminStyles {
     bool showIcon = true,
   }) {
     final theme = Theme.of(context);
-    final color = tierColors[tier.toLowerCase()] ?? AppTheme.textColorLight;
+    final colors = AppTheme.colorsOf(context);
+    final color =
+        tierColorsOf(colors)[tier.toLowerCase()] ?? colors.textColorLight;
     final icon = _getTierIcon(tier);
 
     return Container(
@@ -130,8 +135,9 @@ class AdminStyles {
     Color? color,
     bool isDestructive = false,
   }) {
-    final effectiveColor =
-        isDestructive ? AppTheme.dangerColor : (color ?? AppTheme.primaryColor);
+    final effectiveColor = isDestructive
+        ? AppTheme.colorsOf(context).danger
+        : (color ?? AppTheme.colorsOf(context).primary);
 
     return ElevatedButton.icon(
       onPressed: onPressed,
@@ -159,7 +165,7 @@ class AdminStyles {
     IconData? icon,
     Color? color,
   }) {
-    final effectiveColor = color ?? AppTheme.primaryColor;
+    final effectiveColor = color ?? AppTheme.colorsOf(context).primary;
 
     return TextButton.icon(
       onPressed: onPressed,
@@ -202,7 +208,7 @@ class AdminStyles {
   }
 
   /// Build a divider with consistent styling
-  static Widget divider() {
+  static Widget divider(BuildContext context) {
     return Divider(
       color: AppTheme.borderColor,
       thickness: 1,
@@ -229,7 +235,7 @@ class AdminStyles {
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textColorLight,
+                color: AppTheme.colorsOf(context).textColorLight,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -240,7 +246,7 @@ class AdminStyles {
                 Text(
                   value,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textColor,
+                    color: AppTheme.colorsOf(context).textColor,
                   ),
                 ),
           ),
@@ -250,20 +256,20 @@ class AdminStyles {
   }
 
   /// Build a loading indicator with consistent styling
-  static Widget loadingIndicator({String? message}) {
+  static Widget loadingIndicator(BuildContext context, {String? message}) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircularProgressIndicator(
-            color: AppTheme.primaryColor,
+            color: AppTheme.colorsOf(context).primary,
           ),
           if (message != null) ...[
             SizedBox(height: AppTheme.spacingM),
             Text(
               message,
               style: TextStyle(
-                color: AppTheme.textColorLight,
+                color: AppTheme.colorsOf(context).textColorLight,
                 fontSize: 14,
               ),
             ),
@@ -275,6 +281,7 @@ class AdminStyles {
 
   /// Build an empty state widget
   static Widget emptyState({
+    required BuildContext context,
     required String message,
     IconData? icon,
     Widget? action,
@@ -289,14 +296,14 @@ class AdminStyles {
               Icon(
                 icon,
                 size: 64,
-                color: AppTheme.textColorLight.withValues(alpha: 0.5),
+                color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.5),
               ),
               SizedBox(height: AppTheme.spacingM),
             ],
             Text(
               message,
               style: TextStyle(
-                color: AppTheme.textColorLight,
+                color: AppTheme.colorsOf(context).textColorLight,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,

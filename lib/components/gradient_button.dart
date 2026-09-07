@@ -92,15 +92,15 @@ class _GradientButtonState extends State<GradientButton>
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                           colors: [
-                            AppTheme.primaryColor,
-                            AppTheme.primaryColor.withValues(alpha: 0.8),
+                            AppTheme.colorsOf(context).primary,
+                            AppTheme.colorsOf(context).primary.withValues(alpha: 0.8),
                           ],
                         )
                       : AppTheme.buttonGradient,
                   borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.primaryColor.withValues(
+                      color: AppTheme.colorsOf(context).primary.withValues(
                         alpha: _isHovered ? 0.4 : 0.2,
                       ),
                       blurRadius: _isHovered ? 16 : 8,
@@ -199,17 +199,17 @@ class _OutlinedGradientButtonState extends State<OutlinedGradientButton> {
         ),
         decoration: BoxDecoration(
           color: _isHovered
-              ? AppTheme.primaryColor.withValues(alpha: 0.1)
+              ? AppTheme.colorsOf(context).primary.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
           border: Border.all(
             width: 2,
-            color: _isHovered ? AppTheme.primaryColor : AppTheme.secondaryColor,
+            color: _isHovered ? AppTheme.colorsOf(context).primary : AppTheme.colorsOf(context).secondary,
           ),
           boxShadow: _isHovered
               ? [
                   BoxShadow(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.2),
+                    color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -230,7 +230,7 @@ class _OutlinedGradientButtonState extends State<OutlinedGradientButton> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          AppTheme.primaryColor,
+                          AppTheme.colorsOf(context).primary,
                         ),
                       ),
                     )
@@ -242,8 +242,8 @@ class _OutlinedGradientButtonState extends State<OutlinedGradientButton> {
                           Icon(
                             widget.icon,
                             color: _isHovered
-                                ? AppTheme.primaryColor
-                                : AppTheme.secondaryColor,
+                                ? AppTheme.colorsOf(context).primary
+                                : AppTheme.colorsOf(context).secondary,
                             size: 18,
                           ),
                           SizedBox(width: AppTheme.spacingS),
@@ -254,8 +254,8 @@ class _OutlinedGradientButtonState extends State<OutlinedGradientButton> {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: _isHovered
-                                ? AppTheme.primaryColor
-                                : AppTheme.secondaryColor,
+                                ? AppTheme.colorsOf(context).primary
+                                : AppTheme.colorsOf(context).secondary,
                             letterSpacing: 0.5,
                           ),
                         ),

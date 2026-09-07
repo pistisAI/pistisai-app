@@ -93,7 +93,7 @@ class _DashboardTabState extends State<DashboardTab> {
                 child: Text(
                   'Last updated: ${_formatTime(_lastUpdated!)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textColorLight,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
               ),
@@ -182,7 +182,7 @@ class _DashboardTabState extends State<DashboardTab> {
           title: 'Total Users',
           value: _formatNumber(users['total']),
           icon: Icons.people,
-          iconColor: AppTheme.primaryColor,
+          iconColor: AppTheme.colorsOf(context).primary,
           subtitle: '${users['newThisMonth']} new this month',
         ),
 
@@ -191,7 +191,7 @@ class _DashboardTabState extends State<DashboardTab> {
           title: 'Active Users',
           value: _formatNumber(users['active']),
           icon: Icons.person_outline,
-          iconColor: AppTheme.successColor,
+          iconColor: AppTheme.colorsOf(context).success,
           subtitle: '${users['activePercentage']}% of total',
         ),
 
@@ -200,7 +200,7 @@ class _DashboardTabState extends State<DashboardTab> {
           title: 'Monthly Recurring Revenue',
           value: '\$${_formatCurrency(revenue['mrr'])}',
           icon: Icons.attach_money,
-          iconColor: AppTheme.warningColor,
+          iconColor: AppTheme.colorsOf(context).warning,
           subtitle: 'From ${subscriptions['totalSubscribed']} subscribers',
         ),
 
@@ -209,7 +209,7 @@ class _DashboardTabState extends State<DashboardTab> {
           title: 'Current Month Revenue',
           value: '\$${_formatCurrency(revenue['currentMonth'])}',
           icon: Icons.trending_up,
-          iconColor: AppTheme.infoColor,
+          iconColor: AppTheme.colorsOf(context).info,
           subtitle: '${revenue['transactionCount']} transactions',
         ),
       ],
@@ -243,7 +243,7 @@ class _DashboardTabState extends State<DashboardTab> {
               'Conversion Rate: ${subscriptions['conversionRate']}%',
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: AppTheme.textColorLight),
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
             ),
 
             SizedBox(height: AppTheme.spacingL),
@@ -253,7 +253,7 @@ class _DashboardTabState extends State<DashboardTab> {
               'Free',
               distribution['free'] as int,
               total,
-              AppTheme.textColorLight,
+              AppTheme.colorsOf(context).textColorLight,
             ),
 
             SizedBox(height: AppTheme.spacingM),
@@ -262,7 +262,7 @@ class _DashboardTabState extends State<DashboardTab> {
               'Premium',
               distribution['premium'] as int,
               total,
-              AppTheme.primaryColor,
+              AppTheme.colorsOf(context).primary,
             ),
 
             SizedBox(height: AppTheme.spacingM),
@@ -271,7 +271,7 @@ class _DashboardTabState extends State<DashboardTab> {
               'Enterprise',
               distribution['enterprise'] as int,
               total,
-              AppTheme.warningColor,
+              AppTheme.colorsOf(context).warning,
             ),
           ],
         ),
@@ -298,7 +298,7 @@ class _DashboardTabState extends State<DashboardTab> {
               '$count (${percentage.toStringAsFixed(1)}%)',
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: AppTheme.textColorLight),
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
             ),
           ],
         ),
@@ -328,7 +328,7 @@ class _DashboardTabState extends State<DashboardTab> {
               'No recent transactions',
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: AppTheme.textColorLight),
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
             ),
           ),
         ),
@@ -378,13 +378,13 @@ class _DashboardTabState extends State<DashboardTab> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: (isSuccess ? AppTheme.successColor : AppTheme.dangerColor)
+          color: (isSuccess ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger)
               .withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
         ),
         child: Icon(
           isSuccess ? Icons.check_circle : Icons.error,
-          color: isSuccess ? AppTheme.successColor : AppTheme.dangerColor,
+          color: isSuccess ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
         ),
       ),
       title: Text(
@@ -397,7 +397,7 @@ class _DashboardTabState extends State<DashboardTab> {
         '${transaction['paymentMethod']} •••• ${transaction['last4']} • ${_formatDateTime(transaction['createdAt'])}',
         style: Theme.of(
           context,
-        ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+        ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -413,7 +413,7 @@ class _DashboardTabState extends State<DashboardTab> {
             transaction['subscriptionTier'] as String,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
         ],
       ),

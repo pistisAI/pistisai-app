@@ -37,13 +37,13 @@ class AdminSearchBar extends StatelessWidget {
             hintText: hintText,
             prefixIcon: Icon(
               Icons.search,
-              color: AppTheme.textColorLight,
+              color: AppTheme.colorsOf(context).textColorLight,
             ),
             suffixIcon: controller.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(
                       Icons.clear,
-                      color: AppTheme.textColorLight,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
                     onPressed: () {
                       controller.clear();
@@ -57,23 +57,23 @@ class AdminSearchBar extends StatelessWidget {
                   )
                 : null,
             filled: true,
-            fillColor: AppTheme.backgroundCard,
+            fillColor: AppTheme.colorsOf(context).backgroundCard,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
               borderSide: BorderSide(
-                color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
               borderSide: BorderSide(
-                color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
               borderSide: BorderSide(
-                color: AppTheme.primaryColor,
+                color: AppTheme.colorsOf(context).primary,
                 width: 2,
               ),
             ),

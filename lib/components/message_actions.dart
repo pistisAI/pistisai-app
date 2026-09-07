@@ -21,12 +21,14 @@ class MessageActions extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildActionButton(
+          context: context,
           icon: Icons.copy,
           tooltip: 'Copy message',
           onPressed: onCopy,
         ),
         if (message.hasError && onRetry != null)
           _buildActionButton(
+            context: context,
             icon: Icons.refresh,
             tooltip: 'Retry',
             onPressed: onRetry!,
@@ -36,6 +38,7 @@ class MessageActions extends StatelessWidget {
   }
 
   Widget _buildActionButton({
+    required BuildContext context,
     required IconData icon,
     required String tooltip,
     required VoidCallback onPressed,
@@ -46,10 +49,10 @@ class MessageActions extends StatelessWidget {
         onPressed: onPressed,
         icon: Icon(icon),
         iconSize: 16,
-        color: AppTheme.textColorLight,
+        color: AppTheme.colorsOf(context).textColorLight,
         tooltip: tooltip,
         style: IconButton.styleFrom(
-          backgroundColor: AppTheme.backgroundCard,
+          backgroundColor: AppTheme.colorsOf(context).backgroundCard,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
           ),

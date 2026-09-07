@@ -71,7 +71,7 @@ class _OpenClawSkillsSettingsScreenState
                 : 'Installation failed: ${_installService!.errorMessage}',
           ),
           backgroundColor:
-              success ? AppTheme.successColor : AppTheme.dangerColor,
+              success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
           duration: const Duration(seconds: 4),
         ),
       );
@@ -108,7 +108,7 @@ class _OpenClawSkillsSettingsScreenState
                   'avatar personality, evolution tracking, and '
                   'conversation memory.',
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: AppTheme.textColorLight,
+                    color: AppTheme.colorsOf(context).textColorLight,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -162,7 +162,7 @@ class _OpenClawSkillsSettingsScreenState
           padding: EdgeInsets.all(spacing.m),
           child: Row(
             children: [
-              const Icon(Icons.error_outline, color: AppTheme.dangerColor),
+              Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
               const SizedBox(width: 16),
               Expanded(
                 child: Text('Unable to check installation status.'),
@@ -181,26 +181,26 @@ class _OpenClawSkillsSettingsScreenState
     switch (service.status) {
       case OpenClawSkillStatus.installed:
         icon = Icons.check_circle;
-        iconColor = AppTheme.successColor;
+        iconColor = AppTheme.colorsOf(context).success;
         title = 'Skill Installed';
         subtitle =
             'Version: ${service.installedVersion ?? 'unknown'}';
         break;
       case OpenClawSkillStatus.notInstalled:
         icon = Icons.info_outline;
-        iconColor = AppTheme.warningColor;
+        iconColor = AppTheme.colorsOf(context).warning;
         title = 'Not Installed';
         subtitle = 'The OpenClaw personality skill is not yet installed.';
         break;
       case OpenClawSkillStatus.installing:
         icon = Icons.sync;
-        iconColor = AppTheme.infoColor;
+        iconColor = AppTheme.colorsOf(context).info;
         title = 'Installing...';
         subtitle = 'Copying skill files to the target directory.';
         break;
       case OpenClawSkillStatus.error:
         icon = Icons.error;
-        iconColor = AppTheme.dangerColor;
+        iconColor = AppTheme.colorsOf(context).danger;
         title = 'Installation Error';
         subtitle = service.errorMessage ?? 'An unknown error occurred.';
         break;
@@ -227,7 +227,7 @@ class _OpenClawSkillsSettingsScreenState
                   Text(
                     subtitle,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textColorLight,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
                   ),
                 ],
@@ -258,8 +258,8 @@ class _OpenClawSkillsSettingsScreenState
                   isInstalled ? Icons.cloud_done : Icons.cloud_download,
                   size: 20,
                   color: isInstalled
-                      ? AppTheme.successColor
-                      : AppTheme.primaryColor,
+                      ? AppTheme.colorsOf(context).success
+                      : AppTheme.colorsOf(context).primary,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -278,7 +278,7 @@ class _OpenClawSkillsSettingsScreenState
                 'The OpenClaw personality skill is installed and ready. '
                 'Click below to reinstall if needed.',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textColorLight,
+                  color: AppTheme.colorsOf(context).textColorLight,
                 ),
               ),
               const SizedBox(height: 12),
@@ -303,7 +303,7 @@ class _OpenClawSkillsSettingsScreenState
                 'skill. This will copy the skill package to '
                 '~/.openclaw/skills/pistisai/.',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textColorLight,
+                  color: AppTheme.colorsOf(context).textColorLight,
                 ),
               ),
               const SizedBox(height: 12),
@@ -332,23 +332,23 @@ class _OpenClawSkillsSettingsScreenState
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppTheme.dangerColor.withValues(alpha: 0.1),
+                  color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.borderRadiusM),
                   border: Border.all(
-                    color: AppTheme.dangerColor.withValues(alpha: 0.3),
+                    color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.warning_amber,
-                        color: AppTheme.dangerColor, size: 18),
+                    Icon(Icons.warning_amber,
+                        color: AppTheme.colorsOf(context).danger, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         service.errorMessage!,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppTheme.dangerColor,
+                          color: AppTheme.colorsOf(context).danger,
                         ),
                       ),
                     ),
@@ -431,25 +431,25 @@ class _OpenClawSkillsSettingsScreenState
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.infoColor.withValues(alpha: 0.1),
+                color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
                 borderRadius:
                     BorderRadius.circular(AppTheme.borderRadiusM),
                 border: Border.all(
-                  color: AppTheme.infoColor.withValues(alpha: 0.3),
+                  color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3),
                 ),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.lightbulb_outline,
-                      color: AppTheme.infoColor, size: 18),
+                  Icon(Icons.lightbulb_outline,
+                      color: AppTheme.colorsOf(context).info, size: 18),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'After installation, restart the OpenClaw gateway '
                       'for the skill to be detected.',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppTheme.infoColor,
+                        color: AppTheme.colorsOf(context).info,
                       ),
                     ),
                   ),
@@ -474,7 +474,7 @@ class _OpenClawSkillsSettingsScreenState
           width: 24,
           height: 24,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.2),
+            color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.2),
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -483,7 +483,7 @@ class _OpenClawSkillsSettingsScreenState
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.primaryColor,
+                color: AppTheme.colorsOf(context).primary,
               ),
             ),
           ),
@@ -500,16 +500,16 @@ class _OpenClawSkillsSettingsScreenState
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppTheme.backgroundMain,
+                  color: AppTheme.colorsOf(context).backgroundMain,
                   borderRadius:
                       BorderRadius.circular(AppTheme.borderRadiusS),
                 ),
                 child: Text(
                   code,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'monospace',
                     fontSize: 12,
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.colorsOf(context).primary,
                   ),
                 ),
               ),

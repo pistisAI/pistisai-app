@@ -93,23 +93,23 @@ class MessageContent extends StatelessWidget {
     Widget trailing;
 
     if (isError) {
-      borderColor = AppTheme.dangerColor.withValues(alpha: 0.5);
-      backgroundColor = AppTheme.dangerColor.withValues(alpha: 0.05);
+      borderColor = AppTheme.colorsOf(context).danger.withValues(alpha: 0.5);
+      backgroundColor = AppTheme.colorsOf(context).danger.withValues(alpha: 0.05);
       trailing = const Icon(Icons.error_outline, size: 14, color: Colors.red);
     } else if (!isCompleted) {
       // Still running — pulsing indicator
-      borderColor = AppTheme.primaryColor.withValues(alpha: 0.5);
-      backgroundColor = AppTheme.primaryColor.withValues(alpha: 0.05);
+      borderColor = AppTheme.colorsOf(context).primary.withValues(alpha: 0.5);
+      backgroundColor = AppTheme.colorsOf(context).primary.withValues(alpha: 0.05);
       trailing = SizedBox(
         width: 14,
         height: 14,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).primary),
         ),
       );
     } else {
-      borderColor = AppTheme.secondaryColor.withValues(alpha: 0.3);
+      borderColor = AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3);
       backgroundColor = Colors.white.withValues(alpha: 0.03);
       trailing =
           const Icon(Icons.check_circle_outline, size: 14, color: Colors.green);
@@ -136,7 +136,7 @@ class MessageContent extends StatelessWidget {
                     Text(
                       name,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textColor,
+                            color: AppTheme.colorsOf(context).textColor,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'monospace',
                             fontSize: 11,
@@ -147,7 +147,7 @@ class MessageContent extends StatelessWidget {
                       Text(
                         '${duration.toStringAsFixed(1)}s',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppTheme.textColorLight,
+                              color: AppTheme.colorsOf(context).textColorLight,
                               fontSize: 10,
                             ),
                       ),
@@ -162,7 +162,7 @@ class MessageContent extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textColorLight,
+                            color: AppTheme.colorsOf(context).textColorLight,
                             fontSize: 11,
                           ),
                     ),
@@ -182,10 +182,10 @@ class MessageContent extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.05),
+        color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+          color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -196,14 +196,14 @@ class MessageContent extends StatelessWidget {
             height: 14,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).primary),
             ),
           ),
           const SizedBox(width: 8),
           Text(
             'Agent working...',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.colorsOf(context).primary,
                   fontStyle: FontStyle.italic,
                 ),
           ),
@@ -224,7 +224,7 @@ class MessageContent extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppTheme.secondaryColor.withValues(alpha: 0.2),
+          color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -248,7 +248,7 @@ class MessageContent extends StatelessWidget {
           SelectableText(
             message.reasoning!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textColorLight,
+                  color: AppTheme.colorsOf(context).textColorLight,
                   fontStyle: FontStyle.italic,
                 ),
           ),
@@ -267,63 +267,63 @@ class MessageContent extends StatelessWidget {
       selectable: true,
       styleSheet: MarkdownStyleSheet(
         p: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textColor,
+              color: AppTheme.colorsOf(context).textColor,
               height: 1.5,
             ),
         h1: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: AppTheme.textColor,
+              color: AppTheme.colorsOf(context).textColor,
               fontWeight: FontWeight.bold,
             ),
         h2: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppTheme.textColor,
+              color: AppTheme.colorsOf(context).textColor,
               fontWeight: FontWeight.bold,
             ),
         h3: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.textColor,
+              color: AppTheme.colorsOf(context).textColor,
               fontWeight: FontWeight.bold,
             ),
         code: Theme.of(context).textTheme.bodySmall?.copyWith(
               fontFamily: 'monospace',
-              backgroundColor: AppTheme.secondaryColor.withValues(alpha: 0.1),
-              color: AppTheme.primaryColor,
+              backgroundColor: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
+              color: AppTheme.colorsOf(context).primary,
             ),
         codeblockDecoration: BoxDecoration(
-          color: AppTheme.backgroundCard,
+          color: AppTheme.colorsOf(context).backgroundCard,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+            color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
           ),
         ),
         blockquote: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textColorLight,
+              color: AppTheme.colorsOf(context).textColorLight,
               fontStyle: FontStyle.italic,
             ),
         blockquoteDecoration: BoxDecoration(
-          color: AppTheme.secondaryColor.withValues(alpha: 0.1),
+          color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
           border: Border(
             left: BorderSide(
-              color: AppTheme.secondaryColor,
+              color: AppTheme.colorsOf(context).secondary,
               width: 3,
             ),
           ),
         ),
         listBullet: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textColor,
+              color: AppTheme.colorsOf(context).textColor,
             ),
         tableHead: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppTheme.textColor,
+              color: AppTheme.colorsOf(context).textColor,
             ),
         tableBody: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textColor,
+              color: AppTheme.colorsOf(context).textColor,
             ),
         tableBorder: TableBorder.all(
-          color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+          color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
       imageBuilder: (uri, title, alt) {
-        return _buildImageWidget(uri.toString(), alt);
+        return _buildImageWidget(context, uri.toString(), alt);
       },
     );
   }
@@ -332,9 +332,9 @@ class MessageContent extends StatelessWidget {
   // Image widgets
   // ---------------------------------------------------------------------------
 
-  Widget _buildImageWidget(String url, String? alt) {
+  Widget _buildImageWidget(BuildContext context, String url, String? alt) {
     if (url.startsWith('data:image')) {
-      return _buildBase64Image(url, alt);
+      return _buildBase64Image(context, url, alt);
     } else {
       return _buildNetworkImage(url, alt);
     }
@@ -351,10 +351,10 @@ class MessageContent extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.secondaryColor.withValues(alpha: 0.1),
+                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+                  color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -369,7 +369,7 @@ class MessageContent extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       alt,
-                      style: TextStyle(color: AppTheme.textColorLight),
+                      style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -396,7 +396,7 @@ class MessageContent extends StatelessWidget {
     );
   }
 
-  Widget _buildBase64Image(String dataUrl, String? alt) {
+  Widget _buildBase64Image(BuildContext context, String dataUrl, String? alt) {
     try {
       final base64String = dataUrl.split(',').last;
       final imageBytes = base64Decode(base64String);
@@ -410,10 +410,10 @@ class MessageContent extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.secondaryColor.withValues(alpha: 0.1),
+                  color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+                    color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
@@ -428,7 +428,7 @@ class MessageContent extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         alt,
-                        style: TextStyle(color: AppTheme.textColorLight),
+                        style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -443,10 +443,10 @@ class MessageContent extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.dangerColor.withValues(alpha: 0.1),
+          color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: AppTheme.dangerColor.withValues(alpha: 0.3),
+            color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3),
           ),
         ),
         child: Column(
@@ -476,14 +476,14 @@ class MessageContent extends StatelessWidget {
           height: 16,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).primary),
           ),
         ),
         SizedBox(width: AppTheme.spacingS),
         Text(
           'Thinking...',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textColorLight,
+                color: AppTheme.colorsOf(context).textColorLight,
                 fontStyle: FontStyle.italic,
               ),
         ),

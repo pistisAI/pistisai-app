@@ -75,7 +75,7 @@ class AdminTable extends StatelessWidget {
           child: Text(
             emptyMessage ?? 'No data available',
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: AppTheme.textColorLight,
+              color: AppTheme.colorsOf(context).textColorLight,
             ),
           ),
         ),
@@ -106,11 +106,11 @@ class AdminTable extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: DataTable(
         headingRowColor: WidgetStateProperty.all(
-          AppTheme.backgroundCard.withValues(alpha: 0.5),
+          AppTheme.colorsOf(context).backgroundCard.withValues(alpha: 0.5),
         ),
         dataRowColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.hovered)) {
-            return AppTheme.primaryColor.withValues(alpha: 0.1);
+            return AppTheme.colorsOf(context).primary.withValues(alpha: 0.1);
           }
           return null;
         }),
@@ -120,7 +120,7 @@ class AdminTable extends StatelessWidget {
               column.label,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.textColor,
+                color: AppTheme.colorsOf(context).textColor,
               ),
             ),
             onSort: column.sortable && onSort != null
@@ -185,7 +185,7 @@ class AdminTable extends StatelessWidget {
                             column.label,
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.textColorLight,
+                              color: AppTheme.colorsOf(context).textColorLight,
                             ),
                           ),
                         ),
@@ -223,7 +223,7 @@ class AdminTable extends StatelessWidget {
         Text(
           'Showing $startItem-$endItem of $totalItems items',
           style: theme.textTheme.bodySmall?.copyWith(
-            color: AppTheme.textColorLight,
+            color: AppTheme.colorsOf(context).textColorLight,
           ),
         ),
 

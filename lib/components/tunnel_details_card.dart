@@ -13,14 +13,14 @@ class TunnelDetailsCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildConnectionStats(),
+        _buildConnectionStats(context),
         const SizedBox(height: 16),
-        _buildTechnicalInfo(),
+        _buildTechnicalInfo(context),
       ],
     );
   }
 
-  Widget _buildConnectionStats() {
+  Widget _buildConnectionStats(BuildContext context) {
     final stats = tunnelState.stats;
     final quality = tunnelState.quality;
 
@@ -40,19 +40,19 @@ class TunnelDetailsCard extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           childAspectRatio: 3,
           children: [
-            _buildStatItem('Status',
+            _buildStatItem(context, 'Status',
                 tunnelState.isConnected ? 'Connected' : 'Disconnected'),
-            _buildStatItem('Quality', quality.label,
-                color: _getQualityColor(quality)),
-            _buildStatItem(
+            _buildStatItem(context, 'Quality', quality.label,
+                color: _getQualityColor(context, quality)),
+            _buildStatItem(context,
                 'Duration', _formatDuration(tunnelState.connectionDuration)),
-            _buildStatItem('Latency',
+            _buildStatItem(context, 'Latency',
                 stats != null ? '${stats.averageLatencyMs} ms' : 'N/A'),
-            _buildStatItem('Transferred',
+            _buildStatItem(context, 'Transferred',
                 stats != null ? _formatBytes(stats.bytesTransferred) : 'N/A'),
-            _buildStatItem('Received',
+            _buildStatItem(context, 'Received',
                 stats != null ? _formatBytes(stats.bytesReceived) : 'N/A'),
-            _buildStatItem(
+            _buildStatItem(context,
                 'Success Rate',
                 stats != null
                     ? '${(stats.successRate * 100).toStringAsFixed(1)}%'
@@ -63,17 +63,17 @@ class TunnelDetailsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTechnicalInfo() {
+  Widget _buildTechnicalInfo(BuildContext context) {
     return ExpansionTile(
       title: const Text(
         'Technical Info',
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       children: [
-        _buildInfoRow('Tunnel ID', tunnelState.tunnelId ?? 'N/A'),
-        _buildInfoRow(
+        _buildInfoRow(context, 'Tunnel ID', tunnelState.tunnelId ?? 'N/A'),
+        _buildInfoRow(context,
             'Tunnel Port', tunnelState.tunnelPort?.toString() ?? 'N/A'),
-        _buildInfoRow(
+        _buildInfoRow(context,
             'Last Request',
             tunnelState.stats != null
                 ? DateFormat.yMd()
@@ -84,17 +84,17 @@ class TunnelDetailsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value, {Color? color}) {
+  Widget _buildStatItem(BuildContext context, String label, String value, {Color? color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: TextStyle(color: AppTheme.textColorLight, fontSize: 12)),
+              style: TextStyle(color: AppTheme.colorsOf(context).textColorLight, fontSize: 12)),
           Text(value,
               style: TextStyle(
-                  color: color ?? AppTheme.textColor,
+                  color: color ?? AppTheme.colorsOf(context).textColor,
                   fontSize: 14,
                   fontWeight: FontWeight.bold)),
         ],
@@ -102,20 +102,20 @@ class TunnelDetailsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: AppTheme.textColorLight)),
+          Text(label, style: TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
           Text(value, style: const TextStyle(fontFamily: 'monospace')),
         ],
       ),
     );
   }
 
-  Color _getQualityColor(TunnelConnectionQuality quality) {
+  Color _getQualityColor(BuildContext context, TunnelConnectionQuality quality) {
     switch (quality) {
       case TunnelConnectionQuality.excellent:
         return Colors.green;
@@ -126,7 +126,7 @@ class TunnelDetailsCard extends StatelessWidget {
       case TunnelConnectionQuality.poor:
         return Colors.red;
       default:
-        return AppTheme.textColor;
+        return AppTheme.colorsOf(context).textColor;
     }
   }
 

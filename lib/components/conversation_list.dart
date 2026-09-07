@@ -291,10 +291,10 @@ class _ConversationListState extends State<ConversationList> {
     return Container(
       width: 280,
       decoration: BoxDecoration(
-        color: AppTheme.backgroundCard,
+        color: AppTheme.colorsOf(context).backgroundCard,
         border: Border(
           right: BorderSide(
-            color: AppTheme.secondaryColor.withValues(alpha: 0.2),
+            color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -312,10 +312,10 @@ class _ConversationListState extends State<ConversationList> {
     return Container(
       width: 60,
       decoration: BoxDecoration(
-        color: AppTheme.backgroundCard,
+        color: AppTheme.colorsOf(context).backgroundCard,
         border: Border(
           right: BorderSide(
-            color: AppTheme.secondaryColor.withValues(alpha: 0.2),
+            color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -329,7 +329,7 @@ class _ConversationListState extends State<ConversationList> {
               onPressed: widget.onNewConversation,
               icon: const Icon(Icons.add),
               style: IconButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
+                backgroundColor: AppTheme.colorsOf(context).primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
@@ -346,8 +346,8 @@ class _ConversationListState extends State<ConversationList> {
               onPressed: _showExportDialog,
               icon: const Icon(Icons.file_download),
               style: IconButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-                foregroundColor: AppTheme.primaryColor,
+                backgroundColor: AppTheme.colorsOf(context).primary.withValues(alpha: 0.1),
+                foregroundColor: AppTheme.colorsOf(context).primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
                 ),
@@ -363,8 +363,8 @@ class _ConversationListState extends State<ConversationList> {
               onPressed: _showImportDialog,
               icon: const Icon(Icons.file_upload),
               style: IconButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-                foregroundColor: AppTheme.primaryColor,
+                backgroundColor: AppTheme.colorsOf(context).primary.withValues(alpha: 0.1),
+                foregroundColor: AppTheme.colorsOf(context).primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
                 ),
@@ -392,13 +392,13 @@ class _ConversationListState extends State<ConversationList> {
                     height: 44,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppTheme.primaryColor.withValues(alpha: 0.2)
+                          ? AppTheme.colorsOf(context).primary.withValues(alpha: 0.2)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(
                         AppTheme.borderRadiusS,
                       ),
                       border: isSelected
-                          ? Border.all(color: AppTheme.primaryColor, width: 2)
+                          ? Border.all(color: AppTheme.colorsOf(context).primary, width: 2)
                           : null,
                     ),
                     child: IconButton(
@@ -407,8 +407,8 @@ class _ConversationListState extends State<ConversationList> {
                       icon: const Icon(Icons.chat_bubble_outline),
                       iconSize: 20,
                       color: isSelected
-                          ? AppTheme.primaryColor
-                          : AppTheme.textColorLight,
+                          ? AppTheme.colorsOf(context).primary
+                          : AppTheme.colorsOf(context).textColorLight,
                       tooltip: conversation.title,
                     ),
                   ),
@@ -427,7 +427,7 @@ class _ConversationListState extends State<ConversationList> {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppTheme.secondaryColor.withValues(alpha: 0.2),
+            color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -440,7 +440,7 @@ class _ConversationListState extends State<ConversationList> {
                 child: Text(
                   'Conversations',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppTheme.textColor,
+                        color: AppTheme.colorsOf(context).textColor,
                         fontWeight: FontWeight.bold,
                       ),
                 ),
@@ -449,9 +449,9 @@ class _ConversationListState extends State<ConversationList> {
                 onPressed: () => context.go('/agent-status'),
                 icon: const Text('🦞', style: TextStyle(fontSize: 18)),
                 iconSize: 20,
-                color: AppTheme.primaryColor,
+                color: AppTheme.colorsOf(context).primary,
                 style: IconButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  backgroundColor: AppTheme.colorsOf(context).primary.withValues(alpha: 0.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
                   ),
@@ -462,9 +462,9 @@ class _ConversationListState extends State<ConversationList> {
                 onPressed: _isSearchExpanded ? _toggleSearch : _toggleSearch,
                 icon: Icon(_isSearchExpanded ? Icons.search_off : Icons.search),
                 iconSize: 20,
-                color: AppTheme.primaryColor,
+                color: AppTheme.colorsOf(context).primary,
                 style: IconButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  backgroundColor: AppTheme.colorsOf(context).primary.withValues(alpha: 0.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
                   ),
@@ -475,9 +475,9 @@ class _ConversationListState extends State<ConversationList> {
                 onPressed: widget.onNewConversation,
                 icon: const Icon(Icons.add),
                 iconSize: 20,
-                color: AppTheme.primaryColor,
+                color: AppTheme.colorsOf(context).primary,
                 style: IconButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  backgroundColor: AppTheme.colorsOf(context).primary.withValues(alpha: 0.1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
                   ),
@@ -525,7 +525,7 @@ class _ConversationListState extends State<ConversationList> {
                 child: Text(
                   '${_filteredConversations.length} of ${widget.conversations.length} conversations',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textColorLight,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
               ),
@@ -545,14 +545,14 @@ class _ConversationListState extends State<ConversationList> {
             Icon(
               Icons.chat_bubble_outline,
               size: 48,
-              color: AppTheme.textColorLight,
+              color: AppTheme.colorsOf(context).textColorLight,
             ),
             SizedBox(height: AppTheme.spacingM),
             Text(
               'No conversations yet',
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: AppTheme.textColorLight),
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
             ),
             SizedBox(height: AppTheme.spacingS),
             TextButton.icon(
@@ -560,7 +560,7 @@ class _ConversationListState extends State<ConversationList> {
               icon: const Icon(Icons.add),
               label: const Text('Start chatting'),
               style: TextButton.styleFrom(
-                foregroundColor: AppTheme.primaryColor,
+                foregroundColor: AppTheme.colorsOf(context).primary,
               ),
             ),
           ],
@@ -576,13 +576,13 @@ class _ConversationListState extends State<ConversationList> {
             Icon(
               Icons.search_off,
               size: 48,
-              color: AppTheme.textColorLight,
+              color: AppTheme.colorsOf(context).textColorLight,
             ),
             SizedBox(height: AppTheme.spacingM),
             Text(
               'No results found',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textColorLight,
+                    color: AppTheme.colorsOf(context).textColorLight,
                   ),
             ),
             if (_searchController.text.isNotEmpty) ...[
@@ -595,7 +595,7 @@ class _ConversationListState extends State<ConversationList> {
                 icon: const Icon(Icons.clear),
                 label: const Text('Clear search'),
                 style: TextButton.styleFrom(
-                  foregroundColor: AppTheme.primaryColor,
+                  foregroundColor: AppTheme.colorsOf(context).primary,
                 ),
               ),
             ],
@@ -624,12 +624,12 @@ class _ConversationListState extends State<ConversationList> {
       ),
       decoration: BoxDecoration(
         color: isSelected
-            ? AppTheme.primaryColor.withValues(alpha: 0.1)
+            ? AppTheme.colorsOf(context).primary.withValues(alpha: 0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
         border: isSelected
             ? Border.all(
-                color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
                 width: 1,
               )
             : null,
@@ -641,7 +641,7 @@ class _ConversationListState extends State<ConversationList> {
         ),
         leading: Icon(
           Icons.chat_bubble_outline,
-          color: isSelected ? AppTheme.primaryColor : AppTheme.textColorLight,
+          color: isSelected ? AppTheme.colorsOf(context).primary : AppTheme.colorsOf(context).textColorLight,
           size: 20,
         ),
         title: isEditing
@@ -663,7 +663,7 @@ class _ConversationListState extends State<ConversationList> {
     return Text(
       conversation.title,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppTheme.textColor,
+            color: AppTheme.colorsOf(context).textColor,
             fontWeight: FontWeight.w500,
           ),
       maxLines: 1,
@@ -675,7 +675,7 @@ class _ConversationListState extends State<ConversationList> {
     return TextField(
       controller: _editController,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppTheme.textColor,
+            color: AppTheme.colorsOf(context).textColor,
             fontWeight: FontWeight.w500,
           ),
       decoration: const InputDecoration(
@@ -695,7 +695,7 @@ class _ConversationListState extends State<ConversationList> {
       conversation.preview,
       style: Theme.of(
         context,
-      ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+      ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
@@ -726,7 +726,7 @@ class _ConversationListState extends State<ConversationList> {
           ),
         ),
       ],
-      child: Icon(Icons.more_vert, color: AppTheme.textColorLight, size: 16),
+      child: Icon(Icons.more_vert, color: AppTheme.colorsOf(context).textColorLight, size: 16),
     );
   }
 
@@ -776,7 +776,7 @@ class _ConversationListState extends State<ConversationList> {
               Navigator.of(context).pop();
               widget.onConversationDeleted(conversation.id);
             },
-            style: TextButton.styleFrom(foregroundColor: AppTheme.dangerColor),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.colorsOf(context).danger),
             child: const Text('Delete'),
           ),
         ],

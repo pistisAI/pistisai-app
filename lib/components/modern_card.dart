@@ -77,18 +77,18 @@ class _ModernCardState extends State<ModernCard>
               height: widget.height,
               margin: widget.margin ?? EdgeInsets.all(AppTheme.spacingS),
               decoration: BoxDecoration(
-                color: AppTheme.backgroundCard,
+                color: AppTheme.colorsOf(context).backgroundCard,
                 borderRadius: BorderRadius.circular(AppTheme.borderRadiusM),
                 border: Border.all(
                   color: _isHovered
-                      ? AppTheme.primaryColor
-                      : AppTheme.secondaryColor.withValues(alpha: 0.27),
+                      ? AppTheme.colorsOf(context).primary
+                      : AppTheme.colorsOf(context).secondary.withValues(alpha: 0.27),
                   width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: _isHovered
-                        ? AppTheme.primaryColor.withValues(alpha: 0.4)
+                        ? AppTheme.colorsOf(context).primary.withValues(alpha: 0.4)
                         : Colors.black.withValues(alpha: 0.4),
                     blurRadius: _isHovered ? 32 : 24,
                     offset: Offset(0, _isHovered ? 8 : 4),
@@ -157,14 +157,14 @@ class InfoCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingS),
                   decoration: BoxDecoration(
-                    color: (iconColor ?? AppTheme.primaryColor).withValues(
+                    color: (iconColor ?? AppTheme.colorsOf(context).primary).withValues(
                       alpha: 0.1,
                     ),
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
                   ),
                   child: Icon(
                     icon,
-                    color: iconColor ?? AppTheme.primaryColor,
+                    color: iconColor ?? AppTheme.colorsOf(context).primary,
                     size: 24,
                   ),
                 ),
@@ -174,7 +174,7 @@ class InfoCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppTheme.primaryColor,
+                        color: AppTheme.colorsOf(context).primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
@@ -189,7 +189,7 @@ class InfoCard extends StatelessWidget {
           Text(
             description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppTheme.textColorLight,
+                  color: AppTheme.colorsOf(context).textColorLight,
                   fontSize: 16,
                   height: 1.5,
                 ),
@@ -207,7 +207,7 @@ class InfoCard extends StatelessWidget {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: AppTheme.accentColor,
+                        color: AppTheme.colorsOf(context).accent,
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),
@@ -216,7 +216,7 @@ class InfoCard extends StatelessWidget {
                       child: Text(
                         feature,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppTheme.textColor,
+                              color: AppTheme.colorsOf(context).textColor,
                               fontSize: 15,
                               height: 1.4,
                             ),

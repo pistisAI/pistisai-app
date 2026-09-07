@@ -86,10 +86,10 @@ class _MessageInputState extends State<MessageInput> {
         child: Container(
           padding: EdgeInsets.all(AppTheme.spacingM),
           decoration: BoxDecoration(
-            color: AppTheme.backgroundMain,
+            color: AppTheme.colorsOf(context).backgroundMain,
             border: Border(
               top: BorderSide(
-                color: AppTheme.secondaryColor.withValues(alpha: 0.2),
+                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -106,13 +106,13 @@ class _MessageInputState extends State<MessageInput> {
                           32, // Approximate line height + padding
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.backgroundCard,
+                      color: AppTheme.colorsOf(context).backgroundCard,
                       borderRadius:
                           BorderRadius.circular(AppTheme.borderRadiusM),
                       border: Border.all(
                         color: _focusNode.hasFocus
-                            ? AppTheme.primaryColor.withValues(alpha: 0.5)
-                            : AppTheme.secondaryColor.withValues(alpha: 0.3),
+                            ? AppTheme.colorsOf(context).primary.withValues(alpha: 0.5)
+                            : AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
@@ -123,7 +123,7 @@ class _MessageInputState extends State<MessageInput> {
                       textInputAction: TextInputAction.send,
                       enabled: !widget.isLoading,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.textColor,
+                            color: AppTheme.colorsOf(context).textColor,
                             height: 1.5,
                           ),
                       decoration: InputDecoration(
@@ -131,7 +131,7 @@ class _MessageInputState extends State<MessageInput> {
                             widget.placeholder ?? 'Type your message...',
                         hintStyle:
                             Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppTheme.textColorLight,
+                                  color: AppTheme.colorsOf(context).textColorLight,
                                 ),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.all(AppTheme.spacingM),
@@ -163,8 +163,8 @@ class _MessageInputState extends State<MessageInput> {
       height: 48,
       child: Material(
         color: canSend
-            ? AppTheme.primaryColor
-            : AppTheme.textColorLight.withValues(alpha: 0.3),
+            ? AppTheme.colorsOf(context).primary
+            : AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.borderRadiusM),
         child: InkWell(
           onTap: canSend ? _sendMessage : null,
@@ -175,7 +175,7 @@ class _MessageInputState extends State<MessageInput> {
               boxShadow: canSend
                   ? [
                       BoxShadow(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                        color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -196,7 +196,7 @@ class _MessageInputState extends State<MessageInput> {
                     )
                   : Icon(
                       Icons.send,
-                      color: canSend ? Colors.white : AppTheme.textColorLight,
+                      color: canSend ? Colors.white : AppTheme.colorsOf(context).textColorLight,
                       size: 20,
                     ),
             ),
@@ -227,7 +227,7 @@ class NewConversationFAB extends StatelessWidget {
         onPressed: onPressed,
         icon: const Icon(Icons.add),
         label: const Text('New Chat'),
-        backgroundColor: AppTheme.primaryColor,
+        backgroundColor: AppTheme.colorsOf(context).primary,
         foregroundColor: Colors.white,
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -262,10 +262,10 @@ class ModelSelector extends StatelessWidget {
           vertical: AppTheme.spacingS,
         ),
         decoration: BoxDecoration(
-          color: AppTheme.warningColor.withValues(alpha: 0.1),
+          color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
           border: Border.all(
-            color: AppTheme.warningColor.withValues(alpha: 0.3),
+            color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -274,7 +274,7 @@ class ModelSelector extends StatelessWidget {
           children: [
             Icon(
               Icons.warning_outlined,
-              color: AppTheme.warningColor,
+              color: AppTheme.colorsOf(context).warning,
               size: 16,
             ),
             SizedBox(width: AppTheme.spacingS),
@@ -282,7 +282,7 @@ class ModelSelector extends StatelessWidget {
               'No models available',
               style: Theme.of(
                 context,
-              ).textTheme.bodySmall?.copyWith(color: AppTheme.warningColor),
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).warning),
             ),
           ],
         ),
@@ -292,10 +292,10 @@ class ModelSelector extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingS),
       decoration: BoxDecoration(
-        color: AppTheme.backgroundCard,
+        color: AppTheme.colorsOf(context).backgroundCard,
         borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
         border: Border.all(
-          color: AppTheme.secondaryColor.withValues(alpha: 0.3),
+          color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -306,20 +306,20 @@ class ModelSelector extends StatelessWidget {
             'Select model',
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.textColorLight),
+            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           items: models.map((model) {
             return DropdownMenuItem(
               value: model,
               child: Row(
                 children: [
-                  Icon(Icons.smart_toy, color: AppTheme.primaryColor, size: 16),
+                  Icon(Icons.smart_toy, color: AppTheme.colorsOf(context).primary, size: 16),
                   SizedBox(width: AppTheme.spacingS),
                   Flexible(
                     child: Text(
                       model,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textColor,
+                            color: AppTheme.colorsOf(context).textColor,
                           ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -331,11 +331,11 @@ class ModelSelector extends StatelessWidget {
           onChanged: isLoading ? null : onModelChanged,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.textColor),
-          dropdownColor: AppTheme.backgroundCard,
+          ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColor),
+          dropdownColor: AppTheme.colorsOf(context).backgroundCard,
           icon: Icon(
             Icons.arrow_drop_down,
-            color: AppTheme.textColorLight,
+            color: AppTheme.colorsOf(context).textColorLight,
             size: 20,
           ),
         ),

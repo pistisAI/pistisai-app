@@ -26,7 +26,7 @@ class AdminStatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final effectiveIconColor = iconColor ?? AppTheme.primaryColor;
+    final effectiveIconColor = iconColor ?? AppTheme.colorsOf(context).primary;
 
     return Card(
       elevation: 2,
@@ -66,7 +66,7 @@ class AdminStatCard extends StatelessWidget {
               Text(
                 title,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textColorLight,
+                  color: AppTheme.colorsOf(context).textColorLight,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -78,7 +78,7 @@ class AdminStatCard extends StatelessWidget {
                 value,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textColor,
+                  color: AppTheme.colorsOf(context).textColor,
                 ),
               ),
 
@@ -88,7 +88,7 @@ class AdminStatCard extends StatelessWidget {
                 Text(
                   subtitle!,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppTheme.textColorLight,
+                    color: AppTheme.colorsOf(context).textColorLight,
                   ),
                 ),
               ],
@@ -102,7 +102,7 @@ class AdminStatCard extends StatelessWidget {
   Widget _buildTrendIndicator(ThemeData theme) {
     final isPositive = trend! >= 0;
     final trendColor =
-        isPositive ? AppTheme.successColor : AppTheme.dangerColor;
+        isPositive ? theme.colorScheme.primary : theme.colorScheme.error;
     final trendIcon = isPositive ? Icons.trending_up : Icons.trending_down;
 
     return Container(

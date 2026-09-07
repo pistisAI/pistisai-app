@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Text(
                 'An unexpected error occurred during login. Please try again.'),
-            backgroundColor: AppTheme.dangerColor,
+            backgroundColor: AppTheme.colorsOf(context).danger,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
