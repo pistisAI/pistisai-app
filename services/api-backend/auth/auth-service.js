@@ -30,6 +30,15 @@ export class AuthService {
     this.authDbMigrator = config.authDbMigrator || null;
     this.mainDbMigrator = config.dbMigrator || null;
 
+    // Dev bypass token: only active when NODE_ENV !== 'production'
+    // Allows local development without a real Supabase JWT
+    if (process.env.NODE_ENV !== 'production') {
+      this.devBypassToken =
+        process.env.DEV_BYPASS_TOKEN || 'mock_dev_access_token';
+    } else {
+      this.devBypassToken = null;
+    }
+
     if (this.authDbMigrator) {
       this.db = this.authDbMigrator;
     } else if (this.mainDbMigrator) {
@@ -47,6 +56,17 @@ export class AuthService {
       rateLimit: true,
       jwksRequestsPerMinute: 5,
     });
+  }
+
+  /**
+   * Returns true when the provided token matches the configured dev bypass token.
+   * The bypass is only active when NODE_ENV !== 'production'.
+   */
+  isDevBypassToken(token) {
+    if (!this.devBypassToken || !token) {
+      return false;
+    }
+    return token === this.devBypassToken;
   }
 
   /**
@@ -195,11 +215,8 @@ export class AuthService {
       if (preValidatedPayload) {
         this.logger.info('Using pre-validated token payload');
         payload = preValidatedPayload;
-      } else if (
-        token === 'mock_dev_access_token' &&
-        process.env.NODE_ENV !== 'production'
-      ) {
-        this.logger.info('Using mock developer token bypass');
+      } else if (this.isDevBypassToken(token)) {
+        this.logger.info('Using dev bypass token');
         payload = {
           iss: `${this.config.SUPABASE_URL}/auth/v1`,
           sub: '00000000-0000-0000-0000-000000000000',
@@ -277,13 +294,8 @@ export class AuthService {
    */
   async validateTokenForWebSocket(token) {
     try {
-      if (
-        token === 'mock_dev_access_token' &&
-        process.env.NODE_ENV !== 'production'
-      ) {
-        this.logger.info(
-          'Bypassing WebSocket token verification for mock developer token',
-        );
+      if (this.isDevBypassToken(token)) {
+        this.logger.info('Bypassing WebSocket token verification for dev token');
         return {
           iss: `${this.config.SUPABASE_URL}/auth/v1`,
           sub: '00000000-0000-0000-0000-000000000000',
