@@ -303,6 +303,11 @@ class ProviderDiscoveryService {
     String url, {
     String? apiKey,
   }) async {
+    // Pi uses RPC mode (no HTTP endpoint) — test via binary version check
+    if (url.startsWith('pi://')) {
+      return _testPiConnection();
+    }
+
     final trimmed = url.trim().replaceAll(RegExp(r'/+$'), '');
     final headers = (apiKey != null && apiKey.isNotEmpty)
         ? {'Authorization': 'Bearer $apiKey'}
@@ -350,6 +355,33 @@ class ProviderDiscoveryService {
       url: trimmed,
       message: 'Connection failed: ${lastError ?? 'unknown error'}',
     );
+  }
+
+  /// Test Pi connection via binary version check (Pi has no HTTP endpoint)
+  Future<ConnectionTestResult> _testPiConnection() async {
+    try {
+      final result = await Process.run('pi', ['--version'])
+          .timeout(const Duration(seconds: 5));
+      if (result.exitCode == 0) {
+        final version = result.stdout.toString().trim();
+        return ConnectionTestResult(
+          isConnected: true,
+          url: 'pi://local',
+          message: 'Pi Agent ready${version.isNotEmpty ? " ($version)" : ""}',
+        );
+      }
+      return const ConnectionTestResult(
+        isConnected: false,
+        url: 'pi://local',
+        message: 'Pi binary returned error',
+      );
+    } catch (e) {
+      return ConnectionTestResult(
+        isConnected: false,
+        url: 'pi://local',
+        message: 'Pi not found: $e',
+      );
+    }
   }
 
   /// Start periodic scanning for new providers

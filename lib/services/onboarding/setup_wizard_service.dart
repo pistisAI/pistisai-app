@@ -738,6 +738,11 @@ class SetupWizardService extends ChangeNotifier {
       return _hermesStepKinds().length;
     }
 
+    // Pi steps: Welcome, Connection Method, Detection, Test, Complete = 5 (no password)
+    if (_state.selectedMethod == ConnectionMethod.pi) {
+      return 5;
+    }
+
     // OpenClaw steps: Welcome, Connection Method, Detection, Password, Test, Complete = 6
     // Optional: Tailscale (1), Remote (1)
     int steps = 6;

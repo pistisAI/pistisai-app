@@ -169,6 +169,17 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
       return steps;
     }
 
+    // Pi flow: no password step needed (local RPC agent)
+    if (method == ConnectionMethod.pi) {
+      return const [
+        WelcomeStep(), // 0
+        ConnectionMethodStep(), // 1
+        LocalDetectionStep(), // 2
+        ConnectionTestStep(), // 3
+        CompletionStep(), // 4
+      ];
+    }
+
     // OpenClaw flow
     final steps = <Widget>[
       const WelcomeStep(), // 0 - Always shown
