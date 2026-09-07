@@ -1,0 +1,12 @@
+{
+  "_comment": "MCP server configuration for Pi desktop control",
+  "mcp": {
+    "servers": {
+      "computer-use": {
+        "command": "npx",
+        "args": ["@agent-sh/computer-use-linux"],
+        "env": {}
+      }
+    }
+  }
+}

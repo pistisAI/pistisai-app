@@ -1,0 +1,18 @@
+{
+  "_comment": "Pi Watcher A2A + MCP configuration",
+  "a2a": {
+    "port": 9910,
+    "peers": {},
+    "_peers_comment": "Add peers as: { \"hermes\": { \"url\": \"http://localhost:9900\", \"token\": \"...\" } }"
+  },
+  "mcp": {
+    "servers": {}
+  },
+  "_extensions": {
+    "a2a": "pi install npm:@bacnh85/pi-a2a",
+    "desktop_control": "pi install npm:@agent-sh/computer-use-linux",
+    "notify": "pi install npm:@bacnh85/pi-notify",
+    "checkpoint": "pi install npm:@bacnh85/pi-checkpoint",
+    "budget": "pi install npm:@bacnh85/pi-budget"
+  }
+}

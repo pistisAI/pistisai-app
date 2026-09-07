@@ -10,6 +10,7 @@
  *   3. Or reference directly in systemd ExecStart --extension flag
  */
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+import { heartbeat, recordSignal } from "./oversight-module.js";
 
 export default function observerExtension(pi: ExtensionAPI) {
   const z = pi.zod;
@@ -65,25 +66,34 @@ export default function observerExtension(pi: ExtensionAPI) {
     },
   });
 
-  // ─── Passive Monitoring: Log All Tool Calls ─────────────────────
+  // ─── L1: Passive Monitoring ──────────────────────────────────────
   pi.on("tool_call", async (event) => {
     await pi.appendEntry({
       type: "tool_call_log",
       toolName: event.toolName,
       timestamp: Date.now(),
     });
+    recordSignal({
+      timestamp: Date.now(),
+      type: "tool_call",
+      detail: event.toolName,
+      severity: "info",
+    });
   });
 
-  // ─── Active Monitoring: Periodic Health Check ───────────────────
+  // ─── L2: Active Monitoring (every 5 min) ────────────────────────
   pi.setInterval(async () => {
     const health = await performHealthCheck("all");
     if (health.status !== "ok") {
-      pi.sendMessage({
-        role: "assistant",
-        content: `⚠️ Health anomaly detected:\n${JSON.stringify(health.anomalies, null, 2)}`,
-        deliverAs: "steer",
+      recordSignal({
+        timestamp: Date.now(),
+        type: "health_anomaly",
+        detail: JSON.stringify(health.anomalies),
+        severity: health.status === "critical" ? "critical" : "warning",
       });
     }
+    // Run layered oversight heartbeat
+    await heartbeat(pi);
   }, 300_000); // Every 5 minutes
 
   pi.sendMessage({
