@@ -301,14 +301,55 @@ jobs:
           path: dist/macos/*.zip
           retention-days: 7
 
+  check_version_bump:
+    name: Check Version Bump
+    needs: set_version
+    runs-on: ubuntu-24.04
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Compare version against latest release
+        id: check
+        run: |
+          CURRENT_VERSION="${{ needs.set_version.outputs.version }}"
+          echo "Current version from version.json: $CURRENT_VERSION"
+
+          # Get latest release tag
+          LATEST_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name // "none"')
+          echo "Latest release tag: $LATEST_TAG"
+
+          if [ "$LATEST_TAG" = "none" ] || [ "$LATEST_TAG" = "null" ]; then
+            echo "No previous releases found, should_release=true"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Strip 'v' prefix
+          LATEST_VERSION="${LATEST_TAG#v}"
+          echo "Latest release version: $LATEST_VERSION"
+
+          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+            echo "Version changed: $LATEST_VERSION -> $CURRENT_VERSION"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged ($CURRENT_VERSION), should_release=false"
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          fi
+
   create_release:
-    needs: [set_version, build_linux, build_windows, build_macos]
+    needs: [set_version, build_linux, build_windows, build_macos, check_version_bump]
     # Issue #155: never publish a partial desktop release.
-    # Auto-publish on version tags (v*.*.*) or manual dispatch.
-    # Push-to-main builds do NOT auto-publish releases.
+    # Auto-publish when version.json differs from latest release tag,
+    # on manual dispatch, or on version tags (v*.*.*).
+    # Push-to-main with unchanged version skips release.
     if: >-
       always() &&
-      (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))) &&
+      (github.event_name == 'workflow_dispatch' || 
+       (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+       (github.event_name == 'push' && needs.check_version_bump.outputs.should_release == 'true')) &&
       needs.build_linux.result == 'success' &&
       needs.build_windows.result == 'success'
     runs-on: ubuntu-24.04
