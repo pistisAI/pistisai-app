@@ -139,6 +139,7 @@ class ConnectionManagerService extends ChangeNotifier {
   String? get preferredConnectionType => switch (_currentBackend) {
         BackendType.hermes => 'hermes',
         BackendType.openclaw => 'openclaw',
+        BackendType.pi => 'pi',
         null => null,
       };
 
@@ -422,18 +423,21 @@ class ConnectionManagerService extends ChangeNotifier {
       };
     }
 
-    final activeBackendLabel = activeBackend == BackendType.hermes
-        ? 'Hermes Agent'
-        : 'OpenClaw Gateway';
-    final activeStatus = activeBackend == BackendType.hermes
-        ? {
-            'state': _isConnected ? 'connected' : 'disconnected',
-            'running': _isConnected,
-          }
-        : {
-            'state': openclawStatus.name,
-            'running': openclawStatus == GatewayState.running,
-          };
+    final activeBackendLabel = switch (activeBackend) {
+      BackendType.hermes => 'Hermes Agent',
+      BackendType.openclaw => 'OpenClaw Gateway',
+      BackendType.pi => 'Pi Agent',
+    };
+    final activeStatus = switch (activeBackend) {
+      BackendType.hermes || BackendType.pi => {
+        'state': _isConnected ? 'connected' : 'disconnected',
+        'running': _isConnected,
+      },
+      BackendType.openclaw => {
+        'state': openclawStatus.name,
+        'running': openclawStatus == GatewayState.running,
+      },
+    };
 
     return {
       'state': activeStatus['state']?.toString() ?? 'unknown',
@@ -460,6 +464,7 @@ class ConnectionManagerService extends ChangeNotifier {
       null => false,
       BackendType.openclaw => _isConnected && openclawGatewayService.isRunning,
       BackendType.hermes => _isConnected,
+      BackendType.pi => _isConnected,
     };
   }
 
