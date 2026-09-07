@@ -197,12 +197,40 @@ set_permissions() {
     log_success "Set correct permissions"
 }
 
+# Validate AppDir before building
+validate_appdir() {
+    log_info "Validating AppDir structure..."
+
+    local appdir="$BUILD_DIR/Pistisai.AppDir"
+
+    if [[ ! -f "$appdir/AppRun" ]]; then
+        log_error "AppRun missing from AppDir! The AppImage will not launch."
+        log_error "Expected: $appdir/AppRun"
+        exit 1
+    fi
+
+    if [[ ! -x "$appdir/AppRun" ]]; then
+        log_error "AppRun is not executable"
+        exit 1
+    fi
+
+    if [[ ! -f "$appdir/pistisai" ]]; then
+        log_error "pistisai binary missing from AppDir"
+        exit 1
+    fi
+
+    log_success "AppDir validated (AppRun ✓, pistisai ✓)"
+}
+
 # Build the AppImage package
 build_appimage_package() {
     log_info "Building AppImage package..."
-    
+
     cd "$BUILD_DIR"
-    
+
+    # Validate before building
+    validate_appdir
+
     # Build the AppImage
     if APPIMAGE_EXTRACT_AND_RUN=1 appimagetool Pistisai.AppDir "$OUTPUT_PATH"; then
         log_success "AppImage package built successfully"
@@ -225,19 +253,44 @@ generate_checksums() {
 # Validate the package
 validate_package() {
     log_info "Validating AppImage package..."
-    
+
     if [[ -f "$OUTPUT_PATH" ]]; then
         local package_size=$(du -h "$OUTPUT_PATH" | cut -f1)
         log_success "AppImage package created successfully: $(basename "$OUTPUT_PATH")"
         log_info "Package size: $package_size"
         log_info "Package location: $OUTPUT_PATH"
-        
+
         # Test if AppImage is executable
         if [[ -x "$OUTPUT_PATH" ]]; then
             log_success "AppImage is executable"
         else
             log_warning "AppImage may not be executable"
         fi
+
+        # Verify AppRun is inside the squashfs
+        local extract_dir
+        extract_dir=$(mktemp -d)
+        "$OUTPUT_PATH" --appimage-extract >/dev/null 2>&1
+        local squashfs_root
+        squashfs_root="$(ls -d "$extract_dir"/squashfs-root 2>/dev/null || echo "")"
+        if [[ -z "$squashfs_root" ]]; then
+            # AppImage-extract next to the binary
+            squashfs_root="$(ls -d "$(dirname "$OUTPUT_PATH")/squashfs-root" 2>/dev/null || echo "")"
+        fi
+        # The --appimage-extract extracts CWD-relative; find it
+        local found_apprun
+        found_apprun=$(find "$(dirname "$OUTPUT_PATH")" -maxdepth 2 -name "AppRun" -path "*/squashfs-root/*" 2>/dev/null | head -1)
+        if [[ -n "$found_apprun" ]]; then
+            log_success "AppRun found inside AppImage squashfs ✓"
+        else
+            log_error "AppRun NOT found inside AppImage squashfs — AppImage will not launch!"
+            log_error "This is the bug that caused the broken release."
+            rm -rf "$extract_dir"
+            exit 1
+        fi
+        # Clean up extracted dir
+        rm -rf "$(dirname "$OUTPUT_PATH")/squashfs-root"
+        rm -rf "$extract_dir"
     else
         log_error "Failed to create AppImage package"
         exit 1
