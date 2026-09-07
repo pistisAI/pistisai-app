@@ -47,11 +47,12 @@ export const authenticateJWT = async (req, res, next) => {
       });
     }
 
-    // Mock developer token bypass (non-production only)
-    if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
-      logger.info(' [Auth] Bypassing authentication for mock developer token');
+    const service = getAuthService();
+
+    if (service.isDevBypassToken(token)) {
+      logger.info(' [Auth] Bypassing authentication for dev bypass token');
       req.auth = {
-        token: 'mock_dev_access_token',
+        token: service.devBypassToken,
         payload: {
           iss: `${SUPABASE_URL}/auth/v1`,
           sub: '00000000-0000-0000-0000-000000000000',
@@ -71,7 +72,6 @@ export const authenticateJWT = async (req, res, next) => {
     }
 
     // Validate token via AuthService
-    const service = getAuthService();
     const result = await service.validateToken(token, req);
 
     if (!result.valid) {
@@ -238,9 +238,11 @@ export const optionalAuth = async (req, res, next) => {
       return next();
     }
 
-    if (token === 'mock_dev_access_token' && process.env.NODE_ENV !== 'production') {
+    const service = getAuthService();
+
+    if (service.isDevBypassToken(token)) {
       req.auth = {
-        token: 'mock_dev_access_token',
+        token: service.devBypassToken,
         payload: {
           iss: `${SUPABASE_URL}/auth/v1`,
           sub: '00000000-0000-0000-0000-000000000000',
@@ -260,7 +262,6 @@ export const optionalAuth = async (req, res, next) => {
       return next();
     }
 
-    const service = getAuthService();
     const result = await service.validateToken(token, req);
 
     if (result.valid) {
