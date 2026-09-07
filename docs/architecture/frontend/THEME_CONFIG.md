@@ -14,32 +14,36 @@ The `ThemeConfig` class provides a centralized, unified theme configuration syst
 
 ### 2. Color Definitions
 
-#### Brand Colors
+#### Brand Colors (Pistisai Gold)
 
-- Primary: `#a777e3` (Purple)
-- Secondary: `#6e8efb` (Blue)
-- Accent: `#00c58e` (Green)
+- Primary: `#FFD700` (Gold)
+- Highlight: `#FFE44D` (Bright gold / glow)
+- Accent: `#D4A017` (Dark gold)
 
 #### Dark Mode Colors
 
-- Background Main: `#181a20`
-- Background Card: `#23243a`
-- Text Color: `#f1f1f1`
-- Text Color Light: `#b0b0b0`
+- Background Main: `#1A1A1A`
+- Background Card: `#2A2A2A`
+- Background Elevated: `#333333`
+- Text Color: `#F5E6C8`
+- Text Color Light (muted): `#B8A88A`
+- Border: `#3A3A3A`
 
 #### Light Mode Colors
 
-- Background Main: White
-- Background Card: `#F1F2F4`
-- Text Color: `#2c3e50`
-- Text Color Light: `#6F7B8A`
+- Background Main: `#FAFAFA`
+- Background Card: `#FFFFFF`
+- Background Elevated: `#F5F5F5`
+- Text Color: `#2C3E50`
+- Text Color Light (muted): `#7F8C8D`
+- Border: `#E0E0E0`
 
 #### Status Colors
 
-- Success: `#4caf50` (Dark) / `#2E7D32` (Light)
-- Warning: `#ffa726` (Dark) / `#F57C00` (Light)
-- Danger: `#ff5252` (Dark) / `#D32F2F` (Light)
-- Info: `#2196f3` (Dark) / `#1976D2` (Light)
+- Success: `#27AE60`
+- Warning: `#F39C12`
+- Danger: `#E74C3C`
+- Info: `#3498DB`
 
 ### 3. Typography
 

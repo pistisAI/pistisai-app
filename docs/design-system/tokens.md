@@ -4,29 +4,37 @@ Use these tokens as the single source of truth for color, typography, spacing, s
 
 ## Color
 
-### Brand
-- `brand-50`: #eef2ff
-- `brand-100`: #e0e7ff
-- `brand-500`: #6366f1
-- `brand-600`: #4f46e5
-- `brand-700`: #4338ca
+> Implementation source of truth: `lib/config/theme_config.dart` (gold palette, 2026-08).
+> Previous indigo/slate tokens were an alternative design that was never wired into the app.
 
-### Neutral
-- `neutral-0`: #ffffff
-- `neutral-50`: #f8fafc
-- `neutral-100`: #f1f5f9
-- `neutral-200`: #e2e8f0
-- `neutral-400`: #94a3b8
-- `neutral-600`: #475569
-- `neutral-800`: #1e293b
-- `neutral-900`: #0f172a
-- `neutral-950`: #020617
+### Brand (Pistisai Gold)
+- `brand-primary`: #FFD700
+- `brand-highlight`: #FFE44D
+- `brand-accent`: #D4A017
+- `brand-dark`: #B8960F
+- `brand-glow`: #FFE44D (with alpha for glow states)
+
+### Neutral — Dark Mode (default)
+- `dark-bg`: #1A1A1A
+- `dark-bg-card`: #2A2A2A
+- `dark-bg-elevated`: #333333
+- `dark-text`: #F5E6C8
+- `dark-text-muted`: #B8A88A
+- `dark-border`: #3A3A3A
+
+### Neutral — Light Mode
+- `light-bg`: #FAFAFA
+- `light-bg-card`: #FFFFFF
+- `light-bg-elevated`: #F5F5F5
+- `light-text`: #2C3E50
+- `light-text-muted`: #7F8C8D
+- `light-border`: #E0E0E0
 
 ### Semantic
-- `success-500`: #22c55e
-- `warning-500`: #f59e0b
-- `danger-500`: #ef4444
-- `info-500`: #3b82f6
+- `success`: #27AE60
+- `warning`: #F39C12
+- `danger`: #E74C3C
+- `info`: #3498DB
 
 ## Typography
 
