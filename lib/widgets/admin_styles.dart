@@ -132,6 +132,10 @@ class AdminStyles {
   }) {
     final effectiveColor =
         isDestructive ? AppTheme.dangerColor : (color ?? AppTheme.primaryColor);
+    final foregroundColor =
+        (effectiveColor == AppTheme.primaryColor || effectiveColor == AppTheme.accentColor || effectiveColor == AppTheme.secondaryColor)
+            ? const Color(0xFF1A1C22)
+            : Colors.white;
 
     return ElevatedButton.icon(
       onPressed: onPressed,
@@ -139,7 +143,7 @@ class AdminStyles {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: effectiveColor,
-        foregroundColor: Colors.white,
+        foregroundColor: foregroundColor,
         padding: EdgeInsets.symmetric(
           horizontal: AppTheme.spacingM,
           vertical: AppTheme.spacingS,

@@ -40,7 +40,7 @@ class ThemeConfig {
   static const Color darkTextColorLight = Color(0xFFB8A88A);
   static const Color darkBorderColor = Color(0xFF2A2A3E);
   static const Color darkGlassBackground = Color(0x33FFD700);
-  static const Color darkGlassBorder = Color(0x26FFD700);
+  static const Color darkGlassBorder = Color(0x4DFFD700);
 
   // Light Mode Colors
   static const Color lightBackgroundMain = Colors.white;
@@ -50,8 +50,8 @@ class ThemeConfig {
   static const Color lightTextColorLight = Color(0xFF6F7B8A);
   static const Color lightTextColorDark = Color(0xFF263238);
   static const Color lightBorderColor = Color(0xFFE0E0E0);
-  static const Color lightGlassBackground = Color(0x66FFFFFF);
-  static const Color lightGlassBorder = Color(0x4DFFFFFF);
+  static const Color lightGlassBackground = Color(0x66D4AF37);
+  static const Color lightGlassBorder = Color(0x80D4AF37);
 
   // Status Colors (same for both themes)
   static const Color successColor = Color(0xFF4caf50);
@@ -325,8 +325,8 @@ class ThemeConfig {
       secondary: secondaryColor,
       surface: darkBackgroundCard,
       onSurface: darkTextColor,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
+      onPrimary: Color(0xFF1A1C22),
+      onSecondary: Color(0xFF1A1C22),
     );
 
     return ThemeData(
@@ -340,10 +340,10 @@ class ThemeConfig {
           accent: accentColor,
           backgroundMain: darkBackgroundMain,
           backgroundCard: darkBackgroundCard,
-          backgroundLight: Colors.black, // Placeholder for dark light bg
+          backgroundLight: lightBackgroundLight,
           textColor: darkTextColor,
           textColorLight: darkTextColorLight,
-          textColorDark: Colors.white,
+          textColorDark: lightTextColor,
           success: successColor,
           warning: warningColor,
           danger: dangerColor,
@@ -380,8 +380,8 @@ class ThemeConfig {
       secondary: secondaryColor,
       surface: lightBackgroundLight,
       onSurface: lightTextColor,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
+      onPrimary: Color(0xFF1A1C22),
+      onSecondary: Color(0xFF1A1C22),
     );
 
     return ThemeData(
@@ -446,13 +446,13 @@ class ThemeConfig {
   static AppBarTheme _buildDarkAppBarTheme() {
     return const AppBarTheme(
       backgroundColor: Colors.transparent,
-      foregroundColor: Colors.white,
+      foregroundColor: darkTextColor,
       elevation: 0,
       centerTitle: true,
       titleTextStyle: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: Colors.white,
+        color: darkTextColor,
       ),
     );
   }
@@ -477,7 +477,7 @@ class ThemeConfig {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+        foregroundColor: Color(0xFF1A1C22),
         elevation: elevationMedium,
         shadowColor: primaryColor.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(
@@ -547,7 +547,7 @@ class ThemeConfig {
       titleTextStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: Colors.white,
+        color: darkTextColor,
       ),
       contentTextStyle: const TextStyle(
         fontSize: 16,
@@ -598,7 +598,7 @@ class ThemeConfig {
         }
         return Colors.transparent;
       }),
-      checkColor: WidgetStateProperty.all(Colors.white),
+      checkColor: WidgetStateProperty.all(Color(0xFF1A1C22)),
       side: BorderSide(
         color: secondaryColor.withValues(alpha: 0.5),
         width: 2,
@@ -709,7 +709,7 @@ class ThemeConfig {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+        foregroundColor: Color(0xFF1A1C22),
         elevation: elevationLow,
         shadowColor: primaryColor.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
@@ -830,7 +830,7 @@ class ThemeConfig {
         }
         return Colors.transparent;
       }),
-      checkColor: WidgetStateProperty.all(Colors.white),
+      checkColor: WidgetStateProperty.all(Color(0xFF1A1C22)),
       side: BorderSide(
         color: lightBorderColor,
         width: 2,
