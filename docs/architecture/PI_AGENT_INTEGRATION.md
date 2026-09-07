@@ -3,7 +3,7 @@
 > **Status:** Research phase (not yet approved for implementation)
 > **Author:** Zoid (with Christopher)
 > **Created:** 2026-09-06
-> **Revised:** 2026-09-07 (v5 — oh-my-pi extension API, systemd watchdog, pi-a2a config)
+> **Revised:** 2026-09-07 (v6 — llama.cpp integration, Pi↔llama.cpp wiring, model selection)
 > **Location:** `docs/architecture/PI_AGENT_INTEGRATION.md`
 
 ---
@@ -739,14 +739,161 @@ A second agent (Zoid/Hermes) should periodically check the watcher's health — 
 
 ---
 
+## Deep Research: llama.cpp + Gemma 4 E4B Stack
+
+**Decision: llama.cpp (not Ollama) + Gemma 4 E4B-it**
+
+Christopher confirmed llama.cpp for control. Gemma 4 E4B chosen because:
+- **Multimodal** (text + image + audio) — can see desktop screenshots, analyze UI
+- **Tiny** (4.5B effective, 8B with embeddings) — runs on anything
+- **Q4_K_M = 5.4GB** — fits RTX 4070 12GB with 6+ GB headroom for KV cache
+- **~45 tok/s** on 12GB cards — fast enough for interactive agent work
+- **Apache 2.0** — commercial-friendly
+- **Tool calling** — confirmed working with llama.cpp's `--jinja` mode
+
+### Why Not Ollama?
+
+Ollama wraps llama.cpp with opinionated defaults. We need:
+- Direct control over CUDA architecture targeting (sm_89 for RTX 4070)
+- Custom context sizes for long agent sessions
+- mmproj (multimodal projector) for vision/audio input
+- Flash Attention + KV cache quantization flags
+- Router mode for multiple models
+
+llama.cpp gives us all of this. Ollama hides it.
+
+### Gemma 4 E4B Specs
+
+| Spec | Value |
+|------|-------|
+| Effective params | 4.5B |
+| Total params (with embeddings) | 8B |
+| Layers | 42 |
+| Vocab | 262K |
+| Vision encoder | ~150M |
+| Audio encoder | ~300M |
+| Min RAM | 8 GB |
+| Q4_K_M size | 5.41 GB |
+| Q8_0 size | 8.03 GB |
+| BF16 size | 15.05 GB |
+| License | Apache-2.0 |
+
+### llama.cpp Build (RTX 4070)
+
+RTX 4070 = Ada Lovelace = compute capability 8.9 (sm_89)
+
+```bash
+git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89
+cmake --build build --config Release -j $(nproc)
+```
+
+Binaries produced: `build/bin/llama-server`, `build/bin/llama-cli`
+
+### llama-server Launch Command
+
+```bash
+# Text-only mode
+llama-server \
+  -hf bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M \
+  -ngl 99 \
+  -c 32768 \
+  --host 127.0.0.1 \
+  --port 8080
+
+# Multimodal mode (for desktop control — image + audio input)
+llama-server \
+  -hf bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M \
+  --mmproj mmproj-BF16.gguf \
+  -ngl 99 \
+  -c 32768 \
+  --host 127.0.0.1 \
+  --port 8080
+```
+
+### Pi ↔ llama.cpp Wiring
+
+**Critical finding:** Pi has **built-in llama.cpp provider support**. No custom `models.json` needed for basic setup:
+
+```bash
+# Pi auto-discovers llama-server at default URL
+pi --provider llamacpp --model google_gemma-4-E4B-it -p "Hello"
+```
+
+Pi's built-in llamacpp provider:
+- Default base URL: `http://127.0.0.1:8080`
+- API type: `openai-responses`
+- Auth: keyless (`auth: none`)
+- Auto-discovers models via `GET /models`
+
+**For custom configuration** (e.g., different port, specific model settings), add to `~/.pi/agent/models.json`:
+
+```json
+{
+  "providers": {
+    "llamacpp": {
+      "baseUrl": "http://127.0.0.1:8080/v1",
+      "api": "openai-completions",
+      "apiKey": "none",
+      "models": [
+        {
+          "id": "gemma-4-E4B-it",
+          "name": "Gemma 4 E4B (local)",
+          "contextWindow": 32768,
+          "reasoning": false
+        }
+      ]
+    }
+  }
+}
+```
+
+### Desktop Control Use Case
+
+Gemma 4 E4B's multimodal capability enables desktop control:
+
+1. **Screenshot → mmproj → model** — Pi can "see" the desktop
+2. **Tool calls → shell commands** — Pi can execute actions
+3. **Audio input → transcription** — voice commands possible
+
+Flow:
+```
+User: "Click the Firefox icon"
+  → Pi calls screenshot tool (via llama.cpp)
+  → mmproj encodes image → Gemma 4 E4B analyzes
+  → Pi calls mouse_click(x, y) tool
+  → Desktop action executed
+```
+
+This requires:
+- llama-server running with `--mmproj` flag
+- Pi tools registered for: screenshot, mouse_click, keyboard_type, shell_exec
+- oh-my-pi extension or pi-skills package providing desktop control tools
+
+### Minimum Hardware for Users
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| GPU | 6GB VRAM (RTX 3060, RTX 4060) | 12GB (RTX 4070, RTX 3060 12G) |
+| RAM | 16 GB | 32 GB |
+| Disk | 10 GB free (Q4_K_M + mmproj) | 20 GB (Q8_0 + room for more models) |
+| OS | Linux, Windows, macOS | — |
+| CUDA | 12.x driver | 12.8+ |
+| Bun | 1.3.14+ | 1.4.x |
+
+**Runs on Christopher's RTX 4070 with massive headroom.**
+
+---
+
 ## Open Questions
 
-1. **Model for watcher:** Phi-4 14B (best quality, fits tight) vs Qwen 7B (lighter, faster)? RTX 4070 12GB handles both. Leaning Phi-4 for reasoning quality.
-2. **Inference runtime:** Ollama (simple, auto-CUDA) vs llama.cpp (more control) vs Turbohaul (when fixed). Leaning Ollama for v1.
+1. **Inference runtime:** llama.cpp confirmed (Christopher). Build from source with CUDA sm_89 for RTX 4070.
+2. **Model:** Gemma 4 E4B-it Q4_K_M confirmed for multimodal desktop control. Phi-4 14B was considered but lacks vision.
 3. **oh-my-pi install flow:** How does the Flutter app trigger oh-my-pi install? Shell command to PC via SSH? Bundled installer prompt?
 4. **Subagent attribution:** How should "via Pi subagent" appear in chat? Inline badge? Separate message?
 5. **A2A port:** Default pi-a2a port is 9910. Hermes A2A is on 9900. Need to ensure no conflicts.
-6. **Free tier fallback:** If local model is too heavy for some users, OpenRouter free tier as fallback? Or require local?
+6. **Desktop control tools:** Which pi-skills or oh-my-pi extensions provide screenshot/mouse/keyboard? Need to research specific packages.
 7. **Observer architecture:** oh-my-pi extension (runs inside Pi) vs standalone Dart service (runs in app) vs systemd timer?
 
 ---
@@ -767,4 +914,8 @@ A second agent (Zoid/Hermes) should periodically check the watcher's health — 
 - [systemd Watchdog](https://adhdecode.com/articles/systemd/systemd-watchdog-service-health) — hung-process detection
 - [systemd Watchdog (Python)](https://oneuptime.com/blog/post/2026-03-02-how-to-configure-systemd-watchdog-for-service-health-checks-on-ubuntu/) — sd_notify pattern
 - [bacnh85/pi-extensions](https://github.com/bacnh85/pi-extensions) — full extension catalog
+- [Gemma 4 E4B-it GGUF (bartowski)](https://huggingface.co/bartowski/google_gemma-4-E4B-it-GGUF) — model quants
+- [Gemma 4 E4B on RTX 4070](https://smeltcore.com/recipes/gemma-4-e4b-on-rtx-4070-multimodal-inference-via-q4-k-m-gguf-llama-cpp-or-ollama-bf16-will-not-fit) — hardware-specific recipe
+- [Pi settings: llama.cpp provider](https://pi.dev/docs/latest/settings) — built-in Pi↔llama.cpp wiring
+- [llama-agent](https://github.com/gary149/llama-agent) — single-binary agent on llama.cpp (reference pattern)
 - [Pi settings.json](https://pi.dev/docs/latest/settings) — full config reference
