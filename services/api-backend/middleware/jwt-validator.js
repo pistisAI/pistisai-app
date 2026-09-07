@@ -4,7 +4,6 @@
  */
 
 import crypto from 'node:crypto';
-import jwt from 'jsonwebtoken';
 import {
   TunnelLogger,
   ERROR_CODES,
@@ -301,7 +300,7 @@ export class JWTValidator {
       if (!validationResult.valid) {
         throw new Error(validationResult.error || 'Token validation failed');
       }
-      verified = validationResult.payload;
+      const verified = validationResult.payload;
 
       // Additional security checks
       if (this.config.requireSubject && !verified.sub) {
