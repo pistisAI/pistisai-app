@@ -1,0 +1,29 @@
+[Unit]
+Description=Pi Agent Watcher (always-on observer)
+After=network.target
+
+[Service]
+Type=simple
+User=zoid
+Group=zoid
+WorkingDirectory=/dev/pistisai
+ExecStart=/home/zoid/.local/bin/pi \
+  --provider llamacpp \
+  --model google_gemma-4-E4B-it \
+  --extension /dev/pistisai/watcher/observer-extension.ts
+Restart=always
+RestartSec=10
+
+# Resource limits
+MemoryMax=2G
+CPUQuota=50%
+
+# Security
+ProtectSystem=strict
+ReadWritePaths=/dev/pistisai /home/zoid/.pi /tmp
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target
