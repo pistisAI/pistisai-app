@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -85,6 +87,16 @@ class _ChatPaneState extends State<_ChatPane> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Re-check connection when returning to this screen (e.g. after
+    // configuring an agent in Settings).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _autoConnectRuntime();
+    });
+  }
+
   void _ensureChannelExists() {
     // Storage load creates or restores the single main-channel session.
     // Do not call resetContext() here — that wipes persisted history.
@@ -96,13 +108,20 @@ class _ChatPaneState extends State<_ChatPane> {
   }
 
   /// After wizard completion, the connection manager may have a backend
-  /// configured but _isConnected still false.  Trigger a connection test
-  /// so the UI shows "Runtime channel ready" without manual intervention.
+  /// configured in settings but not yet loaded into memory.  Re-load from
+  /// settings and test the connection so the UI shows "Connected" without
+  /// manual intervention.
   void _autoConnectRuntime() {
     try {
       final cm = context.read<ConnectionManagerService>();
-      if (!cm.isConnected && cm.currentBackend != null) {
-        cm.testConnection();
+      if (!cm.isConnected) {
+        if (cm.currentBackend != null) {
+          cm.testConnection();
+        } else {
+          // Backend was configured after initialize() ran (e.g. setup
+          // wizard). Re-load from settings, then connect.
+          unawaited(cm.reloadConfiguredRuntime());
+        }
       }
     } catch (_) {
       // ConnectionManagerService not available on this platform.

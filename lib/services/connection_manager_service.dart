@@ -293,6 +293,22 @@ class ConnectionManagerService extends ChangeNotifier {
     }
   }
 
+  /// Re-load the configured runtime from settings and test the connection.
+  ///
+  /// Called after the setup wizard saves a new runtime selection. Without
+  /// this, [currentBackend] stays null (stale from the initial [initialize])
+  /// and the UI shows "No Agent Connected" even though the user just
+  /// configured one.
+  Future<void> reloadConfiguredRuntime() async {
+    _log.info('Reloading configured runtime from settings...');
+    await _loadConfiguredRuntime();
+    notifyListeners();
+
+    if (_currentBackend != null && !_isConnected) {
+      await testConnection();
+    }
+  }
+
   /// Probe for available agent runtimes in order of preference.
   Future<void> _autoDetectRuntime() async {
     _log.info('Auto-detecting local agent runtimes...');

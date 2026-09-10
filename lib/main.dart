@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show exit;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -44,6 +45,7 @@ import 'package:pistisai/widgets/window_listener_widget.dart'
 import 'package:pistisai/config/navigator_key.dart';
 import 'package:pistisai/utils/platform_file_utils.dart'
     if (dart.library.html) 'package:pistisai/utils/platform_file_utils_web.dart';
+import 'package:pistisai/utils/single_instance.dart';
 
 // navigatorKey is now imported from config/navigator_key.dart
 
@@ -67,6 +69,15 @@ String? resolveCallbackUrl(List<String> args) {
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Ensure only one instance runs at a time (desktop only, no-op on web)
+  if (!kIsWeb) {
+    final isFirst = await SingleInstance.acquireLock();
+    if (!isFirst) {
+      debugPrint('[Main] Another instance is already running. Exiting.');
+      exit(0);
+    }
+  }
 
   // Initialize Supabase before any other async operations
   await Supabase.initialize(
