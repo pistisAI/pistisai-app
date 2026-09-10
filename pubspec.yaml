@@ -46,7 +46,7 @@ dependencies:
   stream_channel: ^2.1.0
 
   # Enhanced HTTP handling for streaming
-  dio: ^5.10.0
+  dio: ^5.11.1
 
   # Real-time event handling
   rxdart: ^0.28.0
