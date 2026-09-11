@@ -85,5 +85,6 @@ abstract class AgentRuntimeClient {
     required String prompt,
     required String model,
     List<Map<String, String>>? history,
+    String conversationId = 'main-channel',
   });
 }

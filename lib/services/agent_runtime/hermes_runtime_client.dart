@@ -121,9 +121,9 @@ class HermesRuntimeClient implements AgentRuntimeClient {
     required String prompt,
     required String model,
     List<Map<String, String>>? history,
+    String conversationId = 'main-channel',
   }) async {
     final chunks = StringBuffer();
-    final conversationId = DateTime.now().microsecondsSinceEpoch.toString();
 
     await for (final message in streamChat(
       prompt: prompt,
