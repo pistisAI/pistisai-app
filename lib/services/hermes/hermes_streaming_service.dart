@@ -50,7 +50,13 @@ class HermesStreamingService extends StreamingService {
 
   /// Whether to use the full agent runs API (vs text-only chat completions).
   /// Defaults to true for rich agent integration.
+  /// This flag resets to true on app restart — transient failures must not
+  /// permanently disable session-bound agent runs.
   bool _useAgentRuns = true;
+
+  /// Re-enable agent runs mode after a transient failure.
+  /// Call from connection recovery logic.
+  void enableAgentRuns() => _useAgentRuns = true;
 
   HermesStreamingService({
     String? baseUrl,
@@ -90,6 +96,7 @@ class HermesStreamingService extends StreamingService {
 
       if (response.statusCode == 200) {
         _connection = StreamingConnection.connected(_baseUrl);
+        _useAgentRuns = true; // Re-enable agent runs on fresh connection
         debugPrint('[Hermes] Connected to $_baseUrl');
         await _fetchModels();
         notifyListeners();
@@ -243,11 +250,10 @@ class HermesStreamingService extends StreamingService {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         runId = json['run_id'] as String?;
       } else if (response.statusCode == 404) {
-        // /v1/runs not available — fall back to chat completions
+        // /v1/runs not available — per-call fallback only, do NOT permanently disable
         appLogger.warning(
-          '[Hermes] /v1/runs returned 404, falling back to chat completions',
+          '[Hermes] /v1/runs returned 404, falling back to chat completions for this message',
         );
-        _useAgentRuns = false;
         yield* _streamViaChatCompletions(
           prompt: prompt,
           model: model,
@@ -272,9 +278,8 @@ class HermesStreamingService extends StreamingService {
       }
     } on TimeoutException {
       appLogger.warning(
-        '[Hermes] startRun timed out, falling back to chat completions',
+        '[Hermes] startRun timed out, per-call fallback to chat completions',
       );
-      _useAgentRuns = false;
       yield* _streamViaChatCompletions(
         prompt: prompt,
         model: model,
@@ -284,9 +289,8 @@ class HermesStreamingService extends StreamingService {
       return;
     } catch (e) {
       appLogger.warning(
-        '[Hermes] startRun failed: $e, falling back to chat completions',
+        '[Hermes] startRun failed: $e, per-call fallback to chat completions',
       );
-      _useAgentRuns = false;
       yield* _streamViaChatCompletions(
         prompt: prompt,
         model: model,
@@ -520,6 +524,7 @@ class HermesStreamingService extends StreamingService {
         Uri.parse('$_baseUrl/v1/chat/completions'),
       )
         ..headers.addAll(_headers())
+        ..headers['X-Hermes-Session-Id'] = conversationId
         ..body = body;
 
       final streamedResponse = await client.send(request).timeout(
