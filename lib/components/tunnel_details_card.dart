@@ -116,17 +116,18 @@ class TunnelDetailsCard extends StatelessWidget {
   }
 
   Color _getQualityColor(BuildContext context, TunnelConnectionQuality quality) {
+    final colors = AppTheme.colorsOf(context);
     switch (quality) {
       case TunnelConnectionQuality.excellent:
-        return Colors.green;
+        return colors.success;
       case TunnelConnectionQuality.good:
-        return Colors.lightGreen;
+        return colors.success;
       case TunnelConnectionQuality.fair:
-        return Colors.orange;
+        return colors.warning;
       case TunnelConnectionQuality.poor:
-        return Colors.red;
+        return colors.danger;
       default:
-        return AppTheme.colorsOf(context).textColor;
+        return colors.textColor;
     }
   }
 
