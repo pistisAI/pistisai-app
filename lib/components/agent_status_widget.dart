@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/theme.dart';
 import '../services/agent_status_service.dart';
 
 /// Widget for displaying agent status with real-time updates
@@ -222,6 +223,7 @@ class _AgentStatusWidgetState extends State<AgentStatusWidget> {
   }
 
   Widget _buildHeader() {
+    final statusColor = _getStatusColor(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -234,13 +236,13 @@ class _AgentStatusWidgetState extends State<AgentStatusWidget> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: _getStatusColor().withValues(alpha: 0.2),
+            color: statusColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             '${_agents.length} active',
             style: TextStyle(
-              color: _getStatusColor(),
+              color: statusColor,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
@@ -251,12 +253,12 @@ class _AgentStatusWidgetState extends State<AgentStatusWidget> {
   }
 
   Widget _buildAgentCard(AgentStatus agent) {
+    final statusColor = _getStatusColorForStatus(context, agent.status);
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor:
-              _getStatusColorForStatus(agent.status).withValues(alpha: 0.2),
+          backgroundColor: statusColor.withValues(alpha: 0.2),
           child: Text(
             _getStatusEmoji(agent.status),
             style: TextStyle(fontSize: 20),
@@ -291,14 +293,13 @@ class _AgentStatusWidgetState extends State<AgentStatusWidget> {
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color:
-                _getStatusColorForStatus(agent.status).withValues(alpha: 0.2),
+            color: statusColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             agent.status.toUpperCase(),
             style: TextStyle(
-              color: _getStatusColorForStatus(agent.status),
+              color: statusColor,
               fontWeight: FontWeight.bold,
               fontSize: 10,
             ),
@@ -308,30 +309,31 @@ class _AgentStatusWidgetState extends State<AgentStatusWidget> {
     );
   }
 
-  Color _getStatusColor() {
-    // Return overall status color based on all agents
+  Color _getStatusColor(BuildContext context) {
+    final colors = AppTheme.colorsOf(context);
     if (_agents.any((a) => a.status == 'error')) {
-      return Colors.red;
+      return colors.danger;
     } else if (_agents
         .any((a) => a.status == 'busy' || a.status == 'thinking')) {
-      return Colors.orange;
+      return colors.warning;
     }
-    return Colors.green;
+    return colors.success;
   }
 
-  Color _getStatusColorForStatus(String status) {
+  Color _getStatusColorForStatus(BuildContext context, String status) {
+    final colors = AppTheme.colorsOf(context);
     switch (status) {
       case 'idle':
-        return Colors.green;
+        return colors.success;
       case 'active':
-        return Colors.blue;
+        return colors.info;
       case 'thinking':
       case 'busy':
-        return Colors.orange;
+        return colors.warning;
       case 'error':
-        return Colors.red;
+        return colors.danger;
       default:
-        return Colors.grey;
+        return colors.textColorLight;
     }
   }
 

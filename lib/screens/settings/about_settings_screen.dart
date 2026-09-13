@@ -193,8 +193,8 @@ class AboutSettingsScreen extends StatelessWidget {
                         Text('App Information',
                             style: theme.textTheme.titleMedium),
                         const SizedBox(height: 12),
-                        _buildInfoRow('Version', AppConfig.appVersion),
-                        _buildInfoRow('Repository', 'pistisAI/pistisai-app'),
+                        _buildInfoRow(context, 'Version', AppConfig.appVersion),
+                        _buildInfoRow(context, 'Repository', 'pistisAI/pistisai-app'),
                       ],
                     ),
                   ),
@@ -390,14 +390,14 @@ class AboutSettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: AppTheme.textColorLight)),
-          Text(value, style: TextStyle(color: AppTheme.textColor)),
+          Text(label, style: TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
+          Text(value, style: TextStyle(color: AppTheme.colorsOf(context).textColor)),
         ],
       ),
     );
