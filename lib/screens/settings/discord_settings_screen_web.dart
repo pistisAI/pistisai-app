@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 /// Web stub for Discord settings - Discord bot integration is desktop-only
 /// (requires dart:ffi via nyxx, not available on web).
@@ -11,7 +12,7 @@ class DiscordSettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Discord Bot Settings'),
       ),
-      body: const Center(
+      body: Center(
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Column(
@@ -20,7 +21,7 @@ class DiscordSettingsScreen extends StatelessWidget {
               Icon(
                 Icons.discord,
                 size: 64,
-                color: Color(0xFF6e8efb),
+                color: AppTheme.colorsOf(context).primary,
               ),
               SizedBox(height: 24),
               Text(
