@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../config/theme.dart';
 
 import '../../config/app_config.dart';
 import '../../services/github_release_service.dart';
@@ -36,11 +37,11 @@ class DownloadScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF6e8efb), Color(0xFFa777e3)],
+          colors: [AppTheme.colorsOf(context).primary, AppTheme.colorsOf(context).accent],
         ),
       ),
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
@@ -51,9 +52,9 @@ class DownloadScreen extends StatelessWidget {
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              color: const Color(0xFF6e8efb),
+              color: AppTheme.colorsOf(context).primary,
               borderRadius: BorderRadius.circular(35),
-              border: Border.all(color: const Color(0xFFa777e3), width: 3),
+              border: Border.all(color: AppTheme.colorsOf(context).accent, width: 3),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -62,13 +63,13 @@ class DownloadScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Center(
+            child: Center(
               child: Text(
                 'LLM',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFa777e3),
+                  color: AppTheme.colorsOf(context).accent,
                 ),
               ),
             ),
@@ -91,7 +92,7 @@ class DownloadScreen extends StatelessWidget {
           Text(
             'Complete installation guide for Linux distributions',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: const Color(0xFFe0d7ff),
+                  color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.5),
                   fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
@@ -102,10 +103,10 @@ class DownloadScreen extends StatelessWidget {
           // Back link
           TextButton(
             onPressed: () => context.go('/'),
-            child: const Text(
+            child: Text(
               '← Back to Home',
               style: TextStyle(
-                color: Color(0xFFa777e3),
+                color: AppTheme.colorsOf(context).accent,
                 fontWeight: FontWeight.w600,
                 decoration: TextDecoration.underline,
               ),
@@ -161,7 +162,7 @@ class DownloadScreen extends StatelessWidget {
               icon: const Icon(Icons.download),
               label: const Text('View All Downloads on GitHub'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6e8efb),
+                backgroundColor: AppTheme.colorsOf(context).primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
@@ -191,7 +192,7 @@ class DownloadScreen extends StatelessWidget {
                 icon: const Icon(Icons.apps),
                 label: const Text('Linux (AppImage)'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00c58e),
+                  backgroundColor: AppTheme.colorsOf(context).success,
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -206,7 +207,7 @@ class DownloadScreen extends StatelessWidget {
                 icon: const Icon(Icons.desktop_windows),
                 label: const Text('Linux (.deb)'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00c58e),
+                  backgroundColor: AppTheme.colorsOf(context).success,
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -221,7 +222,7 @@ class DownloadScreen extends StatelessWidget {
                 icon: const Icon(Icons.archive),
                 label: const Text('Linux (.tar.gz)'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFa777e3),
+                  backgroundColor: AppTheme.colorsOf(context).accent,
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -236,7 +237,7 @@ class DownloadScreen extends StatelessWidget {
                 icon: const Icon(Icons.apple),
                 label: const Text('macOS (.zip)'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6e8efb),
+                  backgroundColor: AppTheme.colorsOf(context).primary,
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -248,10 +249,10 @@ class DownloadScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Info text
-          const Text(
+          Text(
             'Prefer a manual install? See the platform sections below for '
             'Debian, universal installer, and prebuilt binary instructions.',
-            style: TextStyle(color: Color(0xFFb0b0b0), fontSize: 14),
+            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight, fontSize: 14),
             textAlign: TextAlign.center,
           ),
         ],
@@ -266,9 +267,9 @@ class DownloadScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF00c58e).withValues(alpha: 0.1),
+          color: AppTheme.colorsOf(context).success.withValues(alpha: 0.1),
           border: Border.all(
-            color: const Color(0xFF00c58e).withValues(alpha: 0.3),
+            color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3),
           ),
           borderRadius: BorderRadius.circular(4),
         ),
@@ -294,7 +295,7 @@ class DownloadScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   '• $req',
-                  style: const TextStyle(color: Color(0xFFf1f1f1)),
+                  style: TextStyle(color: AppTheme.colorsOf(context).textColor),
                 ),
               ),
             ),
@@ -316,7 +317,7 @@ class DownloadScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   '• $req',
-                  style: const TextStyle(color: Color(0xFFf1f1f1)),
+                  style: TextStyle(color: AppTheme.colorsOf(context).textColor),
                 ),
               ),
             ),
@@ -332,7 +333,7 @@ class DownloadScreen extends StatelessWidget {
       title: 'Snap Package',
       description:
           'A Snap Store listing is not published. Use the Debian or archive packages from GitHub Releases.',
-      child: _buildInstallationSection(
+      child: _buildInstallationSection(context,
         'Not listed on Snap Store',
         '''# Use GitHub Releases instead of Snap
 # https://github.com/pistisAI/pistisai-app/releases/latest''',
@@ -346,7 +347,7 @@ class DownloadScreen extends StatelessWidget {
       title: '� Debian Package (.deb)',
       description:
           'Native package for Ubuntu, Debian, and derivatives with proper dependency management.',
-      child: _buildInstallationSection(
+      child: _buildInstallationSection(context,
         'Installation',
         '''# Download from GitHub releases
 wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai_${AppConfig.appVersion}_amd64.deb
@@ -366,7 +367,7 @@ sudo apt-get install -f''',
       title: '📦 AppImage (Universal Linux)',
       description:
           'Portable application that runs on any Linux distribution. No installation required — just download, make executable, and run.',
-      child: _buildInstallationSection(
+      child: _buildInstallationSection(context,
         'Download and run',
         '''# Download from GitHub releases
 wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
@@ -386,7 +387,7 @@ chmod +x Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
       title: '🚀 Universal Installer (install.sh)',
       description:
           'One-line installer script that detects your platform and fetches the correct release asset. Works on most Linux distributions.',
-      child: _buildInstallationSection(
+      child: _buildInstallationSection(context,
         'Run the installer',
         '''# Download and run the official installer
 curl -fsSL https://pistisai.app/install.sh | bash''',
@@ -400,7 +401,7 @@ curl -fsSL https://pistisai.app/install.sh | bash''',
       title: '� Arch User Repository (AUR)',
       description:
           'Pre-built binary package for Arch Linux and derivatives. No Flutter dependency required!',
-      child: _buildInstallationSection(
+      child: _buildInstallationSection(context,
         'Installation with AUR Helper (Recommended)',
         '''# Install with yay (no build dependencies needed)
 yay -S Pistisai
@@ -420,7 +421,7 @@ pamac install Pistisai''',
       title: '⚡ Pre-built Binary (Universal)',
       description:
           'Direct download of the compiled application for manual installation on any Linux distribution.',
-      child: _buildInstallationSection(
+      child: _buildInstallationSection(context,
         'Download and Install',
         '''# Download pre-built binary from GitHub releases
 wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-x64.tar.gz
@@ -444,32 +445,32 @@ cd Pistisai-Linux-x64
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
-          const Text(
+          Text(
             '1. Launch the Application',
             style: TextStyle(
-              color: Color(0xFFa777e3),
+              color: AppTheme.colorsOf(context).accent,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Pistisai will minimize to the system tray by default. Look for the LLM icon in your system tray.',
-            style: TextStyle(color: Color(0xFFb0b0b0)),
+            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             '2. Configure LLM Provider',
             style: TextStyle(
-              color: Color(0xFFa777e3),
+              color: AppTheme.colorsOf(context).accent,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Go to Settings → LLM Provider Settings to configure your connection:',
-            style: TextStyle(color: Color(0xFFb0b0b0)),
+            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
           ),
           const SizedBox(height: 8),
           ...[
@@ -480,7 +481,7 @@ cd Pistisai-Linux-x64
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 '• $item',
-                style: const TextStyle(color: Color(0xFFb0b0b0)),
+                style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
               ),
             ),
           ),
@@ -498,10 +499,10 @@ cd Pistisai-Linux-x64
     return Container(
       constraints: const BoxConstraints(maxWidth: 800),
       decoration: BoxDecoration(
-        color: const Color(0xFF23243a),
+        color: AppTheme.colorsOf(context).backgroundCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF6e8efb).withValues(alpha: 0.27),
+          color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.27),
           width: 1.5,
         ),
         boxShadow: [
@@ -519,7 +520,7 @@ cd Pistisai-Linux-x64
           Text(
             title,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: const Color(0xFFa777e3),
+                  color: AppTheme.colorsOf(context).accent,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -529,7 +530,7 @@ cd Pistisai-Linux-x64
             Text(
               description,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFFb0b0b0),
+                    color: AppTheme.colorsOf(context).textColorLight,
                     fontSize: 16,
                   ),
             ),
@@ -540,15 +541,15 @@ cd Pistisai-Linux-x64
     );
   }
 
-  Widget _buildInstallationSection(String title, String code) {
+  Widget _buildInstallationSection(BuildContext context, String title, String code) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
         Text(
           title,
-          style: const TextStyle(
-            color: Color(0xFFa777e3),
+          style: TextStyle(
+            color: AppTheme.colorsOf(context).accent,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
@@ -563,9 +564,9 @@ cd Pistisai-Linux-x64
           ),
           child: Text(
             code,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'monospace',
-              color: Color(0xFF00c58e),
+              color: AppTheme.colorsOf(context).success,
               fontSize: 14,
             ),
           ),
@@ -581,10 +582,10 @@ cd Pistisai-Linux-x64
       child: Center(
         child: TextButton(
           onPressed: () => context.go('/'),
-          child: const Text(
+          child: Text(
             '← Back to Home',
             style: TextStyle(
-              color: Color(0xFFa777e3),
+              color: AppTheme.colorsOf(context).accent,
               fontWeight: FontWeight.w600,
               decoration: TextDecoration.underline,
             ),
