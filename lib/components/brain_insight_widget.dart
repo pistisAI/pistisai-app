@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/theme.dart';
 import '../database/local_brain.dart';
 import '../di/locator.dart';
 
@@ -21,7 +22,7 @@ class BrainInsightWidget extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                const Icon(Icons.psychology, color: Colors.purple),
+                Icon(Icons.psychology, color: AppTheme.colorsOf(context).accent),
                 const SizedBox(width: 8),
                 Text(
                   'Local Brain Insights',
@@ -30,9 +31,9 @@ class BrainInsightWidget extends StatelessWidget {
                       ),
                 ),
                 const Spacer(),
-                const Chip(
-                  label: Text('HIGH SPEED (RAM)'),
-                  backgroundColor: Colors.greenAccent,
+                Chip(
+                  label: const Text('HIGH SPEED (RAM)'),
+                  backgroundColor: AppTheme.colorsOf(context).success,
                 ),
               ],
             ),
@@ -63,7 +64,7 @@ class BrainInsightWidget extends StatelessWidget {
                         logs[logs.length - 1 - index]; // Reverse chronological
                     return ListTile(
                       dense: true,
-                      leading: _getLogLevelIcon(log.level),
+                      leading: _getLogLevelIcon(context, log.level),
                       title: Text(log.message),
                       subtitle: Text(
                         '${log.timestamp.toIso8601String()} | ${log.context ?? ""}',
@@ -80,11 +81,11 @@ class BrainInsightWidget extends StatelessWidget {
     );
   }
 
-  Widget _getLogLevelIcon(String level) {
+  Widget _getLogLevelIcon(BuildContext context, String level) {
     return switch (level.toLowerCase()) {
-      'error' => const Icon(Icons.error, color: Colors.red, size: 20),
-      'warn' => const Icon(Icons.warning, color: Colors.orange, size: 20),
-      _ => const Icon(Icons.info, color: Colors.blue, size: 20),
+      'error' => Icon(Icons.error, color: AppTheme.colorsOf(context).danger, size: 20),
+      'warn' => Icon(Icons.warning, color: AppTheme.colorsOf(context).warning, size: 20),
+      _ => Icon(Icons.info, color: AppTheme.colorsOf(context).info, size: 20),
     };
   }
 }
