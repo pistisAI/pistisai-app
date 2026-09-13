@@ -372,5 +372,5 @@ class AdminStyles {
 
 /// Hover effect mixin for interactive elements
 mixin AdminHoverEffect on StatefulWidget {
-  Color get hoverColor => AppTheme.primaryColor.withValues(alpha: 0.1);
+  Color hoverColor(AppColorsTheme colors) => colors.primary.withValues(alpha: 0.1);
 }
