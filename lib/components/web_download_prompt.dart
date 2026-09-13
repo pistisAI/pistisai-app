@@ -92,7 +92,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                   children: [
                     Icon(
                       Icons.download_for_offline,
-                      color: Colors.white,
+                      color: AppTheme.colorsOf(context).textColor,
                       size: 32,
                     ),
                     SizedBox(width: AppTheme.spacingM),
@@ -101,14 +101,14 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                         'Download Desktop App',
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  color: Colors.white,
+                                  color: AppTheme.colorsOf(context).textColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                       ),
                     ),
                     IconButton(
                       onPressed: _dismissPrompt,
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      icon: Icon(Icons.close, color: AppTheme.colorsOf(context).textColor),
                       tooltip: 'Close',
                     ),
                   ],
@@ -145,7 +145,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                           label: const Text('Download Desktop App'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.colorsOf(context).primary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppTheme.colorsOf(context).textColor,
                             padding: EdgeInsets.all(AppTheme.spacingM),
                             textStyle: const TextStyle(
                               fontSize: 16,

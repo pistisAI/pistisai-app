@@ -282,7 +282,7 @@ class _SuccessAnimationState extends State<SuccessAnimation>
                       return CustomPaint(
                         painter: CheckmarkPainter(
                           progress: _checkAnimation.value,
-                          color: Colors.white,
+                          color: AppTheme.colorsOf(context).textColor,
                         ),
                       );
                     },
@@ -429,7 +429,7 @@ class _ErrorAnimationState extends State<ErrorAnimation>
                   ),
                   child: Icon(
                     Icons.error_outline,
-                    color: Colors.white,
+                    color: AppTheme.colorsOf(context).textColor,
                     size: widget.size * 0.5,
                   ),
                 ),
@@ -456,7 +456,7 @@ class _ErrorAnimationState extends State<ErrorAnimation>
                 label: const Text('Retry'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colorsOf(context).danger,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                   minimumSize: const Size(100, 44),
                 ),
               ),

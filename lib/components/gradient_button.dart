@@ -122,7 +122,7 @@ class _GradientButtonState extends State<GradientButton>
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white.withValues(alpha: 0.8),
+                                  AppTheme.colorsOf(context).textColor.withValues(alpha: 0.8),
                                 ),
                               ),
                             )
@@ -133,7 +133,7 @@ class _GradientButtonState extends State<GradientButton>
                                 if (widget.icon != null) ...[
                                   Icon(
                                     widget.icon,
-                                    color: Colors.white,
+                                    color: AppTheme.colorsOf(context).textColor,
                                     size: widget.fontSize + 2,
                                   ),
                                   SizedBox(width: AppTheme.spacingS),
@@ -143,7 +143,7 @@ class _GradientButtonState extends State<GradientButton>
                                   style: TextStyle(
                                     fontSize: widget.fontSize,
                                     fontWeight: widget.fontWeight,
-                                    color: Colors.white,
+                                    color: AppTheme.colorsOf(context).textColor,
                                     letterSpacing: 0.5,
                                   ),
                                 ),

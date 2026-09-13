@@ -50,7 +50,7 @@ class TunnelStatusButton extends StatelessWidget {
             );
           },
           backgroundColor: color,
-          child: Icon(icon, color: Colors.white),
+          child: Icon(icon, color: AppTheme.colorsOf(context).textColor),
         ),
       ),
     );

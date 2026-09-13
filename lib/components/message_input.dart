@@ -190,13 +190,13 @@ class _MessageInputState extends State<MessageInput> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white.withValues(alpha: 0.8),
+                          AppTheme.colorsOf(context).textColor.withValues(alpha: 0.8),
                         ),
                       ),
                     )
                   : Icon(
                       Icons.send,
-                      color: canSend ? Colors.white : AppTheme.colorsOf(context).textColorLight,
+                      color: canSend ? AppTheme.colorsOf(context).textColor : AppTheme.colorsOf(context).textColorLight,
                       size: 20,
                     ),
             ),
@@ -228,7 +228,7 @@ class NewConversationFAB extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: const Text('New Chat'),
         backgroundColor: AppTheme.colorsOf(context).primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppTheme.colorsOf(context).textColor,
         elevation: 8,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.borderRadiusM),

@@ -252,7 +252,7 @@ class GradientAppLogo extends StatelessWidget {
             return Center(
               child: Text(
                 'P',
-                style: TextStyle(fontSize: size * 0.6, color: Colors.white),
+                style: TextStyle(fontSize: size * 0.6, color: AppTheme.colorsOf(context).textColor),
               ),
             );
           },
