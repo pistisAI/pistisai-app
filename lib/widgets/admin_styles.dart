@@ -145,7 +145,7 @@ class AdminStyles {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: effectiveColor,
-        foregroundColor: Colors.white,
+        foregroundColor: AppTheme.colorsOf(context).textColor,
         padding: EdgeInsets.symmetric(
           horizontal: AppTheme.spacingM,
           vertical: AppTheme.spacingS,

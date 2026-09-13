@@ -133,7 +133,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
                       SizedBox(height: AppTheme.spacingL),
 
                       // Benefits
-                      _buildBenefitsList(),
+                      _buildBenefitsList(context),
                       SizedBox(height: AppTheme.spacingL),
 
                       // Download button
@@ -178,7 +178,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
     );
   }
 
-  Widget _buildBenefitsList() {
+  Widget _buildBenefitsList(BuildContext context) {
     final benefits = [
       'Connect to your local Ollama installation',
       'Use your own AI models privately',
@@ -203,7 +203,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 20),
+                Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success, size: 20),
                 SizedBox(width: AppTheme.spacingS),
                 Expanded(
                   child: Text(

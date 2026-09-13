@@ -37,14 +37,14 @@ class DiscordSettingsScreen extends StatelessWidget {
                 'This feature requires native FFI bindings (via nyxx) '
                 'that are not supported on the web platform.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(fontSize: 16, color: AppTheme.colorsOf(context).textColorLight),
               ),
               SizedBox(height: 24),
               Text(
                 'Please use the desktop version of Pistisai to configure '
                 'your Discord bot.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(fontSize: 14, color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ),

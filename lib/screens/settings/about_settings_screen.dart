@@ -234,9 +234,9 @@ class AboutSettingsScreen extends StatelessWidget {
               child: Image.asset(
                 'assets/images/app_icon.png',
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Center(
+                errorBuilder: (context, error, stackTrace) => Center(
                   child: Text('P',
-                      style: TextStyle(fontSize: 48, color: Colors.white)),
+                      style: TextStyle(fontSize: 48, color: AppTheme.colorsOf(context).textColor)),
                 ),
               ),
             ),

@@ -80,7 +80,7 @@ class DownloadScreen extends StatelessWidget {
           Text(
             'Download Pistisai',
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
+                  color: AppTheme.colorsOf(context).textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 40,
                   letterSpacing: 1,
@@ -163,7 +163,7 @@ class DownloadScreen extends StatelessWidget {
               label: const Text('View All Downloads on GitHub'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.colorsOf(context).primary,
-                foregroundColor: Colors.white,
+                foregroundColor: AppTheme.colorsOf(context).textColor,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 24,
@@ -193,7 +193,7 @@ class DownloadScreen extends StatelessWidget {
                 label: const Text('Linux (AppImage)'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colorsOf(context).success,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
@@ -208,7 +208,7 @@ class DownloadScreen extends StatelessWidget {
                 label: const Text('Linux (.deb)'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colorsOf(context).success,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
@@ -223,7 +223,7 @@ class DownloadScreen extends StatelessWidget {
                 label: const Text('Linux (.tar.gz)'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colorsOf(context).accent,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
@@ -238,7 +238,7 @@ class DownloadScreen extends StatelessWidget {
                 label: const Text('macOS (.zip)'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colorsOf(context).primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
@@ -276,10 +276,10 @@ class DownloadScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Minimum Requirements:',
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.colorsOf(context).textColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -300,10 +300,10 @@ class DownloadScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'For System Tray Support:',
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.colorsOf(context).textColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -664,15 +664,15 @@ cd Pistisai-Linux-x64
   /// Show download started message
   void _showDownloadStartedMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Row(
           children: [
-            Icon(Icons.download, color: Colors.white),
+            Icon(Icons.download, color: AppTheme.colorsOf(context).textColor),
             SizedBox(width: 8),
             Text('Download started...'),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.colorsOf(context).success,
         duration: Duration(seconds: 3),
       ),
     );
@@ -684,16 +684,16 @@ cd Pistisai-Linux-x64
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error, color: Colors.white),
+            Icon(Icons.error, color: AppTheme.colorsOf(context).textColor),
             const SizedBox(width: 8),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: AppTheme.colorsOf(context).danger,
         duration: const Duration(seconds: 5),
         action: SnackBarAction(
           label: 'GitHub Releases',
-          textColor: Colors.white,
+          textColor: AppTheme.colorsOf(context).textColor,
           onPressed: () => _launchUrl(AppConfig.githubReleasesUrl),
         ),
       ),

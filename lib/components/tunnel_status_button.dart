@@ -25,11 +25,11 @@ class TunnelStatusButton extends StatelessWidget {
 
     if (state.isConnected) {
       icon = Icons.gpp_good;
-      color = Colors.green;
+      color = AppTheme.colorsOf(context).success;
       tooltip = 'Tunnel Connected';
     } else if (state.isConnecting) {
       icon = Icons.hourglass_empty;
-      color = Colors.orange;
+      color = AppTheme.colorsOf(context).warning;
       tooltip = 'Tunnel Connecting';
     } else {
       icon = Icons.gpp_bad;
