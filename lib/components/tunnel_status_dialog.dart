@@ -24,7 +24,7 @@ class TunnelStatusDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!isAuthenticated) ...[
-                const Icon(Icons.cloud_off, size: 48, color: Colors.grey),
+                Icon(Icons.cloud_off, size: 48, color: AppTheme.colorsOf(context).textColorLight),
                 const SizedBox(height: 16),
                 const Text(
                   'Cloud Relay & Tunnels require a cloud connection.',
@@ -44,7 +44,7 @@ class TunnelStatusDialog extends StatelessWidget {
                     Icon(
                       state.isConnected ? Icons.gpp_good : Icons.gpp_bad,
                       color: state.isConnected
-                          ? Colors.green
+                          ? AppTheme.colorsOf(context).success
                           : AppTheme.colorsOf(context).danger,
                     ),
                     const SizedBox(width: 8),
@@ -52,7 +52,7 @@ class TunnelStatusDialog extends StatelessWidget {
                       state.isConnected ? 'Connected' : 'Disconnected',
                       style: TextStyle(
                         color: state.isConnected
-                            ? Colors.green
+                            ? AppTheme.colorsOf(context).success
                             : AppTheme.colorsOf(context).danger,
                         fontWeight: FontWeight.bold,
                       ),
