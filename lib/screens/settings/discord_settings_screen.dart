@@ -134,7 +134,7 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
       appBar: AppBar(
         title: const Text('Discord Bot Settings'),
         backgroundColor: AppTheme.colorsOf(context).primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppTheme.colorsOf(context).textColor,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -153,8 +153,8 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                             ? Icons.check_circle
                             : Icons.error_outline,
                         color: discordService.isConnected
-                            ? Colors.green
-                            : Colors.orange,
+                            ? AppTheme.colorsOf(context).success
+                            : AppTheme.colorsOf(context).warning,
                         size: 24,
                       ),
                       const SizedBox(width: 8),
@@ -165,8 +165,8 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: discordService.isConnected
-                                  ? Colors.green
-                                  : Colors.orange,
+                                  ? AppTheme.colorsOf(context).success
+                                  : AppTheme.colorsOf(context).warning,
                             ),
                       ),
                     ],
@@ -174,13 +174,13 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                   const SizedBox(height: 16),
                   if (discordService.isConnected &&
                       discordService.botToken != null)
-                    _buildConnectionInfo(discordService),
+                    _buildConnectionInfo(context, discordService),
                   if (discordService.connectionError != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
                         'Error: ${discordService.connectionError}',
-                        style: const TextStyle(color: Colors.red),
+                        style: TextStyle(color: AppTheme.colorsOf(context).danger),
                       ),
                     ),
                 ],
@@ -279,25 +279,25 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: _saveSuccess
-                            ? Colors.green.withValues(alpha: 0.1)
-                            : Colors.red.withValues(alpha: 0.1),
+                            ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+                            : AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _saveSuccess ? Colors.green : Colors.red,
+                          color: _saveSuccess ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
                         ),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             _saveSuccess ? Icons.check_circle : Icons.error,
-                            color: _saveSuccess ? Colors.green : Colors.red,
+                            color: _saveSuccess ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _saveMessage!,
                               style: TextStyle(
-                                color: _saveSuccess ? Colors.green : Colors.red,
+                                color: _saveSuccess ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
                               ),
                             ),
                           ),
@@ -323,8 +323,8 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                               ? Icons.check_circle
                               : Icons.error,
                           color: _testResult!['success'] == true
-                              ? Colors.green
-                              : Colors.red,
+                              ? AppTheme.colorsOf(context).success
+                              : AppTheme.colorsOf(context).danger,
                           size: 24,
                         ),
                         const SizedBox(width: 8),
@@ -336,14 +336,14 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
                               Theme.of(context).textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: _testResult!['success'] == true
-                                        ? Colors.green
-                                        : Colors.red,
+                                        ? AppTheme.colorsOf(context).success
+                                        : AppTheme.colorsOf(context).danger,
                                   ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    _buildTestResult(_testResult!),
+                    _buildTestResult(context, _testResult!),
                   ],
                 ),
               ),
@@ -405,14 +405,14 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
     );
   }
 
-  Widget _buildConnectionInfo(DiscordService discordService) {
+  Widget _buildConnectionInfo(BuildContext context, DiscordService discordService) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (_testResult != null && _testResult!['botName'] != null) ...[
-          _buildInfoRow('Bot Name:', _testResult!['botName']),
-          const SizedBox(height: 8),
-          _buildInfoRow('Bot ID:', _testResult!['botId']),
+          _buildInfoRow(context, 'Bot Name:', _testResult!['botName']),
+          const SizedBox(height: 4),
+          _buildInfoRow(context, 'Bot ID:', _testResult!['botId']),
         ] else ...[
           const Text('Bot is connected'),
         ],
@@ -420,31 +420,31 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
     );
   }
 
-  Widget _buildTestResult(Map<String, dynamic> result) {
+  Widget _buildTestResult(BuildContext context, Map<String, dynamic> result) {
     if (result['success'] == true) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow('Status:', 'Connected'),
+          _buildInfoRow(context, 'Status:', 'Connected'),
           if (result['botName'] != null) ...[
             const SizedBox(height: 8),
-            _buildInfoRow('Bot Name:', result['botName']),
+            _buildInfoRow(context, 'Bot Name:', result['botName']),
           ],
           if (result['botId'] != null) ...[
             const SizedBox(height: 8),
-            _buildInfoRow('Bot ID:', result['botId']),
+            _buildInfoRow(context, 'Bot ID:', result['botId']),
           ],
         ],
       );
     } else {
       return Text(
         'Error: ${result['error'] ?? 'Unknown error'}',
-        style: const TextStyle(color: Colors.red),
+        style: TextStyle(color: AppTheme.colorsOf(context).danger),
       );
     }
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -452,9 +452,9 @@ class _DiscordSettingsScreenState extends State<DiscordSettingsScreen> {
           width: 100,
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: AppTheme.colorsOf(context).textColorLight,
             ),
           ),
         ),
