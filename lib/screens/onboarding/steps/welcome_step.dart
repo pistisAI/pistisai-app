@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/theme.dart';
 
 /// Welcome step - First screen of the setup wizard
 class WelcomeStep extends StatelessWidget {
@@ -84,7 +85,7 @@ class _SubtitleText extends StatelessWidget {
     return Text(
       'Your privacy-first local AI companion',
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: Colors.grey.shade600,
+            color: AppTheme.colorsOf(context).textColorLight,
           ),
       textAlign: TextAlign.center,
     );
@@ -146,22 +147,22 @@ class _InfoBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: AppTheme.colorsOf(context).info.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.shade200),
+        border: Border.all(color: AppTheme.colorsOf(context).info.withOpacity(0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+            child: Icon(Icons.info_outline, color: AppTheme.colorsOf(context).info, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.',
-              style: TextStyle(color: Colors.blue.shade900, height: 1.35),
+              style: TextStyle(color: AppTheme.colorsOf(context).info, height: 1.35),
             ),
           ),
         ],
