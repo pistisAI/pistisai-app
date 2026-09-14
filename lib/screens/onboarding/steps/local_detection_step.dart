@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
+import '../../../config/theme.dart';
 
 /// Local runtime detection step.
 /// Scans for compatible agent runtimes, not raw local model providers.
@@ -55,16 +56,16 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
           height: 64,
           child: CircularProgressIndicator(),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'Looking for agent runtimes...',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           'Scanning ${AppConfig.defaultHermesUrl} and ${AppConfig.gatewayUrl}',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade600,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
         ),
       ],
@@ -78,58 +79,58 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.orange.shade50,
+            color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.05),
             shape: BoxShape.circle,
           ),
           child: Icon(
             Icons.search_off,
             size: 40,
-            color: Colors.orange.shade700,
+            color: AppTheme.colorsOf(context).warning,
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'Agent Runtime Not Found',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Text(
           'We couldn\'t find Hermes or OpenClaw running on this computer.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade600,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
 
         // Download guidance
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.blue.shade50,
+            color: AppTheme.colorsOf(context).info.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue.shade200),
+            border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.2)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue.shade700),
-                  const SizedBox(width: 8),
+                  Icon(Icons.info_outline, color: AppTheme.colorsOf(context).info),
+                  SizedBox(width: 8),
                   Text(
                     'To get started:',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade900,
+                      color: AppTheme.colorsOf(context).info,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              _buildStep('1. Start Hermes Agent or OpenClaw Gateway'),
-              _buildStep('2. Verify the runtime is reachable'),
-              _buildStep('3. Click "Retry" below'),
+              _buildStep(context, '1. Start Hermes Agent or OpenClaw Gateway'),
+              _buildStep(context, '2. Verify the runtime is reachable'),
+              _buildStep(context, '3. Click "Retry" below'),
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => wizard.scanForProviders(),
@@ -160,13 +161,13 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.green.shade50,
+            color: AppTheme.colorsOf(context).success.withValues(alpha: 0.05),
             shape: BoxShape.circle,
           ),
           child: Icon(
             Icons.check_circle,
             size: 40,
-            color: Colors.green.shade700,
+            color: AppTheme.colorsOf(context).success,
           ),
         ),
         const SizedBox(height: 24),
@@ -174,26 +175,26 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
           'Agent Runtime Found!',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         _buildProviderCard(context, provider),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
 
         // Success message
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.green.shade50,
+            color: AppTheme.colorsOf(context).success.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.green.shade200),
+            border: Border.all(color: AppTheme.colorsOf(context).success.withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
-              Icon(Icons.check, color: Colors.green.shade700),
-              const SizedBox(width: 12),
+              Icon(Icons.check, color: AppTheme.colorsOf(context).success),
+              SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Ready to proceed to connection test',
-                  style: TextStyle(color: Colors.green.shade900),
+                  style: TextStyle(color: AppTheme.colorsOf(context).success),
                 ),
               ),
             ],
@@ -235,24 +236,24 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       provider.url,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey.shade600,
+                            color: AppTheme.colorsOf(context).textColorLight,
                             fontFamily: 'monospace',
                           ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: provider.isAvailable
-                                ? Colors.green.shade100
-                                : Colors.orange.shade100,
+                                ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+                                : AppTheme.colorsOf(context).warning.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
@@ -261,20 +262,20 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
                                 : 'Check Connection',
                             style: TextStyle(
                               color: provider.isAvailable
-                                  ? Colors.green.shade900
-                                  : Colors.orange.shade900,
+                                  ? AppTheme.colorsOf(context).success
+                                  : AppTheme.colorsOf(context).warning,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         if (provider.version != null) ...[
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Text(
                             'v${provider.version}',
                             style:
                                 Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.grey.shade600,
+                                      color: AppTheme.colorsOf(context).textColorLight,
                                     ),
                           ),
                         ],
@@ -290,17 +291,17 @@ class _LocalDetectionStepState extends State<LocalDetectionStep> {
     );
   }
 
-  Widget _buildStep(String text) {
+  Widget _buildStep(BuildContext context, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('• ', style: TextStyle(color: Colors.blue.shade900)),
+          Text('• ', style: TextStyle(color: AppTheme.colorsOf(context).info)),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(color: Colors.blue.shade900),
+              style: TextStyle(color: AppTheme.colorsOf(context).info),
             ),
           ),
         ],
