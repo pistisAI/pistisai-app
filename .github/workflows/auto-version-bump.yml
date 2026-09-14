@@ -4,7 +4,7 @@ name: "🔢 Auto Version Bump"
 # On every push to main, if version.json was NOT explicitly changed,
 # auto-bump the patch version and commit it back.
 #
-# All platform workflows (desktop, mobile, web, backend, hermes) use
+# All platform workflows (desktop, mobile, web, backend) use
 # workflow_run to chain off this one — no PAT needed, native GitHub.
 #
 # Bump type override via commit message:
