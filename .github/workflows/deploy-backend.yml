@@ -2,7 +2,7 @@ name: "🖥️ Backend Deploy"
 
 on:
   workflow_run:
-    workflows: ["🔢 Auto Version Bump"]
+    workflows: ["🌐 Web Deploy"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
