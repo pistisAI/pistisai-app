@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 import 'package:pistisai/services/vision/v4l2_camera_service.dart';
 
@@ -52,7 +53,7 @@ class _V4L2CameraPreviewState extends State<V4L2CameraPreview> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 8),
-            Text('Starting camera…', style: TextStyle(color: Colors.grey)),
+            Text('Starting camera…', style: TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
           ],
         ),
       );
