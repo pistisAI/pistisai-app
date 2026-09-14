@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/theme.dart';
 
 /// Widget for displaying inline error messages in admin forms
 class AdminErrorMessage extends StatelessWidget {
@@ -80,20 +81,20 @@ class AdminSuccessMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (message == null || message!.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     final theme = Theme.of(context);
-    final defaultBackgroundColor = Colors.green.shade50;
-    final defaultTextColor = Colors.green.shade900;
+    final defaultBackgroundColor = AppTheme.colorsOf(context).success.withValues(alpha: 0.1);
+    final defaultTextColor = AppTheme.colorsOf(context).success;
 
     return Container(
-      padding: padding ?? const EdgeInsets.all(12),
+      padding: padding ?? EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: backgroundColor ?? defaultBackgroundColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Colors.green.withValues(alpha: 0.3),
+          color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -140,20 +141,20 @@ class AdminWarningMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (message == null || message!.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     final theme = Theme.of(context);
-    final defaultBackgroundColor = Colors.orange.shade50;
-    final defaultTextColor = Colors.orange.shade900;
+    final defaultBackgroundColor = AppTheme.colorsOf(context).warning.withValues(alpha: 0.1);
+    final defaultTextColor = AppTheme.colorsOf(context).warning;
 
     return Container(
-      padding: padding ?? const EdgeInsets.all(12),
+      padding: padding ?? EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: backgroundColor ?? defaultBackgroundColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Colors.orange.withValues(alpha: 0.3),
+          color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -200,20 +201,20 @@ class AdminInfoMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (message == null || message!.isEmpty) {
-      return const SizedBox.shrink();
+      return SizedBox.shrink();
     }
 
     final theme = Theme.of(context);
-    final defaultBackgroundColor = Colors.blue.shade50;
-    final defaultTextColor = Colors.blue.shade900;
+    final defaultBackgroundColor = AppTheme.colorsOf(context).info.withValues(alpha: 0.1);
+    final defaultTextColor = AppTheme.colorsOf(context).info;
 
     return Container(
-      padding: padding ?? const EdgeInsets.all(12),
+      padding: padding ?? EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: backgroundColor ?? defaultBackgroundColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Colors.blue.withValues(alpha: 0.3),
+          color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -248,17 +249,17 @@ class AdminSnackBar {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.error_outline, color: AppTheme.colorsOf(context).textColor),
+            SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
         backgroundColor: Theme.of(context).colorScheme.error,
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 4),
+        duration: Duration(seconds: 4),
         action: SnackBarAction(
           label: 'Dismiss',
-          textColor: Colors.white,
+          textColor: AppTheme.colorsOf(context).textColor,
           onPressed: () {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
           },
@@ -273,12 +274,12 @@ class AdminSnackBar {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_outline, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.check_circle_outline, color: AppTheme.colorsOf(context).textColor),
+            SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.colorsOf(context).success,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
       ),
@@ -291,12 +292,12 @@ class AdminSnackBar {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.warning_amber_outlined, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.warning_amber_outlined, color: AppTheme.colorsOf(context).textColor),
+            SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppTheme.colorsOf(context).warning,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
       ),
@@ -309,12 +310,12 @@ class AdminSnackBar {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.info_outline, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.info_outline, color: AppTheme.colorsOf(context).textColor),
+            SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.colorsOf(context).info,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
       ),

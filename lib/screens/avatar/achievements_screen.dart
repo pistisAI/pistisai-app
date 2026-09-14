@@ -439,7 +439,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                     : AppTheme.colorsOf(context).textColorLight,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isUnlocked ? metadata.color : AppTheme.colorsOf(context).textColorLight!,
+                  color: isUnlocked ? metadata.color : AppTheme.colorsOf(context).textColorLight,
                   width: 2,
                 ),
               ),

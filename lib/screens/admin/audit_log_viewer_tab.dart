@@ -913,7 +913,7 @@ class _LogDetailDialog extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.colorsOf(context).textColorLight,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.colorsOf(context).textColorLight!),
+                  border: Border.all(color: AppTheme.colorsOf(context).textColorLight),
                 ),
                 child: SelectableText(
                   _formatJson(details),
