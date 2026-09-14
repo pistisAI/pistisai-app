@@ -94,7 +94,7 @@ jobs:
 
       - name: Commit and push
         env:
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -103,7 +103,7 @@ jobs:
           git commit -m "ci: bump version to ${{ steps.compute.outputs.version }}+${{ github.run_number }} [skip ci]"
           # Use SSH to push (bypasses branch protection that blocks GITHUB_TOKEN)
           mkdir -p ~/.ssh
-          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           cat >> ~/.ssh/config << 'EOF'
             Host github.com
