@@ -125,30 +125,7 @@ jobs:
 
           # Deploy on VPS
           echo "🚀 Deploying on VPS..."
-          ssh -i ~/.ssh/vps_deploy_key -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} bash -s << 'REMOTE'
-            set -euo pipefail
-            DEPLOY_PATH="${1:-/opt/pistisai}"
-            cd "$DEPLOY_PATH"
-
-            # Load image
-            docker load -i pistisai-app-web.tar
-
-            # Stop old container
-            docker stop pistisai-app-web 2>/dev/null || true
-            docker rm pistisai-app-web 2>/dev/null || true
-
-            # Run new container
-            docker run -d \
-              --name pistisai-app-web \
-              --restart unless-stopped \
-              --network dokploy-network \
-              -p 8080:80 \
-              pistisai-app-web:latest
-
-            # Cleanup
-            rm -f pistisai-app-web.tar
-            echo "✅ Deployment complete"
-          REMOTE
+          ssh -i ~/.ssh/vps_deploy_key -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} "cd ${VPS_DEPLOY_PATH} && docker load -i pistisai-app-web.tar && (docker stop pistisai-app-web 2>/dev/null || true) && (docker rm pistisai-app-web 2>/dev/null || true) && docker run -d --name pistisai-app-web --restart unless-stopped --network dokploy-network -p 8080:80 pistisai-app-web:latest && rm -f pistisai-app-web.tar && echo '✅ Deployment complete'"
 
       - name: Purge Cloudflare cache
         if: always()
