@@ -127,8 +127,8 @@ class DocumentationScreen extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withValues(alpha: 0.4)
-                : Colors.black.withValues(alpha: 0.1),
+                ? theme.shadowColor.withValues(alpha: 0.4)
+                : theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 24,
             offset: const Offset(0, 4),
           ),
@@ -242,8 +242,8 @@ class DocumentationScreen extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withValues(alpha: 0.4)
-                : Colors.black.withValues(alpha: 0.1),
+                ? theme.shadowColor.withValues(alpha: 0.4)
+                : theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 24,
             offset: const Offset(0, 4),
           ),
