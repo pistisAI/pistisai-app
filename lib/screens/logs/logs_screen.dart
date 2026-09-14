@@ -12,6 +12,7 @@ import '../../widgets/navigation/popout_button.dart';
 import '../../models/log_entry.dart';
 import '../../services/logging_service.dart';
 import '../../di/locator.dart' as di;
+import '../../config/theme.dart';
 
 /// Screen displaying system logs with filtering and search.
 class LogsScreen extends StatefulWidget {
@@ -328,8 +329,8 @@ class _LogsScreenState extends State<LogsScreen> {
                       });
                     },
                     selectedColor:
-                        _getSeverityColor(severity).withValues(alpha: 0.3),
-                    checkmarkColor: _getSeverityColor(severity),
+                        _getSeverityColor(context, severity).withValues(alpha: 0.3),
+                    checkmarkColor: _getSeverityColor(context, severity),
                   );
                 }).toList(),
               ),
@@ -592,18 +593,19 @@ class _LogsScreenState extends State<LogsScreen> {
     }
   }
 
-  Color _getSeverityColor(LogSeverity severity) {
+  Color _getSeverityColor(BuildContext context, LogSeverity severity) {
+    final colors = AppTheme.colorsOf(context);
     switch (severity) {
       case LogSeverity.debug:
-        return Colors.grey;
+        return colors.textColorLight;
       case LogSeverity.info:
-        return Colors.blue;
+        return colors.info;
       case LogSeverity.warning:
-        return Colors.orange;
+        return colors.warning;
       case LogSeverity.error:
-        return Colors.red;
+        return colors.danger;
       case LogSeverity.critical:
-        return Colors.red.shade700;
+        return colors.danger;
     }
   }
 }
