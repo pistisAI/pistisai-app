@@ -31,14 +31,14 @@ class AdminFilterChip extends StatelessWidget {
             Icon(
               icon,
               size: 16,
-              color: selected ? Colors.white : AppTheme.colorsOf(context).textColorLight,
+              color: selected ? AppTheme.colorsOf(context).textColor : AppTheme.colorsOf(context).textColorLight,
             ),
             SizedBox(width: AppTheme.spacingXS),
           ],
           Text(
             label,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: selected ? Colors.white : AppTheme.colorsOf(context).textColor,
+              color: selected ? AppTheme.colorsOf(context).textColor : AppTheme.colorsOf(context).textColor,
               fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -48,7 +48,7 @@ class AdminFilterChip extends StatelessWidget {
       onSelected: (_) => onSelected(),
       backgroundColor: AppTheme.colorsOf(context).backgroundCard,
       selectedColor: selectedColor ?? AppTheme.colorsOf(context).primary,
-      checkmarkColor: Colors.white,
+      checkmarkColor: AppTheme.colorsOf(context).textColor,
       side: BorderSide(
         color: selected
             ? (selectedColor ?? AppTheme.colorsOf(context).primary)
