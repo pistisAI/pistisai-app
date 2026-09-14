@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import '../../services/subagent_registry_service.dart';
 import '../../di/locator.dart' as di;
 import '../../widgets/common/empty_state.dart';
@@ -354,12 +355,12 @@ class _AgentsScreenState extends State<AgentsScreen>
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final agent = _agents[index];
-        return _buildAgentCard(agent);
+        return _buildAgentCard(context, agent);
       },
     );
   }
 
-  Widget _buildAgentCard(Agent agent) {
+  Widget _buildAgentCard(BuildContext context, Agent agent) {
     final theme = Theme.of(context);
 
     return Card(
@@ -373,10 +374,10 @@ class _AgentsScreenState extends State<AgentsScreen>
               children: [
                 CircleAvatar(
                   backgroundColor:
-                      _getStatusColor(agent.status).withValues(alpha: 0.1),
+                      _getStatusColor(context, agent.status).withValues(alpha: 0.1),
                   child: Icon(
                     _getStatusIcon(agent.status),
-                    color: _getStatusColor(agent.status),
+                    color: _getStatusColor(context, agent.status),
                     size: 20,
                   ),
                 ),
@@ -485,28 +486,32 @@ class _AgentsScreenState extends State<AgentsScreen>
             runSpacing: 12,
             children: [
               _buildSummaryCard(
+                context,
                 Icons.people,
                 'Total Agents',
                 '${_agents.length}',
-                Colors.blue,
+                AppTheme.colorsOf(context).info,
               ),
               _buildSummaryCard(
+                context,
                 Icons.check_circle,
                 'Tasks Today',
                 '${_agents.fold<int>(0, (sum, a) => sum + a.taskCount)}',
-                Colors.green,
+                AppTheme.colorsOf(context).success,
               ),
               _buildSummaryCard(
+                context,
                 Icons.speed,
                 'Avg Latency',
                 '${(_agents.fold<double>(0, (sum, a) => sum + a.avgLatency) / _agents.length).toStringAsFixed(1)}s',
-                Colors.orange,
+                AppTheme.colorsOf(context).warning,
               ),
               _buildSummaryCard(
+                context,
                 Icons.error,
                 'Errors',
                 '${_agents.where((a) => a.status == AgentStatus.error).length}',
-                Colors.red,
+                AppTheme.colorsOf(context).danger,
               ),
             ],
           ),
@@ -527,7 +532,7 @@ class _AgentsScreenState extends State<AgentsScreen>
                       const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final event = _activityFeed[index];
-                    return _buildActivityCard(event);
+                    return _buildActivityCard(context, event);
                   },
                 ),
         ),
@@ -535,7 +540,7 @@ class _AgentsScreenState extends State<AgentsScreen>
     );
   }
 
-  Widget _buildSummaryCard(
+  Widget _buildSummaryCard(BuildContext context,
       IconData icon, String title, String value, Color color) {
     return Card(
       child: Container(
@@ -563,16 +568,16 @@ class _AgentsScreenState extends State<AgentsScreen>
     );
   }
 
-  Widget _buildActivityCard(ActivityEvent event) {
+  Widget _buildActivityCard(BuildContext context, ActivityEvent event) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: event.success
-              ? Colors.green.withValues(alpha: 0.1)
-              : Colors.red.withValues(alpha: 0.1),
+              ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+              : AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
           child: Icon(
             event.success ? Icons.check : Icons.close,
-            color: event.success ? Colors.green : Colors.red,
+            color: event.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
             size: 20,
           ),
         ),
@@ -764,16 +769,16 @@ class _AgentsScreenState extends State<AgentsScreen>
     }
   }
 
-  Color _getStatusColor(AgentStatus status) {
+  Color _getStatusColor(BuildContext context, AgentStatus status) {
     switch (status) {
       case AgentStatus.online:
-        return Colors.green;
+        return AppTheme.colorsOf(context).success;
       case AgentStatus.offline:
-        return Colors.grey;
+        return AppTheme.colorsOf(context).textColorLight;
       case AgentStatus.busy:
-        return Colors.blue;
+        return AppTheme.colorsOf(context).info;
       case AgentStatus.error:
-        return Colors.red;
+        return AppTheme.colorsOf(context).danger;
     }
   }
 
