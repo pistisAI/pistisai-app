@@ -274,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         strokeWidth: 2,
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
+                                          colorScheme.onPrimary,
                                         ),
                                       ),
                                     )
@@ -330,7 +330,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                      }
                                    },
                             style: TextButton.styleFrom(
-                              foregroundColor: Colors.orange,
+                              foregroundColor: AppTheme.colorsOf(context).warning,
                             ),
                             child: const Text('Bypass to Test User (Debug)'),
                           ),
