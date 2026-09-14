@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
+import '../../config/theme.dart';
 
 /// OpenClaw Gateway Password Step
 /// Collects the OpenClaw Gateway password/token for local connections
@@ -103,7 +104,7 @@ class _GatewayPasswordStepState extends State<GatewayPasswordStep> {
                 Text(
                   'Enter your OpenClaw Gateway token to complete the setup.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey.shade600,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                   textAlign: TextAlign.center,
                 ),
@@ -174,8 +175,8 @@ class _GatewayPasswordStepState extends State<GatewayPasswordStep> {
                       _detectionMessage!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: _detectionMessage!.contains('Could not')
-                                ? Colors.orange
-                                : Colors.green,
+                                ? AppTheme.colorsOf(context).warning
+                                : AppTheme.colorsOf(context).success,
                           ),
                       textAlign: TextAlign.center,
                     ),
@@ -260,7 +261,7 @@ class _GatewayPasswordStepState extends State<GatewayPasswordStep> {
         Text(
           description,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey.shade600,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
         ),
       ],
