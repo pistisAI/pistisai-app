@@ -95,7 +95,7 @@ class MessageContent extends StatelessWidget {
     if (isError) {
       borderColor = AppTheme.colorsOf(context).danger.withValues(alpha: 0.5);
       backgroundColor = AppTheme.colorsOf(context).danger.withValues(alpha: 0.05);
-      trailing = const Icon(Icons.error_outline, size: 14, color: Colors.red);
+      trailing = Icon(Icons.error_outline, size: 14, color: AppTheme.colorsOf(context).danger);
     } else if (!isCompleted) {
       // Still running — pulsing indicator
       borderColor = AppTheme.colorsOf(context).primary.withValues(alpha: 0.5);
@@ -110,9 +110,9 @@ class MessageContent extends StatelessWidget {
       );
     } else {
       borderColor = AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3);
-      backgroundColor = Colors.white.withValues(alpha: 0.03);
+      backgroundColor = AppTheme.colorsOf(context).textColor.withValues(alpha: 0.03);
       trailing =
-          const Icon(Icons.check_circle_outline, size: 14, color: Colors.green);
+          Icon(Icons.check_circle_outline, size: 14, color: AppTheme.colorsOf(context).success);
     }
 
     return Container(
@@ -221,7 +221,7 @@ class MessageContent extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
@@ -232,13 +232,13 @@ class MessageContent extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.psychology_outlined,
-                  size: 14, color: Colors.grey),
+              Icon(Icons.psychology_outlined,
+                  size: 14, color: AppTheme.colorsOf(context).textColorLight),
               const SizedBox(width: 4),
               Text(
                 'Thinking',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
+                      color: AppTheme.colorsOf(context).textColorLight,
                       fontWeight: FontWeight.bold,
                     ),
               ),
@@ -359,11 +359,11 @@ class MessageContent extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.broken_image, color: Colors.grey),
+                  Icon(Icons.broken_image, color: AppTheme.colorsOf(context).textColorLight),
                   const SizedBox(height: 8),
                   Text(
                     'Failed to load image',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
                   ),
                   if (alt != null && alt.isNotEmpty) ...[
                     const SizedBox(height: 4),
@@ -418,11 +418,11 @@ class MessageContent extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.broken_image, color: Colors.grey),
+                    Icon(Icons.broken_image, color: AppTheme.colorsOf(context).textColorLight),
                     const SizedBox(height: 8),
                     Text(
                       'Failed to load base64 image',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
                     ),
                     if (alt != null && alt.isNotEmpty) ...[
                       const SizedBox(height: 4),
@@ -451,11 +451,11 @@ class MessageContent extends StatelessWidget {
         ),
         child: Column(
           children: [
-            const Icon(Icons.error_outline, color: Colors.red),
+            Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 8),
             Text(
               'Invalid base64 image',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: AppTheme.colorsOf(context).danger),
             ),
           ],
         ),
