@@ -7,6 +7,7 @@ import '../../services/channel_service.dart';
 import '../../di/locator.dart' as di;
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
+import '../../config/theme.dart';
 
 /// Screen displaying detailed information about a specific gateway channel.
 class ChannelDetailScreen extends StatelessWidget {
@@ -49,7 +50,7 @@ class ChannelDetailScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger),
                   const SizedBox(height: 16),
                   const Text('Channel not found'),
                   const SizedBox(height: 8),
