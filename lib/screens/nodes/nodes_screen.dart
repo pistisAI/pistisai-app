@@ -1,6 +1,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
 import '../../models/provider_configuration.dart';
 import '../../services/provider_discovery_service.dart';
@@ -183,7 +184,7 @@ class _NodesScreenState extends State<NodesScreen> {
             selected != null ? Icons.check_circle : Icons.info_outline,
             size: 16,
             color: selected != null
-                ? Colors.green
+                ? AppTheme.colorsOf(context).success
                 : theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           const SizedBox(width: 8),
@@ -271,7 +272,7 @@ class _ProviderCard extends StatelessWidget {
             children: [
               Row(children: [
                 Icon(isOnline ? Icons.check_circle : Icons.error,
-                    color: isOnline ? Colors.green : Colors.red, size: 16),
+                    color: isOnline ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(provider.name,
@@ -322,7 +323,7 @@ class _TailscaleDeviceCard extends StatelessWidget {
           children: [
             Row(children: [
               Icon(device.isOnline ? Icons.wifi : Icons.wifi_off,
-                  color: device.isOnline ? Colors.green : Colors.grey,
+                  color: device.isOnline ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
                   size: 16),
               const SizedBox(width: 8),
               Expanded(
