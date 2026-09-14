@@ -17,6 +17,7 @@ import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../config/app_config.dart';
+import '../../config/theme.dart';
 import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
 import '../../services/settings_preference_service.dart';
@@ -919,7 +920,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                           children: [
                             const Icon(
                               Icons.check_circle,
-                              color: Colors.green,
+                              color: AppTheme.colorsOf(context).success,
                               size: 20,
                             ),
                             const SizedBox(width: 8),
@@ -930,7 +931,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                                     .textTheme
                                     .titleMedium
                                     ?.copyWith(
-                                      color: Colors.green,
+                                      color: AppTheme.colorsOf(context).success,
                                     ),
                               ),
                             ),
