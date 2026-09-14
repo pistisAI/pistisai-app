@@ -91,16 +91,16 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
       // This would typically save to a configuration file or service
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Daemon settings saved successfully'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppTheme.colorsOf(context).success,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to save settings: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
     }
@@ -111,9 +111,9 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
       // Restart the system tray daemon
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Restarting system tray daemon...'),
-            backgroundColor: Colors.orange,
+            backgroundColor: AppTheme.colorsOf(context).warning,
           ),
         );
       }
@@ -123,9 +123,9 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('System tray daemon restarted successfully'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.colorsOf(context).success,
           ),
         );
       }
@@ -134,7 +134,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to restart daemon: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.colorsOf(context).danger,
           ),
         );
       }
@@ -248,8 +248,8 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                   ? 'Connected'
                   : 'Disconnected',
               _connectionStatus!['connected'] == true
-                  ? Colors.green
-                  : Colors.red,
+                  ? AppTheme.colorsOf(context).success
+                  : AppTheme.colorsOf(context).danger,
             ),
             if (_connectionStatus!['connection_type'] != null)
               _buildStatusRow(
@@ -274,7 +274,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
               _buildStatusRow(
                 'Error',
                 _connectionStatus!['error'].toString(),
-                Colors.red,
+                AppTheme.colorsOf(context).danger,
               ),
             if (_lastStatusUpdate != null) ...[
               SizedBox(height: AppTheme.spacingS),
@@ -399,7 +399,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                   label: const Text('Restart Daemon'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.colorsOf(context).secondary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppTheme.colorsOf(context).textColor,
                     padding: EdgeInsets.all(AppTheme.spacingM),
                   ),
                 ),
