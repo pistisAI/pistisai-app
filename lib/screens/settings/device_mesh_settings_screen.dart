@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
 import '../../services/cloud_connector_service.dart';
 
@@ -107,8 +108,8 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
                 leading: Icon(
                   Icons.cloud_done,
                   color: connector.status == CloudConnectionStatus.connected
-                      ? Colors.green
-                      : Colors.grey,
+                      ? AppTheme.colorsOf(context).success
+                      : AppTheme.colorsOf(context).textColorLight,
                 ),
                 title: const Text('This device'),
                 subtitle: Text(_connectionLabel(connector.status)),
@@ -160,12 +161,13 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
       child: ListTile(
         leading: Icon(
           online ? Icons.devices : Icons.phonelink_off,
-          color: online ? Colors.green : null,
+          color: online ? AppTheme.colorsOf(context).success : null,
         ),
         title: Text(device.deviceName ?? device.deviceId),
         subtitle: Text(
           '${device.platform ?? 'unknown platform'} · ${device.runtimeLocation}'
-          '\n${online ? "online" : "last seen $lastSeen"}'
+          '
+${online ? "online" : "last seen $lastSeen"}'
           '${device.runtimeAvailable ? " · runtime available" : ""}',
         ),
         isThreeLine: true,
