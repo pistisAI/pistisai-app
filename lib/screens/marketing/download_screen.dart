@@ -57,7 +57,7 @@ class DownloadScreen extends StatelessWidget {
               border: Border.all(color: AppTheme.colorsOf(context).accent, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.2),
                   blurRadius: 12,
                   offset: const Offset(0, 2),
                 ),
@@ -507,7 +507,7 @@ cd Pistisai-Linux-x64
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
+            color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.4),
             blurRadius: 24,
             offset: const Offset(0, 4),
           ),
@@ -559,7 +559,7 @@ cd Pistisai-Linux-x64
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.4),
+            color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
