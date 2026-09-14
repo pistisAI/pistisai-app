@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/theme.dart';
+
 import '../../services/voice/voice_conversation_service.dart';
 import '../../services/voice/local_voice_input_service.dart';
 
@@ -110,7 +112,7 @@ class _VoiceConversationStatusCardState
                   Text(
                     'Low-latency voice shell state for natural back-and-forth around Hermes.',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -180,7 +182,7 @@ class _VoiceConversationStatusCardState
       Text(
         'Use these to fake a voice exchange while wiring the real mic path.',
         style: theme.textTheme.bodySmall?.copyWith(
-          color: Colors.grey,
+          color: AppTheme.colorsOf(context).textColorLight,
         ),
       ),
       const SizedBox(height: 12),
@@ -253,15 +255,16 @@ class _VoiceConversationStatusCardState
   }
 
   Color _modeColor(VoiceConversationMode mode, ColorScheme scheme) {
+    final colors = AppTheme.colorsOf(context);
     switch (mode) {
       case VoiceConversationMode.idle:
         return scheme.outline;
       case VoiceConversationMode.listening:
         return scheme.primary;
       case VoiceConversationMode.engaged:
-        return Colors.greenAccent.shade400;
+        return colors.success;
       case VoiceConversationMode.speaking:
-        return Colors.orangeAccent.shade400;
+        return colors.warning;
       case VoiceConversationMode.coolingDown:
         return scheme.secondary;
     }
@@ -367,7 +370,7 @@ class _InfoChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: theme.textTheme.labelSmall?.copyWith(color: Colors.grey),
+            style: theme.textTheme.labelSmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           const SizedBox(height: 4),
           Text(
@@ -402,7 +405,7 @@ class _AnimatedTranscriptPanel extends StatelessWidget {
       children: [
         Text(
           title,
-          style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
+          style: theme.textTheme.labelMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
         ),
         const SizedBox(height: 6),
         AnimatedContainer(
@@ -428,7 +431,7 @@ class _AnimatedTranscriptPanel extends StatelessWidget {
               hasValue ? value : emptyLabel,
               key: ValueKey(hasValue ? value : 'empty:$title'),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: hasValue ? null : Colors.grey,
+                color: hasValue ? null : AppTheme.colorsOf(context).textColorLight,
                 fontStyle: hasValue ? FontStyle.normal : FontStyle.italic,
               ),
             ),

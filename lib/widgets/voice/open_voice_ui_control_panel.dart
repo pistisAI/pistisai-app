@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/theme.dart';
+
 import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
@@ -36,8 +38,8 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: isConnected
-                            ? (isRunning ? Colors.greenAccent : Colors.orange)
-                            : Colors.redAccent,
+                            ? (isRunning ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).warning)
+                            : AppTheme.colorsOf(context).danger,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -60,7 +62,7 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                 Text(
                   'Voice front-end, agent control, and backend switching in one place.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
                 const SizedBox(height: 16),
@@ -162,7 +164,7 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                   Text(
                     'Gateway process controls are only available on desktop builds.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey,
+                          color: AppTheme.colorsOf(context).textColorLight,
                         ),
                   ),
                 const SizedBox(height: 16),
@@ -309,7 +311,7 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: success ? Colors.green : Colors.red,
+        backgroundColor: success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
       ),
     );
   }
@@ -342,7 +344,7 @@ class _StatusChip extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.grey,
+                  color: AppTheme.colorsOf(context).textColorLight,
                 ),
           ),
           const SizedBox(height: 4),
@@ -456,7 +458,7 @@ class _TranscriptPreview extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: Colors.grey,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
         ),
         const SizedBox(height: 6),
@@ -478,7 +480,7 @@ class _TranscriptPreview extends StatelessWidget {
           child: Text(
             hasValue ? value : emptyLabel,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: hasValue ? null : Colors.grey,
+                  color: hasValue ? null : AppTheme.colorsOf(context).textColorLight,
                   fontStyle: hasValue ? FontStyle.normal : FontStyle.italic,
                 ),
           ),
