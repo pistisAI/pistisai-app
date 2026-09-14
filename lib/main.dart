@@ -250,10 +250,10 @@ class _PistisaiAppState extends State<PistisaiApp> {
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
             home: Scaffold(
-              backgroundColor: Colors.grey[900],
-              body: const Center(
+              backgroundColor: AppTheme.colorsOf(context).backgroundCard,
+              body: Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).info),
                 ),
               ),
             ),
@@ -269,8 +269,8 @@ class _PistisaiAppState extends State<PistisaiApp> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 64, color: Colors.red),
+                    Icon(Icons.error_outline,
+                        size: 64, color: AppTheme.colorsOf(context).danger),
                     const SizedBox(height: 16),
                     const Text('Initialization Error'),
                     const SizedBox(height: 8),
@@ -368,7 +368,7 @@ class _PistisaiAppState extends State<PistisaiApp> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger),
                 const SizedBox(height: 16),
                 const Text('Initialization Error'),
                 const SizedBox(height: 8),
@@ -545,10 +545,10 @@ class _AppRouterHostState extends State<_AppRouterHost> {
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
         home: Scaffold(
-          backgroundColor: Colors.grey[900],
-          body: const Center(
+          backgroundColor: AppTheme.colorsOf(context).backgroundCard,
+          body: Center(
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).info),
             ),
           ),
         ),
