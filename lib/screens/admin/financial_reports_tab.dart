@@ -4,6 +4,7 @@ import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import '../../config/theme.dart';
 
 /// Financial Reports Tab for the Admin Center
 /// Provides revenue reports, subscription metrics, and export functionality
@@ -109,9 +110,9 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
     // Check permission
     if (!adminService.hasPermission(AdminPermission.exportReports)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('You do not have permission to export reports'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
       return;
@@ -129,7 +130,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Report exported successfully as $format'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.colorsOf(context).success,
           ),
         );
       }
@@ -138,7 +139,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to export report: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.colorsOf(context).danger,
           ),
         );
       }
@@ -167,7 +168,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                 'View revenue reports, subscription metrics, and export data',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade700),
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ),
@@ -301,11 +302,11 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+            Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger.withOpacity(0.3)),
             const SizedBox(height: 16),
             Text(
               _error!,
-              style: TextStyle(color: Colors.red.shade700),
+              style: TextStyle(color: AppTheme.colorsOf(context).danger),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -352,7 +353,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Total Revenue',
                   '\$${totalRevenue.toStringAsFixed(2)}',
                   Icons.attach_money,
-                  Colors.green,
+                  AppTheme.colorsOf(context).success,
                 ),
               ),
               const SizedBox(width: 16),
@@ -361,7 +362,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Transactions',
                   transactionCount.toString(),
                   Icons.receipt_long,
-                  Colors.blue,
+                  AppTheme.colorsOf(context).info,
                 ),
               ),
               const SizedBox(width: 16),
@@ -370,7 +371,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Avg Transaction',
                   '\$${avgTransactionValue.toStringAsFixed(2)}',
                   Icons.trending_up,
-                  Colors.orange,
+                  AppTheme.colorsOf(context).warning,
                 ),
               ),
             ],
@@ -427,7 +428,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Monthly Recurring Revenue',
                   '\$${mrr.toStringAsFixed(2)}',
                   Icons.autorenew,
-                  Colors.green,
+                  AppTheme.colorsOf(context).success,
                 ),
               ),
               const SizedBox(width: 16),
@@ -436,7 +437,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Active Subscriptions',
                   activeSubscriptions.toString(),
                   Icons.people,
-                  Colors.blue,
+                  AppTheme.colorsOf(context).info,
                 ),
               ),
             ],
@@ -451,7 +452,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Churn Rate',
                   '${churnRate.toStringAsFixed(1)}%',
                   Icons.trending_down,
-                  Colors.red,
+                  AppTheme.colorsOf(context).danger,
                 ),
               ),
               const SizedBox(width: 16),
@@ -460,7 +461,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Retention Rate',
                   '${retentionRate.toStringAsFixed(1)}%',
                   Icons.trending_up,
-                  Colors.green,
+                  AppTheme.colorsOf(context).success,
                 ),
               ),
             ],
@@ -475,7 +476,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'New Subscriptions',
                   newSubscriptions.toString(),
                   Icons.add_circle,
-                  Colors.blue,
+                  AppTheme.colorsOf(context).info,
                 ),
               ),
               const SizedBox(width: 16),
@@ -484,7 +485,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   'Canceled Subscriptions',
                   canceledSubscriptions.toString(),
                   Icons.cancel,
-                  Colors.orange,
+                  AppTheme.colorsOf(context).warning,
                 ),
               ),
             ],
@@ -537,7 +538,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade700,
+                          color: AppTheme.colorsOf(context).textColorLight,
                         ),
                   ),
                 ),
@@ -560,7 +561,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
   /// Build revenue by tier table
   Widget _buildRevenueByTierTable(List<Map<String, dynamic>> data) {
     return Table(
-      border: TableBorder.all(color: Colors.grey.shade300),
+      border: TableBorder.all(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.3)),
       columnWidths: const {
         0: FlexColumnWidth(2),
         1: FlexColumnWidth(1),
@@ -570,7 +571,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
       children: [
         // Header
         TableRow(
-          decoration: BoxDecoration(color: Colors.grey.shade100),
+          decoration: BoxDecoration(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.15)),
           children: [
             _buildTableCell('Tier', isHeader: true),
             _buildTableCell('Transactions', isHeader: true),
@@ -601,7 +602,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
   /// Build subscriptions by tier table
   Widget _buildSubscriptionsByTierTable(List<Map<String, dynamic>> data) {
     return Table(
-      border: TableBorder.all(color: Colors.grey.shade300),
+      border: TableBorder.all(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.3)),
       columnWidths: const {
         0: FlexColumnWidth(2),
         1: FlexColumnWidth(1),
@@ -612,7 +613,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
       children: [
         // Header
         TableRow(
-          decoration: BoxDecoration(color: Colors.grey.shade100),
+          decoration: BoxDecoration(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.15)),
           children: [
             _buildTableCell('Tier', isHeader: true),
             _buildTableCell('Total', isHeader: true),
