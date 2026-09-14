@@ -56,7 +56,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
     final isMobile = size.width < 768;
 
     return Material(
-      color: Colors.black.withValues(alpha: 0.5),
+      color: AppTheme.colorsOf(context).textColorDark.withValues(alpha: 0.5),
       child: Center(
         child: Container(
           margin: EdgeInsets.all(AppTheme.spacingL),
@@ -69,7 +69,7 @@ class _WebDownloadPromptState extends State<WebDownloadPrompt> {
             borderRadius: BorderRadius.circular(AppTheme.borderRadiusL),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
+                color: AppTheme.colorsOf(context).textColorDark.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
