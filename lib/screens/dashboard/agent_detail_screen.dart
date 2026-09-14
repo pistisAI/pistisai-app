@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -50,7 +51,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message ?? 'Unknown error'),
-        backgroundColor: result.success ? Colors.green : Colors.red,
+        backgroundColor: result.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
       ),
     );
 
@@ -66,7 +67,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message ?? 'Unknown error'),
-        backgroundColor: result.success ? Colors.green : Colors.red,
+        backgroundColor: result.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
       ),
     );
 
@@ -82,7 +83,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message ?? 'Unknown error'),
-        backgroundColor: result.success ? Colors.green : Colors.red,
+        backgroundColor: result.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
       ),
     );
 
@@ -113,7 +114,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                  Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).textColorLight),
                   const SizedBox(height: 16),
                   const Text('Agent not found'),
                   const SizedBox(height: 8),
@@ -187,7 +188,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
               children: [
                 Icon(
                   _getStatusIcon(agent.state),
-                  color: _getStatusColor(agent.state),
+                  color: _getStatusColor(context, agent.state),
                   size: 32,
                 ),
                 const SizedBox(width: 12),
@@ -202,7 +203,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
                       Text(
                         _getStatusText(agent.state),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: _getStatusColor(agent.state),
+                              color: _getStatusColor(context, agent.state),
                             ),
                       ),
                     ],
@@ -228,7 +229,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
               const SizedBox(height: 4),
               Text(
                 agent.errorMessage!,
-                style: TextStyle(color: Colors.red.shade700),
+                style: TextStyle(color: AppTheme.colorsOf(context).danger),
               ),
             ],
             if (agent.lastUpdate != null) ...[
@@ -318,20 +319,20 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
     );
   }
 
-  Color _getStatusColor(AgentLifecycleState state) {
+  Color _getStatusColor(BuildContext context, AgentLifecycleState state) {
     switch (state) {
       case AgentLifecycleState.idle:
-        return Colors.grey;
+        return AppTheme.colorsOf(context).textColorLight;
       case AgentLifecycleState.starting:
-        return Colors.orange;
+        return AppTheme.colorsOf(context).warning;
       case AgentLifecycleState.running:
-        return Colors.green;
+        return AppTheme.colorsOf(context).success;
       case AgentLifecycleState.stopping:
-        return Colors.orange.shade300;
+        return AppTheme.colorsOf(context).warning.withValues(alpha: 0.3);
       case AgentLifecycleState.error:
-        return Colors.red;
+        return AppTheme.colorsOf(context).danger;
       case AgentLifecycleState.offline:
-        return Colors.grey.shade400;
+        return AppTheme.colorsOf(context).textColorLight;
     }
   }
 
