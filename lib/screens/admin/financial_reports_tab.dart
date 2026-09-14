@@ -302,7 +302,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger.withOpacity(0.3)),
+            Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3)),
             const SizedBox(height: 16),
             Text(
               _error!,
@@ -561,7 +561,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
   /// Build revenue by tier table
   Widget _buildRevenueByTierTable(List<Map<String, dynamic>> data) {
     return Table(
-      border: TableBorder.all(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.3)),
+      border: TableBorder.all(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.3)),
       columnWidths: const {
         0: FlexColumnWidth(2),
         1: FlexColumnWidth(1),
@@ -571,7 +571,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
       children: [
         // Header
         TableRow(
-          decoration: BoxDecoration(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.15)),
+          decoration: BoxDecoration(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.15)),
           children: [
             _buildTableCell('Tier', isHeader: true),
             _buildTableCell('Transactions', isHeader: true),
@@ -602,7 +602,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
   /// Build subscriptions by tier table
   Widget _buildSubscriptionsByTierTable(List<Map<String, dynamic>> data) {
     return Table(
-      border: TableBorder.all(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.3)),
+      border: TableBorder.all(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.3)),
       columnWidths: const {
         0: FlexColumnWidth(2),
         1: FlexColumnWidth(1),
@@ -613,7 +613,7 @@ class _FinancialReportsTabState extends State<FinancialReportsTab> {
       children: [
         // Header
         TableRow(
-          decoration: BoxDecoration(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.15)),
+          decoration: BoxDecoration(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.15)),
           children: [
             _buildTableCell('Tier', isHeader: true),
             _buildTableCell('Total', isHeader: true),

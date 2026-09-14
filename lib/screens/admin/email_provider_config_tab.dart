@@ -220,7 +220,7 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.cloud_outlined, size: 64, color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.4)),
+              Icon(Icons.cloud_outlined, size: 64, color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.4)),
               const SizedBox(height: 16),
               Text(
                 'Email Configuration Not Available',
@@ -271,9 +271,9 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
+                    color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.colorsOf(context).danger.withOpacity(0.2)),
+                    border: Border.all(color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     children: [
@@ -300,9 +300,9 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: AppTheme.colorsOf(context).success.withOpacity(0.1),
+                    color: AppTheme.colorsOf(context).success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.colorsOf(context).success.withOpacity(0.2)),
+                    border: Border.all(color: AppTheme.colorsOf(context).success.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     children: [
@@ -585,9 +585,9 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                 margin: const EdgeInsets.only(top: 16),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppTheme.colorsOf(context).warning.withOpacity(0.1),
+                  color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.colorsOf(context).warning.withOpacity(0.2)),
+                  border: Border.all(color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [

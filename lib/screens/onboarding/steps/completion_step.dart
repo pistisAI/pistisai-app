@@ -31,7 +31,7 @@ class _CompletionStepState extends State<CompletionStep> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: AppTheme.colorsOf(context).success.withOpacity(0.1),
+                    color: AppTheme.colorsOf(context).success.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -107,9 +107,9 @@ class _CompletionStepState extends State<CompletionStep> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.colorsOf(context).info.withOpacity(0.1),
+                    color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.colorsOf(context).info.withOpacity(0.4)),
+                    border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.4)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -237,9 +237,9 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppTheme.colorsOf(context).info.withOpacity(0.1),
+                            color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppTheme.colorsOf(context).info.withOpacity(0.3)),
+                            border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3)),
                           ),
                           child: Row(
                             children: [
@@ -380,10 +380,10 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                     Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
+                                        color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
-                                          color: AppTheme.colorsOf(context).danger.withOpacity(0.3),
+                                          color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3),
                                         ),
                                       ),
                                       child: Row(
@@ -410,10 +410,10 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                     Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.colorsOf(context).success.withOpacity(0.1),
+                                        color: AppTheme.colorsOf(context).success.withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
-                                          color: AppTheme.colorsOf(context).success.withOpacity(0.3),
+                                          color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3),
                                         ),
                                       ),
                                       child: Row(
@@ -502,13 +502,13 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                   Icon(
                                     Icons.dns,
                                     size: 48,
-                                    color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.3),
+                                    color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.3),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
                                     'No DNS records configured',
                                     style: TextStyle(
-                                      color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
+                                      color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ],
@@ -548,8 +548,8 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                             label: Text(record.status),
                                             backgroundColor:
                                                 record.status == 'valid'
-                                                    ? AppTheme.colorsOf(context).success.withOpacity(0.15)
-                                                    : AppTheme.colorsOf(context).warning.withOpacity(0.15),
+                                                    ? AppTheme.colorsOf(context).success.withValues(alpha: 0.15)
+                                                    : AppTheme.colorsOf(context).warning.withValues(alpha: 0.15),
                                           ),
                                         ),
                                         DataCell(

@@ -75,9 +75,9 @@ class ConnectionMethodStep extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.colorsOf(context).warning.withOpacity(0.1),
+                  color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.colorsOf(context).warning.withOpacity(0.3)),
+                  border: Border.all(color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [

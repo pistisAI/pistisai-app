@@ -189,7 +189,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                     Text(
                       'Manage administrator accounts and roles',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
+                            color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                           ),
                     ),
                   ],
@@ -210,7 +210,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
         if (_errorMessage != null)
           Container(
             padding: const EdgeInsets.all(16.0),
-            color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
+            color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
             child: Row(
               children: [
                 Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
@@ -267,7 +267,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppTheme.colorsOf(context).info.withOpacity(0.15),
+                  backgroundColor: AppTheme.colorsOf(context).info.withValues(alpha: 0.15),
                   child: Text(
                     admin['email']?.substring(0, 1).toUpperCase() ?? '?',
                     style: TextStyle(
@@ -292,7 +292,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                         Text(
                           admin['username'],
                           style: TextStyle(
-                            color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
+                            color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                             fontSize: 14,
                           ),
                         ),
@@ -335,7 +335,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
               Container(
                 padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
-                  color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.1),
+                  color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -376,7 +376,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
+          style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7)),
         ),
         const SizedBox(height: 4),
         Text(
@@ -520,7 +520,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
                         'User management and support',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
+                          color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -536,7 +536,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
                         'Payments, refunds, and reports',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
+                          color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -556,7 +556,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
               Container(
                 padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
-                  color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
+                  color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(

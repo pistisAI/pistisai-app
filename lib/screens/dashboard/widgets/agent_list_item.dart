@@ -19,11 +19,11 @@ class AgentListItem extends StatelessWidget {
       case AgentLifecycleState.running:
         return AppTheme.colorsOf(context).success;
       case AgentLifecycleState.stopping:
-        return AppTheme.colorsOf(context).warning.withOpacity(0.7);
+        return AppTheme.colorsOf(context).warning.withValues(alpha: 0.7);
       case AgentLifecycleState.error:
         return AppTheme.colorsOf(context).danger;
       case AgentLifecycleState.offline:
-        return AppTheme.colorsOf(context).textColorLight.withOpacity(0.6);
+        return AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6);
     }
   }
 

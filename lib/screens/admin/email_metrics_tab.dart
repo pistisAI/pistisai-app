@@ -218,7 +218,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                   'Auto-refresh: Every 30s',
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
+                  ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7)),
                 ),
               ],
             ),
@@ -233,9 +233,9 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
+                  color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.colorsOf(context).danger.withOpacity(0.2)),
+                  border: Border.all(color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -363,7 +363,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
               title,
               style: Theme.of(
                 context,
-              ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -442,7 +442,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
           label,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
+          ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7)),
         ),
       ],
     );
@@ -468,7 +468,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
               Center(
                 child: Text(
                   'No data available for the selected date range',
-                  style: TextStyle(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
+                  style: TextStyle(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7)),
                 ),
               ),
             ],
@@ -588,7 +588,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
-                                  ?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
+                                  ?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7)),
                             ),
                           ],
                         ),
@@ -599,7 +599,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
+                          color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(

@@ -629,7 +629,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             Icon(
               Icons.folder_open,
               size: 64,
-              color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.6),
+              color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 16),
             Text(
