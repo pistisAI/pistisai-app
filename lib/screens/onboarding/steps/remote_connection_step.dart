@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
@@ -57,7 +58,7 @@ class _RemoteConnectionStepState extends State<RemoteConnectionStep> {
               Text(
                 'Enter the full URL to your OpenClaw Gateway',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade600,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
                 textAlign: TextAlign.center,
               ),
@@ -121,9 +122,9 @@ class _RemoteConnectionStepState extends State<RemoteConnectionStep> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: AppTheme.colorsOf(context).info.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(color: AppTheme.colorsOf(context).info.withOpacity(0.4)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,13 +132,13 @@ class _RemoteConnectionStepState extends State<RemoteConnectionStep> {
                     Row(
                       children: [
                         Icon(Icons.lightbulb_outline,
-                            color: Colors.blue.shade700),
+                            color: AppTheme.colorsOf(context).info),
                         const SizedBox(width: 8),
                         Text(
                           'Example URLs:',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade900,
+                            color: AppTheme.colorsOf(context).info,
                           ),
                         ),
                       ],
@@ -148,7 +149,7 @@ class _RemoteConnectionStepState extends State<RemoteConnectionStep> {
                       '• http://100.x.y.z:18789 (Tailscale IP)\n'
                       '• https://your-domain.com',
                       style: TextStyle(
-                        color: Colors.blue.shade900,
+                        color: AppTheme.colorsOf(context).info,
                         fontFamily: 'monospace',
                         fontSize: 12,
                       ),
