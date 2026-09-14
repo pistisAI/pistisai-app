@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import '../services/auth_logger.dart';
+import '../config/theme.dart';
 
 /// Debug panel for authentication logging
 /// Only visible in debug mode and on web platform
@@ -48,9 +49,9 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
             maxHeight: _isExpanded ? 500 : 60,
           ),
           decoration: BoxDecoration(
-            color: Colors.black87,
+            color: AppTheme.colorsOf(context).backgroundCard,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue, width: 1),
+            border: Border.all(color: AppTheme.colorsOf(context).info, width: 1),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,9 +67,9 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                   }
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
+                    color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12),
                       topRight: Radius.circular(12),
@@ -81,20 +82,20 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.bug_report, color: Colors.blue, size: 16),
-                      const SizedBox(width: 8),
+                      Icon(Icons.bug_report, color: AppTheme.colorsOf(context).info, size: 16),
+                      SizedBox(width: 8),
                       Text(
                         'Auth Debug',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppTheme.colorsOf(context).textColor,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Icon(
                         _isExpanded ? Icons.expand_less : Icons.expand_more,
-                        color: Colors.blue,
+                        color: AppTheme.colorsOf(context).info,
                         size: 16,
                       ),
                     ],
@@ -112,15 +113,15 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                     children: [
                       Text(
                         'Logs: ${_logs.length}',
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: AppTheme.colorsOf(context).textColorLight,
                           fontSize: 11,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         'Errors: ${_logs.where((l) => l.contains('[ERROR]')).length}',
-                        style: const TextStyle(color: Colors.red, fontSize: 11),
+                        style: TextStyle(color: AppTheme.colorsOf(context).danger, fontSize: 11),
                       ),
                     ],
                   ),
@@ -138,14 +139,14 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                             await AuthLogger.downloadLogs();
                             if (!mounted) return;
                             messenger.showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text('Debug log downloaded'),
                                 duration: Duration(seconds: 2),
                               ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: AppTheme.colorsOf(context).info,
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             textStyle: const TextStyle(fontSize: 10),
                           ),
@@ -159,14 +160,14 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                             AuthLogger.clearLogs();
                             _refreshLogs();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text('Debug log cleared'),
                                 duration: Duration(seconds: 2),
                               ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
+                            backgroundColor: AppTheme.colorsOf(context).danger,
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             textStyle: const TextStyle(fontSize: 10),
                           ),
@@ -182,12 +183,12 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                 // Recent logs
                 Expanded(
                   child: Container(
-                    margin: const EdgeInsets.all(12),
-                    padding: const EdgeInsets.all(8),
+                    margin: EdgeInsets.all(12),
+                    padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: AppTheme.colorsOf(context).backgroundCard,
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: Colors.grey.shade800),
+                      border: Border.all(color: AppTheme.colorsOf(context).textColorLight),
                     ),
                     child: ListView.builder(
                       itemCount: _logs.length > 10 ? 10 : _logs.length,
@@ -195,18 +196,18 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
                         final log = _logs[
                             _logs.length - 1 - index]; // Show newest first
 
-                        Color levelColor = Colors.white70;
+                        Color levelColor = AppTheme.colorsOf(context).textColorLight;
                         if (log.contains('[ERROR]')) {
-                          levelColor = Colors.red;
+                          levelColor = AppTheme.colorsOf(context).danger;
                         }
                         if (log.contains('[WARNING]')) {
-                          levelColor = Colors.orange;
+                          levelColor = AppTheme.colorsOf(context).warning;
                         }
                         if (log.contains('[INFO]')) {
-                          levelColor = Colors.blue;
+                          levelColor = AppTheme.colorsOf(context).info;
                         }
                         if (log.contains('[DEBUG]')) {
-                          levelColor = Colors.grey;
+                          levelColor = AppTheme.colorsOf(context).textColorLight;
                         }
 
                         return Padding(
@@ -233,13 +234,13 @@ class _AuthDebugPanelState extends State<AuthDebugPanel> {
 
                 // Refresh button
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _refreshLogs,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade700,
+                        backgroundColor: AppTheme.colorsOf(context).textColorLight,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         textStyle: const TextStyle(fontSize: 10),
                       ),
