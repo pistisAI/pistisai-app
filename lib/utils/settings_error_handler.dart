@@ -242,7 +242,7 @@ class SettingsErrorHandler {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   onRetry();
                 },
-                child: const Text(
+                child: Text(
                   'Retry',
                   style: TextStyle(color: AppTheme.colorsOf(context).textColor),
                 ),

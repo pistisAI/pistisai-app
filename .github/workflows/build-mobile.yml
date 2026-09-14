@@ -143,7 +143,7 @@ jobs:
   create_release:
     needs: [get_version, build_android, build_ios]
     if: >-
-      always() &&
+      needs.get_version.result == 'success' &&
       (needs.build_android.result == 'success' || needs.build_android.result == 'skipped') &&
       (needs.build_ios.result == 'success' || needs.build_ios.result == 'skipped')
     runs-on: ubuntu-24.04

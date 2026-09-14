@@ -65,11 +65,11 @@ if "secrets.VPS_USER || 'pistisai'" in workflow_text:
     raise SystemExit('Hermes workflow must not fall back to Simon SSH user')
 
 required_web = [
-    "secrets.VPS_HOST || 'pistisai.app'",
-    "secrets.VPS_USER || 'cloudllm'",
-    '/opt/Pistisai',
-    'https://app.pistisai.app/health',
-    'skipping live VPS deploy',
+    "secrets.DEPLOY_WEBHOOK_URL || 'https://deploy.pistisai.app/deploy'",
+    "secrets.DEPLOY_WEBHOOK_SECRET || 'pistisai-deploy-secret'",
+    'Trigger VPS deploy via webhook',
+    'Purge Cloudflare cache',
+    'flutter build web --release',
 ]
 for needle in required_web:
     if needle not in web_text:
@@ -80,8 +80,8 @@ if "secrets.VPS_USER || 'pistisai'" in web_text:
     raise SystemExit('web deploy must not fall back to Simon SSH user')
 if "/opt/pistisai/deploy" in web_text:
     raise SystemExit('web deploy still targets Simon deploy dir')
-if '31.97.140.7' in web_text and 'Ignoring Simon VPS host' not in web_text:
-    raise SystemExit('web deploy mentions Simon VPS without remapping it')
+if '31.97.140.7' in web_text:
+    raise SystemExit('web deploy must not reference Simon VPS')
 
 required_compose = [
     'nousresearch/hermes-agent',

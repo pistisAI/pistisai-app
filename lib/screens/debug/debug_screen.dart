@@ -684,7 +684,7 @@ class _DebugScreenState extends State<DebugScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline,
+                        Icon(Icons.error_outline,
                             size: 16, color: AppTheme.colorsOf(context).danger),
                         const SizedBox(width: 8),
                         Expanded(
