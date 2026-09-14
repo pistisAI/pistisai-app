@@ -219,7 +219,7 @@ class AdminAccessibility {
           child: Text(
             label,
             style: TextStyle(
-              color: Colors.white,
+              color: AppTheme.colorsOf(context).textColor,
               fontWeight: FontWeight.w600,
             ),
           ),
