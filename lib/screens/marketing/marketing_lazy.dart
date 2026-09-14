@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'download_screen.dart';
 import 'documentation_screen.dart';
 import 'homepage_screen.dart';
+import '../../config/theme.dart';
 
 // Re-export HomepageScreen for use in router.dart's home route
 export 'homepage_screen.dart';
@@ -31,7 +32,7 @@ final marketingRoutes = [
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.desktop_windows, size: 64, color: Colors.grey),
+                Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
                 SizedBox(height: 16),
                 Text('Desktop App Required',
                     style: Theme.of(context).textTheme.headlineSmall),
@@ -64,7 +65,7 @@ final marketingRoutes = [
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.desktop_windows, size: 64, color: Colors.grey),
+                Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
                 SizedBox(height: 16),
                 Text('Desktop App Required',
                     style: Theme.of(context).textTheme.headlineSmall),
@@ -98,7 +99,7 @@ final marketingRoutes = [
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.desktop_windows, size: 64, color: Colors.grey),
+                  Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
                   SizedBox(height: 16),
                   Text('Desktop App Required',
                       style: Theme.of(context).textTheme.headlineSmall),
@@ -133,7 +134,7 @@ final marketingRoutes = [
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.desktop_windows, size: 64, color: Colors.grey),
+                  Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
                   SizedBox(height: 16),
                   Text('Desktop App Required',
                       style: Theme.of(context).textTheme.headlineSmall),
