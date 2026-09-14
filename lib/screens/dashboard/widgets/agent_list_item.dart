@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/theme.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
 
 /// Agent List Item widget — renders an [AgentInfo] from the
@@ -9,20 +10,20 @@ class AgentListItem extends StatelessWidget {
 
   const AgentListItem({super.key, required this.agent, this.onTap});
 
-  Color _statusColor(AgentLifecycleState state) {
+  Color _statusColor(BuildContext context, AgentLifecycleState state) {
     switch (state) {
       case AgentLifecycleState.idle:
-        return Colors.grey;
+        return AppTheme.colorsOf(context).textColorLight;
       case AgentLifecycleState.starting:
-        return Colors.orange;
+        return AppTheme.colorsOf(context).warning;
       case AgentLifecycleState.running:
-        return Colors.green;
+        return AppTheme.colorsOf(context).success;
       case AgentLifecycleState.stopping:
-        return Colors.orange.shade300;
+        return AppTheme.colorsOf(context).warning.withOpacity(0.7);
       case AgentLifecycleState.error:
-        return Colors.red;
+        return AppTheme.colorsOf(context).danger;
       case AgentLifecycleState.offline:
-        return Colors.grey.shade400;
+        return AppTheme.colorsOf(context).textColorLight.withOpacity(0.6);
     }
   }
 
@@ -63,7 +64,7 @@ class AgentListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = agent.state;
-    final color = _statusColor(state);
+    final color = _statusColor(context, state);
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: color.withValues(alpha: 0.15),
