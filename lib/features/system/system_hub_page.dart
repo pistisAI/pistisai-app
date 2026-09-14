@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 class SystemHubPage extends StatefulWidget {
   const SystemHubPage({super.key});
@@ -25,20 +26,20 @@ class _SystemHubPageState extends State<SystemHubPage> {
             Icon(
               Icons.settings_applications,
               size: 64,
-              color: Colors.grey.shade400,
+              color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
             Text(
               'System Hub is not available',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey.shade600,
+                    color: AppTheme.colorsOf(context).textColorLight,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
               'System monitoring features require additional dependencies',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade500,
+                    color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                   ),
             ),
           ],
