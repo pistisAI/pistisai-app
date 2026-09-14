@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 class ResourceOverviewScreen extends StatelessWidget {
   const ResourceOverviewScreen({super.key});
@@ -13,28 +14,28 @@ class ResourceOverviewScreen extends StatelessWidget {
           value: '12%',
           status: 'Healthy',
           icon: Icons.speed,
-          color: Colors.green,
+          color: AppTheme.colorsOf(context).success,
         ),
         _ResourceCard(
           title: 'Memory (RAM)',
           value: '45%',
           status: 'Normal',
           icon: Icons.memory,
-          color: Colors.blue,
+          color: AppTheme.colorsOf(context).info,
         ),
         _ResourceCard(
           title: 'Storage (Disk)',
           value: '97GB / 952GB',
           status: '11% Used',
           icon: Icons.storage,
-          color: Colors.orange,
+          color: AppTheme.colorsOf(context).warning,
         ),
         _ResourceCard(
           title: 'Network (Tunnel)',
           value: 'Active',
           status: 'Latency: 45ms',
           icon: Icons.lan,
-          color: Colors.green,
+          color: AppTheme.colorsOf(context).success,
         ),
       ],
     );
@@ -58,6 +59,7 @@ class _ResourceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppTheme.colorsOf(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -76,7 +78,7 @@ class _ResourceCard extends StatelessWidget {
                   Text(title,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(status,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                      style: TextStyle(color: colors.textColorLight, fontSize: 12)),
                 ],
               ),
             ),
