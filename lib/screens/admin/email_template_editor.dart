@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
+import '../../config/theme.dart';
 
 /// Email Template Editor Screen for the Admin Center
 /// Allows administrators to create, edit, and manage email templates
@@ -215,7 +216,7 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).danger),
             child: const Text('Delete'),
           ),
         ],
@@ -372,12 +373,12 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                           Icon(
                             Icons.mail_outline,
                             size: 48,
-                            color: Colors.grey.shade300,
+                            color: AppTheme.colorsOf(context).textColorLight,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'No templates',
-                            style: TextStyle(color: Colors.grey.shade600),
+                            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
                           ),
                         ],
                       ),
@@ -396,7 +397,7 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           selected: isSelected,
-                          selectedTileColor: Colors.blue.shade50,
+                          selectedTileColor: AppTheme.colorsOf(context).info,
                           onTap: () => _selectTemplate(template),
                           trailing: template.isSystemTemplate
                               ? Tooltip(
@@ -404,7 +405,7 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                                   child: Icon(
                                     Icons.lock,
                                     size: 16,
-                                    color: Colors.grey.shade400,
+                                    color: AppTheme.colorsOf(context).textColorLight,
                                   ),
                                 )
                               : null,
@@ -442,7 +443,7 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                       Text(
                         'Created: ${_formatDate(_selectedTemplate!.createdAt)}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey.shade600,
+                              color: AppTheme.colorsOf(context).textColorLight,
                             ),
                       ),
                   ],
@@ -451,7 +452,7 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                   children: [
                     if (!_isEditingNew && _selectedTemplate != null)
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
+                        icon: Icon(Icons.delete, color: AppTheme.colorsOf(context).danger),
                         onPressed: _isDeleting
                             ? null
                             : () => _deleteTemplate(_selectedTemplate!.id),
@@ -479,24 +480,24 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 24),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade50,
+                  color: AppTheme.colorsOf(context).danger,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.shade200),
+                  border: Border.all(color: AppTheme.colorsOf(context).danger),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, color: Colors.red.shade700),
+                    Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         _error!,
-                        style: TextStyle(color: Colors.red.shade700),
+                        style: TextStyle(color: AppTheme.colorsOf(context).danger),
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => setState(() => _error = null),
-                      color: Colors.red.shade700,
+                      color: AppTheme.colorsOf(context).danger,
                     ),
                   ],
                 ),
@@ -508,27 +509,27 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 24),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: AppTheme.colorsOf(context).success,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.shade200),
+                  border: Border.all(color: AppTheme.colorsOf(context).success),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.check_circle_outline,
-                      color: Colors.green.shade700,
+                      color: AppTheme.colorsOf(context).success,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         _successMessage!,
-                        style: TextStyle(color: Colors.green.shade700),
+                        style: TextStyle(color: AppTheme.colorsOf(context).success),
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => setState(() => _successMessage = null),
-                      color: Colors.green.shade700,
+                      color: AppTheme.colorsOf(context).success,
                     ),
                   ],
                 ),
@@ -657,9 +658,9 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
+                        border: Border.all(color: AppTheme.colorsOf(context).textColorLight),
                         borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey.shade50,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -675,9 +676,9 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppTheme.colorsOf(context).textColor,
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: Colors.grey.shade200),
+                              border: Border.all(color: AppTheme.colorsOf(context).textColorLight),
                             ),
                             child: SelectableText(
                               _renderPreview(),
@@ -711,12 +712,12 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
                       FilledButton.icon(
                         onPressed: _isSaving ? null : _saveTemplate,
                         icon: _isSaving
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Colors.white,
+                                  color: AppTheme.colorsOf(context).textColor,
                                 ),
                               )
                             : const Icon(Icons.save),
@@ -739,20 +740,20 @@ class _EmailTemplateEditorState extends State<EmailTemplateEditor> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.mail_outline, size: 64, color: Colors.grey.shade300),
+          Icon(Icons.mail_outline, size: 64, color: AppTheme.colorsOf(context).textColorLight),
           const SizedBox(height: 16),
           Text(
             'No template selected',
             style: Theme.of(
               context,
-            ).textTheme.headlineSmall?.copyWith(color: Colors.grey.shade600),
+            ).textTheme.headlineSmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           const SizedBox(height: 8),
           Text(
             'Select a template from the list or create a new one',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
         ],
       ),
