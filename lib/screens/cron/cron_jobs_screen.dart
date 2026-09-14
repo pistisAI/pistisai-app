@@ -4,6 +4,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import '../../services/cron_service.dart';
 import '../../di/locator.dart' as di;
 import '../../widgets/common/empty_state.dart';
@@ -124,12 +125,12 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
       if (mounted) {
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Job deleted successfully')),
+            SnackBar(content: Text('Job deleted successfully')),
           );
           unawaited(_loadData());
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to delete job')),
+            SnackBar(content: Text('Failed to delete job')),
           );
         }
       }
@@ -363,9 +364,9 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                               unawaited(_loadData());
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text('Failed to save scheduled job'),
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: AppTheme.colorsOf(context).danger,
                                 ),
                               );
                             }
