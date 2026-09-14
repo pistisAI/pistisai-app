@@ -5,6 +5,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../config/theme.dart';
 
 /// Accessibility utilities for building accessible UI
 class AccessibilityHelpers {
@@ -174,7 +175,7 @@ class _AccessibleTextInputState extends State<AccessibleTextInput> {
               child: Text(
                 widget.description!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade600,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
               ),
             ),
@@ -227,7 +228,7 @@ class _AccessibleTextInputState extends State<AccessibleTextInput> {
               child: Text(
                 widget.errorMessage!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.red.shade600,
+                      color: AppTheme.colorsOf(context).danger,
                       fontWeight: FontWeight.w500,
                     ),
               ),
@@ -303,7 +304,7 @@ class AccessibleToggle extends StatelessWidget {
                     Text(
                       description!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey.shade600,
+                            color: AppTheme.colorsOf(context).textColorLight,
                           ),
                     ),
                   ],
@@ -398,7 +399,7 @@ class AccessibleButton extends StatelessWidget {
       case 'danger':
         return FilledButton(
           style: FilledButton.styleFrom(
-            backgroundColor: Colors.red.shade600,
+            backgroundColor: AppTheme.colorsOf(context).danger,
           ),
           onPressed: isLoading ? null : onPressed,
           child: content,
@@ -476,7 +477,7 @@ class AccessibleDropdown<T> extends StatelessWidget {
               Text(
                 description!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade600,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
               ),
             ],
