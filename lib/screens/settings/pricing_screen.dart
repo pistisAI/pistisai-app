@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../di/locator.dart' as di;
 import '../../services/enhanced_user_tier_service.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
+import '../../config/theme.dart';
 
 /// Pricing and Upgrade Screen
 /// Displays subscription plans and handles upgrade/downgrade flow
@@ -66,7 +67,7 @@ class _PricingScreenState extends State<PricingScreen> {
 
   /// Show upgrade confirmation dialog
   void _showUpgradeConfirmation(String planId) {
-    final plan = _getPlanDetails(planId);
+    final plan = _getPlanDetails(context, planId);
 
     showDialog(
       context: context,
@@ -77,14 +78,14 @@ class _PricingScreenState extends State<PricingScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Price: ${plan['price']}'),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ...List.generate(
               (plan['benefits'] as List).length,
               (index) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
+                padding: EdgeInsets.only(bottom: 4),
                 child: Row(
                   children: [
-                    const Icon(Icons.check, size: 16, color: Colors.green),
+                    Icon(Icons.check, size: 16, color: AppTheme.colorsOf(context).success),
                     const SizedBox(width: 8),
                     Text(plan['benefits'][index]),
                   ],
@@ -131,20 +132,20 @@ class _PricingScreenState extends State<PricingScreen> {
   }
 
   /// Get plan details
-  Map<String, dynamic> _getPlanDetails(String planId) {
-    final plans = _getPlans();
+  Map<String, dynamic> _getPlanDetails(BuildContext context, String planId) {
+    final plans = _getPlans(context);
     return plans.firstWhere((p) => p['id'] == planId);
   }
 
   /// Get all available plans
-  List<Map<String, dynamic>> _getPlans() {
+  List<Map<String, dynamic>> _getPlans(BuildContext context) {
     return [
       {
         'id': 'free',
         'name': 'Free',
         'price': '\$0/month',
         'description': 'For users who want basic functionality',
-        'color': Colors.grey,
+        'color': AppTheme.colorsOf(context).textColorLight,
         'icon': Icons.info,
         'benefits': [
           'Web platform access',
@@ -160,7 +161,7 @@ class _PricingScreenState extends State<PricingScreen> {
         'name': 'Premium',
         'price': '\$9.99/month',
         'description': 'For power users who need more features',
-        'color': Colors.blue,
+        'color': AppTheme.colorsOf(context).info,
         'icon': Icons.star,
         'benefits': [
           'All platform access (web, mobile)',
@@ -178,7 +179,7 @@ class _PricingScreenState extends State<PricingScreen> {
         'name': 'Enterprise',
         'price': '\$29.99/month',
         'description': 'For teams and organizations',
-        'color': Colors.purple,
+        'color': AppTheme.colorsOf(context).accent,
         'icon': Icons.diamond,
         'benefits': [
           'Everything in Premium',
@@ -196,7 +197,7 @@ class _PricingScreenState extends State<PricingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final plans = _getPlans();
+    final plans = _getPlans(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -229,35 +230,35 @@ class _PricingScreenState extends State<PricingScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           'Select the plan that best fits your needs',
                           style:
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Colors.grey.shade600,
+                                    color: AppTheme.colorsOf(context).textColorLight,
                                   ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   // Current tier indicator
                   if (_getCurrentTier() != 'free')
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        border: Border.all(color: Colors.green.shade300),
+                        color: AppTheme.colorsOf(context).success.withValues(alpha: 0.05),
+                        border: Border.all(color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3)),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.check_circle, color: Colors.green),
-                          const SizedBox(width: 12),
+                          Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success),
+                          SizedBox(width: 12),
                           Text(
                             'You are currently on the ${_getCurrentTier().capitalize()} plan',
-                            style: TextStyle(color: Colors.green.shade800),
+                            style: TextStyle(color: AppTheme.colorsOf(context).success),
                           ),
                         ],
                       ),
@@ -270,22 +271,22 @@ class _PricingScreenState extends State<PricingScreen> {
                   // Error message
                   if (_error != null)
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       child: Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          border: Border.all(color: Colors.red.shade300),
+                          color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.05),
+                          border: Border.all(color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3)),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.error, color: Colors.red),
-                            const SizedBox(width: 12),
+                            Icon(Icons.error, color: AppTheme.colorsOf(context).danger),
+                            SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 _error!,
-                                style: const TextStyle(color: Colors.red),
+                                style: TextStyle(color: AppTheme.colorsOf(context).danger),
                               ),
                             ),
                           ],
@@ -307,14 +308,14 @@ class _PricingScreenState extends State<PricingScreen> {
     final color = plan['color'] as Color;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 24),
+      margin: EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         border: Border.all(
-          color: isCurrent ? Colors.green : color.withValues(alpha: 0.5),
+          color: isCurrent ? AppTheme.colorsOf(context).success : color.withValues(alpha: 0.5),
           width: isCurrent ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(16),
-        color: isCurrent ? Colors.green.shade50 : Colors.white,
+        color: isCurrent ? AppTheme.colorsOf(context).success.withValues(alpha: 0.05) : AppTheme.colorsOf(context).textColor,
       ),
       child: Column(
         children: [
@@ -343,18 +344,18 @@ class _PricingScreenState extends State<PricingScreen> {
                           ),
                           if (isCurrent)
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 8,
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.green,
+                                color: AppTheme.colorsOf(context).success,
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'CURRENT PLAN',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: AppTheme.colorsOf(context).textColor,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -373,11 +374,11 @@ class _PricingScreenState extends State<PricingScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   plan['description'] as String,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey.shade600,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
               ],
@@ -387,7 +388,7 @@ class _PricingScreenState extends State<PricingScreen> {
           // Divider
           Container(
             height: 1,
-            color: Colors.grey.shade200,
+            color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.2),
             margin: const EdgeInsets.symmetric(horizontal: 24),
           ),
 
