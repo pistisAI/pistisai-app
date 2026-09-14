@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pistisai/widgets/navigation/breadcrumb_bar.dart';
 
@@ -217,8 +218,8 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: AppTheme.colorsOf(context).danger,
+              foregroundColor: AppTheme.colorsOf(context).textColor,
             ),
             child: const Text('Delete'),
           ),
@@ -432,12 +433,12 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _detailRow(Icons.description, 'Type',
+            _detailRow(context, Icons.description, 'Type',
                 item is Directory ? 'Directory' : 'File'),
-            _detailRow(Icons.storage, 'Size', sizeText),
-            _detailRow(Icons.access_time, 'Modified',
+            _detailRow(context, Icons.storage, 'Size', sizeText),
+            _detailRow(context, Icons.access_time, 'Modified',
                 '${modified.day}/${modified.month}/${modified.year}'),
-            _detailRow(Icons.folder, 'Path', item.path),
+            _detailRow(context, Icons.folder, 'Path', item.path),
           ],
         ),
         actions: [
@@ -450,12 +451,12 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
     );
   }
 
-  Widget _detailRow(IconData icon, String label, String value) {
+  Widget _detailRow(BuildContext context, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.grey[600]),
+          Icon(icon, size: 18, color: AppTheme.colorsOf(context).textColorLight),
           const SizedBox(width: 12),
           Text(
             '$label: ',
@@ -611,7 +612,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             icon: const Icon(Icons.delete),
             onPressed: _deleteSelected,
             tooltip: 'Delete',
-            color: Colors.red,
+            color: AppTheme.colorsOf(context).danger,
           ),
         ],
       ),
@@ -628,14 +629,14 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             Icon(
               Icons.folder_open,
               size: 64,
-              color: Colors.grey[400],
+              color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.6),
             ),
             const SizedBox(height: 16),
             Text(
               'This folder is empty',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.grey[600],
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
             ),
           ],
@@ -661,7 +662,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             isDirectory ? Icons.folder : _getFileIcon(item),
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
-                : (isDirectory ? Colors.amber : Colors.blue),
+                : (isDirectory ? AppTheme.colorsOf(context).warning : AppTheme.colorsOf(context).info),
           ),
           title: Text(
             _getItemName(item),
