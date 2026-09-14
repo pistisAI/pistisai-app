@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/avatar/avatar_state_service.dart';
 import '../../di/locator.dart' as di;
 import '../../database/drift_local_brain.dart';
+import '../../config/theme.dart';
 
 /// Screen for displaying avatar achievements
 ///
@@ -131,70 +132,70 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   }
 
   /// Get achievement metadata
-  AchievementMetadata _getAchievementMetadata(String achievementId) {
+  AchievementMetadata _getAchievementMetadata(BuildContext context, String achievementId) {
     switch (achievementId) {
       case 'first_chat':
         return AchievementMetadata(
           title: 'First Conversation',
           description: 'Complete your first conversation with the avatar',
           icon: Icons.chat_bubble_outline,
-          color: Colors.blue,
+          color: AppTheme.colorsOf(context).info,
         );
       case 'deep_conversations_5':
         return AchievementMetadata(
           title: 'Getting to Know You',
           description: 'Have 5 deep conversations',
           icon: Icons.auto_awesome,
-          color: Colors.green,
+          color: AppTheme.colorsOf(context).success,
         );
       case 'deep_conversations_15':
         return AchievementMetadata(
           title: 'Deep Thinker',
           description: 'Have 15 deep conversations',
           icon: Icons.psychology,
-          color: Colors.purple,
+          color: AppTheme.colorsOf(context).accent,
         );
       case 'deep_conversations_30':
         return AchievementMetadata(
           title: 'Conversational Master',
           description: 'Have 30 deep conversations',
           icon: Icons.school,
-          color: Colors.orange,
+          color: AppTheme.colorsOf(context).warning,
         );
       case 'high_novelty':
         return AchievementMetadata(
           title: 'Novelty Seeker',
           description: 'Maintain high novelty in conversations (60%+)',
           icon: Icons.explore,
-          color: Colors.teal,
+          color: AppTheme.colorsOf(context).info,
         );
       case 'knowledge_seeker':
         return AchievementMetadata(
           title: 'Knowledge Seeker',
           description: 'Evolve your avatar to the Knowledge Seeker stage',
           icon: Icons.trending_up,
-          color: Colors.indigo,
+          color: AppTheme.colorsOf(context).primary,
         );
       case 'wise_companion':
         return AchievementMetadata(
           title: 'Wise Companion',
           description: 'Evolve your avatar to the Wise Companion stage',
           icon: Icons.stars,
-          color: Colors.amber,
+          color: AppTheme.colorsOf(context).warning,
         );
       case 'enlightened_guide':
         return AchievementMetadata(
           title: 'Enlightened Guide',
           description: 'Evolve your avatar to the Enlightened Guide stage',
           icon: Icons.workspace_premium,
-          color: Colors.redAccent,
+          color: AppTheme.colorsOf(context).danger,
         );
       default:
         return AchievementMetadata(
           title: achievementId,
           description: '',
           icon: Icons.emoji_events,
-          color: Colors.grey,
+          color: AppTheme.colorsOf(context).textColorLight,
         );
     }
   }
@@ -210,12 +211,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
     if (_errorMessage != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Achievements')),
+        appBar: AppBar(title: Text('Achievements')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger),
               const SizedBox(height: 16),
               Text(_errorMessage!, textAlign: TextAlign.center),
               const SizedBox(height: 16),
@@ -241,16 +242,16 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Stats card
             _buildStatsCard(),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // Unlocked achievements
-            _buildSectionHeader('Unlocked', Icons.check_circle, Colors.green),
+            _buildSectionHeader('Unlocked', Icons.check_circle, AppTheme.colorsOf(context).success),
             const SizedBox(height: 12),
             if (_unlockedAchievements.isEmpty)
               _buildEmptyState(
@@ -258,7 +259,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             else
               ..._unlockedAchievements.map((achievement) {
                 final metadata =
-                    _getAchievementMetadata(achievement.achievementId);
+                    _getAchievementMetadata(context, achievement.achievementId);
                 return _buildAchievementCard(
                   achievement: achievement,
                   metadata: metadata,
@@ -266,10 +267,10 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                 );
               }),
 
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
 
             // Locked achievements
-            _buildSectionHeader('Locked', Icons.lock, Colors.grey),
+            _buildSectionHeader('Locked', Icons.lock, AppTheme.colorsOf(context).textColorLight),
             const SizedBox(height: 12),
             ..._progressMap.entries.where((entry) {
               final achievementId = entry.key;
@@ -277,7 +278,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                   .any((a) => a.achievementId == achievementId);
               return !isUnlocked;
             }).map((entry) {
-              final metadata = _getAchievementMetadata(entry.key);
+              final metadata = _getAchievementMetadata(context, entry.key);
               final progress = entry.value;
               return _buildAchievementCard(
                 achievement: Achievement(
@@ -335,7 +336,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                       Text(
                         '$unlockedCount of $totalCount unlocked',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
+                              color: AppTheme.colorsOf(context).textColorLight,
                             ),
                       ),
                     ],
@@ -398,14 +399,14 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             Icon(
               Icons.emoji_events_outlined,
               size: 64,
-              color: Colors.grey[400],
+              color: AppTheme.colorsOf(context).textColorLight,
             ),
             const SizedBox(height: 16),
             Text(
               message,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
               textAlign: TextAlign.center,
             ),
@@ -435,17 +436,17 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
               decoration: BoxDecoration(
                 color: isUnlocked
                     ? metadata.color.withValues(alpha: 0.2)
-                    : Colors.grey[200],
+                    : AppTheme.colorsOf(context).textColorLight,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isUnlocked ? metadata.color : Colors.grey[400]!,
+                  color: isUnlocked ? metadata.color : AppTheme.colorsOf(context).textColorLight!,
                   width: 2,
                 ),
               ),
               child: Icon(
                 metadata.icon,
                 size: 32,
-                color: isUnlocked ? metadata.color : Colors.grey[400],
+                color: isUnlocked ? metadata.color : AppTheme.colorsOf(context).textColorLight,
               ),
             ),
             const SizedBox(width: 16),
@@ -464,7 +465,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                   Text(
                     metadata.description,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: AppTheme.colorsOf(context).textColorLight,
                         ),
                   ),
                   if (!isUnlocked && progress != null) ...[
@@ -516,7 +517,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             if (isUnlocked)
               Icon(
                 Icons.check_circle,
-                color: Colors.green,
+                color: AppTheme.colorsOf(context).success,
                 size: 28,
               ),
           ],
