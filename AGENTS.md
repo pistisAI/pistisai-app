@@ -38,6 +38,28 @@ Flutter desktop/web app plus Node.js backend services: a local-first companion a
 
 5. **Keep it moving.** Analyze, build, push. Don't ask for permission. If the build fails, fix it and push again.
 
+### Version bumping — mandatory for feature/fix work
+
+**Every push to `main` that changes code (`lib/**`, `pubspec.yaml`) MUST produce a new release.** The GitHub Actions workflow (`build-desktop.yml`) auto-bumps the patch version if `assets/version.json` was not manually bumped, but relying on auto-bump is sloppy — always bump explicitly.
+
+**Rule: when you add a feature or fix a bug, bump the version yourself.**
+
+```bash
+# Read current version
+CURRENT=$(jq -r '.version' assets/version.json)   # e.g. 1.1.2
+# Bump patch (or minor for breaking changes)
+NEW_VERSION="1.1.3"
+# Update both files
+jq ".version = \"$NEW_VERSION\" | .build_number = \"$(($(jq -r '.build_number' assets/version.json) + 1))\"" assets/version.json > v.json.tmp && mv v.json.tmp assets/version.json
+sed -i "s/^version: .*/version: $NEW_VERSION+$(jq -r '.build_number' assets/version.json)/" pubspec.yaml
+```
+
+- **Patch bump** (`1.1.2 → 1.1.3`): bug fixes, theme fixes, small UI tweaks
+- **Minor bump** (`1.1.2 → 1.2.0`): new features, new screens, notable UX changes
+- **Major bump** (`1.1.2 → 2.0.0`): breaking changes, architecture overhauls
+
+Both `assets/version.json` and `pubspec.yaml` must be updated and committed before push. The CI workflow reads `assets/version.json` and compares it against the latest GitHub release tag — if they differ, it publishes a new release. If you forget, the workflow will auto-bump patch, but don't rely on that.
+
 ## Commands
 
 ### Flutter app
