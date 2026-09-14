@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../config/theme.dart';
 import '../services/gui_automation_service.dart';
 
 class GuiAutomationScreen extends StatefulWidget {
@@ -51,8 +52,8 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
                               ? Icons.check_circle
                               : Icons.warning,
                           color: _service.isInitialized
-                              ? Colors.green
-                              : Colors.orange,
+                              ? AppTheme.colorsOf(context).success
+                              : AppTheme.colorsOf(context).warning,
                         ),
                         const SizedBox(width: 8),
                         Text(_service.status),
@@ -142,11 +143,11 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
-                children: const [
+                children: [
                   Icon(Icons.info, size: 16),
                   SizedBox(width: 8),
                   Expanded(
