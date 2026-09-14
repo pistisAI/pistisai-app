@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
 import 'package:pistisai/features/avatar/avatar_widget.dart';
 
@@ -46,7 +47,7 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
   late AnimationController _bounceController;
 
   // Personality-derived properties
-  Color _baseColor = Colors.blue;
+  Color _baseColor = const Color(0xFF2196f3);
   double _bounceScale = 1.0;
   bool _isPulsing = false;
 
@@ -226,13 +227,13 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
       case AgentState.idle:
         return _baseColor.withValues(alpha: 0.1);
       case AgentState.thinking:
-        return Colors.purple.withValues(alpha: 0.1);
+        return AppTheme.colorsOf(context).accent.withValues(alpha: 0.1);
       case AgentState.working:
-        return Colors.orange.withValues(alpha: 0.1);
+        return AppTheme.colorsOf(context).warning.withValues(alpha: 0.1);
       case AgentState.error:
-        return Colors.red.withValues(alpha: 0.15);
+        return AppTheme.colorsOf(context).danger.withValues(alpha: 0.15);
       case AgentState.happy:
-        return Colors.green.withValues(alpha: 0.1);
+        return AppTheme.colorsOf(context).success.withValues(alpha: 0.1);
     }
   }
 
@@ -242,13 +243,13 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
       case AgentState.idle:
         return _baseColor.withValues(alpha: 0.5);
       case AgentState.thinking:
-        return Colors.purple.withValues(alpha: 0.5);
+        return AppTheme.colorsOf(context).accent.withValues(alpha: 0.5);
       case AgentState.working:
-        return Colors.orange.withValues(alpha: 0.5);
+        return AppTheme.colorsOf(context).warning.withValues(alpha: 0.5);
       case AgentState.error:
-        return Colors.red.withValues(alpha: 0.7);
+        return AppTheme.colorsOf(context).danger.withValues(alpha: 0.7);
       case AgentState.happy:
-        return Colors.green.withValues(alpha: 0.5);
+        return AppTheme.colorsOf(context).success.withValues(alpha: 0.5);
     }
   }
 
@@ -258,13 +259,13 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
       case AgentState.idle:
         return _baseColor.withValues(alpha: 0.3);
       case AgentState.thinking:
-        return Colors.purple.withValues(alpha: 0.3);
+        return AppTheme.colorsOf(context).accent.withValues(alpha: 0.3);
       case AgentState.working:
-        return Colors.orange.withValues(alpha: 0.3);
+        return AppTheme.colorsOf(context).warning.withValues(alpha: 0.3);
       case AgentState.error:
-        return Colors.red.withValues(alpha: 0.4);
+        return AppTheme.colorsOf(context).danger.withValues(alpha: 0.4);
       case AgentState.happy:
-        return Colors.green.withValues(alpha: 0.3);
+        return AppTheme.colorsOf(context).success.withValues(alpha: 0.3);
     }
   }
 
