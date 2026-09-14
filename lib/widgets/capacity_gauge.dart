@@ -37,7 +37,7 @@ class CapacityGaugeWidget extends StatelessWidget {
                       style: theme.textTheme.titleMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    const Icon(Icons.speed, size: 20, color: Colors.blueGrey),
+                    Icon(Icons.speed, size: 20, color: AppTheme.colorsOf(context).textColorLight),
                   ],
                 ),
                 const SizedBox(height: 16),
