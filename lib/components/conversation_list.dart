@@ -90,30 +90,30 @@ class _ConversationListState extends State<ConversationList> {
           SimpleDialogOption(
             onPressed: () => Navigator.pop(context, 'json'),
             child: Row(
-              children: const [
-                Icon(Icons.description, color: Colors.blue),
-                SizedBox(width: 8),
-                Text('Export as JSON'),
+              children: [
+                Icon(Icons.description, color: AppTheme.colorsOf(context).info),
+                const SizedBox(width: 8),
+                const Text('Export as JSON'),
               ],
             ),
           ),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(context, 'csv'),
             child: Row(
-              children: const [
-                Icon(Icons.table_view, color: Colors.green),
-                SizedBox(width: 8),
-                Text('Export as CSV'),
+              children: [
+                Icon(Icons.table_view, color: AppTheme.colorsOf(context).success),
+                const SizedBox(width: 8),
+                const Text('Export as CSV'),
               ],
             ),
           ),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(context, 'none'),
             child: Row(
-              children: const [
-                Icon(Icons.cancel, color: Colors.red),
-                SizedBox(width: 8),
-                Text('Cancel'),
+              children: [
+                Icon(Icons.cancel, color: AppTheme.colorsOf(context).danger),
+                const SizedBox(width: 8),
+                const Text('Cancel'),
               ],
             ),
           ),
@@ -185,7 +185,7 @@ class _ConversationListState extends State<ConversationList> {
         SnackBar(
           content: Text('Export failed: $e'),
           duration: const Duration(seconds: 3),
-          backgroundColor: Colors.red,
+          backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
     }
@@ -276,7 +276,7 @@ class _ConversationListState extends State<ConversationList> {
         SnackBar(
           content: Text('Import failed: $e'),
           duration: const Duration(seconds: 3),
-          backgroundColor: Colors.red,
+          backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
     }
