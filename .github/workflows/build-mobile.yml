@@ -46,6 +46,7 @@ jobs:
     name: Read Version
     needs: analyze
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     outputs:
       version: ${{ steps.read.outputs.version }}
     steps:
@@ -64,6 +65,7 @@ jobs:
     needs: get_version
     if: contains(inputs.platforms || 'android', 'android')
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
         with:
@@ -119,6 +121,7 @@ jobs:
     needs: get_version
     if: contains(inputs.platforms || 'android', 'ios')
     runs-on: macos-15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
         with:

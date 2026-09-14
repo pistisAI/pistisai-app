@@ -53,6 +53,7 @@ jobs:
     name: Read Version
     needs: analyze
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     outputs:
       version: ${{ steps.read.outputs.version }}
       platforms: ${{ steps.platforms.outputs.platforms }}
@@ -81,9 +82,12 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Set Version
         run: |
+          set -euo pipefail
           VERSION=${{ needs.get_version.outputs.version }}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           sed -i "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
@@ -155,9 +159,12 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Set Version
         run: |
+          set -euo pipefail
           VERSION=${{ needs.get_version.outputs.version }}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           sed -i "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
@@ -227,6 +234,7 @@ jobs:
     needs: get_version
     if: contains(needs.get_version.outputs.platforms, 'macos')
     runs-on: macos-15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
         with:
@@ -281,6 +289,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Download all artifacts
         uses: actions/download-artifact@v5

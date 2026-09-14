@@ -15,6 +15,10 @@ permissions:
   contents: read
   packages: write
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: pistisai/pistisai-app-web
+
 jobs:
   analyze:
     runs-on: ubuntu-24.04
@@ -32,6 +36,7 @@ jobs:
           channel: "stable"
       - name: flutter analyze
         run: |
+          set -euo pipefail
           flutter pub get
           flutter analyze lib/
           echo "✅ Analysis passed"
@@ -40,6 +45,9 @@ jobs:
     needs: analyze
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    outputs:
+      image_tag: ${{ steps.version.outputs.tag }}
+      image_digest: ${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -51,28 +59,42 @@ jobs:
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract version
         id: version
         run: |
+          set -euo pipefail
           VERSION=$(jq -r '.version' assets/version.json)
           echo "tag=$VERSION" >> $GITHUB_OUTPUT
-          echo "image=ghcr.io/pistisai/pistisai-app-web" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
 
       - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile.web
           push: true
           tags: |
-            ghcr.io/pistisai/pistisai-app-web:${{ steps.version.outputs.tag }}
-            ghcr.io/pistisai/pistisai-app-web:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
+
+      - name: Verify image pushed
+        run: |
+          set -euo pipefail
+          DIGEST="${{ steps.build.outputs.digest }}"
+          if [ -z "$DIGEST" ]; then
+            echo "❌ No image digest returned — push may have failed"
+            exit 1
+          fi
+          echo "✅ Image pushed: $DIGEST"
 
       - name: Trigger Dokploy deploy
         env:
@@ -84,27 +106,45 @@ jobs:
             exit 0
           fi
           echo "🚀 Triggering Dokploy deploy..."
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$DOKPLOY_WEBHOOK_URL")
-          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
-            echo "✅ Dokploy deploy triggered (HTTP $HTTP_CODE)"
-          else
-            echo "⚠️ Dokploy webhook returned HTTP $HTTP_CODE (non-fatal)"
-          fi
+          for attempt in 1 2 3; do
+            HTTP_CODE=$(curl -sS --fail --max-time 30 -o /tmp/dokploy_response.txt -w "%{http_code}" -X POST "$DOKPLOY_WEBHOOK_URL" 2>&1) || true
+            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
+              echo "✅ Dokploy deploy triggered (HTTP $HTTP_CODE)"
+              break
+            fi
+            echo "⚠️ Attempt $attempt: HTTP $HTTP_CODE"
+            if [ "$attempt" -lt 3 ]; then
+              sleep 5
+            else
+              echo "❌ Dokploy webhook failed after 3 attempts"
+              cat /tmp/dokploy_response.txt || true
+              exit 1
+            fi
+          done
 
       - name: Purge Cloudflare cache
         if: always()
         env:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
-          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID || '8261c24001b81e3513d82aef76fef90f' }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
         run: |
           set -euo pipefail
           if [ -z "${CF_TOKEN:-}" ]; then
-            echo "Missing Cloudflare token, skipping cache purge"
+            echo "⚠️ CLOUDFLARE_CACHE_PURGE_TOKEN not set — skipping cache purge"
             exit 0
           fi
-          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
-            -H "Authorization: Bearer ${CF_TOKEN}" \
+          if [ -z "${CF_ZONE_ID:-}" ]; then
+            echo "⚠️ CF_ZONE_ID not set — skipping cache purge"
+            exit 0
+          fi
+          echo "🧹 Purging Cloudflare cache for zone $CF_ZONE_ID..."
+          PURGE_RESP=$(curl -sS --max-time 30 -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}' \
-            | python3 -c "import sys,json; d=json.load(sys.stdin); print('✅ Cache purged' if d.get('success') else f\"⚠️ {d.get('errors')}\")" \
-            || echo "Cloudflare cache purge failed (ignored)"
+            --data '{"purge_everything":true}' 2>&1)
+          SUCCESS=$(echo "$PURGE_RESP" | jq -r '.success // false')
+          if [ "$SUCCESS" = "true" ]; then
+            echo "✅ Cloudflare cache purged"
+          else
+            echo "⚠️ Cache purge response: $PURGE_RESP"
+          fi

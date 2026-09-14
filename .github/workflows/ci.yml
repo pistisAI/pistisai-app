@@ -25,6 +25,11 @@ jobs:
           channel: "stable"
           cache: true
       - name: flutter pub get
-        run: flutter pub get
+        run: |
+          set -euo pipefail
+          flutter pub get
       - name: flutter analyze
-        run: flutter analyze lib/
+        run: |
+          set -euo pipefail
+          flutter analyze lib/
+          echo "✅ Analysis passed"
