@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../config/theme.dart';
 
 /// Log severity levels
 enum LogSeverity {
@@ -70,11 +71,11 @@ class LogEntry {
       case LogSeverity.info:
         return theme.colorScheme.primary;
       case LogSeverity.warning:
-        return Colors.orange;
+        return AppTheme.colorsOf(context).warning;
       case LogSeverity.error:
         return theme.colorScheme.error;
       case LogSeverity.critical:
-        return Colors.red.shade700;
+        return AppTheme.colorsOf(context).danger;
     }
   }
 
