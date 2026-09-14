@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import 'dart:io' show Platform;
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/services/vision/vision_service.dart';
@@ -110,6 +111,7 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
   }
 
   Widget _buildServiceStatusCard({
+    required BuildContext context,
     required String title,
     required String icon,
     required bool isInitialized,
@@ -135,7 +137,7 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
         ),
         trailing: Icon(
           isInitialized ? Icons.check_circle : Icons.error,
-          color: isInitialized ? Colors.green : Colors.red,
+          color: isInitialized ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
         ),
       ),
     );
@@ -161,24 +163,28 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                   ),
                 ),
                 _buildServiceStatusCard(
+                  context: context,
                   title: 'Main Vision Service',
                   icon: '👁️',
                   isInitialized: _mainVisionService.isInitialized,
                   lastError: null,
                 ),
                 _buildServiceStatusCard(
+                  context: context,
                   title: 'Region Capture Service',
                   icon: '🖼️',
                   isInitialized: _regionCaptureService.isInitialized,
                   lastError: _regionCaptureService.lastError,
                 ),
                 _buildServiceStatusCard(
+                  context: context,
                   title: 'Camera Capture Service',
                   icon: '📷',
                   isInitialized: _cameraCaptureService.isInitialized,
                   lastError: _cameraCaptureService.lastError,
                 ),
                 _buildServiceStatusCard(
+                  context: context,
                   title: 'OCR Engine Service',
                   icon: '🔤',
                   isInitialized: _ocrEngineService.isInitialized,
@@ -211,7 +217,7 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                           style: Theme.of(context)
                               .textTheme
                               .bodySmall
-                              ?.copyWith(color: Colors.grey.shade600),
+                              ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
                         ),
                       ],
                     ),
@@ -254,7 +260,7 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
               color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),
