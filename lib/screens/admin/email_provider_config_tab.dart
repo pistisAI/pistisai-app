@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
+import '../../config/theme.dart';
 
 /// Email Provider Configuration Tab for the Admin Center (Self-Hosted Only)
 /// Allows administrators to configure email provider settings for self-hosted instances
@@ -219,7 +220,7 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.cloud_outlined, size: 64, color: Colors.grey.shade400),
+              Icon(Icons.cloud_outlined, size: 64, color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.4)),
               const SizedBox(height: 16),
               Text(
                 'Email Configuration Not Available',
@@ -260,7 +261,7 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                 'Configure email provider settings for sending notifications and communications.',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade700),
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
               ),
               const SizedBox(height: 32),
 
@@ -270,24 +271,24 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
+                    color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.shade200),
+                    border: Border.all(color: AppTheme.colorsOf(context).danger.withOpacity(0.2)),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: Colors.red.shade700),
+                      Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: TextStyle(color: Colors.red.shade700),
+                          style: TextStyle(color: AppTheme.colorsOf(context).danger),
                         ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close),
                         onPressed: () => setState(() => _error = null),
-                        color: Colors.red.shade700,
+                        color: AppTheme.colorsOf(context).danger,
                       ),
                     ],
                   ),
@@ -299,27 +300,27 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
+                    color: AppTheme.colorsOf(context).success.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green.shade200),
+                    border: Border.all(color: AppTheme.colorsOf(context).success.withOpacity(0.2)),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.check_circle_outline,
-                        color: Colors.green.shade700,
+                        color: AppTheme.colorsOf(context).success,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           _successMessage!,
-                          style: TextStyle(color: Colors.green.shade700),
+                          style: TextStyle(color: AppTheme.colorsOf(context).success),
                         ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close),
                         onPressed: () => setState(() => _successMessage = null),
-                        color: Colors.green.shade700,
+                        color: AppTheme.colorsOf(context).success,
                       ),
                     ],
                   ),
@@ -357,12 +358,12 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                         child: FilledButton.icon(
                           onPressed: _isSaving ? null : _saveConfiguration,
                           icon: _isSaving
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: AppTheme.colorsOf(context).textColor,
                                   ),
                                 )
                               : const Icon(Icons.save),
@@ -584,19 +585,19 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                 margin: const EdgeInsets.only(top: 16),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
+                  color: AppTheme.colorsOf(context).warning.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.shade200),
+                  border: Border.all(color: AppTheme.colorsOf(context).warning.withOpacity(0.2)),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.warning_amber, color: Colors.orange.shade700),
+                    Icon(Icons.warning_amber, color: AppTheme.colorsOf(context).warning),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Warning: Unencrypted connections are not secure. '
                         'Use TLS or SSL for production environments.',
-                        style: TextStyle(color: Colors.orange.shade700),
+                        style: TextStyle(color: AppTheme.colorsOf(context).warning),
                       ),
                     ),
                   ],
@@ -628,7 +629,7 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
               'Send a test email to verify your configuration is working correctly.',
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700),
+              ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
             ),
             const SizedBox(height: 16),
             Row(
@@ -661,12 +662,12 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                 FilledButton.icon(
                   onPressed: _isSendingTest ? null : _sendTestEmail,
                   icon: _isSendingTest
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: AppTheme.colorsOf(context).textColor,
                           ),
                         )
                       : const Icon(Icons.send),
