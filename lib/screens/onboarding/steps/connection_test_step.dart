@@ -2,6 +2,7 @@ import 'package:pistisai/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import '../../../config/theme.dart';
 
 /// Connection Test Step
 /// Tests connectivity to the selected provider
@@ -71,9 +72,9 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 16),
-        _buildTestItem('DNS resolution', true),
-        _buildTestItem('TCP connection', null),
-        _buildTestItem('Runtime API', null),
+        _buildTestItem(context, 'DNS resolution', true),
+        _buildTestItem(context, 'TCP connection', null),
+        _buildTestItem(context, 'Runtime API', null),
       ],
     );
   }
@@ -88,41 +89,41 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.red.shade50,
+            color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.05),
             shape: BoxShape.circle,
           ),
           child: Icon(
             Icons.error_outline,
             size: 40,
-            color: Colors.red.shade700,
+            color: AppTheme.colorsOf(context).danger,
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'Connection Failed',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.red.shade700,
+                color: AppTheme.colorsOf(context).danger,
               ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.red.shade50,
+            color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.red.shade200),
+            border: Border.all(color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.2)),
           ),
           child: Column(
             children: [
               Row(
                 children: [
                   Icon(Icons.info_outline,
-                      color: Colors.red.shade700, size: 20),
-                  const SizedBox(width: 8),
+                      color: AppTheme.colorsOf(context).danger, size: 20),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       wizard.state.errorMessage ?? 'Unknown error',
-                      style: TextStyle(color: Colors.red.shade900),
+                      style: TextStyle(color: AppTheme.colorsOf(context).danger),
                     ),
                   ),
                 ],
@@ -143,16 +144,16 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
         // Go back option
         TextButton.icon(
           onPressed: () => wizard.previousStep(),
-          icon: const Icon(Icons.arrow_back),
-          label: const Text('Check connection settings'),
+          icon: Icon(Icons.arrow_back),
+          label: Text('Check connection settings'),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'Connecting to: $url',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontFamily: 'monospace',
-                color: Colors.grey.shade600,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
         ),
       ],
@@ -168,20 +169,20 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.green.shade50,
+            color: AppTheme.colorsOf(context).success.withValues(alpha: 0.05),
             shape: BoxShape.circle,
           ),
           child: Icon(
             Icons.check_circle,
             size: 40,
-            color: Colors.green.shade700,
+            color: AppTheme.colorsOf(context).success,
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'Connection Successful!',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.green.shade700,
+                color: AppTheme.colorsOf(context).success,
               ),
         ),
         const SizedBox(height: 16),
@@ -200,9 +201,9 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
           ),
           child: Column(
             children: [
-              _buildTestItem('DNS resolution', true),
-              _buildTestItem('TCP connection', true),
-              _buildTestItem('Runtime API', true),
+              _buildTestItem(context, 'DNS resolution', true),
+              _buildTestItem(context, 'TCP connection', true),
+              _buildTestItem(context, 'Runtime API', true),
             ],
           ),
         ),
@@ -224,7 +225,7 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
             provider.url,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontFamily: 'monospace',
-                  color: Colors.grey.shade600,
+                  color: AppTheme.colorsOf(context).textColorLight,
                 ),
           ),
         ],
@@ -232,12 +233,12 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
     );
   }
 
-  Widget _buildTestItem(String label, bool? success) {
+  Widget _buildTestItem(BuildContext context, String label, bool? success) {
     final color = success == null
-        ? Colors.grey
+        ? AppTheme.colorsOf(context).textColorLight
         : success == true
-            ? Colors.green
-            : Colors.red;
+            ? AppTheme.colorsOf(context).success
+            : AppTheme.colorsOf(context).danger;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
