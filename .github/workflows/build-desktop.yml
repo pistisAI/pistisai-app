@@ -3,33 +3,12 @@ name: "💻 Desktop Build & Release"
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "Release version (e.g. 1.1.0). Leave empty for auto-bump."
-        required: false
-        default: ""
-        type: string
       platforms:
         description: "Platforms to build (comma-separated)"
         required: false
         default: "linux,windows,macos"
         type: string
-      bump:
-        description: "Version bump type"
-        required: false
-        default: "minor"
-        type: choice
-        options:
-          - patch
-          - minor
   push:
-    branches: [main]
-    paths:
-      - "lib/**"
-      - "pubspec.yaml"
-      - "windows/**"
-      - "linux/**"
-      - "macos/**"
-      - ".github/workflows/build-desktop.yml"
     tags:
       - "v*"
 
@@ -60,59 +39,32 @@ jobs:
           flutter analyze lib/
           echo "✅ Analysis passed"
 
-  set_version:
-    name: Set Version
+  get_version:
+    name: Read Version
     needs: analyze
     runs-on: ubuntu-24.04
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      version: ${{ steps.read.outputs.version }}
       platforms: ${{ steps.platforms.outputs.platforms }}
     steps:
       - uses: actions/checkout@v7
       - name: Resolve platforms
         id: platforms
         run: |
-          PLATFORMS="${{ inputs.platforms }}"
-          if [ -z "$PLATFORMS" ]; then
-            PLATFORMS="${{ env.PLATFORMS }}"
-          fi
+          PLATFORMS="${{ inputs.platforms || env.PLATFORMS }}"
           [ -z "$PLATFORMS" ] && PLATFORMS="linux,windows,macos"
-          echo "Resolved platforms: $PLATFORMS"
           echo "platforms=$PLATFORMS" >> $GITHUB_OUTPUT
-      - name: Compute version
-        id: version
+      - name: Read version from version.json
+        id: read
         run: |
-          if [[ "${{ github.ref }}" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Full release tag (v1.1.0): extract version, use as-is
-            VERSION=${GITHUB_REF#refs/tags/v}
-          elif [ -n "${{ inputs.version }}" ]; then
-            # workflow_dispatch with explicit version
-            VERSION=${{ inputs.version }}
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # workflow_dispatch without version: auto-bump based on input
-            BUMP="${{ inputs.bump || 'minor' }}"
-            CURRENT=$(jq -r '.version' assets/version.json | cut -d+ -f1)
-            IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
-            if [ "$BUMP" = "minor" ]; then
-              MINOR=$((MINOR + 1))
-              PATCH=0
-            elif [ "$BUMP" = "patch" ]; then
-              PATCH=$((PATCH + 1))
-            fi
-            VERSION="${MAJOR}.${MINOR}.${PATCH}"
-          else
-            # Push to main or tag push: read version from tree
-            VERSION=$(jq -r '.version' assets/version.json)
-          fi
+          VERSION=$(jq -r '.version' assets/version.json | cut -d+ -f1)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Resolved version: $VERSION"
+          echo "Building version: $VERSION"
 
   build_linux:
     name: Linux Build
-    needs: set_version
-    if: contains(needs.set_version.outputs.platforms, 'linux')
-    # GitHub-hosted: the previous self-hosted desktop-build runner lost
-    # communication mid-compile (run 33776998037). ubuntu-24.04 matches CI.
+    needs: get_version
+    if: contains(needs.get_version.outputs.platforms, 'linux')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -120,7 +72,7 @@ jobs:
 
       - name: Set Version
         run: |
-          VERSION=${{ needs.set_version.outputs.version }}
+          VERSION=${{ needs.get_version.outputs.version }}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           sed -i "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
           jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
@@ -183,8 +135,8 @@ jobs:
 
   build_windows:
     name: Windows Build
-    needs: set_version
-    if: contains(needs.set_version.outputs.platforms, 'windows')
+    needs: get_version
+    if: contains(needs.get_version.outputs.platforms, 'windows')
     runs-on: windows-2022
     defaults:
       run:
@@ -194,7 +146,7 @@ jobs:
 
       - name: Set Version
         run: |
-          VERSION=${{ needs.set_version.outputs.version }}
+          VERSION=${{ needs.get_version.outputs.version }}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           sed -i "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
           jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
@@ -260,15 +212,15 @@ jobs:
 
   build_macos:
     name: macOS Build
-    needs: set_version
-    if: contains(needs.set_version.outputs.platforms, 'macos')
+    needs: get_version
+    if: contains(needs.get_version.outputs.platforms, 'macos')
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v7
 
       - name: Set Version
         run: |
-          VERSION=${{ needs.set_version.outputs.version }}
+          VERSION=${{ needs.get_version.outputs.version }}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           sed -i "" "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
           jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
@@ -301,57 +253,13 @@ jobs:
           path: dist/macos/*.zip
           retention-days: 7
 
-  check_version_bump:
-    name: Check Version Bump
-    needs: set_version
-    runs-on: ubuntu-24.04
-    outputs:
-      should_release: ${{ steps.check.outputs.should_release }}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Compare version against latest release
-        id: check
-        run: |
-          CURRENT_VERSION="${{ needs.set_version.outputs.version }}"
-          echo "Current version from version.json: $CURRENT_VERSION"
-
-          # Get latest release tag
-          LATEST_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name // "none"')
-          echo "Latest release tag: $LATEST_TAG"
-
-          if [ "$LATEST_TAG" = "none" ] || [ "$LATEST_TAG" = "null" ]; then
-            echo "No previous releases found, should_release=true"
-            echo "should_release=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Strip 'v' prefix
-          LATEST_VERSION="${LATEST_TAG#v}"
-          echo "Latest release version: $LATEST_VERSION"
-
-          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
-            echo "Version changed: $LATEST_VERSION -> $CURRENT_VERSION"
-            echo "should_release=true" >> $GITHUB_OUTPUT
-          else
-            echo "Version unchanged ($CURRENT_VERSION), should_release=false"
-            echo "should_release=false" >> $GITHUB_OUTPUT
-          fi
-
   create_release:
-    needs: [set_version, build_linux, build_windows, build_macos, check_version_bump]
-    # Issue #155: never publish a partial desktop release.
-    # Auto-publish when version.json differs from latest release tag,
-    # on manual dispatch, or on version tags (v*.*.*).
-    # Push-to-main with unchanged version skips release.
+    needs: [get_version, build_linux, build_windows, build_macos]
     if: >-
       always() &&
-      (github.event_name == 'workflow_dispatch' || 
-       (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
-       (github.event_name == 'push' && needs.check_version_bump.outputs.should_release == 'true')) &&
       needs.build_linux.result == 'success' &&
-      needs.build_windows.result == 'success'
+      needs.build_windows.result == 'success' &&
+      (needs.build_macos.result == 'success' || needs.build_macos.result == 'skipped')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -363,7 +271,7 @@ jobs:
 
       - name: Compute version
         run: |
-          echo "VERSION=${{ needs.set_version.outputs.version }}" >> $GITHUB_ENV
+          echo "VERSION=${{ needs.get_version.outputs.version }}" >> $GITHUB_ENV
 
       - name: Organize artifacts for release
         run: |
@@ -407,6 +315,7 @@ jobs:
 
       - name: Generate release notes
         run: |
+          PREV_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name // "none"')
           {
             echo "## PistisAI Desktop v${VERSION}"
             echo ""
@@ -424,13 +333,24 @@ jobs:
               echo "### macOS"
               echo "- **ZIP**: \`Pistisai-macOS-x64.zip\`"
             fi
+            echo ""
+            echo "### Changes"
+            if [ "$PREV_TAG" != "none" ] && [ "$PREV_TAG" != "null" ]; then
+              echo "Comparing \`$PREV_TAG\` → \`v${VERSION}\`"
+              echo ""
+              git log --oneline --no-merges "$PREV_TAG"...HEAD | head -30 | while read line; do
+                echo "- $line"
+              done
+            else
+              echo "(first release)"
+            fi
           } > release-notes.md
           cat release-notes.md
 
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: release-assets/*
+          artifacts: "release-assets/*"
           tag: "v${{ env.VERSION }}"
           name: "PistisAI v${{ env.VERSION }}"
           artifactErrorsFailBuild: true

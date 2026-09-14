@@ -1,13 +1,30 @@
-name: CI
-on: [push, pull_request]
+name: "⚡ CI Quick Gate"
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-quick-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  lint-test:
-    runs-on: ubuntu-latest
+  analyze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      - name: Setup
-        run: echo "Setup per PistisAI standards"
-      - name: Lint
-        run: echo "Run lint (to be expanded per STANDARDS.md)"
-      - name: Test
-        run: echo "Run tests"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: "stable"
+          cache: true
+      - name: flutter pub get
+        run: flutter pub get
+      - name: flutter analyze
+        run: flutter analyze lib/

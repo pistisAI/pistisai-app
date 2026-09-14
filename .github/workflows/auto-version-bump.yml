@@ -1,0 +1,121 @@
+name: "🔢 Auto Version Bump"
+
+# On every push to main, if version.json was NOT explicitly changed in the
+# push, auto-bump the patch version and commit it back. This guarantees that
+# every push to main results in a unique version and therefore a successful
+# release from build-desktop.yml.
+#
+# If a commit message contains [major] or [minor], that bump type is used
+# instead of patch.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "assets/version.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-version-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: "Bump version & commit"
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.compute.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      - name: Determine bump type
+        id: bump_type
+        run: |
+          MSG=$(git log -1 --pretty=%B)
+          if echo "$MSG" | grep -qi '\[major\]'; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          elif echo "$MSG" | grep -qi '\[minor\]'; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+          fi
+          echo "Commit message: $MSG"
+          echo "Bump type: $(cat $GITHUB_OUTPUT | grep type | cut -d= -f2)"
+
+      - name: Compute new version
+        id: compute
+        run: |
+          CURRENT=$(jq -r '.version' assets/version.json | cut -d+ -f1)
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          BUMP="${{ steps.bump_type.outputs.type }}"
+          case "$BUMP" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Current: $CURRENT → New: $NEW_VERSION (bump: $BUMP)"
+
+      - name: Update version.json
+        run: |
+          VERSION="${{ steps.compute.outputs.version }}"
+          BUILD_NUMBER="${{ github.run_number }}"
+          BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          GIT_COMMIT="${GITHUB_SHA:0:7}"
+          BUILD_TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+
+          jq -n \
+            --arg version "$VERSION" \
+            --arg build_number "$BUILD_NUMBER" \
+            --arg build_date "$BUILD_DATE" \
+            --arg git_commit "$GIT_COMMIT" \
+            --arg buildTimestamp "$BUILD_TIMESTAMP" \
+            '{
+              version: $version,
+              build_number: $build_number,
+              build_date: $build_date,
+              git_commit: $git_commit,
+              buildTimestamp: $buildTimestamp
+            }' > assets/version.json
+
+          echo "Updated assets/version.json:"
+          cat assets/version.json
+
+      - name: Update pubspec.yaml version
+        run: |
+          VERSION="${{ steps.compute.outputs.version }}"
+          BUILD_NUMBER="${{ github.run_number }}"
+          sed -i "s/^version: .*/version: ${VERSION}+${BUILD_NUMBER}/" pubspec.yaml
+          echo "pubspec.yaml version: $(grep '^version:' pubspec.yaml)"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/version.json pubspec.yaml
+          git commit -m "ci: bump version to ${{ steps.compute.outputs.version }}+${{ github.run_number }} [skip ci]"
+          git push origin main
+
+      - name: Trigger desktop build & release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Triggering build-desktop.yml for version ${{ steps.compute.outputs.version }}..."
+          gh workflow run build-desktop.yml \
+            --ref main \
+            -f platforms=linux,windows \
+            || echo "Failed to trigger workflow (may already be running)"
