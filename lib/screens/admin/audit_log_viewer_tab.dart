@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import '../../services/admin_center_service.dart';
 import '../../models/admin_audit_log_model.dart';
+import '../../config/theme.dart';
 
 /// Audit Log Viewer Tab for Admin Center
 ///
@@ -134,7 +135,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to load log details: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
     }
@@ -155,9 +156,9 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Audit logs exported successfully'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppTheme.colorsOf(context).success,
         ),
       );
     } catch (e) {
@@ -165,7 +166,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to export logs: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
     }
@@ -407,7 +408,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
                           log.timeAgo,
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.grey[600],
+                            color: AppTheme.colorsOf(context).textColorLight,
                           ),
                         ),
                       ],
@@ -423,7 +424,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
                           log.actionCategory,
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.grey[600],
+                            color: AppTheme.colorsOf(context).textColorLight,
                           ),
                         ),
                       ],
@@ -439,7 +440,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
                           log.resourceId,
                           style: TextStyle(
                             fontSize: 10,
-                            color: Colors.grey[600],
+                            color: AppTheme.colorsOf(context).textColorLight,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -454,7 +455,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
                         log.severity.displayName,
                         style: const TextStyle(fontSize: 11),
                       ),
-                      backgroundColor: _getSeverityColor(log.severity),
+                      backgroundColor: _getSeverityColor(context, log.severity),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                   ),
@@ -475,14 +476,14 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
     );
   }
 
-  Color _getSeverityColor(AuditLogSeverity severity) {
+  Color _getSeverityColor(BuildContext context, AuditLogSeverity severity) {
     switch (severity) {
       case AuditLogSeverity.low:
-        return Colors.green.withValues(alpha: 0.2);
+        return AppTheme.colorsOf(context).success.withValues(alpha: 0.2);
       case AuditLogSeverity.medium:
-        return Colors.orange.withValues(alpha: 0.2);
+        return AppTheme.colorsOf(context).warning.withValues(alpha: 0.2);
       case AuditLogSeverity.high:
-        return Colors.red.withValues(alpha: 0.2);
+        return AppTheme.colorsOf(context).danger.withValues(alpha: 0.2);
     }
   }
 
@@ -494,7 +495,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         children: [
           Text(
             'Showing ${(_currentPage - 1) * _itemsPerPage + 1}-${(_currentPage * _itemsPerPage).clamp(0, _totalLogs)} of $_totalLogs logs',
-            style: TextStyle(color: Colors.grey[600]),
+            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
           ),
           Row(
             children: [
@@ -529,7 +530,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
+          Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger),
           const SizedBox(height: 16),
           Text('Error: $_error'),
           const SizedBox(height: 16),
@@ -544,11 +545,11 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history, size: 64, color: Colors.grey[400]),
+          Icon(Icons.history, size: 64, color: AppTheme.colorsOf(context).textColorLight),
           const SizedBox(height: 16),
           Text(
             'No audit logs found',
-            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 18, color: AppTheme.colorsOf(context).textColorLight),
           ),
           if (_activeFilterCount > 0) ...[
             const SizedBox(height: 8),
@@ -846,11 +847,12 @@ class _LogDetailDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Log ID
-              _buildDetailRow('Log ID', log['id']),
+              _buildDetailRow(context, 'Log ID', log['id']),
               const Divider(),
 
               // Timestamp
               _buildDetailRow(
+                context,
                 'Timestamp',
                 DateTime.parse(
                   log['createdAt'],
@@ -859,12 +861,12 @@ class _LogDetailDialog extends StatelessWidget {
               const Divider(),
 
               // Action
-              _buildDetailRow('Action', log['action']),
+              _buildDetailRow(context, 'Action', log['action']),
               const Divider(),
 
               // Resource
-              _buildDetailRow('Resource Type', log['resourceType']),
-              _buildDetailRow('Resource ID', log['resourceId']),
+              _buildDetailRow(context, 'Resource Type', log['resourceType']),
+              _buildDetailRow(context, 'Resource ID', log['resourceId']),
               const Divider(),
 
               // Admin User
@@ -874,10 +876,10 @@ class _LogDetailDialog extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               if (adminUser != null) ...[
-                _buildDetailRow('Email', adminUser['email']),
-                _buildDetailRow('Username', adminUser['username']),
-                _buildDetailRow('Role', adminUser['role']),
-                _buildDetailRow('User ID', adminUser['id']),
+                _buildDetailRow(context, 'Email', adminUser['email']),
+                _buildDetailRow(context, 'Username', adminUser['username']),
+                _buildDetailRow(context, 'Role', adminUser['role']),
+                _buildDetailRow(context, 'User ID', adminUser['id']),
               ],
               const Divider(),
 
@@ -888,15 +890,15 @@ class _LogDetailDialog extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 8),
-                _buildDetailRow('Email', affectedUser['email']),
-                _buildDetailRow('Username', affectedUser['username']),
-                _buildDetailRow('User ID', affectedUser['id']),
+                _buildDetailRow(context, 'Email', affectedUser['email']),
+                _buildDetailRow(context, 'Username', affectedUser['username']),
+                _buildDetailRow(context, 'User ID', affectedUser['id']),
                 const Divider(),
               ],
 
               // IP Address and User Agent
-              _buildDetailRow('IP Address', log['ipAddress'] ?? 'N/A'),
-              _buildDetailRow('User Agent', log['userAgent'] ?? 'N/A'),
+              _buildDetailRow(context, 'IP Address', log['ipAddress'] ?? 'N/A'),
+              _buildDetailRow(context, 'User Agent', log['userAgent'] ?? 'N/A'),
               const Divider(),
 
               // Action Details (JSON)
@@ -909,9 +911,9 @@ class _LogDetailDialog extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: AppTheme.colorsOf(context).textColorLight,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: AppTheme.colorsOf(context).textColorLight!),
                 ),
                 child: SelectableText(
                   _formatJson(details),
@@ -931,7 +933,7 @@ class _LogDetailDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String? value) {
+  Widget _buildDetailRow(BuildContext context, String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -941,9 +943,9 @@ class _LogDetailDialog extends StatelessWidget {
             width: 150,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
             ),
           ),
