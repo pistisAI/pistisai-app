@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -93,10 +94,10 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Avatar customization saved successfully'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: const Text('Avatar customization saved successfully'),
+            backgroundColor: AppTheme.colorsOf(context).success,
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -105,7 +106,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to save settings: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.colorsOf(context).danger,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -135,7 +136,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.colorsOf(context).danger),
             child: const Text('Reset'),
           ),
         ],
@@ -152,10 +153,10 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Avatar settings reset to defaults'),
-            backgroundColor: Colors.orange,
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: const Text('Avatar settings reset to defaults'),
+            backgroundColor: AppTheme.colorsOf(context).warning,
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -368,7 +369,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
               'Create avatar.riv in assets/animations/ to enable.',
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey,
+                color: AppTheme.colorsOf(context).textColorLight,
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -527,9 +528,9 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                         ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Enable pulsing glow effect around avatar',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight),
                   ),
                 ],
               ),
