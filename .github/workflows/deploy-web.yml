@@ -80,8 +80,8 @@ jobs:
       - name: Trigger VPS deploy via webhook
         if: github.ref_name == 'main'
         env:
-          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL || 'https://deploy.pistisai.app/deploy' }}
-          DEPLOY_WEBHOOK_SECRET: ${{ secrets.DEPLOY_WEBHOOK_SECRET || 'pistisai-deploy-secret' }}
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+          DEPLOY_WEBHOOK_SECRET: ${{ secrets.DEPLOY_WEBHOOK_SECRET }}
         run: |
           set -euo pipefail
           PAYLOAD="{\"ref\":\"$GITHUB_SHA\",\"repository\":\"$GITHUB_REPOSITORY\",\"workflow\":\"$GITHUB_WORKFLOW\"}"
