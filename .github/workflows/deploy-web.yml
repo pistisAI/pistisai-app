@@ -96,54 +96,59 @@ jobs:
           fi
           echo "✅ Image pushed: $DIGEST"
 
-      - name: Make image public
+      - name: Deploy to VPS via SSH
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
         run: |
           set -euo pipefail
-          # Make the container package public so Dokpull can pull without auth
-          PACKAGE_PATH="${{ github.repository }}/pistisai-app-web"
-          echo "🔓 Making package public: $PACKAGE_PATH"
-          # Get the package ID first
-          PKG_INFO=$(gh api "repos/${{ github.repository }}/packages/container/pistisai-app-web" \
-            -H "Accept: application/vnd.github+json" 2>&1) || true
-          echo "$PKG_INFO" | jq -r '.id // empty' > /dev/null 2>&1 || true
-          # Update visibility to public
-          RESP=$(gh api -X PATCH "repos/${{ github.repository }}/packages/container/pistisai-app-web" \
-            -f visibility=public \
-            -H "Accept: application/vnd.github+json" 2>&1) || true
-          if echo "$RESP" | jq -e '.visibility == "public"' > /dev/null 2>&1; then
-            echo "✅ Package is now public"
-          else
-            echo "⚠️ Could not set package public (may already be public or org policy blocks it)"
-            echo "$RESP" | head -5 || true
-          fi
-
-      - name: Trigger Dokploy deploy
-        env:
-          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
-        run: |
-          set -euo pipefail
-          if [ -z "${DOKPLOY_WEBHOOK_URL:-}" ]; then
-            echo "⚠️ DOKPLOY_WEBHOOK_URL not set — skipping deploy trigger"
+          if [ -z "${VPS_HOST:-}" ] || [ -z "${VPS_USER:-}" ] || [ -z "${VPS_SSH_KEY:-}" ]; then
+            echo "⚠️ VPS secrets not set — skipping SSH deploy"
             exit 0
           fi
-          echo "🚀 Triggering Dokploy deploy..."
-          for attempt in 1 2 3; do
-            HTTP_CODE=$(curl -sS --fail --max-time 30 -o /tmp/dokploy_response.txt -w "%{http_code}" -X POST "$DOKPLOY_WEBHOOK_URL" 2>&1) || true
-            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
-              echo "✅ Dokploy deploy triggered (HTTP $HTTP_CODE)"
-              break
-            fi
-            echo "⚠️ Attempt $attempt: HTTP $HTTP_CODE"
-            if [ "$attempt" -lt 3 ]; then
-              sleep 5
-            else
-              echo "❌ Dokploy webhook failed after 3 attempts"
-              cat /tmp/dokploy_response.txt || true
-              exit 1
-            fi
-          done
+
+          # Write SSH key
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/vps_deploy_key
+          chmod 600 ~/.ssh/vps_deploy_key
+
+          # Build image locally and save as tarball
+          echo "📦 Saving Docker image as tarball..."
+          docker build -f Dockerfile.web -t pistisai-app-web:${{ steps.version.outputs.tag }} .
+          docker save pistisai-app-web:${{ steps.version.outputs.tag }} -o /tmp/pistisai-app-web.tar
+
+          # Copy tarball to VPS
+          echo "📤 Copying image to VPS..."
+          scp -i ~/.ssh/vps_deploy_key -o StrictHostKeyChecking=no /tmp/pistisai-app-web.tar ${VPS_USER}@${VPS_HOST}:${VPS_DEPLOY_PATH}/pistisai-app-web.tar
+
+          # Deploy on VPS
+          echo "🚀 Deploying on VPS..."
+          ssh -i ~/.ssh/vps_deploy_key -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} bash -s << 'REMOTE'
+            set -euo pipefail
+            DEPLOY_PATH="${1:-/opt/pistisai}"
+            cd "$DEPLOY_PATH"
+
+            # Load image
+            docker load -i pistisai-app-web.tar
+
+            # Stop old container
+            docker stop pistisai-app-web 2>/dev/null || true
+            docker rm pistisai-app-web 2>/dev/null || true
+
+            # Run new container
+            docker run -d \
+              --name pistisai-app-web \
+              --restart unless-stopped \
+              --network dokploy-network \
+              -p 8080:80 \
+              pistisai-app-web:latest
+
+            # Cleanup
+            rm -f pistisai-app-web.tar
+            echo "✅ Deployment complete"
+          REMOTE
 
       - name: Purge Cloudflare cache
         if: always()
