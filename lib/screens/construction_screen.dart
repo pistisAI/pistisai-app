@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 /// Construction Page - Shows current features with progress and roadmap
 class ConstructionScreen extends StatelessWidget {
@@ -28,17 +29,17 @@ class ConstructionScreen extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.bolt, color: Colors.white, size: 24),
+                      Icon(Icons.bolt, color: AppTheme.colorsOf(context).textColor, size: 24),
                       SizedBox(width: 12),
                       Text(
                         'Beta / Active Development',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppTheme.colorsOf(context).textColor,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -49,7 +50,7 @@ class ConstructionScreen extends StatelessWidget {
                   Text(
                     'We are building something amazing. Check back soon!',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
                   ),
@@ -73,7 +74,7 @@ class ConstructionScreen extends StatelessWidget {
               description: 'Real-time visibility into all your AI agents',
               progress: 90,
               icon: Icons.dashboard,
-              color: Colors.blue,
+              color: AppTheme.colorsOf(context).info,
             ),
             const SizedBox(height: 12),
 
@@ -83,7 +84,7 @@ class ConstructionScreen extends StatelessWidget {
               description: 'Run powerful AI models locally with OpenClaw',
               progress: 95,
               icon: Icons.memory,
-              color: Colors.green,
+              color: AppTheme.colorsOf(context).success,
             ),
             const SizedBox(height: 12),
 
@@ -94,7 +95,7 @@ class ConstructionScreen extends StatelessWidget {
                   'Your data stays on your device unless you enable cloud relay',
               progress: 100,
               icon: Icons.shield,
-              color: Colors.purple,
+              color: AppTheme.colorsOf(context).accent,
             ),
             const SizedBox(height: 12),
 
@@ -104,7 +105,7 @@ class ConstructionScreen extends StatelessWidget {
               description: 'Linux, Windows, macOS, and Web support',
               progress: 85,
               icon: Icons.devices,
-              color: Colors.orange,
+              color: AppTheme.colorsOf(context).warning,
             ),
             const SizedBox(height: 32),
 
@@ -305,13 +306,13 @@ class ConstructionScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: isCompleted
-                        ? Colors.green.withValues(alpha: 0.1)
-                        : Colors.blue.withValues(alpha: 0.1),
+                        ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+                        : AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     isCompleted ? Icons.check_circle : Icons.event,
-                    color: isCompleted ? Colors.green : Colors.blue,
+                    color: isCompleted ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).info,
                     size: 20,
                   ),
                 ),
@@ -332,8 +333,8 @@ class ConstructionScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: isCompleted
-                              ? Colors.green.shade600
-                              : Colors.blue.shade600,
+                              ? AppTheme.colorsOf(context).success
+                              : AppTheme.colorsOf(context).info,
                         ),
                       ),
                     ],
@@ -356,7 +357,7 @@ class ConstructionScreen extends StatelessWidget {
                             ? Icons.check_circle
                             : Icons.circle_outlined,
                         size: 16,
-                        color: isCompleted ? Colors.green : Colors.grey,
+                        color: isCompleted ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
                       ),
                       const SizedBox(width: 8),
                       Text(item),
