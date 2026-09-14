@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/models/agent_event.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
@@ -75,13 +76,13 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
     super.dispose();
   }
 
-  Color _eventColor(String label) {
-    if (label.startsWith('run.failed')) return Colors.red;
-    if (label.startsWith('run.completed')) return Colors.green;
-    if (label.startsWith('tool.started')) return Colors.blue;
-    if (label.startsWith('tool.completed')) return Colors.teal;
-    if (label.startsWith('reasoning')) return Colors.deepPurple;
-    return Colors.grey;
+  Color _eventColor(BuildContext context, String label) {
+    if (label.startsWith('run.failed')) return AppTheme.colorsOf(context).danger;
+    if (label.startsWith('run.completed')) return AppTheme.colorsOf(context).success;
+    if (label.startsWith('tool.started')) return AppTheme.colorsOf(context).info;
+    if (label.startsWith('tool.completed')) return AppTheme.colorsOf(context).info;
+    if (label.startsWith('reasoning')) return AppTheme.colorsOf(context).accent;
+    return AppTheme.colorsOf(context).textColorLight;
   }
 
   IconData _eventIcon(String label) {
@@ -120,19 +121,19 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.stream, size: 48, color: Colors.grey.shade400),
+              Icon(Icons.stream, size: 48, color: AppTheme.colorsOf(context).textColorLight),
               const SizedBox(height: 16),
               Text(
                 'No agent runtime connected',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.grey.shade600,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Connect to a Hermes or OpenClaw runtime to see live events.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade500,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
               ),
             ],
@@ -162,11 +163,11 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.stream, size: 48, color: Colors.grey.shade400),
+                  Icon(Icons.stream, size: 48, color: AppTheme.colorsOf(context).textColorLight),
                   const SizedBox(height: 16),
                   Text(
                     'Waiting for agent events…',
-                    style: TextStyle(color: Colors.grey.shade600),
+                    style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
                   ),
                 ],
               ),
@@ -177,7 +178,7 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
               itemBuilder: (context, index) {
                 final event = _events[index];
                 final label = event.eventTypeLabel;
-                final color = _eventColor(label);
+                final color = _eventColor(context, label);
                 return ListTile(
                   dense: true,
                   leading: CircleAvatar(
