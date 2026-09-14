@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/screens/onboarding/widgets/connection_method_card.dart';
@@ -33,7 +34,7 @@ class ConnectionMethodStep extends StatelessWidget {
               Text(
                 'Select the runtime that will power the main channel',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade600,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
                 textAlign: TextAlign.center,
               ),
@@ -74,18 +75,18 @@ class ConnectionMethodStep extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  color: AppTheme.colorsOf(context).warning.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.shade200),
+                  border: Border.all(color: AppTheme.colorsOf(context).warning.withOpacity(0.3)),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.lightbulb_outline, color: Colors.amber.shade700),
+                    Icon(Icons.lightbulb_outline, color: AppTheme.colorsOf(context).warning),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Ollama and LM Studio can be added later in settings for memory and helper tasks.',
-                        style: TextStyle(color: Colors.amber.shade900),
+                        style: TextStyle(color: AppTheme.colorsOf(context).warning),
                       ),
                     ),
                   ],
