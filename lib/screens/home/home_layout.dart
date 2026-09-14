@@ -194,15 +194,15 @@ class _ChatPaneState extends State<_ChatPane> {
         borderRadius: 16,
         blur: 15,
         border: Border.all(
-          color: Colors.amber.withValues(alpha: 0.2),
+          color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.15),
           width: 1,
         ),
         padding: EdgeInsets.all(spacing.m),
         child: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.warning_amber_rounded,
-              color: Colors.amber,
+              color: AppTheme.colorsOf(context).warning,
               size: 24,
             ),
             const SizedBox(width: 12),
@@ -215,7 +215,7 @@ class _ChatPaneState extends State<_ChatPane> {
                     'No Agent Connected',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.amber,
+                      color: AppTheme.colorsOf(context).warning,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -235,8 +235,8 @@ class _ChatPaneState extends State<_ChatPane> {
               icon: const Icon(Icons.settings_rounded, size: 16),
               label: const Text('Settings'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                foregroundColor: Colors.black87,
+                backgroundColor: AppTheme.colorsOf(context).warning,
+                foregroundColor: AppTheme.colorsOf(context).textColor,
                 elevation: 0,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -313,16 +313,16 @@ class _ChatPaneState extends State<_ChatPane> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.amber.withValues(alpha: 0.15),
+                      color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.15),
                       blurRadius: 40,
                       spreadRadius: 8,
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.warning_amber_rounded,
                   size: 72,
-                  color: Colors.amber,
+                  color: AppTheme.colorsOf(context).warning,
                 ),
               ),
               const SizedBox(height: 28),
@@ -350,8 +350,8 @@ class _ChatPaneState extends State<_ChatPane> {
                 icon: const Icon(Icons.settings_rounded),
                 label: const Text('Open Settings'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  foregroundColor: Colors.black87,
+                  backgroundColor: AppTheme.colorsOf(context).warning,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                   elevation: 2,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -605,7 +605,7 @@ class _ActionBar extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text('Evolution: ${profile.evolutionStage}',
                     style:
-                        TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                        TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6))),
               ],
             ),
             actions: [
@@ -639,7 +639,7 @@ class _TraitBar extends StatelessWidget {
             children: [
               Text(label, style: const TextStyle(fontSize: 13)),
               Text('${(value * 100).round()}%',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6))),
             ],
           ),
           const SizedBox(height: 2),
@@ -648,7 +648,7 @@ class _TraitBar extends StatelessWidget {
             child: LinearProgressIndicator(
               value: value,
               minHeight: 6,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.3),
             ),
           ),
         ],
@@ -722,7 +722,7 @@ class _ToolsPanel extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.handyman, size: 24, color: Colors.amber),
+                Icon(Icons.handyman, size: 24, color: AppTheme.colorsOf(context).warning),
                 const SizedBox(width: 12),
                 Text(
                   'What $agentName Can Do',
@@ -736,7 +736,7 @@ class _ToolsPanel extends StatelessWidget {
             Text(
               'Available offline • Connect to unlock more',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.grey,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
             ),
             const SizedBox(height: 20),
@@ -804,14 +804,14 @@ class _ToolRow extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: available
-                  ? Colors.green.withValues(alpha: 0.1)
-                  : Colors.grey.withValues(alpha: 0.1),
+                  ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+                  : AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
               size: 22,
-              color: available ? Colors.green : Colors.grey,
+              color: available ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
             ),
           ),
           const SizedBox(width: 16),
@@ -831,8 +831,8 @@ class _ToolRow extends StatelessWidget {
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: available
-                            ? Colors.green.withValues(alpha: 0.15)
-                            : Colors.orange.withValues(alpha: 0.15),
+                            ? AppTheme.colorsOf(context).success.withValues(alpha: 0.15)
+                            : AppTheme.colorsOf(context).warning.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -840,7 +840,7 @@ class _ToolRow extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
-                          color: available ? Colors.green : Colors.orange,
+                          color: available ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).warning,
                         ),
                       ),
                     ),
@@ -851,7 +851,7 @@ class _ToolRow extends StatelessWidget {
                   description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey.shade600,
+                    color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6),
                   ),
                 ),
                 if (note != null)
@@ -861,7 +861,7 @@ class _ToolRow extends StatelessWidget {
                       note!,
                       style: TextStyle(
                         fontSize: 10,
-                        color: Colors.orange.shade400,
+                        color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.6),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -873,7 +873,7 @@ class _ToolRow extends StatelessWidget {
             Icon(
               Icons.check_circle,
               size: 18,
-              color: Colors.green.shade400,
+              color: AppTheme.colorsOf(context).success.withValues(alpha: 0.8),
             ),
         ],
       ),
