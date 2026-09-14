@@ -4,6 +4,7 @@ import '../../models/admin_role_model.dart';
 import '../../models/subscription_model.dart';
 import '../../di/locator.dart' as di;
 import 'dart:async';
+import '../../config/theme.dart';
 
 /// User Management Tab for the Admin Center
 /// Provides search, filtering, and management of user accounts
@@ -144,7 +145,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 'View and manage user accounts, subscriptions, and permissions',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade700),
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ),
@@ -326,9 +327,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: _loadUsers, child: const Text('Retry')),
           ],
@@ -337,11 +338,11 @@ class _UserManagementTabState extends State<UserManagementTab> {
     }
 
     if (_users.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.people_outline, size: 48, color: Colors.grey),
+            Icon(Icons.people_outline, size: 48, color: AppTheme.colorsOf(context).textColorLight),
             SizedBox(height: 16),
             Text('No users found'),
           ],
@@ -398,16 +399,16 @@ class _UserManagementTabState extends State<UserManagementTab> {
               ),
               if (status == 'active')
                 IconButton(
-                  icon: const Icon(Icons.block, size: 20, color: Colors.red),
+                  icon: Icon(Icons.block, size: 20, color: AppTheme.colorsOf(context).danger),
                   onPressed: () => _showSuspendDialog(user),
                   tooltip: 'Suspend',
                 )
               else if (status == 'suspended')
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.check_circle,
                     size: 20,
-                    color: Colors.green,
+                    color: AppTheme.colorsOf(context).success,
                   ),
                   onPressed: () => _showReactivateDialog(user),
                   tooltip: 'Reactivate',
@@ -423,19 +424,19 @@ class _UserManagementTabState extends State<UserManagementTab> {
     Color color;
     switch (tier.toLowerCase()) {
       case 'enterprise':
-        color = Colors.purple;
+        color = AppTheme.colorsOf(context).accent;
         break;
       case 'premium':
-        color = Colors.blue;
+        color = AppTheme.colorsOf(context).info;
         break;
       default:
-        color = Colors.grey;
+        color = AppTheme.colorsOf(context).textColorLight;
     }
 
     return Chip(
       label: Text(
         tier.toUpperCase(),
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColor),
       ),
       backgroundColor: color,
       padding: EdgeInsets.zero,
@@ -447,22 +448,22 @@ class _UserManagementTabState extends State<UserManagementTab> {
     Color color;
     switch (status.toLowerCase()) {
       case 'active':
-        color = Colors.green;
+        color = AppTheme.colorsOf(context).success;
         break;
       case 'suspended':
-        color = Colors.red;
+        color = AppTheme.colorsOf(context).danger;
         break;
       case 'deleted':
-        color = Colors.grey;
+        color = AppTheme.colorsOf(context).textColorLight;
         break;
       default:
-        color = Colors.orange;
+        color = AppTheme.colorsOf(context).warning;
     }
 
     return Chip(
       label: Text(
         status.toUpperCase(),
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColor),
       ),
       backgroundColor: color,
       padding: EdgeInsets.zero,
@@ -474,8 +475,8 @@ class _UserManagementTabState extends State<UserManagementTab> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        border: Border(top: BorderSide(color: Colors.grey.shade300)),
+        color: AppTheme.colorsOf(context).textColorLight,
+        border: Border(top: BorderSide(color: AppTheme.colorsOf(context).textColorLight)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -652,9 +653,9 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadUserDetails,
@@ -784,7 +785,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
               '$label:',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
             ),
           ),
@@ -792,7 +793,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
             child: Text(
               value,
               style: TextStyle(
-                color: isWarning ? Colors.orange : null,
+                color: isWarning ? AppTheme.colorsOf(context).warning : null,
                 fontWeight: isWarning ? FontWeight.bold : null,
               ),
             ),
@@ -972,7 +973,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             ],
           ],
         ),
@@ -1074,9 +1075,9 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
           children: [
             Text('User: ${widget.user['email']}'),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'This will suspend the user account and prevent them from accessing the application.',
-              style: TextStyle(color: Colors.orange),
+              style: TextStyle(color: AppTheme.colorsOf(context).warning),
             ),
             const SizedBox(height: 24),
             TextField(
@@ -1091,7 +1092,7 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             ],
           ],
         ),
@@ -1103,7 +1104,7 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
         ),
         FilledButton(
           onPressed: _isLoading ? null : _suspendUser,
-          style: FilledButton.styleFrom(backgroundColor: Colors.red),
+          style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).danger),
           child: _isLoading
               ? const SizedBox(
                   width: 16,
@@ -1185,7 +1186,7 @@ class _ReactivateUserDialogState extends State<_ReactivateUserDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             ],
           ],
         ),
@@ -1197,7 +1198,7 @@ class _ReactivateUserDialogState extends State<_ReactivateUserDialog> {
         ),
         FilledButton(
           onPressed: _isLoading ? null : _reactivateUser,
-          style: FilledButton.styleFrom(backgroundColor: Colors.green),
+          style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).success),
           child: _isLoading
               ? const SizedBox(
                   width: 16,
