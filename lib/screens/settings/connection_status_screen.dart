@@ -49,7 +49,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to refresh status: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.colorsOf(context).danger,
           ),
         );
       }
@@ -138,27 +138,27 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                   SizedBox(height: AppTheme.spacingXL),
 
                   // Authentication Status
-                  _buildAuthenticationStatus(),
+                  _buildAuthenticationStatus(context),
                   SizedBox(height: AppTheme.spacingL),
 
                   // Active Backend
-                  _buildActiveBackendStatus(),
+                  _buildActiveBackendStatus(context),
                   SizedBox(height: AppTheme.spacingL),
 
                   // Gateway Status
-                  _buildGatewayStatus(),
+                  _buildGatewayStatus(context),
                   SizedBox(height: AppTheme.spacingL),
 
                   // Cloud Proxy Status
-                  _buildCloudProxyStatus(),
+                  _buildCloudProxyStatus(context),
                   SizedBox(height: AppTheme.spacingL),
 
                   // System Tray Status
-                  _buildSystemTrayStatus(),
+                  _buildSystemTrayStatus(context),
                   SizedBox(height: AppTheme.spacingL),
 
                   // Network Status
-                  _buildNetworkStatus(),
+                  _buildNetworkStatus(context),
                 ],
               ),
             ),
@@ -168,7 +168,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
     );
   }
 
-  Widget _buildAuthenticationStatus() {
+  Widget _buildAuthenticationStatus(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
         final isAuthenticated = authService.isAuthenticated.value;
@@ -180,16 +180,16 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildSectionHeader(
                 'Authentication',
                 Icons.security,
-                isAuthenticated ? Colors.green : Colors.red,
+                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
               ),
               SizedBox(height: AppTheme.spacingM),
               _buildStatusRow(
                 'Status',
                 isAuthenticated ? 'Authenticated' : 'Not Authenticated',
-                isAuthenticated ? Colors.green : Colors.red,
+                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
               ),
               if (isAuthenticated) ...[
-                _buildStatusRow('Provider', 'Supabase', Colors.blue),
+                _buildStatusRow('Provider', 'Supabase', AppTheme.colorsOf(context).info),
               ],
               SizedBox(height: AppTheme.spacingM),
               if (!isAuthenticated)
@@ -203,8 +203,8 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                   icon: const Icon(Icons.logout),
                   label: const Text('Logout'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppTheme.colorsOf(context).danger,
+                    foregroundColor: AppTheme.colorsOf(context).textColor,
                   ),
                 ),
             ],
@@ -214,7 +214,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
     );
   }
 
-  Widget _buildActiveBackendStatus() {
+  Widget _buildActiveBackendStatus(BuildContext context) {
     return Consumer<ConnectionManagerService>(
       builder: (context, connectionManager, child) {
         final backend = connectionManager.activeBackend;
@@ -225,15 +225,15 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
 
         if (backend == BackendType.openclaw) {
           backendLabel = 'OpenClaw';
-          backendColor = Colors.blue;
+          backendColor = AppTheme.colorsOf(context).info;
           statusText = connectionManager.isConnected ? 'Active' : 'Disconnected';
         } else if (backend == BackendType.hermes) {
           backendLabel = 'Hermes Agent';
-          backendColor = Colors.purple;
+          backendColor = AppTheme.colorsOf(context).accent;
           statusText = connectionManager.isConnected ? 'Active' : 'Disconnected';
         } else {
           backendLabel = 'None';
-          backendColor = Colors.grey;
+          backendColor = AppTheme.colorsOf(context).textColorLight;
           statusText = 'No backend selected';
         }
 
@@ -251,7 +251,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildStatusRow(
                 'Status',
                 statusText,
-                connectionManager.isConnected ? Colors.green : Colors.orange,
+                connectionManager.isConnected ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).warning,
               ),
               if (backend != null) ...[
                 SizedBox(height: AppTheme.spacingM),
@@ -269,7 +269,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
     );
   }
 
-  Widget _buildGatewayStatus() {
+  Widget _buildGatewayStatus(BuildContext context) {
     return Consumer<ConnectionManagerService>(
       builder: (context, connectionManager, child) {
         final backend = connectionManager.activeBackend;
@@ -289,9 +289,9 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeader(gatewayLabel, Icons.computer, Colors.blue),
+              _buildSectionHeader(gatewayLabel, Icons.computer, AppTheme.colorsOf(context).info),
               SizedBox(height: AppTheme.spacingM),
-              _buildStatusRow('Connection', 'Checking...', Colors.blue),
+              _buildStatusRow('Connection', 'Checking...', AppTheme.colorsOf(context).info),
               _buildStatusRow(
                 'URL',
                 gatewayUrl,
@@ -311,7 +311,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                 label: const Text('View Agent Status'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colorsOf(context).primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                 ),
               ),
             ],
@@ -321,7 +321,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
     );
   }
 
-  Widget _buildCloudProxyStatus() {
+  Widget _buildCloudProxyStatus(BuildContext context) {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
         final isAuthenticated = authService.isAuthenticated.value;
@@ -333,13 +333,13 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildSectionHeader(
                 'Cloud Proxy',
                 Icons.cloud,
-                isAuthenticated ? Colors.green : Colors.grey,
+                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
               ),
               SizedBox(height: AppTheme.spacingM),
               _buildStatusRow(
                 'Status',
                 isAuthenticated ? 'Available' : 'Requires Authentication',
-                isAuthenticated ? Colors.green : Colors.grey,
+                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
               ),
               _buildStatusRow(
                 'Endpoint',
@@ -367,7 +367,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
     );
   }
 
-  Widget _buildSystemTrayStatus() {
+  Widget _buildSystemTrayStatus(BuildContext context) {
     return ModernCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,16 +375,16 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
           _buildSectionHeader(
             'System Tray',
             Icons.apps,
-            kIsWeb ? Colors.grey : Colors.green,
+            kIsWeb ? AppTheme.colorsOf(context).textColorLight : AppTheme.colorsOf(context).success,
           ),
           SizedBox(height: AppTheme.spacingM),
           _buildStatusRow(
             'Platform Support',
             kIsWeb ? 'Not Available (Web)' : 'Available (Desktop)',
-            kIsWeb ? Colors.grey : Colors.green,
+            kIsWeb ? AppTheme.colorsOf(context).textColorLight : AppTheme.colorsOf(context).success,
           ),
           if (!kIsWeb) ...[
-            _buildStatusRow('Daemon Status', 'Running', Colors.green),
+            _buildStatusRow('Daemon Status', 'Running', AppTheme.colorsOf(context).success),
             _buildStatusRow(
               'Icon Theme',
               'Monochrome',
@@ -400,7 +400,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               label: const Text('Daemon Settings'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.colorsOf(context).secondary,
-                foregroundColor: Colors.white,
+                foregroundColor: AppTheme.colorsOf(context).textColor,
               ),
             ),
           ],
@@ -409,16 +409,16 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
     );
   }
 
-  Widget _buildNetworkStatus() {
+  Widget _buildNetworkStatus(BuildContext context) {
     return ModernCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Network', Icons.network_check, Colors.green),
+          _buildSectionHeader('Network', Icons.network_check, AppTheme.colorsOf(context).success),
           SizedBox(height: AppTheme.spacingM),
-          _buildStatusRow('Internet', 'Connected', Colors.green),
-          _buildStatusRow('DNS Resolution', 'Working', Colors.green),
-          _buildStatusRow('Firewall', 'Configured', Colors.green),
+          _buildStatusRow('Internet', 'Connected', AppTheme.colorsOf(context).success),
+          _buildStatusRow('DNS Resolution', 'Working', AppTheme.colorsOf(context).success),
+          _buildStatusRow('Firewall', 'Configured', AppTheme.colorsOf(context).success),
           SizedBox(height: AppTheme.spacingM),
           Text(
             'Network connectivity is required for authentication and cloud proxy features.',
