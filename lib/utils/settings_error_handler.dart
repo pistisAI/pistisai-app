@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../config/theme.dart';
 
 /// Settings error types
 enum SettingsErrorType {
@@ -202,10 +203,10 @@ class SettingsErrorHandler {
   }
 
   /// Get error color
-  static Color getErrorColor(SettingsError error) {
+  static Color getErrorColor(BuildContext context, SettingsError error) {
     switch (error.type) {
       case SettingsErrorType.validation:
-        return Colors.orange;
+        return AppTheme.colorsOf(context).warning;
 
       case SettingsErrorType.saveFailed:
       case SettingsErrorType.loadFailed:
@@ -213,7 +214,7 @@ class SettingsErrorHandler {
       case SettingsErrorType.importExportFailed:
       case SettingsErrorType.storageUnavailable:
       case SettingsErrorType.unknown:
-        return Colors.red;
+        return AppTheme.colorsOf(context).danger;
     }
   }
 
@@ -225,13 +226,13 @@ class SettingsErrorHandler {
   }) {
     final message = getUserMessage(error);
     final icon = getErrorIcon(error);
-    final color = getErrorColor(error);
+    final color = getErrorColor(context, error);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(icon, color: Colors.white),
+            Icon(icon, color: AppTheme.colorsOf(context).textColor),
             const SizedBox(width: 12),
             Expanded(child: Text(message)),
             if (error.isRetryable && onRetry != null) ...[
@@ -243,7 +244,7 @@ class SettingsErrorHandler {
                 },
                 child: const Text(
                   'Retry',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppTheme.colorsOf(context).textColor),
                 ),
               ),
             ],
@@ -298,12 +299,12 @@ class SettingsErrorHandler {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white),
+            Icon(Icons.check_circle, color: AppTheme.colorsOf(context).textColor),
             const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.colorsOf(context).success,
         duration: duration,
       ),
     );
