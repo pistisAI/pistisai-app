@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
-import '../../config/theme.dart';
+import 'package:pistisai/config/theme.dart';
 
 /// OpenClaw Gateway Password Step
 /// Collects the OpenClaw Gateway password/token for local connections

@@ -94,7 +94,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                             context,
                             'Snapshot',
                             'Latest gateway handshake information.',
-                            _buildSnapshotCard(gatewayStatus),
+                            _buildSnapshotCard(context, gatewayStatus),
                           ),
 
                           const SizedBox(height: 24),

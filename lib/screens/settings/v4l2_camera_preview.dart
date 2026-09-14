@@ -47,13 +47,16 @@ class _V4L2CameraPreviewState extends State<V4L2CameraPreview> {
   @override
   Widget build(BuildContext context) {
     if (_image == null) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 8),
-            Text('Starting camera…', style: TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 8),
+            Text(
+              'Starting camera…',
+              style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+            ),
           ],
         ),
       );

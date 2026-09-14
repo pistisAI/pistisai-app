@@ -165,10 +165,9 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
         ),
         title: Text(device.deviceName ?? device.deviceId),
         subtitle: Text(
-          '${device.platform ?? 'unknown platform'} · ${device.runtimeLocation}'
-          '
-${online ? "online" : "last seen $lastSeen"}'
-          '${device.runtimeAvailable ? " · runtime available" : ""}',
+          '${device.platform ?? 'unknown platform'} · ${device.runtimeLocation}\n'
+          '${online ? 'online' : 'last seen $lastSeen'}'
+          '${device.runtimeAvailable ? ' · runtime available' : ''}',
         ),
         isThreeLine: true,
         trailing: IconButton(

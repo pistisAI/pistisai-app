@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+import 'package:pistisai/config/theme.dart';
 
 /// Card widget for selecting connection method
 class ConnectionMethodCard extends StatelessWidget {

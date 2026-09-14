@@ -918,7 +918,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.check_circle,
                               color: AppTheme.colorsOf(context).success,
                               size: 20,
