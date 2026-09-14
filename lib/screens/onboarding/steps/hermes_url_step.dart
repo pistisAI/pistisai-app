@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../config/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:logging/logging.dart';
@@ -112,7 +113,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                     ? 'Confirm the Tailscale URL, then paste the API key from your server.'
                     : 'Hermes is running on this device. We auto-detected the connection details below.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade600,
+                      color: AppTheme.colorsOf(context).textColorLight,
                     ),
               ),
               const SizedBox(height: 24),
@@ -158,7 +159,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                         : 'Auto-discovered from Hermes config',
                     prefixIcon: const Icon(Icons.vpn_key),
                     suffixIcon: _autoDiscovered
-                        ? Icon(Icons.check_circle, color: Colors.green.shade600)
+                        ? Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success)
                         : null,
                     border: const OutlineInputBorder(),
                   ),
@@ -176,20 +177,20 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
+                    color: AppTheme.colorsOf(context).success.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green.shade200),
+                    border: Border.all(color: AppTheme.colorsOf(context).success.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.auto_awesome,
-                          size: 16, color: Colors.green.shade700),
+                          size: 16, color: AppTheme.colorsOf(context).success),
                       const SizedBox(width: 8),
                       Text(
                         'Auto-discovered from Hermes configuration',
                         style: TextStyle(
-                          color: Colors.green.shade800,
+                          color: AppTheme.colorsOf(context).success,
                           fontSize: 13,
                         ),
                       ),
@@ -255,16 +256,16 @@ class _RemoteApiKeyHelp extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: AppTheme.colorsOf(context).info.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.shade200),
+        border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'On your VPS, run this command and paste the output into the API key field above.',
-            style: TextStyle(color: Colors.blue.shade900, height: 1.35),
+            style: TextStyle(color: AppTheme.colorsOf(context).info, height: 1.35),
           ),
           const SizedBox(height: 10),
           _CommandBlock(
@@ -292,9 +293,9 @@ class _CommandBlock extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colorsOf(context).textColor,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.blue.shade100),
+        border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,7 +313,7 @@ class _CommandBlock extends StatelessWidget {
           IconButton(
             tooltip: 'Copy command',
             onPressed: onCopy,
-            icon: Icon(Icons.copy, size: 18, color: Colors.blue.shade700),
+            icon: Icon(Icons.copy, size: 18, color: AppTheme.colorsOf(context).info),
             visualDensity: VisualDensity.compact,
           ),
         ],
