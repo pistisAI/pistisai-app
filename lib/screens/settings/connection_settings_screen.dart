@@ -118,7 +118,7 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                             FilledButton(
                               onPressed: () => Navigator.of(context).pop(true),
                               style: FilledButton.styleFrom(
-                                backgroundColor: Colors.orange,
+                                backgroundColor: AppTheme.colorsOf(context).warning,
                               ),
                               child: const Text('Clear & Re-run'),
                             ),
@@ -148,7 +148,7 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Failed to clear setup data: $e'),
-                                backgroundColor: Colors.red,
+                                backgroundColor: AppTheme.colorsOf(context).danger,
                               ),
                             );
                           }
