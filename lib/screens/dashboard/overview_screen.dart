@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
 import '../../services/connection_manager_service.dart';
 import '../../services/voice/voice_conversation_service.dart';
@@ -49,7 +50,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   Text(
                     'Gateway status, entry points, and a fast health read.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey,
+                          color: AppTheme.colorsOf(context).textColorLight,
                         ),
                   ),
                   const SizedBox(height: 24),
@@ -61,6 +62,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildSection(
+                            context,
                             'Voice Companion',
                             'Natural conversation state, backend switching, and agent control for the Pistisai voice shell layered around Hermes.',
                             di.serviceLocator
@@ -72,13 +74,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
                                       const OpenVoiceUIControlPanel(),
                                     ],
                                   )
-                                : _buildVoiceUnavailableCard(),
+                                : _buildVoiceUnavailableCard(context),
                           ),
 
                           const SizedBox(height: 24),
 
                           // Gateway Access Section
                           _buildSection(
+                            context,
                             'Gateway Access',
                             'Where the dashboard connects and how it authenticates.',
                             _buildGatewayAccessCard(connService),
@@ -88,6 +91,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
 
                           // Snapshot Section
                           _buildSection(
+                            context,
                             'Snapshot',
                             'Latest gateway handshake information.',
                             _buildSnapshotCard(gatewayStatus),
@@ -100,6 +104,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                             children: [
                               Expanded(
                                 child: _buildStatCard(
+                                  context,
                                   'Instances',
                                   gatewayStatus['instances']?.toString() ?? '0',
                                   'Presence beacons in the last 5 minutes',
@@ -109,6 +114,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: _buildStatCard(
+                                  context,
                                   'Sessions',
                                   gatewayStatus['sessions']?.toString() ??
                                       'n/a',
@@ -131,7 +137,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildSection(String title, String description, Widget child) {
+  Widget _buildSection(BuildContext context, String title, String description, Widget child) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,7 +149,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
         Text(
           description,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
         ),
         const SizedBox(height: 16),
@@ -193,17 +199,21 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildSnapshotCard(Map<String, dynamic> gatewayStatus) {
+  Widget _buildSnapshotCard(BuildContext context, Map<String, dynamic> gatewayStatus) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSnapshotRow('Status',
-                gatewayStatus['healthStatus']?.toString() ?? 'Unknown'),
-            _buildSnapshotRow('Uptime', gatewayStatus['uptime'] ?? 'n/a'),
             _buildSnapshotRow(
+                context,
+                'Status',
+                gatewayStatus['healthStatus']?.toString() ?? 'Unknown'),
+            _buildSnapshotRow(
+                context, 'Uptime', gatewayStatus['uptime'] ?? 'n/a'),
+            _buildSnapshotRow(
+                context,
                 'Last Channels Refresh', gatewayStatus['lastRefresh'] ?? 'n/a'),
           ],
         ),
@@ -211,14 +221,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildVoiceUnavailableCard() {
+  Widget _buildVoiceUnavailableCard(BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Text(
           'Voice conversation service is only wired on desktop builds right now.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
         ),
       ),
@@ -249,7 +259,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildSnapshotRow(String label, String value) {
+  Widget _buildSnapshotRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -262,7 +272,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
           Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey,
+                  color: AppTheme.colorsOf(context).textColorLight,
                 ),
           ),
         ],
@@ -270,7 +280,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildStatCard(
+  Widget _buildStatCard(BuildContext context,
       String title, String value, String subtitle, IconData icon) {
     return Card(
       child: Padding(
@@ -302,7 +312,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
             Text(
               subtitle,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
+                    color: AppTheme.colorsOf(context).textColorLight,
                   ),
             ),
           ],
