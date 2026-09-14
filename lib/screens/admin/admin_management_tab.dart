@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
+import '../../config/theme.dart';
 
 /// Admin Management Tab for managing administrator accounts and roles.
 /// Only accessible to Super Admin users.
@@ -81,7 +82,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).danger),
             child: const Text('Revoke'),
           ),
         ],
@@ -129,16 +130,16 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
   }
 
   /// Get role badge color
-  Color _getRoleColor(String role) {
+  Color _getRoleColor(BuildContext context, String role) {
     switch (role) {
       case 'super_admin':
-        return Colors.purple;
+        return AppTheme.colorsOf(context).accent;
       case 'support_admin':
-        return Colors.blue;
+        return AppTheme.colorsOf(context).info;
       case 'finance_admin':
-        return Colors.green;
+        return AppTheme.colorsOf(context).success;
       default:
-        return Colors.grey;
+        return AppTheme.colorsOf(context).textColorLight;
     }
   }
 
@@ -152,7 +153,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.lock_outline, size: 64, color: Colors.red),
+            Icon(Icons.lock_outline, size: 64, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
             Text(
               'Super Admin Access Required',
@@ -188,7 +189,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                     Text(
                       'Manage administrator accounts and roles',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade600,
+                            color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
                           ),
                     ),
                   ],
@@ -209,19 +210,19 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
         if (_errorMessage != null)
           Container(
             padding: const EdgeInsets.all(16.0),
-            color: Colors.red.shade50,
+            color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
             child: Row(
               children: [
-                const Icon(Icons.error_outline, color: Colors.red),
+                Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(color: Colors.red),
+                    style: TextStyle(color: AppTheme.colorsOf(context).danger),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.red),
+                  icon: Icon(Icons.close, color: AppTheme.colorsOf(context).danger),
                   onPressed: () => setState(() => _errorMessage = null),
                 ),
               ],
@@ -266,11 +267,11 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.blue.shade100,
+                  backgroundColor: AppTheme.colorsOf(context).info.withOpacity(0.15),
                   child: Text(
                     admin['email']?.substring(0, 1).toUpperCase() ?? '?',
                     style: TextStyle(
-                      color: Colors.blue.shade900,
+                      color: AppTheme.colorsOf(context).info,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -291,7 +292,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                         Text(
                           admin['username'],
                           style: TextStyle(
-                            color: Colors.grey.shade600,
+                            color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
                             fontSize: 14,
                           ),
                         ),
@@ -310,11 +311,11 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
               children: activeRoles.map((role) {
                 return Chip(
                   label: Text(_formatRole(role['role'])),
-                  backgroundColor: _getRoleColor(
+                  backgroundColor: _getRoleColor(context,
                     role['role'],
                   ).withValues(alpha: 0.1),
                   labelStyle: TextStyle(
-                    color: _getRoleColor(role['role']),
+                    color: _getRoleColor(context, role['role']),
                     fontWeight: FontWeight.bold,
                   ),
                   deleteIcon: role['role'] != 'super_admin'
@@ -334,7 +335,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
               Container(
                 padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -375,7 +376,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
         ),
         const SizedBox(height: 4),
         Text(
@@ -519,7 +520,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
                         'User management and support',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -535,7 +536,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
                         'Payments, refunds, and reports',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -555,21 +556,21 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
               Container(
                 padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade50,
+                  color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
-                      color: Colors.red,
+                      color: AppTheme.colorsOf(context).danger,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _errorMessage!,
-                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                        style: TextStyle(color: AppTheme.colorsOf(context).danger, fontSize: 12),
                       ),
                     ),
                   ],
