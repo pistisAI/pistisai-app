@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../config/theme.dart';
 import '../../services/agent_lifecycle_service.dart';
 
 /// Agent List View - Shows all available agents with their status
@@ -61,20 +62,20 @@ class _AgentListViewState extends State<AgentListView> {
                   Icon(
                     Icons.cloud_off,
                     size: 64,
-                    color: Colors.grey.shade400,
+                    color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Not Connected to OpenClaw Gateway',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.grey.shade600,
+                          color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     service.lastError ?? 'Connection required',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey.shade500,
+                          color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6),
                         ),
                   ),
                   const SizedBox(height: 24),
@@ -98,20 +99,20 @@ class _AgentListViewState extends State<AgentListView> {
                   Icon(
                     Icons.smart_toy,
                     size: 64,
-                    color: Colors.grey.shade400,
+                    color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No Agents Found',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.grey.shade600,
+                          color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'No agents are configured in OpenClaw Gateway',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey.shade500,
+                          color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6),
                         ),
                   ),
                   const SizedBox(height: 24),
@@ -169,20 +170,21 @@ class _AgentListTile extends StatelessWidget {
     required this.onRefresh,
   });
 
-  Color _getStatusColor(AgentLifecycleState state) {
+  Color _getStatusColor(BuildContext context, AgentLifecycleState state) {
+    final colors = AppTheme.colorsOf(context);
     switch (state) {
       case AgentLifecycleState.idle:
-        return Colors.grey;
+        return colors.textColorLight;
       case AgentLifecycleState.starting:
-        return Colors.orange;
+        return colors.warning;
       case AgentLifecycleState.running:
-        return Colors.green;
+        return colors.success;
       case AgentLifecycleState.stopping:
-        return Colors.orange.shade300;
+        return colors.warning.withValues(alpha: 0.7);
       case AgentLifecycleState.error:
-        return Colors.red;
+        return colors.danger;
       case AgentLifecycleState.offline:
-        return Colors.grey.shade400;
+        return colors.textColorLight.withValues(alpha: 0.5);
     }
   }
 
@@ -222,7 +224,7 @@ class _AgentListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _getStatusColor(agent.state);
+    final statusColor = _getStatusColor(context, agent.state);
     final statusIcon = _getStatusIcon(agent.state);
     final statusText = _getStatusText(agent.state);
 
@@ -245,7 +247,7 @@ class _AgentListTile extends StatelessWidget {
             if (agent.errorMessage != null)
               Text(
                 agent.errorMessage!,
-                style: TextStyle(color: Colors.red.shade700, fontSize: 12),
+                style: TextStyle(color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.8), fontSize: 12),
               ),
           ],
         ),
@@ -295,7 +297,7 @@ class _AgentDetailScreenState extends State<_AgentDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message ?? 'Unknown error'),
-        backgroundColor: result.success ? Colors.green : Colors.red,
+        backgroundColor: result.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
       ),
     );
   }
@@ -311,7 +313,7 @@ class _AgentDetailScreenState extends State<_AgentDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message ?? 'Unknown error'),
-        backgroundColor: result.success ? Colors.green : Colors.red,
+        backgroundColor: result.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
       ),
     );
   }
@@ -327,7 +329,7 @@ class _AgentDetailScreenState extends State<_AgentDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message ?? 'Unknown error'),
-        backgroundColor: result.success ? Colors.green : Colors.red,
+        backgroundColor: result.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
       ),
     );
   }
@@ -376,7 +378,7 @@ class _AgentDetailScreenState extends State<_AgentDetailScreen> {
                         children: [
                           Icon(
                             _getStatusIcon(currentAgent.state),
-                            color: _getStatusColor(currentAgent.state),
+                            color: _getStatusColor(context, currentAgent.state),
                             size: 32,
                           ),
                           const SizedBox(width: 12),
@@ -396,7 +398,7 @@ class _AgentDetailScreenState extends State<_AgentDetailScreen> {
                                       .titleLarge
                                       ?.copyWith(
                                         color:
-                                            _getStatusColor(currentAgent.state),
+                                            _getStatusColor(context, currentAgent.state),
                                       ),
                                 ),
                               ],
@@ -422,7 +424,7 @@ class _AgentDetailScreenState extends State<_AgentDetailScreen> {
                         const SizedBox(height: 4),
                         Text(
                           currentAgent.errorMessage!,
-                          style: TextStyle(color: Colors.red.shade700),
+                          style: TextStyle(color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.8)),
                         ),
                       ],
                       if (currentAgent.lastUpdate != null) ...[
@@ -525,20 +527,21 @@ class _AgentDetailScreenState extends State<_AgentDetailScreen> {
     );
   }
 
-  Color _getStatusColor(AgentLifecycleState state) {
+  Color _getStatusColor(BuildContext context, AgentLifecycleState state) {
+    final colors = AppTheme.colorsOf(context);
     switch (state) {
       case AgentLifecycleState.idle:
-        return Colors.grey;
+        return colors.textColorLight;
       case AgentLifecycleState.starting:
-        return Colors.orange;
+        return colors.warning;
       case AgentLifecycleState.running:
-        return Colors.green;
+        return colors.success;
       case AgentLifecycleState.stopping:
-        return Colors.orange.shade300;
+        return colors.warning.withValues(alpha: 0.7);
       case AgentLifecycleState.error:
-        return Colors.red;
+        return colors.danger;
       case AgentLifecycleState.offline:
-        return Colors.grey.shade400;
+        return colors.textColorLight.withValues(alpha: 0.5);
     }
   }
 
