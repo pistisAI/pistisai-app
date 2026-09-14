@@ -6,6 +6,7 @@ import '../../models/admin_role_model.dart';
 import '../../models/subscription_model.dart';
 import '../../di/locator.dart' as di;
 import 'dart:async';
+import '../../config/theme.dart';
 
 /// Subscription Management Tab for the Admin Center
 /// Provides subscription viewing, filtering, and management (upgrade, downgrade, cancel)
@@ -190,7 +191,7 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
                 'View and manage user subscriptions, upgrades, downgrades, and cancellations',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade700),
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ),
@@ -333,9 +334,9 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadSubscriptions,
@@ -347,11 +348,11 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
     }
 
     if (_subscriptions.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.subscriptions_outlined, size: 48, color: Colors.grey),
+            Icon(Icons.subscriptions_outlined, size: 48, color: AppTheme.colorsOf(context).textColorLight),
             SizedBox(height: 16),
             Text('No subscriptions found'),
           ],
@@ -421,13 +422,13 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
               ),
               if (canModify)
                 IconButton(
-                  icon: const Icon(Icons.upgrade, size: 20, color: Colors.blue),
+                  icon: Icon(Icons.upgrade, size: 20, color: AppTheme.colorsOf(context).info),
                   onPressed: () => _showUpgradeDowngradeDialog(subscription),
                   tooltip: 'Upgrade/Downgrade',
                 ),
               if (canModify && !subscription.cancelAtPeriodEnd)
                 IconButton(
-                  icon: const Icon(Icons.cancel, size: 20, color: Colors.red),
+                  icon: Icon(Icons.cancel, size: 20, color: AppTheme.colorsOf(context).danger),
                   onPressed: () => _showCancelDialog(subscription),
                   tooltip: 'Cancel Subscription',
                 ),
@@ -442,20 +443,20 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
     Color color;
     switch (tier) {
       case SubscriptionTier.enterprise:
-        color = Colors.purple;
+        color = AppTheme.colorsOf(context).accent;
         break;
       case SubscriptionTier.premium:
-        color = Colors.blue;
+        color = AppTheme.colorsOf(context).info;
         break;
       case SubscriptionTier.free:
-        color = Colors.grey;
+        color = AppTheme.colorsOf(context).textColorLight;
         break;
     }
 
     return Chip(
       label: Text(
         tier.displayName.toUpperCase(),
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColor),
       ),
       backgroundColor: color,
       padding: EdgeInsets.zero,
@@ -467,26 +468,26 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
     Color color;
     switch (status) {
       case SubscriptionStatus.active:
-        color = Colors.green;
+        color = AppTheme.colorsOf(context).success;
         break;
       case SubscriptionStatus.canceled:
-        color = Colors.red;
+        color = AppTheme.colorsOf(context).danger;
         break;
       case SubscriptionStatus.pastDue:
-        color = Colors.orange;
+        color = AppTheme.colorsOf(context).warning;
         break;
       case SubscriptionStatus.trialing:
-        color = Colors.blue;
+        color = AppTheme.colorsOf(context).info;
         break;
       case SubscriptionStatus.incomplete:
-        color = Colors.grey;
+        color = AppTheme.colorsOf(context).textColorLight;
         break;
     }
 
     return Chip(
       label: Text(
         status.displayName.toUpperCase(),
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColor),
       ),
       backgroundColor: color,
       padding: EdgeInsets.zero,
@@ -498,8 +499,8 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        border: Border(top: BorderSide(color: Colors.grey.shade300)),
+        color: AppTheme.colorsOf(context).textColorLight,
+        border: Border(top: BorderSide(color: AppTheme.colorsOf(context).textColorLight)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -646,9 +647,9 @@ class _SubscriptionDetailDialogState extends State<_SubscriptionDetailDialog> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadSubscriptionDetails,
@@ -814,7 +815,7 @@ class _SubscriptionDetailDialogState extends State<_SubscriptionDetailDialog> {
               '$label:',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
             ),
           ),
@@ -822,7 +823,7 @@ class _SubscriptionDetailDialogState extends State<_SubscriptionDetailDialog> {
             child: Text(
               value,
               style: TextStyle(
-                color: isWarning ? Colors.orange : null,
+                color: isWarning ? AppTheme.colorsOf(context).warning : null,
                 fontWeight: isWarning ? FontWeight.bold : null,
               ),
             ),
@@ -1046,13 +1047,13 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _proratedCharge! >= 0
-                      ? Colors.blue.shade50
-                      : Colors.green.shade50,
+                      ? AppTheme.colorsOf(context).info
+                      : AppTheme.colorsOf(context).success,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _proratedCharge! >= 0
-                        ? Colors.blue.shade200
-                        : Colors.green.shade200,
+                        ? AppTheme.colorsOf(context).info
+                        : AppTheme.colorsOf(context).success,
                   ),
                 ),
                 child: Column(
@@ -1063,8 +1064,8 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: _proratedCharge! >= 0
-                            ? Colors.blue.shade900
-                            : Colors.green.shade900,
+                            ? AppTheme.colorsOf(context).info
+                            : AppTheme.colorsOf(context).success,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1075,8 +1076,8 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
                       style: TextStyle(
                         fontSize: 12,
                         color: _proratedCharge! >= 0
-                            ? Colors.blue.shade700
-                            : Colors.green.shade700,
+                            ? AppTheme.colorsOf(context).info
+                            : AppTheme.colorsOf(context).success,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1084,7 +1085,7 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
                       'Based on ${widget.subscription.daysRemaining} days remaining in current period',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade600,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                     ),
                   ],
@@ -1093,7 +1094,7 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
             ],
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             ],
           ],
         ),
@@ -1234,9 +1235,9 @@ class _CancelSubscriptionDialogState extends State<_CancelSubscriptionDialog> {
                     },
               child: RadioListTile<bool>(
                 title: const Text('Cancel immediately'),
-                subtitle: const Text(
+                subtitle: Text(
                   'User will lose access immediately. No refund will be issued.',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: AppTheme.colorsOf(context).danger),
                 ),
                 value: true,
                 selected: _immediate,
@@ -1244,7 +1245,7 @@ class _CancelSubscriptionDialogState extends State<_CancelSubscriptionDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.red)),
+              Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             ],
           ],
         ),
@@ -1256,7 +1257,7 @@ class _CancelSubscriptionDialogState extends State<_CancelSubscriptionDialog> {
         ),
         FilledButton(
           onPressed: _isLoading ? null : _cancelSubscription,
-          style: FilledButton.styleFrom(backgroundColor: Colors.red),
+          style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).danger),
           child: _isLoading
               ? const SizedBox(
                   width: 16,
