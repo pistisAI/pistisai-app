@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
+import '../../../config/theme.dart';
 
 /// Completion Step
 /// Shows success message after setup is complete
@@ -30,13 +31,13 @@ class _CompletionStepState extends State<CompletionStep> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
+                    color: AppTheme.colorsOf(context).success.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.check_circle,
                     size: 60,
-                    color: Colors.green.shade700,
+                    color: AppTheme.colorsOf(context).success,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -44,7 +45,7 @@ class _CompletionStepState extends State<CompletionStep> {
                   'You\'re All Set!',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.green.shade700,
+                        color: AppTheme.colorsOf(context).success,
                       ),
                 ),
                 const SizedBox(height: 16),
@@ -106,9 +107,9 @@ class _CompletionStepState extends State<CompletionStep> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
+                    color: AppTheme.colorsOf(context).info.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue.shade200),
+                    border: Border.all(color: AppTheme.colorsOf(context).info.withOpacity(0.4)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,13 +117,13 @@ class _CompletionStepState extends State<CompletionStep> {
                       Row(
                         children: [
                           Icon(Icons.rocket_launch,
-                              color: Colors.blue.shade700),
+                              color: AppTheme.colorsOf(context).info),
                           const SizedBox(width: 8),
                           Text(
                             'Ready to start chatting!',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue.shade900,
+                              color: AppTheme.colorsOf(context).info,
                             ),
                           ),
                         ],
@@ -130,7 +131,7 @@ class _CompletionStepState extends State<CompletionStep> {
                       const SizedBox(height: 8),
                       Text(
                         'Your setup is complete. You can start chatting now!',
-                        style: TextStyle(color: Colors.blue.shade900),
+                        style: TextStyle(color: AppTheme.colorsOf(context).info),
                       ),
                     ],
                   ),
@@ -153,7 +154,7 @@ class _CompletionStepState extends State<CompletionStep> {
             child: Text(
               '$label:',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
+                    color: AppTheme.colorsOf(context).textColorLight,
                   ),
             ),
           ),
