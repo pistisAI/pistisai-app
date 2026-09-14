@@ -96,6 +96,29 @@ jobs:
           fi
           echo "✅ Image pushed: $DIGEST"
 
+      - name: Make image public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Make the container package public so Dokpull can pull without auth
+          PACKAGE_PATH="${{ github.repository }}/pistisai-app-web"
+          echo "🔓 Making package public: $PACKAGE_PATH"
+          # Get the package ID first
+          PKG_INFO=$(gh api "repos/${{ github.repository }}/packages/container/pistisai-app-web" \
+            -H "Accept: application/vnd.github+json" 2>&1) || true
+          echo "$PKG_INFO" | jq -r '.id // empty' > /dev/null 2>&1 || true
+          # Update visibility to public
+          RESP=$(gh api -X PATCH "repos/${{ github.repository }}/packages/container/pistisai-app-web" \
+            -f visibility=public \
+            -H "Accept: application/vnd.github+json" 2>&1) || true
+          if echo "$RESP" | jq -e '.visibility == "public"' > /dev/null 2>&1; then
+            echo "✅ Package is now public"
+          else
+            echo "⚠️ Could not set package public (may already be public or org policy blocks it)"
+            echo "$RESP" | head -5 || true
+          fi
+
       - name: Trigger Dokploy deploy
         env:
           DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
