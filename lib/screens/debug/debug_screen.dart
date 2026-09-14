@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../config/app_config.dart';
+import '../../config/theme.dart';
 import '../../services/connection_manager_service.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
@@ -365,20 +366,20 @@ class _DebugScreenState extends State<DebugScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isConnected
-            ? Colors.green.withValues(alpha: 0.1)
-            : Colors.red.withValues(alpha: 0.1),
+            ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+            : AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isConnected
-              ? Colors.green.withValues(alpha: 0.3)
-              : Colors.red.withValues(alpha: 0.3),
+              ? AppTheme.colorsOf(context).success.withValues(alpha: 0.3)
+              : AppTheme.colorsOf(context).danger.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
         children: [
           Icon(
             isConnected ? Icons.cloud_done : Icons.cloud_off,
-            color: isConnected ? Colors.green : Colors.red,
+            color: isConnected ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -388,7 +389,7 @@ class _DebugScreenState extends State<DebugScreen> {
                 Text(
                   isConnected ? 'Connected to Gateway' : 'Disconnected',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: isConnected ? Colors.green : Colors.red,
+                        color: isConnected ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
                         fontWeight: FontWeight.w600,
                       ),
                 ),
@@ -678,13 +679,13 @@ class _DebugScreenState extends State<DebugScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
+                      color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
                         const Icon(Icons.error_outline,
-                            size: 16, color: Colors.red),
+                            size: 16, color: AppTheme.colorsOf(context).danger),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -692,7 +693,7 @@ class _DebugScreenState extends State<DebugScreen> {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall
-                                ?.copyWith(color: Colors.red),
+                                ?.copyWith(color: AppTheme.colorsOf(context).danger),
                           ),
                         ),
                       ],
