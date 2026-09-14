@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 class SidebarSection extends StatefulWidget {
   final String title;
@@ -54,7 +55,7 @@ class _SidebarSectionState extends State<SidebarSection> {
                 Text(
                   widget.title,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.grey,
+                        color: AppTheme.colorsOf(context).textColorLight,
                         letterSpacing: 1.2,
                       ),
                 ),
@@ -62,7 +63,7 @@ class _SidebarSectionState extends State<SidebarSection> {
                 Icon(
                   _isExpanded ? Icons.expand_less : Icons.expand_more,
                   size: 16,
-                  color: Colors.grey,
+                  color: AppTheme.colorsOf(context).textColorLight,
                 ),
               ],
             ),
