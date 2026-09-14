@@ -16,6 +16,7 @@ import '../../services/connection_manager_service.dart';
 import '../../services/hermes/hermes_streaming_service.dart';
 import '../../services/settings_preference_service.dart' hide BackendType;
 import '../../config/app_config.dart';
+import '../../config/theme.dart';
 
 /// Screen displaying gateway process state and model instances
 ///
@@ -499,16 +500,16 @@ class _ModelInstanceCard extends StatelessWidget {
   });
 
   /// Get tier badge color
-  Color _getTierColor(String tier, ThemeData theme) {
+  Color _getTierColor(BuildContext context, String tier, ThemeData theme) {
     switch (tier.toLowerCase()) {
       case 'critical':
         return theme.colorScheme.error;
       case 'high':
-        return Colors.orange;
+        return AppTheme.colorsOf(context).warning;
       case 'medium':
-        return Colors.blue;
+        return AppTheme.colorsOf(context).info;
       case 'unlimited':
-        return Colors.green;
+        return AppTheme.colorsOf(context).success;
       default:
         return theme.colorScheme.onSurface.withValues(alpha: 0.4);
     }
@@ -603,18 +604,18 @@ class _ModelInstanceCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getTierColor(instance.tier, theme)
+                    color: _getTierColor(context, instance.tier, theme)
                         .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: _getTierColor(instance.tier, theme),
+                      color: _getTierColor(context, instance.tier, theme),
                       width: 1,
                     ),
                   ),
                   child: Text(
                     instance.tier.toUpperCase(),
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: _getTierColor(instance.tier, theme),
+                      color: _getTierColor(context, instance.tier, theme),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -641,7 +642,7 @@ class _ModelInstanceCard extends StatelessWidget {
                 utilization > 0.9
                     ? theme.colorScheme.error
                     : utilization > 0.7
-                        ? Colors.orange
+                        ? AppTheme.colorsOf(context).warning
                         : theme.colorScheme.primary,
               ),
               borderRadius: BorderRadius.circular(2),
@@ -842,9 +843,9 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.link),
                   suffixIcon: _connectionStatus == true
-                      ? const Icon(Icons.check_circle, color: Colors.green)
+                      ? Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success)
                       : _connectionStatus == false
-                          ? const Icon(Icons.error, color: Colors.red)
+                          ? Icon(Icons.error, color: AppTheme.colorsOf(context).danger)
                           : null,
                 ),
                 controller: TextEditingController(text: _url),
