@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
@@ -131,7 +132,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                   decoration: BoxDecoration(
                     color: index <= currentStep
                         ? Theme.of(context).primaryColor
-                        : Colors.grey.shade300,
+                        : AppTheme.colorsOf(context).textColorLight,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -209,7 +210,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     messenger.showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: AppTheme.colorsOf(context).danger,
         duration: const Duration(seconds: 5),
       ),
     );
