@@ -6,6 +6,7 @@ import '../../models/payment_transaction_model.dart';
 import '../../models/refund_model.dart';
 import '../../di/locator.dart' as di;
 import 'dart:async';
+import '../../config/theme.dart';
 
 /// Payment Management Tab for the Admin Center
 /// Provides transaction viewing, filtering, and refund processing
@@ -194,7 +195,7 @@ class _PaymentManagementTabState extends State<PaymentManagementTab> {
                 'View payment transactions, process refunds, and manage payment methods',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade700),
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ),
@@ -355,9 +356,9 @@ class _PaymentManagementTabState extends State<PaymentManagementTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadTransactions,
@@ -369,11 +370,11 @@ class _PaymentManagementTabState extends State<PaymentManagementTab> {
     }
 
     if (_transactions.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.payment_outlined, size: 48, color: Colors.grey),
+            Icon(Icons.payment_outlined, size: 48, color: AppTheme.colorsOf(context).textColorLight),
             SizedBox(height: 16),
             Text('No transactions found'),
           ],
@@ -430,10 +431,10 @@ class _PaymentManagementTabState extends State<PaymentManagementTab> {
               ),
               if (canRefund)
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.money_off,
                     size: 20,
-                    color: Colors.orange,
+                    color: AppTheme.colorsOf(context).warning,
                   ),
                   onPressed: () => _showRefundDialog(transaction),
                   tooltip: 'Process Refund',
@@ -449,29 +450,29 @@ class _PaymentManagementTabState extends State<PaymentManagementTab> {
     Color color;
     switch (status) {
       case TransactionStatus.succeeded:
-        color = Colors.green;
+        color = AppTheme.colorsOf(context).success;
         break;
       case TransactionStatus.pending:
-        color = Colors.orange;
+        color = AppTheme.colorsOf(context).warning;
         break;
       case TransactionStatus.failed:
-        color = Colors.red;
+        color = AppTheme.colorsOf(context).danger;
         break;
       case TransactionStatus.refunded:
-        color = Colors.purple;
+        color = AppTheme.colorsOf(context).accent;
         break;
       case TransactionStatus.partiallyRefunded:
-        color = Colors.blue;
+        color = AppTheme.colorsOf(context).info;
         break;
       case TransactionStatus.disputed:
-        color = Colors.deepOrange;
+        color = AppTheme.colorsOf(context).warning;
         break;
     }
 
     return Chip(
       label: Text(
         status.displayName.toUpperCase(),
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColor),
       ),
       backgroundColor: color,
       padding: EdgeInsets.zero,
@@ -483,8 +484,8 @@ class _PaymentManagementTabState extends State<PaymentManagementTab> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        border: Border(top: BorderSide(color: Colors.grey.shade300)),
+        color: AppTheme.colorsOf(context).textColorLight,
+        border: Border(top: BorderSide(color: AppTheme.colorsOf(context).textColorLight)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -650,9 +651,9 @@ class _TransactionDetailDialogState extends State<_TransactionDetailDialog> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadTransactionDetails,
@@ -788,7 +789,7 @@ class _TransactionDetailDialogState extends State<_TransactionDetailDialog> {
               '$label:',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
             ),
           ),
@@ -800,8 +801,8 @@ class _TransactionDetailDialogState extends State<_TransactionDetailDialog> {
                     },
                     child: Text(
                       value,
-                      style: const TextStyle(
-                        color: Colors.blue,
+                      style: TextStyle(
+                        color: AppTheme.colorsOf(context).info,
                         decoration: TextDecoration.underline,
                       ),
                     ),
@@ -809,7 +810,7 @@ class _TransactionDetailDialogState extends State<_TransactionDetailDialog> {
                 : Text(
                     value,
                     style: TextStyle(
-                      color: isWarning ? Colors.orange : null,
+                      color: isWarning ? AppTheme.colorsOf(context).warning : null,
                       fontWeight: isWarning ? FontWeight.bold : null,
                     ),
                   ),
@@ -974,7 +975,7 @@ class _RefundDialogState extends State<_RefundDialog> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: AppTheme.colorsOf(context).textColorLight,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
@@ -1093,18 +1094,18 @@ class _RefundDialogState extends State<_RefundDialog> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
+                    color: AppTheme.colorsOf(context).danger,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.shade300),
+                    border: Border.all(color: AppTheme.colorsOf(context).danger),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.red),
+                      Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: const TextStyle(color: Colors.red),
+                          style: TextStyle(color: AppTheme.colorsOf(context).danger),
                         ),
                       ),
                     ],
@@ -1118,18 +1119,18 @@ class _RefundDialogState extends State<_RefundDialog> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
+                  color: AppTheme.colorsOf(context).warning,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.shade300),
+                  border: Border.all(color: AppTheme.colorsOf(context).warning),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.warning_amber, color: Colors.orange),
+                    Icon(Icons.warning_amber, color: AppTheme.colorsOf(context).warning),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'This action cannot be undone. The refund will be processed immediately through the payment gateway.',
-                        style: TextStyle(color: Colors.orange),
+                        style: TextStyle(color: AppTheme.colorsOf(context).warning),
                       ),
                     ),
                   ],
@@ -1146,7 +1147,7 @@ class _RefundDialogState extends State<_RefundDialog> {
         ),
         FilledButton(
           onPressed: _isLoading ? null : _processRefund,
-          style: FilledButton.styleFrom(backgroundColor: Colors.orange),
+          style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).warning),
           child: _isLoading
               ? const SizedBox(
                   width: 16,
