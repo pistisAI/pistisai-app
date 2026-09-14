@@ -1,12 +1,14 @@
 name: "🔢 Auto Version Bump"
 
-# On every push to main, if version.json was NOT explicitly changed in the
-# push, auto-bump the patch version and commit it back. This guarantees that
-# every push to main results in a unique version and therefore a successful
-# release from build-desktop.yml.
+# SINGLE ENTRY POINT for all releases.
+# On every push to main, if version.json was NOT explicitly changed,
+# auto-bump the patch version, commit it back, then trigger ALL platform
+# build/deploy workflows via workflow_dispatch.
 #
-# If a commit message contains [major] or [minor], that bump type is used
-# instead of patch.
+# Bump type override via commit message:
+#   [major] → major bump
+#   [minor] → minor bump
+#   (nothing) → patch bump
 
 on:
   push:
@@ -23,7 +25,7 @@ concurrency:
 
 jobs:
   bump:
-    name: "Bump version & commit"
+    name: "Bump version & trigger all platforms"
     runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.compute.outputs.version }}
@@ -43,8 +45,8 @@ jobs:
           else
             echo "type=patch" >> $GITHUB_OUTPUT
           fi
-          echo "Commit message: $MSG"
-          echo "Bump type: $(cat $GITHUB_OUTPUT | grep type | cut -d= -f2)"
+          echo "Commit: $MSG"
+          echo "Bump: $(grep type $GITHUB_OUTPUT | cut -d= -f2)"
 
       - name: Compute new version
         id: compute
@@ -53,46 +55,26 @@ jobs:
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
           BUMP="${{ steps.bump_type.outputs.type }}"
           case "$BUMP" in
-            major)
-              MAJOR=$((MAJOR + 1))
-              MINOR=0
-              PATCH=0
-              ;;
-            minor)
-              MINOR=$((MINOR + 1))
-              PATCH=0
-              ;;
-            patch)
-              PATCH=$((PATCH + 1))
-              ;;
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH + 1)) ;;
           esac
           NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "Current: $CURRENT → New: $NEW_VERSION (bump: $BUMP)"
+          echo "Current: $CURRENT → New: $NEW_VERSION"
 
       - name: Update version.json
         run: |
           VERSION="${{ steps.compute.outputs.version }}"
           BUILD_NUMBER="${{ github.run_number }}"
-          BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          GIT_COMMIT="${GITHUB_SHA:0:7}"
-          BUILD_TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
-
           jq -n \
             --arg version "$VERSION" \
             --arg build_number "$BUILD_NUMBER" \
-            --arg build_date "$BUILD_DATE" \
-            --arg git_commit "$GIT_COMMIT" \
-            --arg buildTimestamp "$BUILD_TIMESTAMP" \
-            '{
-              version: $version,
-              build_number: $build_number,
-              build_date: $build_date,
-              git_commit: $git_commit,
-              buildTimestamp: $buildTimestamp
-            }' > assets/version.json
-
-          echo "Updated assets/version.json:"
+            --arg build_date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg git_commit "${GITHUB_SHA:0:7}" \
+            --arg buildTimestamp "$(date +'%Y-%m-%d %H:%M:%S')" \
+            '{version: $version, build_number: $build_number, build_date: $build_date, git_commit: $git_commit, buildTimestamp: $buildTimestamp}' \
+            > assets/version.json
           cat assets/version.json
 
       - name: Update pubspec.yaml version
@@ -100,7 +82,7 @@ jobs:
           VERSION="${{ steps.compute.outputs.version }}"
           BUILD_NUMBER="${{ github.run_number }}"
           sed -i "s/^version: .*/version: ${VERSION}+${BUILD_NUMBER}/" pubspec.yaml
-          echo "pubspec.yaml version: $(grep '^version:' pubspec.yaml)"
+          grep '^version:' pubspec.yaml
 
       - name: Commit and push
         run: |
@@ -110,12 +92,38 @@ jobs:
           git commit -m "ci: bump version to ${{ steps.compute.outputs.version }}+${{ github.run_number }} [skip ci]"
           git push origin main
 
-      - name: Trigger desktop build & release
+      - name: Trigger ALL platform builds
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          echo "Triggering build-desktop.yml for version ${{ steps.compute.outputs.version }}..."
-          gh workflow run build-desktop.yml \
-            --ref main \
-            -f platforms=linux,windows \
-            || echo "Failed to trigger workflow (may already be running)"
+          VERSION="${{ steps.compute.outputs.version }}"
+          echo "🚀 Triggering all platform builds for v${VERSION}"
+
+          # Desktop (Linux + Windows + macOS)
+          gh workflow run build-desktop.yml --ref main \
+            -f platforms=linux,windows,macos \
+            && echo "✅ desktop triggered" \
+            || echo "⚠️ desktop trigger failed"
+
+          # Web deploy
+          gh workflow run deploy-web.yml --ref main \
+            && echo "✅ web triggered" \
+            || echo "⚠️ web trigger failed"
+
+          # Mobile (Android + iOS)
+          gh workflow run build-mobile.yml --ref main \
+            -f platforms=android,ios \
+            && echo "✅ mobile triggered" \
+            || echo "⚠️ mobile trigger failed"
+
+          # Backend deploy
+          gh workflow run deploy-backend.yml --ref main \
+            && echo "✅ backend triggered" \
+            || echo "⚠️ backend trigger failed"
+
+          # Hermes VPS deploy
+          gh workflow run deploy-hermes.yml --ref main \
+            && echo "✅ hermes triggered" \
+            || echo "⚠️ hermes trigger failed"
+
+          echo "All platform workflows triggered for v${VERSION}"

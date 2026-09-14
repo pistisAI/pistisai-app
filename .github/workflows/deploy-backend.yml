@@ -1,22 +1,6 @@
 name: "🖥️ Backend Deploy"
 
 on:
-  push:
-    branches:
-      - main
-      - "antigravity/**"
-      - "codex/**"
-    paths:
-      - "services/api-backend/**"
-      - "services/streaming-proxy/**"
-      - "services/postgres/**"
-      - "config/docker/Dockerfile.api-backend"
-      - "config/docker/Dockerfile.streaming-proxy"
-      - "config/docker/Dockerfile.postgres"
-      - "config/docker/postgres-*"
-      - "config/docker/init.sql"
-      - "config/swarm/**"
-      - ".github/workflows/deploy-backend.yml"
   workflow_dispatch:
     inputs:
       force_build:
@@ -48,11 +32,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' assets/version.json | cut -d+ -f1)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Deploying backend version: $VERSION"
+
       - name: Build and Push Backend Images
         run: |
           set -euo pipefail
           REPO_LOWER=${GITHUB_REPOSITORY,,}
-          TAG_SUFFIX="${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:7}"
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG_SUFFIX="${VERSION}-${GITHUB_SHA:0:7}"
 
           if [ "${{ github.event_name }}" == "push" ]; then
             DIFF_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} || git diff --name-only HEAD^ HEAD)
@@ -67,7 +59,9 @@ jobs:
             # Only push to permanent tags on main
             if [ "${{ github.ref_name }}" == "main" ]; then
               docker tag ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX} ghcr.io/${REPO_LOWER}/${name}:latest
+              docker tag ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX} ghcr.io/${REPO_LOWER}/${name}:v${VERSION}
               docker push ghcr.io/${REPO_LOWER}/${name}:latest
+              docker push ghcr.io/${REPO_LOWER}/${name}:v${VERSION}
               docker push ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX}
             fi
           }

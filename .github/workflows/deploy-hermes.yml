@@ -11,18 +11,6 @@ on:
         description: "SSH user on the Pistisai VPS (cloudllm)"
         required: false
         default: "cloudllm"
-  push:
-    branches:
-      - main
-    paths:
-      - "deploy/hermes/**"
-      - "scripts/deploy-hermes-pistisai-vps.sh"
-      - "docker-compose.multi.yml"
-      - "config/nginx/nginx-webapp-internal.conf"
-      - "config/nginx/nginx-flutter.conf"
-      - "config/docker/nginx-proxy.conf"
-      - "config/docker/nginx-web.conf"
-      - ".github/workflows/deploy-hermes.yml"
 
 concurrency:
   group: hermes-deploy-${{ github.ref }}
