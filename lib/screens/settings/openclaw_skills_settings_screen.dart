@@ -287,7 +287,7 @@ class _OpenClawSkillsSettingsScreenState
                 child: OutlinedButton.icon(
                   onPressed: isInstalling ? null : _handleInstall,
                   icon: isInstalling
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
@@ -312,12 +312,12 @@ class _OpenClawSkillsSettingsScreenState
                 child: FilledButton.icon(
                   onPressed: isInstalling ? null : _handleInstall,
                   icon: isInstalling
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: AppTheme.colorsOf(context).textColor,
                           ),
                         )
                       : const Icon(Icons.download),
