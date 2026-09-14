@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 enum StatusType {
   healthy,
@@ -25,7 +26,7 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final config = _getStatusConfig();
+    final config = _getStatusConfig(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -52,33 +53,34 @@ class StatusBadge extends StatelessWidget {
     );
   }
 
-  _StatusConfig _getStatusConfig() {
+  _StatusConfig _getStatusConfig(BuildContext context) {
+    final colors = AppTheme.colorsOf(context);
     switch (status) {
       case StatusType.healthy:
       case StatusType.running:
       case StatusType.active:
         return _StatusConfig(
-          color: Colors.green,
+          color: colors.success,
           icon: Icons.check_circle,
         );
       case StatusType.error:
         return _StatusConfig(
-          color: Colors.red,
+          color: colors.danger,
           icon: Icons.error,
         );
       case StatusType.idle:
         return _StatusConfig(
-          color: Colors.blue,
+          color: colors.info,
           icon: Icons.coffee,
         );
       case StatusType.stopped:
         return _StatusConfig(
-          color: Colors.grey,
+          color: colors.textColorLight,
           icon: Icons.stop_circle,
         );
       case StatusType.unknown:
         return _StatusConfig(
-          color: Colors.grey.shade400,
+          color: colors.textColorLight,
           icon: Icons.help_outline,
         );
     }
