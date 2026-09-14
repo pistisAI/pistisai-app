@@ -7,6 +7,7 @@ import '../../config/theme_config.dart';
 import '../../services/admin_data_flush_service.dart';
 import '../../services/platform_adapter.dart';
 import '../../services/platform_detection_service.dart';
+import '../../config/theme.dart';
 
 /// Administrative Data Flush Screen
 ///
@@ -237,7 +238,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                     'Running Tasks',
                     '${docker['runningContainers'] ?? 0}',
                     Icons.run_circle_outlined,
-                    Colors.green,
+                    AppTheme.colorsOf(context).success,
                   ),
                 ],
               ),
@@ -344,25 +345,25 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: _performEmergencyCleanup,
-                        icon: const Icon(Icons.cleaning_services),
-                        label: const Text('Emergency Cleanup'),
+                        icon: Icon(Icons.cleaning_services),
+                        label: Text('Emergency Cleanup'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ThemeConfig.warningColor,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppTheme.colorsOf(context).textColor,
                           minimumSize: const Size(double.infinity, 44),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: _refreshData,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Refresh Data'),
+                        icon: Icon(Icons.refresh),
+                        label: Text('Refresh Data'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppTheme.colorsOf(context).textColor,
                           minimumSize: const Size(double.infinity, 44),
                         ),
                       ),
@@ -374,23 +375,23 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: _performEmergencyCleanup,
-                        icon: const Icon(Icons.cleaning_services),
-                        label: const Text('Emergency Cleanup'),
+                        icon: Icon(Icons.cleaning_services),
+                        label: Text('Emergency Cleanup'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ThemeConfig.warningColor,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppTheme.colorsOf(context).textColor,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: _refreshData,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Refresh Data'),
+                        icon: Icon(Icons.refresh),
+                        label: Text('Refresh Data'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppTheme.colorsOf(context).textColor,
                         ),
                       ),
                     ),
@@ -474,12 +475,12 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
         padding: EdgeInsets.all(isMobile ? 12 : 16),
         child: Column(
           children: [
-            Icon(Icons.warning, color: Colors.white, size: isMobile ? 40 : 48),
+            Icon(Icons.warning, color: AppTheme.colorsOf(context).textColor, size: isMobile ? 40 : 48),
             SizedBox(height: isMobile ? 6 : 8),
             Text(
               'CRITICAL WARNING',
               style: theme.textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
+                color: AppTheme.colorsOf(context).textColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -487,7 +488,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
             Text(
               'Data flush operations permanently delete user data and cannot be undone. '
               'Ensure you have proper authorization and have backed up any necessary data.',
-              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+              style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColor),
               textAlign: TextAlign.center,
             ),
           ],
@@ -612,7 +613,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                   child: Text(
                     adminService.error!,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
+                      color: AppTheme.colorsOf(context).textColor,
                     ),
                   ),
                 ),
@@ -636,7 +637,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                                   adminService.hasValidConfirmationToken
                                       ? ThemeConfig.successColor
                                       : theme.colorScheme.primary,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppTheme.colorsOf(context).textColor,
                               minimumSize: const Size(double.infinity, 44),
                             ),
                           ),
@@ -649,11 +650,11 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                                     !adminService.isLoading
                                 ? _executeFlush
                                 : null,
-                            icon: const Icon(Icons.delete_forever),
-                            label: const Text('EXECUTE FLUSH'),
+                            icon: Icon(Icons.delete_forever),
+                            label: Text('EXECUTE FLUSH'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ThemeConfig.dangerColor,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppTheme.colorsOf(context).textColor,
                               minimumSize: const Size(double.infinity, 44),
                             ),
                           ),
@@ -677,7 +678,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                                   adminService.hasValidConfirmationToken
                                       ? ThemeConfig.successColor
                                       : theme.colorScheme.primary,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppTheme.colorsOf(context).textColor,
                             ),
                           ),
                         ),
@@ -688,11 +689,11 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                                     !adminService.isLoading
                                 ? _executeFlush
                                 : null,
-                            icon: const Icon(Icons.delete_forever),
-                            label: const Text('EXECUTE FLUSH'),
+                            icon: Icon(Icons.delete_forever),
+                            label: Text('EXECUTE FLUSH'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: ThemeConfig.dangerColor,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppTheme.colorsOf(context).textColor,
                             ),
                           ),
                         ),
@@ -882,9 +883,9 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Data flush executed successfully'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.colorsOf(context).success,
           ),
         );
       }
@@ -974,7 +975,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                child: Text('Cancel'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -982,7 +983,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
                   backgroundColor: isDestructive
                       ? ThemeConfig.dangerColor
                       : theme.colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
                 ),
                 child: Text(isDestructive ? 'I Understand' : 'Confirm'),
               ),
@@ -1092,14 +1093,14 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed:
                       canConfirm ? () => Navigator.of(context).pop(true) : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ThemeConfig.dangerColor,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppTheme.colorsOf(context).textColor,
                   ),
                   child: const Text('EXECUTE DELETION'),
                 ),
