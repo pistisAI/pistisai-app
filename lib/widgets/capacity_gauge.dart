@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/rate_limit_manager.dart';
 import '../database/drift_local_brain.dart';
+import '../config/theme.dart';
 
 /// A widget that displays the current capacity and usage of LLM models
 class CapacityGaugeWidget extends StatelessWidget {
@@ -53,11 +54,12 @@ class CapacityGaugeWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final usageRatio = model.concurrentUsed / model.concurrentLimit;
 
-    Color progressColor = Colors.green;
+    final colors = AppTheme.colorsOf(context);
+    Color progressColor = colors.success;
     if (usageRatio > 0.8) {
-      progressColor = Colors.red;
+      progressColor = colors.danger;
     } else if (usageRatio > 0.5) {
-      progressColor = Colors.orange;
+      progressColor = colors.warning;
     }
 
     return Padding(

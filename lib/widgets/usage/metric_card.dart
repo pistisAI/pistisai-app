@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 enum MetricTrend { up, down, neutral }
 
@@ -138,14 +139,15 @@ class MetricCard extends StatelessWidget {
     IconData iconData;
     Color color;
 
+    final colors = AppTheme.colorsOf(context);
     switch (trend) {
       case MetricTrend.up:
         iconData = Icons.trending_up;
-        color = Colors.green;
+        color = colors.success;
         break;
       case MetricTrend.down:
         iconData = Icons.trending_down;
-        color = Colors.red;
+        color = colors.danger;
         break;
       case MetricTrend.neutral:
         iconData = Icons.trending_flat;
