@@ -229,6 +229,10 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-retries: 5
+          fetch-retry-delay: 10
 
       - name: Set Version
         run: |

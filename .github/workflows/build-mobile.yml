@@ -10,7 +10,7 @@ on:
       platforms:
         description: "Platforms to build (comma-separated)"
         required: false
-        default: "android,ios"
+        default: "android"
         type: string
 
 concurrency:
@@ -62,7 +62,7 @@ jobs:
   build_android:
     name: Android Build
     needs: get_version
-    if: contains(inputs.platforms || 'android,ios', 'android')
+    if: contains(inputs.platforms || 'android', 'android')
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -80,6 +80,14 @@ jobs:
           flutter-version: 3.44.6
           channel: "stable"
           cache: true
+
+      - name: Setup Android SDK platform 37
+        run: |
+          set -euo pipefail
+          yes | sdkmanager "platforms;android-37.0" "platforms;android-36"
+          if [ -d "${ANDROID_HOME}/platforms/android-37.0" ] && [ ! -e "${ANDROID_HOME}/platforms/android-37" ]; then
+            ln -s android-37.0 "${ANDROID_HOME}/platforms/android-37"
+          fi
 
       - name: Decode Keystore
         run: |
@@ -109,12 +117,20 @@ jobs:
   build_ios:
     name: iOS Build
     needs: get_version
-    if: contains(inputs.platforms || 'android,ios', 'ios')
+    if: contains(inputs.platforms || 'android', 'ios')
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v7
         with:
           ref: main
+
+      - name: Verify iOS platform is configured
+        run: |
+          if [ ! -f ios/Runner.xcodeproj/project.pbxproj ]; then
+            echo "iOS platform is not configured in this repository."
+            echo "Add it locally with: flutter create --platforms=ios ."
+            exit 1
+          fi
 
       - name: Set Version
         run: |
