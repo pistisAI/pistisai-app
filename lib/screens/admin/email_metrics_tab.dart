@@ -3,6 +3,7 @@ import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
 import 'dart:async';
+import '../../config/theme.dart';
 
 /// Email Metrics Dashboard Tab for the Admin Center
 /// Displays email delivery metrics, charts, and real-time updates
@@ -186,7 +187,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                   'Monitor email delivery performance and metrics',
                   style: Theme.of(
                     context,
-                  ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade700),
+                  ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
                 ),
               ],
             ),
@@ -217,7 +218,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                   'Auto-refresh: Every 30s',
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+                  ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
                 ),
               ],
             ),
@@ -232,24 +233,24 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade50,
+                  color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.shade200),
+                  border: Border.all(color: AppTheme.colorsOf(context).danger.withOpacity(0.2)),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, color: Colors.red.shade700),
+                    Icon(Icons.error_outline, color: AppTheme.colorsOf(context).danger),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         _error!,
-                        style: TextStyle(color: Colors.red.shade700),
+                        style: TextStyle(color: AppTheme.colorsOf(context).danger),
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => setState(() => _error = null),
-                      color: Colors.red.shade700,
+                      color: AppTheme.colorsOf(context).danger,
                     ),
                   ],
                 ),
@@ -310,25 +311,25 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
           title: 'Total Sent',
           value: (_metrics!['sent_count'] ?? 0).toString(),
           icon: Icons.check_circle,
-          color: Colors.green,
+          color: AppTheme.colorsOf(context).success,
         ),
         _buildMetricCard(
           title: 'Failed',
           value: (_metrics!['failed_count'] ?? 0).toString(),
           icon: Icons.error,
-          color: Colors.red,
+          color: AppTheme.colorsOf(context).danger,
         ),
         _buildMetricCard(
           title: 'Bounced',
           value: (_metrics!['bounced_count'] ?? 0).toString(),
           icon: Icons.mail_outline,
-          color: Colors.orange,
+          color: AppTheme.colorsOf(context).warning,
         ),
         _buildMetricCard(
           title: 'Pending',
           value: (_metrics!['pending_count'] ?? 0).toString(),
           icon: Icons.schedule,
-          color: Colors.blue,
+          color: AppTheme.colorsOf(context).info,
         ),
       ],
     );
@@ -362,7 +363,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
               title,
               style: Theme.of(
                 context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+              ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -390,25 +391,25 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildDeliveryTimeMetric(
+                _buildDeliveryTimeMetric(context,
                   label: 'Average',
                   value: _formatDuration(
                     _metrics!['avg_delivery_time_seconds'] as double?,
                   ),
                 ),
-                _buildDeliveryTimeMetric(
+                _buildDeliveryTimeMetric(context,
                   label: 'P50 (Median)',
                   value: _formatDuration(
                     _metrics!['p50_delivery_time_seconds'] as double?,
                   ),
                 ),
-                _buildDeliveryTimeMetric(
+                _buildDeliveryTimeMetric(context,
                   label: 'P95',
                   value: _formatDuration(
                     _metrics!['p95_delivery_time_seconds'] as double?,
                   ),
                 ),
-                _buildDeliveryTimeMetric(
+                _buildDeliveryTimeMetric(context,
                   label: 'P99',
                   value: _formatDuration(
                     _metrics!['p99_delivery_time_seconds'] as double?,
@@ -423,7 +424,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
   }
 
   /// Build delivery time metric display
-  Widget _buildDeliveryTimeMetric({
+  Widget _buildDeliveryTimeMetric(BuildContext context, {
     required String label,
     required String value,
   }) {
@@ -433,7 +434,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.blue,
+                color: AppTheme.colorsOf(context).info,
               ),
         ),
         const SizedBox(height: 8),
@@ -441,7 +442,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
           label,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+          ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
         ),
       ],
     );
@@ -467,7 +468,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
               Center(
                 child: Text(
                   'No data available for the selected date range',
-                  style: TextStyle(color: Colors.grey.shade600),
+                  style: TextStyle(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
                 ),
               ),
             ],
@@ -508,19 +509,19 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                           DataCell(
                             Text(
                               metric.sentCount.toString(),
-                              style: const TextStyle(color: Colors.green),
+                              style: TextStyle(color: AppTheme.colorsOf(context).success),
                             ),
                           ),
                           DataCell(
                             Text(
                               metric.failedCount.toString(),
-                              style: const TextStyle(color: Colors.red),
+                              style: TextStyle(color: AppTheme.colorsOf(context).danger),
                             ),
                           ),
                           DataCell(
                             Text(
                               metric.bouncedCount.toString(),
-                              style: const TextStyle(color: Colors.orange),
+                              style: TextStyle(color: AppTheme.colorsOf(context).warning),
                             ),
                           ),
                           DataCell(Text(metric.totalCount.toString())),
@@ -587,7 +588,7 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
-                                  ?.copyWith(color: Colors.grey.shade600),
+                                  ?.copyWith(color: AppTheme.colorsOf(context).textColorLight.withOpacity(0.7)),
                             ),
                           ],
                         ),
@@ -598,13 +599,13 @@ class _EmailMetricsTabState extends State<EmailMetricsTab> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.red.shade50,
+                          color: AppTheme.colorsOf(context).danger.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           reason.count.toString(),
                           style: TextStyle(
-                            color: Colors.red.shade700,
+                            color: AppTheme.colorsOf(context).danger,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
