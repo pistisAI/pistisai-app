@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
+import '../../../config/theme.dart';
 
 /// Tailscale Device Discovery Step
 /// Discovers and lists Tailscale devices on the tailnet
@@ -53,16 +54,16 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
                   height: 64,
                   child: CircularProgressIndicator(),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 Text(
                   'Discovering Tailscale devices...',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Scanning your tailnet',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey.shade600,
+                        color: AppTheme.colorsOf(context).textColorLight,
                       ),
                 ),
               ] else if (wizard.state.tailscaleDevices.isEmpty) ...[
@@ -83,18 +84,18 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
         Icon(
           Icons.lan,
           size: 64,
-          color: Colors.orange.shade700,
+          color: AppTheme.colorsOf(context).warning,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'No Tailscale Devices Found',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Text(
           'Make sure Tailscale is installed and logged in.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade600,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
         ),
         const SizedBox(height: 24),
@@ -129,13 +130,13 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
               : 'Select your OpenClaw Gateway device',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           isHermes
               ? 'Pick the VPS or machine running Hermes on your tailnet (port ${AppConfig.defaultHermesPort})'
               : 'Found ${wizard.state.tailscaleDevices.length} device(s) on your tailnet',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade600,
+                color: AppTheme.colorsOf(context).textColorLight,
               ),
           textAlign: TextAlign.center,
         ),
@@ -206,15 +207,15 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
               height: 48,
               decoration: BoxDecoration(
                 color: device.isOnline
-                    ? Colors.green.shade100
-                    : Colors.grey.shade200,
+                    ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+                    : AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 Icons.computer,
                 color: device.isOnline
-                    ? Colors.green.shade700
-                    : Colors.grey.shade600,
+                    ? AppTheme.colorsOf(context).success
+                    : AppTheme.colorsOf(context).textColorLight,
               ),
             ),
             const SizedBox(width: 16),
@@ -228,12 +229,12 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     device.primaryIP ?? 'No IP',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontFamily: 'monospace',
-                          color: Colors.grey.shade600,
+                          color: AppTheme.colorsOf(context).textColorLight,
                         ),
                   ),
                 ],
@@ -246,11 +247,11 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
               )
             else
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: device.isOnline
-                      ? Colors.green.shade100
-                      : Colors.grey.shade200,
+                      ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
+                      : AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -258,8 +259,8 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
                   style: TextStyle(
                     fontSize: 12,
                     color: device.isOnline
-                        ? Colors.green.shade900
-                        : Colors.grey.shade700,
+                        ? AppTheme.colorsOf(context).success
+                        : AppTheme.colorsOf(context).textColorLight,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
