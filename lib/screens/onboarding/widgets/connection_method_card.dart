@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 /// Card widget for selecting connection method
 class ConnectionMethodCard extends StatelessWidget {
@@ -44,13 +45,13 @@ class ConnectionMethodCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: selected
                     ? Theme.of(context).primaryColor
-                    : Colors.grey.shade200,
+                    : AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 icon,
                 size: 28,
-                color: selected ? Colors.white : Colors.grey.shade600,
+                color: selected ? AppTheme.colorsOf(context).textColor : AppTheme.colorsOf(context).textColorLight,
               ),
             ),
             const SizedBox(width: 16),
@@ -70,7 +71,7 @@ class ConnectionMethodCard extends StatelessWidget {
                   Text(
                     description,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey.shade600,
+                          color: AppTheme.colorsOf(context).textColorLight,
                         ),
                   ),
                 ],
