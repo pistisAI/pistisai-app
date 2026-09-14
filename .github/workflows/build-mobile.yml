@@ -1,6 +1,10 @@
 name: "📱 Mobile Build & Release"
 
 on:
+  workflow_run:
+    workflows: ["🔢 Auto Version Bump"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       platforms:
@@ -21,8 +25,13 @@ jobs:
   analyze:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.44.6
@@ -41,6 +50,8 @@ jobs:
       version: ${{ steps.read.outputs.version }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - name: Read version
         id: read
         run: |
@@ -51,10 +62,12 @@ jobs:
   build_android:
     name: Android Build
     needs: get_version
-    if: contains(inputs.platforms, 'android')
+    if: contains(inputs.platforms || 'android,ios', 'android')
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Set Version
         run: |
@@ -96,10 +109,12 @@ jobs:
   build_ios:
     name: iOS Build
     needs: get_version
-    if: contains(inputs.platforms, 'ios')
+    if: contains(inputs.platforms || 'android,ios', 'ios')
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Set Version
         run: |
@@ -136,6 +151,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Download all artifacts
         uses: actions/download-artifact@v5

@@ -2,8 +2,10 @@ name: "🔢 Auto Version Bump"
 
 # SINGLE ENTRY POINT for all releases.
 # On every push to main, if version.json was NOT explicitly changed,
-# auto-bump the patch version, commit it back, then trigger ALL platform
-# build/deploy workflows via workflow_dispatch.
+# auto-bump the patch version and commit it back.
+#
+# All platform workflows (desktop, mobile, web, backend, hermes) use
+# workflow_run to chain off this one — no PAT needed, native GitHub.
 #
 # Bump type override via commit message:
 #   [major] → major bump
@@ -25,7 +27,7 @@ concurrency:
 
 jobs:
   bump:
-    name: "Bump version & trigger all platforms"
+    name: "Bump version"
     runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.compute.outputs.version }}
@@ -89,41 +91,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/version.json pubspec.yaml
-          git commit -m "ci: bump version to ${{ steps.compute.outputs.version }}+${{ github.run_number }} [skip ci]"
+          git commit -m "ci: bump version to ${{ steps.compute.outputs.version }}+${{ github.run_number }}"
           git push origin main
-
-      - name: Trigger ALL platform builds
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          VERSION="${{ steps.compute.outputs.version }}"
-          echo "🚀 Triggering all platform builds for v${VERSION}"
-
-          # Desktop (Linux + Windows + macOS)
-          gh workflow run build-desktop.yml --ref main \
-            -f platforms=linux,windows,macos \
-            && echo "✅ desktop triggered" \
-            || echo "⚠️ desktop trigger failed"
-
-          # Web deploy
-          gh workflow run deploy-web.yml --ref main \
-            && echo "✅ web triggered" \
-            || echo "⚠️ web trigger failed"
-
-          # Mobile (Android + iOS)
-          gh workflow run build-mobile.yml --ref main \
-            -f platforms=android,ios \
-            && echo "✅ mobile triggered" \
-            || echo "⚠️ mobile trigger failed"
-
-          # Backend deploy
-          gh workflow run deploy-backend.yml --ref main \
-            && echo "✅ backend triggered" \
-            || echo "⚠️ backend trigger failed"
-
-          # Hermes VPS deploy
-          gh workflow run deploy-hermes.yml --ref main \
-            && echo "✅ hermes triggered" \
-            || echo "⚠️ hermes trigger failed"
-
-          echo "All platform workflows triggered for v${VERSION}"
+          echo "✅ Version bumped and committed — workflow_run will trigger all platforms"

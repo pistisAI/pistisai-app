@@ -1,6 +1,10 @@
 name: "💻 Desktop Build & Release"
 
 on:
+  workflow_run:
+    workflows: ["🔢 Auto Version Bump"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       platforms:
@@ -27,8 +31,14 @@ jobs:
   analyze:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    # Only proceed if triggered by workflow_run success, or manual/tag
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.44.6
@@ -48,6 +58,8 @@ jobs:
       platforms: ${{ steps.platforms.outputs.platforms }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - name: Resolve platforms
         id: platforms
         run: |

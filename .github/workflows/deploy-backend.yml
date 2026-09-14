@@ -1,6 +1,10 @@
 name: "🖥️ Backend Deploy"
 
 on:
+  workflow_run:
+    workflows: ["🔢 Auto Version Bump"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       force_build:
@@ -20,9 +24,13 @@ permissions:
 jobs:
   build_images:
     runs-on: ubuntu-24.04
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Login to GHCR

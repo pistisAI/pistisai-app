@@ -1,6 +1,10 @@
 name: "🦞 Hermes VPS Deploy"
 
 on:
+  workflow_run:
+    workflows: ["🔢 Auto Version Bump"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       vps_host:
@@ -24,8 +28,13 @@ jobs:
     name: Deploy Hermes to pistisai.app
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
 
       - name: Guard against Simon VPS
         run: |
