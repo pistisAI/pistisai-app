@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../components/modern_card.dart';
+import '../../config/theme.dart';
 
 /// LLM Provider Settings Screen - OpenClaw focused
 ///
@@ -10,6 +11,7 @@ class LLMProviderSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppTheme.colorsOf(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -35,7 +37,7 @@ class LLMProviderSettingsScreen extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: Colors.blue[700],
+                          color: colors.info,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -75,20 +77,20 @@ class LLMProviderSettingsScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
-                    const ListTile(
-                      leading: Icon(Icons.check_circle, color: Colors.green),
-                      title: Text('OpenClaw Gateway'),
-                      subtitle: Text('Primary LLM provider (Connected)'),
+                    ListTile(
+                      leading: Icon(Icons.check_circle, color: colors.success),
+                      title: const Text('OpenClaw Gateway'),
+                      subtitle: const Text('Primary LLM provider (Connected)'),
                     ),
-                    const ListTile(
-                      leading: Icon(Icons.check_circle, color: Colors.green),
-                      title: Text('GUI Automation'),
-                      subtitle: Text('Vision-based control enabled'),
+                    ListTile(
+                      leading: Icon(Icons.check_circle, color: colors.success),
+                      title: const Text('GUI Automation'),
+                      subtitle: const Text('Vision-based control enabled'),
                     ),
-                    const ListTile(
-                      leading: Icon(Icons.check_circle, color: Colors.green),
-                      title: Text('Cloud Relay'),
-                      subtitle: Text('Secure remote access via OpenClaw'),
+                    ListTile(
+                      leading: Icon(Icons.check_circle, color: colors.success),
+                      title: const Text('Cloud Relay'),
+                      subtitle: const Text('Secure remote access via OpenClaw'),
                     ),
                   ],
                 ),
