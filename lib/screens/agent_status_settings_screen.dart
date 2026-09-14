@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import '../../config/theme.dart';
 
 /// Agent status settings screen
 class AgentStatusSettingsScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _AgentStatusSettingsScreenState extends State<AgentStatusSettingsScreen> {
   }
 
   Widget _buildBody() {
+    final colors = AppTheme.colorsOf(context);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -41,25 +43,25 @@ class _AgentStatusSettingsScreenState extends State<AgentStatusSettingsScreen> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
-                const _StatusRow(
+                _StatusRow(
                   label: 'Status',
                   value: 'Active',
                   icon: Icons.check_circle,
-                  color: Colors.green,
+                  color: colors.success,
                 ),
                 const SizedBox(height: 12),
-                const _StatusRow(
+                _StatusRow(
                   label: 'Last Activity',
                   value: '2 minutes ago',
                   icon: Icons.access_time,
-                  color: Colors.blue,
+                  color: colors.info,
                 ),
                 const SizedBox(height: 12),
-                const _StatusRow(
+                _StatusRow(
                   label: 'Tasks Completed',
                   value: '127',
                   icon: Icons.task_alt,
-                  color: Colors.purple,
+                  color: colors.accent,
                 ),
               ],
             ),
@@ -83,7 +85,7 @@ class _AgentStatusSettingsScreenState extends State<AgentStatusSettingsScreen> {
                   'The agent status page shows the current state and activity of your AI agents. '
                   'This feature is currently in development.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey.shade600,
+                        color: colors.textColorLight,
                       ),
                 ),
               ],
