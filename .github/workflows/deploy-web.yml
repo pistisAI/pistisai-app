@@ -17,7 +17,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: pistisai/pistisai-app-web
+  IMAGE_NAME: imrightguy/pistisai-app-web
 
 jobs:
   analyze:
