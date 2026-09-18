@@ -1,5 +1,5 @@
 # ---- Build stage: Flutter web ----
-FROM ghcr.io/cirruslabs/flutter:3.44.6 AS builder
+FROM gmeligio/flutter-android:3.44.6 AS builder
 
 WORKDIR /app
 COPY pubspec.* ./
