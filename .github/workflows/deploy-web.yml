@@ -17,7 +17,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: imrightguy/pistisai-app-web
+  IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: http://100.101.206.45:8000
   COOLIFY_APP_UUID: pistisai-web-a9dc5f260ea466bc6c92769b20ee1fe1
 
