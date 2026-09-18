@@ -4,9 +4,9 @@ FROM gmeligio/flutter-android:3.44.6 AS builder
 WORKDIR /app
 COPY pubspec.* ./
 RUN flutter pub get
-# Ensure android directory exists and is writable BEFORE copying source (flutter-android image has Android SDK configured)
-RUN mkdir -p /app/android && chmod 777 /app/android
 COPY . .
+# Ensure android directory exists and is writable AFTER copy (flutter-android image has Android SDK configured)
+RUN mkdir -p /app/android && chmod 777 /app/android
 RUN flutter build web --release
 
 # ---- Serve stage: Nginx ----
