@@ -5,6 +5,8 @@ WORKDIR /app
 COPY pubspec.* ./
 RUN flutter pub get
 COPY . .
+# Ensure android directory exists and is writable (flutter-android image has Android SDK configured)
+RUN mkdir -p /app/android && chmod 777 /app/android
 RUN flutter build web --release
 
 # ---- Serve stage: Nginx ----
