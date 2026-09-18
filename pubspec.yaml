@@ -167,6 +167,10 @@ flutter_launcher_icons:
 
 # Removed web package override - using dart:js_interop instead
 
+dependency_overrides:
+  material_ui: 1.1.0
+  cupertino_ui: 1.0.1
+
 flutter:
   uses-material-design: true
 

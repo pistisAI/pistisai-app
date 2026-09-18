@@ -18,6 +18,8 @@ permissions:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: imrightguy/pistisai-app-web
+  COOLIFY_URL: http://100.101.206.45:8000
+  COOLIFY_APP_UUID: pistisai-web-a9dc5f260ea466bc6c92769b20ee1fe1
 
 jobs:
   analyze:
@@ -96,36 +98,47 @@ jobs:
           fi
           echo "✅ Image pushed: $DIGEST"
 
-      - name: Deploy to VPS via SSH
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-          VPS_DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+  deploy_coolify:
+    needs: build_and_push
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+    steps:
+      - name: Trigger Coolify deployment via webhook
+        if: env.COOLIFY_API_TOKEN != ''
         run: |
           set -euo pipefail
-          if [ -z "${VPS_HOST:-}" ] || [ -z "${VPS_USER:-}" ] || [ -z "${VPS_SSH_KEY:-}" ]; then
-            echo "⚠️ VPS secrets not set — skipping SSH deploy"
-            exit 0
-          fi
-
-          # Write SSH key
-          mkdir -p ~/.ssh
-          echo "$VPS_SSH_KEY" > ~/.ssh/vps_deploy_key
-          chmod 600 ~/.ssh/vps_deploy_key
-
-          # Build image locally and save as tarball
-          echo "📦 Saving Docker image as tarball..."
-          docker build -f Dockerfile.web -t pistisai-app-web:${{ steps.version.outputs.tag }} .
-          docker save pistisai-app-web:${{ steps.version.outputs.tag }} -o /tmp/pistisai-app-web.tar
-
-          # Copy tarball to VPS
-          echo "📤 Copying image to VPS..."
-          scp -i ~/.ssh/vps_deploy_key -o StrictHostKeyChecking=no /tmp/pistisai-app-web.tar ${VPS_USER}@${VPS_HOST}:${VPS_DEPLOY_PATH}/pistisai-app-web.tar
-
-          # Deploy on VPS
-          echo "🚀 Deploying on VPS..."
-          ssh -i ~/.ssh/vps_deploy_key -o StrictHostKeyChecking=no ${VPS_USER}@${VPS_HOST} "cd ${VPS_DEPLOY_PATH} && docker load -i pistisai-app-web.tar && (docker stop pistisai-app-web 2>/dev/null || true) && (docker rm pistisai-app-web 2>/dev/null || true) && docker run -d --name pistisai-app-web --restart unless-stopped --network dokploy-network -p 8080:80 pistisai-app-web:latest && rm -f pistisai-app-web.tar && echo '✅ Deployment complete'"
+          echo "🚀 Triggering Coolify deployment for ${{ env.COOLIFY_APP_UUID }}"
+          
+          # Try multiple webhook URL formats
+          WEBHOOK_URLS=(
+            "${{ env.COOLIFY_URL }}/api/v1/applications/${{ env.COOLIFY_APP_UUID }}/deploy"
+            "${{ env.COOLIFY_URL }}/api/v1/webhook/github/${{ env.COOLIFY_APP_UUID }}?secret=pistisai-webhook-secret-2026"
+            "${{ env.COOLIFY_URL }}/webhook/github/${{ env.COOLIFY_APP_UUID }}?secret=pistisai-webhook-secret-2026"
+          )
+          
+          for url in "${WEBHOOK_URLS[@]}"; do
+            echo "Trying: $url"
+            RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "$url" \
+              -H "Authorization: Bearer ${{ env.COOLIFY_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -H "X-GitHub-Event: push" \
+              -d '{"ref":"refs/heads/main","head_commit":{"id":"${{ github.sha }}"}}' || true)
+            
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | head -n -1)
+            
+            echo "Response: $HTTP_CODE - $BODY"
+            
+            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ] || [ "$HTTP_CODE" = "201" ]; then
+              echo "✅ Deployment triggered successfully via $url"
+              exit 0
+            fi
+          done
+          
+          echo "❌ All webhook attempts failed"
+          exit 1
 
       - name: Purge Cloudflare cache
         if: always()
@@ -144,7 +157,7 @@ jobs:
           fi
           echo "🧹 Purging Cloudflare cache for zone $CF_ZONE_ID..."
           PURGE_RESP=$(curl -sS --max-time 30 -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
-            -H "Authorization: Bearer $CF_TOKEN" \
+            -H "Authorization: Bearer ${CF_TOKEN}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}' 2>&1)
           SUCCESS=$(echo "$PURGE_RESP" | jq -r '.success // false')
