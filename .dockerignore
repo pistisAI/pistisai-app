@@ -30,5 +30,6 @@ data/
 
 # Build artifacts
 build/
+android/
 .pub-cache/
 pubspec.lock
