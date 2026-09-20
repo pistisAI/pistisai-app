@@ -19,7 +19,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: http://68.168.30.4:8000
-  COOLIFY_APP_UUID: pistisai-web-a9dc5f260ea466bc6c92769b20ee1fe1
+  COOLIFY_APP_UUID: o8ydk6d8w6qaclqdtd5xjhng
 
 jobs:
   analyze:
@@ -111,34 +111,26 @@ jobs:
           set -euo pipefail
           echo "🚀 Triggering Coolify deployment for ${{ env.COOLIFY_APP_UUID }}"
           
-          # Try multiple webhook URL formats
-          WEBHOOK_URLS=(
-            "${{ env.COOLIFY_URL }}/api/v1/applications/${{ env.COOLIFY_APP_UUID }}/deploy"
-            "${{ env.COOLIFY_URL }}/api/v1/webhook/github/${{ env.COOLIFY_APP_UUID }}?secret=pistisai-webhook-secret-2026"
-            "${{ env.COOLIFY_URL }}/webhook/github/${{ env.COOLIFY_APP_UUID }}?secret=pistisai-webhook-secret-2026"
-          )
+          WEBHOOK_URL="${{ env.COOLIFY_URL }}/api/v1/deploy?uuid=${{ env.COOLIFY_APP_UUID }}&force=false"
           
-          for url in "${WEBHOOK_URLS[@]}"; do
-            echo "Trying: $url"
-            RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "$url" \
-              -H "Authorization: Bearer ${{ env.COOLIFY_API_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              -H "X-GitHub-Event: push" \
-              -d '{"ref":"refs/heads/main","head_commit":{"id":"${{ github.sha }}"}}' || true)
-            
-            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-            BODY=$(echo "$RESPONSE" | head -n -1)
-            
-            echo "Response: $HTTP_CODE - $BODY"
-            
-            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ] || [ "$HTTP_CODE" = "201" ]; then
-              echo "✅ Deployment triggered successfully via $url"
-              exit 0
-            fi
-          done
+          echo "Triggering: $WEBHOOK_URL"
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "$WEBHOOK_URL" \
+            -H "Authorization: Bearer ${{ env.COOLIFY_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Event: push" \
+            -d '{"ref":"refs/heads/main","head_commit":{"id":"${{ github.sha }}"}}')
           
-          echo "❌ All webhook attempts failed"
-          exit 1
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          
+          echo "Response: $HTTP_CODE - $BODY"
+          
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ] || [ "$HTTP_CODE" = "201" ]; then
+            echo "✅ Deployment triggered successfully"
+          else
+            echo "❌ Deployment trigger failed"
+            exit 1
+          fi
 
       - name: Purge Cloudflare cache
         if: always()
