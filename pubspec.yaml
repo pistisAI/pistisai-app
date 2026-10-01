@@ -82,7 +82,7 @@ dependencies:
   # SSH tunneling
   dartssh2: ^2.14.0
 
-  get_it: ^9.2.1
+  get_it: ^9.3.0
   logger: ^2.7.0
 
   # Discord integration
