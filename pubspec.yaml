@@ -107,7 +107,7 @@ dependencies:
   # Desktop (Linux/macOS/Windows) backend for the camera plugin — the official
   # `camera` package has no Linux impl; camera_desktop implements
   # camera_platform_interface so CameraCaptureService works on desktop.
-  camera_desktop: ^1.2.1
+  camera_desktop: ^2.0.0
 
   # Vision System - OCR
   tesseract_ocr: ^0.5.0
