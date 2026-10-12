@@ -83,7 +83,7 @@ jobs:
           channel: "stable"
           cache: true
 
-      - name: Setup Android SDK platform 37
+      - name: Setup Android SDK platform 36
         run: |
           set -euo pipefail
           SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
@@ -96,16 +96,11 @@ jobs:
             exit 1
           fi
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          # Package is published as android-37.0 but Gradle requires platforms;android-37.
-          # Clone the dir and rewrite its package metadata so the id matches.
-          if ! "$SDKMANAGER" --install "platforms;android-37.0" > /tmp/sdk.log 2>&1; then
+          if ! "$SDKMANAGER" --install "platforms;android-36" > /tmp/sdk.log 2>&1; then
             echo "sdkmanager install failed — output:" >&2
             tail -60 /tmp/sdk.log >&2
             exit 1
           fi
-          rm -rf "${ANDROID_HOME}/platforms/android-37"
-          cp -r "${ANDROID_HOME}/platforms/android-37.0" "${ANDROID_HOME}/platforms/android-37"
-          sed -i 's/37\.0/37/g' "${ANDROID_HOME}/platforms/android-37/source.properties"
 
       - name: Decode Keystore
         run: |
