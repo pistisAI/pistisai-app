@@ -95,14 +95,17 @@ jobs:
             ls -R "${ANDROID_HOME:-/nonexistent}" | head -50 >&2
             exit 1
           fi
+          set +o pipefail
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          if ! "$SDKMANAGER" --install "platforms;android-37" > /tmp/sdk.log 2>&1; then
+          set -o pipefail
+          # Package id is android-37.0; Gradle/AGP expects a platforms/android-37 directory.
+          if ! "$SDKMANAGER" --install "platforms;android-37.0" > /tmp/sdk.log 2>&1; then
             echo "sdkmanager install failed — output:" >&2
             tail -60 /tmp/sdk.log >&2
             exit 1
           fi
-          if [ -d "${ANDROID_HOME}/platforms/android-37.0" ] && [ ! -e "${ANDROID_HOME}/platforms/android-37" ]; then
-            ln -s android-37.0 "${ANDROID_HOME}/platforms/android-37"
+          if [ -d "${ANDROID_HOME}/platforms/android-37.0" ] && [ ! -d "${ANDROID_HOME}/platforms/android-37" ]; then
+            cp -a "${ANDROID_HOME}/platforms/android-37.0" "${ANDROID_HOME}/platforms/android-37"
           fi
 
       - name: Decode Keystore
