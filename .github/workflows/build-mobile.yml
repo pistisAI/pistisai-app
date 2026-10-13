@@ -12,6 +12,13 @@ on:
         required: false
         default: "android"
         type: string
+  pull_request:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/build-mobile.yml"
 
 concurrency:
   group: mobile-build-${{ github.ref }}
@@ -30,8 +37,6 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: main
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.44.6
@@ -51,8 +56,6 @@ jobs:
       version: ${{ steps.read.outputs.version }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: main
       - name: Read version
         id: read
         run: |
@@ -68,8 +71,6 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: main
 
       - name: Set Version
         run: |
@@ -96,26 +97,45 @@ jobs:
             exit 1
           fi
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          # API 37 is published as minor-versioned platforms;android-37.0;
-          # AGP >= 8.9 resolves it from compileSdk 37 + compileSdkMinor 0.
+          # API 37 is published as platforms;android-37.0.
+          # AGP 9.1.1 resolves it from compileSdk 37 + compileSdkMinor 0.
           if ! "$SDKMANAGER" --install "platforms;android-37.0" > /tmp/sdk.log 2>&1; then
             echo "sdkmanager install failed — output:" >&2
             tail -60 /tmp/sdk.log >&2
             exit 1
           fi
 
-      - name: Decode Keystore
+      - name: Configure release signing
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KEYSTORE_B64_ALT: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          STORE_PASSWORD_ALT: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > android/release-keystore.jks
-
-      - name: Create key.properties
-        run: |
-          cat > android/key.properties << EOF
-          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          storeFile=../release-keystore.jks
-          EOF
+          set -euo pipefail
+          b64="${KEYSTORE_B64:-${KEYSTORE_B64_ALT:-}}"
+          store="${STORE_PASSWORD:-${STORE_PASSWORD_ALT:-}}"
+          if [ -z "$b64" ] || [ -z "$store" ] || [ -z "${KEY_PASSWORD:-}" ] || [ -z "${KEY_ALIAS:-}" ]; then
+            echo "Android signing secrets are missing."
+            echo "Set ANDROID_KEYSTORE_B64 or ANDROID_KEYSTORE_BASE64,"
+            echo "ANDROID_STORE_PASSWORD or ANDROID_KEYSTORE_PASSWORD,"
+            echo "ANDROID_KEY_PASSWORD, and ANDROID_KEY_ALIAS."
+            exit 1
+          fi
+          printf '%s' "$b64" | base64 -d > android/release-keystore.jks
+          if [ ! -s android/release-keystore.jks ]; then
+            echo "Decoded keystore is empty."
+            exit 1
+          fi
+          umask 077
+          {
+            printf 'storePassword=%s\n' "$store"
+            printf 'keyPassword=%s\n' "$KEY_PASSWORD"
+            printf 'keyAlias=%s\n' "$KEY_ALIAS"
+            printf 'storeFile=../release-keystore.jks\n'
+          } > android/key.properties
 
       - name: Flutter Build APK
         run: |
@@ -137,8 +157,6 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: main
 
       - name: Verify iOS platform is configured
         run: |
@@ -175,6 +193,7 @@ jobs:
   create_release:
     needs: [get_version, build_android, build_ios]
     if: >-
+      github.event_name != 'pull_request' &&
       needs.get_version.result == 'success' &&
       (needs.build_android.result == 'success' || needs.build_android.result == 'skipped') &&
       (needs.build_ios.result == 'success' || needs.build_ios.result == 'skipped')
@@ -183,8 +202,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: main
 
       - name: Download all artifacts
         uses: actions/download-artifact@v5

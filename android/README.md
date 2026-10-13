@@ -38,8 +38,8 @@ This directory contains the Android-specific configuration for Pistisai.
 The CI/CD workflow automatically creates the signing configuration from GitHub Secrets.
 
 **Required GitHub Secrets:**
-- `ANDROID_KEYSTORE_BASE64` - Base64-encoded keystore file
-- `ANDROID_KEYSTORE_PASSWORD` - Keystore password
+- `ANDROID_KEYSTORE_BASE64` or `ANDROID_KEYSTORE_B64` - Base64-encoded keystore file
+- `ANDROID_KEYSTORE_PASSWORD` or `ANDROID_STORE_PASSWORD` - Keystore password
 - `ANDROID_KEY_PASSWORD` - Key password
 - `ANDROID_KEY_ALIAS` - Key alias
 
