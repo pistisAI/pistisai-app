@@ -87,15 +87,27 @@ jobs:
       - name: Setup Android SDK platform 37
         run: |
           set -euo pipefail
-          SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -x "$SDKMANAGER" ]; then
-            SDKMANAGER="$(find "${ANDROID_HOME}" -name sdkmanager -type f 2>/dev/null | head -1)"
-          fi
-          if [ -z "$SDKMANAGER" ] || [ ! -x "$SDKMANAGER" ]; then
-            echo "sdkmanager not found under ANDROID_HOME=${ANDROID_HOME:-unset}" >&2
-            ls -R "${ANDROID_HOME:-/nonexistent}" | head -50 >&2
+          SDK_ROOT_CANDIDATES="${ANDROID_HOME:-} /usr/local/lib/android/sdk /opt/android-sdk ${HOME}/Android/Sdk"
+          SDKMANAGER=""
+          for root in $SDK_ROOT_CANDIDATES; do
+            [ -n "$root" ] || continue
+            candidate="${root}/cmdline-tools/latest/bin/sdkmanager"
+            if [ -x "$candidate" ]; then
+              SDKMANAGER="$candidate"
+              break
+            fi
+            candidate="$(find "$root" -name sdkmanager -type f 2>/dev/null | head -1)"
+            if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+              SDKMANAGER="$candidate"
+              break
+            fi
+          done
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager not found in any candidate SDK root: ${SDK_ROOT_CANDIDATES}" >&2
             exit 1
           fi
+          export ANDROID_HOME="${SDKMANAGER%/cmdline-tools/*/bin/sdkmanager}"
+          echo "Using sdkmanager: $SDKMANAGER (ANDROID_HOME=$ANDROID_HOME)"
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
           # API 37 is published as platforms;android-37.0.
           # AGP 9.1.1 resolves it from compileSdk 37 + compileSdkMinor 0.
