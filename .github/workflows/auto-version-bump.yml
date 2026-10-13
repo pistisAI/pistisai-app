@@ -1,8 +1,9 @@
 name: "🔢 Auto Version Bump"
 
 # SINGLE ENTRY POINT for all releases.
-# On every push to main, if version.json was NOT explicitly changed,
+# On every code push to main, if version.json was NOT explicitly changed,
 # auto-bump the patch version and commit it back.
+# Markdown, docs/, and images/ pushes do not bump.
 #
 # All platform workflows chain: bump → web → (desktop, mobile, backend)
 # Web deploys first (fastest), then desktop/mobile/backend in parallel.
@@ -17,6 +18,9 @@ on:
     branches: [main]
     paths-ignore:
       - "assets/version.json"
+      - "**.md"
+      - "docs/**"
+      - "images/**"
 
 permissions:
   contents: write
