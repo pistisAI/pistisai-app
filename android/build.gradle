@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlin_version = '2.1.0'
+    ext.kotlin_version = '2.2.20'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath 'com.android.tools.build:gradle:9.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -17,7 +17,7 @@ allprojects {
         mavenCentral()
     }
 
-    // Force AndroidX deps to versions compatible with AGP 8.6.0
+    // Pin AndroidX deps that older plugins resolve above this app's compile target.
     configurations.all {
         resolutionStrategy {
             force 'androidx.browser:browser:1.5.0'

@@ -32,7 +32,8 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "app.pistisai.app"
     compileSdk 37
-    compileSdkMinor 0
+    // API 37 is published as platforms;android-37.0. AGP 9.1.1 reads this minor.
+    compileSdkMinor = 0
     ndkVersion flutter.ndkVersion
 
     compileOptions {
