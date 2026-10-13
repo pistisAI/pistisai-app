@@ -49,45 +49,61 @@ jobs:
           echo "Deploying backend version: $VERSION"
 
       - name: Build and Push Backend Images
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          FORCE_BUILD: ${{ inputs.force_build }}
         run: |
           set -euo pipefail
           REPO_LOWER=${GITHUB_REPOSITORY,,}
           VERSION="${{ steps.version.outputs.version }}"
           TAG_SUFFIX="${VERSION}-${GITHUB_SHA:0:7}"
 
-          if [ "${{ github.event_name }}" == "push" ]; then
-            DIFF_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} || git diff --name-only HEAD^ HEAD)
+          read -r BASE TARGET < <(bash scripts/ci/select_backend_diff_range.sh)
+          if [ "${FORCE_BUILD}" = "true" ]; then
+            DIFF_FILES="$(printf '%s\n' services/api-backend/ services/streaming-proxy/ config/docker/Dockerfile.postgres)"
+            echo "force_build: rebuilding every backend image"
           else
-            DIFF_FILES=$(git diff --name-only HEAD^ HEAD || echo "api")
+            DIFF_FILES=$(git diff --name-only "$BASE" "$TARGET")
+          fi
+          echo "Changed files:"
+          printf '%s\n' "$DIFF_FILES"
+
+          publish=false
+          if [ "${GITHUB_REF_NAME}" = "main" ] || [ "${HEAD_BRANCH}" = "main" ]; then
+            publish=true
           fi
 
+          built=0
           build_and_push() {
             local name=$1 dockerfile=$2
             echo "=== Building $name ==="
-            docker build -t ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX} -f $dockerfile .
-            # Only push to permanent tags on main
-            if [ "${{ github.ref_name }}" == "main" ]; then
-              docker tag ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX} ghcr.io/${REPO_LOWER}/${name}:latest
-              docker tag ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX} ghcr.io/${REPO_LOWER}/${name}:v${VERSION}
-              docker push ghcr.io/${REPO_LOWER}/${name}:latest
-              docker push ghcr.io/${REPO_LOWER}/${name}:v${VERSION}
-              docker push ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX}
+            docker build -t "ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX}" -f "$dockerfile" .
+            if [ "$publish" = "true" ]; then
+              docker tag "ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX}" "ghcr.io/${REPO_LOWER}/${name}:latest"
+              docker tag "ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX}" "ghcr.io/${REPO_LOWER}/${name}:v${VERSION}"
+              docker push "ghcr.io/${REPO_LOWER}/${name}:latest"
+              docker push "ghcr.io/${REPO_LOWER}/${name}:v${VERSION}"
+              docker push "ghcr.io/${REPO_LOWER}/${name}:build-${TAG_SUFFIX}"
+            else
+              echo "Skipping push for $name (branch is not main)"
             fi
+            built=1
           }
 
-          # API backend
-          if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend" || [ "${{ inputs.force_build }}" == "true" ]; then
+          if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend"; then
             build_and_push api-backend config/docker/Dockerfile.api-backend
           fi
 
-          # Streaming proxy
-          if echo "$DIFF_FILES" | grep -qE "services/streaming-proxy/|config/docker/Dockerfile.streaming-proxy" || [ "${{ inputs.force_build }}" == "true" ]; then
+          if echo "$DIFF_FILES" | grep -qE "services/streaming-proxy/|config/docker/Dockerfile.streaming-proxy"; then
             build_and_push streaming-proxy config/docker/Dockerfile.streaming-proxy
           fi
 
-          # Postgres
-          if echo "$DIFF_FILES" | grep -qE "config/docker/Dockerfile.postgres|config/docker/postgres-|config/docker/init.sql|services/postgres/" || [ "${{ inputs.force_build }}" == "true" ]; then
+          if echo "$DIFF_FILES" | grep -qE "config/docker/Dockerfile.postgres|config/docker/postgres-|config/docker/init.sql|services/postgres/"; then
             build_and_push postgres config/docker/Dockerfile.postgres
           fi
 
-          echo "✅ Backend images built"
+          if [ "$built" -eq 0 ]; then
+            echo "No backend image paths changed"
+            exit 0
+          fi
+          echo "Backend images built"
