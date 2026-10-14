@@ -187,7 +187,7 @@ jobs:
           ref: main
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
 
       - name: Organize artifacts
         run: |
