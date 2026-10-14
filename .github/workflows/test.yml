@@ -219,7 +219,7 @@ jobs:
           node-version: "26"
 
       - name: "📦 Cache api-backend node_modules"
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: services/api-backend/node_modules
           key: ${{ runner.os }}-api-backend-node-modules-${{ hashFiles('services/api-backend/package.json') }}
