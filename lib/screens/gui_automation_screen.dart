@@ -152,7 +152,7 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'GUI Automation is powered by OpenClaw Gateway.',
+                      'GUI Automation uses the local agent runtime.',
                       style: TextStyle(fontSize: 12),
                     ),
                   ),

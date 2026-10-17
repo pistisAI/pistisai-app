@@ -131,7 +131,7 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Connect to a Hermes or OpenClaw runtime to see live events.',
+                'Connect to a Hermes runtime to see live events.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppTheme.colorsOf(context).textColorLight,
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/app_config.dart';
 import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
 import '../../services/connection_manager_service.dart';
@@ -166,13 +167,13 @@ class _OverviewScreenState extends State<OverviewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildFormField(
-              'WebSocket URL',
+              'Hermes URL',
               connService.getGatewayStatus()['endpoint'] ??
-                  'ws://127.0.0.1:18789',
+                  AppConfig.defaultHermesUrl,
             ),
             const SizedBox(height: 16),
             _buildFormField(
-              'Gateway Token',
+              'API Key',
               connService.gatewayToken != null &&
                       connService.gatewayToken!.length >= 16
                   ? '${connService.gatewayToken!.substring(0, 16)}...'

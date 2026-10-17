@@ -223,11 +223,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
         Color backendColor;
         String statusText;
 
-        if (backend == BackendType.openclaw) {
-          backendLabel = 'OpenClaw';
-          backendColor = AppTheme.colorsOf(context).info;
-          statusText = connectionManager.isConnected ? 'Active' : 'Disconnected';
-        } else if (backend == BackendType.hermes) {
+        if (backend == BackendType.hermes) {
           backendLabel = 'Hermes Agent';
           backendColor = AppTheme.colorsOf(context).accent;
           statusText = connectionManager.isConnected ? 'Active' : 'Disconnected';
@@ -281,8 +277,8 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
           gatewayLabel = 'Hermes Agent';
           gatewayUrl = AppConfig.defaultHermesUrl;
         } else {
-          gatewayLabel = 'OpenClaw Gateway';
-          gatewayUrl = AppConfig.gatewayUrl;
+          gatewayLabel = 'Agent Runtime';
+          gatewayUrl = AppConfig.defaultHermesUrl;
         }
 
         return ModernCard(

@@ -393,14 +393,24 @@ class SettingsPreferenceService {
   // ==========================================================================
 
   /// Get the active backend type. Returns null if no backend is selected.
+  ///
+  /// A stored `openclaw` value is cleared. OpenClaw is no longer offered, so
+  /// existing installs degrade to an unselected runtime instead of a dead path.
   Future<BackendType?> getActiveBackend() async {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getString(_activeBackendKey);
     if (value == null) return null;
-    return BackendType.values.firstWhere(
-      (e) => e.name == value,
-      orElse: () => BackendType.openclaw,
-    );
+    if (value == BackendType.openclaw.name) {
+      await prefs.remove(_activeBackendKey);
+      return null;
+    }
+    for (final backend in BackendType.values) {
+      if (backend.name == value && backend != BackendType.openclaw) {
+        return backend;
+      }
+    }
+    await prefs.remove(_activeBackendKey);
+    return null;
   }
 
   /// Set the active backend type. Pass null to clear (no backend selected).

@@ -1,4 +1,3 @@
-import 'package:pistisai/config/app_config.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -44,7 +43,6 @@ class ProviderDiscoveryService {
     final List<ProviderInfo> discovered = [];
     final List<Future<ProviderInfo?>> scans = [
       _scanHermes(),
-      _scanOpenClawGateway(),
     ];
 
     try {
@@ -89,35 +87,6 @@ class ProviderDiscoveryService {
       '[ProviderDiscovery] Found ${discovered.length} support model providers',
     );
     return discovered;
-  }
-
-  /// Scan for OpenClaw Gateway on localhost:18789
-  Future<ProviderInfo?> _scanOpenClawGateway() async {
-    final host = AppConfig.gatewayHost;
-    const port = 18789;
-    final baseUrl = 'http://$host:$port';
-    final healthUrl = Uri.parse('$baseUrl/health');
-
-    try {
-      final response = await http.get(healthUrl).timeout(_scanTimeout);
-
-      if (response.statusCode == 200) {
-        debugPrint('[ProviderDiscovery] Found OpenClaw Gateway at $baseUrl');
-        return ProviderInfo(
-          id: 'openclaw_discovered',
-          type: ProviderType.openclaw,
-          name: 'OpenClaw Gateway',
-          url: baseUrl,
-          isLocal: true,
-          isAvailable: true,
-          version: _extractVersion(response.body),
-          role: ProviderRole.agentRuntime,
-        );
-      }
-    } catch (_) {
-      // Not available — expected on this machine
-    }
-    return null;
   }
 
   /// Scan for LM Studio on localhost:1234

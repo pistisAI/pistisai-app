@@ -57,11 +57,11 @@ void main() {
     expect(find.text('Listening'), findsOneWidget);
   });
 
-  testWidgets('shows backend toggle buttons', (tester) async {
+  testWidgets('shows Hermes backend controls without OpenClaw', (tester) async {
     await tester.pumpWidget(buildWidget());
     await tester.pump();
 
-    expect(find.text('OpenClaw'), findsOneWidget);
+    expect(find.text('OpenClaw'), findsNothing);
     expect(find.text('Hermes Agent'), findsOneWidget);
     expect(find.text('Test'), findsOneWidget);
     expect(find.text('Reset voice'), findsOneWidget);

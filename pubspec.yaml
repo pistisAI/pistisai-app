@@ -1,5 +1,5 @@
 name: pistisai
-description: Local-first agent companion for Hermes, OpenClaw, and compatible agent runtimes.
+description: Local-first agent companion for Hermes and compatible agent runtimes.
 publish_to: none
 homepage: https://pistisai.app
 repository: https://github.com/pistisAI/pistisai-app

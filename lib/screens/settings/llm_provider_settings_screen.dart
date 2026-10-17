@@ -3,9 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../components/modern_card.dart';
 import '../../config/theme.dart';
 
-/// LLM Provider Settings Screen - OpenClaw focused
-///
-/// Note: This app uses OpenClaw as the primary LLM engine.
+/// LLM Provider Settings Screen — Hermes-focused.
 class LLMProviderSettingsScreen extends StatelessWidget {
   const LLMProviderSettingsScreen({super.key});
 
@@ -41,25 +39,21 @@ class LLMProviderSettingsScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'OpenClaw Powered',
+                          'Hermes Agent',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'This application is powered by OpenClaw. '
-                      'All LLM processing, including Chat and Vision-based GUI Automation, '
-                      'is handled via your local OpenClaw Gateway.',
+                      'This application uses Hermes Agent as the primary runtime. '
+                      'Chat and related features go through your local Hermes install.',
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        // In a real app, this would use the router
-                        Navigator.of(context).pushNamed('/gui-automation');
-                      },
-                      icon: const Icon(Icons.smart_toy),
-                      label: const Text('Open GUI Automation'),
+                      onPressed: () => context.go('/config'),
+                      icon: const Icon(Icons.settings),
+                      label: const Text('Open Config'),
                     ),
                   ],
                 ),
@@ -79,18 +73,15 @@ class LLMProviderSettingsScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     ListTile(
                       leading: Icon(Icons.check_circle, color: colors.success),
-                      title: const Text('OpenClaw Gateway'),
-                      subtitle: const Text('Primary LLM provider (Connected)'),
+                      title: const Text('Hermes Agent'),
+                      subtitle: const Text('Primary agent runtime'),
                     ),
                     ListTile(
-                      leading: Icon(Icons.check_circle, color: colors.success),
-                      title: const Text('GUI Automation'),
-                      subtitle: const Text('Vision-based control enabled'),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.check_circle, color: colors.success),
-                      title: const Text('Cloud Relay'),
-                      subtitle: const Text('Secure remote access via OpenClaw'),
+                      leading: Icon(Icons.info_outline, color: colors.info),
+                      title: const Text('Support model providers'),
+                      subtitle: const Text(
+                        'Optional helpers such as Ollama or LM Studio',
+                      ),
                     ),
                   ],
                 ),

@@ -81,7 +81,7 @@ class ConstructionScreen extends StatelessWidget {
             _buildFeatureCard(
               context,
               title: 'Local LLM Support',
-              description: 'Run powerful AI models locally with OpenClaw',
+              description: 'Run powerful AI models locally with Hermes',
               progress: 95,
               icon: Icons.memory,
               color: AppTheme.colorsOf(context).success,

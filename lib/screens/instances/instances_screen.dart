@@ -20,7 +20,7 @@ import '../../config/theme.dart';
 
 /// Screen displaying gateway process state and model instances
 ///
-/// Shows the current status of the OpenClaw Gateway process
+/// Shows local agent runtime process status.
 /// and all active model instances with their utilization.
 class InstancesScreen extends StatefulWidget {
   const InstancesScreen({super.key});
@@ -815,7 +815,7 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
       title: '🦞 Hermes Agent',
       subtitle: _hermesEnabled
           ? 'Active — routing chat through Hermes API server'
-          : 'Disabled — using default OpenClaw gateway',
+          : 'Disabled — using the default Hermes gateway',
       children: [
         Padding(
           padding: const EdgeInsets.all(16),

@@ -888,7 +888,6 @@ class SetupWizardService extends ChangeNotifier {
 
     for (final type in [
       ProviderType.hermes,
-      ProviderType.openclaw,
       ProviderType.custom,
     ]) {
       final matches = providers.where((provider) => provider.type == type);

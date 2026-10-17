@@ -5,7 +5,7 @@ import '../../components/agent_status_widget.dart';
 import '../../components/app_logo.dart';
 import 'package:get_it/get_it.dart';
 
-/// Screen for monitoring OpenClaw agent status in real-time
+/// Screen for monitoring agent status in real-time.
 class AgentStatusScreen extends StatefulWidget {
   const AgentStatusScreen({super.key});
 
@@ -96,7 +96,7 @@ class _AgentStatusScreenState extends State<AgentStatusScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Real-time monitoring of OpenClaw agent sessions',
+                    'Real-time monitoring of agent sessions',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context)
                               .colorScheme

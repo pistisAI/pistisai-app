@@ -978,19 +978,8 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
 
         switch (providerInfo.type) {
           case ProviderType.openclaw:
-            config = OpenAICompatibleProviderConfiguration(
-              providerId: providerId,
-              baseUrl: providerInfo.baseUrl,
-              port: providerInfo.port,
-              timeout: const Duration(seconds: 90),
-              customSettings: {
-                'auto_configured': true,
-                'discovered_at': DateTime.now().toIso8601String(),
-                'role': ProviderRole.agentRuntime.name,
-                'type': providerInfo.type.name,
-              },
-            );
-            break;
+            // OpenClaw is no longer auto-configured for the secure channel.
+            continue;
 
           case ProviderType.hermes:
             config = HermesProviderConfiguration(

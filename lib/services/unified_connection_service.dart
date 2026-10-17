@@ -33,18 +33,15 @@ class UnifiedConnectionService extends ChangeNotifier {
     _isConnected = isConnected;
     _models = _connectionManager!.availableModels;
 
-    if (activeBackend == null) {
-      _connectionType = 'none';
-      _version = null;
-      _error = 'No backend selected';
-    } else if (activeBackend == BackendType.hermes) {
+    if (activeBackend == BackendType.hermes) {
       _connectionType = 'hermes';
       _version = isConnected ? 'Hermes Agent' : null;
       _error = isConnected ? null : 'Hermes Agent disconnected';
     } else {
-      _connectionType = 'openclaw';
-      _version = isConnected ? 'OpenClaw Gateway' : null;
-      _error = isConnected ? null : 'OpenClaw Gateway disconnected';
+      // OpenClaw and any other stale backend degrade to an unselected runtime.
+      _connectionType = 'none';
+      _version = null;
+      _error = 'No backend selected';
     }
 
     notifyListeners();

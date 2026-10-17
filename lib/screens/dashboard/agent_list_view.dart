@@ -66,7 +66,7 @@ class _AgentListViewState extends State<AgentListView> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Not Connected to OpenClaw Gateway',
+                    'Not connected to an agent runtime',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                         ),
@@ -110,7 +110,7 @@ class _AgentListViewState extends State<AgentListView> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'No agents are configured in OpenClaw Gateway',
+                    'No agents are configured in the agent runtime',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6),
                         ),

@@ -338,20 +338,6 @@ class ConnectionManagerService extends ChangeNotifier {
       _log.info('Hermes HTTP gateway detection: $e');
     }
 
-    // 2. Try OpenClaw gateway
-    try {
-      await openclawGatewayService.checkStatus();
-      if (openclawGatewayService.isRunning) {
-        _log.info('Auto-detected OpenClaw gateway');
-        _currentBackend = BackendType.openclaw;
-        _activeRuntimeClient = null;
-        notifyListeners();
-        return;
-      }
-    } catch (e) {
-      _log.info('OpenClaw gateway detection: $e');
-    }
-
     // No runtime detected — UI will show the setup wizard
     _log.info('No local agent runtime detected');
   }
@@ -655,10 +641,8 @@ class ConnectionManagerService extends ChangeNotifier {
     if (configuredBackend == preferences.BackendType.hermes || hermesEnabled) {
       _currentBackend = BackendType.hermes;
       _activeRuntimeClient = _createHermesRuntimeClient();
-    } else if (configuredBackend == preferences.BackendType.openclaw) {
-      _currentBackend = BackendType.openclaw;
-      _activeRuntimeClient = null;
     } else {
+      // OpenClaw is no longer offered; a stale preference clears to none.
       _currentBackend = null;
       _activeRuntimeClient = null;
     }
@@ -670,11 +654,8 @@ class ConnectionManagerService extends ChangeNotifier {
       return;
     }
 
-    final preferences.BackendType? preferenceBackend = switch (backend) {
-      BackendType.hermes => preferences.BackendType.hermes,
-      BackendType.openclaw => preferences.BackendType.openclaw,
-      null => null,
-    };
+    final preferences.BackendType? preferenceBackend =
+        backend == BackendType.hermes ? preferences.BackendType.hermes : null;
     unawaited(settings.setActiveBackend(preferenceBackend));
   }
 

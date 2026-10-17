@@ -95,15 +95,6 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                   runSpacing: 8,
                   children: [
                     _BackendButton(
-                      label: 'OpenClaw',
-                      selected: backend == BackendType.openclaw,
-                      onPressed: () => _switchBackend(
-                        context,
-                        connectionManager,
-                        BackendType.openclaw,
-                      ),
-                    ),
-                    _BackendButton(
                       label: 'Hermes Agent',
                       selected: backend == BackendType.hermes,
                       onPressed: () => _switchBackend(
@@ -254,9 +245,7 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
     if (connectionManager.activeBackend == backend) {
       _showFeedback(
         context,
-        backend == BackendType.hermes
-            ? 'Hermes is already selected.'
-            : 'OpenClaw is already selected.',
+        'Hermes is already selected.',
         true,
       );
       return;
