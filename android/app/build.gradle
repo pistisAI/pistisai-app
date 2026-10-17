@@ -50,7 +50,8 @@ android {
 
     defaultConfig {
         applicationId "app.pistisai.app"
-        minSdkVersion flutter.minSdkVersion
+        // Sentry Flutter 10 requires Android API 26.
+        minSdkVersion Math.max(flutter.minSdkVersion, 26)
         targetSdkVersion flutter.targetSdkVersion
         try {
             versionCode flutterVersionCode.toInteger()

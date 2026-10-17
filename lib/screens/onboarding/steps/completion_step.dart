@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
+import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
 import '../../../config/theme.dart';
 
 /// Completion Step
@@ -102,6 +103,33 @@ class _CompletionStepState extends State<CompletionStep> {
                 ),
               const SizedBox(height: 32),
 
+              // Bot install result
+              if (!wizard.state.isLoading && wizard.state.lastBotInstall != null)
+                Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Agent Bot Installation:',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      ...wizard.state.lastBotInstall!.steps.map(_buildBotInstallStepRow),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 32),
+
               // Next steps info
               if (!wizard.state.isLoading)
                 Container(
@@ -186,5 +214,49 @@ class _CompletionStepState extends State<CompletionStep> {
       case ProviderType.custom:
         return 'Custom';
     }
+  }
+
+  Widget _buildBotInstallStepRow(HermesBotInstallStep step) {
+    final Color color = step.installed
+        ? AppTheme.colorsOf(context).success
+        : step.skipped
+            ? AppTheme.colorsOf(context).info
+            : AppTheme.colorsOf(context).danger;
+    final IconData icon = step.installed
+        ? Icons.check_circle
+        : step.skipped
+            ? Icons.info_outline
+            : Icons.error_outline;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 16,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '${step.name}: ${step.detail}',
+              style: TextStyle(
+                color: color,
+                fontWeight: step.installed ? FontWeight.w500 : FontWeight.normal,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

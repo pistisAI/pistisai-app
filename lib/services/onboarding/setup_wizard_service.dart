@@ -8,6 +8,7 @@ import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/utils/logger.dart';
 import 'package:pistisai/services/hermes/hermes_endpoint_resolver.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
+import '../hermes/hermes_bot_install_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/provider_configuration_manager.dart';
@@ -46,6 +47,10 @@ class WizardState {
   final String? hermesDetectionMessage;
   final bool isLoading;
   final String? errorMessage;
+  /// Whether the user has chosen to install the aigent bot.
+  final bool installAigentBot;
+  /// The result of the last bot install attempt, if any.
+  final HermesBotInstallReport? lastBotInstall;
 
   const WizardState({
     this.currentStep = 0,
@@ -62,6 +67,8 @@ class WizardState {
     this.hermesDetectionMessage,
     this.isLoading = false,
     this.errorMessage,
+    this.installAigentBot = true,
+    this.lastBotInstall,
   });
 
   WizardState copyWith({
@@ -79,6 +86,8 @@ class WizardState {
     Object? hermesDetectionMessage = _unset,
     bool? isLoading,
     Object? errorMessage = _unset,
+    bool? installAigentBot,
+    HermesBotInstallReport? lastBotInstall,
   }) {
     return WizardState(
       currentStep: currentStep ?? this.currentStep,
@@ -108,6 +117,8 @@ class WizardState {
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
+      installAigentBot: installAigentBot ?? this.installAigentBot,
+      lastBotInstall: lastBotInstall ?? this.lastBotInstall,
     );
   }
 }
@@ -126,6 +137,7 @@ enum _HermesStepKind {
   tailscaleDiscovery,
   hermesUrl,
   connectionTest,
+  hermesBot,
   completion,
 }
 
@@ -803,6 +815,14 @@ class SetupWizardService extends ChangeNotifier {
         await _saveGatewayPassword(_state.gatewayPassword!);
       }
 
+      // Install the aigent bot if requested and on local Hermes
+      if (_state.installAigentBot &&
+          _state.hermesLocation == HermesLocation.local) {
+        final installService = HermesBotInstallService();
+        final report = await installService.install(bot: 'aigent-watch');
+        _state = _state.copyWith(lastBotInstall: report);
+      }
+
       // Mark setup as complete
       // Hardcoded local_user as auth service is not currently integrated in wizard
       final userId = 'local_user';
@@ -876,6 +896,7 @@ class SetupWizardService extends ChangeNotifier {
     kinds.addAll([
       _HermesStepKind.hermesUrl,
       _HermesStepKind.connectionTest,
+      if (_state.hermesLocation == HermesLocation.local) _HermesStepKind.hermesBot,
       _HermesStepKind.completion,
     ]);
     return kinds;

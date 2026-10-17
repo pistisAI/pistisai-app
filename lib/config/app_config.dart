@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
+import 'dart:io';
+import 'package:path/path.dart';
 
 /// Application configuration constants
 class AppConfig {
@@ -205,6 +207,14 @@ class AppConfig {
   // Admin Interface Configuration
   static const bool enableAdminInterface = true;
   static const int adminServerPort = 8080;
+  static const int pistisaiUiPort = 1338;
+
+  /// Get the document root for serving the PistisAI app UI.
+  /// Defaults to the 'web/' directory in the current working directory.
+  static String getPistisaiUiDocumentRoot() {
+    // In future, this could be made configurable or pointed to bundled assets.
+    return join(Directory.current.path, 'web');
+  }
 
   // Platform-specific admin server URLs
   static const String adminServerUrlWeb = 'https://api.pistisai.app';

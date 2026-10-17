@@ -28,6 +28,7 @@ import 'package:pistisai/services/cloud_connector_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
+import 'package:pistisai/services/pistisai_ui_server.dart';
 import 'package:pistisai/services/settings_import_export_service.dart';
 import 'package:pistisai/services/provider_configuration_manager.dart';
 import 'package:pistisai/services/admin_center_service.dart';
@@ -260,6 +261,10 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
+      // Pistisai UI server for serving the app UI to the Hermes Desktop tab.
+      final pistisaiUiServer = PistisaiUiServer();
+      serviceLocator.registerSingleton<PistisaiUiServer>(pistisaiUiServer);
+
       // Hermes streaming service for direct Hermes API integration.
       // Discover the local gateway key so desktop chat/voice are authenticated.
       final hermesUrl = await settingsPreferenceService.getHermesUrl();
@@ -303,6 +308,8 @@ Future<void> setupCoreServices() async {
 
       // Start the router server in the background.
       unawaited(routerServer.start());
+      // Start the Pistisai UI server in the background.
+      unawaited(pistisaiUiServer.start());
     } else {
       debugPrint(
         '[ServiceLocator] Skipping desktop-only LocalBrain/router core services on web',
