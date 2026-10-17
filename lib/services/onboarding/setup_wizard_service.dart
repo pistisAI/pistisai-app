@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/utils/logger.dart';
+import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
 import 'package:pistisai/services/hermes/hermes_endpoint_resolver.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
@@ -46,6 +47,7 @@ class WizardState {
   final String? hermesDetectionMessage;
   final bool isLoading;
   final String? errorMessage;
+  final HermesBotInstallReport? lastBotInstall;
 
   const WizardState({
     this.currentStep = 0,
@@ -62,6 +64,7 @@ class WizardState {
     this.hermesDetectionMessage,
     this.isLoading = false,
     this.errorMessage,
+    this.lastBotInstall,
   });
 
   WizardState copyWith({
@@ -79,6 +82,7 @@ class WizardState {
     Object? hermesDetectionMessage = _unset,
     bool? isLoading,
     Object? errorMessage = _unset,
+    Object? lastBotInstall = _unset,
   }) {
     return WizardState(
       currentStep: currentStep ?? this.currentStep,
@@ -108,6 +112,9 @@ class WizardState {
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
+      lastBotInstall: identical(lastBotInstall, _unset)
+          ? this.lastBotInstall
+          : lastBotInstall as HermesBotInstallReport?,
     );
   }
 }
@@ -126,6 +133,7 @@ enum _HermesStepKind {
   tailscaleDiscovery,
   hermesUrl,
   connectionTest,
+  hermesBot,
   completion,
 }
 
@@ -137,6 +145,7 @@ class SetupWizardService extends ChangeNotifier {
   final SettingsPreferenceService? _settings;
   final HermesEndpointResolver _hermesResolver;
   final HermesLocalAgentApi? _localAgentApi;
+  final HermesBotInstallService? _botInstaller;
 
   WizardState _state = const WizardState();
   Timer? _testTimeoutTimer;
@@ -150,9 +159,11 @@ class SetupWizardService extends ChangeNotifier {
     SettingsPreferenceService? settings,
     HermesEndpointResolver? hermesResolver,
     HermesLocalAgentApi? localAgentApi,
+    HermesBotInstallService? botInstaller,
   })  : _settings = settings,
         _hermesResolver = hermesResolver ?? HermesEndpointResolver(),
-        _localAgentApi = localAgentApi;
+        _localAgentApi = localAgentApi,
+        _botInstaller = botInstaller;
 
   WizardState get state => _state;
   bool get isSetupCompleted => _setupCompleted;
@@ -168,6 +179,31 @@ class SetupWizardService extends ChangeNotifier {
       return false;
     }
     return steps[index] == _HermesStepKind.connectionTest;
+  }
+
+  /// True on the local-only pistisai package step.
+  bool get isHermesBotStep {
+    if (_state.hermesLocation != HermesLocation.local) {
+      return false;
+    }
+    final steps = _hermesStepKinds();
+    final index = _state.currentStep;
+    if (index < 0 || index >= steps.length) {
+      return false;
+    }
+    return steps[index] == _HermesStepKind.hermesBot;
+  }
+
+  /// The package step is shown only for a Hermes install on this machine.
+  bool get showsLocalHermesBotStep =>
+      _state.hermesLocation == HermesLocation.local;
+
+  int? _localHermesPort() {
+    final uri = Uri.tryParse(_state.hermesUrl?.trim() ?? '');
+    if (uri != null && uri.hasPort && uri.port > 0) {
+      return uri.port;
+    }
+    return AppConfig.defaultHermesPort;
   }
 
   /// Initialize the wizard - check if first run
@@ -813,7 +849,32 @@ class SetupWizardService extends ChangeNotifier {
       await _settings?.setSetupWizardDeferred(false);
       appLogger.info('[SetupWizard] Setup completed successfully');
 
-      _state = _state.copyWith(isLoading: false, errorMessage: null);
+      HermesBotInstallReport? botReport;
+      if (_state.hermesLocation == HermesLocation.local) {
+        try {
+          botReport = await (_botInstaller ?? HermesBotInstallService())
+              .install(agentPort: _localHermesPort());
+        } catch (error, stackTrace) {
+          appLogger.error(
+            '[SetupWizard] PistisAI package install failed',
+            error: error,
+            stackTrace: stackTrace,
+          );
+          botReport = HermesBotInstallReport(<HermesBotInstallStep>[
+            HermesBotInstallStep(
+              name: HermesBotInstallService.agentStep,
+              status: HermesBotInstallStatus.failed,
+              detail: '$error',
+            ),
+          ]);
+        }
+      }
+
+      _state = _state.copyWith(
+        isLoading: false,
+        errorMessage: null,
+        lastBotInstall: botReport,
+      );
       notifyListeners();
       return true;
     } catch (e, stackTrace) {
@@ -876,8 +937,11 @@ class SetupWizardService extends ChangeNotifier {
     kinds.addAll([
       _HermesStepKind.hermesUrl,
       _HermesStepKind.connectionTest,
-      _HermesStepKind.completion,
     ]);
+    if (_state.hermesLocation == HermesLocation.local) {
+      kinds.add(_HermesStepKind.hermesBot);
+    }
+    kinds.add(_HermesStepKind.completion);
     return kinds;
   }
 

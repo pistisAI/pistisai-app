@@ -10,6 +10,7 @@ import 'package:pistisai/screens/onboarding/steps/tailscale_discovery_step.dart'
 import 'package:pistisai/screens/onboarding/steps/hermes_location_step.dart';
 import 'package:pistisai/screens/onboarding/steps/hermes_url_step.dart';
 import 'package:pistisai/screens/onboarding/steps/connection_test_step.dart';
+import 'package:pistisai/screens/onboarding/steps/hermes_bot_step.dart';
 import 'package:pistisai/screens/onboarding/steps/completion_step.dart';
 
 /// Setup Wizard Screen
@@ -27,6 +28,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   ConnectionMethod? _lastMethod;
   HermesLocation? _lastHermesLocation;
   String? _lastErrorSnackbarMessage;
+  bool _installReportReady = false;
 
   @override
   void dispose() {
@@ -162,8 +164,11 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     steps.addAll(const [
       HermesUrlStep(),
       ConnectionTestStep(),
-      CompletionStep(),
     ]);
+    if (hermesLocation == HermesLocation.local) {
+      steps.add(const HermesBotStep());
+    }
+    steps.add(const CompletionStep());
     return steps;
   }
 
@@ -219,6 +224,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
             Expanded(
               child: OutlinedButton(
                 onPressed: () {
+                  _installReportReady = false;
                   wizard.previousStep();
                 },
                 child: const Text('Back'),
@@ -231,6 +237,12 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                   ? null
                   : () async {
                       if (isLastStep) {
+                        if (_installReportReady) {
+                          if (mounted) {
+                            context.go('/');
+                          }
+                          return;
+                        }
                         _lastErrorSnackbarMessage = null;
                         final success = await wizard.completeSetup();
 
@@ -246,6 +258,11 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
 
                         _lastErrorSnackbarMessage = null;
 
+                        if (wizard.state.hermesLocation == HermesLocation.local) {
+                          setState(() => _installReportReady = true);
+                          return;
+                        }
+
                         if (mounted) {
                           context.go('/');
                         }
@@ -256,7 +273,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                     },
               child: Text(
                 isLastStep
-                    ? 'Complete'
+                    ? (_installReportReady ? 'Continue' : 'Complete')
                     : wizard.state.isLoading
                         ? 'Loading...'
                         : 'Next',

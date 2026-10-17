@@ -206,6 +206,9 @@ class AppConfig {
   static const bool enableAdminInterface = true;
   static const int adminServerPort = 8080;
 
+  /// Loopback port for the app UI. The embedded router stays on 1337.
+  static const int pistisaiUiPort = 1338;
+
   // Platform-specific admin server URLs
   static const String adminServerUrlWeb = 'https://api.pistisai.app';
   static const String adminServerUrlDesktop = 'http://127.0.0.1:8080';

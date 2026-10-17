@@ -1,6 +1,7 @@
 import 'package:pistisai/models/provider_configuration.dart';
 import 'dart:io';
 
+import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
 import 'package:pistisai/services/hermes/hermes_endpoint_resolver.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
 import 'package:pistisai/services/auth_service.dart';
@@ -25,7 +26,12 @@ void main() {
       discovery = _FakeProviderDiscoveryService();
       setupStatus = _FakeSetupStatusService();
       configManager = _FakeProviderConfigurationManager();
-      service = SetupWizardService(discovery, setupStatus, configManager);
+      service = SetupWizardService(
+        discovery,
+        setupStatus,
+        configManager,
+        botInstaller: _RecordingInstaller(_installedReport()),
+      );
     });
 
     test('provider scan failure maps message and resets loading', () async {
@@ -366,7 +372,146 @@ void main() {
       expect(await configManager.getAllAgentRuntimes(), isNotEmpty);
       expect(await service.shouldShowWizard(), isTrue);
     });
+
+    test('local Hermes shows the package step and Tailscale does not', () {
+      service.selectConnectionMethod(ConnectionMethod.hermes);
+      service.selectHermesLocation(HermesLocation.local);
+      service.goToStep(5);
+
+      expect(service.showsLocalHermesBotStep, isTrue);
+      expect(service.isHermesBotStep, isTrue);
+
+      service.nextStep();
+
+      expect(service.state.currentStep, 6);
+      expect(service.isHermesBotStep, isFalse);
+
+      service.selectHermesLocation(HermesLocation.tailscale);
+
+      expect(service.showsLocalHermesBotStep, isFalse);
+      expect(service.isHermesBotStep, isFalse);
+    });
+
+    test('local completeSetup calls the installer once', () async {
+      final installer = _RecordingInstaller(_installedReport());
+      service = SetupWizardService(
+        discovery,
+        setupStatus,
+        configManager,
+        botInstaller: installer,
+      );
+      _selectLocalHermes(service);
+
+      final bool success = await service.completeSetup();
+
+      expect(success, isTrue);
+      expect(installer.calls, 1);
+      expect(installer.port, 8642);
+      expect(service.state.lastBotInstall!.succeeded, isTrue);
+    });
+
+    test('a failed package install still completes setup', () async {
+      final installer = _RecordingInstaller(_failedReport());
+      service = SetupWizardService(
+        discovery,
+        setupStatus,
+        configManager,
+        botInstaller: installer,
+      );
+      _selectLocalHermes(service);
+
+      final bool success = await service.completeSetup();
+
+      expect(success, isTrue);
+      expect(service.isSetupCompleted, isTrue);
+      expect(installer.calls, 1);
+      expect(service.state.lastBotInstall!.hasFailures, isTrue);
+    });
+
+    test('first-time local setup installs even without a separate confirmation',
+        () async {
+      final installer = _RecordingInstaller(_installedReport());
+      service = SetupWizardService(
+        discovery,
+        setupStatus,
+        configManager,
+        botInstaller: installer,
+      );
+      _selectLocalHermes(service);
+
+      final bool success = await service.completeSetup();
+
+      expect(success, isTrue);
+      expect(installer.calls, 1);
+      expect(installer.port, 8642);
+    });
+
+    test('Tailscale setup does not install the package', () async {
+      final installer = _RecordingInstaller(_installedReport());
+      service = SetupWizardService(
+        discovery,
+        setupStatus,
+        configManager,
+        botInstaller: installer,
+      );
+      service.selectConnectionMethod(ConnectionMethod.hermes);
+      service.selectHermesLocation(HermesLocation.tailscale);
+      service.setHermesUrl('http://100.64.0.5:8642');
+      service.setHermesApiKey('psk_test_key');
+      service.selectProvider(_hermesRuntimeProvider().copyWith(
+        url: 'http://100.64.0.5:8642',
+        isLocal: false,
+      ));
+
+      final bool success = await service.completeSetup();
+
+      expect(success, isTrue);
+      expect(installer.calls, 0);
+      expect(service.state.lastBotInstall, isNull);
+    });
   });
+}
+
+void _selectLocalHermes(SetupWizardService service) {
+  service.selectConnectionMethod(ConnectionMethod.hermes);
+  service.selectHermesLocation(HermesLocation.local);
+  service.setHermesUrl('http://127.0.0.1:8642');
+  service.selectProvider(_hermesRuntimeProvider());
+}
+
+HermesBotInstallReport _installedReport() {
+  return const HermesBotInstallReport(<HermesBotInstallStep>[
+    HermesBotInstallStep(
+      name: HermesBotInstallService.agentStep,
+      status: HermesBotInstallStatus.installed,
+      detail: 'Wrote 2 file(s).',
+    ),
+  ]);
+}
+
+HermesBotInstallReport _failedReport() {
+  return const HermesBotInstallReport(<HermesBotInstallStep>[
+    HermesBotInstallStep(
+      name: HermesBotInstallService.enableStep,
+      status: HermesBotInstallStatus.failed,
+      detail: 'hermes missing',
+    ),
+  ]);
+}
+
+class _RecordingInstaller extends HermesBotInstallService {
+  _RecordingInstaller(this.report);
+
+  final HermesBotInstallReport report;
+  int calls = 0;
+  int? port;
+
+  @override
+  Future<HermesBotInstallReport> install({int? agentPort}) async {
+    calls += 1;
+    port = agentPort;
+    return report;
+  }
 }
 
 ProviderInfo _customRuntimeProvider() {

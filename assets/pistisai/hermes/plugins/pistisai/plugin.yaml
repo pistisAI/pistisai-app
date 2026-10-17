@@ -1,0 +1,6 @@
+name: pistisai
+version: 1.1.0
+description: "Deterministic drift critic on durable writes. Warn-mode only: flags findings-record and memory writes that assert facts without a resolvable source, and appends an ⚠️ Aigent critic nudge to the tool result so the agent self-corrects next turn. Same shape as security-guidance. Every trigger logs to the drift log (AIGENT_DRIFT_LOG, else <HERMES_HOME>/logs/drift-log.md). Kill switch: AIGENT_WATCH_DISABLE=1. Person-name list for the C2 check: AIGENT_WATCH_PERSONS."
+author: "Zoid Maltek (built for Christopher Maltais, 2026-10-14)"
+provides_hooks:
+  - transform_tool_result

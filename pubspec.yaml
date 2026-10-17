@@ -184,6 +184,9 @@ flutter:
     - assets/images/lobster_avatar_128.png
     - assets/version.json
     - assets/component-versions.json
+    - assets/pistisai/hermes/plugins/pistisai/
+    - assets/pistisai/hermes/profiles/aigent-watch/
+    - assets/pistisai/hermes/profiles/aigent-watch/skills/drift-scan/
 
 sentry:
   upload_debug_symbols: true

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import '../../../config/theme.dart';
@@ -102,6 +103,8 @@ class _CompletionStepState extends State<CompletionStep> {
                 ),
               const SizedBox(height: 32),
 
+              if (!wizard.state.isLoading) _buildBotInstallReport(context, wizard),
+
               // Next steps info
               if (!wizard.state.isLoading)
                 Container(
@@ -141,6 +144,56 @@ class _CompletionStepState extends State<CompletionStep> {
         );
       },
     );
+  }
+
+  Widget _buildBotInstallReport(BuildContext context, SetupWizardService wizard) {
+    final report = wizard.state.lastBotInstall;
+    if (report == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32),
+      child: Container(
+        width: double.infinity,
+        constraints: const BoxConstraints(maxWidth: 480),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).dividerColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'PistisAI package',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 12),
+            for (final step in report.steps)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    '${step.name}: ${_installStatusLabel(step.status)} — ${step.detail}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _installStatusLabel(HermesBotInstallStatus status) {
+    switch (status) {
+      case HermesBotInstallStatus.installed:
+        return 'Installed';
+      case HermesBotInstallStatus.skipped:
+        return 'Skipped';
+      case HermesBotInstallStatus.failed:
+        return 'Failed';
+    }
   }
 
   Widget _buildConfigRow(String label, String value) {

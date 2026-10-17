@@ -40,6 +40,7 @@ import 'package:pistisai/database/local_brain.dart';
 import 'package:pistisai/services/brain_sync_service.dart';
 import 'package:pistisai/services/full_context_indexer.dart';
 import 'package:pistisai/services/rate_limit_manager.dart';
+import 'package:pistisai/services/pistisai_ui_server.dart';
 import 'package:pistisai/services/router_server.dart';
 import 'package:pistisai/services/providers/zhipu_adapter.dart';
 import 'package:pistisai/services/providers/google_adapter.dart';
@@ -303,6 +304,11 @@ Future<void> setupCoreServices() async {
 
       // Start the router server in the background.
       unawaited(routerServer.start());
+
+      // Loopback UI for the app, separate from the router on 1337.
+      final pistisaiUiServer = PistisaiUiServer();
+      serviceLocator.registerSingleton<PistisaiUiServer>(pistisaiUiServer);
+      unawaited(pistisaiUiServer.start());
     } else {
       debugPrint(
         '[ServiceLocator] Skipping desktop-only LocalBrain/router core services on web',

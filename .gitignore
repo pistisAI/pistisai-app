@@ -117,6 +117,7 @@ kilo.json
 # Other AI agent session artifacts
 SOUL.md
 !deploy/hermes/SOUL.md
+!assets/pistisai/**/SOUL.md
 IDENTITY.md
 MEMORY.md
 USER.md
