@@ -5,6 +5,14 @@ on:
     workflows: ["🌐 Web Deploy"]
     types: [completed]
     branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "lib/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/build-mobile.yml"
   workflow_dispatch:
     inputs:
       platforms:
@@ -14,11 +22,11 @@ on:
         type: string
 
 concurrency:
-  group: mobile-build-${{ github.ref }}
-  cancel-in-progress: false
+  group: mobile-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
-  contents: write
+  contents: read
   packages: read
 
 jobs:
@@ -33,7 +41,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: main
+          # Pull requests check out the PR head. Release paths stay on main.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          persist-credentials: false
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.44.6
@@ -54,13 +64,17 @@ jobs:
   build_android:
     name: Android Build
     needs: analyze
-    if: contains(inputs.platforms || 'android', 'android')
+    if: >-
+      needs.analyze.result == 'success' &&
+      (github.event_name == 'pull_request' ||
+       contains(inputs.platforms || 'android', 'android'))
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: main
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          persist-credentials: false
 
       - name: Set Version
         run: |
@@ -114,11 +128,16 @@ jobs:
             exit 1
           fi
 
+      # Production signing material stays off pull_request jobs. Same-repo PRs
+      # receive secrets; decoding the keystore onto an untrusted head SHA would
+      # expose it. PR builds use the debug key via android/app/build.gradle.
       - name: Decode Keystore
+        if: github.event_name != 'pull_request'
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > android/release-keystore.jks
 
       - name: Create key.properties
+        if: github.event_name != 'pull_request'
         run: |
           cat > android/key.properties << EOF
           storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
@@ -142,7 +161,10 @@ jobs:
   build_ios:
     name: iOS Build
     needs: analyze
-    if: contains(inputs.platforms || 'android', 'ios')
+    # iOS stays off pull requests. Manual/dispatch and main release only.
+    if: >-
+      github.event_name != 'pull_request' &&
+      contains(inputs.platforms || 'android', 'ios')
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -186,6 +208,7 @@ jobs:
     needs: [analyze, build_android, build_ios]
     if: >-
       always() &&
+      github.event_name != 'pull_request' &&
       needs.analyze.result == 'success' &&
       (needs.build_android.result == 'success' || needs.build_android.result == 'skipped') &&
       (needs.build_ios.result == 'success' || needs.build_ios.result == 'skipped')

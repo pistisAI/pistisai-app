@@ -74,7 +74,13 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            // CI pull requests build without the release keystore; use the
+            // debug key so `flutter build apk --release` still produces an APK.
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
