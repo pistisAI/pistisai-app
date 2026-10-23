@@ -116,7 +116,7 @@ dependencies:
   image: ^4.9.2
 
   # Voice System - Recording
-  record: ^7.1.1
+  record: ^7.1.2
 
 
 dev_dependencies:
