@@ -118,6 +118,36 @@ jobs:
             exit 1
           fi
 
+          FLUTTER_ROOT="${FLUTTER_ROOT:-$(dirname "$(dirname "$(command -v flutter)")")}"
+          NDK_EXT="$FLUTTER_ROOT/packages/flutter_tools/gradle/src/main/kotlin/FlutterExtension.kt"
+          NDK_VERSION=$(grep -E 'ndkVersion: String = ' "$NDK_EXT" | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ -z "$NDK_VERSION" ]; then
+            echo "Could not read ndkVersion from $NDK_EXT" >&2
+            exit 1
+          fi
+          NDK_PKG="ndk;${NDK_VERSION}"
+          NDK_DIR="${ANDROID_HOME}/ndk/${NDK_VERSION}"
+          install_with_retry() {
+            local pkg="$1"
+            local cleanup_dir="$2"
+            local attempt=1
+            local max_attempts=3
+            while [ "$attempt" -le "$max_attempts" ]; do
+              if "$SDKMANAGER" --install "$pkg" > /tmp/sdk-extra.log 2>&1; then
+                return 0
+              fi
+              echo "sdkmanager install failed for $pkg (attempt $attempt/$max_attempts):" >&2
+              tail -40 /tmp/sdk-extra.log >&2
+              rm -rf "${ANDROID_HOME}/.temp" "$cleanup_dir" 2>/dev/null || true
+              attempt=$((attempt + 1))
+              sleep $((attempt * 15))
+            done
+            return 1
+          }
+          if [ ! -d "$NDK_DIR" ]; then
+            install_with_retry "$NDK_PKG" "$NDK_DIR"
+          fi
+
       - name: Configure release signing
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
