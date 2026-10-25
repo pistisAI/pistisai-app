@@ -1,5 +1,5 @@
 # --- Build Stage ---
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ COPY . .
 RUN npm prune --omit=dev
 
 # --- Runner Stage ---
-FROM node:24-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 

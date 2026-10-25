@@ -1,5 +1,5 @@
 # Node.js streaming proxy
-FROM node:24-alpine
+FROM node:26-alpine
 WORKDIR /app
 
 # Create pistisai user with UID 1001

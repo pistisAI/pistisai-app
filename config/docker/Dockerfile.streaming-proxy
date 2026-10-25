@@ -3,7 +3,7 @@
 # Uses standard Node.js Alpine images
 # ============================================================================
 
-FROM node:24-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 

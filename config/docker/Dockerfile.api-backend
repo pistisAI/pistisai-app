@@ -1,5 +1,5 @@
 # API Backend Container (Node.js/Express)
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN apk add --no-cache python3 make g++
 RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
 
 # Production container
-FROM node:24-alpine
+FROM node:26-alpine
 
 # Install curl for health checks
 RUN apk add --no-cache curl

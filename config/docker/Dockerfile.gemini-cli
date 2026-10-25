@@ -2,7 +2,7 @@
 # Provides a consistent Node.js environment for running code analysis
 
 # Use official Node.js alpine image for a smaller footprint
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 
 # Create non-root user
 RUN addgroup -g 1001 -S gemini-cli && \
@@ -17,7 +17,7 @@ COPY --chown=gemini-cli:gemini-cli scripts/gemini-cli-cli.cjs /usr/local/bin/gem
 RUN chmod +x /usr/local/bin/gemini-cli-cli.cjs
 
 # Final lightweight stage
-FROM node:24-alpine
+FROM node:26-alpine
 
 RUN apk add --no-cache bash curl
 

@@ -1,6 +1,6 @@
 # Docker Swarm Web Image
 # Multi-service container: Web frontend, API backend, and streaming proxy
-FROM node:20-bookworm-slim
+FROM node:26-bookworm-slim
 
 WORKDIR /app/code
 
