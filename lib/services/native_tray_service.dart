@@ -1,3 +1,6 @@
+// tray_manager 0.8.x: legacy.dart keeps the 0.5.x API until we migrate to the native API.
+// ignore_for_file: deprecated_member_use, deprecated_member_use_from_same_package
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
