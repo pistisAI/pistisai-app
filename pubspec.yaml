@@ -188,6 +188,7 @@ flutter:
     - assets/version.json
     - assets/component-versions.json
     - assets/pistisai/hermes/plugins/pistisai/
+    - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/
     - assets/pistisai/hermes/profiles/aigent-watch/skills/drift-scan/
 

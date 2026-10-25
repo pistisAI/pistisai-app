@@ -69,7 +69,9 @@ void main() {
 
     test('complete setup persistence failure is deterministic and not loading',
         () async {
+      service.selectConnectionMethod(ConnectionMethod.custom);
       service.selectProvider(_customRuntimeProvider());
+      service.setCustomUrl(_customRuntimeProvider().url);
       configManager.throwOnSave = true;
 
       final bool success = await service.completeSetup();
@@ -83,6 +85,7 @@ void main() {
     });
 
     test('invalid custom URL is rejected before persistence', () async {
+      service.selectConnectionMethod(ConnectionMethod.custom);
       service.selectProvider(_customRuntimeProvider());
       service.setCustomUrl('not-a-valid-url');
 
@@ -224,12 +227,12 @@ void main() {
       service.selectConnectionMethod(ConnectionMethod.hermes);
       service.selectHermesLocation(HermesLocation.local);
       service.setHermesUrl('http://127.0.0.1:8642');
-      service.goToStep(4);
+      service.goToStep(3);
 
       await service.testConnection('http://127.0.0.1:8642');
       service.nextStep();
 
-      expect(service.state.currentStep, 4);
+      expect(service.state.currentStep, 3);
       expect(service.state.errorMessage, hermesUnreachableMessage);
     });
 
@@ -258,11 +261,11 @@ void main() {
       expect(service.state.detectedHermesKind,
           HermesEndpointKind.desktopDashboard);
 
-      service.goToStep(4);
+      service.goToStep(3);
       await service.testConnection(service.state.hermesUrl!);
       service.nextStep();
 
-      expect(service.state.currentStep, 4);
+      expect(service.state.currentStep, 3);
       expect(service.state.errorMessage, contains('51910'));
       expect(service.state.errorMessage, contains('agent API'));
     });
@@ -301,43 +304,45 @@ void main() {
       service.selectConnectionMethod(ConnectionMethod.hermes);
       service.selectHermesLocation(HermesLocation.local);
       service.setHermesUrl('http://127.0.0.1:51910');
-      service.goToStep(4);
+      service.goToStep(3);
 
       await service.testConnection('http://127.0.0.1:51910');
       service.nextStep();
 
       expect(service.state.hermesUrl, 'http://127.0.0.1:8642');
       expect(service.state.hermesApiKey, 'psk_0123456789abcdef');
-      expect(service.state.currentStep, 5);
+      expect(service.state.currentStep, 4);
       expect(service.state.errorMessage, isNull);
     });
 
     test('nextStep blocks the connection step until Hermes is chosen', () {
-      service.goToStep(1);
+      service.goToStep(0);
+      service.nextStep();
+      expect(service.state.currentStep, 1);
 
       service.nextStep();
 
       expect(service.state.currentStep, 1);
       expect(
         service.state.errorMessage,
-        'Choose Hermes Agent before continuing.',
+        'Choose where Hermes is running before continuing.',
       );
 
       service.selectConnectionMethod(ConnectionMethod.hermes);
       service.nextStep();
 
-      expect(service.state.currentStep, 2);
-      expect(service.state.errorMessage, isNull);
+      expect(service.state.currentStep, 1);
+      expect(service.state.errorMessage, isNotNull);
     });
 
     test('nextStep blocks Hermes location step until a location is chosen',
         () {
       service.selectConnectionMethod(ConnectionMethod.hermes);
-      service.goToStep(2);
+      service.goToStep(1);
 
       service.nextStep();
 
-      expect(service.state.currentStep, 2);
+      expect(service.state.currentStep, 1);
       expect(
         service.state.errorMessage,
         'Choose where Hermes is running before continuing.',
@@ -346,7 +351,7 @@ void main() {
       service.selectHermesLocation(HermesLocation.local);
       service.nextStep();
 
-      expect(service.state.currentStep, 3);
+      expect(service.state.currentStep, 2);
       expect(service.state.errorMessage, isNull);
     });
 
