@@ -92,7 +92,7 @@ class SSHTunnelClient with ChangeNotifier {
       await _sshClient!.authenticated;
 
       if (_isDisposed) {
-        _sshClient?.close();
+        await _sshClient?.close();
         return;
       }
 
@@ -295,7 +295,7 @@ class SSHTunnelClient with ChangeNotifier {
     }
 
     try {
-      _sshClient?.close();
+      await _sshClient?.close();
       _sshClient = null;
     } catch (e) {
       debugPrint('[SSH] Error closing SSH client: $e');
