@@ -22,6 +22,7 @@ env:
   IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: https://deploy.pistisai.app
   COOLIFY_APP_UUID: umnmzbzlgcnjssqphnrgiejt
+  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST || '68.168.30.4' }}
 
 jobs:
   analyze:
@@ -112,6 +113,7 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COOLIFY_HOST: ${{ env.COOLIFY_HOST }}
         run: |
           set -euo pipefail
           if [ -z "${COOLIFY_API_TOKEN:-}" ]; then
@@ -122,11 +124,15 @@ jobs:
             echo "COOLIFY_SSH_KEY is not set"
             exit 1
           fi
+          if [ -z "${COOLIFY_HOST:-}" ]; then
+            echo "COOLIFY_HOST is not set"
+            exit 1
+          fi
           install -d -m 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/coolify_ci
           chmod 600 ~/.ssh/coolify_ci
-          ssh-keyscan -H 68.168.30.4 >> ~/.ssh/known_hosts
-          printf '%s' "$GITHUB_TOKEN" | ssh -i ~/.ssh/coolify_ci -o StrictHostKeyChecking=yes root@68.168.30.4 "docker login ghcr.io -u ${{ github.actor }} --password-stdin"
+          ssh-keyscan -H "$COOLIFY_HOST" >> ~/.ssh/known_hosts
+          printf '%s' "$GITHUB_TOKEN" | ssh -i ~/.ssh/coolify_ci -o StrictHostKeyChecking=yes -o ConnectTimeout=30 root@"$COOLIFY_HOST" "docker login ghcr.io -u ${{ github.actor }} --password-stdin"
 
       - name: Trigger Coolify deployment
         id: trigger

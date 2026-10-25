@@ -102,6 +102,10 @@ jobs:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
           set -euo pipefail
+          if [ -z "${DEPLOY_KEY:-}" ]; then
+            echo "❌ DEPLOY_KEY secret is not set. This workflow requires a deploy key to push version bumps to main (bypassing branch protection)."
+            exit 1
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/version.json pubspec.yaml

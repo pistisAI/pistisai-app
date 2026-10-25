@@ -60,23 +60,60 @@ jobs:
         id: changes
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" == "push" ]; then
-            DIFF_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} || git diff --name-only HEAD^ HEAD)
-          else
-            DIFF_FILES=$(git diff --name-only HEAD^ HEAD || echo "api")
-          fi
+          echo "Event: ${{ github.event_name }}"
 
           build_api=false
           build_proxy=false
           build_postgres=false
-          if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend" || [ "${{ inputs.force_build }}" == "true" ]; then
+
+          # On workflow_run from the release chain (e.g. Web Deploy), build all backend images
+          # because version bumps only change assets/version.json/pubspec.yaml and we need
+          # to deploy updated backend images with the new version tag.
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            echo "Triggered by workflow_run from ${{ github.event.workflow_run.name }} (conclusion: ${{ github.event.workflow_run.conclusion }})"
+            echo "Building all backend images for release chain"
             build_api=true
-          fi
-          if echo "$DIFF_FILES" | grep -qE "services/streaming-proxy/|config/docker/Dockerfile.streaming-proxy" || [ "${{ inputs.force_build }}" == "true" ]; then
             build_proxy=true
-          fi
-          if echo "$DIFF_FILES" | grep -qE "config/docker/Dockerfile.postgres|config/docker/postgres-|config/docker/init.sql|services/postgres/" || [ "${{ inputs.force_build }}" == "true" ]; then
             build_postgres=true
+          elif [ "${{ inputs.force_build }}" == "true" ]; then
+            echo "Force build requested via workflow_dispatch"
+            build_api=true
+            build_proxy=true
+            build_postgres=true
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || [ -z "$BEFORE" ]; then
+              echo "Zero/empty before SHA (first push or new branch), building all"
+              build_api=true
+              build_proxy=true
+              build_postgres=true
+            else
+              DIFF_FILES=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null || git diff --name-only HEAD^ HEAD 2>/dev/null || echo "")
+              echo "Changed files:"
+              echo "$DIFF_FILES"
+              if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend"; then
+                build_api=true
+              fi
+              if echo "$DIFF_FILES" | grep -qE "services/streaming-proxy/|config/docker/Dockerfile.streaming-proxy"; then
+                build_proxy=true
+              fi
+              if echo "$DIFF_FILES" | grep -qE "config/docker/Dockerfile.postgres|config/docker/postgres-|config/docker/init.sql|services/postgres/"; then
+                build_postgres=true
+              fi
+            fi
+          else
+            echo "Unknown trigger, falling back to diff against HEAD^ HEAD"
+            DIFF_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null || echo "")
+            if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend"; then
+              build_api=true
+            fi
+            if echo "$DIFF_FILES" | grep -qE "services/streaming-proxy/|config/docker/Dockerfile.streaming-proxy"; then
+              build_proxy=true
+            fi
+            if echo "$DIFF_FILES" | grep -qE "config/docker/Dockerfile.postgres|config/docker/postgres-|config/docker/init.sql|services/postgres/"; then
+              build_postgres=true
+            fi
           fi
 
           echo "api_backend=$build_api" >> "$GITHUB_OUTPUT"
