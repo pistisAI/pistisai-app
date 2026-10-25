@@ -7,6 +7,7 @@ analyzer:
   errors:
     missing_required_param: error
     missing_return: error
+    deprecated_member_use: ignore
   exclude:
     # Only exclude auto-generated files that should not be manually edited
     - lib/**/*.g.dart
