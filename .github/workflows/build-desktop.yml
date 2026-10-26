@@ -246,6 +246,9 @@ jobs:
           channel: "stable"
           cache: true
 
+      - name: Patch Flutter macOS windowing AOT (flutter/flutter#188060)
+        run: bash scripts/ci/patch-flutter-macos-aot-windowing.sh
+
       - name: Flutter Build macOS
         run: |
           flutter pub get
