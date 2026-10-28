@@ -141,6 +141,7 @@ jobs:
           echo "Triggering Coolify deployment for ${{ env.COOLIFY_APP_UUID }}"
           WEBHOOK_URL="${{ env.COOLIFY_URL }}/api/v1/deploy?uuid=${{ env.COOLIFY_APP_UUID }}&force=true"
           HTTP_CODE=$(curl -sS -o /tmp/coolify-deploy.json -w "%{http_code}" -X POST "$WEBHOOK_URL" \
+            --retry 5 --retry-all-errors --retry-delay 2 --max-time 60 \
             -H "Authorization: Bearer ${{ env.COOLIFY_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -H "X-GitHub-Event: push" \
@@ -164,10 +165,15 @@ jobs:
           set -euo pipefail
           DEPLOYMENT_UUID="${{ steps.trigger.outputs.deployment_uuid }}"
           for _ in $(seq 1 60); do
-            HTTP_CODE=$(curl -sS -o /tmp/coolify-status.json -w "%{http_code}" \
+            if ! HTTP_CODE=$(curl -sS -o /tmp/coolify-status.json -w "%{http_code}" \
+              --retry 5 --retry-all-errors --retry-delay 2 --max-time 30 \
               -H "Authorization: Bearer ${{ env.COOLIFY_API_TOKEN }}" \
               -H "Accept: application/json" \
-              "${{ env.COOLIFY_URL }}/api/v1/deployments/${DEPLOYMENT_UUID}")
+              "${{ env.COOLIFY_URL }}/api/v1/deployments/${DEPLOYMENT_UUID}"); then
+              echo "Coolify status poll failed (transient); retrying in 15s"
+              sleep 15
+              continue
+            fi
             STATUS=$(jq -r '.status // empty' /tmp/coolify-status.json)
             echo "deployment ${DEPLOYMENT_UUID}: http ${HTTP_CODE} status ${STATUS}"
             case "$STATUS" in
