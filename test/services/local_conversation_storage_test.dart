@@ -9,7 +9,7 @@ void main() {
   late Directory tempDir;
 
   setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('pistisai-chat-');
+    tempDir = await Directory.systemTemp.createTemp('pistisai-');
   });
 
   tearDown(() async {
@@ -18,7 +18,7 @@ void main() {
     }
   });
 
-  test('pistisai-chat survives a new storage instance without a keyring',
+  test('pistisai survives a new storage instance without a keyring',
       () async {
     Future<Directory> docs() async => tempDir;
 

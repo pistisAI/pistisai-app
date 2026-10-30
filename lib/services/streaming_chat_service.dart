@@ -47,7 +47,7 @@ class StreamingChatService extends ChangeNotifier {
   }
 
   /// The one conversation for this harness. Every connected device uses the
-  /// same `pistisai-chat` session id and loads the transcript from the harness.
+  /// same `pistisai` session id and loads the transcript from the harness.
   Conversation? _mainChannel;
   Timer? _sharedChannelTimer;
   bool _syncingSharedChannel = false;
