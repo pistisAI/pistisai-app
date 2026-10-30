@@ -26,17 +26,5 @@ void main() {
         expect(source, isNot(contains('/main-chat-timeline/sync')));
       }
     });
-
-    test('sync gate rules stay explicit in the review document', () {
-      final gateDoc = File(
-        'docs/archive/plans/2026-05-09-main-chat-cockpit-transport-review-gate.md',
-      ).readAsStringSync();
-
-      expect(gateDoc, contains('No unauthenticated listener.'));
-      expect(gateDoc, contains('No all-interface bind by default.'));
-      expect(gateDoc, contains('No client-selected target IP or route authority.'));
-      expect(gateDoc, contains('No unpaired-device writes.'));
-      expect(gateDoc, contains('No user-JWT-as-device-auth.'));
-    });
   });
 }

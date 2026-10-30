@@ -4,8 +4,15 @@ This document provides a comprehensive overview of deployment options and strate
 
 > **Current orientation**: Pistisai is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers for app-owned memory/background features, not primary app runtimes. Cloud deployment should focus on account sync, presence, web/mobile access, per-user cloud connectors, and optional per-user hosted agent runtime containers. Legacy streaming-proxy/tunnel components remain fallback architecture unless a deployment specifically depends on them.
 
+## Start here
+
+Production web hosting is [Web Deploy](../operations/cicd/WEB_DEPLOY.md) (Coolify). That path builds the Flutter web image from `Dockerfile.web`, publishes it from `.github/workflows/deploy-web.yml`, and routes through Traefik only after the container healthcheck passes.
+
+The sections below are additional self-host and Kubernetes options. They are not the production web path.
+
 ## 📋 Table of Contents
 
+- [Start here](#start-here)
 - [Deployment Options](#deployment-options)
 - [Multi-Container Architecture](#multi-container-architecture)
 - [Deployment Scripts](#deployment-scripts)
@@ -17,7 +24,7 @@ This document provides a comprehensive overview of deployment options and strate
 
 ## Deployment Options
 
-### 🚀 Kubernetes Deployment (Recommended)
+### Kubernetes deployment
 
 Deploy the full Pistisai stack to **Kubernetes** using Dockerfiles and Kubernetes manifests. Works with:
 
@@ -53,16 +60,6 @@ kubectl apply -f config/kubernetes/base/
 - Container registry (Docker Hub, DigitalOcean Container Registry, self-hosted, etc.)
 - Domain name with DNS configuration
 - kubectl configured for your cluster
-
-#### Proxmox + k3s path
-
-For Proxmox-hosted Kubernetes with Cloudflare Tunnel-only ingress:
-
-- [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](ARGOCD_PROXMOX_MANAGEMENT_VM.md)
-- Template automation scripts:
-  - `scripts/proxmox/create-k3s-template.sh`
-  - `scripts/proxmox/clone-k3s-node.sh`
 
 ### 🏠 Self-Hosting Options
 
@@ -194,8 +191,7 @@ and [docs/development/versioning/](../development/versioning/).
 - [Complete Deployment Workflow](COMPLETE_DEPLOYMENT_WORKFLOW.md)
 - [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md)
 - [Deployment Testing Guide](DEPLOYMENT_TESTING_GUIDE.md)
-- [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](ARGOCD_PROXMOX_MANAGEMENT_VM.md)
+- [Web Deploy](../operations/cicd/WEB_DEPLOY.md) — production Flutter web image on Coolify
 
 ### 🔧 **Operations**
 

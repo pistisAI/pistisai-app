@@ -1,16 +1,14 @@
 # Pistisai Complete Deployment Workflow
 
-This is the **ONE AND ONLY** deployment document for Pistisai. Follow this exactly to ensure a smooth and successful deployment.
+Production web hosting is [Web Deploy](../operations/cicd/WEB_DEPLOY.md) (Coolify). This page is the Kubernetes image-build and apply sequence.
 
 **Estimated Total Time:** 45-90 minutes
 
-**⚠️ IMPORTANT NOTICE**: AUR (Arch User Repository) support has been temporarily removed as of v3.10.3. See [AUR Status Documentation](./AUR_STATUS.md) for complete details and reintegration timeline.
+AUR packaging scripts are not in the tree.
 
 **Related Documentation:**
 
-- [System Architecture](../ARCHITECTURE/SYSTEM_ARCHITECTURE.md)
-- [k3s on Proxmox Deployment Workflow](./K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](./ARGOCD_PROXMOX_MANAGEMENT_VM.md)
+- [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
 - [Versioning Strategy](./VERSIONING_STRATEGY.md)
 
 ---
@@ -71,8 +69,6 @@ scripts/proxmox/create-k3s-template.sh --help
 # Clone control/worker nodes from template
 scripts/proxmox/clone-k3s-node.sh --help
 ```
-
-For full sequence, see [k3s on Proxmox Deployment Workflow](./K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md).
 
 ### **Build and Push Images to Container Registry**
 

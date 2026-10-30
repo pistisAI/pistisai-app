@@ -69,11 +69,11 @@ For project-wide agent instructions, see [AGENTS.md](../AGENTS.md). For the prod
 
 ## Historical Material
 
-Large implementation notes, one-off plans, and generated summaries should move under [Archive](archive/README.md) when they are no longer current. Current docs should describe the code as it exists now, not preserve task history inline.
+Current docs should describe the code as it exists now, not preserve task history inline.
 
 ## Maintenance Rules
 
 - Keep this file as the single navigation source.
 - Keep [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) as a compatibility redirect only.
 - Run `npm run docs:links` before changing canonical docs.
-- Use `npm run docs:links:all` for full-tree cleanup work; it is expected to fail until the archive is cleaned.
+- Use `npm run docs:links:all` for a full-tree scan. Canonical edits are gated by `npm run docs:links`.

@@ -30,7 +30,7 @@ This document consolidates all release information, version history, and release
 
 ### **Platform Support**
 
-- **Linux**: AppImage, DEB (Ubuntu/Debian), Manual Build. AUR support is temporarily unavailable. See [AUR Status](../DEPLOYMENT/AUR_STATUS.md) for details.
+- **Linux**: AppImage, DEB (Ubuntu/Debian), Manual Build. AUR packaging scripts are not in the tree.
 - **Windows**: Installer with Docker/Ollama integration
 - **Web**: Progressive Web App with cloud connectivity
 - **Self-Hosting**: Complete VPS deployment solution
