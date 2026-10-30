@@ -33,16 +33,18 @@ class Conversation {
     );
   }
 
+  /// The shared Pistisai chat session. All devices use this id as the Hermes
+  /// session id, then load the transcript from the harness.
+  static const _pistisaiChannelId = 'pistisai-chat';
+  static const pistisaiChannelId = _pistisaiChannelId;
+
   /// The one harness conversation. Every device uses this id as the session
   /// id, then loads the transcript from the harness.
-  ///
-  /// [agentName] is the companion the user set up — never a hardcoded
-  /// personal name like "Zoid Maltek".
   factory Conversation.mainChannel({String? model, String? agentName}) {
     final now = DateTime.now();
     final name = (agentName ?? '').trim();
     return Conversation(
-      id: 'main-channel',
+      id: _pistisaiChannelId,
       title: name.isEmpty ? 'Agent' : name,
       messages: [],
       createdAt: now,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_setup_status.dart';
 import '../services/auth_service.dart';
 import '../services/desktop_client_detection_service.dart';
@@ -25,6 +26,42 @@ class InMemorySetupStatusStorage implements SetupStatusStorage {
 
   @override
   Future<void> delete(String key) async => _storage.remove(key);
+}
+
+/// SharedPreferences-backed storage for production.
+///
+/// Setup completion is not sensitive data, so we avoid the Linux keyring
+/// dependency of FlutterSecureStorage, which commonly fails inside AppImages
+/// and headless sessions and causes the wizard to replay every launch.
+///
+/// Older installs stored these keys with a "flutter." prefix via
+/// FlutterSecureStorage's Linux backend. We check both forms so existing
+/// users are not forced through the wizard again.
+class PrefsSetupStatusStorage implements SetupStatusStorage {
+  PrefsSetupStatusStorage(this._prefs);
+  final SharedPreferences _prefs;
+
+  static String _withFlutterPrefix(String key) => 'flutter.$key';
+
+  @override
+  Future<String?> read(String key) async {
+    final direct = _prefs.getString(key);
+    if (direct != null) return direct;
+    return _prefs.getString(_withFlutterPrefix(key));
+  }
+
+  @override
+  Future<void> write(String key, String value) async {
+    final directOk = await _prefs.setString(key, value);
+    if (!directOk) return;
+    await _prefs.setString(_withFlutterPrefix(key), value);
+  }
+
+  @override
+  Future<void> delete(String key) async {
+    await _prefs.remove(key);
+    await _prefs.remove(_withFlutterPrefix(key));
+  }
 }
 
 /// Secure storage implementation for production
@@ -99,9 +136,13 @@ class SetupStatusService extends ChangeNotifier {
     required AuthService authService,
     DesktopClientDetectionService? clientDetectionService,
     SetupStatusStorage? storage,
+    SharedPreferences? prefs,
   })  : _authService = authService,
         _clientDetectionService = clientDetectionService,
-        _storage = storage ?? SecureSetupStatusStorage();
+        _storage = storage ??
+            (prefs != null
+                ? PrefsSetupStatusStorage(prefs)
+                : SecureSetupStatusStorage());
 
   // Getters
   UserSetupStatus? get currentStatus => _currentStatus;

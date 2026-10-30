@@ -98,7 +98,7 @@ class _ChatPaneState extends State<_ChatPane> {
   }
 
   void _ensureChannelExists() {
-    // Storage load creates or restores the single main-channel session.
+    // Storage load creates or restores the single pistisai-chat session.
     // Do not call resetContext() here — that wipes persisted history.
     try {
       context.read<StreamingChatService>();

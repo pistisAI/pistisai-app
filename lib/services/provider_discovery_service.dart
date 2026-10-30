@@ -20,7 +20,7 @@ class ProviderDiscoveryService {
 
   /// Scan for all known endpoint types on the network.
   ///
-  /// Agent runtimes are valid main-channel targets. Support model providers
+  /// Agent runtimes are valid pistisai-chat targets. Support model providers
   /// are background helpers only and cannot satisfy setup.
   Future<List<ProviderInfo>> scanForProviders() async {
     debugPrint('[ProviderDiscovery] Scanning for providers...');

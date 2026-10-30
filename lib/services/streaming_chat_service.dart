@@ -47,7 +47,7 @@ class StreamingChatService extends ChangeNotifier {
   }
 
   /// The one conversation for this harness. Every connected device uses the
-  /// same `main-channel` session id and loads the transcript from the harness.
+  /// same `pistisai-chat` session id and loads the transcript from the harness.
   Conversation? _mainChannel;
   Timer? _sharedChannelTimer;
   bool _syncingSharedChannel = false;
@@ -153,7 +153,7 @@ class StreamingChatService extends ChangeNotifier {
       if (loaded.isNotEmpty) {
         // Find or create the main channel
         final existing = loaded.firstWhere(
-          (c) => c.id == 'main-channel',
+          (c) => c.id == Conversation.pistisaiChannelId,
           orElse: () => Conversation.mainChannel(
             model: _selectedModel,
             agentName: configuredAgentName(),
@@ -444,7 +444,24 @@ class StreamingChatService extends ChangeNotifier {
     appLogger.error('[StreamingChat] Streaming error: $error');
 
     _setStreaming(false);
-    _removeLastMessage();
+    _isAgentRunning = false;
+
+    // Clear streaming state so _handleStreamingComplete does not add a
+    // duplicate assistant message after this error.
+    _streamingContentSubject.add('');
+    _streamingReasoningSubject.add('');
+    _currentStreamingMessageId = '';
+    _runCompletedOutput = '';
+    _activeToolCalls.clear();
+    _completedToolCalls.clear();
+
+    // Remove the streaming placeholder if it's still the last message
+    if (_mainChannel != null && _mainChannel!.messages.isNotEmpty) {
+      final lastMessage = _mainChannel!.messages.last;
+      if (lastMessage.isStreaming) {
+        _removeLastMessage();
+      }
+    }
 
     final errorModel = _selectedModel ?? 'default';
     final errorMessage = Message.assistant(
