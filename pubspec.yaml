@@ -43,9 +43,6 @@ dependencies:
   # Streaming and WebSocket support
   web_socket_channel: ^3.0.3
 
-  # Inert/in-memory WebSocket channel scaffolding for tunnel components
-  stream_channel: ^2.1.0
-
   # Enhanced HTTP handling for streaming
   dio: ^5.11.1
 
@@ -79,9 +76,6 @@ dependencies:
   # Crypto for PKCE and ED25519 device identity
   crypto: ^3.0.7
   cryptography: ^2.9.0
-
-  # SSH tunneling
-  dartssh2: ^4.1.0
 
   get_it: ^9.2.1
   logger: ^2.7.0
@@ -171,7 +165,7 @@ flutter_launcher_icons:
 dependency_overrides:
   material_ui: 1.1.0
   cupertino_ui: 1.0.1
-  # dartssh2 >=2.15 needs pointycastle 4; encrypt 5.0.3 still resolves at runtime.
+  # encrypt 5.0.3 still resolves at runtime.
   pointycastle: ^4.0.0
 
 flutter:

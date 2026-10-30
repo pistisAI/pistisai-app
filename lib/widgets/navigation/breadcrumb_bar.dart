@@ -234,12 +234,6 @@ class AutoBreadcrumbBar extends StatelessWidget {
       BreadcrumbItem(label: 'Settings', route: '/settings'),
       const BreadcrumbItem(label: 'Downloads'),
     ],
-    '/settings/tunnel': [
-      BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
-      BreadcrumbItem(label: 'Connection', route: '/settings/connection'),
-      const BreadcrumbItem(label: 'Tunnel Settings'),
-    ],
     '/dashboard': [
       BreadcrumbItem(label: 'Home', route: '/'),
       const BreadcrumbItem(label: 'Dashboard'),

@@ -19,9 +19,6 @@ import 'package:pistisai/services/desktop_client_detection_service.dart';
 import 'package:pistisai/services/enhanced_user_tier_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/streaming_chat_service.dart';
-import 'package:pistisai/services/streaming_proxy_service.dart';
-import 'package:pistisai/services/tunnel_service.dart';
-import 'package:pistisai/services/tunnel/tunnel_config_manager.dart';
 import 'package:pistisai/services/unified_connection_service.dart';
 import 'package:pistisai/services/user_container_service.dart';
 import 'package:pistisai/services/cloud_connector_service.dart';
@@ -734,33 +731,6 @@ Future<void> setupAuthenticatedServices() async {
     } else {
       debugPrint(
           '[ServiceLocator] Skipping provider discovery (force setup wizard mode)');
-    }
-
-    if (AppConfig.enableLegacyTunnelServices) {
-      // Legacy tunnel configuration manager - disabled in the default runtime
-      // path while Tailscale-first connectivity replaces it.
-      debugPrint('[ServiceLocator] Initializing legacy TunnelConfigManager...');
-      final tunnelConfigManager = TunnelConfigManager();
-      await tunnelConfigManager.initialize();
-      serviceLocator
-          .registerSingleton<TunnelConfigManager>(tunnelConfigManager);
-
-      // Legacy tunnel service - requires authentication token
-      final tunnelService = TunnelService(authService: authService);
-      serviceLocator.registerSingleton<TunnelService>(tunnelService);
-    } else {
-      debugPrint('[ServiceLocator] Legacy tunnel services disabled');
-    }
-
-    if (AppConfig.enableLegacyStreamingProxyServices) {
-      // Legacy streaming proxy service - requires authentication token
-      final streamingProxyService =
-          StreamingProxyService(authService: authService);
-      serviceLocator.registerSingleton<StreamingProxyService>(
-        streamingProxyService,
-      );
-    } else {
-      debugPrint('[ServiceLocator] Legacy streaming proxy service disabled');
     }
 
     // User container service - requires authentication token

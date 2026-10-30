@@ -6,19 +6,13 @@ class AppConfig {
   // App Information
   static const String appName = 'Pistisai';
   static const String appVersion = '1.0.6';
-  static const String appDescription =
-      'Local-first agent companion. Offline until you choose to connect.';
 
   // URLs
   static const String homepageUrl = 'https://pistisai.app';
   static const String appUrl = 'https://app.pistisai.app';
   static const String adminCenterUrl = 'https://admin.pistisai.app';
-  static const String githubUrl = 'https://github.com/pistisAI/pistisai-app';
   static const String githubReleasesUrl =
       'https://github.com/pistisAI/pistisai-app/releases/latest';
-
-  // Configured Authentication Provider
-  static const AuthProviderType authProvider = AuthProviderType.supabase;
 
   // Supabase Configuration
   static const String supabaseUrl = 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
@@ -36,14 +30,6 @@ class AppConfig {
     'SENTRY_DSN',
     defaultValue: '',
   );
-  static const String sentryEnvironment = String.fromEnvironment(
-    'SENTRY_ENVIRONMENT',
-    defaultValue: kReleaseMode ? 'production' : 'development',
-  );
-
-  // Development mode settings
-  static const bool enableDevMode = false; // Set to false for production
-  static const String devModeUser = 'dev@pistisai.app';
 
   // Testing mode settings
   static const bool forceSetupWizard =
@@ -54,27 +40,9 @@ class AppConfig {
   // API Configuration
   static const String apiBaseUrl = 'https://api.pistisai.app';
   static const Duration apiTimeout = Duration(seconds: 30);
-  // Tunnel Configuration (SSH over WebSocket)
-  static const String tunnelSshUrl = 'wss://api.pistisai.app/ssh';
-  static const String tunnelSshUrlDev = 'wss://api.pistisai.app/ssh';
-  // UI Configuration
-  static const double maxContentWidth = 1200.0;
-  static const double mobileBreakpoint = 768.0;
-  static const double tabletBreakpoint = 1024.0;
 
   // Feature Flags
   static const bool enableDarkMode = true;
-  static const bool enableAnalytics = false; // Disabled for privacy
-  static bool get enableDebugMode => !kReleaseMode;
-  static bool get showTunnelDebugInfo => !kReleaseMode;
-  static bool get enableVerboseLogging => !kReleaseMode;
-
-  // Tier-based feature flags
-  static const bool enableTierDetection = true;
-  static const bool showTierInformation = true;
-  static const bool enableDirectTunnelMode = false;
-  static const bool enableLegacyTunnelServices = false;
-  static const bool enableLegacyStreamingProxyServices = false;
 
   // ==========================================================================
   // Gateway Configuration (Runtime Configurable)
@@ -207,9 +175,6 @@ class AppConfig {
   static const String cloudGatewayUrl = '$apiBaseUrl/v1';
 
   // Admin Interface Configuration
-  static const bool enableAdminInterface = true;
-  static const int adminServerPort = 8080;
-
   /// Loopback port for the app UI. The embedded router stays on 1337.
   static const int pistisaiUiPort = 1338;
 
@@ -224,44 +189,9 @@ class AppConfig {
 
   static const Duration adminApiTimeout = Duration(seconds: 45);
 
-  // Admin Interface Feature Flags
-  static const bool enableAdminSystemMonitoring = true;
-  static const bool enableAdminUserManagement = true;
-  static const bool enableAdminConfigManagement = true;
-  static const bool enableAdminContainerManagement = true;
-  static const bool enableAdminDataFlush = true;
-
-  // Admin Interface Security Settings
-  static const bool requireAdminRole = true;
-  static const bool enableAdminAuditLogging = true;
-  static const bool enableAdminRateLimiting = true;
-  static const int adminSessionTimeoutMinutes = 30;
-
-  // Admin Interface UI Configuration
-  static const int adminDashboardRefreshIntervalSeconds = 30;
-  static const int adminRealtimeUpdateIntervalSeconds = 5;
-  static const bool enableAdminDarkMode = true;
-  static bool get showAdminDebugInfo => enableDebugMode;
-
-  // Debug logging for configuration
-  static void logConfiguration() {
-    debugPrint('[DEBUG] AppConfig loaded:');
-    debugPrint('[DEBUG] - Hermes Gateway: $defaultGatewayUrl');
-    debugPrint('[DEBUG] - Bridge Status URL: $bridgeStatusUrl');
-    debugPrint('[DEBUG] - Bridge Register URL: $bridgeRegisterUrl');
-    debugPrint('[DEBUG] - Admin Server URL: $adminServerUrl');
-    debugPrint('[DEBUG] - Admin API Base URL: $adminApiBaseUrl');
-  }
-
   // Bridge Configuration
   static const String bridgePollingUrl = '$apiBaseUrl/v1/bridge-polling';
-  static const String bridgeStatusUrl = '$bridgePollingUrl/:bridgeId/status';
   static const String bridgeRegisterUrl = '$bridgePollingUrl/register';
-}
-
-enum AuthProviderType {
-  supabase,
-  none,
 }
 
 /// Subscription tier pricing configuration

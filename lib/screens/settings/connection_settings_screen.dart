@@ -6,7 +6,7 @@ import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../services/setup_status_service.dart';
 import '../../services/auth_service.dart';
 
-/// Connection Settings Screen - Network and tunnel configuration
+/// Connection Settings Screen - Network and daemon configuration
 class ConnectionSettingsScreen extends StatefulWidget {
   const ConnectionSettingsScreen({super.key});
 
@@ -42,20 +42,8 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
               children: [
                 Text('Connection', style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 16),
-                const Text('Manage tunnel and daemon connections.'),
+                const Text('Manage daemon connections.'),
                 const SizedBox(height: 32),
-
-                // Tunnel Settings
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.vpn_key),
-                    title: const Text('Tunnel Settings'),
-                    subtitle: const Text('Configure SSH tunnel settings'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.go('/settings/tunnel'),
-                  ),
-                ),
-                const SizedBox(height: 8),
 
                 // Daemon Settings
                 Card(
@@ -118,7 +106,8 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                             FilledButton(
                               onPressed: () => Navigator.of(context).pop(true),
                               style: FilledButton.styleFrom(
-                                backgroundColor: AppTheme.colorsOf(context).warning,
+                                backgroundColor:
+                                    AppTheme.colorsOf(context).warning,
                               ),
                               child: const Text('Clear & Re-run'),
                             ),
@@ -148,7 +137,8 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Failed to clear setup data: $e'),
-                                backgroundColor: AppTheme.colorsOf(context).danger,
+                                backgroundColor:
+                                    AppTheme.colorsOf(context).danger,
                               ),
                             );
                           }

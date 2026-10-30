@@ -16,7 +16,6 @@ flutter test \
   test/services/onboarding/setup_wizard_service_test.dart \
   test/services/session_service_test.dart \
   test/services/connection_manager_service_test.dart \
-  test/services/tunnel/ \
   test/services/hermes/ \
   test/services/hermes_manager/main_chat_timeline_trust_store_test.dart \
   test/services/hermes_manager/hermes_gateway_control_service_test.dart \
