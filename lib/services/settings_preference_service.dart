@@ -80,6 +80,9 @@ class SettingsPreferenceService {
   static const String _hermesApiKeyKey = 'settings_hermes_api_key';
   static const String _setupWizardDeferredKey = 'settings_setup_wizard_deferred';
 
+  // Display Settings
+  static const String _showThinkingKey = 'settings_show_thinking';
+
   // Mobile Settings
   static const String _biometricAuthKey = 'settings_biometric_auth_enabled';
   static const String _notificationsKey = 'settings_notifications_enabled';
@@ -445,6 +448,17 @@ class SettingsPreferenceService {
     } else {
       await prefs.setString(_hermesUrlKey, AppConfig.normalizeHermesUrl(value));
     }
+  }
+
+  /// Whether to show assistant thinking/reasoning in messages.
+  Future<bool> isThinkingVisible() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_showThinkingKey) ?? false;
+  }
+
+  Future<void> setThinkingVisible(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showThinkingKey, value);
   }
 
   /// Hermes API key (optional — Hermes doesn't require auth by default)

@@ -9,12 +9,14 @@ import 'package:flutter/services.dart';
 class MessageBubble extends StatefulWidget {
   final Message message;
   final bool showAvatar;
+  final bool showThinking;
   final VoidCallback? onRetry;
 
   const MessageBubble({
     super.key,
     required this.message,
     this.showAvatar = true,
+    this.showThinking = false,
     this.onRetry,
   });
 
@@ -207,7 +209,7 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   Widget _buildMessageContent(ThemeData theme) {
-    return MessageContent(message: widget.message);
+    return MessageContent(message: widget.message, showThinking: widget.showThinking);
   }
 
   void _copyToClipboard(BuildContext context) {

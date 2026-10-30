@@ -26,16 +26,28 @@ class TrayInitializer extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
   @override
-  State<TrayInitializer> createState() => _TrayInitializerState();
+  State<TrayInitializer> createState() {
+    debugPrint('[TrayInitializer] createState called');
+    return _TrayInitializerState();
+  }
 }
 
 class _TrayInitializerState extends State<TrayInitializer> {
   bool _trayInitialized = false;
 
   @override
+  void initState() {
+    super.initState();
+    debugPrint('[TrayInitializer] initState called');
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    appLogger.info('[TrayInitializer] didChangeDependencies called');
+    // Moved to build() to ensure the widget is fully mounted.
+  }
+
+  Future<void> _startTrayInit() async {
     if (_trayInitialized || kIsWeb || PlatformHelper.isMobile) {
       appLogger.info(
           '[TrayInitializer] Already initialized, web, or mobile, skipping');
@@ -44,8 +56,12 @@ class _TrayInitializerState extends State<TrayInitializer> {
     _trayInitialized = true;
 
     appLogger.info('[TrayInitializer] Starting async tray init...');
-    unawaited(_initializeTray(context));
-    appLogger.info('[TrayInitializer] Tray init scheduled');
+    try {
+      await _initializeTray(context);
+      appLogger.info('[TrayInitializer] Tray init completed');
+    } catch (e, st) {
+      appLogger.error('[TrayInitializer] Tray init failed', error: e, stackTrace: st);
+    }
   }
 
   Future<void> _initializeTray(BuildContext context) async {
@@ -107,7 +123,16 @@ class _TrayInitializerState extends State<TrayInitializer> {
 
   @override
   Widget build(BuildContext context) {
-    appLogger.info('[TrayInitializer] build() called');
+    debugPrint('[TrayInitializer] build() called');
+    
+    // Initialize tray on first build after the widget is mounted.
+    // We use a post-frame callback to ensure the widget tree is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_trayInitialized) {
+        unawaited(_startTrayInit());
+      }
+    });
+    
     return widget.child;
   }
 }

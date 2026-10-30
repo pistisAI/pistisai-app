@@ -9,6 +9,7 @@ import '../../models/chat_model.dart';
 import '../../services/streaming_chat_service.dart';
 import '../../services/avatar/personality_engine.dart';
 import '../../services/connection_manager_service.dart';
+import '../../services/settings_preference_service.dart';
 import '../../features/avatar/avatar_widget.dart';
 import '../../widgets/common/status_badge.dart';
 import '../../components/message_bubble.dart';
@@ -78,13 +79,28 @@ class _ChatPane extends StatefulWidget {
 }
 
 class _ChatPaneState extends State<_ChatPane> {
+  bool _showThinking = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _ensureChannelExists();
       _autoConnectRuntime();
+      _loadThinkingPreference();
     });
+  }
+
+  Future<void> _loadThinkingPreference() async {
+    try {
+      final settings = SettingsPreferenceService();
+      final showThinking = await settings.isThinkingVisible();
+      if (mounted && showThinking != _showThinking) {
+        setState(() => _showThinking = showThinking);
+      }
+    } catch (_) {
+      // Settings not available on this platform.
+    }
   }
 
   @override
@@ -404,6 +420,7 @@ class _ChatPaneState extends State<_ChatPane> {
                         ? _MessageList(
                             conversation: conversation,
                             controller: widget.scrollController,
+                            showThinking: _showThinking,
                           )
                         : WelcomeScreen(
                             onNewChat: () => chatService.resetContext(),
@@ -445,10 +462,15 @@ class _ChatPaneState extends State<_ChatPane> {
 }
 
 class _MessageList extends StatelessWidget {
-  const _MessageList({required this.conversation, required this.controller});
+  const _MessageList({
+    required this.conversation, 
+    required this.controller,
+    this.showThinking = false,
+  });
 
   final Conversation conversation;
   final ScrollController controller;
+  final bool showThinking;
 
   @override
   Widget build(BuildContext context) {
@@ -466,6 +488,7 @@ class _MessageList extends StatelessWidget {
           key: ValueKey(message.id),
           message: message,
           showAvatar: true,
+          showThinking: showThinking,
           onRetry: message.hasError
               ? () {
                   final chatService = context.read<StreamingChatService>();

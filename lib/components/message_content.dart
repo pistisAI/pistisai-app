@@ -6,8 +6,13 @@ import '../models/chat_model.dart';
 
 class MessageContent extends StatelessWidget {
   final Message message;
+  final bool showThinking;
 
-  const MessageContent({super.key, required this.message});
+  const MessageContent({
+    super.key, 
+    required this.message,
+    this.showThinking = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,7 @@ class MessageContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (hasReasoning) _buildReasoning(context),
+        if (hasReasoning && showThinking) _buildReasoning(context),
         // Tool calls — show above the response content
         if (toolCalls.isNotEmpty) _buildToolCalls(context, toolCalls),
         // Active agent indicator (tool running but no completed text yet)

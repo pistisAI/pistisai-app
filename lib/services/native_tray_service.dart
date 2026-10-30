@@ -48,10 +48,14 @@ class NativeTrayService with TrayListener {
     void Function()? onSettings,
     void Function()? onQuit,
   }) async {
-    if (_isInitialized) return true;
+    appLogger.info('[NativeTray] initialize() called');
+    if (_isInitialized) {
+      appLogger.info('[NativeTray] already initialized, skipping');
+      return true;
+    }
 
     try {
-      appLogger.debug('[NativeTray] Initializing native tray service...');
+      appLogger.info('[NativeTray] Starting initialization...');
 
       // Check platform support - web platforms don't support native tray
       if (kIsWeb) {
