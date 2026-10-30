@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../services/agent_status_service.dart';
-import '../../components/agent_status_widget.dart';
-import '../../components/app_logo.dart';
+import '../services/agent_status_service.dart';
+import '../components/agent_status_widget.dart';
+import '../components/app_logo.dart';
 import 'package:get_it/get_it.dart';
 
 /// Screen for monitoring agent status in real-time.
