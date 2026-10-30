@@ -178,8 +178,13 @@ class StreamingChatService extends ChangeNotifier {
   }
 
   void _startSharedChannelSync() {
+    // Only poll when idle. During streaming the Hermes agent event stream
+    // and SSE response are already live, so a periodic fetch would race
+    // with the in-flight messages and create duplicates.
     _sharedChannelTimer ??= Timer.periodic(const Duration(seconds: 8), (_) {
-      unawaited(_syncSharedChannel());
+      if (!_isStreaming && !_isAgentRunning) {
+        unawaited(_syncSharedChannel());
+      }
     });
   }
 
@@ -539,6 +544,10 @@ class StreamingChatService extends ChangeNotifier {
     _runCompletedOutput = '';
     _activeToolCalls.clear();
     _completedToolCalls.clear();
+
+    // Refresh from the harness now that the run is complete — other devices
+    // may have messages that arrived while we were streaming.
+    unawaited(_syncSharedChannel());
   }
 
   /// Subscribe to agent events if the streaming service supports them.
