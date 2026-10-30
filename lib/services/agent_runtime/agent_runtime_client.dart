@@ -1,5 +1,6 @@
 import 'package:pistisai/models/agent_event.dart';
 import 'package:pistisai/models/streaming_message.dart';
+import 'package:pistisai/models/conversation.dart';
 import 'package:pistisai/services/streaming_service.dart';
 
 enum AgentRuntimeKind {
@@ -85,6 +86,6 @@ abstract class AgentRuntimeClient {
     required String prompt,
     required String model,
     List<Map<String, String>>? history,
-    String conversationId = 'main-channel',
+    String conversationId = Conversation.pistisaiChannelId,
   });
 }

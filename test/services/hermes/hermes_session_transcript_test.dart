@@ -96,4 +96,35 @@ void main() {
   test('invalid session body is an empty transcript', () {
     expect(messagesFromHermesSessionBody('not-json'), isEmpty);
   });
+
+  test('merge deduplicates a just-sent local message by content+role+time', () {
+    // Simulate a user message sent locally, then stored on the harness
+    // with a different server-generated ID.
+    final localUser = Message.user(
+      content: 'yo',
+      id: 'local_123',
+      metadata: const {},
+    );
+    final harnessUser = Message(
+      id: 'hermes_abc',
+      content: 'yo',
+      role: MessageRole.user,
+      timestamp: localUser.timestamp.add(const Duration(seconds: 1)),
+    );
+    final harnessAssistant = Message(
+      id: 'hermes_def',
+      content: 'Yo. What\'s up?',
+      role: MessageRole.assistant,
+      timestamp: harnessUser.timestamp.add(const Duration(seconds: 2)),
+    );
+
+    final merged = mergeHarnessTranscript(
+      local: [localUser],
+      harness: [harnessUser, harnessAssistant],
+    );
+
+    // The local duplicate should be dropped; only the harness rows remain.
+    expect(merged.map((message) => message.id), ['hermes_abc', 'hermes_def']);
+    expect(merged.map((message) => message.role), [MessageRole.user, MessageRole.assistant]);
+  });
 }

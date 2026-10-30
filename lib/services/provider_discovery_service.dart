@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/hermes/hermes_endpoint_resolver.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
@@ -20,7 +21,7 @@ class ProviderDiscoveryService {
 
   /// Scan for all known endpoint types on the network.
   ///
-  /// Agent runtimes are valid main-channel targets. Support model providers
+  /// Agent runtimes are valid pistisai targets. Support model providers
   /// are background helpers only and cannot satisfy setup.
   Future<List<ProviderInfo>> scanForProviders() async {
     debugPrint('[ProviderDiscovery] Scanning for providers...');
@@ -54,6 +55,16 @@ class ProviderDiscoveryService {
       }
     } catch (e) {
       debugPrint('[ProviderDiscovery] Runtime scan error: $e');
+    }
+
+    // Tailnet hub scan is intentionally separate: it walks the tailnet and
+    // probes each peer for the Pistisai hub document, so it can take longer
+    // and must not block Hermes discovery.
+    try {
+      final hubs = await _scanForPistisaiHubs();
+      discovered.addAll(hubs);
+    } catch (e) {
+      debugPrint('[ProviderDiscovery] Tailnet hub scan error: $e');
     }
 
     debugPrint(
@@ -309,6 +320,59 @@ class ProviderDiscoveryService {
           '[ProviderDiscovery] Failed to discover Tailscale devices: $e');
       return [];
     }
+  }
+
+  /// Scan the tailnet for Pistisai desktop hubs.
+  ///
+  /// Probes each discovered Tailscale device's `/api/pistisai/hub`
+  /// and returns those advertising `role: primary_hub`.
+  Future<List<ProviderInfo>> _scanForPistisaiHubs() async {
+    debugPrint('[ProviderDiscovery] Scanning for Pistisai hubs on tailnet...');
+    final discovered = <ProviderInfo>[];
+
+    try {
+      final devices = await discoverTailscaleDevices();
+      for (final device in devices) {
+        final ip = device.primaryIP;
+        if (ip == null) continue;
+
+        for (final port in [AppConfig.defaultRouterPort, 1337]) {
+          final hubUrl = Uri.parse('http://$ip:$port${AppConfig.hubPath}');
+          try {
+            final response = await http
+                .get(hubUrl)
+                .timeout(const Duration(seconds: 5));
+            if (response.statusCode == 200) {
+              final data = jsonDecode(response.body) as Map;
+              if (data['role'] == 'primary_hub' &&
+                  data['product'] == 'Pistisai') {
+                debugPrint('[ProviderDiscovery] Found Pistisai hub at $hubUrl');
+                discovered.add(ProviderInfo(
+                  id: 'pistisai_hub_${ip}_$port',
+                  name: 'Pistisai Hub (${device.name})',
+                  type: ProviderType.pistisaiHub,
+                  url: 'http://$ip:$port',
+                  isLocal: false,
+                  isAvailable: true,
+                  version: data['version']?.toString(),
+                  role: ProviderRole.agentRuntime,
+                ));
+                break;
+              }
+            }
+          } catch (_) {
+            // Not a hub on this port — continue
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[ProviderDiscovery] Hub scan error: $e');
+    }
+
+    debugPrint(
+      '[ProviderDiscovery] Found ${discovered.length} Pistisai hubs',
+    );
+    return discovered;
   }
 
   List<TailscaleDevice> _parseTailscaleStatus(String jsonOutput) {

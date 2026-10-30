@@ -48,10 +48,14 @@ class NativeTrayService with TrayListener {
     void Function()? onSettings,
     void Function()? onQuit,
   }) async {
-    if (_isInitialized) return true;
+    appLogger.info('[NativeTray] initialize() called');
+    if (_isInitialized) {
+      appLogger.info('[NativeTray] already initialized, skipping');
+      return true;
+    }
 
     try {
-      appLogger.debug('[NativeTray] Initializing native tray service...');
+      appLogger.info('[NativeTray] Starting initialization...');
 
       // Check platform support - web platforms don't support native tray
       if (kIsWeb) {
@@ -86,6 +90,10 @@ class NativeTrayService with TrayListener {
       _onSettings = onSettings;
       _onQuit = onQuit;
 
+      // Set up initial menu BEFORE icon on Linux/AppIndicator — some
+      // backends require the menu to exist before the tray entry appears.
+      await _updateTrayMenu();
+
       // Initialize tray manager
       await trayManager
           .setIcon(_getTrayIconPath(TrayConnectionStatus.disconnected));
@@ -94,9 +102,6 @@ class NativeTrayService with TrayListener {
       if (_connectionManager != null) {
         _connectionManager!.addListener(_onConnectionStatusChanged);
       }
-
-      // Set up initial menu
-      await _updateTrayMenu();
 
       // Add tray listener
       trayManager.addListener(this);
@@ -218,13 +223,23 @@ class NativeTrayService with TrayListener {
   /// TrayListener: Handle tray icon click
   @override
   void onTrayIconMouseDown() {
-    _onShowWindow?.call();
+    // On Linux/AppIndicator, left-click is expected to show the tray menu,
+    // not the window directly. Only show the window on non-Linux platforms.
+    if (Platform.isLinux) {
+      trayManager.popUpContextMenu();
+    } else {
+      _onShowWindow?.call();
+    }
   }
 
   /// TrayListener: Handle tray icon right-click
   @override
   void onTrayIconRightMouseDown() {
-    trayManager.popUpContextMenu();
+    // On Linux, left-click already shows the menu; on other platforms
+    // right-click is the menu trigger.
+    if (!Platform.isLinux) {
+      trayManager.popUpContextMenu();
+    }
   }
 
   /// TrayListener: Handle menu item click

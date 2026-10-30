@@ -26,22 +26,50 @@ List<Message> messagesFromHermesSessionBody(String body) {
 /// harness has not stored yet (a message just sent on this device) stay
 /// at the end. A local-only welcome message is dropped once the harness
 /// has real history.
+///
+/// Local messages use app-generated IDs while harness rows use server IDs,
+/// so ID-only deduplication is not enough. We also match by content + role
+/// + timestamp proximity so a freshly-sent message that already appears
+/// in the harness is not rendered twice.
 List<Message> mergeHarnessTranscript({
   required List<Message> local,
   required List<Message> harness,
 }) {
   if (harness.isEmpty) return local;
+
   final ids = harness.map((message) => message.id).toSet();
   var newest = harness.first.timestamp;
   for (final message in harness) {
     if (message.timestamp.isAfter(newest)) newest = message.timestamp;
   }
-  final pending = local.where(
-    (message) =>
-        message.role != MessageRole.system &&
-        !ids.contains(message.id) &&
-        !message.timestamp.isBefore(newest),
-  );
+
+  // Build a lookup of harness messages by (role, content, nearby timestamp)
+  // so local messages that already exist in the harness are not duplicated.
+  final harnessByContent = <String, List<Message>>{};
+  for (final message in harness) {
+    final key = '${message.role.name}:${message.content}';
+    harnessByContent.putIfAbsent(key, () => []).add(message);
+  }
+
+  final pending = local.where((message) {
+    if (message.role == MessageRole.system) return false;
+    if (ids.contains(message.id)) return false;
+
+    final key = '${message.role.name}:${message.content}';
+    final candidates = harnessByContent[key];
+    if (candidates != null) {
+      // If a harness message has the same content and role and its
+      // timestamp is within 2 seconds, treat the local message as a
+      // duplicate of the harness row.
+      final hasNearbyHarness = candidates.any(
+        (h) => message.timestamp.difference(h.timestamp).inSeconds.abs() <= 2,
+      );
+      if (hasNearbyHarness) return false;
+    }
+
+    return !message.timestamp.isBefore(newest);
+  }).toList();
+
   return [...harness, ...pending];
 }
 

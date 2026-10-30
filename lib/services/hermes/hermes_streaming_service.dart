@@ -818,7 +818,7 @@ class HermesStreamingService extends StreamingService {
 
   /// Load the shared harness transcript for [sessionId].
   ///
-  /// Every Pistisai device uses the same session id (`main-channel`), so this
+  /// Every Pistisai device uses the same session id (`pistisai`), so this
   /// is the one conversation. Returns an empty list when the session does not
   /// exist yet, and null when the harness cannot be read.
   Future<List<Message>?> fetchSessionMessages(String sessionId) async {

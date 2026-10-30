@@ -15,6 +15,7 @@ import 'package:pistisai/services/connection_manager_service.dart'
     hide BackendType;
 import 'package:pistisai/auth/auth_provider.dart';
 import 'package:pistisai/auth/providers/supabase_auth_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
 import 'package:pistisai/services/enhanced_user_tier_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
@@ -46,6 +47,7 @@ import 'package:pistisai/services/providers/google_adapter.dart';
 import 'package:pistisai/services/providers/moonshot_adapter.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/agent_status_service.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
@@ -272,6 +274,16 @@ Future<void> setupCoreServices() async {
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);
 
+      // Mobile connection service — desktop-side peer for phone onboarding.
+      // Registered in core so _initializeRouter can resolve it from GetIt
+      // without crashing on first frame.
+      final mobileConnectionService = MobileConnectionService(
+        settings: serviceLocator.get<SettingsPreferenceService>(),
+        hermesStreamingService: hermesStreamingService,
+      );
+      serviceLocator
+          .registerSingleton<MobileConnectionService>(mobileConnectionService);
+
       final voiceConversationService = VoiceConversationService();
       serviceLocator.registerLazySingleton<VoiceConversationService>(
         () => voiceConversationService,
@@ -445,9 +457,11 @@ Future<void> setupCoreServices() async {
         .registerSingleton<GatewayControlService>(gatewayControlService);
 
     // Setup status service - tracks first-run and setup completion
+    final prefs = await SharedPreferences.getInstance();
     final setupStatusService = SetupStatusService(
       authService: authService,
       clientDetectionService: desktopClientDetectionService,
+      prefs: prefs,
     );
     serviceLocator.registerSingleton<SetupStatusService>(setupStatusService);
     await setupStatusService.initialize();
@@ -1060,6 +1074,22 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
             debugPrint(
                 '[ServiceLocator] Skipping custom provider ${providerInfo.name}');
             continue;
+          case ProviderType.pistisaiHub:
+            config = HermesProviderConfiguration(
+              providerId: providerId,
+              baseUrl: providerInfo.url,
+              timeout: const Duration(seconds: 60),
+              enableStreaming: true,
+              customSettings: {
+                'auto_configured': true,
+                'discovered_at': DateTime.now().toIso8601String(),
+                'role': ProviderRole.agentRuntime.name,
+                'type': providerInfo.type.name,
+                'models': providerInfo.availableModels,
+                'hub': true,
+              },
+            );
+            break;
         }
 
         await configManager.setConfiguration(config);

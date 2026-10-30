@@ -247,6 +247,20 @@ class SetupWizardService extends ChangeNotifier {
         return false;
       }
 
+      // If Hermes is already configured from a previous install (e.g. the
+      // old Flatpak used FlutterSecureStorage which silently failed on Linux,
+      // so setup completion was never persisted), treat it as done.
+      if (settings != null) {
+        final hermesUrl = await settings.getHermesUrl();
+        final hermesEnabled = await settings.isHermesEnabled();
+        if (hermesEnabled && hermesUrl != null && hermesUrl.isNotEmpty) {
+          debugPrint(
+              '[SetupWizard] Hermes already configured at $hermesUrl — marking setup complete');
+          await _setupStatus.markSetupComplete(userId);
+          return false;
+        }
+      }
+
       debugPrint('[SetupWizard] Setup not completed — showing wizard');
       return true;
     } catch (e) {
@@ -1021,6 +1035,11 @@ class SetupWizardService extends ChangeNotifier {
         if (key != null && key.isNotEmpty) {
           await settings.setHermesApiKey(key);
         }
+        break;
+      case ProviderType.pistisaiHub:
+        await settings.setHermesEnabled(true);
+        await settings.setHermesUrl(runtimeUrl);
+        await settings.setActiveBackend(BackendType.hermes);
         break;
       case ProviderType.custom:
         await settings.setActiveBackend(null);

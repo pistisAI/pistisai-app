@@ -22,7 +22,7 @@ class ChatControlBar extends StatelessWidget {
     required this.onThinkingToggle,
     required this.onFocusModeToggle,
     required this.onCronSessionsToggle,
-    this.showThinking = true,
+    this.showThinking = false,
     this.focusMode = false,
     this.showCronSessions = true,
     super.key,
