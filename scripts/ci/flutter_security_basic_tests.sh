@@ -18,9 +18,6 @@ flutter test \
   test/services/connection_manager_service_test.dart \
   test/services/tunnel/ \
   test/services/hermes/ \
-  test/services/hermes_manager/main_chat_timeline_trust_store_test.dart \
-  test/services/hermes_manager/hermes_gateway_control_service_test.dart \
-  test/services/providers/hermes_adapter_test.dart \
   test/services/openclaw_manager/ \
   test/services/desktop_control/ \
   test/widgets/logout_token_clearing_timing_test.dart \

@@ -22,8 +22,8 @@ import 'llm_provider_settings_screen.dart';
 // Discord settings is desktop-only (requires dart:ffi via nyxx)
 import 'discord_settings_screen.dart' if (dart.library.html) 'discord_settings_screen_web.dart';
 
-// This file contains the route configuration for the settings screens,
-// which will be lazy-loaded to improve initial application performance.
+// Route configuration for the settings screens.
+// The screens are imported directly above.
 //
 // NOTE: The main /settings route that used UnifiedSettingsScreen has been removed.
 // Settings navigation is now integrated into the sidebar (Config, Debug, Logs branches).
