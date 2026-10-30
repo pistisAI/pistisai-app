@@ -1,5 +1,5 @@
 # ---- Build stage: Flutter web ----
-FROM gmeligio/flutter-android:3.47.7 AS builder
+FROM gmeligio/flutter-android:3.47.9 AS builder
 
 WORKDIR /app
 COPY pubspec.* ./

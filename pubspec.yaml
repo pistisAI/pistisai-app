@@ -7,7 +7,7 @@ version: 1.1.100+102
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
-  flutter: 3.47.7
+  flutter: 3.47.9
 
 dependencies:
   # HTTP Server for LLM Router

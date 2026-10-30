@@ -136,7 +136,7 @@ jobs:
             ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:v${{ steps.version.outputs.version }}
             ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:build-${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
           cache-from: type=gha,scope=api-backend
-          cache-to: type=gha,mode=max,scope=api-backend
+          cache-to: type=gha,mode=min,scope=api-backend
 
       - name: Build streaming-proxy
         if: steps.changes.outputs.streaming_proxy == 'true'
@@ -153,7 +153,7 @@ jobs:
             ghcr.io/${{ steps.version.outputs.repo_lower }}/streaming-proxy:v${{ steps.version.outputs.version }}
             ghcr.io/${{ steps.version.outputs.repo_lower }}/streaming-proxy:build-${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
           cache-from: type=gha,scope=streaming-proxy
-          cache-to: type=gha,mode=max,scope=streaming-proxy
+          cache-to: type=gha,mode=min,scope=streaming-proxy
 
       - name: Build postgres
         if: steps.changes.outputs.postgres == 'true'
@@ -170,7 +170,7 @@ jobs:
             ghcr.io/${{ steps.version.outputs.repo_lower }}/postgres:v${{ steps.version.outputs.version }}
             ghcr.io/${{ steps.version.outputs.repo_lower }}/postgres:build-${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
           cache-from: type=gha,scope=postgres
-          cache-to: type=gha,mode=max,scope=postgres
+          cache-to: type=gha,mode=min,scope=postgres
 
       - name: Backend images built
         run: echo "✅ Backend images built"
