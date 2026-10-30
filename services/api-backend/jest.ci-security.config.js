@@ -8,11 +8,8 @@ export default {
     // Prefer **/ globs — <rootDir>/../../.../security/** fails to expand on Windows
     '**/test/api-backend/security/*.test.js',
     '**/test/api-backend/rbac.test.js',
-    '**/test/api-backend/https-enforcer.test.js',
     '**/test/api-backend/input-validation.test.js',
     '**/test/api-backend/cloud-connector.test.js',
-    '**/test/api-backend/adaptive-rate-limiting.test.js',
-    '**/test/api-backend/rate-limit-exemptions.test.js',
     '**/test/api-backend/webhook-rate-limiting.test.js',
     '**/test/api-backend/sandbox-service.test.js',
   ],

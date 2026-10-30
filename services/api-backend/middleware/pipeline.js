@@ -48,8 +48,7 @@ import logger from '../logger.js';
  * 13. Authentication - Validate JWT tokens
  * 14. Authorization - Check user permissions
  * 15. Queue Status - Add queue status to request
- * 16. Compression - Compress response body
- * 17. Error Handling - Catch and format errors
+ * 16. Error Handling - Catch and format errors
  */
 
 /**
@@ -63,7 +62,6 @@ export function setupMiddlewarePipeline(app, options = {}) {
     corsOptions = {},
     rateLimitOptions = {},
     timeoutMs = 30000,
-    enableCompression = true,
   } = options;
 
   // 3. CORS Middleware - Handle preflight requests
@@ -169,9 +167,6 @@ export function setupMiddlewarePipeline(app, options = {}) {
   const queueStatusMiddleware = createQueueStatusMiddleware();
   app.use(queueStatusMiddleware);
 
-  // 16. Compression - Compress response body (optional, skipped if not available)
-  // Note: Compression is optional and can be added later if needed
-
   logger.info('Middleware pipeline configured successfully', {
     corsEnabled: true,
     helmetEnabled: true,
@@ -180,7 +175,6 @@ export function setupMiddlewarePipeline(app, options = {}) {
     rateLimitingEnabled: true,
     requestQueuingEnabled: true,
     rbacEnabled: true,
-    compressionEnabled: enableCompression,
     timeoutMs,
   });
 }
