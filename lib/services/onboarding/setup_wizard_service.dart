@@ -1036,6 +1036,11 @@ class SetupWizardService extends ChangeNotifier {
           await settings.setHermesApiKey(key);
         }
         break;
+      case ProviderType.pistisaiHub:
+        await settings.setHermesEnabled(true);
+        await settings.setHermesUrl(runtimeUrl);
+        await settings.setActiveBackend(BackendType.hermes);
+        break;
       case ProviderType.custom:
         await settings.setActiveBackend(null);
         break;

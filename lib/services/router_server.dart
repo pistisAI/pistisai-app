@@ -16,6 +16,24 @@ import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
 import 'package:pistisai/utils/http_constants.dart';
 
+List<String> _getLocalTailscaleIps() {
+  try {
+    final result = Process.runSync('tailscale', ['status', '--json']);
+    if (result.exitCode == 0) {
+      final data = jsonDecode(result.stdout.toString()) as Map;
+      final self = data['Self'] as Map?;
+      if (self != null && self['TailscaleIPs'] is List) {
+        return (self['TailscaleIPs'] as List)
+            .whereType<String>()
+            .toList(growable: false);
+      }
+    }
+  } catch (_) {
+    // Tailscale not available or not authenticated
+  }
+  return const [];
+}
+
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
 ///
 /// When [authSecret] is non-null, all endpoints except `/health` and
@@ -152,12 +170,14 @@ class RouterServer {
   }
 
   Response _handleHub(Request request) {
+    final tailscaleIps = _getLocalTailscaleIps();
     return Response.ok(
       jsonEncode(<String, Object>{
         'role': 'primary_hub',
         'product': 'Pistisai',
         'hermesPort': AppConfig.defaultHermesPort,
         'routerPort': _server?.port ?? port,
+        if (tailscaleIps.isNotEmpty) 'tailscaleIps': tailscaleIps,
       }),
       headers: {'Content-Type': 'application/json'},
     );

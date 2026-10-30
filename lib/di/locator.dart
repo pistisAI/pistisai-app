@@ -1074,6 +1074,22 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
             debugPrint(
                 '[ServiceLocator] Skipping custom provider ${providerInfo.name}');
             continue;
+          case ProviderType.pistisaiHub:
+            config = HermesProviderConfiguration(
+              providerId: providerId,
+              baseUrl: providerInfo.url,
+              timeout: const Duration(seconds: 60),
+              enableStreaming: true,
+              customSettings: {
+                'auto_configured': true,
+                'discovered_at': DateTime.now().toIso8601String(),
+                'role': ProviderRole.agentRuntime.name,
+                'type': providerInfo.type.name,
+                'models': providerInfo.availableModels,
+                'hub': true,
+              },
+            );
+            break;
         }
 
         await configManager.setConfiguration(config);

@@ -236,6 +236,8 @@ class _CompletionStepState extends State<CompletionStep> {
         return 'OpenAI Compatible';
       case ProviderType.custom:
         return 'Custom';
+      case ProviderType.pistisaiHub:
+        return 'Pistisai Hub';
     }
   }
 }

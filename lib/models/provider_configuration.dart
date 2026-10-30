@@ -11,6 +11,7 @@ enum ProviderType {
   lmStudio,
   openAICompatible,
   custom,
+  pistisaiHub,
 }
 
 /// High-level role for a discovered or configured backend endpoint.
@@ -23,7 +24,8 @@ extension ProviderTypeRole on ProviderType {
   bool get isAgentRuntime {
     return switch (this) {
       ProviderType.hermes ||
-      ProviderType.custom =>
+      ProviderType.custom ||
+      ProviderType.pistisaiHub =>
         true,
       ProviderType.ollama ||
       ProviderType.lmStudio ||
