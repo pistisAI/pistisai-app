@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+import '../config/theme.dart';
 
 /// Construction Page - Shows current features with progress and roadmap
 class ConstructionScreen extends StatelessWidget {
