@@ -1,18 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-normalize_tmpdir_root() {
-  local candidate="${1:-/tmp}"
-  while [[ "$candidate" == */ ]]; do
-    candidate="${candidate%/}"
-  done
-  if [[ -z "$candidate" || "$candidate" == "/" ]]; then
-    echo "/tmp"
-  else
-    echo "$candidate"
-  fi
-}
-
 if [[ $# -lt 1 ]]; then
   echo "usage: $0 <wav-path>" >&2
   exit 2
@@ -26,9 +14,7 @@ if ! command -v whisper >/dev/null 2>&1; then
   exit 127
 fi
 
-tmpdir_root="$(normalize_tmpdir_root "${TMPDIR:-/tmp}")"
-mkdir -p "$tmpdir_root"
-tmpdir="$(mktemp -d "$tmpdir_root/paperclip-voice.XXXXXX")"
+tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/paperclip-voice.XXXXXX")"
 trap 'rm -rf "$tmpdir"' EXIT
 
 model="${PISTISAI_WHISPER_MODEL:-base}"
