@@ -20,11 +20,11 @@ This skill contains the comprehensive developer guidelines, commands, architectu
   - [lib/services/](../../../lib/services/) — Core logic services
   - [lib/screens/](../../../lib/screens/) — UI screens
 - [services/](../../../services/) — Node.js backend services
-  - [services/api-backend/](../../../services/api-backend/) — Express 5 REST API (Node `>=22 <27`)
-  - [services/streaming-proxy/](../../../services/streaming-proxy/) — Streaming proxy (Node `>=22 <27`)
-  - [services/tailscale-relay/](../../../services/tailscale-relay/) — Tailscale relay (Express 4)
-  - [services/sdk/](../../../services/sdk/) — TypeScript SDK (Node `>=18`)
-- [backend/auth/](../../../backend/auth/) — Express 5 Auth0 JWT validation backend (CommonJS, Node `>=22 <27`)
+  - [services/api-backend/](../../../services/api-backend/) — Express 5 REST API (Node `>=26.0.0 <28.0.0`)
+  - [services/streaming-proxy/](../../../services/streaming-proxy/) — Streaming proxy (Node `>=26.0.0 <28.0.0`)
+  - [services/tailscale-relay/](../../../services/tailscale-relay/) — Tailscale relay (Express 4; no `engines` field; use Node 26 from `.nvmrc`)
+  - [services/sdk/](../../../services/sdk/) — TypeScript SDK (Node `>=26.0.0 <28.0.0`)
+- [backend/auth/](../../../backend/auth/) — Express 5 Auth0 JWT validation backend (CommonJS; no `engines` field; use Node 26 from `.nvmrc`)
 
 ---
 
@@ -77,14 +77,11 @@ All backend service directories are ESM (except `backend/auth/` which is CommonJ
 #### API Backend (`services/api-backend/`)
 - **Install packages**: `npm install`
 - **Start dev server**: `npm run dev`
-- **Run unit & integration tests**:
-  - Root runner (API tests are at repository root):
-    ```bash
-    npm test ../../test/api-backend/security/authentication-authorization.test.js
-    ```
+- **Run unit & integration tests** (from `services/api-backend/`; Jest files live at repo-root `test/api-backend/`):
+  - Auth tests: `npm run test:auth`
   - Unit tests: `npm run test:unit`
   - Integration tests: `npm run test:integration`
-  - Complete security/auth tests: `npm run test:security` / `npm run test:auth`
+  - Security suite: `npm run test:security`
 - **Database helpers**: `npm run db:validate` / `npm run db:stats` / `npm run db:test` (there is no `db:migrate`)
 
 #### Streaming Proxy (`services/streaming-proxy/`)
@@ -100,11 +97,6 @@ All backend service directories are ESM (except `backend/auth/` which is CommonJ
 
 ## 4. Git & Branch Discipline
 
-- **Push directly to `main`** by default. Do not use PRs or branches unless:
-  1. Specifically requested by the user.
-  2. Working on highly experimental/breaking features.
-- **Commit Formatting**: Prefix commits with the agent name in this format:
-  ```text
-  ai(Antigravity): <description of changes>
-  ```
-- **Tests verification**: Ensure `flutter analyze` and root `npm test` pass before pushing.
+- **Commits**: conventional `feat:` / `fix:` / `docs:` / `chore:` / `test:` / `refactor:` with agent prefix `ai(<agent>): <subject>`.
+- **Internal agents** push to `main`. **External contributors** use fork → PR ([CONTRIBUTING.md](../../../CONTRIBUTING.md)).
+- **Tests verification**: Ensure `flutter analyze lib/` and root `npm test` pass before pushing.

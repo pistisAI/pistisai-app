@@ -21,7 +21,7 @@ Web Deploy must complete successfully before the three downstream workflows proc
 
 Flutter CI pins the exact version in root `pubspec.yaml` `environment.flutter` (currently `3.47.7`, stable). Web and Android runners are `ubuntu-24.04`.
 
-There is no `deployment.yml` or `build-pipeline.yml` in `.github/workflows/`. [Unified Deployment Workflow](UNIFIED_DEPLOYMENT_WORKFLOW.md) describes that older pipeline and is not the current path.
+There is no `deployment.yml` or `build-pipeline.yml` in `.github/workflows/`.
 
 ## Commands
 

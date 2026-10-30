@@ -36,7 +36,7 @@ This directory contains all automation scripts for Pistisai development, deploym
 
 ### Temporarily Removed Scripts
 
-- **AUR-related scripts** - Temporarily removed (reintegration planned). See [AUR Status](../docs/DEPLOYMENT/AUR_STATUS.md) for details.
+- **AUR-related scripts** - not in the tree.
 
 ### PowerShell Scripts (`powershell/`)
 
@@ -176,7 +176,7 @@ node scripts/validate-organization.js
 ./scripts/powershell/Create-UnifiedPackages.ps1
 ```
 
-**Note**: AUR package building scripts temporarily removed. See [AUR Status](../docs/DEPLOYMENT/AUR_STATUS.md) for details.
+**Note**: AUR package building scripts are not in the tree.
 
 ## 🔧 Platform Separation
 

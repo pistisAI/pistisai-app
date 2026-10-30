@@ -16,8 +16,8 @@ The setup wizard is the authority for agent runtime selection. Do not assume one
 | Shared Flutter package | `lib/shared/pubspec.yaml`, Dart `>=3.9.0 <4.0.0` |
 | Local database | Drift/SQLite in `lib/database/drift_local_brain.dart` |
 | Embedded router | Shelf server in `lib/services/router_server.dart`, default port `1337` |
-| API backend | Express 5 ESM in `services/api-backend/`, Node `>=22 <27`, default port `8080` |
-| Streaming proxy | Express 5 ESM in `services/streaming-proxy/`, Node `>=22 <27`, default port `3001` |
+| API backend | Express 5 ESM in `services/api-backend/`, Node `>=26.0.0 <28.0.0`, default port `8080` |
+| Streaming proxy | Express 5 ESM in `services/streaming-proxy/`, Node `>=26.0.0 <28.0.0`, default port `3001` |
 | Tailscale relay | ESM service in `services/tailscale-relay/`, default port `3002` |
 | Auth backend | CommonJS Express 5 app in `backend/auth/`, default port `3000` |
 

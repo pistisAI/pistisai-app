@@ -11,7 +11,7 @@ Flutter desktop/web app + Node.js backend services: local-first companion layer 
 - `services/streaming-proxy/` — Express 5 ESM, `PORT || 3001` (`proxy-server.js`); `dev` is `node --inspect`, not nodemon
 - `services/tailscale-relay/` — Express 4 ESM, `PORT || 3002`; has only `start`/`dev` scripts (no lint/test)
 - `backend/auth/` — Express 5 **CommonJS** (`"type": "commonjs"`), `PORT || 3000`, entry `handlers.js`; no `dev` script; Jest 29
-- `services/sdk/` — TypeScript SDK (ESM, Node `>=18`), `main: dist/index.js` — run `npm run build` (`tsc`) before use
+- `services/sdk/` — TypeScript SDK (ESM, Node `>=26.0.0 <28.0.0`), `main: dist/index.js` — run `npm run build` (`tsc`) before use
 - `services/openclaw-skills/pistisai/` — avatar personality skill, tests use **Vitest** (`vitest run`), not Jest
 - `lib/shared/` — separate package `pistisai_shared` (Dart `>=3.9.0 <4.0.0`, version `1.0.6+33`) needing its own `flutter pub get`
 - Discovery defaults: OpenClaw Gateway `localhost:18789`, Hermes `127.0.0.1:8642`, Ollama `localhost:11434`, LM Studio `localhost:1234`
@@ -25,7 +25,7 @@ npm install                                     # root Node tooling (backend onl
 cd services/api-backend && npm install          # repeat per service you touch
 ```
 
-CI pins Flutter via exact `environment.flutter` in root `pubspec.yaml` (currently `3.47.7`, stable; workflows use `flutter-version-file: pubspec.yaml`) and Node `26` (`.nvmrc` — **single source of truth** for Node); service engines allow Node `>=22 <27` (sdk `>=18`). Android builds use AGP `8.11.1`, Gradle `8.14.3`, Kotlin `2.4.0` (Flutter `3.47.7` floor; Gradle 9 / AGP 9 blocked until `tesseract_ocr` drops `jcenter()`). Integration test rig (shared `docker-compose.test.yml` hub): `bash scripts/run_integration_test_rig.sh` (prefers **emulator**, not USB); local PC: `bash scripts/run_pc_integration_test_rig.sh` (`docs/development/testing/PHYSICAL_INTEGRATION_TEST_RIG.md`). USB phone smoke: `scripts/test-android-phone.sh`. CI: `integration-test-rig.yml`; optional self-hosted `integration-test-rig-physical.yml` (label `integration-rig`).
+CI pins Flutter via exact `environment.flutter` in root `pubspec.yaml` (currently `3.47.7`, stable; workflows use `flutter-version-file: pubspec.yaml`) and Node `26` (`.nvmrc` — **single source of truth** for Node); service engines are Node `>=26.0.0 <28.0.0` (`services/api-backend`, `services/streaming-proxy`, and `services/sdk`). Android builds use AGP `8.11.1`, Gradle `8.14.3`, Kotlin `2.4.0` (Flutter `3.47.7` floor; Gradle 9 / AGP 9 blocked until `tesseract_ocr` drops `jcenter()`). Integration test rig (shared `docker-compose.test.yml` hub): `bash scripts/run_integration_test_rig.sh` (prefers **emulator**, not USB); local PC: `bash scripts/run_pc_integration_test_rig.sh` (`docs/development/testing/PHYSICAL_INTEGRATION_TEST_RIG.md`). USB phone smoke: `scripts/test-android-phone.sh`. CI: `integration-test-rig.yml`; optional self-hosted `integration-test-rig-physical.yml` (label `integration-rig`).
 
 ```bash
 # Flutter — CI scopes analysis to lib/ only; gate suite is the script, not bare flutter test
