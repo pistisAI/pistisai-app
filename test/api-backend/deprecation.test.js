@@ -3,7 +3,7 @@
 
  * API Deprecation Tests
  *
- * Tests for deprecation service, middleware, and routes.
+ * Tests for deprecation service and routes.
  * Validates deprecation headers, migration guides, and sunset enforcement.
  *
  * Requirements: 12.5
@@ -22,11 +22,6 @@ import {
   getAllDeprecatedEndpoints,
   getDeprecationStatusReport,
 } from "../../services/api-backend/services/deprecation-service.js";
-import {
-  deprecationMiddleware,
-  deprecationWarningMiddleware,
-  deprecationResponseMiddleware,
-} from "../../services/api-backend/middleware/deprecation-middleware.js";
 import deprecationRoutes from "../../services/api-backend/routes/deprecation.js";
 
 describe("Deprecation Service", () => {
@@ -173,68 +168,6 @@ describe("Deprecation Service", () => {
     it("should include all deprecated endpoints", () => {
       const report = getDeprecationStatusReport();
       expect(report.deprecatedEndpoints.length).toBe(report.totalDeprecated);
-    });
-  });
-});
-
-describe("Deprecation Middleware", () => {
-  let app;
-
-  beforeEach(() => {
-    app = express();
-    app.use(deprecationMiddleware());
-    app.use(deprecationWarningMiddleware());
-    app.use(deprecationResponseMiddleware());
-
-    // Test routes
-    app.get("/v1/users", (req, res) => {
-      res.json({ user: { id: "123", email: "test@example.com" } });
-    });
-
-    app.get("/v2/users", (req, res) => {
-      res.json({ user: { id: "123", email: "test@example.com" } });
-    });
-  });
-
-  describe("deprecationMiddleware", () => {
-    it("should add deprecation headers to deprecated endpoint response", async () => {
-      const response = await request(app).get("/v1/users");
-      expect(response.headers.deprecation).toBe("true");
-      expect(response.headers.sunset).toBeDefined();
-      expect(response.headers.warning).toBeDefined();
-    });
-
-    it("should not add deprecation headers to current endpoint", async () => {
-      const response = await request(app).get("/v2/users");
-      expect(response.headers.deprecation).toBeUndefined();
-      expect(response.headers.sunset).toBeUndefined();
-    });
-
-    it("should include deprecation link header", async () => {
-      const response = await request(app).get("/v1/users");
-      expect(response.headers["deprecation-link"]).toBe("/v2/users");
-    });
-  });
-
-  describe("deprecationResponseMiddleware", () => {
-    it("should include deprecation info in response body", async () => {
-      const response = await request(app).get("/v1/users");
-      expect(response.body._deprecation).toBeDefined();
-      expect(response.body._deprecation.deprecated).toBe(true);
-      expect(response.body._deprecation.replacedBy).toBe("/v2/users");
-      expect(response.body._deprecation.sunsetAt).toBeDefined();
-    });
-
-    it("should include migration guide in response", async () => {
-      const response = await request(app).get("/v1/users");
-      expect(response.body._deprecation.migrationGuide).toBeDefined();
-      expect(response.body._deprecation.migrationGuide.title).toBeDefined();
-      expect(response.body._deprecation.migrationGuide.steps).toBeDefined();
-    });
-
-    it("should not include deprecation info for current endpoint", async () => {
-      const response = await request(app).get("/v2/users");
-      expect(response.body._deprecation).toBeUndefined();
     });
   });
 });

@@ -90,7 +90,6 @@ import webhookRoutes from './routes/webhooks.js';
 import authRoutes from './routes/auth.js';
 import apiKeysRouter from './routes/api-keys.js';
 import tunnelRoutes, { initializeTunnelService } from './routes/tunnels.js';
-import adaptiveRateLimitingRoutes from './routes/adaptive-rate-limiting.js';
 import adminMetricsRoutes from './routes/admin-metrics.js';
 import alertConfigurationRoutes from './routes/alert-configuration.js';
 import authAuditRoutes from './routes/auth-audit.js';
@@ -109,8 +108,6 @@ import proxyMetricsRoutes from './routes/proxy-metrics.js';
 import proxyScalingRoutes from './routes/proxy-scaling.js';
 import proxyUsageRoutes from './routes/proxy-usage.js';
 import proxyWebhooksRoutes from './routes/proxy-webhooks.js';
-import quotasRoutes from './routes/quotas.js';
-import rateLimitExemptionsRoutes from './routes/rate-limit-exemptions.js';
 import rateLimitViolationsRoutes from './routes/rate-limit-violations.js';
 import sandboxRoutes from './routes/sandbox.js';
 import dashboardWSManager from './websocket/dashboard-ws.js';
@@ -120,8 +117,6 @@ import tunnelSharingRoutes from './routes/tunnel-sharing.js';
 import tunnelUsageRoutes from './routes/tunnel-usage.js';
 import tunnelWebhooksRoutes from './routes/tunnel-webhooks.js';
 import userActivityRoutes from './routes/user-activity.js';
-import userDeletionRoutes from './routes/user-deletion.js';
-import webhookEventFiltersRoutes from './routes/webhook-event-filters.js';
 import webhookPayloadTransformationsRoutes from './routes/webhook-payload-transformations.js';
 import webhookRateLimitingRoutes from './routes/webhook-rate-limiting.js';
 import webhookTestingRoutes from './routes/webhook-testing.js';
@@ -230,7 +225,6 @@ setupMiddlewarePipeline(app, {
     bridgeMax: 500,
   },
   timeoutMs: 30000,
-  enableCompression: true,
 });
 
 const server = http.createServer(app);
@@ -392,7 +386,6 @@ if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   registerRoutes('/tunnels', tunnelRoutes);
 }
 
-registerRoutes('/adaptive-rate-limiting', adaptiveRateLimitingRoutes);
 registerRoutes('/admin-metrics', adminMetricsRoutes);
 registerRoutes('/alert-configuration', alertConfigurationRoutes);
 registerRoutes('/auth-audit', authAuditRoutes);
@@ -416,8 +409,6 @@ if (LEGACY_DIRECT_PROXY_ROUTES_ENABLED) {
   registerRoutes('/proxy-usage', proxyUsageRoutes);
   registerRoutes('/proxy-webhooks', proxyWebhooksRoutes);
 }
-registerRoutes('/quotas', quotasRoutes);
-registerRoutes('/rate-limit-exemptions', rateLimitExemptionsRoutes);
 registerRoutes('/rate-limit-violations', rateLimitViolationsRoutes);
 registerRoutes('/sandbox', sandboxRoutes);
 if (LEGACY_TUNNEL_ROUTES_ENABLED) {
@@ -428,9 +419,7 @@ if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   registerRoutes('/tunnel-webhooks', tunnelWebhooksRoutes);
 }
 registerRoutes('/user-activity', userActivityRoutes);
-registerRoutes('/user-deletion', userDeletionRoutes);
 // Note: versionedRoutes is a utility module, not a router - don't register it
-registerRoutes('/webhook-event-filters', webhookEventFiltersRoutes);
 registerRoutes(
   '/webhook-payload-transformations',
   webhookPayloadTransformationsRoutes,
@@ -464,7 +453,7 @@ if (LEGACY_OLLAMA_PROXY_ENABLED) {
 // User tier endpoint
 registerRoutes(
   '/user/tier',
-  ...authenticateJWT,
+  authenticateJWT,
   addTierInfo,
   ...userTierHandler,
 );
@@ -538,10 +527,10 @@ registerRoutes('/prometheus', prometheusMetricsRoutes);
 registerRoutes('/changelog', changelogRoutes);
 
 // Queue status endpoints
-registerRoutes('/queue/status', ...authenticateJWT, queueStatusHandler);
+registerRoutes('/queue/status', authenticateJWT, queueStatusHandler);
 
 // Queue drain endpoint (for testing/debugging)
-registerRoutes('/queue/drain', ...authenticateJWT, queueDrainHandler);
+registerRoutes('/queue/drain', authenticateJWT, queueDrainHandler);
 
 // WebSocket bridge endpoints removed - using HTTP polling only
 
@@ -625,8 +614,8 @@ let conversationRouter = null;
 // Register versioned conversations route after initialization
 async function registerConversationRoutes(migrator) {
   conversationRouter = createConversationRoutes(migrator, logger);
-  app.use('/api/conversations', ...authenticateJWT, conversationRouter);
-  app.use('/conversations', ...authenticateJWT, conversationRouter);
+  app.use('/api/conversations', authenticateJWT, conversationRouter);
+  app.use('/conversations', authenticateJWT, conversationRouter);
   logger.info('Conversation routes registered with authentication');
 }
 
@@ -638,9 +627,6 @@ function setupFinalHandlers() {
     }
     res.status(404).json({ error: 'Not found' });
   });
-
-  // Sentry Error Handler
-  Sentry.setupExpressErrorHandler(app);
 
   // Error handling middleware
   app.use((error, req, res, _next) => {
@@ -899,11 +885,6 @@ async function gracefulShutdown() {
     process.exit(1);
   }
 }
-
-app.post('/test-hook', (req, res) => {
-  logger.info('Received test hook');
-  res.json({ ok: true });
-});
 
 // Start server with enhanced tunnel system
 async function startServer() {
