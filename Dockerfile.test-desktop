@@ -66,6 +66,9 @@ RUN apt-get update && apt-get install -y \
     libsecret-1-dev libjsoncpp-dev \
     libnotify-dev libcurl4-openssl-dev \
     libayatana-appindicator3-dev \
+    # X11/Xi dev headers for cnativeapi native-assets build (pkg-config x11 + xi)
+    libx11-dev \
+    libxi-dev \
     # GStreamer for camera_desktop plugin
     libgstreamer1.0-dev \
     libgstreamer-plugins-base1.0-dev \
