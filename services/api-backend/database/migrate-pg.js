@@ -181,13 +181,27 @@ export class DatabaseMigratorPG {
     return rows.length > 0;
   }
 
+  // Older rows stored the numeric prefix plus the derived name of the file
+  // that actually ran. A different file that shares the prefix must still run.
+  async isLegacyNumericMigrationApplied(filename, name) {
+    const match = filename.match(/^(\d+)_/);
+    if (!match) {
+      return false;
+    }
+
+    const { rows } = await this.pool.query(
+      'SELECT 1 FROM schema_migrations WHERE version = $1 AND name = $2 AND success = TRUE',
+      [match[1], name],
+    );
+    return rows.length > 0;
+  }
+
   calculateChecksum(content) {
     return createHash('sha256').update(content).digest('hex');
   }
 
   extractVersionFromFilename(filename) {
-    const match = filename.match(/^(\d+)_/);
-    return match ? match[1] : filename;
+    return filename;
   }
 
   extractNameFromFilename(filename) {
@@ -345,6 +359,10 @@ export class DatabaseMigratorPG {
     const name = this.extractNameFromFilename(migrationFile);
 
     if (await this.isMigrationApplied(version)) {
+      return;
+    }
+
+    if (await this.isLegacyNumericMigrationApplied(migrationFile, name)) {
       return;
     }
 
