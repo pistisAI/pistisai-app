@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/services/agent_runtime/agent_runtime_client.dart';
 import 'package:pistisai/services/agent_runtime/hermes_runtime_client.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
-import 'package:pistisai/services/providers/base_provider.dart';
-import 'package:pistisai/services/providers/hermes_adapter.dart';
 
 /// Live tests against a local Hermes gateway at 127.0.0.1:8642.
 ///
@@ -201,87 +199,6 @@ void main() {
       expect(second!.toUpperCase(), contains('BANANA-8642'));
       await client.disconnect();
     }, timeout: const Timeout(Duration(seconds: 180)));
-  });
-
-  group('HermesProviderAdapter', () {
-    test('complete() talks to the live gateway', () async {
-      final reachable = await hermesGatewayReachable();
-      if (!reachable) {
-        return;
-      }
-      final adapter = HermesProviderAdapter(
-        baseUrl: 'http://127.0.0.1:8642',
-        apiKey: apiKey,
-      );
-      final response = await adapter.complete(
-        CompletionRequest(
-          model: 'hermes-agent',
-          messages: <Map<String, dynamic>>[
-            <String, dynamic>{
-              'role': 'user',
-              'content': 'Reply with exactly: adapter-ok.',
-            },
-          ],
-        ),
-      );
-      expect(response.choices, isNotEmpty);
-      expect(response.choices.first.message.content.toLowerCase(),
-          contains('adapter-ok'));
-      adapter.dispose();
-    }, timeout: const Timeout(Duration(seconds: 90)));
-
-    test('streamCompletion() yields OpenAI SSE from MiniMax', () async {
-      final reachable = await hermesGatewayReachable();
-      if (!reachable) {
-        return;
-      }
-      expect(apiKey, isNotNull);
-
-      final adapter = HermesProviderAdapter(
-        baseUrl: 'http://127.0.0.1:8642',
-        apiKey: apiKey,
-      );
-      final events = <String>[];
-      await for (final event in adapter.streamCompletion(
-        CompletionRequest(
-          model: 'hermes-agent',
-          messages: <Map<String, dynamic>>[
-            <String, dynamic>{
-              'role': 'user',
-              'content': 'Reply with exactly: SSE_OK',
-            },
-          ],
-          stream: true,
-        ),
-      )) {
-        events.add(event.data);
-      }
-      expect(events, isNotEmpty);
-      expect(events.join().toLowerCase(), contains('sse_ok'));
-      adapter.dispose();
-    }, timeout: const Timeout(Duration(seconds: 90)));
-
-    test('complete() without API key is rejected', () async {
-      final reachable = await hermesGatewayReachable();
-      if (!reachable) {
-        return;
-      }
-      final adapter = HermesProviderAdapter(
-        baseUrl: 'http://127.0.0.1:8642',
-      );
-      expect(
-        () => adapter.complete(
-          CompletionRequest(
-            model: 'hermes-agent',
-            messages: <Map<String, dynamic>>[
-              <String, dynamic>{'role': 'user', 'content': 'hi'},
-            ],
-          ),
-        ),
-        throwsA(isA<Exception>()),
-      );
-      adapter.dispose();
-    });
   });
 }
 

@@ -46,18 +46,6 @@ class GeneralSettingsScreen extends StatelessWidget {
                     onTap: () => context.go('/settings/appearance'),
                   ),
                 ),
-                const SizedBox(height: 8),
-
-                // Downloads
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.download),
-                    title: const Text('Downloads'),
-                    subtitle: const Text('Manage download settings'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.go('/settings/downloads'),
-                  ),
-                ),
               ],
             ),
           ),
