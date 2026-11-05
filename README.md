@@ -138,4 +138,4 @@ Command reference → [AGENTS.md](AGENTS.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Business Source License 1.1 — see [LICENSE](LICENSE).
