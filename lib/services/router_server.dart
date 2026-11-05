@@ -14,6 +14,8 @@ import 'conscience_storage_service.dart';
 import 'voice/cloud_tts_service.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/services/hermes/hermes_session_key.dart';
+import 'package:pistisai/services/hub/hermes_hub_broker.dart';
 import 'package:pistisai/utils/http_constants.dart';
 
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
@@ -35,6 +37,13 @@ class RouterServer {
   /// When null, all endpoints are open (no auth check).
   final String? authSecret;
 
+  /// Forwards chat send/sync to the co-resident Hermes gateway.
+  ///
+  /// Web, mobile, and secondary desktops call these routes on the hub.
+  /// They must not dial the Hermes gateway port themselves. `hermesPort` in
+  /// the discovery document is informational for this hub.
+  final HermesHubBroker hermesHubBroker;
+
   HttpServer? _server;
 
   /// Endpoints that remain accessible without authentication.
@@ -53,7 +62,9 @@ class RouterServer {
     this.conscienceStorage,
     CloudTtsService? ttsService,
     this.authSecret,
-  }) : ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService());
+    HermesHubBroker? hermesHubBroker,
+  })  : ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService()),
+        hermesHubBroker = hermesHubBroker ?? HermesHubBroker();
 
   /// Start the server
   Future<void> start() async {
@@ -68,8 +79,16 @@ class RouterServer {
     // GET /health
     router.get('/health', (Request request) => Response.ok('OK'));
 
-    // GET /api/pistisai/hub — mobile clients discover the primary desktop hub.
+    // GET /api/pistisai/hub — clients discover the primary desktop hub.
     router.get(AppConfig.hubPath, _handleHub);
+
+    // Chat send/sync for non-primary clients. The body and status codes are
+    // forwarded unchanged (a 404 or 409 is not an empty success).
+    router.post('/api/pistisai/messages', _proxyPistisaiMessage);
+    router.get(
+      '/api/sessions/<sessionKey>/messages',
+      _proxySessionMessages,
+    );
 
     // OpenAI-compatible local speech endpoint for Hermes voice output.
     if (ttsService != null) {
@@ -108,6 +127,7 @@ class RouterServer {
   Future<void> stop() async {
     await _server?.close();
     _server = null;
+    hermesHubBroker.close();
   }
 
   /// Auth middleware: when [authSecret] is set, rejects unauthenticated
@@ -156,9 +176,93 @@ class RouterServer {
       jsonEncode(<String, Object>{
         'role': 'primary_hub',
         'product': 'Pistisai',
+        // hermesPort is the gateway this hub dials. Clients use [chat],
+        // not that port.
         'hermesPort': AppConfig.defaultHermesPort,
         'routerPort': _server?.port ?? port,
+        'chat': <String, String>{
+          'send': '/api/pistisai/messages',
+          'sync': '/api/sessions/{session_key}/messages',
+        },
       }),
+      headers: {'Content-Type': 'application/json'},
+    );
+  }
+
+  Future<Response> _proxyPistisaiMessage(Request request) async {
+    try {
+      final body = await request.readAsString();
+      if (!_allowsPlatformPost(body)) {
+        return Response(
+          HttpStatus.forbidden,
+          body: jsonEncode(<String, String>{
+            'error':
+                'Only the shared Pistisai conversation can be written here.',
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
+      }
+      final result = await hermesHubBroker.forwardPistisaiMessage(body: body);
+      return _proxyResponse(result);
+    } catch (e) {
+      return _gatewayUnavailable();
+    }
+  }
+
+  /// Forwards the original bytes when [body] names the shared Pistisai chat.
+  ///
+  /// `conversation_id: pistisai` is not rewritten. Other ids, including
+  /// Telegram and Slack, are not sent upstream.
+  bool _allowsPlatformPost(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is! Map) return false;
+      final conversationId = decoded['conversation_id'];
+      if (conversationId is! String) return false;
+      return hubAllowsPlatformConversationId(conversationId);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<Response> _proxySessionMessages(
+    Request request,
+    String sessionKey,
+  ) async {
+    // Only the shared Pistisai DM. Other agent transcripts are not readable
+    // through the hub, and caller query strings are not forwarded.
+    final allowed = hubAllowlistedSessionKey(sessionKey);
+    if (allowed == null) {
+      return Response(
+        HttpStatus.forbidden,
+        body: jsonEncode(<String, String>{
+          'error': 'Only the shared Pistisai conversation can be read here.',
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+    }
+    try {
+      final result = await hermesHubBroker.forwardSessionMessages(
+        sessionKey: allowed,
+      );
+      return _proxyResponse(result);
+    } catch (e) {
+      return _gatewayUnavailable();
+    }
+  }
+
+  Response _proxyResponse(HubForwardResult result) {
+    return Response(
+      result.statusCode,
+      body: result.body,
+      headers: {'Content-Type': result.contentType},
+    );
+  }
+
+  Response _gatewayUnavailable() {
+    return Response(
+      502,
+      body: hermesGatewayUnavailableBody(),
       headers: {'Content-Type': 'application/json'},
     );
   }

@@ -210,7 +210,8 @@ void main() {
       final bool success = await service.completeSetup();
 
       expect(success, isTrue);
-      expect(configManager.lastSavedUrl, 'http://100.64.0.5:8642');
+      expect(service.state.hermesUrl, 'http://100.64.0.5:1337');
+      expect(configManager.lastSavedUrl, 'http://100.64.0.5:1337');
     });
 
     test('nextStep stays on the Hermes connection test when the probe failed',
@@ -335,8 +336,7 @@ void main() {
       expect(service.state.errorMessage, isNotNull);
     });
 
-    test('nextStep blocks Hermes location step until a location is chosen',
-        () {
+    test('nextStep blocks Hermes location step until a location is chosen', () {
       service.selectConnectionMethod(ConnectionMethod.hermes);
       service.goToStep(1);
 

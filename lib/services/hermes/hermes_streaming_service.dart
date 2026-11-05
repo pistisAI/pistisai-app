@@ -5,13 +5,22 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../../config/app_config.dart';
 import '../../models/agent_event.dart';
 import '../../models/message.dart';
 import '../../models/streaming_message.dart';
+import '../hub/client_connectivity.dart';
+import '../hub/hermes_hub_broker.dart';
 import '../streaming_service.dart';
 import 'hermes_session_key.dart';
 import 'hermes_session_transcript.dart';
 import '../../utils/logger.dart';
+
+/// Client wait for a platform send that travels through the desktop hub.
+///
+/// Longer than [hermesHubUpstreamTimeout] so a 401, 502, or gateway timeout
+/// comes back as a proxy status instead of a client timeout.
+const Duration hermesHubPlatformSendTimeout = Duration(seconds: 12);
 
 /// Streaming service implementation for Hermes Agent API server.
 ///
@@ -34,6 +43,14 @@ import '../../utils/logger.dart';
 class HermesStreamingService extends StreamingService {
   String _baseUrl;
   final String? _apiKey;
+  ClientInstallRole _role;
+
+  /// Non-primary installs talk to the hub. Live `/v1/runs` stays on the
+  /// primary desktop; the hub proxies platform send and session sync.
+  bool _viaHub = false;
+
+  /// Set when a non-primary install was pointed at a Hermes gateway URL.
+  bool _refusedDirectHermes = false;
 
   /// Gateway session key learned from a 2xx platform response.
   ///
@@ -68,25 +85,60 @@ class HermesStreamingService extends StreamingService {
   /// Call from connection recovery logic.
   void enableAgentRuns() => _useAgentRuns = true;
 
-  HermesStreamingService({String? baseUrl, String? apiKey, http.Client? client})
-    : _baseUrl = baseUrl ?? 'http://127.0.0.1:8642',
-      _apiKey = apiKey,
-      _client = client;
+  HermesStreamingService({
+    String? baseUrl,
+    String? apiKey,
+    http.Client? client,
+    ClientInstallRole role = ClientInstallRole.primaryHub,
+  })  : _baseUrl = _normalizeBase(baseUrl),
+        _apiKey = apiKey,
+        _client = client,
+        _role = role {
+    _viaHub = !allowsDirectHermesGateway(_role) && isHubBaseUrl(_baseUrl);
+    _refusedDirectHermes =
+        !allowsDirectHermesGateway(_role) && !isHubBaseUrl(_baseUrl);
+  }
+
+  ClientInstallRole get installRole => _role;
+
+  bool get reachesHermesViaHub => _viaHub;
+
+  bool get refusedDirectHermes => _refusedDirectHermes;
+
+  /// Bind this client to [role] before the next connection attempt.
+  void bindRole(ClientInstallRole role) {
+    _role = role;
+    _viaHub = !allowsDirectHermesGateway(_role) && isHubBaseUrl(_baseUrl);
+    _refusedDirectHermes =
+        !allowsDirectHermesGateway(_role) && !isHubBaseUrl(_baseUrl);
+  }
 
   String get baseUrl => _baseUrl;
 
   /// Session key adopted from Hermes, when the platform response included one.
   String? get boundGatewaySessionKey => _boundGatewaySessionKey;
 
-  /// Point this client at a newly discovered desktop hub (mobile Tailscale).
+  /// Point this client at a hub (`:1337`) or, for the primary desktop only,
+  /// at the co-resident Hermes gateway.
+  ///
+  /// A non-primary role ignores a direct gateway URL and keeps the previous
+  /// base. That refusal is how web, mobile, and secondary desktops avoid
+  /// opening `127.0.0.1:8642` or a remote Hermes port.
   void updateBaseUrl(String url) {
     final trimmed = url.trim();
     if (trimmed.isEmpty) {
       return;
     }
-    _baseUrl = trimmed.endsWith('/')
+    final normalized = trimmed.endsWith('/')
         ? trimmed.substring(0, trimmed.length - 1)
         : trimmed;
+    if (!allowsDirectHermesGateway(_role) && !isHubBaseUrl(normalized)) {
+      _refusedDirectHermes = true;
+      return;
+    }
+    _baseUrl = normalized;
+    _viaHub = !allowsDirectHermesGateway(_role) && isHubBaseUrl(_baseUrl);
+    _refusedDirectHermes = false;
   }
 
   /// Stream of structured agent events for consumers who want full
@@ -108,7 +160,20 @@ class HermesStreamingService extends StreamingService {
 
   @override
   Future<void> establishConnection() async {
+    if (!allowsDirectHermesGateway(_role) && !isHubBaseUrl(_baseUrl)) {
+      _refusedDirectHermes = true;
+      _connection = StreamingConnection.error(
+        directHermesRefusal,
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+      return;
+    }
     _client ??= http.Client();
+    if (_viaHub) {
+      await _establishHubConnection();
+      return;
+    }
     try {
       final response = await _client!
           .get(Uri.parse('$_baseUrl/health'), headers: _headers())
@@ -168,8 +233,63 @@ class HermesStreamingService extends StreamingService {
 
   @override
   Future<List<String>> getAvailableModels() async {
+    if (_viaHub) {
+      _modelIds = const <String>[];
+      return _modelIds;
+    }
     await _fetchModels();
     return _modelIds;
+  }
+
+  /// Hub clients are connected when discovery reports `primary_hub`.
+  ///
+  /// Router `/health` and `/v1/models` are the local model router, not Hermes.
+  Future<void> _establishHubConnection() async {
+    final client = _client ?? http.Client();
+    try {
+      final response = await client
+          .get(
+            Uri.parse('$_baseUrl${AppConfig.hubPath}'),
+            headers: _headers(),
+          )
+          .timeout(const Duration(seconds: 5));
+      if (response.statusCode == 200 && _isPrimaryHubDocument(response.body)) {
+        _connection = StreamingConnection.connected(_baseUrl);
+        _modelIds = const <String>[];
+        _useAgentRuns = true;
+        debugPrint('[Hermes] Attached to primary hub at $_baseUrl');
+        notifyListeners();
+        return;
+      }
+      _connection = StreamingConnection.error(
+        'Hub discovery returned ${response.statusCode}',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    } on SocketException {
+      _connection = StreamingConnection.error(
+        'Cannot reach the primary hub at $_baseUrl',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    } on TimeoutException {
+      _connection = StreamingConnection.error(
+        'Connection to $_baseUrl timed out',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    } catch (e) {
+      _connection = StreamingConnection.error(
+        'Connection failed: $e',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    }
+  }
+
+  bool _isPrimaryHubDocument(String body) {
+    final decoded = _decodeJsonObject(body);
+    return decoded != null && decoded['role'] == 'primary_hub';
   }
 
   @override
@@ -192,6 +312,40 @@ class HermesStreamingService extends StreamingService {
       );
       _messageController.add(errorMsg);
       yield errorMsg;
+      return;
+    }
+
+    if (_viaHub) {
+      // Platform send is proxied by the hub. The shared-channel poll reads
+      // the transcript through the same hub. Do not call `/v1/runs` or
+      // `/v1/chat/completions` here: those hub routes are not Hermes.
+      final delivery = await postPistisaiMessage(
+        text: prompt,
+        conversationId: conversationId,
+      );
+      final status = delivery.statusCode;
+      final accepted = status != null && status >= 200 && status < 300;
+      if (!accepted) {
+        final errorMsg = StreamingMessage.error(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          conversationId: conversationId,
+          error: status == null
+              ? 'The primary hub did not accept the message.'
+              : 'The primary hub rejected the message ($status).',
+          sequence: 0,
+        );
+        _messageController.add(errorMsg);
+        yield errorMsg;
+        return;
+      }
+      final completeMsg = StreamingMessage.complete(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        conversationId: conversationId,
+        sequence: 0,
+        model: model,
+      );
+      _messageController.add(completeMsg);
+      yield completeMsg;
       return;
     }
 
@@ -345,9 +499,8 @@ class HermesStreamingService extends StreamingService {
         Uri.parse('$_baseUrl/v1/runs/$runId/events'),
       )..headers.addAll(_headers());
 
-      final streamedResponse = await client
-          .send(request)
-          .timeout(const Duration(seconds: 600));
+      final streamedResponse =
+          await client.send(request).timeout(const Duration(seconds: 600));
 
       if (streamedResponse.statusCode != 200) {
         final errorBody = await streamedResponse.stream.bytesToString();
@@ -483,11 +636,11 @@ class HermesStreamingService extends StreamingService {
       // reasoning.available is chain-of-thought. It is not a chat delta.
       AgentReasoningAvailable() => null,
       AgentRunFailed(:final error) => StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: error,
-        sequence: sequence,
-      ),
+          id: messageId,
+          conversationId: conversationId,
+          error: error,
+          sequence: sequence,
+        ),
       // run.completed output is the full response text, which is
       // already accumulated from message.delta events. Emitting it
       // as a chunk would DOUBLE the content (deltas + final output).
@@ -542,9 +695,8 @@ class HermesStreamingService extends StreamingService {
             ..headers.addAll(_sessionHeaders(_sessionKeyFor(conversationId)))
             ..body = body;
 
-      final streamedResponse = await client
-          .send(request)
-          .timeout(const Duration(seconds: 300));
+      final streamedResponse =
+          await client.send(request).timeout(const Duration(seconds: 300));
 
       if (streamedResponse.statusCode != 200) {
         final errorBody = await streamedResponse.stream.bytesToString();
@@ -758,9 +910,8 @@ class HermesStreamingService extends StreamingService {
       Uri.parse('$_baseUrl/v1/runs/$runId/events'),
     )..headers.addAll(_headers());
 
-    final streamedResponse = await client
-        .send(request)
-        .timeout(const Duration(seconds: 600));
+    final streamedResponse =
+        await client.send(request).timeout(const Duration(seconds: 600));
 
     if (streamedResponse.statusCode != 200) {
       yield AgentRunFailed(
@@ -823,9 +974,10 @@ class HermesStreamingService extends StreamingService {
     final uri = hermesSessionMessagesUri(_baseUrl, sessionKey);
     try {
       final client = _client ?? http.Client();
-      final response = await client
-          .get(uri, headers: {..._headers(), 'Accept': 'application/json'})
-          .timeout(const Duration(seconds: 8));
+      final response = await client.get(uri, headers: {
+        ..._headers(),
+        'Accept': 'application/json'
+      }).timeout(const Duration(seconds: 8));
 
       appLogger.info(
         '[Hermes] transcript poll status=${response.statusCode} session=$sessionKey boundShortId=false',
@@ -889,7 +1041,9 @@ class HermesStreamingService extends StreamingService {
               'text': text,
             }),
           )
-          .timeout(const Duration(seconds: 3));
+          .timeout(
+            _viaHub ? hermesHubPlatformSendTimeout : const Duration(seconds: 3),
+          );
 
       final adopted = adoptGatewaySessionKey(
         statusCode: response.statusCode,
@@ -965,6 +1119,10 @@ class HermesStreamingService extends StreamingService {
   }
 
   Future<void> _fetchModels() async {
+    if (_viaHub) {
+      _modelIds = const <String>[];
+      return;
+    }
     try {
       final client = _client ?? http.Client();
       final response = await client
@@ -982,6 +1140,15 @@ class HermesStreamingService extends StreamingService {
     } catch (e) {
       appLogger.warning('[Hermes] Failed to fetch models: $e');
     }
+  }
+
+  static String _normalizeBase(String? url) {
+    final trimmed = (url == null || url.trim().isEmpty)
+        ? 'http://127.0.0.1:8642'
+        : url.trim();
+    return trimmed.endsWith('/')
+        ? trimmed.substring(0, trimmed.length - 1)
+        : trimmed;
   }
 
   @override

@@ -12,9 +12,13 @@ import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
 import '../../widgets/navigation/popout_button.dart';
+import 'package:flutter/foundation.dart';
+
 import '../../services/connection_manager_service.dart';
 import '../../services/hermes/hermes_streaming_service.dart';
+import '../../services/hub/client_connectivity.dart';
 import '../../services/settings_preference_service.dart' hide BackendType;
+import '../../utils/platform_helper.dart';
 import '../../config/app_config.dart';
 import '../../config/theme.dart';
 
@@ -722,6 +726,7 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
   bool? _connectionStatus;
   String _url = AppConfig.defaultHermesUrl;
   String _apiKey = '';
+  ClientInstallRole _role = ClientInstallRole.primaryHub;
 
   @override
   void initState() {
@@ -732,23 +737,56 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
   Future<void> _loadSettings() async {
     final enabled = await _settings.isHermesEnabled();
     final url = await _settings.getHermesUrl();
+    final hubUrl = await _settings.getHubUrl();
     final apiKey = await _settings.getHermesApiKey();
+    final role = resolveClientInstallRole(
+      isWeb: kIsWeb,
+      isMobile: PlatformHelper.isMobile,
+      storedRole: await _settings.getClientInstallRole(),
+      hubUrl: hubUrl,
+      hermesUrl: url,
+    );
+    final decision = resolveChatTransport(
+      role: role,
+      configuredUrl: url,
+      hubUrl: hubUrl,
+    );
     if (mounted) {
       setState(() {
         _hermesEnabled = enabled;
-        _url = url ?? AppConfig.defaultHermesUrl;
+        _role = role;
+        _url = decision.baseUrl ??
+            (allowsDirectHermesGateway(role) ? AppConfig.defaultHermesUrl : '');
         _apiKey = apiKey ?? '';
         _isLoading = false;
       });
     }
   }
 
+  bool get _directHermesAllowed => allowsDirectHermesGateway(_role);
+
   Future<void> _testConnection() async {
     setState(() => _isTesting = true);
+    final editedRole = roleForConfiguredUrl(detected: _role, url: _url);
+    final decision = resolveChatTransport(
+      role: editedRole,
+      configuredUrl: _url,
+      hubUrl: isHubBaseUrl(_url) ? _url : null,
+    );
+    if (!decision.allowed || decision.baseUrl == null) {
+      if (mounted) {
+        setState(() {
+          _connectionStatus = false;
+          _isTesting = false;
+        });
+      }
+      return;
+    }
     try {
       final service = HermesStreamingService(
-        baseUrl: _url,
+        baseUrl: decision.baseUrl,
         apiKey: _apiKey.isNotEmpty ? _apiKey : null,
+        role: editedRole,
       );
       final ok = await service.testConnection();
       service.dispose();
@@ -769,16 +807,43 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
   }
 
   Future<void> _saveAndApply() async {
+    final editedRole = roleForConfiguredUrl(detected: _role, url: _url);
+    final decision = resolveChatTransport(
+      role: editedRole,
+      configuredUrl: _url,
+      hubUrl: isHubBaseUrl(_url) ? _url : null,
+    );
+    if (_hermesEnabled && (!decision.allowed || decision.baseUrl == null)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(directHermesRefusal)),
+        );
+      }
+      return;
+    }
+    final target = decision.baseUrl ?? _url;
     await _settings.setHermesEnabled(_hermesEnabled);
-    await _settings.setHermesUrl(_url);
     await _settings.setHermesApiKey(_apiKey);
+    if (decision.viaHub) {
+      await _settings.setHubUrl(target);
+      await _settings.setHermesUrl(null);
+      await _settings.setClientInstallRole(editedRole.storageValue);
+      _role = editedRole;
+    } else if (allowsDirectHermesGateway(editedRole)) {
+      await _settings.setHermesUrl(target);
+      await _settings.setHubUrl(null);
+      await _settings.setClientInstallRole(
+        ClientInstallRole.primaryHub.storageValue,
+      );
+      _role = ClientInstallRole.primaryHub;
+    }
 
     // Update connection manager
     try {
       final connectionManager = di.serviceLocator<ConnectionManagerService>();
       if (_hermesEnabled) {
-        connectionManager.configureHermesRuntime(
-          url: _url,
+        await connectionManager.configureHermesRuntime(
+          url: target,
           apiKey: _apiKey,
         );
         connectionManager.setPreferredConnectionType(ConnectionType.hermes);
@@ -814,8 +879,12 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
     return CardSection(
       title: '🦞 Hermes Agent',
       subtitle: _hermesEnabled
-          ? 'Active — routing chat through Hermes API server'
-          : 'Disabled — using the default Hermes gateway',
+          ? (_directHermesAllowed
+              ? 'Active — routing chat through the local Hermes gateway'
+              : 'Active — routing chat through the primary desktop hub')
+          : (_directHermesAllowed
+              ? 'Disabled — using the default Hermes gateway'
+              : 'Disabled — attach a primary desktop hub to chat'),
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
@@ -838,14 +907,20 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
               // URL field
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Hermes API URL',
-                  hintText: AppConfig.defaultHermesUrl,
+                  labelText: _directHermesAllowed
+                      ? 'Hermes API URL'
+                      : 'Primary hub URL',
+                  hintText: _directHermesAllowed
+                      ? AppConfig.defaultHermesUrl
+                      : 'http://host:${AppConfig.defaultRouterPort}',
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.link),
                   suffixIcon: _connectionStatus == true
-                      ? Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success)
+                      ? Icon(Icons.check_circle,
+                          color: AppTheme.colorsOf(context).success)
                       : _connectionStatus == false
-                          ? Icon(Icons.error, color: AppTheme.colorsOf(context).danger)
+                          ? Icon(Icons.error,
+                              color: AppTheme.colorsOf(context).danger)
                           : null,
                 ),
                 controller: TextEditingController(text: _url),

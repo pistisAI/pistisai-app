@@ -1,7 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/agent_event.dart';
 import 'package:pistisai/models/streaming_message.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/hub/client_connectivity.dart';
+import 'package:pistisai/services/hub/hermes_hub_broker.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,10 +29,27 @@ void main() {
         service.dispose();
       });
 
-      test('updateBaseUrl points the client at a desktop hub', () {
+      test('primary hub may still target the local Hermes gateway', () {
         final service = HermesStreamingService();
+        service.updateBaseUrl('http://127.0.0.1:8642/');
+        expect(service.baseUrl, 'http://127.0.0.1:8642');
+        expect(service.reachesHermesViaHub, isFalse);
+        service.dispose();
+      });
+
+      test('non-primary role refuses a direct Hermes URL and accepts the hub',
+          () {
+        final service = HermesStreamingService(
+          role: ClientInstallRole.web,
+        );
         service.updateBaseUrl('http://100.64.1.20:8642/');
-        expect(service.baseUrl, 'http://100.64.1.20:8642');
+        expect(service.baseUrl, 'http://127.0.0.1:8642');
+        expect(service.refusedDirectHermes, isTrue);
+
+        service.updateBaseUrl('http://100.64.1.20:1337/');
+        expect(service.baseUrl, 'http://100.64.1.20:1337');
+        expect(service.reachesHermesViaHub, isTrue);
+        expect(service.refusedDirectHermes, isFalse);
         service.dispose();
       });
 
@@ -381,5 +404,191 @@ void main() {
         expect(restored.model, original.model);
       });
     });
+
+    test('web client sends through the hub and does not open /v1/runs',
+        () async {
+      final client = _RecordingClient();
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final messages = await service
+          .streamResponse(
+            prompt: 'hello',
+            model: 'default',
+            conversationId: 'main-channel',
+          )
+          .toList();
+
+      expect(messages, isNotEmpty);
+      expect(messages.last.isComplete, isTrue);
+      final paths = client.requests.map((request) => request.url.path).toList();
+      expect(paths, contains('/api/pistisai/messages'));
+      expect(paths, isNot(contains('/v1/runs')));
+      expect(paths, isNot(contains('/v1/chat/completions')));
+      expect(client.bodies.single, contains('"conversation_id":"pistisai"'));
+      expect(client.bodies.single, isNot(contains('agent:main')));
+      service.dispose();
+    });
+
+    test('via-hub send surfaces a proxy failure instead of a completed turn',
+        () async {
+      final client = _RecordingClient(postStatus: 502);
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final messages = await service
+          .streamResponse(
+            prompt: 'hello',
+            model: 'default',
+            conversationId: 'main-channel',
+          )
+          .toList();
+
+      expect(messages, hasLength(1));
+      expect(messages.single.hasError, isTrue);
+      expect(messages.single.error, contains('502'));
+      service.dispose();
+    });
+
+    test('via-hub send waits long enough for the hub hop', () async {
+      final client = _RecordingClient(postDelay: const Duration(seconds: 4));
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final messages = await service
+          .streamResponse(
+            prompt: 'hello',
+            model: 'default',
+            conversationId: 'pistisai',
+          )
+          .toList();
+
+      expect(messages.single.hasError, isFalse);
+      expect(messages.single.isComplete, isTrue);
+      expect(
+        hermesHubPlatformSendTimeout,
+        greaterThan(hermesHubUpstreamTimeout),
+      );
+      service.dispose();
+    });
+
+    test('via-hub connection probes hub discovery and skips router models',
+        () async {
+      final client = _RecordingClient();
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final connected = await service.testConnection();
+      final models = await service.getAvailableModels();
+
+      expect(connected, isTrue);
+      expect(models, isEmpty);
+      final paths = client.requests.map((request) => request.url.path).toList();
+      expect(paths, contains(AppConfig.hubPath));
+      expect(paths, isNot(contains('/health')));
+      expect(paths, isNot(contains('/v1/models')));
+      service.dispose();
+    });
+
+    test('router /health does not count as a Hermes connection for hub clients',
+        () async {
+      final client = _RouterOnlyClient();
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final connected = await service.testConnection();
+
+      expect(connected, isFalse);
+      expect(client.paths, contains(AppConfig.hubPath));
+      expect(await service.getAvailableModels(), isEmpty);
+      expect(client.paths, isNot(contains('/v1/models')));
+      service.dispose();
+    });
+
+    test('web client does not dial the default Hermes gateway', () async {
+      final client = _RecordingClient();
+      final service = HermesStreamingService(
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final connected = await service.testConnection();
+
+      expect(connected, isFalse);
+      expect(service.refusedDirectHermes, isTrue);
+      expect(client.requests, isEmpty);
+      service.dispose();
+    });
   });
+}
+
+class _RecordingClient extends http.BaseClient {
+  _RecordingClient({
+    this.postStatus = 200,
+    this.postDelay = Duration.zero,
+  });
+
+  final int postStatus;
+  final Duration postDelay;
+  final List<http.BaseRequest> requests = <http.BaseRequest>[];
+  final List<String> bodies = <String>[];
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    requests.add(request);
+    if (request is http.Request && request.method == 'POST') {
+      bodies.add(request.body);
+    }
+    if (request.url.path == '/api/pistisai/messages' &&
+        postDelay > Duration.zero) {
+      await Future<void>.delayed(postDelay);
+    }
+    final payload = request.url.path == '/health'
+        ? 'OK'
+        : request.url.path == AppConfig.hubPath
+            ? '{"role":"primary_hub","product":"Pistisai"}'
+            : request.url.path == '/v1/models'
+                ? '{"data":[{"id":"router-only-model"}]}'
+                : '{"ok":true}';
+    final status =
+        request.url.path == '/api/pistisai/messages' ? postStatus : 200;
+    return http.StreamedResponse(
+      Stream<List<int>>.value(utf8.encode(payload)),
+      status,
+    );
+  }
+}
+
+class _RouterOnlyClient extends http.BaseClient {
+  final List<String> paths = <String>[];
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    paths.add(request.url.path);
+    final payload = request.url.path == '/health'
+        ? 'OK'
+        : request.url.path == '/v1/models'
+            ? '{"data":[{"id":"router-only-model"}]}'
+            : '{"role":"not_a_hub"}';
+    final status = request.url.path == AppConfig.hubPath ? 404 : 200;
+    return http.StreamedResponse(
+      Stream<List<int>>.value(utf8.encode(payload)),
+      status,
+    );
+  }
 }

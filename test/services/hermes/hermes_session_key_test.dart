@@ -18,6 +18,29 @@ void main() {
       expect(platformChatIdForUiId('pistisai'), isNot(sessionKey));
     });
 
+    test('hub message allowlist is only the shared Pistisai chat id', () {
+      expect(hubAllowsPlatformConversationId('pistisai'), isTrue);
+      expect(hubAllowsPlatformConversationId('main-channel'), isTrue);
+      expect(hubAllowsPlatformConversationId('pistisai-chat'), isTrue);
+      expect(hubAllowsPlatformConversationId('telegram'), isFalse);
+      expect(hubAllowsPlatformConversationId(null), isFalse);
+    });
+
+    test('hub proxy allowlist is only the shared Pistisai DM', () {
+      expect(hubAllowlistedSessionKey(sessionKey), sessionKey);
+      expect(hubAllowlistedSessionKey('pistisai'), sessionKey);
+      expect(hubAllowlistedSessionKey('main-channel'), sessionKey);
+      expect(hubAllowlistedSessionKey('pistisai-chat'), sessionKey);
+      expect(
+        hubAllowlistedSessionKey('agent:main:telegram:dm:ops'),
+        isNull,
+      );
+      expect(
+        hubAllowlistedSessionKey('agent:main:pistisai:dm:alice'),
+        isNull,
+      );
+    });
+
     test('local main-channel shell uses the same pistisai DM', () {
       expect(hermesSessionKeyForUiId('main-channel'), sessionKey);
       expect(platformChatIdForUiId('main-channel'), 'pistisai');

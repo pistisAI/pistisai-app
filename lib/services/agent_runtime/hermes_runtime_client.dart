@@ -4,6 +4,7 @@ import 'package:pistisai/models/agent_event.dart';
 import 'package:pistisai/models/streaming_message.dart';
 import 'package:pistisai/services/agent_runtime/agent_runtime_client.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/hub/client_connectivity.dart';
 import 'package:pistisai/services/streaming_service.dart';
 
 class HermesRuntimeClient implements AgentRuntimeClient {
@@ -23,10 +24,12 @@ class HermesRuntimeClient implements AgentRuntimeClient {
   HermesRuntimeClient({
     required this.baseUrl,
     this.apiKey,
+    ClientInstallRole role = ClientInstallRole.primaryHub,
   }) {
     _streamingService = HermesStreamingService(
       baseUrl: baseUrl,
       apiKey: apiKey,
+      role: role,
     );
   }
 

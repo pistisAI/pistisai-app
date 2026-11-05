@@ -44,12 +44,16 @@ import 'package:pistisai/services/providers/google_adapter.dart';
 import 'package:pistisai/services/providers/moonshot_adapter.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/hub/client_connectivity.dart';
+import 'package:pistisai/services/hub/hermes_hub_broker.dart';
+import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/agent_status_service.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
 import 'package:pistisai/services/subagent_registry_service.dart';
 import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
+import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
@@ -233,6 +237,11 @@ Future<void> setupCoreServices() async {
         conscienceStorageService,
       );
 
+      // The hub's own Hermes key authenticates upstream calls.
+      // Remote clients do not send or possess that key. A saved gateway URL
+      // (including a non-default port) is the same upstream the local client uses.
+      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
+      final savedHermesUrl = await settingsPreferenceService.getHermesUrl();
       final routerServer = RouterServer(
         rateLimitManager: rateLimitManager,
         providers: {
@@ -249,18 +258,33 @@ Future<void> setupCoreServices() async {
         evolutionTracker: evolutionTracker,
         conscienceStorage: conscienceStorageService,
         ttsService: CloudTtsService(),
+        hermesHubBroker: HermesHubBroker(
+          hermesBaseUrl: savedHermesUrl,
+          hermesApiKey: hermesApiKey,
+        ),
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
-      // Hermes streaming service for direct Hermes API integration.
-      // Discover the local gateway key so desktop chat/voice are authenticated.
-      final hermesUrl = await settingsPreferenceService.getHermesUrl();
-      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
+      // Hermes streaming service. The primary desktop hub dials local Hermes.
+      // A phone or secondary desktop uses the saved hub URL instead.
+      final hermesUrl = savedHermesUrl;
+      final hubUrl = await settingsPreferenceService.getHubUrl();
+      final installRole = resolveClientInstallRole(
+        isWeb: false,
+        isMobile: PlatformHelper.isMobile,
+        storedRole: await settingsPreferenceService.getClientInstallRole(),
+        hubUrl: hubUrl,
+        hermesUrl: hermesUrl,
+      );
+      final transport = resolveChatTransport(
+        role: installRole,
+        configuredUrl: hermesUrl,
+        hubUrl: hubUrl,
+      );
       final hermesStreamingService = HermesStreamingService(
-        baseUrl: (hermesUrl != null && hermesUrl.isNotEmpty)
-            ? AppConfig.normalizeHermesUrl(hermesUrl)
-            : AppConfig.defaultHermesUrl,
+        baseUrl: transport.baseUrl,
         apiKey: hermesApiKey,
+        role: installRole,
       );
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);
@@ -299,6 +323,21 @@ Future<void> setupCoreServices() async {
       AppConfig.verboseLog(
         '[ServiceLocator] Skipping desktop-only LocalBrain/router core services on web',
       );
+      // Web attaches to the primary desktop hub. It does not open a Hermes
+      // gateway client, including the default loopback port.
+      final hermesUrl = await settingsPreferenceService.getHermesUrl();
+      final hubUrl = await settingsPreferenceService.getHubUrl();
+      final transport = resolveChatTransport(
+        role: ClientInstallRole.web,
+        configuredUrl: hermesUrl,
+        hubUrl: hubUrl,
+      );
+      final webHermes = HermesStreamingService(
+        baseUrl: transport.baseUrl,
+        apiKey: await settingsPreferenceService.getHermesApiKey(),
+        role: ClientInstallRole.web,
+      );
+      serviceLocator.registerSingleton<HermesStreamingService>(webHermes);
     }
 
     // Authentication Provider - Using platform-specific provider
@@ -484,6 +523,29 @@ Future<void> setupCoreServices() async {
     // the System tab Consumer to throw "Provider not found".
     final autoUpdateService = AutoUpdateService();
     serviceLocator.registerSingleton<AutoUpdateService>(autoUpdateService);
+
+    // Mobile onboarding is not part of the desktop router graph. The attach
+    // callback looks up the connection manager when the user joins a hub,
+    // which is after authenticated services exist on a phone.
+    if (!serviceLocator.isRegistered<MobileConnectionService>()) {
+      final mobileHermes = serviceLocator.isRegistered<HermesStreamingService>()
+          ? serviceLocator.get<HermesStreamingService>()
+          : null;
+      serviceLocator.registerSingleton<MobileConnectionService>(
+        MobileConnectionService(
+          settings: settingsPreferenceService,
+          hermesStreamingService: mobileHermes,
+          onHubAttached: (String hubUrl) {
+            if (!serviceLocator.isRegistered<ConnectionManagerService>()) {
+              return Future<bool>.value(false);
+            }
+            return serviceLocator
+                .get<ConnectionManagerService>()
+                .attachToPrimaryHub(hubUrl);
+          },
+        ),
+      );
+    }
 
     AppConfig.verboseLog(
         '[ServiceLocator] Core services registered successfully');
