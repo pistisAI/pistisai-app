@@ -36,7 +36,7 @@ This directory contains all automation scripts for Pistisai development, deploym
 
 ### Temporarily Removed Scripts
 
-- **AUR-related scripts** - Temporarily removed (reintegration planned). See [AUR Status](../docs/DEPLOYMENT/AUR_STATUS.md) for details.
+- **AUR-related scripts** - Temporarily removed (reintegration planned). See [AUR Status](../../deployment/AUR_STATUS.md) for details.
 
 ### PowerShell Scripts (`powershell/`)
 
@@ -176,7 +176,7 @@ node scripts/validate-organization.js
 ./scripts/powershell/Create-UnifiedPackages.ps1
 ```
 
-**Note**: AUR package building scripts temporarily removed. See [AUR Status](../docs/DEPLOYMENT/AUR_STATUS.md) for details.
+**Note**: AUR package building scripts temporarily removed. See [AUR Status](../../deployment/AUR_STATUS.md) for details.
 
 ## 🔧 Platform Separation
 
@@ -234,10 +234,10 @@ grep -r "SSL" scripts/ --include="*.sh"
 
 ## 📚 Related Documentation
 
-- [Main README](../README.md) - Project overview and setup
-- [Deployment Guide](../docs/DEPLOYMENT/) - Detailed deployment instructions
-- [Development Guide](../docs/DEVELOPMENT/) - Development workflow
-- [Operations Guide](../docs/OPERATIONS/) - System operations and maintenance
+- [Main README](../../../README.md) - Project overview and setup
+- [Deployment Guide](../../deployment/README.md) - Detailed deployment instructions
+- [Docs index](../../README.md) - Development workflow index
+- [Operations Guide](../../operations/README.md) - System operations and maintenance
 
 ---
 

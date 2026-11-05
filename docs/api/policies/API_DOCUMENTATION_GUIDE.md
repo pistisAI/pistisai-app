@@ -413,7 +413,7 @@ For API support:
 
 ## Changelog
 
-See [CHANGELOG.md](../../../docs/CHANGELOG.md) for API changes and updates.
+See CHANGELOG.md for API changes and updates.
 
 ## License
 

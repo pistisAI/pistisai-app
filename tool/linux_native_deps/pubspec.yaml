@@ -1,0 +1,12 @@
+name: linux_native_deps
+description: >-
+  Installs the GTK 3, X11, and Xi development packages cnativeapi's Linux
+  build hook asks pkg-config for, then fetches that package's C++ sources.
+publish_to: none
+version: 0.0.1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  hooks: ^2.2.0

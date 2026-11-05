@@ -19,7 +19,7 @@ class AboutSettingsScreen extends StatelessWidget {
         title: const Text('About Pistisai'),
         elevation: 0,
         leading: BackButton(
-          onPressed: () => context.go('/'),
+          onPressed: () => context.go('/config'),
         ),
       ),
       body: Column(

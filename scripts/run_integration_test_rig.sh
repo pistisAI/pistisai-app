@@ -176,7 +176,6 @@ if [[ "$RUN_ANDROID" == "true" ]]; then
     test_rig_log_info "Hub host for probe: $HUB_HOST"
 
     "$FLUTTER_BIN" pub get
-    (cd lib/shared && "$FLUTTER_BIN" pub get)
 
     DART_DEFINES=(
       --dart-define=PISTISAI_ANDROID_TEST_RIG=true

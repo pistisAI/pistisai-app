@@ -801,7 +801,7 @@ process.env.DEBUG = 'auth0:*';
 
 For authentication issues:
 
-- Check [API Documentation](./API_DOCUMENTATION_GUIDE.md)
-- Review [Error Codes](./API_ERROR_CODES.md)
+- Check API Documentation
+- Review Error Codes
 - Contact support@pistisai.app
 - Visit https://docs.pistisai.app

@@ -345,6 +345,6 @@ app.use('/api/webhooks', webhookTestingRoutes);
 
 ## Related Documentation
 
-- [Webhook Implementation Summary](./routes/WEBHOOK_IMPLEMENTATION_SUMMARY.md)
-- [Webhook API Reference](./routes/WEBHOOK_API.md)
-- [Webhook Quick Reference](./routes/WEBHOOK_QUICK_REFERENCE.md)
+- Webhook Implementation Summary
+- Webhook API Reference
+- Webhook Quick Reference

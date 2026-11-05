@@ -26,7 +26,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
   bool _isLoading = true;
 
   // Current settings
-  String _avatarType = 'emoji'; // 'emoji' or 'rive'
+  String _avatarType = 'emoji';
   String _avatarSize = 'medium'; // 'small', 'medium', 'large'
   bool _glowEnabled = true;
   Color? _customColor; // null = use personality-derived colors
@@ -55,7 +55,8 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
       _prefs = await SharedPreferences.getInstance();
 
       setState(() {
-        _avatarType = _prefs.getString('avatar_type') ?? 'emoji';
+        final storedAvatarType = _prefs.getString('avatar_type') ?? 'emoji';
+        _avatarType = storedAvatarType == 'rive' ? 'emoji' : storedAvatarType;
         _avatarSize = _prefs.getString('avatar_size') ?? 'medium';
         _glowEnabled = _prefs.getBool('avatar_glow_enabled') ?? true;
 
@@ -352,26 +353,12 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                   value: 'emoji',
                   child: Text('Emoji'),
                 ),
-                DropdownMenuItem(
-                  value: 'rive',
-                  child: Text('Rive Animation'),
-                ),
               ],
               onChanged: (value) {
                 if (value != null) {
                   setState(() => _avatarType = value);
                 }
               },
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Rive animations provide state-driven vector animations. '
-              'Create avatar.riv in assets/animations/ to enable.',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppTheme.colorsOf(context).textColorLight,
-                fontStyle: FontStyle.italic,
-              ),
             ),
           ],
         ),
