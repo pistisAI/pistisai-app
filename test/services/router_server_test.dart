@@ -112,6 +112,12 @@ void main() {
       expect(body, containsPair('role', 'primary_hub'));
       expect(body, containsPair('product', 'Pistisai'));
       expect(body, containsPair('hermesPort', 8642));
+      final dynamic chat = (body as Map)['chat'];
+      expect(chat, containsPair('send', '/api/pistisai/messages'));
+      expect(
+        chat,
+        containsPair('sync', '/api/sessions/{session_key}/messages'),
+      );
     });
   });
 }

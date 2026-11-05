@@ -8,6 +8,8 @@ import 'package:pistisai/utils/logger.dart';
 import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
 import 'package:pistisai/services/hermes/hermes_endpoint_resolver.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
+import 'package:pistisai/services/hub/client_connectivity.dart';
+import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/provider_configuration_manager.dart';
@@ -99,8 +101,9 @@ class WizardState {
       gatewayPassword: gatewayPassword ?? this.gatewayPassword,
       hermesUrl:
           identical(hermesUrl, _unset) ? this.hermesUrl : hermesUrl as String?,
-      hermesApiKey:
-          identical(hermesApiKey, _unset) ? this.hermesApiKey : hermesApiKey as String?,
+      hermesApiKey: identical(hermesApiKey, _unset)
+          ? this.hermesApiKey
+          : hermesApiKey as String?,
       detectedHermesKind: identical(detectedHermesKind, _unset)
           ? this.detectedHermesKind
           : detectedHermesKind as HermesEndpointKind?,
@@ -145,7 +148,8 @@ class SetupWizardService extends ChangeNotifier {
   final HermesLocalAgentApi? _localAgentApi;
   final HermesBotInstallService? _botInstaller;
 
-  WizardState _state = const WizardState(selectedMethod: ConnectionMethod.hermes);
+  WizardState _state =
+      const WizardState(selectedMethod: ConnectionMethod.hermes);
   Timer? _testTimeoutTimer;
   bool _setupCompleted = false; // Track if setup was completed this session
   bool _hermesAgentApiConnected = false;
@@ -329,9 +333,8 @@ class SetupWizardService extends ChangeNotifier {
           location == HermesLocation.local ? _state.hermesApiKey : null,
       selectedProvider:
           location == HermesLocation.local ? _state.selectedProvider : null,
-      tailscaleDevices: location == HermesLocation.local
-          ? const []
-          : _state.tailscaleDevices,
+      tailscaleDevices:
+          location == HermesLocation.local ? const [] : _state.tailscaleDevices,
       errorMessage: null,
       lastBotInstall: null,
     );
@@ -350,7 +353,9 @@ class SetupWizardService extends ChangeNotifier {
       return;
     }
 
-    final url = 'http://$ip:${AppConfig.defaultHermesPort}';
+    // Tailscale Hermes lives on the primary desktop. This install joins the
+    // hub on the router port and does not open the gateway port.
+    final url = 'http://$ip:${AppConfig.defaultRouterPort}';
     _state = _state.copyWith(
       hermesUrl: url,
       selectedProvider: ProviderInfo(
@@ -513,7 +518,8 @@ class SetupWizardService extends ChangeNotifier {
           .get(Uri.parse('$baseUrl/health'))
           .timeout(const Duration(seconds: 5));
       if (response.statusCode == 200) {
-        appLogger.info('[SetupWizard] Direct health check found Hermes at $baseUrl');
+        appLogger
+            .info('[SetupWizard] Direct health check found Hermes at $baseUrl');
         return ProviderInfo(
           id: 'hermes_discovered',
           type: ProviderType.hermes,
@@ -704,8 +710,13 @@ class SetupWizardService extends ChangeNotifier {
 
   /// Set Hermes Agent URL
   void setHermesUrl(String url) {
-    final trimmedUrl = url.trim();
+    var trimmedUrl = url.trim();
     final isLocal = _state.hermesLocation != HermesLocation.tailscale;
+    if (!isLocal) {
+      final joined = hubBaseUrlForHermesGateway(trimmedUrl) ??
+          normalizeHubBaseUrl(trimmedUrl);
+      if (joined != null) trimmedUrl = joined;
+    }
     _hermesAgentApiConnected = false;
     _state = _state.copyWith(
       hermesUrl: trimmedUrl,
@@ -749,8 +760,8 @@ class SetupWizardService extends ChangeNotifier {
       return null;
     }
 
-    appLogger.info(
-        '[SetupWizard] No Hermes API key found — generating a new one');
+    appLogger
+        .info('[SetupWizard] No Hermes API key found — generating a new one');
     final generated = _generateApiKey();
     _state = _state.copyWith(hermesApiKey: generated);
     notifyListeners();
@@ -840,7 +851,6 @@ class SetupWizardService extends ChangeNotifier {
 
       await _persistRuntimeSelection(providerUrl);
 
-
       // Mark setup as complete
       // Hardcoded local_user as auth service is not currently integrated in wizard
       final userId = 'local_user';
@@ -897,7 +907,6 @@ class SetupWizardService extends ChangeNotifier {
       return false;
     }
   }
-
 
   /// Clear error message
   void clearError() {
@@ -1011,7 +1020,22 @@ class SetupWizardService extends ChangeNotifier {
     switch (_state.selectedProvider!.type) {
       case ProviderType.hermes:
         await settings.setHermesEnabled(true);
-        await settings.setHermesUrl(runtimeUrl);
+        final tailscale = _state.hermesLocation == HermesLocation.tailscale;
+        if (tailscale) {
+          final joined = normalizeHubBaseUrl(runtimeUrl) ??
+              hubBaseUrlForHermesGateway(runtimeUrl);
+          if (joined != null) {
+            await settings.setHubUrl(joined);
+          }
+          await settings.setHermesUrl(null);
+          await settings.setClientInstallRole(_remoteJoinRole().storageValue);
+        } else {
+          await settings.setHermesUrl(runtimeUrl);
+          await settings.setHubUrl(null);
+          await settings.setClientInstallRole(
+            ClientInstallRole.primaryHub.storageValue,
+          );
+        }
         await settings.setActiveBackend(BackendType.hermes);
         // Use the key discovered in the wizard step, or fall back to
         // auto-discovery from .env if it wasn't loaded yet.
@@ -1030,6 +1054,12 @@ class SetupWizardService extends ChangeNotifier {
       case ProviderType.openAICompatible:
         break;
     }
+  }
+
+  ClientInstallRole _remoteJoinRole() {
+    if (kIsWeb) return ClientInstallRole.web;
+    if (PlatformHelper.isMobile) return ClientInstallRole.mobile;
+    return ClientInstallRole.secondaryDesktop;
   }
 
   bool _shouldUseCustomUrl() {

@@ -37,13 +37,18 @@ void main() {
 
   group('isAndroidTestRigLoopbackHost', () {
     test('recognizes emulator and local Docker bridge hosts', () {
-      expect(MobileConnectionService.isAndroidTestRigLoopbackHost('10.0.2.2'), isTrue);
-      expect(MobileConnectionService.isAndroidTestRigLoopbackHost('127.0.0.1'), isTrue);
+      expect(MobileConnectionService.isAndroidTestRigLoopbackHost('10.0.2.2'),
+          isTrue);
+      expect(MobileConnectionService.isAndroidTestRigLoopbackHost('127.0.0.1'),
+          isTrue);
       expect(
-        MobileConnectionService.isAndroidTestRigLoopbackHost('host.docker.internal'),
+        MobileConnectionService.isAndroidTestRigLoopbackHost(
+            'host.docker.internal'),
         isTrue,
       );
-      expect(MobileConnectionService.isAndroidTestRigLoopbackHost('192.168.1.1'), isFalse);
+      expect(
+          MobileConnectionService.isAndroidTestRigLoopbackHost('192.168.1.1'),
+          isFalse);
     });
   });
 
@@ -98,7 +103,7 @@ void main() {
       expect(await service.shouldShowConnectionScreen(), isFalse);
     });
 
-    test('connectViaTailscaleHub saves Hermes URL when the desktop hub answers',
+    test('connectViaTailscaleHub saves the hub URL and does not dial Hermes',
         () async {
       final hermes = HermesStreamingService();
       final settings = SettingsPreferenceService();
@@ -117,28 +122,37 @@ void main() {
 
       expect(result.success, isTrue);
       expect(result.foundPrimaryHub, isTrue);
-      expect(result.hermesUrl, 'http://100.64.1.20:8642');
-      expect(hermes.baseUrl, 'http://100.64.1.20:8642');
-      expect(await settings.getHermesUrl(), 'http://100.64.1.20:8642');
+      expect(result.hubUrl, 'http://100.64.1.20:1337');
+      expect(result.hermesUrl, isEmpty);
+      expect(hermes.baseUrl, 'http://100.64.1.20:1337');
+      expect(hermes.reachesHermesViaHub, isTrue);
+      expect(await settings.getHubUrl(), 'http://100.64.1.20:1337');
+      expect(await settings.getHermesUrl(), isNull);
+      expect(await settings.getClientInstallRole(), 'mobile');
       expect(service.mode, MobileConnectionMode.tailscaleHub);
       expect(await service.shouldShowConnectionScreen(), isFalse);
       hermes.dispose();
     });
 
-    test('falls back to Hermes /health when the hub path is absent', () async {
+    test('does not treat a direct Hermes /health check as the desktop hub',
+        () async {
+      var hermesProbed = false;
       final service = MobileConnectionService(
         httpGet: (uri) async {
-          if (uri.path == '/health') {
+          if (uri.path == '/health' ||
+              uri.port == AppConfig.defaultHermesPort) {
+            hermesProbed = true;
             return http.Response('OK', 200);
           }
-          throw Exception('hub down');
+          return http.Response('missing', 404);
         },
       );
 
       final result = await service.probeHub('pc.tailnet.ts.net');
-      expect(result.success, isTrue);
+      expect(result.success, isFalse);
       expect(result.foundPrimaryHub, isFalse);
-      expect(result.hermesUrl, 'http://pc.tailnet.ts.net:8642');
+      expect(result.hermesUrl, isEmpty);
+      expect(hermesProbed, isFalse);
     });
 
     test('does not probe a non-tailnet host even if it answers /health',

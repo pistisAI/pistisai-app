@@ -46,6 +46,8 @@ import 'package:pistisai/services/providers/google_adapter.dart';
 import 'package:pistisai/services/providers/moonshot_adapter.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/hub/client_connectivity.dart';
+import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/agent_status_service.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
@@ -266,15 +268,27 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
-      // Hermes streaming service for direct Hermes API integration.
-      // Discover the local gateway key so desktop chat/voice are authenticated.
+      // Hermes streaming service. The primary desktop hub dials local Hermes.
+      // A phone or secondary desktop uses the saved hub URL instead.
       final hermesUrl = await settingsPreferenceService.getHermesUrl();
+      final hubUrl = await settingsPreferenceService.getHubUrl();
       final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
+      final installRole = resolveClientInstallRole(
+        isWeb: false,
+        isMobile: PlatformHelper.isMobile,
+        storedRole: await settingsPreferenceService.getClientInstallRole(),
+        hubUrl: hubUrl,
+        hermesUrl: hermesUrl,
+      );
+      final transport = resolveChatTransport(
+        role: installRole,
+        configuredUrl: hermesUrl,
+        hubUrl: hubUrl,
+      );
       final hermesStreamingService = HermesStreamingService(
-        baseUrl: (hermesUrl != null && hermesUrl.isNotEmpty)
-            ? AppConfig.normalizeHermesUrl(hermesUrl)
-            : AppConfig.defaultHermesUrl,
+        baseUrl: transport.baseUrl,
         apiKey: hermesApiKey,
+        role: installRole,
       );
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);
@@ -313,6 +327,21 @@ Future<void> setupCoreServices() async {
       AppConfig.verboseLog(
         '[ServiceLocator] Skipping desktop-only LocalBrain/router core services on web',
       );
+      // Web attaches to the primary desktop hub. It does not open a Hermes
+      // gateway client, including the default loopback port.
+      final hermesUrl = await settingsPreferenceService.getHermesUrl();
+      final hubUrl = await settingsPreferenceService.getHubUrl();
+      final transport = resolveChatTransport(
+        role: ClientInstallRole.web,
+        configuredUrl: hermesUrl,
+        hubUrl: hubUrl,
+      );
+      final webHermes = HermesStreamingService(
+        baseUrl: transport.baseUrl,
+        apiKey: await settingsPreferenceService.getHermesApiKey(),
+        role: ClientInstallRole.web,
+      );
+      serviceLocator.registerSingleton<HermesStreamingService>(webHermes);
     }
 
     // Authentication Provider - Using platform-specific provider

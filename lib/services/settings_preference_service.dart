@@ -48,11 +48,13 @@ class SettingsPreferenceService {
 
   // App Settings
   static const String _encryptLocalDataKey = 'settings_encrypt_local_data';
-  static const String _sessionTimeoutMinutesKey = 'settings_session_timeout_minutes';
+  static const String _sessionTimeoutMinutesKey =
+      'settings_session_timeout_minutes';
   static const String _rememberTokensKey = 'settings_remember_tokens';
 
   // Storage Settings
-  static const String _maxConversationHistoryKey = 'settings_max_conversation_history';
+  static const String _maxConversationHistoryKey =
+      'settings_max_conversation_history';
   static const String _enableCacheKey = 'settings_enable_cache';
   static const String _cacheSizeMBKey = 'settings_cache_size_mb';
   static const String _autoCleanupKey = 'settings_auto_cleanup';
@@ -77,8 +79,11 @@ class SettingsPreferenceService {
   // Hermes Settings
   static const String _hermesEnabledKey = 'settings_hermes_enabled';
   static const String _hermesUrlKey = 'settings_hermes_url';
+  static const String _hubUrlKey = 'settings_hub_url';
+  static const String _clientInstallRoleKey = 'settings_client_install_role';
   static const String _hermesApiKeyKey = 'settings_hermes_api_key';
-  static const String _setupWizardDeferredKey = 'settings_setup_wizard_deferred';
+  static const String _setupWizardDeferredKey =
+      'settings_setup_wizard_deferred';
 
   // Mobile Settings
   static const String _biometricAuthKey = 'settings_biometric_auth_enabled';
@@ -444,6 +449,38 @@ class SettingsPreferenceService {
       await prefs.remove(_hermesUrlKey);
     } else {
       await prefs.setString(_hermesUrlKey, AppConfig.normalizeHermesUrl(value));
+    }
+  }
+
+  /// Primary desktop hub base (`http://host:1337`). Not a Hermes gateway URL.
+  Future<String?> getHubUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString(_hubUrlKey);
+    if (stored == null || stored.isEmpty) return null;
+    return stored;
+  }
+
+  Future<void> setHubUrl(String? value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value == null || value.isEmpty) {
+      await prefs.remove(_hubUrlKey);
+    } else {
+      await prefs.setString(_hubUrlKey, value.trim());
+    }
+  }
+
+  /// `primary_hub`, `secondary_desktop`, `web`, or `mobile`.
+  Future<String?> getClientInstallRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_clientInstallRoleKey);
+  }
+
+  Future<void> setClientInstallRole(String? value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value == null || value.isEmpty) {
+      await prefs.remove(_clientInstallRoleKey);
+    } else {
+      await prefs.setString(_clientInstallRoleKey, value);
     }
   }
 

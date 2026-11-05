@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/hub/client_connectivity.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,11 +20,17 @@ class MobileHubProbeResult {
     required this.success,
     required this.hermesUrl,
     required this.message,
+    this.hubUrl = '',
     this.foundPrimaryHub = false,
   });
 
   final bool success;
+
+  /// Direct gateway URL. Not a client dial target. Empty on success.
   final String hermesUrl;
+
+  /// Primary desktop hub (`http://host:1337`) when [foundPrimaryHub] is true.
+  final String hubUrl;
   final String message;
   final bool foundPrimaryHub;
 }
@@ -163,14 +170,20 @@ class MobileConnectionService extends ChangeNotifier {
       );
     }
 
-    final hermesUrl = 'http://$host:$hermesPort';
-    final hubUri = Uri.parse('http://$host:$hubPort${AppConfig.hubPath}');
+    final hubUrl = 'http://$host:$hubPort';
+    // hermesPort is the gateway behind the hub. This phone must not dial it.
+    final blockedGateway = 'http://$host:$hermesPort';
+    final hubUri = Uri.parse('$hubUrl${AppConfig.hubPath}');
     try {
       final hubResponse = await _get(hubUri);
       if (hubResponse.statusCode == 200 && _isPrimaryHub(hubResponse.body)) {
+        debugPrint(
+          '[MobileConnection] Hub at $hubUrl; not dialing $blockedGateway',
+        );
         return MobileHubProbeResult(
           success: true,
-          hermesUrl: hermesUrl,
+          hermesUrl: '',
+          hubUrl: hubUrl,
           foundPrimaryHub: true,
           message: 'Connected to the primary desktop hub.',
         );
@@ -179,23 +192,10 @@ class MobileConnectionService extends ChangeNotifier {
       debugPrint('[MobileConnection] Hub probe failed: $e');
     }
 
-    final healthUri = Uri.parse('$hermesUrl/health');
-    try {
-      final health = await _get(healthUri);
-      if (health.statusCode == 200) {
-        return MobileHubProbeResult(
-          success: true,
-          hermesUrl: hermesUrl,
-          message: 'Reached Hermes on the desktop through Tailscale.',
-        );
-      }
-    } catch (e) {
-      debugPrint('[MobileConnection] Hermes probe failed: $e');
-    }
-
     return MobileHubProbeResult(
       success: false,
-      hermesUrl: hermesUrl,
+      hermesUrl: '',
+      hubUrl: '',
       message:
           'Could not reach a Pistisai desktop hub at $host. Open Tailscale on this phone, join the same tailnet as your PC, and use that PC\'s Tailscale name or 100.x address.',
     );
@@ -212,8 +212,16 @@ class MobileConnectionService extends ChangeNotifier {
         return result;
       }
       await _settings.setHermesEnabled(true);
-      await _settings.setHermesUrl(result.hermesUrl);
-      _hermesStreamingService?.updateBaseUrl(result.hermesUrl);
+      await _settings.setHermesUrl(null);
+      await _settings.setHubUrl(result.hubUrl);
+      await _settings.setClientInstallRole(
+        ClientInstallRole.mobile.storageValue,
+      );
+      final streaming = _hermesStreamingService;
+      if (streaming != null) {
+        streaming.bindRole(ClientInstallRole.mobile);
+        streaming.updateBaseUrl(result.hubUrl);
+      }
       await _persist(
         mode: MobileConnectionMode.tailscaleHub,
         complete: true,

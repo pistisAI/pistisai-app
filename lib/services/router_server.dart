@@ -14,6 +14,7 @@ import 'conscience_storage_service.dart';
 import 'voice/cloud_tts_service.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/services/hub/hermes_hub_broker.dart';
 import 'package:pistisai/utils/http_constants.dart';
 
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
@@ -35,6 +36,13 @@ class RouterServer {
   /// When null, all endpoints are open (no auth check).
   final String? authSecret;
 
+  /// Forwards chat send/sync to the co-resident Hermes gateway.
+  ///
+  /// Web, mobile, and secondary desktops call these routes on the hub.
+  /// They must not dial the Hermes gateway port themselves. `hermesPort` in
+  /// the discovery document is informational for this hub.
+  final HermesHubBroker hermesHubBroker;
+
   HttpServer? _server;
 
   /// Endpoints that remain accessible without authentication.
@@ -53,7 +61,9 @@ class RouterServer {
     this.conscienceStorage,
     CloudTtsService? ttsService,
     this.authSecret,
-  }) : ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService());
+    HermesHubBroker? hermesHubBroker,
+  })  : ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService()),
+        hermesHubBroker = hermesHubBroker ?? HermesHubBroker();
 
   /// Start the server
   Future<void> start() async {
@@ -68,8 +78,16 @@ class RouterServer {
     // GET /health
     router.get('/health', (Request request) => Response.ok('OK'));
 
-    // GET /api/pistisai/hub — mobile clients discover the primary desktop hub.
+    // GET /api/pistisai/hub — clients discover the primary desktop hub.
     router.get(AppConfig.hubPath, _handleHub);
+
+    // Chat send/sync for non-primary clients. The body and status codes are
+    // forwarded unchanged (a 404 or 409 is not an empty success).
+    router.post('/api/pistisai/messages', _proxyPistisaiMessage);
+    router.get(
+      '/api/sessions/<sessionKey>/messages',
+      _proxySessionMessages,
+    );
 
     // OpenAI-compatible local speech endpoint for Hermes voice output.
     if (ttsService != null) {
@@ -108,6 +126,7 @@ class RouterServer {
   Future<void> stop() async {
     await _server?.close();
     _server = null;
+    hermesHubBroker.close();
   }
 
   /// Auth middleware: when [authSecret] is set, rejects unauthenticated
@@ -156,9 +175,80 @@ class RouterServer {
       jsonEncode(<String, Object>{
         'role': 'primary_hub',
         'product': 'Pistisai',
+        // hermesPort is the gateway this hub dials. Clients use [chat],
+        // not that port.
         'hermesPort': AppConfig.defaultHermesPort,
         'routerPort': _server?.port ?? port,
+        'chat': <String, String>{
+          'send': '/api/pistisai/messages',
+          'sync': '/api/sessions/{session_key}/messages',
+        },
       }),
+      headers: {'Content-Type': 'application/json'},
+    );
+  }
+
+  Future<Response> _proxyPistisaiMessage(Request request) async {
+    try {
+      final body = await request.readAsString();
+      final result = await hermesHubBroker.forwardPistisaiMessage(
+        body: body,
+        authorization: _upstreamAuthorization(request),
+      );
+      return _proxyResponse(result);
+    } catch (e) {
+      return _gatewayUnavailable();
+    }
+  }
+
+  Future<Response> _proxySessionMessages(
+    Request request,
+    String sessionKey,
+  ) async {
+    try {
+      final result = await hermesHubBroker.forwardSessionMessages(
+        sessionKey: _decodeSessionKey(sessionKey),
+        queryParameters: request.url.queryParameters,
+        authorization: _upstreamAuthorization(request),
+      );
+      return _proxyResponse(result);
+    } catch (e) {
+      return _gatewayUnavailable();
+    }
+  }
+
+  /// When the hub itself requires a bearer token, that token is for the
+  /// router, not Hermes. Only an open hub forwards the caller Authorization,
+  /// which may be the Hermes API key.
+  /// Shelf may hand the path segment over still percent-encoded. The broker
+  /// encodes the gateway key itself, so decode once here and only here.
+  String _decodeSessionKey(String sessionKey) {
+    try {
+      final decoded = Uri.decodeComponent(sessionKey);
+      if (decoded == sessionKey) return sessionKey;
+      return decoded;
+    } catch (_) {
+      return sessionKey;
+    }
+  }
+
+  String? _upstreamAuthorization(Request request) {
+    if (authSecret != null) return null;
+    return request.headers['authorization'];
+  }
+
+  Response _proxyResponse(HubForwardResult result) {
+    return Response(
+      result.statusCode,
+      body: result.body,
+      headers: {'Content-Type': result.contentType},
+    );
+  }
+
+  Response _gatewayUnavailable() {
+    return Response(
+      502,
+      body: hermesGatewayUnavailableBody(),
       headers: {'Content-Type': 'application/json'},
     );
   }

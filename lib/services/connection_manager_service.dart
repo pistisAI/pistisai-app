@@ -6,10 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'package:pistisai/utils/platform_helper.dart';
+
 import '../config/app_config.dart';
 import 'agent_runtime/agent_runtime_client.dart';
 import 'agent_runtime/hermes_runtime_client.dart';
 import 'hermes/hermes_streaming_service.dart';
+import 'hub/client_connectivity.dart';
 import 'settings_preference_service.dart' as preferences;
 import 'streaming_service.dart';
 
@@ -48,6 +51,11 @@ class ConnectionManagerService extends ChangeNotifier {
   final preferences.SettingsPreferenceService? _settingsPreferenceService;
   String? _configuredHermesUrl;
   String? _configuredHermesApiKey;
+  String? _hubUrl;
+  ClientInstallRole _role = ClientInstallRole.primaryHub;
+
+  /// How this install is allowed to reach Hermes.
+  ClientInstallRole get installRole => _role;
 
   /// When false, [initialize] skips auto-detection so unit tests can run
   /// without a live agent runtime on the host.
@@ -262,8 +270,31 @@ class ConnectionManagerService extends ChangeNotifier {
   Future<void> _autoDetectRuntime() async {
     _log.info('Auto-detecting local agent runtimes...');
 
+    if (!allowsDirectHermesGateway(_role)) {
+      final decision = _transportDecision();
+      _applyTransport(decision);
+      if (!decision.allowed || decision.baseUrl == null) {
+        _log.info(
+          'No primary hub configured; not opening a Hermes gateway client',
+        );
+        return;
+      }
+      try {
+        await hermesStreamingService.establishConnection();
+        if (hermesStreamingService.connection.isActive) {
+          _currentBackend = BackendType.hermes;
+          _activeRuntimeClient = _createHermesRuntimeClient();
+          notifyListeners();
+        }
+      } catch (e) {
+        _log.info('Primary hub detection: $e');
+      }
+      return;
+    }
+
     // 1. Try the authenticated Hermes HTTP gateway. Chat must use the
     // canonical API server so it keeps session, tool, and lifecycle semantics.
+    // Only the primary desktop hub may do this.
     try {
       // Keep the injected streaming service and the runtime client on the
       // same discovered key so /v1/models and chat are authenticated.
@@ -304,6 +335,14 @@ class ConnectionManagerService extends ChangeNotifier {
           notifyListeners();
           return false;
         case BackendType.hermes:
+          final decision = _transportDecision();
+          if (!decision.allowed) {
+            _lastError = decision.refusal;
+            _isConnected = false;
+            notifyListeners();
+            return false;
+          }
+          _applyTransport(decision);
           final client = _ensureHermesRuntimeClient();
           final health = await client.health();
           _isConnected = health.isHealthy;
@@ -474,17 +513,75 @@ class ConnectionManagerService extends ChangeNotifier {
     }
   }
 
-  void configureHermesRuntime({
+  Future<void> configureHermesRuntime({
     required String url,
     String? apiKey,
-  }) {
-    _configuredHermesUrl = url.trim().isEmpty ? null : url.trim();
+  }) async {
+    final trimmed = url.trim();
     _configuredHermesApiKey =
         apiKey == null || apiKey.trim().isEmpty ? null : apiKey.trim();
+    _role = roleForConfiguredUrl(detected: _role, url: trimmed);
+    hermesStreamingService.bindRole(_role);
+    final decision = resolveChatTransport(
+      role: _role,
+      configuredUrl: trimmed,
+      hubUrl: isHubBaseUrl(trimmed) ? trimmed : _hubUrl,
+    );
+    if (!decision.allowed || decision.baseUrl == null) {
+      _configuredHermesUrl = null;
+      _lastError = decision.refusal ?? directHermesRefusal;
+      _isConnected = false;
+      _activeRuntimeClient = null;
+      notifyListeners();
+      return;
+    }
+    if (decision.viaHub) {
+      _hubUrl = decision.baseUrl;
+      _configuredHermesUrl = null;
+      await _persistHubAttachment(decision.baseUrl!);
+    } else {
+      _configuredHermesUrl = decision.baseUrl;
+    }
+    _applyTransport(decision);
     if (_currentBackend == BackendType.hermes) {
       _activeRuntimeClient = _createHermesRuntimeClient();
       notifyListeners();
     }
+  }
+
+  /// Point a non-primary install at the primary desktop hub.
+  ///
+  /// A direct Hermes gateway URL is refused. A remote `:8642` URL is joined
+  /// as the hub on the same host (`:1337`) and is not dialed.
+  Future<bool> attachToPrimaryHub(String hubBaseUrl) async {
+    final trimmed = hubBaseUrl.trim();
+    if (allowsDirectHermesGateway(_role) && !isLoopbackHost(_hostOf(trimmed))) {
+      _role = ClientInstallRole.secondaryDesktop;
+    }
+    final joined =
+        normalizeHubBaseUrl(trimmed) ?? hubBaseUrlForHermesGateway(trimmed);
+    if (joined == null) {
+      _lastError = directHermesRefusal;
+      _isConnected = false;
+      notifyListeners();
+      return false;
+    }
+    _hubUrl = joined;
+    _configuredHermesUrl = null;
+    hermesStreamingService.bindRole(_role);
+    _applyTransport(
+      resolveChatTransport(
+        role: _role,
+        configuredUrl: null,
+        hubUrl: joined,
+      ),
+    );
+    await _persistHubAttachment(joined);
+    _currentBackend = BackendType.hermes;
+    _activeRuntimeClient = _createHermesRuntimeClient();
+    _persistActiveBackend(BackendType.hermes);
+    notifyListeners();
+    return testConnection();
   }
 
   Future<void> _connectToActiveRuntime() async {
@@ -526,15 +623,51 @@ class ConnectionManagerService extends ChangeNotifier {
   }
 
   HermesRuntimeClient _createHermesRuntimeClient() {
+    final decision = _transportDecision();
     // Add 8642 only when a loopback URL was saved without a port.
     // An explicit port, including a discovered hermes serve port, stays.
-    final url = AppConfig.normalizeHermesUrl(
-      _configuredHermesUrl ?? AppConfig.defaultHermesUrl,
-    );
+    // Non-primary installs never receive a gateway URL here.
+    final url = decision.baseUrl ??
+        (allowsDirectHermesGateway(_role)
+            ? AppConfig.defaultHermesUrl
+            : 'http://127.0.0.1:${AppConfig.defaultRouterPort}');
     return HermesRuntimeClient(
       baseUrl: url,
       apiKey: _configuredHermesApiKey,
+      role: _role,
     );
+  }
+
+  ChatTransportDecision _transportDecision() {
+    return resolveChatTransport(
+      role: _role,
+      configuredUrl: _configuredHermesUrl,
+      hubUrl: _hubUrl,
+    );
+  }
+
+  void _applyTransport(ChatTransportDecision decision) {
+    hermesStreamingService.bindRole(_role);
+    if (decision.allowed && decision.baseUrl != null) {
+      hermesStreamingService.updateBaseUrl(decision.baseUrl!);
+      return;
+    }
+    if (_configuredHermesUrl != null && _configuredHermesUrl!.isNotEmpty) {
+      _lastError = decision.refusal;
+    }
+  }
+
+  Future<void> _persistHubAttachment(String hubUrl) async {
+    final settings = _settingsPreferenceService;
+    if (settings == null) return;
+    await settings.setHubUrl(hubUrl);
+    await settings.setClientInstallRole(_role.storageValue);
+    await settings.setHermesUrl(null);
+    await settings.setHermesEnabled(true);
+  }
+
+  String _hostOf(String url) {
+    return Uri.tryParse(url.trim())?.host ?? '';
   }
 
   Future<void> _loadConfiguredRuntime() async {
@@ -546,11 +679,37 @@ class ConnectionManagerService extends ChangeNotifier {
     final configuredBackend = await settings.getActiveBackend();
     _configuredHermesUrl = await settings.getHermesUrl();
     _configuredHermesApiKey = await settings.getHermesApiKey();
+    _hubUrl = await settings.getHubUrl();
+    _role = resolveClientInstallRole(
+      isWeb: kIsWeb,
+      isMobile: !kIsWeb && PlatformHelper.isMobile,
+      storedRole: await settings.getClientInstallRole(),
+      hubUrl: _hubUrl,
+      hermesUrl: _configuredHermesUrl,
+    );
+    final decision = _transportDecision();
+    if (decision.viaHub && decision.baseUrl != null) {
+      _hubUrl = decision.baseUrl;
+      if (_configuredHermesUrl != null &&
+          isDirectHermesGatewayUrl(_configuredHermesUrl!)) {
+        _configuredHermesUrl = null;
+        unawaited(settings.setHermesUrl(null));
+        unawaited(settings.setHubUrl(decision.baseUrl));
+        unawaited(settings.setClientInstallRole(_role.storageValue));
+      }
+    }
+    _applyTransport(decision);
     final hermesEnabled = await settings.isHermesEnabled();
 
     if (configuredBackend == preferences.BackendType.hermes || hermesEnabled) {
       _currentBackend = BackendType.hermes;
-      _activeRuntimeClient = _createHermesRuntimeClient();
+      if (decision.allowed) {
+        _activeRuntimeClient = _createHermesRuntimeClient();
+      } else {
+        _activeRuntimeClient = null;
+        _lastError = decision.refusal;
+        _isConnected = false;
+      }
     } else {
       _currentBackend = null;
       _activeRuntimeClient = null;
