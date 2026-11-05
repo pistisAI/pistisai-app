@@ -79,7 +79,7 @@ class _TrayInitializerState extends State<TrayInitializer> {
         onSettings: () {
           final context = widget.navigatorKey.currentContext;
           if (context != null) {
-            GoRouter.of(context).go('/settings');
+            GoRouter.of(context).go('/config');
           } else {
             appLogger.warning(
               '[TrayInitializer] Unable to navigate to settings: no context from navigatorKey',

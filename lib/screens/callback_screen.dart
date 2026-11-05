@@ -8,6 +8,7 @@ import '../utils/web_interop_stub.dart'
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
 import '../services/platform_adapter.dart';
+import '../config/app_config.dart';
 
 // Callback forwarding flag key - must match router.dart
 const _callbackForwardedKey = 'callback_forwarded';
@@ -38,9 +39,9 @@ class _CallbackScreenState extends State<CallbackScreen> {
   @override
   void initState() {
     super.initState();
-    debugPrint(' [CallbackScreen] initState called');
+    AppConfig.verboseLog(' [CallbackScreen] initState called');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint(' [CallbackScreen] postFrameCallback triggered');
+      AppConfig.verboseLog(' [CallbackScreen] postFrameCallback triggered');
       _processCallback();
     });
   }
@@ -69,15 +70,15 @@ class _CallbackScreenState extends State<CallbackScreen> {
     int maxAttempts = 3,
     Duration attemptTimeout = const Duration(seconds: 5),
   }) async {
-    debugPrint(
+    AppConfig.verboseLog(
       '[CallbackScreen] Waiting for authentication state (max $maxAttempts attempts)...',
     );
-    debugPrint(
+    AppConfig.verboseLog(
       '[CallbackScreen] Current auth state before wait: ${authService.isAuthenticated.value}',
     );
 
     for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-      debugPrint(
+      AppConfig.verboseLog(
         '[CallbackScreen] Auth state check attempt $attempt/$maxAttempts',
       );
 
@@ -87,32 +88,33 @@ class _CallbackScreenState extends State<CallbackScreen> {
         final currentAuthState = authService.isAuthenticated.value;
         if (currentAuthState) {
           final elapsedMs = DateTime.now().difference(startTime).inMilliseconds;
-          debugPrint(
+          AppConfig.verboseLog(
             '[CallbackScreen] SUCCESS: Authentication state changed to true after ${elapsedMs}ms',
           );
-          debugPrint('[CallbackScreen] Auth state before: false, after: true');
+          AppConfig.verboseLog(
+              '[CallbackScreen] Auth state before: false, after: true');
           return true;
         }
         await Future.delayed(const Duration(milliseconds: 100));
       }
 
       final currentAuthState = authService.isAuthenticated.value;
-      debugPrint(
+      AppConfig.verboseLog(
         '[CallbackScreen] Attempt $attempt timed out after ${attemptTimeout.inSeconds}s',
       );
-      debugPrint('[CallbackScreen] Auth state: $currentAuthState');
+      AppConfig.verboseLog('[CallbackScreen] Auth state: $currentAuthState');
 
       // If not the last attempt, wait a bit before retrying
       if (attempt < maxAttempts) {
-        debugPrint('[CallbackScreen] Waiting 500ms before retry...');
+        AppConfig.verboseLog('[CallbackScreen] Waiting 500ms before retry...');
         await Future.delayed(const Duration(milliseconds: 500));
       }
     }
 
-    debugPrint(
+    AppConfig.verboseLog(
       '[CallbackScreen] FAILED: Authentication state not verified after $maxAttempts attempts',
     );
-    debugPrint(
+    AppConfig.verboseLog(
       '[CallbackScreen] Final auth state: ${authService.isAuthenticated.value}',
     );
     return false;
@@ -123,11 +125,11 @@ class _CallbackScreenState extends State<CallbackScreen> {
     if (kIsWeb) {
       try {
         window.sessionStorage.removeItem(_callbackForwardedKey);
-        debugPrint(
+        AppConfig.verboseLog(
           '[CallbackScreen] Cleared callback forwarded flag from sessionStorage',
         );
       } catch (e) {
-        debugPrint(
+        AppConfig.verboseLog(
           '[CallbackScreen] Error clearing callback forwarded flag: $e',
         );
       }
@@ -153,10 +155,12 @@ class _CallbackScreenState extends State<CallbackScreen> {
           queryParameters: cleanParams.isEmpty ? null : cleanParams,
         );
 
-        debugPrint('[CallbackScreen] Clearing callback parameters from URL');
+        AppConfig.verboseLog(
+            '[CallbackScreen] Clearing callback parameters from URL');
         window.history.replaceState(null, document.title, cleanUri.toString());
       } catch (e) {
-        debugPrint('[CallbackScreen] Error clearing callback parameters: $e');
+        AppConfig.verboseLog(
+            '[CallbackScreen] Error clearing callback parameters: $e');
       }
     }
   }
@@ -216,7 +220,7 @@ class _CallbackScreenState extends State<CallbackScreen> {
     // For now, we'll assume services are loaded if auth state is true
     // In the future, we could add a specific flag in AuthService to track this
     final servicesLoaded = authService.isAuthenticated.value;
-    debugPrint(
+    AppConfig.verboseLog(
       '[CallbackScreen] Authenticated services loaded: $servicesLoaded',
     );
     return servicesLoaded;
@@ -224,38 +228,40 @@ class _CallbackScreenState extends State<CallbackScreen> {
 
   Future<void> _processCallback() async {
     try {
-      debugPrint('[CallbackScreen] ===== CALLBACK PROCESSING START =====');
-      debugPrint('[CallbackScreen] _processCallback started');
+      AppConfig.verboseLog(
+          '[CallbackScreen] ===== CALLBACK PROCESSING START =====');
+      AppConfig.verboseLog('[CallbackScreen] _processCallback started');
 
       _updateStatus('Initializing authentication...');
 
       final authService = context.read<AuthService>();
-      debugPrint('[CallbackScreen] AuthService obtained from context');
-      debugPrint(
+      AppConfig.verboseLog(
+          '[CallbackScreen] AuthService obtained from context');
+      AppConfig.verboseLog(
         '[CallbackScreen] Initial auth state: ${authService.isAuthenticated.value}',
       );
 
       // For desktop platforms, the callback route should not be used
       // Desktop authentication is handled internally by the auth service
       if (!kIsWeb) {
-        debugPrint(
+        AppConfig.verboseLog(
           '[CallbackScreen] Desktop platform detected - callback route not needed',
         );
-        debugPrint(
+        AppConfig.verboseLog(
           '[CallbackScreen] Checking current authentication state and redirecting',
         );
-        debugPrint(
+        AppConfig.verboseLog(
           '[CallbackScreen] Auth state: ${authService.isAuthenticated.value}',
         );
 
         if (mounted) {
           if (authService.isAuthenticated.value) {
-            debugPrint(
+            AppConfig.verboseLog(
               '[CallbackScreen] User already authenticated, redirecting to home',
             );
             context.go('/');
           } else {
-            debugPrint(
+            AppConfig.verboseLog(
               '[CallbackScreen] User not authenticated, redirecting to login',
             );
             context.go('/login');
@@ -266,10 +272,10 @@ class _CallbackScreenState extends State<CallbackScreen> {
 
       // Check if user is already authenticated - if so, just redirect to home
       if (authService.isAuthenticated.value) {
-        debugPrint(
+        AppConfig.verboseLog(
           '[CallbackScreen] User already authenticated, skipping callback processing',
         );
-        debugPrint('[CallbackScreen] Redirecting to home');
+        AppConfig.verboseLog('[CallbackScreen] Redirecting to home');
         if (mounted) {
           context.go('/');
         }
@@ -281,27 +287,28 @@ class _CallbackScreenState extends State<CallbackScreen> {
           routeParams.containsKey('state') ||
           routeParams.containsKey('error');
 
-      debugPrint('[CallbackScreen] Route params: $routeParams');
-      debugPrint(
+      AppConfig.verboseLog('[CallbackScreen] Route params: $routeParams');
+      AppConfig.verboseLog(
         '[CallbackScreen] Has callback params: $hasRouteCallbackParams',
       );
 
       // Check if this is a callback URL using route params
       final isCallbackUrl = hasRouteCallbackParams;
-      debugPrint(
+      AppConfig.verboseLog(
         '[CallbackScreen] Is callback URL: $isCallbackUrl (route params present: $hasRouteCallbackParams)',
       );
 
       if (!isCallbackUrl) {
         // For Supabase, we might not have route params if it uses hash fragment which Flutter router might handle differently
         // But if we are here, we should probably wait for auth state or redirect
-        debugPrint(
+        AppConfig.verboseLog(
             '[CallbackScreen] No explicit callback params found, checking auth state...');
       }
 
       // Web platform - process the callback normally
-      debugPrint('[CallbackScreen] Web platform - processing callback');
-      debugPrint(
+      AppConfig.verboseLog(
+          '[CallbackScreen] Web platform - processing callback');
+      AppConfig.verboseLog(
         '[CallbackScreen] Auth state before callback: ${authService.isAuthenticated.value}',
       );
 
@@ -310,13 +317,14 @@ class _CallbackScreenState extends State<CallbackScreen> {
       // Trigger the auth provider to handle the redirect callback
       // The provider internally uses onLoad() to parse the URL and exchange tokens
       final success = await authService.handleCallback();
-      debugPrint('[CallbackScreen] handleCallback returned: $success');
+      AppConfig.verboseLog(
+          '[CallbackScreen] handleCallback returned: $success');
 
       if (mounted) {
         if (success) {
           // Wait for authentication state to be properly set and session persisted
           // This replaces the arbitrary 300ms delay with proper state verification
-          debugPrint(
+          AppConfig.verboseLog(
             '[CallbackScreen] Callback successful, waiting for session persistence...',
           );
 
@@ -332,7 +340,7 @@ class _CallbackScreenState extends State<CallbackScreen> {
           if (!mounted) return;
 
           if (authStateVerified) {
-            debugPrint(
+            AppConfig.verboseLog(
               '[CallbackScreen] Authentication state verified successfully',
             );
 
@@ -344,21 +352,21 @@ class _CallbackScreenState extends State<CallbackScreen> {
             );
 
             if (servicesLoaded) {
-              debugPrint(
+              AppConfig.verboseLog(
                 '[CallbackScreen] SUCCESS: Authentication and services verified',
               );
-              debugPrint('[CallbackScreen] Redirecting to home');
+              AppConfig.verboseLog('[CallbackScreen] Redirecting to home');
 
               // Clear the callback forwarded flag now that processing is complete
               _clearCallbackForwardedFlag();
 
               // Use pushReplacement to clear the callback URL from history
-              debugPrint(
+              AppConfig.verboseLog(
                 '[CallbackScreen] ===== CALLBACK PROCESSING COMPLETE =====',
               );
               context.pushReplacement('/');
             } else {
-              debugPrint(
+              AppConfig.verboseLog(
                 '[CallbackScreen] ERROR: Authenticated services not loaded after successful auth',
               );
               _clearCallbackForwardedFlag();
@@ -368,7 +376,7 @@ class _CallbackScreenState extends State<CallbackScreen> {
                 _showError(
                   'Authentication succeeded but services failed to load. Please try again.',
                 );
-                debugPrint(
+                AppConfig.verboseLog(
                   '[CallbackScreen] Redirecting to login due to service load failure',
                 );
                 // Delay to show error message
@@ -379,10 +387,10 @@ class _CallbackScreenState extends State<CallbackScreen> {
               }
             }
           } else {
-            debugPrint(
+            AppConfig.verboseLog(
               '[CallbackScreen] ERROR: Authentication state not verified after callback success',
             );
-            debugPrint(
+            AppConfig.verboseLog(
               '[CallbackScreen] Reason: Auth state did not become true within timeout',
             );
             _clearCallbackForwardedFlag();
@@ -392,7 +400,7 @@ class _CallbackScreenState extends State<CallbackScreen> {
               _showError(
                 'Authentication timed out. Session may not have been created. Please try again.',
               );
-              debugPrint(
+              AppConfig.verboseLog(
                 '[CallbackScreen] Redirecting to login due to auth state timeout',
               );
               // Delay to show error message
@@ -403,8 +411,9 @@ class _CallbackScreenState extends State<CallbackScreen> {
             }
           }
         } else {
-          debugPrint('[CallbackScreen] ERROR: Authentication callback failed');
-          debugPrint(
+          AppConfig.verboseLog(
+              '[CallbackScreen] ERROR: Authentication callback failed');
+          AppConfig.verboseLog(
             '[CallbackScreen] Reason: authService.handleCallback() returned false',
           );
           _clearCallbackForwardedFlag();
@@ -414,7 +423,7 @@ class _CallbackScreenState extends State<CallbackScreen> {
             _showError(
               'Authentication failed. Please try logging in again.',
             );
-            debugPrint(
+            AppConfig.verboseLog(
               '[CallbackScreen] Redirecting to login due to callback failure',
             );
             // Delay to show error message
@@ -426,8 +435,8 @@ class _CallbackScreenState extends State<CallbackScreen> {
         }
       }
     } catch (e, stackTrace) {
-      debugPrint('[CallbackScreen] ERROR: Processing exception: $e');
-      debugPrint('[CallbackScreen] Stack trace: $stackTrace');
+      AppConfig.verboseLog('[CallbackScreen] ERROR: Processing exception: $e');
+      AppConfig.verboseLog('[CallbackScreen] Stack trace: $stackTrace');
 
       // Clear callback parameters and flags on error
       _clearCallbackForwardedFlag();
@@ -436,11 +445,14 @@ class _CallbackScreenState extends State<CallbackScreen> {
       if (mounted) {
         // Show comprehensive error message based on error type
         final errorInfo = _categorizeError(e);
-        debugPrint('[CallbackScreen] Error type: ${errorInfo['type']}');
+        AppConfig.verboseLog(
+            '[CallbackScreen] Error type: ${errorInfo['type']}');
 
         _showError(errorInfo['message']!);
-        debugPrint('[CallbackScreen] Redirecting to login due to exception');
-        debugPrint('[CallbackScreen] ===== CALLBACK PROCESSING FAILED =====');
+        AppConfig.verboseLog(
+            '[CallbackScreen] Redirecting to login due to exception');
+        AppConfig.verboseLog(
+            '[CallbackScreen] ===== CALLBACK PROCESSING FAILED =====');
 
         // Delay to show error message
         await Future.delayed(const Duration(seconds: 3));

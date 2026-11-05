@@ -419,7 +419,7 @@ Pistisai has successfully migrated from a complex orchestrator-based system to a
 - No duplicate CI/CD systems running
 - Complete consolidation achieved
 
-See **[Unified Deployment Workflow Documentation](../OPERATIONS/cicd/UNIFIED_DEPLOYMENT_WORKFLOW.md)** for complete technical details.
+See **[Unified Deployment Workflow Documentation](../operations/cicd/UNIFIED_DEPLOYMENT_WORKFLOW.md)** for complete technical details.
 
 ## Conclusion
 
