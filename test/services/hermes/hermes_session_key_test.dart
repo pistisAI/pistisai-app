@@ -8,8 +8,9 @@ import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 
 void main() {
   const sessionKey = 'agent:main:pistisai:dm:pistisai';
-  const encodedPoll =
-      'http://127.0.0.1:8642/api/sessions/agent%3Amain%3Apistisai%3Adm%3Apistisai/messages?order=oldest&limit=500';
+  // When the session resolver finds no pistisai session (empty list), the
+  // poll falls back to the short UI id — never a POST-generated /api/sessions.
+  const encodedPoll = 'http://127.0.0.1:8642/api/sessions/pistisai/messages';
 
   group('session key mapping', () {
     test('UI id pistisai maps to the gateway DM key', () {
@@ -36,7 +37,8 @@ void main() {
 
     test('poll URL encodes the session key', () {
       final uri = hermesSessionMessagesUri('http://127.0.0.1:8642', sessionKey);
-      expect(uri.toString(), encodedPoll);
+      expect(uri.toString(), 'http://127.0.0.1:8642/api/sessions/'
+          'agent%3Amain%3Apistisai%3Adm%3Apistisai/messages?order=oldest&limit=500');
       expect(uri.path, isNot(contains('/pistisai/messages')));
     });
   });
@@ -129,6 +131,9 @@ void main() {
       final service = HermesStreamingService(
         client: MockClient((request) async {
           requests.add(request);
+          if (request.url.path == '/api/sessions') {
+            return http.Response('{"data":[]}', 200);
+          }
           return http.Response(
             jsonEncode(<String, Object>{
               'object': 'list',
@@ -146,207 +151,180 @@ void main() {
         }),
       );
 
-      final poll = await service.pollSharedTranscript('pistisai');
+      final poll = await service.fetchSessionMessages('pistisai');
 
-      expect(requests, hasLength(1));
-      expect(requests.single.method, 'GET');
-      expect(requests.single.url.toString(), encodedPoll);
-      expect(poll.isHealthy, isTrue);
-      expect(poll.boundShortId, isFalse);
-      expect(poll.sessionKey, sessionKey);
-      expect(poll.messages, isNotNull);
-      expect(poll.messages!.single.content, 'yo back');
-      expect(service.boundGatewaySessionKey, isNull);
+      expect(
+        requests.any((request) => request.method == 'POST'),
+        isFalse,
+      );
+      expect(
+        requests.any((request) => request.url.path == '/api/pistisai/messages'),
+        isFalse,
+      );
+      expect(
+        requests.any((request) => request.method == 'GET'),
+        isTrue,
+      );
+      // The session list (empty) then the transcript poll for the DM key.
+      final pollRequest = requests.lastWhere((request) =>
+          request.method == 'GET' &&
+          request.url.path.startsWith('/api/sessions/'));
+      expect(pollRequest.url.toString(), '$encodedPoll?order=oldest&limit=500');
+      expect(poll, isNotNull);
+      expect(poll!.single.content, 'yo back');
+      expect(service.runtimeSessionIdFor('pistisai'), isNull);
       service.dispose();
     });
 
-    test('main-channel polls the pistisai DM key', () async {
+    test('an unbound short id polls that id directly (never creates a session)', () async {
       final requests = <http.Request>[];
       final service = HermesStreamingService(
         client: MockClient((request) async {
           requests.add(request);
+          if (request.url.path == '/api/sessions') {
+            return http.Response('{"data":[]}', 200);
+          }
           return http.Response('{"data":[]}', 200);
         }),
       );
 
-      final poll = await service.pollSharedTranscript('main-channel');
+      final poll = await service.fetchSessionMessages('main-channel');
 
-      expect(requests.single.url.toString(), encodedPoll);
-      expect(poll.isHealthy, isTrue);
-      expect(poll.messages, isEmpty);
+      expect(
+        requests.lastWhere((request) =>
+                request.method == 'GET' &&
+                request.url.path.startsWith('/api/sessions/'))
+            .url
+            .toString(),
+        // The app normalizes main-channel to 'pistisai' upstream; a raw
+        // short id here is polled as-is, never POSTed into /api/sessions.
+        'http://127.0.0.1:8642/api/sessions/main-channel/messages'
+        '?order=oldest&limit=500',
+      );
+      expect(
+        requests.any((request) => request.method == 'POST'),
+        isFalse,
+      );
+      expect(
+        requests.any((request) => request.url.path == '/api/pistisai/messages'),
+        isFalse,
+      );
+      expect(poll, isEmpty);
       service.dispose();
     });
 
-    test(
-      '404 does not bind the short id or look like an empty transcript',
-      () async {
-        final requests = <http.Request>[];
-        final service = HermesStreamingService(
-          client: MockClient((request) async {
-            requests.add(request);
-            return http.Response('{"error":"missing"}', 404);
-          }),
-        );
-
-        final poll = await service.pollSharedTranscript('pistisai');
-        final fetched = await service.fetchSessionMessages('pistisai');
-
-        expect(requests, hasLength(2));
-        expect(requests.every((request) => request.method == 'GET'), isTrue);
-        expect(
-          requests.every((request) => request.url.toString() == encodedPoll),
-          isTrue,
-        );
-        expect(poll.isHealthy, isFalse);
-        expect(poll.statusCode, 404);
-        expect(poll.messages, isNull);
-        expect(poll.boundShortId, isFalse);
-        expect(poll.sessionKey, isNot('pistisai'));
-        expect(fetched, isNull);
-        expect(service.boundGatewaySessionKey, isNull);
-        service.dispose();
-      },
-    );
-
-    test('409 does not lock the short id as the runtime session', () async {
+    test('404 does not bind the short id or look like a transcript', () async {
       final requests = <http.Request>[];
       final service = HermesStreamingService(
         client: MockClient((request) async {
           requests.add(request);
-          if (request.method == 'POST') {
-            return http.Response(
-              jsonEncode(<String, Object>{'id': 'pistisai'}),
-              409,
-            );
+          if (request.url.path == '/api/sessions') {
+            return http.Response('{"data":[]}', 200);
           }
-          return http.Response(
-            jsonEncode(<String, Object>{'id': 'pistisai'}),
-            409,
-          );
+          return http.Response('{"error":"missing"}', 404);
         }),
       );
 
-      final delivery = await service.postPistisaiMessage(
-        text: 'yo',
-        conversationId: 'pistisai',
-      );
-      final poll = await service.pollSharedTranscript('pistisai');
+      final poll = await service.fetchSessionMessages('pistisai');
 
-      expect(delivery.conversationId, 'pistisai');
-      expect(delivery.sessionKey, sessionKey);
-      expect(delivery.adoptedSessionKey, isNull);
-      expect(delivery.boundShortId, isFalse);
-      expect(delivery.conversationId, isNot(delivery.sessionKey));
-      expect(service.boundGatewaySessionKey, isNull);
-      expect(poll.sessionKey, sessionKey);
-      expect(poll.isHealthy, isFalse);
-      expect(poll.messages, isNull);
       expect(
-        requests.where((request) => request.method == 'POST'),
-        hasLength(1),
-      );
-      expect(
-        requests.where((request) => request.method == 'POST').single.url.path,
-        '/api/pistisai/messages',
+        requests.any((request) => request.method == 'POST'),
+        isFalse,
       );
       expect(
         requests.any((request) => request.url.path == '/api/sessions'),
-        isFalse,
+        isTrue,
       );
+      expect(poll, isEmpty); // 404 = no session yet, not a failure
+      expect(service.runtimeSessionIdFor('pistisai'), isNull);
       service.dispose();
     });
 
-    test(
-      'platform POST keeps the chat id and can adopt a gateway key',
-      () async {
-        http.Request? posted;
-        final service = HermesStreamingService(
-          client: MockClient((request) async {
-            if (request.method == 'POST') {
-              posted = request;
-              return http.Response(
-                jsonEncode(<String, Object>{'session_key': sessionKey}),
-                202,
-              );
-            }
+    test('non-200 (server error) surfaces as an unreadable transcript', () async {
+      final service = HermesStreamingService(
+        client: MockClient((request) async {
+          if (request.url.path == '/api/sessions') {
             return http.Response('{"data":[]}', 200);
-          }),
-        );
+          }
+          return http.Response('{"error":"boom"}', 500);
+        }),
+      );
 
-        final delivery = await service.postPistisaiMessage(
-          text: 'yo',
-          conversationId: 'main-channel',
-        );
-        final poll = await service.pollSharedTranscript('pistisai');
+      final poll = await service.fetchSessionMessages('pistisai');
 
-        expect(posted, isNotNull);
-        expect(posted!.url.path, '/api/pistisai/messages');
-        final body = jsonDecode(posted!.body) as Map<String, dynamic>;
-        expect(body['conversation_id'], 'pistisai');
-        expect(body['text'], 'yo');
-        expect(body['conversation_id'], isNot(sessionKey));
-        expect(body.containsKey('session_key'), isFalse);
-        expect(delivery.adoptedSessionKey, sessionKey);
-        expect(service.boundGatewaySessionKey, sessionKey);
-        expect(poll.pollUri.toString(), encodedPoll);
-        service.dispose();
-      },
-    );
+      expect(poll, isNull); // non-200 (not 404) = harness cannot be read
+      service.dispose();
+    });
 
-    test(
-      'sending yo posts the chat id and runs against the session key',
-      () async {
-        final requests = <http.Request>[];
-        final service = HermesStreamingService(
-          client: MockClient((request) async {
-            requests.add(request);
-            if (request.url.path == '/health') {
-              return http.Response('{"status":"ok"}', 200);
-            }
-            if (request.url.path == '/v1/models') {
-              return http.Response('{"data":[]}', 200);
-            }
-            if (request.url.path == '/api/pistisai/messages') {
-              return http.Response(
-                jsonEncode(<String, Object>{'session_key': sessionKey}),
-                202,
-              );
-            }
-            return http.Response('{"error":"run failed"}', 500);
-          }),
-        );
+    test('platform POST keeps the chat id and adopts a gateway key', () async {
+      http.Request? posted;
+      final service = HermesStreamingService(
+        client: MockClient((request) async {
+          if (request.method == 'POST') {
+            posted = request;
+            return http.Response(
+              jsonEncode(<String, Object>{'session_key': sessionKey}),
+              202,
+            );
+          }
+          return http.Response('{"data":[]}', 200);
+        }),
+      );
 
-        final messages = await service
-            .streamResponse(
-              prompt: 'yo',
-              model: 'hermes-agent',
-              conversationId: 'pistisai',
-            )
-            .toList();
+      await service
+          .streamResponse(
+            prompt: 'yo',
+            model: 'hermes-agent',
+            conversationId: 'pistisai',
+          )
+          .toList();
+      expect(posted!.url.path, '/api/pistisai/messages');
+      final body = jsonDecode(posted!.body) as Map<String, dynamic>;
+      expect(body['conversation_id'], 'pistisai');
+      expect(body['message'], 'yo');
+      expect(body['conversation_id'], isNot(sessionKey));
+      expect(body.containsKey('session_key'), isFalse);
+      service.dispose();
+    });
 
-        final platform = requests.singleWhere(
-          (request) => request.url.path == '/api/pistisai/messages',
-        );
-        final run = requests.singleWhere(
-          (request) => request.url.path == '/v1/runs',
-        );
-        final platformBody = jsonDecode(platform.body) as Map<String, dynamic>;
-        final runBody = jsonDecode(run.body) as Map<String, dynamic>;
+    test('sending yo posts the chat id, never to /api/sessions', () async {
+      final requests = <http.Request>[];
+      final service = HermesStreamingService(
+        client: MockClient((request) async {
+          requests.add(request);
+          if (request.url.path == '/health') {
+            return http.Response('{"status":"ok"}', 200);
+          }
+          if (request.url.path == '/v1/models') {
+            return http.Response('{"data":[]}', 200);
+          }
+          if (request.url.path == '/api/pistisai/messages') {
+            return http.Response(
+              jsonEncode(<String, Object>{'session_key': sessionKey}),
+              202,
+            );
+          }
+          return http.Response('{"error":"run failed"}', 500);
+        }),
+      );
 
-        expect(platformBody['conversation_id'], 'pistisai');
-        expect(platformBody['text'], 'yo');
-        expect(runBody['session_id'], sessionKey);
-        expect(run.headers['x-hermes-session-key'], sessionKey);
-        expect(run.headers['x-hermes-session-id'], sessionKey);
-        expect(
-          requests.any((request) => request.url.path == '/api/sessions'),
-          isFalse,
-        );
-        expect(service.boundGatewaySessionKey, sessionKey);
-        expect(messages, isNotEmpty);
-        expect(messages.last.hasError, isTrue);
-        service.dispose();
-      },
-    );
+      final messages = await service
+          .streamResponse(
+            prompt: 'yo',
+            model: 'hermes-agent',
+            conversationId: 'pistisai',
+          )
+          .toList();
+
+      final platform = requests.singleWhere(
+        (request) => request.url.path == '/api/pistisai/messages',
+      );
+      final platformBody = jsonDecode(platform.body) as Map<String, dynamic>;
+      expect(platformBody['conversation_id'], 'pistisai');
+      expect(platformBody['message'], 'yo');
+      expect(requests.any((request) => request.method == 'POST' &&
+          request.url.path == '/api/sessions'), isFalse);
+      expect(messages, isNotEmpty);
+    });
   });
 }

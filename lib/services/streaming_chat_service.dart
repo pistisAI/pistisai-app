@@ -52,6 +52,7 @@ class StreamingChatService extends ChangeNotifier {
   Conversation? _mainChannel;
   Timer? _sharedChannelTimer;
   bool _syncingSharedChannel = false;
+  String? _channelSyncError;
   AvatarStateService? _avatarState;
 
   String? _selectedModel;
@@ -84,6 +85,10 @@ class StreamingChatService extends ChangeNotifier {
   bool get isStreaming => _isStreaming;
   bool get hasConversations => _mainChannel != null;
   bool get isStorageReady => _storageReady;
+
+  /// Set when the last shared-channel sync failed (fetch returned null).
+  /// Cleared after a successful sync. Surfaced in the chat header.
+  String? get channelSyncError => _channelSyncError;
 
   /// Stream of current streaming content for real-time UI updates
   Stream<String> get streamingContentStream => _streamingContentSubject.stream;
@@ -217,8 +222,14 @@ class StreamingChatService extends ChangeNotifier {
           _mainChannel == null ||
           _isStreaming ||
           _currentStreamingMessageId.isNotEmpty) {
+        if (harness == null && _mainChannel != null) {
+          _setChannelSyncError(
+            'Could not reach the hub transcript — check your connection.',
+          );
+        }
         return;
       }
+      _setChannelSyncError(null);
       final merged = mergeHarnessTranscript(
         local: _mainChannel!.messages,
         harness: harness,
@@ -234,6 +245,12 @@ class StreamingChatService extends ChangeNotifier {
     } finally {
       _syncingSharedChannel = false;
     }
+  }
+
+  void _setChannelSyncError(String? error) {
+    if (_channelSyncError == error) return;
+    _channelSyncError = error;
+    notifyListeners();
   }
 
   bool _sameMessages(List<Message> left, List<Message> right) {

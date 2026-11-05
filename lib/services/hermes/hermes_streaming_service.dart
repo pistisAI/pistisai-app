@@ -65,8 +65,10 @@ class HermesStreamingService extends StreamingService {
   HermesStreamingService({
     String? baseUrl,
     String? apiKey,
+    http.Client? client,
   })  : _baseUrl = baseUrl ?? 'http://127.0.0.1:8642',
-        _apiKey = apiKey;
+        _apiKey = apiKey,
+        _client = client;
 
   String get baseUrl => _baseUrl;
 
