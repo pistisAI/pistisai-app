@@ -51,6 +51,7 @@ import 'package:pistisai/services/subagent_registry_service.dart';
 import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
@@ -459,6 +460,18 @@ Future<void> setupCoreServices() async {
       localAgentApi: HermesLocalAgentApi(),
     );
     serviceLocator.registerSingleton<SetupWizardService>(setupWizardService);
+
+    // Required by AppRouter on desktop and mobile. Hermes may be absent on
+    // degraded/web startup paths — the service accepts a null streamer.
+    final mobileConnectionService = MobileConnectionService(
+      settings: settingsPreferenceService,
+      hermesStreamingService:
+          serviceLocator.isRegistered<HermesStreamingService>()
+              ? serviceLocator.get<HermesStreamingService>()
+              : null,
+    );
+    serviceLocator
+        .registerSingleton<MobileConnectionService>(mobileConnectionService);
 
     // Web download prompt service - can be created but won't do heavy work until auth
     final webDownloadPromptService = WebDownloadPromptService(

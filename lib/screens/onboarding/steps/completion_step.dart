@@ -21,126 +21,152 @@ class _CompletionStepState extends State<CompletionStep> {
       builder: (context, wizard, child) {
         final provider = wizard.state.selectedProvider;
 
-        return Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Success animation
-              if (!wizard.state.isLoading) ...[
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppTheme.colorsOf(context).success.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.check_circle,
-                    size: 60,
-                    color: AppTheme.colorsOf(context).success,
-                  ),
+        // Scrollable: config + bot-install report + next-steps exceed short
+        // windows (observed 256px bottom overflow on XFCE).
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(32),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 64,
+                  minWidth: constraints.maxWidth,
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  'You\'re All Set!',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.colorsOf(context).success,
-                      ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Your agent runtime is configured and ready to use.',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textAlign: TextAlign.center,
-                ),
-              ] else ...[
-                const SizedBox(
-                  width: 64,
-                  height: 64,
-                  child: CircularProgressIndicator(),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Saving configuration...',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ],
-              const SizedBox(height: 32),
-
-              // Config summary
-              if (!wizard.state.isLoading && provider != null)
-                Container(
-                  width: double.infinity,
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(context).dividerColor,
-                    ),
-                  ),
+                child: IntrinsicHeight(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Configuration:',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      const SizedBox(height: 12),
-                      _buildConfigRow('Runtime', provider.name),
-                      _buildConfigRow(
-                          'Type', _getProviderTypeLabel(provider.type)),
-                      _buildConfigRow('URL', provider.url),
-                      _buildConfigRow(
-                        'Location',
-                        provider.isLocal ? 'Local' : 'Remote',
-                      ),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 32),
+                      // Success animation
+                      if (!wizard.state.isLoading) ...[
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: AppTheme.colorsOf(context)
+                                .success
+                                .withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 60,
+                            color: AppTheme.colorsOf(context).success,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Text(
+                          'You\'re All Set!',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.colorsOf(context).success,
+                              ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Your agent runtime is configured and ready to use.',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                      ] else ...[
+                        const SizedBox(
+                          width: 64,
+                          height: 64,
+                          child: CircularProgressIndicator(),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Saving configuration...',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ],
+                      const SizedBox(height: 32),
 
-              if (!wizard.state.isLoading) _buildBotInstallReport(context, wizard),
-
-              // Next steps info
-              if (!wizard.state.isLoading)
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.4)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.rocket_launch,
-                              color: AppTheme.colorsOf(context).info),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Ready to start chatting!',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.colorsOf(context).info,
+                      // Config summary
+                      if (!wizard.state.isLoading && provider != null)
+                        Container(
+                          width: double.infinity,
+                          constraints: const BoxConstraints(maxWidth: 400),
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Your setup is complete. You can start chatting now!',
-                        style: TextStyle(color: AppTheme.colorsOf(context).info),
-                      ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Configuration:',
+                                style: Theme.of(context).textTheme.labelMedium,
+                              ),
+                              const SizedBox(height: 12),
+                              _buildConfigRow('Runtime', provider.name),
+                              _buildConfigRow(
+                                  'Type', _getProviderTypeLabel(provider.type)),
+                              _buildConfigRow('URL', provider.url),
+                              _buildConfigRow(
+                                'Location',
+                                provider.isLocal ? 'Local' : 'Remote',
+                              ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 32),
+
+                      if (!wizard.state.isLoading)
+                        _buildBotInstallReport(context, wizard),
+
+                      // Next steps info
+                      if (!wizard.state.isLoading)
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppTheme.colorsOf(context)
+                                .info
+                                .withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: AppTheme.colorsOf(context)
+                                    .info
+                                    .withValues(alpha: 0.4)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.rocket_launch,
+                                      color: AppTheme.colorsOf(context).info),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Ready to start chatting!',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.colorsOf(context).info,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Your setup is complete. You can start chatting now!',
+                                style: TextStyle(
+                                    color: AppTheme.colorsOf(context).info),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),
-            ],
-          ),
+              ),
+            );
+          },
         );
       },
     );

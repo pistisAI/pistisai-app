@@ -115,15 +115,21 @@ build_flutter_linux() {
         return 1
     fi
 
-    # Use WSL-native Flutter installation
-    local flutter_cmd="/opt/flutter/bin/flutter"
+    # Prefer FLUTTER_CMD, then PATH flutter (native Linux), then WSL/opt path.
+    local flutter_cmd="${FLUTTER_CMD:-}"
+    if [[ -z "$flutter_cmd" ]] && command -v flutter >/dev/null 2>&1; then
+        flutter_cmd="$(command -v flutter)"
+    fi
+    if [[ -z "$flutter_cmd" ]]; then
+        flutter_cmd="/opt/flutter/bin/flutter"
+    fi
 
-    # Check if WSL-native Flutter is available
-    if [[ ! -f "$flutter_cmd" ]]; then
-        log_error "WSL-native Flutter not found at $flutter_cmd"
-        log_error "Please install Flutter in WSL or use the PowerShell build scripts"
+    if [[ ! -x "$flutter_cmd" ]]; then
+        log_error "Flutter not found at $flutter_cmd"
+        log_error "Set FLUTTER_CMD or install Flutter on PATH (or at /opt/flutter/bin/flutter)"
         return 1
     fi
+    log_info "Using Flutter: $flutter_cmd"
 
     # Clean previous builds
     log_info "Cleaning previous Flutter builds..."
@@ -283,7 +289,7 @@ main() {
                 echo "Usage: $0 [options]"
                 echo
                 echo "Options:"
-                echo "  --increment <type>    Increment version (major|minor|patch)"
+                echo "  --increment <type>    Increment version (major|minor|patch|build)"
                 echo "  --skip-increment      Skip version increment"
                 echo "  --packages <list>     Build specific packages (all|debian|appimage)"
                 echo "  --help, -h           Show this help message"
@@ -299,7 +305,7 @@ main() {
     
     log_info "Starting Pistisai unified package build..."
     
-    # Increment version if requested
+    # Increment version if requested (CI auto-version-bump owns normal bumps)
     if [[ -n "$increment_type" ]] && [[ "$skip_version_increment" == false ]]; then
         increment_version "$increment_type"
     fi

@@ -7,7 +7,7 @@ void main() {
     const body = '''
 {
   "object": "list",
-  "session_id": "main-channel",
+  "session_id": "pistisai",
   "data": [
     {
       "id": "b",
@@ -87,6 +87,40 @@ void main() {
     );
 
     expect(merged.map((message) => message.id), ['a']);
+  });
+
+  test('merge drops a local reply the harness already stored', () {
+    final harnessReply = Message(
+      id: '80218',
+      content: 'Yo. What do you need?',
+      role: MessageRole.assistant,
+      timestamp: DateTime.fromMillisecondsSinceEpoch(2000),
+    );
+    final localReply = Message(
+      id: 'local-reply',
+      content: 'Yo. What do you need?',
+      role: MessageRole.assistant,
+      timestamp: DateTime.fromMillisecondsSinceEpoch(3000),
+    );
+    final repeatedUser = Message(
+      id: 'local-yo',
+      content: 'yo',
+      role: MessageRole.user,
+      timestamp: DateTime.fromMillisecondsSinceEpoch(3000),
+    );
+    final oldYo = Message(
+      id: '80213',
+      content: 'yo',
+      role: MessageRole.user,
+      timestamp: DateTime.fromMillisecondsSinceEpoch(1000),
+    );
+
+    final merged = mergeHarnessTranscript(
+      local: [localReply, repeatedUser],
+      harness: [oldYo, harnessReply],
+    );
+
+    expect(merged.map((message) => message.id), ['80213', '80218', 'local-yo']);
   });
 
   test('empty harness leaves the local thread alone', () {

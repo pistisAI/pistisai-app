@@ -37,10 +37,19 @@ List<Message> mergeHarnessTranscript({
   for (final message in harness) {
     if (message.timestamp.isAfter(newest)) newest = message.timestamp;
   }
+  // A locally-finished assistant reply that the harness already stored under
+  // its own id (same text) is dropped so a turn is not shown twice. User rows
+  // are not deduped by text: repeating "yo" must never hide a fresh send.
+  final harnessReplies = harness
+      .where((m) => m.role == MessageRole.assistant)
+      .map((m) => m.content.trim())
+      .toSet();
   final pending = local.where(
     (message) =>
         message.role != MessageRole.system &&
         !ids.contains(message.id) &&
+        !(message.role == MessageRole.assistant &&
+            harnessReplies.contains(message.content.trim())) &&
         !message.timestamp.isBefore(newest),
   );
   return [...harness, ...pending];
