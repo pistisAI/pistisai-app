@@ -56,17 +56,6 @@ Sentry.init({
 import express from 'express';
 import http from 'http';
 import winston from 'winston';
-import swaggerUi from 'swagger-ui-express';
-const specs = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Pistisai API Backend',
-    version: '2.0.0',
-    description:
-      'Comprehensive API for Pistisai - Bridge cloud AI services with local models',
-  },
-  paths: {},
-};
 import {
   setupMiddlewarePipeline,
   getAuthMiddleware,
@@ -260,52 +249,6 @@ const healthCheckService = new HealthCheckService(logger);
 // Stripe requires raw body for signature verification
 app.use('/api/webhooks', webhookRoutes);
 app.use('/webhooks', webhookRoutes); // Also register without /api prefix for api subdomain
-
-// Swagger UI documentation endpoint
-// Serves OpenAPI specification and interactive Swagger UI
-app.use(
-  '/api/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(specs, {
-    swaggerOptions: {
-      url: '/api/docs/swagger.json',
-      displayOperationId: true,
-      filter: true,
-      showExtensions: true,
-      deepLinking: true,
-    },
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Pistisai API Documentation',
-  }),
-);
-
-// Serve OpenAPI specification as JSON
-app.get('/api/docs/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(specs);
-});
-
-// Also serve docs without /api prefix for api subdomain
-app.use(
-  '/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(specs, {
-    swaggerOptions: {
-      url: '/docs/swagger.json',
-      displayOperationId: true,
-      filter: true,
-      showExtensions: true,
-      deepLinking: true,
-    },
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Pistisai API Documentation',
-  }),
-);
-
-app.get('/docs/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(specs);
-});
 
 // Auth middleware wrapper for backward compatibility
 async function authenticateToken(req, res, next) {
@@ -508,24 +451,6 @@ registerRoutes('/health', (req, res) => {
 
 // API Version Information Endpoint
 // Returns information about supported API versions
-/**
- * @swagger
- * /api/versions:
- *   get:
- *     summary: Get API version information
- *     description: Returns information about all supported API versions, including current version, default version, and deprecation status
- *     tags:
- *       - System
- *     responses:
- *       200:
- *         description: API version information
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/APIVersionInfo'
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
 registerRoutes('/versions', versionInfoHandler);
 
 // Rate limit metrics routes

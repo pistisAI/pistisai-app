@@ -12,68 +12,6 @@ import ChangelogService from '../services/changelog-service.js';
 const router = express.Router();
 const changelogService = new ChangelogService();
 
-/**
- * @swagger
- * /changelog:
- *   get:
- *     summary: Get changelog with pagination
- *     description: Retrieve paginated changelog entries with version history
- *     tags:
- *       - Documentation
- *     parameters:
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 10
- *         description: Number of versions to return
- *       - in: query
- *         name: offset
- *         schema:
- *           type: integer
- *           default: 0
- *         description: Number of versions to skip
- *     responses:
- *       200:
- *         description: Changelog entries retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 total:
- *                   type: integer
- *                   description: Total number of versions
- *                 limit:
- *                   type: integer
- *                   description: Limit used in query
- *                 offset:
- *                   type: integer
- *                   description: Offset used in query
- *                 versions:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       version:
- *                         type: string
- *                         description: Version number (semantic versioning)
- *                       date:
- *                         type: string
- *                         description: Release date
- *                       changes:
- *                         type: array
- *                         items:
- *                           type: string
- *                         description: List of changes
- *                       changeCount:
- *                         type: integer
- *                         description: Number of changes in this version
- *       400:
- *         description: Invalid query parameters
- *       500:
- *         description: Failed to retrieve changelog
- */
 router.get('/', (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 10, 100);
@@ -107,41 +45,6 @@ router.get('/', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /changelog/latest:
- *   get:
- *     summary: Get latest version
- *     description: Retrieve the latest version from changelog
- *     tags:
- *       - Documentation
- *     responses:
- *       200:
- *         description: Latest version retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 version:
- *                   type: string
- *                   description: Version number
- *                 date:
- *                   type: string
- *                   description: Release date
- *                 changes:
- *                   type: array
- *                   items:
- *                     type: string
- *                   description: List of changes
- *                 changeCount:
- *                   type: integer
- *                   description: Number of changes
- *       404:
- *         description: No changelog entries found
- *       500:
- *         description: Failed to retrieve latest version
- */
 router.get('/latest', (req, res) => {
   try {
     const latest = changelogService.getLatestVersion();
@@ -161,46 +64,6 @@ router.get('/latest', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /changelog/{version}:
- *   get:
- *     summary: Get release notes for specific version
- *     description: Retrieve detailed release notes for a specific API version
- *     tags:
- *       - Documentation
- *     parameters:
- *       - in: path
- *         name: version
- *         required: true
- *         schema:
- *           type: string
- *         description: Version number (e.g., 2.0.0)
- *     responses:
- *       200:
- *         description: Release notes retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 version:
- *                   type: string
- *                   description: Version number
- *                 date:
- *                   type: string
- *                   description: Release date
- *                 releaseNotes:
- *                   type: string
- *                   description: Full release notes text
- *                 formatted:
- *                   type: object
- *                   description: Formatted changelog entry
- *       404:
- *         description: Version not found
- *       500:
- *         description: Failed to retrieve release notes
- */
 router.get('/:version', (req, res) => {
   try {
     const { version } = req.params;
@@ -230,40 +93,6 @@ router.get('/:version', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /changelog/stats:
- *   get:
- *     summary: Get changelog statistics
- *     description: Retrieve statistics about the changelog
- *     tags:
- *       - Documentation
- *     responses:
- *       200:
- *         description: Changelog statistics retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 totalVersions:
- *                   type: integer
- *                   description: Total number of versions
- *                 latestVersion:
- *                   type: string
- *                   description: Latest version number
- *                 oldestVersion:
- *                   type: string
- *                   description: Oldest version number
- *                 totalChanges:
- *                   type: integer
- *                   description: Total number of changes across all versions
- *                 isValid:
- *                   type: boolean
- *                   description: Whether changelog format is valid
- *       500:
- *         description: Failed to retrieve statistics
- */
 router.get('/stats', (req, res) => {
   try {
     const stats = changelogService.getChangelogStats();

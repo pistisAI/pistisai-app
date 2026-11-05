@@ -39,20 +39,6 @@ const revokeSessionSchema = {
 // Token refresh configuration
 const TOKEN_REFRESH_WINDOW = parseInt(process.env.TOKEN_REFRESH_WINDOW) || 300; // 5 minutes before expiry
 
-/**
- * @swagger
- * /auth/token/refresh:
- *   post:
- *     summary: Refresh an expired or expiring JWT token
- *     description: |
- *       Placeholder for token refresh. Token refresh should be handled directly
- *       via the identity provider client SDK.
- *     tags:
- *       - Authentication
- *     responses:
- *       400:
- *         description: Operation not supported on backend
- */
 router.post('/token/refresh', authCheckLimiter, async function (req, res) {
   return res.status(400).json({
     error:
@@ -61,80 +47,6 @@ router.post('/token/refresh', authCheckLimiter, async function (req, res) {
   });
 });
 
-/**
- * @swagger
- * /auth/token/validate:
- *   post:
- *     summary: Validate a JWT token
- *     description: |
- *       Validates a JWT token and returns its status, expiry information,
- *       and user details. Does not require authentication.
- *
- *       **Validates: Requirements 2.1**
- *       - Validates JWT tokens on every protected request
- *     tags:
- *       - Authentication
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               token:
- *                 type: string
- *                 description: JWT token to validate (optional if using Authorization header)
- *           example:
- *             token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *     responses:
- *       200:
- *         description: Token validation result
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 valid:
- *                   type: boolean
- *                   description: Whether token is valid and not expired
- *                 expired:
- *                   type: boolean
- *                   description: Whether token has expired
- *                 expiring:
- *                   type: boolean
- *                   description: Whether token is expiring soon (within 5 minutes)
- *                 expiresIn:
- *                   type: integer
- *                   description: Seconds until token expires
- *                 expiresAt:
- *                   type: string
- *                   format: date-time
- *                   description: Token expiry timestamp
- *                 userId:
- *                   type: string
- *                   description: User ID from token
- *                 email:
- *                   type: string
- *                   description: User email from token
- *       400:
- *         description: Missing token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       401:
- *         description: Invalid token format
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Validation error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
 router.post(
   '/token/validate',
   authCheckLimiter,
@@ -175,52 +87,6 @@ router.post(
   },
 );
 
-/**
- * @swagger
- * /auth/logout:
- *   post:
- *     summary: Logout and revoke token
- *     description: |
- *       Revokes the current JWT token and invalidates the session.
- *       Clears secure refresh token cookies.
- *
- *       **Validates: Requirements 2.9, 2.10**
- *       - Implements token revocation for logout operations
- *       - Enforces HTTPS for all authentication endpoints
- *     tags:
- *       - Authentication
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Successfully logged out
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 userId:
- *                   type: string
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       403:
- *         description: HTTPS required
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               error:
- *                 code: HTTPS_REQUIRED
- *                 message: Authentication endpoints require HTTPS
- *                 statusCode: 403
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
 router.post('/logout', authenticateJWT, async function (req, res) {
   try {
     const userId = extractUserId(req);
@@ -270,58 +136,6 @@ router.post('/logout', authenticateJWT, async function (req, res) {
   }
 });
 
-/**
- * @swagger
- * /auth/session/revoke:
- *   post:
- *     summary: Revoke a specific session
- *     description: |
- *       Revokes a specific session by ID. Useful for revoking sessions
- *       from other devices or browsers.
- *
- *       **Validates: Requirements 2.9**
- *       - Implements token revocation for logout operations
- *     tags:
- *       - Authentication
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               sessionId:
- *                 type: string
- *                 description: Session ID to revoke
- *           example:
- *             sessionId: "550e8400-e29b-41d4-a716-446655440000"
- *     responses:
- *       200:
- *         description: Session revoked successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                 sessionId:
- *                   type: string
- *       400:
- *         description: Missing session ID
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
 router.post(
   '/session/revoke',
   authenticateJWT,
@@ -369,55 +183,6 @@ router.post(
   }
 });
 
-/**
- * @swagger
- * /auth/me:
- *   get:
- *     summary: Get current authenticated user information
- *     description: |
- *       Returns information about the currently authenticated user
- *       extracted from the JWT token.
- *
- *       **Validates: Requirements 2.1**
- *       - Validates JWT tokens on every protected request
- *     tags:
- *       - Authentication
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Current user information
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 userId:
- *                   type: string
- *                   description: User ID
- *                 email:
- *                   type: string
- *                   format: email
- *                   description: User email
- *                 name:
- *                   type: string
- *                   description: User full name
- *                 picture:
- *                   type: string
- *                   format: uri
- *                   description: User profile picture URL
- *                 emailVerified:
- *                   type: boolean
- *                   description: Whether email is verified
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *                   description: Last update timestamp
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
 router.get('/me', authenticateJWT, async function (req, res) {
   try {
     const userId = extractUserId(req);
@@ -444,64 +209,6 @@ router.get('/me', authenticateJWT, async function (req, res) {
   }
 });
 
-/**
- * @swagger
- * /auth/token/check-expiry:
- *   post:
- *     summary: Check if token is expiring soon
- *     description: |
- *       Checks if a token is expiring soon (within 5 minutes) and needs
- *       to be refreshed. Useful for proactive token refresh.
- *
- *       **Validates: Requirements 2.2**
- *       - Implements token refresh mechanism for expired tokens
- *     tags:
- *       - Authentication
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               token:
- *                 type: string
- *                 description: JWT token to check (optional if using Authorization header)
- *           example:
- *             token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *     responses:
- *       200:
- *         description: Token expiry check result
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 shouldRefresh:
- *                   type: boolean
- *                   description: Whether token should be refreshed
- *                 expiresIn:
- *                   type: integer
- *                   description: Seconds until token expires
- *                 expiresAt:
- *                   type: string
- *                   format: date-time
- *                   description: Token expiry timestamp
- *       400:
- *         description: Missing token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       401:
- *         description: Invalid token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
 router.post('/token/check-expiry', authCheckLimiter, async function (req, res) {
   try {
     const { token } = req.body;
