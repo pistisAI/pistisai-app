@@ -50,7 +50,6 @@
     "rate-limit-redis": "^6.0.1",
     "ssh2": "^1.17.0",
     "stripe": "^22.3.0",
-    "swagger-ui-express": "^5.0.1",
     "uuid": "^14.0.0",
     "validator": "^13.15.35",
     "winston": "^3.19.0",
