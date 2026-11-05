@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:pistisai/config/app_config.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/hub/client_connectivity.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
@@ -37,6 +38,12 @@ class MobileHubProbeResult {
 
 typedef MobileHubHttpGet = Future<http.Response> Function(Uri uri);
 
+/// Tells an already-running [ConnectionManagerService] about a hub URL.
+///
+/// Passed in instead of constructing the manager here, so onboarding does
+/// not form a dependency cycle with authenticated service setup.
+typedef PrimaryHubAttach = Future<bool> Function(String hubBaseUrl);
+
 /// Mobile-only connection to the primary desktop hub or pistisai.app.
 class MobileConnectionService extends ChangeNotifier {
   static const String modeKey = 'mobile_connection_mode';
@@ -46,15 +53,18 @@ class MobileConnectionService extends ChangeNotifier {
     SettingsPreferenceService? settings,
     HermesStreamingService? hermesStreamingService,
     MobileHubHttpGet? httpGet,
+    PrimaryHubAttach? onHubAttached,
     this.hubPort = AppConfig.defaultRouterPort,
     this.hermesPort = AppConfig.defaultHermesPort,
   })  : _settings = settings ?? SettingsPreferenceService(),
         _hermesStreamingService = hermesStreamingService,
-        _httpGet = httpGet;
+        _httpGet = httpGet,
+        _onHubAttached = onHubAttached;
 
   final SettingsPreferenceService _settings;
   final HermesStreamingService? _hermesStreamingService;
   final MobileHubHttpGet? _httpGet;
+  final PrimaryHubAttach? _onHubAttached;
   final int hubPort;
   final int hermesPort;
 
@@ -221,6 +231,12 @@ class MobileConnectionService extends ChangeNotifier {
       if (streaming != null) {
         streaming.bindRole(ClientInstallRole.mobile);
         streaming.updateBaseUrl(result.hubUrl);
+      }
+      // Prefs are written above. A connection manager created earlier still
+      // has an empty hub until it is told; chat reads that manager, not prefs.
+      final attach = _onHubAttached;
+      if (attach != null) {
+        await attach(result.hubUrl);
       }
       await _persist(
         mode: MobileConnectionMode.tailscaleHub,

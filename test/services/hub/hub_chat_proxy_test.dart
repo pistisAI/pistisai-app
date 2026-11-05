@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:pistisai/database/drift_local_brain.dart' as brain;
 import 'package:pistisai/services/hermes/hermes_session_key.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/services/hub/hermes_hub_broker.dart';
 import 'package:pistisai/services/providers/base_provider.dart' as provider;
 import 'package:pistisai/services/rate_limit_manager.dart';
@@ -13,6 +14,36 @@ import 'package:pistisai/services/router_server.dart';
 void main() {
   setUpAll(() {
     HttpOverrides.global = null;
+  });
+
+  test('broker uses a custom Hermes base URL and defaults when empty',
+      () async {
+    final blank = HermesHubBroker(hermesBaseUrl: '  ');
+    expect(blank.hermesBaseUrl, AppConfig.defaultHermesUrl);
+    blank.close();
+
+    final hermes = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    final requests = <String>[];
+    hermes.listen((HttpRequest request) async {
+      requests.add(request.uri.path);
+      request.response.statusCode = HttpStatus.accepted;
+      request.response.write('{"ok":true}');
+      await request.response.close();
+    });
+    final custom = HermesHubBroker(
+      hermesBaseUrl: 'http://127.0.0.1:${hermes.port}/',
+      hermesApiKey: 'custom-key',
+    );
+    expect(custom.hermesBaseUrl, 'http://127.0.0.1:${hermes.port}');
+
+    final result = await custom.forwardPistisaiMessage(
+      body: '{"conversation_id":"pistisai","text":"hi"}',
+    );
+    expect(result.statusCode, HttpStatus.accepted);
+    expect(requests, ['/api/pistisai/messages']);
+
+    custom.close();
+    await hermes.close(force: true);
   });
 
   group('hub discovery and proxied chat', () {

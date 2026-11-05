@@ -37,8 +37,11 @@ class HermesHubBroker {
     String? hermesBaseUrl,
     http.Client? client,
     this.hermesApiKey,
-  })  : hermesBaseUrl =
-            _stripSlash(hermesBaseUrl ?? AppConfig.defaultHermesUrl),
+  })  : hermesBaseUrl = _stripSlash(
+          (hermesBaseUrl == null || hermesBaseUrl.trim().isEmpty)
+              ? AppConfig.defaultHermesUrl
+              : hermesBaseUrl,
+        ),
         _client = client ?? http.Client(),
         _ownsClient = client == null;
 

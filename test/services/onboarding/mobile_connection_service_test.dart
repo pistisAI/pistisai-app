@@ -1,9 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:pistisai/config/app_config.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/hub/client_connectivity.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
-import 'package:pistisai/services/settings_preference_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart'
+    hide BackendType;
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -131,6 +134,47 @@ void main() {
       expect(await settings.getClientInstallRole(), 'mobile');
       expect(service.mode, MobileConnectionMode.tailscaleHub);
       expect(await service.shouldShowConnectionScreen(), isFalse);
+      hermes.dispose();
+    });
+
+    test('connectViaTailscaleHub attaches the live connection manager',
+        () async {
+      SharedPreferences.setMockInitialValues({
+        'settings_client_install_role': 'mobile',
+      });
+      final settings = SettingsPreferenceService();
+      final hermes = HermesStreamingService(role: ClientInstallRole.mobile);
+      final manager = ConnectionManagerService(
+        hermesStreamingService: hermes,
+        settingsPreferenceService: settings,
+        autoDetectOnInitialize: false,
+      );
+      await manager.initialize();
+      expect(manager.getStreamingService(), isNull);
+
+      final service = MobileConnectionService(
+        settings: settings,
+        hermesStreamingService: hermes,
+        onHubAttached: manager.attachToPrimaryHub,
+        httpGet: (uri) async {
+          if (uri.path == AppConfig.hubPath) {
+            return http.Response('{"role":"primary_hub"}', 200);
+          }
+          return http.Response('missing', 404);
+        },
+      );
+
+      final result = await service.connectViaTailscaleHub('100.64.1.20');
+
+      expect(result.success, isTrue);
+      expect(manager.activeBackend, BackendType.hermes);
+      final streaming = manager.getStreamingService();
+      expect(streaming, isA<HermesStreamingService>());
+      final hubClient = streaming as HermesStreamingService;
+      expect(hubClient.baseUrl, 'http://100.64.1.20:1337');
+      expect(hubClient.reachesHermesViaHub, isTrue);
+      expect(hubClient.installRole, ClientInstallRole.mobile);
+      manager.dispose();
       hermes.dispose();
     });
 
