@@ -72,9 +72,7 @@ jobs:
           cache: true
 
       - name: "📦 flutter pub get"
-        run: |
-          flutter pub get
-          (cd lib/shared && flutter pub get)
+        run: flutter pub get
 
       - name: "🐳 Docker Compose"
         run: docker compose version
