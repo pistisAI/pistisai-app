@@ -144,6 +144,5 @@ npm test
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Voice Conversation System](VOICE_CONVERSATION_SYSTEM.md)
-- [Implementation Plan](../development/IMPLEMENTATION_PLAN.md)
 - [Avatar User Documentation](../avatar/README.md)
 - [Product Specification](../../SPEC.md)
