@@ -9,6 +9,7 @@ import '../../models/agent_event.dart';
 import '../../models/message.dart';
 import '../../models/streaming_message.dart';
 import '../streaming_service.dart';
+import 'hermes_session_key.dart';
 import 'hermes_session_transcript.dart';
 import '../../utils/logger.dart';
 
@@ -28,9 +29,16 @@ import '../../utils/logger.dart';
 /// - POST /v1/chat/completions   — fallback text-only streaming
 /// - GET  /v1/models              — list available models
 /// - GET  /health                 — health check
+/// - POST /api/pistisai/messages  — platform chat id, not the session key
+/// - GET  /api/sessions/{key}/messages — gateway session key transcript
 class HermesStreamingService extends StreamingService {
   String _baseUrl;
   final String? _apiKey;
+
+  /// Gateway session key learned from a 2xx platform response.
+  ///
+  /// Never set to the short chat id, including when Hermes returns 409.
+  String? _boundGatewaySessionKey;
 
   /// HTTP client — kept alive for connection pooling.
   http.Client? _client;
@@ -60,13 +68,15 @@ class HermesStreamingService extends StreamingService {
   /// Call from connection recovery logic.
   void enableAgentRuns() => _useAgentRuns = true;
 
-  HermesStreamingService({
-    String? baseUrl,
-    String? apiKey,
-  })  : _baseUrl = baseUrl ?? 'http://127.0.0.1:8642',
-        _apiKey = apiKey;
+  HermesStreamingService({String? baseUrl, String? apiKey, http.Client? client})
+    : _baseUrl = baseUrl ?? 'http://127.0.0.1:8642',
+      _apiKey = apiKey,
+      _client = client;
 
   String get baseUrl => _baseUrl;
+
+  /// Session key adopted from Hermes, when the platform response included one.
+  String? get boundGatewaySessionKey => _boundGatewaySessionKey;
 
   /// Point this client at a newly discovered desktop hub (mobile Tailscale).
   void updateBaseUrl(String url) {
@@ -101,10 +111,7 @@ class HermesStreamingService extends StreamingService {
     _client ??= http.Client();
     try {
       final response = await _client!
-          .get(
-            Uri.parse('$_baseUrl/health'),
-            headers: _headers(),
-          )
+          .get(Uri.parse('$_baseUrl/health'), headers: _headers())
           .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
@@ -188,6 +195,8 @@ class HermesStreamingService extends StreamingService {
       return;
     }
 
+    await _attachPlatformTurn(conversationId: conversationId, text: prompt);
+
     // Try agent runs first (full structured events), fall back to chat completions
     if (_useAgentRuns) {
       yield* _streamViaAgentRuns(
@@ -239,10 +248,12 @@ class HermesStreamingService extends StreamingService {
     }
     input.add({'role': 'user', 'content': prompt});
 
+    final sessionKey = _sessionKeyFor(conversationId);
     final body = jsonEncode({
       'input': input,
       'model': model == 'default' ? 'hermes-agent' : model,
-      'session_id': conversationId, // Map app conversation → Hermes session
+      // Transcript id is the gateway session key, not the platform chat id.
+      'session_id': sessionKey,
     });
 
     _connection = StreamingConnection.streaming(_baseUrl);
@@ -254,7 +265,7 @@ class HermesStreamingService extends StreamingService {
       final response = await client
           .post(
             Uri.parse('$_baseUrl/v1/runs'),
-            headers: _headers(),
+            headers: _sessionHeaders(sessionKey),
             body: body,
           )
           .timeout(const Duration(seconds: 15));
@@ -334,9 +345,9 @@ class HermesStreamingService extends StreamingService {
         Uri.parse('$_baseUrl/v1/runs/$runId/events'),
       )..headers.addAll(_headers());
 
-      final streamedResponse = await client.send(request).timeout(
-            const Duration(seconds: 600),
-          );
+      final streamedResponse = await client
+          .send(request)
+          .timeout(const Duration(seconds: 600));
 
       if (streamedResponse.statusCode != 200) {
         final errorBody = await streamedResponse.stream.bytesToString();
@@ -357,8 +368,9 @@ class HermesStreamingService extends StreamingService {
 
       // Parse SSE events
       String buffer = '';
-      await for (final chunk
-          in streamedResponse.stream.transform(utf8.decoder)) {
+      await for (final chunk in streamedResponse.stream.transform(
+        utf8.decoder,
+      )) {
         // ignore: use_string_buffers
         buffer += chunk;
         while (buffer.contains('\n\n')) {
@@ -471,11 +483,11 @@ class HermesStreamingService extends StreamingService {
       // reasoning.available is chain-of-thought. It is not a chat delta.
       AgentReasoningAvailable() => null,
       AgentRunFailed(:final error) => StreamingMessage.error(
-          id: messageId,
-          conversationId: conversationId,
-          error: error,
-          sequence: sequence,
-        ),
+        id: messageId,
+        conversationId: conversationId,
+        error: error,
+        sequence: sequence,
+      ),
       // run.completed output is the full response text, which is
       // already accumulated from message.delta events. Emitting it
       // as a chunk would DOUBLE the content (deltas + final output).
@@ -525,17 +537,14 @@ class HermesStreamingService extends StreamingService {
     notifyListeners();
 
     try {
-      final request = http.Request(
-        'POST',
-        Uri.parse('$_baseUrl/v1/chat/completions'),
-      )
-        ..headers.addAll(_headers())
-        ..headers['X-Hermes-Session-Id'] = conversationId
-        ..body = body;
+      final request =
+          http.Request('POST', Uri.parse('$_baseUrl/v1/chat/completions'))
+            ..headers.addAll(_sessionHeaders(_sessionKeyFor(conversationId)))
+            ..body = body;
 
-      final streamedResponse = await client.send(request).timeout(
-            const Duration(seconds: 300),
-          );
+      final streamedResponse = await client
+          .send(request)
+          .timeout(const Duration(seconds: 300));
 
       if (streamedResponse.statusCode != 200) {
         final errorBody = await streamedResponse.stream.bytesToString();
@@ -555,8 +564,9 @@ class HermesStreamingService extends StreamingService {
 
       // Parse SSE stream
       String buffer = '';
-      await for (final chunk
-          in streamedResponse.stream.transform(utf8.decoder)) {
+      await for (final chunk in streamedResponse.stream.transform(
+        utf8.decoder,
+      )) {
         // ignore: use_string_buffers
         buffer += chunk;
         while (buffer.contains('\n\n')) {
@@ -715,9 +725,7 @@ class HermesStreamingService extends StreamingService {
     }
 
     final client = _client ?? http.Client();
-    final body = <String, dynamic>{
-      'input': input,
-    };
+    final body = <String, dynamic>{'input': input};
     if (instructions != null) body['instructions'] = instructions;
     if (previousResponseId != null) {
       body['previous_response_id'] = previousResponseId;
@@ -750,9 +758,9 @@ class HermesStreamingService extends StreamingService {
       Uri.parse('$_baseUrl/v1/runs/$runId/events'),
     )..headers.addAll(_headers());
 
-    final streamedResponse = await client.send(request).timeout(
-          const Duration(seconds: 600),
-        );
+    final streamedResponse = await client
+        .send(request)
+        .timeout(const Duration(seconds: 600));
 
     if (streamedResponse.statusCode != 200) {
       yield AgentRunFailed(
@@ -795,32 +803,150 @@ class HermesStreamingService extends StreamingService {
     }
   }
 
-  /// Load the shared harness transcript for [sessionId].
+  /// Load the shared harness transcript for a UI conversation id.
   ///
-  /// Every Pistisai device uses the same session id (`main-channel`), so this
-  /// is the one conversation. Returns an empty list when the session does not
-  /// exist yet, and null when the harness cannot be read.
+  /// Returns null unless the gateway session key answered HTTP 200. A 404 or
+  /// 409 is a failed read, not an empty transcript, and does not bind the
+  /// short chat id.
   Future<List<Message>?> fetchSessionMessages(String sessionId) async {
+    final poll = await pollSharedTranscript(sessionId);
+    if (!poll.isHealthy) return null;
+    return poll.messages;
+  }
+
+  /// GET the gateway transcript for [uiId].
+  ///
+  /// Does not `POST /api/sessions`. A missing session stays missing until
+  /// Hermes creates it from a platform turn.
+  Future<HermesTranscriptPoll> pollSharedTranscript(String uiId) async {
+    final sessionKey = _sessionKeyFor(uiId);
+    final uri = hermesSessionMessagesUri(_baseUrl, sessionKey);
     try {
       final client = _client ?? http.Client();
-      final response = await client.get(
-        Uri.parse(
-          '$_baseUrl/api/sessions/${Uri.encodeComponent(sessionId)}/messages'
-          '?order=oldest&limit=500',
-        ),
-        headers: {
-          ..._headers(),
-          'Accept': 'application/json',
-        },
-      ).timeout(const Duration(seconds: 8));
+      final response = await client
+          .get(uri, headers: {..._headers(), 'Accept': 'application/json'})
+          .timeout(const Duration(seconds: 8));
 
-      if (response.statusCode == 404) return const [];
-      if (response.statusCode != 200) return null;
-      return messagesFromHermesSessionBody(response.body);
+      appLogger.info(
+        '[Hermes] transcript poll status=${response.statusCode} session=$sessionKey boundShortId=false',
+      );
+
+      if (response.statusCode == 404 || response.statusCode == 409) {
+        return HermesTranscriptPoll(
+          sessionKey: sessionKey,
+          pollUri: uri,
+          statusCode: response.statusCode,
+          messages: null,
+        );
+      }
+      if (response.statusCode != 200) {
+        return HermesTranscriptPoll(
+          sessionKey: sessionKey,
+          pollUri: uri,
+          statusCode: response.statusCode,
+          messages: null,
+        );
+      }
+      return HermesTranscriptPoll(
+        sessionKey: sessionKey,
+        pollUri: uri,
+        statusCode: response.statusCode,
+        messages: messagesFromHermesSessionBody(response.body),
+      );
     } catch (e) {
-      appLogger.error('[Hermes] Failed to load shared session', error: e);
-      return null;
+      appLogger.error(
+        '[Hermes] Failed to load shared session $sessionKey',
+        error: e,
+      );
+      return HermesTranscriptPoll(
+        sessionKey: sessionKey,
+        pollUri: uri,
+        statusCode: null,
+        messages: null,
+      );
     }
+  }
+
+  /// Tell the pistisai platform about a turn.
+  ///
+  /// [conversationId] is the UI id. The JSON `conversation_id` is the
+  /// platform chat id (`pistisai`), never the gateway session key.
+  Future<HermesChannelDelivery> postPistisaiMessage({
+    required String text,
+    required String conversationId,
+  }) async {
+    final chatId = platformChatIdForUiId(conversationId);
+    final sessionKey = _sessionKeyFor(conversationId);
+    final uri = Uri.parse('$_baseUrl/api/pistisai/messages');
+    try {
+      final client = _client ?? http.Client();
+      final response = await client
+          .post(
+            uri,
+            headers: {..._headers(), 'Accept': 'application/json'},
+            body: jsonEncode(<String, String>{
+              'conversation_id': chatId,
+              'text': text,
+            }),
+          )
+          .timeout(const Duration(seconds: 3));
+
+      final adopted = adoptGatewaySessionKey(
+        statusCode: response.statusCode,
+        body: _decodeJsonObject(response.body),
+      );
+      if (adopted != null) {
+        _boundGatewaySessionKey = adopted;
+      }
+      final activeKey = _sessionKeyFor(conversationId);
+      appLogger.info(
+        '[Hermes] platform turn status=${response.statusCode} chatId=$chatId session=$activeKey boundShortId=false',
+      );
+      return HermesChannelDelivery(
+        conversationId: chatId,
+        sessionKey: activeKey,
+        statusCode: response.statusCode,
+        adoptedSessionKey: adopted,
+      );
+    } catch (e) {
+      appLogger.warning('[Hermes] platform turn failed for chatId=$chatId: $e');
+      return HermesChannelDelivery(
+        conversationId: chatId,
+        sessionKey: sessionKey,
+        statusCode: null,
+        adoptedSessionKey: null,
+      );
+    }
+  }
+
+  String _sessionKeyFor(String uiId) {
+    final bound = _boundGatewaySessionKey;
+    if (bound != null && isHermesGatewaySessionKey(bound)) return bound;
+    return hermesSessionKeyForUiId(uiId);
+  }
+
+  Map<String, String> _sessionHeaders(String sessionKey) {
+    return <String, String>{
+      ..._headers(),
+      'X-Hermes-Session-Key': sessionKey,
+      'X-Hermes-Session-Id': sessionKey,
+    };
+  }
+
+  Future<void> _attachPlatformTurn({
+    required String conversationId,
+    required String text,
+  }) async {
+    await postPistisaiMessage(text: text, conversationId: conversationId);
+  }
+
+  Map<String, dynamic>? _decodeJsonObject(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
+    } catch (_) {}
+    return null;
   }
 
   // ---------------------------------------------------------------------------
@@ -842,10 +968,7 @@ class HermesStreamingService extends StreamingService {
     try {
       final client = _client ?? http.Client();
       final response = await client
-          .get(
-            Uri.parse('$_baseUrl/v1/models'),
-            headers: _headers(),
-          )
+          .get(Uri.parse('$_baseUrl/v1/models'), headers: _headers())
           .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {

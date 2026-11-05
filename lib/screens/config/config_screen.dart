@@ -85,12 +85,6 @@ const _settingsPages = <_SettingsPageLink>[
     Icons.desktop_windows_outlined,
   ),
   _SettingsPageLink(
-    'Discord',
-    'Discord bot connection',
-    '/settings/discord',
-    Icons.forum_outlined,
-  ),
-  _SettingsPageLink(
     'About',
     'Pistisai and this build',
     '/settings/about',
