@@ -20,13 +20,23 @@ void main() {
     RouterServer? hub;
     Uri? hubUri;
     final List<String> hermesRequests = <String>[];
+    final List<String?> upstreamAuthorization = <String?>[];
+    final List<String> upstreamQueries = <String>[];
+    var pistisaiTranscriptReads = 0;
 
     setUp(() async {
       hermesRequests.clear();
+      upstreamAuthorization.clear();
+      upstreamQueries.clear();
+      pistisaiTranscriptReads = 0;
       hermes = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       hermes!.listen((HttpRequest request) async {
         final path = request.uri.path;
         hermesRequests.add('${request.method} $path');
+        upstreamAuthorization.add(
+          request.headers.value(HttpHeaders.authorizationHeader),
+        );
+        upstreamQueries.add(request.uri.query);
         final body = request.method == 'POST'
             ? await utf8.decoder.bind(request).join()
             : '';
@@ -40,23 +50,31 @@ void main() {
           }));
         } else if (request.method == 'GET' && path.endsWith('/messages')) {
           final key = Uri.decodeComponent(path.split('/')[3]);
-          if (key.endsWith(':missing')) {
-            request.response.statusCode = HttpStatus.notFound;
+          if (key != 'agent:main:pistisai:dm:pistisai') {
+            request.response.statusCode = HttpStatus.ok;
             request.response.write(jsonEncode(<String, String>{
-              'error': 'not found',
-            }));
-          } else if (key.endsWith(':conflict')) {
-            request.response.statusCode = HttpStatus.conflict;
-            request.response.write(jsonEncode(<String, String>{
-              'id': 'pistisai',
+              'error': 'unexpected session $key',
             }));
           } else {
-            request.response.statusCode = HttpStatus.ok;
-            request.response.write(jsonEncode(<String, Object>{
-              'messages': <Map<String, String>>[
-                <String, String>{'role': 'user', 'content': 'hello'},
-              ],
-            }));
+            pistisaiTranscriptReads += 1;
+            if (pistisaiTranscriptReads == 2) {
+              request.response.statusCode = HttpStatus.notFound;
+              request.response.write(jsonEncode(<String, String>{
+                'error': 'not found',
+              }));
+            } else if (pistisaiTranscriptReads == 3) {
+              request.response.statusCode = HttpStatus.conflict;
+              request.response.write(jsonEncode(<String, String>{
+                'id': 'pistisai',
+              }));
+            } else {
+              request.response.statusCode = HttpStatus.ok;
+              request.response.write(jsonEncode(<String, Object>{
+                'messages': <Map<String, String>>[
+                  <String, String>{'role': 'user', 'content': 'hello'},
+                ],
+              }));
+            }
           }
         } else {
           request.response.statusCode = HttpStatus.notFound;
@@ -75,6 +93,7 @@ void main() {
         authSecret: 'router-secret',
         hermesHubBroker: HermesHubBroker(
           hermesBaseUrl: 'http://127.0.0.1:${hermes!.port}',
+          hermesApiKey: 'hub-hermes-key',
         ),
       );
       await hub!.start();
@@ -127,6 +146,7 @@ void main() {
       expect(forwarded['echo'], containsPair('conversation_id', 'pistisai'));
       expect(forwarded['echo'], containsPair('text', 'hello'));
       expect(hermesRequests, ['POST /api/pistisai/messages']);
+      expect(upstreamAuthorization, ['Bearer hub-hermes-key']);
       expect(
         hermesRequests.any((entry) => entry.startsWith('POST /api/sessions')),
         isFalse,
@@ -154,22 +174,77 @@ void main() {
         isTrue,
       );
 
-      final missingKey = hermesSessionKeyForUiId('missing');
+      expect(upstreamAuthorization.single, 'Bearer hub-hermes-key');
+      expect(upstreamQueries.single, 'order=oldest&limit=500');
+
       final missing = await http.get(
-        hermesSessionMessagesUri(hubUri!.toString(), missingKey),
+        hermesSessionMessagesUri(hubUri!.toString(), sessionKey),
         headers: {'Authorization': 'Bearer router-secret'},
       );
       expect(missing.statusCode, HttpStatus.notFound);
       expect(missing.body, contains('not found'));
       expect(missing.body, isNot(contains('"messages":[]')));
 
-      final conflictKey = hermesSessionKeyForUiId('conflict');
       final conflict = await http.get(
-        hermesSessionMessagesUri(hubUri!.toString(), conflictKey),
+        hermesSessionMessagesUri(hubUri!.toString(), sessionKey),
         headers: {'Authorization': 'Bearer router-secret'},
       );
       expect(conflict.statusCode, HttpStatus.conflict);
       expect(jsonDecode(conflict.body), containsPair('id', 'pistisai'));
+    });
+
+    test('session proxy rejects other transcripts and caller query overrides',
+        () async {
+      final unauthenticated = await http.get(
+        hermesSessionMessagesUri(
+          hubUri!.toString(),
+          'agent:main:pistisai:dm:pistisai',
+        ),
+      );
+      expect(unauthenticated.statusCode, HttpStatus.forbidden);
+      expect(hermesRequests, isEmpty);
+
+      final foreign = await http.get(
+        hermesSessionMessagesUri(
+          hubUri!.toString(),
+          'agent:main:telegram:dm:ops',
+        ),
+        headers: {'Authorization': 'Bearer router-secret'},
+      );
+      expect(foreign.statusCode, HttpStatus.forbidden);
+      expect(hermesRequests, isEmpty);
+
+      final widened = hermesSessionMessagesUri(
+        hubUri!.toString(),
+        'agent:main:pistisai:dm:pistisai',
+      ).replace(queryParameters: <String, String>{
+        'order': 'newest',
+        'limit': '1',
+      });
+      final kept = await http.get(
+        widened,
+        headers: {
+          'Authorization': 'Bearer router-secret',
+        },
+      );
+      expect(kept.statusCode, HttpStatus.ok);
+      expect(upstreamQueries.single, 'order=oldest&limit=500');
+      expect(upstreamAuthorization.single, 'Bearer hub-hermes-key');
+    });
+
+    test('main-channel is read as the Pistisai DM session key', () async {
+      final shell = await http.get(
+        hubUri!.replace(path: '/api/sessions/main-channel/messages'),
+        headers: {'Authorization': 'Bearer router-secret'},
+      );
+      expect(shell.statusCode, HttpStatus.ok);
+      expect(
+        hermesRequests.single.contains('agent:main:pistisai:dm:pistisai') ||
+            hermesRequests.single.contains(
+              'agent%3Amain%3Apistisai%3Adm%3Apistisai',
+            ),
+        isTrue,
+      );
     });
   });
 }

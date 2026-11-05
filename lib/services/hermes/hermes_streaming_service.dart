@@ -9,10 +9,17 @@ import '../../models/agent_event.dart';
 import '../../models/message.dart';
 import '../../models/streaming_message.dart';
 import '../hub/client_connectivity.dart';
+import '../hub/hermes_hub_broker.dart';
 import '../streaming_service.dart';
 import 'hermes_session_key.dart';
 import 'hermes_session_transcript.dart';
 import '../../utils/logger.dart';
+
+/// Client wait for a platform send that travels through the desktop hub.
+///
+/// Longer than [hermesHubUpstreamTimeout] so a 401, 502, or gateway timeout
+/// comes back as a proxy status instead of a client timeout.
+const Duration hermesHubPlatformSendTimeout = Duration(seconds: 12);
 
 /// Streaming service implementation for Hermes Agent API server.
 ///
@@ -252,7 +259,25 @@ class HermesStreamingService extends StreamingService {
       // Platform send is proxied by the hub. The shared-channel poll reads
       // the transcript through the same hub. Do not call `/v1/runs` or
       // `/v1/chat/completions` here: those hub routes are not Hermes.
-      await _attachPlatformTurn(conversationId: conversationId, text: prompt);
+      final delivery = await postPistisaiMessage(
+        text: prompt,
+        conversationId: conversationId,
+      );
+      final status = delivery.statusCode;
+      final accepted = status != null && status >= 200 && status < 300;
+      if (!accepted) {
+        final errorMsg = StreamingMessage.error(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          conversationId: conversationId,
+          error: status == null
+              ? 'The primary hub did not accept the message.'
+              : 'The primary hub rejected the message ($status).',
+          sequence: 0,
+        );
+        _messageController.add(errorMsg);
+        yield errorMsg;
+        return;
+      }
       final completeMsg = StreamingMessage.complete(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         conversationId: conversationId,
@@ -956,7 +981,9 @@ class HermesStreamingService extends StreamingService {
               'text': text,
             }),
           )
-          .timeout(const Duration(seconds: 3));
+          .timeout(
+            _viaHub ? hermesHubPlatformSendTimeout : const Duration(seconds: 3),
+          );
 
       final adopted = adoptGatewaySessionKey(
         statusCode: response.statusCode,

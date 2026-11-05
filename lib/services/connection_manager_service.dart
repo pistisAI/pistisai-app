@@ -193,13 +193,22 @@ class ConnectionManagerService extends ChangeNotifier {
   void switchBackend(BackendType newBackend) {
     _log.info('Switching backend from $_currentBackend to $newBackend');
     close();
-    _currentBackend = newBackend;
     if (newBackend == BackendType.hermes) {
-      _activeRuntimeClient = _createHermesRuntimeClient();
+      final client = _createHermesRuntimeClient();
+      if (client == null) {
+        _currentBackend = null;
+        _activeRuntimeClient = null;
+        _lastError = _transportDecision().refusal ?? directHermesRefusal;
+        notifyListeners();
+        return;
+      }
+      _currentBackend = newBackend;
+      _activeRuntimeClient = client;
     } else {
+      _currentBackend = null;
       _activeRuntimeClient = null;
     }
-    _persistActiveBackend(newBackend);
+    _persistActiveBackend(_currentBackend);
     notifyListeners();
   }
 
@@ -230,11 +239,11 @@ class ConnectionManagerService extends ChangeNotifier {
 
   Future<void> initialize() async {
     _log.info('Initializing ConnectionManagerService');
-    await _loadConfiguredRuntime();
     _isConnected = false;
     _availableModels = [];
     _selectedModel = null;
     _lastError = null;
+    await _loadConfiguredRuntime();
     notifyListeners();
 
     // Auto-detect: if no backend configured, probe for available runtimes
@@ -282,8 +291,12 @@ class ConnectionManagerService extends ChangeNotifier {
       try {
         await hermesStreamingService.establishConnection();
         if (hermesStreamingService.connection.isActive) {
+          final client = _createHermesRuntimeClient();
+          if (client == null) {
+            return;
+          }
           _currentBackend = BackendType.hermes;
-          _activeRuntimeClient = _createHermesRuntimeClient();
+          _activeRuntimeClient = client;
           notifyListeners();
         }
       } catch (e) {
@@ -308,9 +321,13 @@ class ConnectionManagerService extends ChangeNotifier {
       }
       await hermesStreamingService.establishConnection();
       if (hermesStreamingService.connection.isActive) {
+        final client = _createHermesRuntimeClient();
+        if (client == null) {
+          return;
+        }
         _log.info('Auto-detected Hermes HTTP gateway at $_configuredHermesUrl');
         _currentBackend = BackendType.hermes;
-        _activeRuntimeClient = _createHermesRuntimeClient();
+        _activeRuntimeClient = client;
         notifyListeners();
         return;
       }
@@ -344,6 +361,14 @@ class ConnectionManagerService extends ChangeNotifier {
           }
           _applyTransport(decision);
           final client = _ensureHermesRuntimeClient();
+          if (client == null) {
+            _lastError = decision.refusal ?? directHermesRefusal;
+            _isConnected = false;
+            _currentBackend = null;
+            _activeRuntimeClient = null;
+            notifyListeners();
+            return false;
+          }
           final health = await client.health();
           _isConnected = health.isHealthy;
           if (_isConnected) {
@@ -447,6 +472,9 @@ class ConnectionManagerService extends ChangeNotifier {
     try {
       if (_currentBackend == BackendType.hermes) {
         final client = _ensureHermesRuntimeClient();
+        if (client == null) {
+          return null;
+        }
         final typedHistory = history
             ?.map(
               (entry) => entry.map(
@@ -488,7 +516,7 @@ class ConnectionManagerService extends ChangeNotifier {
 
   StreamingService? getStreamingService() {
     return switch (_currentBackend) {
-      BackendType.hermes => _ensureHermesRuntimeClient().streamingService,
+      BackendType.hermes => _ensureHermesRuntimeClient()?.streamingService,
       null => null,
     };
   }
@@ -532,6 +560,7 @@ class ConnectionManagerService extends ChangeNotifier {
       _lastError = decision.refusal ?? directHermesRefusal;
       _isConnected = false;
       _activeRuntimeClient = null;
+      _currentBackend = null;
       notifyListeners();
       return;
     }
@@ -577,8 +606,17 @@ class ConnectionManagerService extends ChangeNotifier {
       ),
     );
     await _persistHubAttachment(joined);
+    final client = _createHermesRuntimeClient();
+    if (client == null) {
+      _lastError = directHermesRefusal;
+      _isConnected = false;
+      _currentBackend = null;
+      _activeRuntimeClient = null;
+      notifyListeners();
+      return false;
+    }
     _currentBackend = BackendType.hermes;
-    _activeRuntimeClient = _createHermesRuntimeClient();
+    _activeRuntimeClient = client;
     _persistActiveBackend(BackendType.hermes);
     notifyListeners();
     return testConnection();
@@ -611,26 +649,30 @@ class ConnectionManagerService extends ChangeNotifier {
     }
   }
 
-  HermesRuntimeClient _ensureHermesRuntimeClient() {
+  HermesRuntimeClient? _ensureHermesRuntimeClient() {
     final existing = _activeRuntimeClient;
     if (existing is HermesRuntimeClient) {
       return existing;
     }
 
     final client = _createHermesRuntimeClient();
+    if (client == null) {
+      return null;
+    }
     _activeRuntimeClient = client;
     return client;
   }
 
-  HermesRuntimeClient _createHermesRuntimeClient() {
+  /// Builds a runtime client only when transport is allowed.
+  ///
+  /// A web, mobile, or secondary install with no hub URL does not fall back
+  /// to loopback `:1337` or `:8642`.
+  HermesRuntimeClient? _createHermesRuntimeClient() {
     final decision = _transportDecision();
-    // Add 8642 only when a loopback URL was saved without a port.
-    // An explicit port, including a discovered hermes serve port, stays.
-    // Non-primary installs never receive a gateway URL here.
-    final url = decision.baseUrl ??
-        (allowsDirectHermesGateway(_role)
-            ? AppConfig.defaultHermesUrl
-            : 'http://127.0.0.1:${AppConfig.defaultRouterPort}');
+    final url = decision.baseUrl;
+    if (!decision.allowed || url == null) {
+      return null;
+    }
     return HermesRuntimeClient(
       baseUrl: url,
       apiKey: _configuredHermesApiKey,
@@ -702,10 +744,13 @@ class ConnectionManagerService extends ChangeNotifier {
     final hermesEnabled = await settings.isHermesEnabled();
 
     if (configuredBackend == preferences.BackendType.hermes || hermesEnabled) {
-      _currentBackend = BackendType.hermes;
       if (decision.allowed) {
+        _currentBackend = BackendType.hermes;
         _activeRuntimeClient = _createHermesRuntimeClient();
       } else {
+        // Enabled in settings, but this install has no hub to join.
+        // Leave the backend unset so chat does not dial loopback.
+        _currentBackend = null;
         _activeRuntimeClient = null;
         _lastError = decision.refusal;
         _isConnected = false;

@@ -6,6 +6,7 @@ import 'package:pistisai/models/agent_event.dart';
 import 'package:pistisai/models/streaming_message.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/hub/client_connectivity.dart';
+import 'package:pistisai/services/hub/hermes_hub_broker.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -431,6 +432,54 @@ void main() {
       service.dispose();
     });
 
+    test('via-hub send surfaces a proxy failure instead of a completed turn',
+        () async {
+      final client = _RecordingClient(postStatus: 502);
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final messages = await service
+          .streamResponse(
+            prompt: 'hello',
+            model: 'default',
+            conversationId: 'main-channel',
+          )
+          .toList();
+
+      expect(messages, hasLength(1));
+      expect(messages.single.hasError, isTrue);
+      expect(messages.single.error, contains('502'));
+      service.dispose();
+    });
+
+    test('via-hub send waits long enough for the hub hop', () async {
+      final client = _RecordingClient(postDelay: const Duration(seconds: 4));
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final messages = await service
+          .streamResponse(
+            prompt: 'hello',
+            model: 'default',
+            conversationId: 'pistisai',
+          )
+          .toList();
+
+      expect(messages.single.hasError, isFalse);
+      expect(messages.single.isComplete, isTrue);
+      expect(
+        hermesHubPlatformSendTimeout,
+        greaterThan(hermesHubUpstreamTimeout),
+      );
+      service.dispose();
+    });
+
     test('web client does not dial the default Hermes gateway', () async {
       final client = _RecordingClient();
       final service = HermesStreamingService(
@@ -449,6 +498,13 @@ void main() {
 }
 
 class _RecordingClient extends http.BaseClient {
+  _RecordingClient({
+    this.postStatus = 200,
+    this.postDelay = Duration.zero,
+  });
+
+  final int postStatus;
+  final Duration postDelay;
   final List<http.BaseRequest> requests = <http.BaseRequest>[];
   final List<String> bodies = <String>[];
 
@@ -458,10 +514,16 @@ class _RecordingClient extends http.BaseClient {
     if (request is http.Request && request.method == 'POST') {
       bodies.add(request.body);
     }
+    if (request.url.path == '/api/pistisai/messages' &&
+        postDelay > Duration.zero) {
+      await Future<void>.delayed(postDelay);
+    }
     final payload = request.url.path == '/health' ? 'OK' : '{"ok":true}';
+    final status =
+        request.url.path == '/api/pistisai/messages' ? postStatus : 200;
     return http.StreamedResponse(
       Stream<List<int>>.value(utf8.encode(payload)),
-      200,
+      status,
     );
   }
 }

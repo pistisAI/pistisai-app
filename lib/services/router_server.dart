@@ -14,6 +14,7 @@ import 'conscience_storage_service.dart';
 import 'voice/cloud_tts_service.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/services/hermes/hermes_session_key.dart';
 import 'package:pistisai/services/hub/hermes_hub_broker.dart';
 import 'package:pistisai/utils/http_constants.dart';
 
@@ -191,10 +192,7 @@ class RouterServer {
   Future<Response> _proxyPistisaiMessage(Request request) async {
     try {
       final body = await request.readAsString();
-      final result = await hermesHubBroker.forwardPistisaiMessage(
-        body: body,
-        authorization: _upstreamAuthorization(request),
-      );
+      final result = await hermesHubBroker.forwardPistisaiMessage(body: body);
       return _proxyResponse(result);
     } catch (e) {
       return _gatewayUnavailable();
@@ -205,36 +203,26 @@ class RouterServer {
     Request request,
     String sessionKey,
   ) async {
+    // Only the shared Pistisai DM. Other agent transcripts are not readable
+    // through the hub, and caller query strings are not forwarded.
+    final allowed = hubAllowlistedSessionKey(sessionKey);
+    if (allowed == null) {
+      return Response(
+        HttpStatus.forbidden,
+        body: jsonEncode(<String, String>{
+          'error': 'Only the shared Pistisai conversation can be read here.',
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+    }
     try {
       final result = await hermesHubBroker.forwardSessionMessages(
-        sessionKey: _decodeSessionKey(sessionKey),
-        queryParameters: request.url.queryParameters,
-        authorization: _upstreamAuthorization(request),
+        sessionKey: allowed,
       );
       return _proxyResponse(result);
     } catch (e) {
       return _gatewayUnavailable();
     }
-  }
-
-  /// When the hub itself requires a bearer token, that token is for the
-  /// router, not Hermes. Only an open hub forwards the caller Authorization,
-  /// which may be the Hermes API key.
-  /// Shelf may hand the path segment over still percent-encoded. The broker
-  /// encodes the gateway key itself, so decode once here and only here.
-  String _decodeSessionKey(String sessionKey) {
-    try {
-      final decoded = Uri.decodeComponent(sessionKey);
-      if (decoded == sessionKey) return sessionKey;
-      return decoded;
-    } catch (_) {
-      return sessionKey;
-    }
-  }
-
-  String? _upstreamAuthorization(Request request) {
-    if (authSecret != null) return null;
-    return request.headers['authorization'];
   }
 
   Response _proxyResponse(HubForwardResult result) {

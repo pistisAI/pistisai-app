@@ -111,4 +111,33 @@ void main() {
     service.dispose();
     hermes.dispose();
   });
+
+  test('web with Hermes enabled and no hub does not dial loopback', () async {
+    SharedPreferences.setMockInitialValues({
+      'settings_client_install_role': 'web',
+      'settings_hermes_enabled': true,
+    });
+    final hermes = HermesStreamingService(role: ClientInstallRole.web);
+    final service = ConnectionManagerService(
+      hermesStreamingService: hermes,
+      settingsPreferenceService: SettingsPreferenceService(),
+      autoDetectOnInitialize: false,
+    );
+    await service.initialize();
+
+    expect(service.installRole, ClientInstallRole.web);
+    expect(service.activeBackend, isNull);
+    expect(service.activeRuntimeClient, isNull);
+    expect(service.getStreamingService(), isNull);
+    expect(service.isConnected, isFalse);
+    expect(service.lastError, directHermesRefusal);
+    expect(hermes.baseUrl, isNot(contains(':1337')));
+    expect(hermes.refusedDirectHermes, isTrue);
+
+    final reached = await hermes.testConnection();
+    expect(reached, isFalse);
+
+    service.dispose();
+    hermes.dispose();
+  });
 }

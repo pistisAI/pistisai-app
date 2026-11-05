@@ -20,11 +20,18 @@ class HubForwardResult {
   });
 }
 
+/// How long the hub waits for the co-resident gateway.
+///
+/// Clients that send through the hub wait longer than this so they observe
+/// the proxy status instead of timing out while the hop is still in flight.
+const Duration hermesHubUpstreamTimeout = Duration(seconds: 8);
+
 /// Forwards chat send/sync from the desktop hub to local Hermes.
 ///
 /// Non-primary clients call the hub (`:1337`). The hub dials the gateway
-/// (`:8642`). The POST body is not rewritten: `conversation_id` stays the
-/// platform chat id (`pistisai`), and the session key stays in the GET path.
+/// (`:8642`) with its own discovered API key. Caller Authorization headers
+/// are not forwarded. The POST body is not rewritten: `conversation_id`
+/// stays the platform chat id (`pistisai`).
 class HermesHubBroker {
   HermesHubBroker({
     String? hermesBaseUrl,
@@ -47,38 +54,35 @@ class HermesHubBroker {
   /// `POST /api/pistisai/messages` — body forwarded unchanged.
   Future<HubForwardResult> forwardPistisaiMessage({
     required String body,
-    String? authorization,
   }) async {
     final response = await _client
         .post(
           Uri.parse('$hermesBaseUrl/api/pistisai/messages'),
-          headers: _headers(authorization),
+          headers: _headers(),
           body: body,
         )
-        .timeout(const Duration(seconds: 8));
+        .timeout(hermesHubUpstreamTimeout);
     return _result(response);
   }
 
   /// `GET /api/sessions/{session_key}/messages`.
   ///
-  /// [sessionKey] is the gateway key (`agent:main:pistisai:dm:pistisai`).
-  /// It is percent-encoded as one path segment.
+  /// [sessionKey] must already be the allowlisted Pistisai DM key
+  /// (`agent:main:pistisai:dm:pistisai`). It is percent-encoded as one path
+  /// segment. The transcript query is fixed; caller query strings are not
+  /// copied.
   Future<HubForwardResult> forwardSessionMessages({
     required String sessionKey,
-    Map<String, String> queryParameters = const <String, String>{},
-    String? authorization,
   }) async {
-    final built = hermesSessionMessagesUri(hermesBaseUrl, sessionKey);
-    final uri = queryParameters.isEmpty
-        ? built
-        : built.replace(queryParameters: queryParameters);
+    final uri = hermesSessionMessagesUri(hermesBaseUrl, sessionKey);
     final response = await _client
-        .get(uri, headers: _headers(authorization))
-        .timeout(const Duration(seconds: 8));
+        .get(uri, headers: _headers())
+        .timeout(hermesHubUpstreamTimeout);
     return _result(response);
   }
 
-  Map<String, String> _headers(String? authorization) {
+  /// Upstream identity is the hub's discovered Hermes key only.
+  Map<String, String> _headers() {
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -86,8 +90,6 @@ class HermesHubBroker {
     final key = hermesApiKey;
     if (key != null && key.isNotEmpty) {
       headers['Authorization'] = 'Bearer $key';
-    } else if (authorization != null && authorization.isNotEmpty) {
-      headers['Authorization'] = authorization;
     }
     return headers;
   }

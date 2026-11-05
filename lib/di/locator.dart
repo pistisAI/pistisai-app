@@ -45,6 +45,7 @@ import 'package:pistisai/services/providers/moonshot_adapter.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/hub/client_connectivity.dart';
+import 'package:pistisai/services/hub/hermes_hub_broker.dart';
 import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/agent_status_service.dart';
@@ -235,6 +236,9 @@ Future<void> setupCoreServices() async {
         conscienceStorageService,
       );
 
+      // The hub's own Hermes key authenticates upstream :8642 calls.
+      // Remote clients do not send or possess that key.
+      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
       final routerServer = RouterServer(
         rateLimitManager: rateLimitManager,
         providers: {
@@ -251,6 +255,7 @@ Future<void> setupCoreServices() async {
         evolutionTracker: evolutionTracker,
         conscienceStorage: conscienceStorageService,
         ttsService: CloudTtsService(),
+        hermesHubBroker: HermesHubBroker(hermesApiKey: hermesApiKey),
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
@@ -258,7 +263,6 @@ Future<void> setupCoreServices() async {
       // A phone or secondary desktop uses the saved hub URL instead.
       final hermesUrl = await settingsPreferenceService.getHermesUrl();
       final hubUrl = await settingsPreferenceService.getHubUrl();
-      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
       final installRole = resolveClientInstallRole(
         isWeb: false,
         isMobile: PlatformHelper.isMobile,

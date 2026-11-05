@@ -28,6 +28,23 @@ const hermesSharedUiIds = <String>{
 const sharedChannelSyncError =
     'The shared conversation could not be read from Hermes. Retrying shortly.';
 
+/// Gateway session key the desktop hub may proxy.
+///
+/// Only the shared Pistisai DM. Telegram, Slack, and any other `agent:*`
+/// transcript stay on Hermes. [raw] may be that gateway key or a UI id that
+/// already maps to it (`pistisai`, `main-channel`, `pistisai-chat`).
+String? hubAllowlistedSessionKey(String raw) {
+  var value = raw.trim();
+  if (value.isEmpty) return null;
+  try {
+    value = Uri.decodeComponent(value);
+  } catch (_) {}
+  final canonical = hermesSessionKeyForUiId(pistisaiPlatformChatId);
+  if (value == canonical) return canonical;
+  if (hermesSharedUiIds.contains(value)) return canonical;
+  return null;
+}
+
 /// True when [value] is a gateway DM session key, not a short chat id.
 bool isHermesGatewaySessionKey(String value) {
   return value.startsWith('agent:') && value.contains(':dm:');
