@@ -23,7 +23,6 @@ import 'package:pistisai/services/streaming_proxy_service.dart';
 import 'package:pistisai/services/tunnel_service.dart';
 import 'package:pistisai/services/tunnel/tunnel_config_manager.dart';
 import 'package:pistisai/services/unified_connection_service.dart';
-import 'package:pistisai/services/user_container_service.dart';
 import 'package:pistisai/services/cloud_connector_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
@@ -38,7 +37,6 @@ import 'package:pistisai/services/url_scheme_registration_service.dart';
 import 'package:pistisai/services/token_storage_service.dart';
 import 'package:pistisai/database/local_brain.dart';
 import 'package:pistisai/services/brain_sync_service.dart';
-import 'package:pistisai/services/full_context_indexer.dart';
 import 'package:pistisai/services/rate_limit_manager.dart';
 import 'package:pistisai/services/router_server.dart';
 import 'package:pistisai/services/providers/zhipu_adapter.dart';
@@ -62,7 +60,6 @@ import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
-import 'package:pistisai/services/coordinator_service.dart';
 import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
 import 'package:pistisai/services/vision/camera_capture_service.dart';
@@ -228,9 +225,6 @@ Future<void> setupCoreServices() async {
       serviceLocator.registerSingleton<BrainSyncService>(brainSyncService);
       brainSyncService.startSync();
 
-      final fullContextIndexer = FullContextIndexer(localBrain);
-      serviceLocator.registerSingleton<FullContextIndexer>(fullContextIndexer);
-
       final rateLimitManager = RateLimitManager(localBrain);
       serviceLocator.registerSingleton<RateLimitManager>(rateLimitManager);
 
@@ -239,14 +233,6 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<ConscienceStorageService>(
         conscienceStorageService,
-      );
-
-      final coordinatorService = CoordinatorService(
-        database: localBrain,
-        conscienceStorage: conscienceStorageService,
-      );
-      serviceLocator.registerSingleton<CoordinatorService>(
-        coordinatorService,
       );
 
       final routerServer = RouterServer(
@@ -818,11 +804,6 @@ Future<void> setupAuthenticatedServices() async {
       AppConfig.verboseLog(
           '[ServiceLocator] Legacy streaming proxy service disabled');
     }
-
-    // User container service - requires authentication token
-    final userContainerService = UserContainerService(authService: authService);
-    serviceLocator
-        .registerSingleton<UserContainerService>(userContainerService);
 
     // Cloud connector - device registry + presence for the secure device mesh
     final cloudConnectorService = CloudConnectorService(

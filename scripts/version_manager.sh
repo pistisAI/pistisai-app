@@ -10,7 +10,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PUBSPEC_FILE="$PROJECT_ROOT/pubspec.yaml"
 APP_CONFIG_FILE="$PROJECT_ROOT/lib/config/app_config.dart"
-SHARED_VERSION_FILE="$PROJECT_ROOT/lib/shared/lib/version.dart"
 SHARED_PUBSPEC_FILE="$PROJECT_ROOT/lib/shared/pubspec.yaml"
 ASSETS_VERSION_FILE="$PROJECT_ROOT/assets/version.json"
 
@@ -732,38 +731,6 @@ update_app_config_version() {
     log_success "Updated app_config.dart version to $new_version"
 }
 
-# Update version in shared/lib/version.dart
-update_shared_version_file() {
-    local new_version="$1"
-    local new_build_number="$2"
-
-    log_info "Updating shared/lib/version.dart to $new_version"
-
-    if [[ ! -f "$SHARED_VERSION_FILE" ]]; then
-        log_warning "shared/lib/version.dart not found, skipping update"
-        return
-    fi
-
-    # Create backup
-    cp "$SHARED_VERSION_FILE" "$SHARED_VERSION_FILE.backup"
-
-    # Generate build timestamp and ensure build number is in YYYYMMDDHHMM format
-    local build_timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-    # Use the provided build_number parameter which should already be in YYYYMMDDHHMM format
-    local build_number_int="$new_build_number"
-
-    # Update all version constants - handle both numeric build numbers and BUILD_TIME_PLACEHOLDER
-    sed -i "s/static const String mainAppVersion = '[^']*';/static const String mainAppVersion = '$new_version';/" "$SHARED_VERSION_FILE"
-    sed -i "s/static const int mainAppBuildNumber = \([0-9]*\|BUILD_TIME_PLACEHOLDER\);/static const int mainAppBuildNumber = $build_number_int;/" "$SHARED_VERSION_FILE"
-    sed -i "s/static const String tunnelManagerVersion = '[^']*';/static const String tunnelManagerVersion = '$new_version';/" "$SHARED_VERSION_FILE"
-    sed -i "s/static const int tunnelManagerBuildNumber = \([0-9]*\|BUILD_TIME_PLACEHOLDER\);/static const int tunnelManagerBuildNumber = $build_number_int;/" "$SHARED_VERSION_FILE"
-    sed -i "s/static const String sharedLibraryVersion = '[^']*';/static const String sharedLibraryVersion = '$new_version';/" "$SHARED_VERSION_FILE"
-    sed -i "s/static const int sharedLibraryBuildNumber = \([0-9]*\|BUILD_TIME_PLACEHOLDER\);/static const int sharedLibraryBuildNumber = $build_number_int;/" "$SHARED_VERSION_FILE"
-    sed -i "s/static const String buildTimestamp = '[^']*';/static const String buildTimestamp = '$build_timestamp';/" "$SHARED_VERSION_FILE"
-
-    log_success "Updated shared/lib/version.dart to $new_version"
-}
-
 # Update version in shared/pubspec.yaml
 update_shared_pubspec_version() {
     local new_version="$1"
@@ -1107,7 +1074,6 @@ main() {
                 validate_version_format "$current_version"
                 update_pubspec_version "$current_version" "$new_build_number"
                 update_app_config_version "$current_version"
-                update_shared_version_file "$current_version" "$new_build_number"
                 update_shared_pubspec_version "$current_version" "$new_build_number"
                 update_assets_version_json "$current_version" "$new_build_number"
 
@@ -1122,7 +1088,6 @@ main() {
                 validate_version_format "$new_version"
                 update_pubspec_version "$new_version" "$new_build_number"
                 update_app_config_version "$new_version"
-                update_shared_version_file "$new_version" "$new_build_number"
                 update_shared_pubspec_version "$new_version" "$new_build_number"
                 update_assets_version_json "$new_version" "$new_build_number"
 
@@ -1149,7 +1114,6 @@ main() {
             local new_build_number=$(generate_build_number)  # Use timestamp for set command
             update_pubspec_version "$2" "$new_build_number"
             update_app_config_version "$2"
-            update_shared_version_file "$2" "$new_build_number"
             update_shared_pubspec_version "$2" "$new_build_number"
             update_assets_version_json "$2" "$new_build_number"
 
@@ -1165,7 +1129,7 @@ main() {
         "validate-placeholders")
             log_info "Validating that no BUILD_TIME_PLACEHOLDER remains in version files"
 
-            local files_to_check=("$PUBSPEC_FILE" "$SHARED_PUBSPEC_FILE" "$SHARED_VERSION_FILE" "$ASSETS_VERSION_FILE")
+            local files_to_check=("$PUBSPEC_FILE" "$SHARED_PUBSPEC_FILE" "$ASSETS_VERSION_FILE")
             local placeholder_found=false
 
             for file in "${files_to_check[@]}"; do
@@ -1201,7 +1165,6 @@ main() {
                 validate_version_format "$current_version"
                 update_pubspec_version "$current_version" "$placeholder_build"
                 update_app_config_version "$current_version"
-                update_shared_version_file "$current_version" "$placeholder_build"
                 update_shared_pubspec_version "$current_version" "$placeholder_build"
                 update_assets_version_json "$current_version" "$placeholder_build"
                 log_info "Version prepared for build-time timestamp injection"
@@ -1212,7 +1175,6 @@ main() {
                 validate_version_format "$new_version"
                 update_pubspec_version "$new_version" "$placeholder_build"
                 update_app_config_version "$new_version"
-                update_shared_version_file "$new_version" "$placeholder_build"
                 update_shared_pubspec_version "$new_version" "$placeholder_build"
                 update_assets_version_json "$new_version" "$placeholder_build"
 

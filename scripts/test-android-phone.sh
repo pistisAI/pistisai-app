@@ -37,7 +37,6 @@ else
 fi
 
 flutter pub get
-(cd lib/shared && flutter pub get)
 
 echo "Running integration_test/mobile_phone_self_test.dart on device..."
 flutter test integration_test/mobile_phone_self_test.dart -d "$DEVICE" "${DART_DEFINES[@]}"
