@@ -33,8 +33,10 @@ class Conversation {
     );
   }
 
-  /// The one harness conversation. Every device uses this id as the session
-  /// id, then loads the transcript from the harness.
+  /// Local shell for the one shared desktop conversation.
+  ///
+  /// This id is not the Hermes session key. Transcript reads use
+  /// `agent:main:pistisai:dm:<chat_id>`.
   ///
   /// [agentName] is the companion the user set up — never a hardcoded
   /// personal name like "Zoid Maltek".
