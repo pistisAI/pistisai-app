@@ -76,4 +76,3 @@ nav:
       - Security: operations/security/BACKEND_SECURITY.md
   - Development:
       - Building: development/BUILD_SCRIPTS.md
-      - Versioning: development/versioning/VERSIONING.md
