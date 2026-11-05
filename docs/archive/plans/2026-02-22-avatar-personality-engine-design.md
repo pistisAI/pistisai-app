@@ -3,7 +3,7 @@
 **Project**: Pistisai (secure agent companion)
 **Author**: Brainstorming Session
 **Date**: 2026-02-22
-**Status**: Historical design; update implementation against the current agent-runtime-first orientation in [SPEC.md](../../SPEC.md) and [Agent Runtime Contract](../architecture/AGENT_RUNTIME_CONTRACT.md)
+**Status**: Historical design; update implementation against the current agent-runtime-first orientation in [SPEC.md](../../../SPEC.md) and [Agent Runtime Contract](../../architecture/AGENT_RUNTIME_CONTRACT.md)
 
 ---
 

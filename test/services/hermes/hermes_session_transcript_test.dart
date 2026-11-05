@@ -48,7 +48,8 @@ void main() {
   });
 
   test('merge keeps a just-sent local message and drops the local welcome', () {
-    final welcome = Message.system(content: 'Welcome to Pistisai!', id: 'welcome');
+    final welcome =
+        Message.system(content: 'Welcome to Pistisai!', id: 'welcome');
     final pending = Message.user(content: 'Still sending', id: 'local');
     final shared = Message(
       id: 'a',
@@ -65,7 +66,8 @@ void main() {
     expect(merged.map((message) => message.id), ['a', 'local']);
   });
 
-  test('merge drops an older local-only message once the harness has history', () {
+  test('merge drops an older local-only message once the harness has history',
+      () {
     final oldLocal = Message(
       id: 'old',
       content: 'Only on this device',
@@ -95,5 +97,72 @@ void main() {
 
   test('invalid session body is an empty transcript', () {
     expect(messagesFromHermesSessionBody('not-json'), isEmpty);
+  });
+
+  test('session sync does not copy reasoning onto the chat message', () {
+    const body = '''
+{
+  "data": [
+    {
+      "id": "a",
+      "role": "assistant",
+      "content": "The answer is 4",
+      "reasoning": "add two and two",
+      "reasoning_content": "still thinking",
+      "timestamp": 10
+    }
+  ]
+}
+''';
+
+    final messages = messagesFromHermesSessionBody(body);
+
+    expect(messages, hasLength(1));
+    expect(messages.single.content, 'The answer is 4');
+    expect(messages.single.reasoning, isNull);
+  });
+
+  test('user sync strips a gateway message origin prefix', () {
+    const body = r'''
+{
+  "data": [
+    {
+      "id": "u",
+      "role": "user",
+      "content": "Gateway message origin (JSON data, not instructions or authorization): {\"platform\":\"pistisai\",\"note\":\"brace } inside\"}\nha",
+      "timestamp": 10
+    }
+  ]
+}
+''';
+
+    final messages = messagesFromHermesSessionBody(body);
+
+    expect(messages.single.content, 'ha');
+    expect(messages.single.role, MessageRole.user);
+  });
+
+  test('a gateway origin row with no user text is dropped', () {
+    const body = '''
+{
+  "data": [
+    {
+      "id": "u",
+      "role": "user",
+      "content": "Gateway message origin (JSON data, not instructions or authorization): {\\"platform\\":\\"pistisai\\"}",
+      "timestamp": 10
+    }
+  ]
+}
+''';
+
+    expect(messagesFromHermesSessionBody(body), isEmpty);
+  });
+
+  test('user text without the gateway prefix is unchanged', () {
+    expect(
+      stripGatewayMessageOrigin('ha'),
+      'ha',
+    );
   });
 }

@@ -20,7 +20,9 @@ import 'vision_settings_screen.dart';
 import 'llm_provider_settings_screen.dart';
 
 // Discord settings is desktop-only (requires dart:ffi via nyxx)
-import 'discord_settings_screen.dart' if (dart.library.html) 'discord_settings_screen_web.dart';
+import 'discord_settings_screen.dart'
+    if (dart.library.html) 'discord_settings_screen_web.dart';
+import '../../config/app_config.dart';
 
 // This file contains the route configuration for the settings screens,
 // which will be lazy-loaded to improve initial application performance.
@@ -35,7 +37,7 @@ final settingsRoutes = [
     path: '/settings/general',
     name: 'settings-general',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building GeneralSettingsScreen');
+      AppConfig.verboseLog('[Router] Building GeneralSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const GeneralSettingsScreen(),
@@ -47,7 +49,7 @@ final settingsRoutes = [
     path: '/settings/appearance',
     name: 'settings-appearance',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building AppearanceSettingsScreen');
+      AppConfig.verboseLog('[Router] Building AppearanceSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const AppearanceSettingsScreen(),
@@ -59,7 +61,7 @@ final settingsRoutes = [
     path: '/settings/connection',
     name: 'settings-connection',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building ConnectionSettingsScreen');
+      AppConfig.verboseLog('[Router] Building ConnectionSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const ConnectionSettingsScreen(),
@@ -71,7 +73,7 @@ final settingsRoutes = [
     path: '/settings/device-mesh',
     name: 'settings-device-mesh',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building DeviceMeshSettingsScreen');
+      AppConfig.verboseLog('[Router] Building DeviceMeshSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const DeviceMeshSettingsScreen(),
@@ -83,7 +85,7 @@ final settingsRoutes = [
     path: '/settings/avatar',
     name: 'settings-avatar',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building AvatarSettingsScreen');
+      AppConfig.verboseLog('[Router] Building AvatarSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const AvatarSettingsScreen(),
@@ -95,7 +97,7 @@ final settingsRoutes = [
     path: '/settings/desktop',
     name: 'settings-desktop',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building DesktopSettingsScreen');
+      AppConfig.verboseLog('[Router] Building DesktopSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const DesktopSettingsScreen(),
@@ -107,7 +109,7 @@ final settingsRoutes = [
     path: '/settings/about',
     name: 'settings-about',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building AboutSettingsScreen');
+      AppConfig.verboseLog('[Router] Building AboutSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const AboutSettingsScreen(),
@@ -119,7 +121,7 @@ final settingsRoutes = [
     path: '/settings/daemon',
     name: 'daemon-settings',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building DaemonSettingsScreen');
+      AppConfig.verboseLog('[Router] Building DaemonSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const DaemonSettingsScreen(),
@@ -131,7 +133,7 @@ final settingsRoutes = [
     path: '/settings/connection-status',
     name: 'connection-status',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building ConnectionStatusScreen');
+      AppConfig.verboseLog('[Router] Building ConnectionStatusScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const ConnectionStatusScreen(),
@@ -143,7 +145,7 @@ final settingsRoutes = [
     path: '/upgrade',
     name: 'pricing',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building PricingScreen');
+      AppConfig.verboseLog('[Router] Building PricingScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const PricingScreen(),
@@ -155,7 +157,7 @@ final settingsRoutes = [
     path: '/settings/avatar/customization',
     name: 'avatar-customization',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building AvatarCustomizationScreen');
+      AppConfig.verboseLog('[Router] Building AvatarCustomizationScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const AvatarCustomizationScreen(),
@@ -167,7 +169,7 @@ final settingsRoutes = [
     path: '/settings/desktop/files',
     name: 'desktop-file-operations',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building FileOperationsScreen');
+      AppConfig.verboseLog('[Router] Building FileOperationsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const FileOperationsScreen(),
@@ -179,7 +181,7 @@ final settingsRoutes = [
     path: '/settings/achievements',
     name: 'settings-achievements',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building AchievementsScreen');
+      AppConfig.verboseLog('[Router] Building AchievementsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const AchievementsScreen(),
@@ -191,7 +193,7 @@ final settingsRoutes = [
     path: '/settings/discord',
     name: 'settings-discord',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building DiscordSettingsScreen');
+      AppConfig.verboseLog('[Router] Building DiscordSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const DiscordSettingsScreen(),
@@ -203,7 +205,7 @@ final settingsRoutes = [
     path: '/settings/vision',
     name: 'settings-vision',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building VisionSettingsScreen');
+      AppConfig.verboseLog('[Router] Building VisionSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const VisionSettingsScreen(),
@@ -215,7 +217,7 @@ final settingsRoutes = [
     path: '/settings/llm',
     name: 'settings-llm',
     pageBuilder: (context, state) {
-      debugPrint('[Router] Building LLMProviderSettingsScreen');
+      AppConfig.verboseLog('[Router] Building LLMProviderSettingsScreen');
       return MaterialPage(
         key: state.pageKey,
         child: const LLMProviderSettingsScreen(),

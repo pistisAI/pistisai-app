@@ -536,9 +536,9 @@ ORDER BY updated_at DESC;
 ## Related Documentation
 
 - [Stripe Webhook Documentation](https://stripe.com/docs/webhooks)
-- [Webhook Implementation Summary](./WEBHOOK_IMPLEMENTATION_SUMMARY.md)
+- Webhook Implementation Summary
 - [Webhook Quick Reference](./WEBHOOK_QUICK_REFERENCE.md)
-- [Admin API Documentation](../../docs/API/ADMIN_API.md)
+- Admin API Documentation
 - [Payment Service](../services/README.md)
 - [Subscription Service](../services/README.md)
 

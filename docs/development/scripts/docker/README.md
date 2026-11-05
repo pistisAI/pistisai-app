@@ -2,7 +2,7 @@
 
 **⚠️ NOTICE: AUR Docker Building Temporarily Removed**
 
-The Docker-based AUR building system has been temporarily removed as part of the v3.10.3 Unified Flutter-Native Architecture transition. See [AUR Status Documentation](../../docs/DEPLOYMENT/AUR_STATUS.md) for complete details.
+The Docker-based AUR building system has been temporarily removed as part of the v3.10.3 Unified Flutter-Native Architecture transition. See [AUR Status](../../../deployment/AUR_STATUS.md) for complete details.
 
 ## 📋 Current Status
 
@@ -20,7 +20,7 @@ The Docker-based AUR building system has been temporarily removed as part of the
 
 For complete details about the AUR removal and planned reintegration:
 
-- **[AUR Status Documentation](../../docs/DEPLOYMENT/AUR_STATUS.md)**
+- **[AUR Status Documentation](../../../deployment/AUR_STATUS.md)**
 
 ## 🔄 Current Docker Usage
 
@@ -64,7 +64,7 @@ When AUR support is reintegrated, this directory will contain:
 
 ## 🔗 Related Documentation
 
-- **[AUR Status Documentation](../../docs/DEPLOYMENT/AUR_STATUS.md)** - Complete AUR removal and reintegration details
+- **[AUR Status Documentation](../../../deployment/AUR_STATUS.md)** - Complete AUR removal and reintegration details
 - [Deployment Workflow](../deploy/README.md) - Current deployment processes
-- [Package Building](../packaging/README.md) - Available package formats
-- [Version Management](../version_manager.sh) - Version management tools
+- Package Building - Available package formats
+- Version Management - Version management tools

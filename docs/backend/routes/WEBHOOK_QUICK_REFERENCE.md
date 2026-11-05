@@ -207,6 +207,6 @@ psql $DATABASE_URL -c "\dt webhook_events"
 
 **Need help?**
 
-- Review: [WEBHOOK_IMPLEMENTATION_SUMMARY.md](./WEBHOOK_IMPLEMENTATION_SUMMARY.md)
+- Review: WEBHOOK_IMPLEMENTATION_SUMMARY.md
 - Check: [Stripe Webhook Docs](https://stripe.com/docs/webhooks)
 - Contact: Development team with event ID and logs

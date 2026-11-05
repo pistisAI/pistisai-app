@@ -16,9 +16,9 @@ This directory contains version management and build process documentation for P
 
 ## 🔗 Related Documentation
 
-- **[Release Documentation](../RELEASE/README.md)** - Release notes and procedures
-- **[Development Documentation](../DEVELOPMENT/README.md)** - Development build processes
-- **[Operations Documentation](../OPERATIONS/README.md)** - Deployment version management
+- **Release Documentation** - Release notes and procedures
+- **Development Documentation** - Development build processes
+- **Operations Documentation** - Deployment version management
 
 ## 📖 Versioning Overview
 

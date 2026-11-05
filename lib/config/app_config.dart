@@ -69,6 +69,17 @@ class AppConfig {
   static bool get showTunnelDebugInfo => !kReleaseMode;
   static bool get enableVerboseLogging => !kReleaseMode;
 
+  /// Router, locator, and callback traces. Off unless the build passes
+  /// `--dart-define=PISTISAI_VERBOSE_LOGS=true`.
+  static const bool verboseDiagnostics = bool.fromEnvironment(
+    'PISTISAI_VERBOSE_LOGS',
+  );
+
+  static void verboseLog(String? message, {int? wrapWidth}) {
+    if (!verboseDiagnostics) return;
+    debugPrint(message, wrapWidth: wrapWidth);
+  }
+
   // Tier-based feature flags
   static const bool enableTierDetection = true;
   static const bool showTierInformation = true;

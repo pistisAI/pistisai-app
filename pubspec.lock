@@ -250,12 +250,11 @@ packages:
     source: hosted
     version: "1.1.3"
   cnativeapi:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: cnativeapi
-      sha256: "251fb93cd7ec205445fa512ee5ddeb0b82b3273d071cfc0784ddffbbdebbf5d3"
-      url: "https://pub.dev"
-    source: hosted
+      path: "tool/cnativeapi"
+      relative: true
+    source: path
     version: "0.5.2"
   code_assets:
     dependency: transitive
@@ -956,6 +955,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  linux_native_deps:
+    dependency: transitive
+    description:
+      path: "tool/linux_native_deps"
+      relative: true
+    source: path
+    version: "0.0.1"
   local_notifier:
     dependency: "direct main"
     description:

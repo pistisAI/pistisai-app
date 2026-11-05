@@ -425,12 +425,12 @@ if (!connection.isHealthy()) {
 1. Read the [full documentation](./README.md)
 2. Review the [quick start guide](./QUICK_START.md)
 3. Check the [implementation summary](./IMPLEMENTATION_SUMMARY.md)
-4. Explore the [completion report](./TASK_9_COMPLETION.md)
+4. Explore the completion report
 
 ## Support
 
 For issues or questions:
 
 - Check the [troubleshooting section](./README.md#troubleshooting)
-- Review the [requirements document](../../../.kiro/specs/ssh-websocket-tunnel-enhancement/requirements.md)
-- Check the [design document](../../../.kiro/specs/ssh-websocket-tunnel-enhancement/design.md)
+- Review the requirements document
+- Check the design document

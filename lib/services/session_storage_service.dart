@@ -241,7 +241,7 @@ class SessionStorageService {
         throw Exception('Failed to invalidate session: ${response.statusCode}');
       }
 
-      debugPrint(' Session invalidated: $token');
+      debugPrint(' Session invalidated');
     } catch (e) {
       debugPrint(' Failed to invalidate session remotely: $e');
       // Local storage is already cleared, so session is effectively invalidated
