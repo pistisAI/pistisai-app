@@ -13,14 +13,12 @@ Flutter desktop/web app + Node.js backend services: local-first companion layer 
 - `backend/auth/` — Express 5 **CommonJS** (`"type": "commonjs"`), `PORT || 3000`, entry `handlers.js`; no `dev` script; Jest 29
 - `services/sdk/` — TypeScript SDK (ESM, Node `>=18`), `main: dist/index.js` — run `npm run build` (`tsc`) before use
 - `services/openclaw-skills/pistisai/` — avatar personality skill, tests use **Vitest** (`vitest run`), not Jest
-- `lib/shared/` — separate package `pistisai_shared` (Dart `>=3.9.0 <4.0.0`, version `1.0.6+33`) needing its own `flutter pub get`
 - Discovery defaults: OpenClaw Gateway `localhost:18789`, Hermes `127.0.0.1:8642`, Ollama `localhost:11434`, LM Studio `localhost:1234`
 
 ## Setup & verify (exact commands, from repo root)
 
 ```bash
 flutter pub get
-cd lib/shared && flutter pub get && cd ../..   # shared package deps are separate
 npm install                                     # root Node tooling (backend only, NOT the Flutter package)
 cd services/api-backend && npm install          # repeat per service you touch
 ```
