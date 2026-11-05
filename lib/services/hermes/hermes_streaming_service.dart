@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../../config/app_config.dart';
 import '../../models/agent_event.dart';
 import '../../models/message.dart';
 import '../../models/streaming_message.dart';
@@ -169,6 +170,10 @@ class HermesStreamingService extends StreamingService {
       return;
     }
     _client ??= http.Client();
+    if (_viaHub) {
+      await _establishHubConnection();
+      return;
+    }
     try {
       final response = await _client!
           .get(Uri.parse('$_baseUrl/health'), headers: _headers())
@@ -228,8 +233,63 @@ class HermesStreamingService extends StreamingService {
 
   @override
   Future<List<String>> getAvailableModels() async {
+    if (_viaHub) {
+      _modelIds = const <String>[];
+      return _modelIds;
+    }
     await _fetchModels();
     return _modelIds;
+  }
+
+  /// Hub clients are connected when discovery reports `primary_hub`.
+  ///
+  /// Router `/health` and `/v1/models` are the local model router, not Hermes.
+  Future<void> _establishHubConnection() async {
+    final client = _client ?? http.Client();
+    try {
+      final response = await client
+          .get(
+            Uri.parse('$_baseUrl${AppConfig.hubPath}'),
+            headers: _headers(),
+          )
+          .timeout(const Duration(seconds: 5));
+      if (response.statusCode == 200 && _isPrimaryHubDocument(response.body)) {
+        _connection = StreamingConnection.connected(_baseUrl);
+        _modelIds = const <String>[];
+        _useAgentRuns = true;
+        debugPrint('[Hermes] Attached to primary hub at $_baseUrl');
+        notifyListeners();
+        return;
+      }
+      _connection = StreamingConnection.error(
+        'Hub discovery returned ${response.statusCode}',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    } on SocketException {
+      _connection = StreamingConnection.error(
+        'Cannot reach the primary hub at $_baseUrl',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    } on TimeoutException {
+      _connection = StreamingConnection.error(
+        'Connection to $_baseUrl timed out',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    } catch (e) {
+      _connection = StreamingConnection.error(
+        'Connection failed: $e',
+        endpoint: _baseUrl,
+      );
+      notifyListeners();
+    }
+  }
+
+  bool _isPrimaryHubDocument(String body) {
+    final decoded = _decodeJsonObject(body);
+    return decoded != null && decoded['role'] == 'primary_hub';
   }
 
   @override
@@ -1059,6 +1119,10 @@ class HermesStreamingService extends StreamingService {
   }
 
   Future<void> _fetchModels() async {
+    if (_viaHub) {
+      _modelIds = const <String>[];
+      return;
+    }
     try {
       final client = _client ?? http.Client();
       final response = await client

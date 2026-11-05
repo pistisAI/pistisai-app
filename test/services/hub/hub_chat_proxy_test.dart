@@ -184,6 +184,50 @@ void main() {
       );
     });
 
+    test('rejects a foreign conversation id and still forwards pistisai',
+        () async {
+      final foreign = await http.post(
+        hubUri!.replace(path: '/api/pistisai/messages'),
+        headers: {
+          'Authorization': 'Bearer router-secret',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'conversation_id': 'telegram',
+          'text': 'inject',
+        }),
+      );
+      expect(foreign.statusCode, HttpStatus.forbidden);
+      expect(hermesRequests, isEmpty);
+
+      final missing = await http.post(
+        hubUri!.replace(path: '/api/pistisai/messages'),
+        headers: {
+          'Authorization': 'Bearer router-secret',
+          'Content-Type': 'application/json',
+        },
+        body: '{"text":"no id"}',
+      );
+      expect(missing.statusCode, HttpStatus.forbidden);
+      expect(hermesRequests, isEmpty);
+
+      final allowed = await http.post(
+        hubUri!.replace(path: '/api/pistisai/messages'),
+        headers: {
+          'Authorization': 'Bearer router-secret',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'conversation_id': 'pistisai',
+          'text': 'hello',
+        }),
+      );
+      expect(allowed.statusCode, HttpStatus.accepted);
+      final dynamic forwarded = jsonDecode(allowed.body);
+      expect(forwarded['echo'], containsPair('conversation_id', 'pistisai'));
+      expect(hermesRequests, ['POST /api/pistisai/messages']);
+    });
+
     test('proxies the gateway session transcript and keeps 404 and 409',
         () async {
       final sessionKey = hermesSessionKeyForUiId('main-channel');

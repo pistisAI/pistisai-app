@@ -192,10 +192,36 @@ class RouterServer {
   Future<Response> _proxyPistisaiMessage(Request request) async {
     try {
       final body = await request.readAsString();
+      if (!_allowsPlatformPost(body)) {
+        return Response(
+          HttpStatus.forbidden,
+          body: jsonEncode(<String, String>{
+            'error':
+                'Only the shared Pistisai conversation can be written here.',
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
+      }
       final result = await hermesHubBroker.forwardPistisaiMessage(body: body);
       return _proxyResponse(result);
     } catch (e) {
       return _gatewayUnavailable();
+    }
+  }
+
+  /// Forwards the original bytes when [body] names the shared Pistisai chat.
+  ///
+  /// `conversation_id: pistisai` is not rewritten. Other ids, including
+  /// Telegram and Slack, are not sent upstream.
+  bool _allowsPlatformPost(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is! Map) return false;
+      final conversationId = decoded['conversation_id'];
+      if (conversationId is! String) return false;
+      return hubAllowsPlatformConversationId(conversationId);
+    } catch (_) {
+      return false;
     }
   }
 

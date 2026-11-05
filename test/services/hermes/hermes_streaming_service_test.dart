@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/agent_event.dart';
 import 'package:pistisai/models/streaming_message.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
@@ -480,6 +481,45 @@ void main() {
       service.dispose();
     });
 
+    test('via-hub connection probes hub discovery and skips router models',
+        () async {
+      final client = _RecordingClient();
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final connected = await service.testConnection();
+      final models = await service.getAvailableModels();
+
+      expect(connected, isTrue);
+      expect(models, isEmpty);
+      final paths = client.requests.map((request) => request.url.path).toList();
+      expect(paths, contains(AppConfig.hubPath));
+      expect(paths, isNot(contains('/health')));
+      expect(paths, isNot(contains('/v1/models')));
+      service.dispose();
+    });
+
+    test('router /health does not count as a Hermes connection for hub clients',
+        () async {
+      final client = _RouterOnlyClient();
+      final service = HermesStreamingService(
+        baseUrl: 'http://100.64.1.20:1337',
+        role: ClientInstallRole.web,
+        client: client,
+      );
+
+      final connected = await service.testConnection();
+
+      expect(connected, isFalse);
+      expect(client.paths, contains(AppConfig.hubPath));
+      expect(await service.getAvailableModels(), isEmpty);
+      expect(client.paths, isNot(contains('/v1/models')));
+      service.dispose();
+    });
+
     test('web client does not dial the default Hermes gateway', () async {
       final client = _RecordingClient();
       final service = HermesStreamingService(
@@ -518,9 +558,34 @@ class _RecordingClient extends http.BaseClient {
         postDelay > Duration.zero) {
       await Future<void>.delayed(postDelay);
     }
-    final payload = request.url.path == '/health' ? 'OK' : '{"ok":true}';
+    final payload = request.url.path == '/health'
+        ? 'OK'
+        : request.url.path == AppConfig.hubPath
+            ? '{"role":"primary_hub","product":"Pistisai"}'
+            : request.url.path == '/v1/models'
+                ? '{"data":[{"id":"router-only-model"}]}'
+                : '{"ok":true}';
     final status =
         request.url.path == '/api/pistisai/messages' ? postStatus : 200;
+    return http.StreamedResponse(
+      Stream<List<int>>.value(utf8.encode(payload)),
+      status,
+    );
+  }
+}
+
+class _RouterOnlyClient extends http.BaseClient {
+  final List<String> paths = <String>[];
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    paths.add(request.url.path);
+    final payload = request.url.path == '/health'
+        ? 'OK'
+        : request.url.path == '/v1/models'
+            ? '{"data":[{"id":"router-only-model"}]}'
+            : '{"role":"not_a_hub"}';
+    final status = request.url.path == AppConfig.hubPath ? 404 : 200;
     return http.StreamedResponse(
       Stream<List<int>>.value(utf8.encode(payload)),
       status,

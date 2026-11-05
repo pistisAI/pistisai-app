@@ -45,6 +45,15 @@ String? hubAllowlistedSessionKey(String raw) {
   return null;
 }
 
+/// Whether a hub `POST /api/pistisai/messages` body may be forwarded.
+///
+/// Only the platform chat id `pistisai` and the UI aliases that mean that
+/// same conversation. The body is not rewritten.
+bool hubAllowsPlatformConversationId(String? conversationId) {
+  if (conversationId == null) return false;
+  return hermesSharedUiIds.contains(conversationId.trim());
+}
+
 /// True when [value] is a gateway DM session key, not a short chat id.
 bool isHermesGatewaySessionKey(String value) {
   return value.startsWith('agent:') && value.contains(':dm:');
