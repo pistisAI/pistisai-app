@@ -173,6 +173,10 @@ dependency_overrides:
   cupertino_ui: 1.0.1
   # dartssh2 >=2.15 needs pointycastle 4; encrypt 5.0.3 still resolves at runtime.
   pointycastle: ^4.0.0
+  # cnativeapi's Linux hook needs gtk+-3.0, x11, and xi. linux_native_deps
+  # (a dependency of this path package) installs them before that hook runs.
+  cnativeapi:
+    path: tool/cnativeapi
 
 flutter:
   uses-material-design: true
