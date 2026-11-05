@@ -417,8 +417,8 @@ curl -X POST "https://api.pistisai.app/api/admin/email/test" \
 
 ## Related Documentation
 
-- [Email Relay & DNS Setup Requirements](../../../.kiro/specs/email-relay-dns-setup/requirements.md)
-- [Email Relay & DNS Setup Design](../../../.kiro/specs/email-relay-dns-setup/design.md)
+- Email Relay & DNS Setup Requirements
+- Email Relay & DNS Setup Design
 - [Google Workspace Service](../../services/GOOGLE_WORKSPACE_SERVICE_README.md)
-- [Email Config Service](../../services/email-config-service.js)
-- [Admin API Reference](../../../docs/API/ADMIN_API.md)
+- Email Config Service
+- Admin API Reference

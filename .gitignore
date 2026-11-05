@@ -18,6 +18,8 @@ yarn-error.log*
 
 # Build outputs
 build/
+# Fetched by tool/linux_native_deps before the cnativeapi hook compiles.
+tool/cnativeapi/cxx_impl/
 dist/
 out/
 *.tar.gz

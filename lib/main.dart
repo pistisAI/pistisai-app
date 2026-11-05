@@ -119,7 +119,7 @@ void main([List<String> args = const []]) async {
 
   // Sentry DSN is empty by default; set via --dart-define=SENTRY_DSN=...
   if (AppConfig.sentryDsn.isNotEmpty) {
-    _runAppWithSentry();
+    await _runAppWithSentry();
   } else {
     debugPrint('[Main] Sentry DSN not configured, running without Sentry');
     unawaited(_registerWindowsUrlScheme());
@@ -139,10 +139,21 @@ Future<void> _registerWindowsUrlScheme() async {
 
 /// Run the app with Sentry error tracking enabled.
 /// Sentry DSN is configured via --dart-define=SENTRY_DSN=... at build time.
-void _runAppWithSentry() {
+Future<void> _runAppWithSentry() async {
   debugPrint('[Main] Running app with Sentry');
   _initializeClientLogBuffer();
-  _runAppCommon();
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = AppConfig.sentryDsn;
+      options.environment = AppConfig.sentryEnvironment;
+      // Capture full stack traces for all errors, not just catch-block exceptions.
+      options.attachStacktrace = true;
+      // Balanced sampling: real errors always reported, traces sampled at 10%.
+      options.tracesSampleRate = 0.1;
+    },
+    // Start the app inside Sentry's error-tracking zone once the SDK is live.
+    appRunner: _runAppCommon,
+  );
 }
 
 void _runAppCommon() {

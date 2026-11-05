@@ -18,7 +18,7 @@ class DesktopSettingsScreen extends StatelessWidget {
         elevation: 0,
         leading: BackButton(
           onPressed: () {
-            context.go('/');
+            context.go('/config');
           },
         ),
       ),

@@ -12,10 +12,7 @@ class MessageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasContent = message.content.isNotEmpty;
-    // Hide "Thinking" when Hermes duplicated the reply into reasoning.
-    final hasReasoning = message.reasoning != null &&
-        message.reasoning!.isNotEmpty &&
-        message.reasoning!.trim() != message.content.trim();
+    // message.reasoning is not rendered. Sync already leaves it null.
     final hasMarkdown = _hasMarkdown(message.content);
     final toolCalls = _extractToolCalls();
     final isAgentRunning = message.metadata?['isAgentRunning'] == true;
@@ -23,7 +20,6 @@ class MessageContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (hasReasoning) _buildReasoning(context),
         // Tool calls — show above the response content
         if (toolCalls.isNotEmpty) _buildToolCalls(context, toolCalls),
         // Active agent indicator (tool running but no completed text yet)
@@ -94,25 +90,30 @@ class MessageContent extends StatelessWidget {
 
     if (isError) {
       borderColor = AppTheme.colorsOf(context).danger.withValues(alpha: 0.5);
-      backgroundColor = AppTheme.colorsOf(context).danger.withValues(alpha: 0.05);
-      trailing = Icon(Icons.error_outline, size: 14, color: AppTheme.colorsOf(context).danger);
+      backgroundColor =
+          AppTheme.colorsOf(context).danger.withValues(alpha: 0.05);
+      trailing = Icon(Icons.error_outline,
+          size: 14, color: AppTheme.colorsOf(context).danger);
     } else if (!isCompleted) {
       // Still running — pulsing indicator
       borderColor = AppTheme.colorsOf(context).primary.withValues(alpha: 0.5);
-      backgroundColor = AppTheme.colorsOf(context).primary.withValues(alpha: 0.05);
+      backgroundColor =
+          AppTheme.colorsOf(context).primary.withValues(alpha: 0.05);
       trailing = SizedBox(
         width: 14,
         height: 14,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).primary),
+          valueColor:
+              AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).primary),
         ),
       );
     } else {
       borderColor = AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3);
-      backgroundColor = AppTheme.colorsOf(context).textColor.withValues(alpha: 0.03);
-      trailing =
-          Icon(Icons.check_circle_outline, size: 14, color: AppTheme.colorsOf(context).success);
+      backgroundColor =
+          AppTheme.colorsOf(context).textColor.withValues(alpha: 0.03);
+      trailing = Icon(Icons.check_circle_outline,
+          size: 14, color: AppTheme.colorsOf(context).success);
     }
 
     return Container(
@@ -196,7 +197,8 @@ class MessageContent extends StatelessWidget {
             height: 14,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).primary),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.colorsOf(context).primary),
             ),
           ),
           const SizedBox(width: 8),
@@ -204,51 +206,6 @@ class MessageContent extends StatelessWidget {
             'Agent working...',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppTheme.colorsOf(context).primary,
-                  fontStyle: FontStyle.italic,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Reasoning
-  // ---------------------------------------------------------------------------
-
-  Widget _buildReasoning(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.psychology_outlined,
-                  size: 14, color: AppTheme.colorsOf(context).textColorLight),
-              const SizedBox(width: 4),
-              Text(
-                'Thinking',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.colorsOf(context).textColorLight,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          SelectableText(
-            message.reasoning!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.colorsOf(context).textColorLight,
                   fontStyle: FontStyle.italic,
                 ),
           ),
@@ -284,7 +241,8 @@ class MessageContent extends StatelessWidget {
             ),
         code: Theme.of(context).textTheme.bodySmall?.copyWith(
               fontFamily: 'monospace',
-              backgroundColor: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
+              backgroundColor:
+                  AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
               color: AppTheme.colorsOf(context).primary,
             ),
         codeblockDecoration: BoxDecoration(
@@ -351,25 +309,31 @@ class MessageContent extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
+                color:
+                    AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
+                  color: AppTheme.colorsOf(context)
+                      .secondary
+                      .withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
                 children: [
-                  Icon(Icons.broken_image, color: AppTheme.colorsOf(context).textColorLight),
+                  Icon(Icons.broken_image,
+                      color: AppTheme.colorsOf(context).textColorLight),
                   const SizedBox(height: 8),
                   Text(
                     'Failed to load image',
-                    style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+                    style: TextStyle(
+                        color: AppTheme.colorsOf(context).textColorLight),
                   ),
                   if (alt != null && alt.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Text(
                       alt,
-                      style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+                      style: TextStyle(
+                          color: AppTheme.colorsOf(context).textColorLight),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -410,25 +374,32 @@ class MessageContent extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
+                  color: AppTheme.colorsOf(context)
+                      .secondary
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
+                    color: AppTheme.colorsOf(context)
+                        .secondary
+                        .withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.broken_image, color: AppTheme.colorsOf(context).textColorLight),
+                    Icon(Icons.broken_image,
+                        color: AppTheme.colorsOf(context).textColorLight),
                     const SizedBox(height: 8),
                     Text(
                       'Failed to load base64 image',
-                      style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+                      style: TextStyle(
+                          color: AppTheme.colorsOf(context).textColorLight),
                     ),
                     if (alt != null && alt.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         alt,
-                        style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+                        style: TextStyle(
+                            color: AppTheme.colorsOf(context).textColorLight),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -476,7 +447,8 @@ class MessageContent extends StatelessWidget {
           height: 16,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colorsOf(context).primary),
+            valueColor: AlwaysStoppedAnimation<Color>(
+                AppTheme.colorsOf(context).primary),
           ),
         ),
         SizedBox(width: AppTheme.spacingS),
