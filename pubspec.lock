@@ -416,14 +416,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.3"
-  eterl:
-    dependency: transitive
-    description:
-      name: eterl
-      sha256: "5c54d7c4493692b87e9af3bdafb1e4f3dd079f78e0e1fd2617d75449fcd6f1de"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -767,7 +759,7 @@ packages:
     source: hosted
     version: "4.1.2"
   image:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: image
       sha256: "89ed75b2f8231fe676808c5564f9590d728024ded7ac782a7ed8474f1c95b72a"
@@ -994,22 +986,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  nyxx:
-    dependency: "direct main"
-    description:
-      name: nyxx
-      sha256: "0598103dd186a9555b2c4d137585aa8751b85ea128f1a1f8f8c85b5720fe35e0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.9.1"
-  oauth2:
-    dependency: transitive
-    description:
-      name: oauth2
-      sha256: "890a032ba1b44fa8dcfeba500e613df0ecbe16aeace13bb0fe1d25eb42cda5b8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.5"
   objective_c:
     dependency: transitive
     description:
@@ -1306,14 +1282,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  runtime_type:
-    dependency: transitive
-    description:
-      name: runtime_type
-      sha256: "00e431718064e4512012a46e74ed94977ea4d86d83ae416e635092c50ad1397e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -1895,14 +1863,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  zstd_ffi:
-    dependency: transitive
-    description:
-      name: zstd_ffi
-      sha256: "24b81dc18565cfef546552ad2ea97f63832104feda6e29401220d4b0cde7c265"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
 sdks:
   dart: ">=3.13.0 <4.0.0"
   flutter: ">=3.47.7"

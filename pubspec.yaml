@@ -80,9 +80,6 @@ dependencies:
   get_it: ^9.2.1
   logger: ^2.7.0
 
-  # Discord integration
-  nyxx: ^6.8.1
-
   # Rich message rendering
   flutter_markdown_plus: ^1.0.10
 
@@ -105,9 +102,6 @@ dependencies:
 
   # Vision System - OCR
   tesseract_ocr: ^0.5.0
-
-  # Image compression and manipulation
-  image: ^4.9.2
 
   # Voice System - Recording
   record: ^7.1.1
@@ -174,14 +168,11 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/brand/
-    - assets/animations/
     - assets/images/app_icon.png
     - assets/images/lobster_avatar.png
     - assets/images/lobster_avatar_64.png
     - assets/images/lobster_avatar_128.png
     - assets/version.json
-    - assets/component-versions.json
     - assets/pistisai/hermes/plugins/pistisai/
     - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/

@@ -6,7 +6,6 @@ This directory contains version management and build process documentation for P
 
 ### Version Management
 
-- **[Versioning](VERSIONING.md)** - Version numbering scheme and release process
 - **[AI Versioning](AI-VERSIONING.md)** - AI-assisted version management
 
 ### Build Process
