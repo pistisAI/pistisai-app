@@ -50,7 +50,7 @@ android {
 
     defaultConfig {
         applicationId "app.pistisai.app"
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 26
         targetSdkVersion flutter.targetSdkVersion
         try {
             versionCode flutterVersionCode.toInteger()

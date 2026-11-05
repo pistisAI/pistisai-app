@@ -491,4 +491,4 @@ const detection = limiter.detectDDoS(300000); // 5 minute window
 
 - [Authentication Middleware](../middleware/README.md)
 - [WebSocket Handler](../websocket/README.md)
-- [Metrics Collection](../metrics/README.md)
+- Metrics Collection

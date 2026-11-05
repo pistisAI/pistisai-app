@@ -1,6 +1,6 @@
 # Pistisai Docker Deployment Guide
 
-> **Status**: Historical Docker Swarm runbook for the older streaming-proxy stack. Current deployment direction is described in [docs/deployment/DEPLOYMENT_OVERVIEW.md](docs/deployment/DEPLOYMENT_OVERVIEW.md): agent-runtime-first, Tailscale-first, optional per-user cloud connector, and optional hosted agent runtime. Use this file only when maintaining the older Swarm deployment path.
+> **Status**: Historical Docker Swarm runbook for the older streaming-proxy stack. Current deployment direction is described in [docs/deployment/DEPLOYMENT_OVERVIEW.md](../deployment/DEPLOYMENT_OVERVIEW.md): agent-runtime-first, Tailscale-first, optional per-user cloud connector, and optional hosted agent runtime. Use this file only when maintaining the older Swarm deployment path.
 
 ## Prerequisites
 

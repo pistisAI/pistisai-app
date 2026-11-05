@@ -3,7 +3,7 @@ description: Local-first agent companion for Hermes and compatible agent runtime
 publish_to: none
 homepage: https://pistisai.app
 repository: https://github.com/pistisAI/pistisai-app
-version: 1.1.99+101
+version: 1.1.100+102
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -52,16 +52,10 @@ dependencies:
   # Real-time event handling
   rxdart: ^0.28.0
 
-  # Google APIs for Local Integration
-  googleapis: ^17.0.0
-  googleapis_auth: ^2.3.3
-  google_sign_in: 7.2.0
-
   # System Integration - Flutter plugins for window management and secure storage
   window_manager: ^0.5.2
 
   flutter_secure_storage: ^11.0.0
-  mutex: ^3.0.1
   logging: ^1.3.0
   path_provider: ^2.1.6
   path: ^1.9.0
@@ -86,9 +80,6 @@ dependencies:
   get_it: ^9.2.1
   logger: ^2.7.0
 
-  # Discord integration
-  nyxx: ^6.8.1
-
   # Rich message rendering
   flutter_markdown_plus: ^1.0.10
 
@@ -100,7 +91,6 @@ dependencies:
   package_info_plus: ^10.2.0
   process_run: ^1.3.5
   device_info_plus: ^13.3.0
-  local_notifier: ^0.1.6
   flutter_colorpicker: ^1.1.0
 
   # Vision System - Camera
@@ -112,9 +102,6 @@ dependencies:
 
   # Vision System - OCR
   tesseract_ocr: ^0.5.0
-
-  # Image compression and manipulation
-  image: ^4.9.2
 
   # Voice System - Recording
   record: ^7.1.1
@@ -130,8 +117,6 @@ dev_dependencies:
   mockito: ^5.4.4
 
   flutter_test:
-    sdk: flutter
-  flutter_driver:
     sdk: flutter
   integration_test:
     sdk: flutter
@@ -173,20 +158,21 @@ dependency_overrides:
   cupertino_ui: 1.0.1
   # dartssh2 >=2.15 needs pointycastle 4; encrypt 5.0.3 still resolves at runtime.
   pointycastle: ^4.0.0
+  # cnativeapi's Linux hook needs gtk+-3.0, x11, and xi. linux_native_deps
+  # (a dependency of this path package) installs them before that hook runs.
+  cnativeapi:
+    path: tool/cnativeapi
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
-    - assets/brand/
-    - assets/animations/
     - assets/images/app_icon.png
     - assets/images/lobster_avatar.png
     - assets/images/lobster_avatar_64.png
     - assets/images/lobster_avatar_128.png
     - assets/version.json
-    - assets/component-versions.json
     - assets/pistisai/hermes/plugins/pistisai/
     - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/
