@@ -226,7 +226,6 @@ class PlatformDetectionService extends ChangeNotifier {
     return PlatformConfig(
       platform: PlatformType.windows,
       displayName: 'Windows',
-      iconPath: 'assets/images/windows-icon.png',
       downloadOptions: [
         DownloadOption(
           name: 'Windows Installer (Setup.exe)',
@@ -273,8 +272,7 @@ class PlatformDetectionService extends ChangeNotifier {
         ),
         InstallationStep(
           title: 'Launch the application',
-          description:
-              'Find Pistisai in your Start menu or desktop shortcut.',
+          description: 'Find Pistisai in your Start menu or desktop shortcut.',
           applicableTypes: ['exe'],
           order: 2,
         ),
@@ -317,7 +315,6 @@ class PlatformDetectionService extends ChangeNotifier {
     return PlatformConfig(
       platform: PlatformType.linux,
       displayName: 'Linux',
-      iconPath: 'assets/images/linux-icon.png',
       downloadOptions: [
         DownloadOption(
           name: 'AppImage (Universal)',
@@ -435,7 +432,6 @@ class PlatformDetectionService extends ChangeNotifier {
     return PlatformConfig(
       platform: PlatformType.macos,
       displayName: 'macOS',
-      iconPath: 'assets/images/macos-icon.png',
       downloadOptions: [
         DownloadOption(
           name: 'macOS Application (.dmg)',

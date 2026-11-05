@@ -239,6 +239,6 @@ const data = await body.json();
 
 ## Related Documentation
 
-- [Database Connection Pool](services/api-backend/database/db-pool.js)
-- [Pool Monitoring](services/api-backend/database/pool-monitor.js)
-- [Graceful Shutdown](services/api-backend/middleware/graceful-shutdown.js)
+- Database Connection Pool
+- Pool Monitoring
+- Graceful Shutdown

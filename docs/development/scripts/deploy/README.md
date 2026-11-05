@@ -8,13 +8,13 @@ Pistisai now uses **Kubernetes** for production deployment. VPS deployment scrip
 
 ### 🚀 Production Deployment (Recommended)
 
-- **[Kubernetes Deployment](../../docs/DEPLOYMENT/DEPLOYMENT_OVERVIEW.md)**
+- **Kubernetes Deployment**
 - Works with any Kubernetes cluster (managed or self-hosted)
 - Use: `kubectl apply -f k8s/`
 
 ### 🧪 Development/Testing Deployment
 
-- **[Docker Compose](../../DOCKER_DEPLOYMENT.md)**
+- **Docker Compose**
 - Suitable for local development and testing
 - Use: `docker-compose up`
 

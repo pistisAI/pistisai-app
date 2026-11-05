@@ -108,7 +108,8 @@ class Message {
     return Message(
       id: json['id'] ?? '',
       content: json['content'] ?? '',
-      reasoning: json['reasoning'],
+      // Older chat files may still contain chain-of-thought. Do not reload it.
+      reasoning: null,
       role: MessageRole.values.firstWhere(
         (e) => e.name == json['role'],
         orElse: () => MessageRole.user,
@@ -129,7 +130,7 @@ class Message {
     return {
       'id': id,
       'content': content,
-      'reasoning': reasoning,
+      // Model chain-of-thought is not part of the local chat transcript.
       'role': role.name,
       'timestamp': timestamp.toIso8601String(),
       'model': model,

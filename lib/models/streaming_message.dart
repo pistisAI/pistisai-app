@@ -10,6 +10,8 @@ class StreamingMessage {
   final String conversationId;
   final String chunk;
   final String? reasoning; // Thinking content from the model
+  /// When true, [chunk] is the full text for this message id, not a delta.
+  final bool replacesContent;
   final bool isComplete;
   final int sequence;
   final DateTime timestamp;
@@ -21,6 +23,7 @@ class StreamingMessage {
     required this.conversationId,
     required this.chunk,
     this.reasoning,
+    this.replacesContent = false,
     required this.isComplete,
     required this.sequence,
     required this.timestamp,
@@ -34,6 +37,7 @@ class StreamingMessage {
     required String conversationId,
     required String chunk,
     String? reasoning,
+    bool replacesContent = false,
     required int sequence,
     String? model,
   }) {
@@ -42,6 +46,7 @@ class StreamingMessage {
       conversationId: conversationId,
       chunk: chunk,
       reasoning: reasoning,
+      replacesContent: replacesContent,
       isComplete: false,
       sequence: sequence,
       timestamp: DateTime.now(),
@@ -92,6 +97,7 @@ class StreamingMessage {
       conversationId: json['conversationId'] as String,
       chunk: json['chunk'] as String? ?? '',
       reasoning: json['reasoning'] as String?,
+      replacesContent: json['replacesContent'] as bool? ?? false,
       isComplete: json['isComplete'] as bool? ?? false,
       sequence: json['sequence'] as int? ?? 0,
       timestamp: DateTime.parse(json['timestamp'] as String),
@@ -107,6 +113,7 @@ class StreamingMessage {
       'conversationId': conversationId,
       'chunk': chunk,
       if (reasoning != null) 'reasoning': reasoning,
+      if (replacesContent) 'replacesContent': true,
       'isComplete': isComplete,
       'sequence': sequence,
       'timestamp': timestamp.toIso8601String(),
@@ -149,6 +156,7 @@ class StreamingMessage {
     String? conversationId,
     String? chunk,
     String? reasoning,
+    bool? replacesContent,
     bool? isComplete,
     int? sequence,
     DateTime? timestamp,
@@ -160,6 +168,7 @@ class StreamingMessage {
       conversationId: conversationId ?? this.conversationId,
       chunk: chunk ?? this.chunk,
       reasoning: reasoning ?? this.reasoning,
+      replacesContent: replacesContent ?? this.replacesContent,
       isComplete: isComplete ?? this.isComplete,
       sequence: sequence ?? this.sequence,
       timestamp: timestamp ?? this.timestamp,

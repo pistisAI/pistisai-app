@@ -82,5 +82,5 @@ app.use('/api/admin', adminCors, adminHttpsEnforcement, sanitizeAdminInput);
 
 ## Related Documentation
 
-- [Admin Management API](../api/admin/ADMIN_MANAGEMENT.md)
-- [Audit Log API](../api/admin/AUDIT_LOGS.md)
+- Admin Management API
+- Audit Log API

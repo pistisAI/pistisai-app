@@ -111,4 +111,4 @@ curl -X GET "https://api.pistisai.app/api/admin/audit/export?startDate=2025-01-0
 ## Related Documentation
 
 - [Admin Management API](./ADMIN_MANAGEMENT.md)
-- [Admin Authentication Middleware](../../middleware/admin-auth.js)
+- Admin Authentication Middleware

@@ -105,7 +105,7 @@ jobs:
       - name: Flutter Build Linux
         run: |
           flutter pub get
-          flutter build linux --release
+          flutter build linux --release --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
 
       - name: Package Linux Distributions
         env:
@@ -170,7 +170,7 @@ jobs:
       - name: Flutter Build Windows
         run: |
           flutter pub get
-          flutter build windows --release
+          flutter build windows --release --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
 
       - name: Package Portable ZIP
         run: |
@@ -249,7 +249,7 @@ jobs:
       - name: Flutter Build macOS
         run: |
           flutter pub get
-          flutter build macos --release
+          flutter build macos --release --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
         env:
           MACOSX_DEPLOYMENT_TARGET: 12.0
 

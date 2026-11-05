@@ -260,13 +260,13 @@ middleware.startCleanupTask(600000); // 10 minutes
 
 - Read the [full documentation](./README.md)
 - Review [authentication middleware](../middleware/README.md)
-- Check [requirements](../../../../.kiro/specs/ssh-websocket-tunnel-enhancement/requirements.md)
-- See [design document](../../../../.kiro/specs/ssh-websocket-tunnel-enhancement/design.md)
+- Check requirements
+- See design document
 
 ## Support
 
 For issues or questions:
 
 1. Check the [README](./README.md)
-2. Review the [requirements](../../../../.kiro/specs/ssh-websocket-tunnel-enhancement/requirements.md)
+2. Review the requirements
 3. Check existing tests for examples
