@@ -9,6 +9,7 @@ import '../models/streaming_message.dart';
 import 'streaming_service.dart';
 import 'hermes/hermes_session_transcript.dart';
 import 'hermes/hermes_streaming_service.dart';
+import 'streaming_content_update.dart';
 
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
@@ -391,7 +392,8 @@ class StreamingChatService extends ChangeNotifier {
 
       final errorModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
+        content:
+            userFacingChatError(e, isConnected: _connectionManager.isConnected),
         model: errorModel,
         status: MessageStatus.error,
         error: e.toString(),
@@ -416,26 +418,19 @@ class StreamingChatService extends ChangeNotifier {
     }
 
     if (streamingMessage.isDataChunk) {
-      // Update content
+      // Transcript polls send a snapshot for this message id. True deltas are
+      // appended only when the new text is not already the full reply.
+      // Reasoning is never accumulated — chain-of-thought stays off the chat.
       if (streamingMessage.chunk.isNotEmpty) {
-        final currentContent = _streamingContentSubject.value;
-        final newContent = currentContent + streamingMessage.chunk;
-        _streamingContentSubject.add(newContent);
+        final next = nextStreamingContent(
+          previous: _streamingContentSubject.value,
+          incoming: streamingMessage.chunk,
+          replaces: streamingMessage.replacesContent,
+        );
+        _streamingContentSubject.add(next);
       }
 
-      // Update reasoning
-      if (streamingMessage.reasoning != null &&
-          streamingMessage.reasoning!.isNotEmpty) {
-        final currentReasoning = _streamingReasoningSubject.value;
-        final newReasoning = currentReasoning + streamingMessage.reasoning!;
-        _streamingReasoningSubject.add(newReasoning);
-      }
-
-      // Update the streaming message in the conversation
-      _updateStreamingMessage(
-        _streamingContentSubject.value,
-        _streamingReasoningSubject.value,
-      );
+      _updateStreamingMessage(_streamingContentSubject.value, null);
     }
   }
 
@@ -448,7 +443,8 @@ class StreamingChatService extends ChangeNotifier {
 
     final errorModel = _selectedModel ?? 'default';
     final errorMessage = Message.assistant(
-      content: userFacingChatError(error, isConnected: _connectionManager.isConnected),
+      content: userFacingChatError(error,
+          isConnected: _connectionManager.isConnected),
       model: errorModel,
       status: MessageStatus.error,
       error: error.toString(),
@@ -470,9 +466,10 @@ class StreamingChatService extends ChangeNotifier {
     _setStreaming(false);
     _isAgentRunning = false;
 
-    // Convert streaming message to final assistant message
+    // Convert streaming message to final assistant message.
+    // Do not fall back to reasoning text — that would persist chain-of-thought
+    // as the visible reply.
     var finalContent = _streamingContentSubject.value;
-    final finalReasoning = _streamingReasoningSubject.value;
 
     // Fallback: if no deltas were emitted but run.completed had output
     if (finalContent.isEmpty && _runCompletedOutput.isNotEmpty) {
@@ -486,22 +483,14 @@ class StreamingChatService extends ChangeNotifier {
       _removeLastMessage();
     }
 
-    if (finalContent.isNotEmpty || finalReasoning.isNotEmpty) {
+    if (finalContent.isNotEmpty) {
       final completeModel = _selectedModel ?? 'default';
 
       // Build metadata with tool call history
       final toolCallsMeta = _serializeToolCalls(includeLive: false);
 
-      // Hermes sometimes emits the final reply as reasoning.available as well
-      // as message deltas. Keep reasoning only when it adds distinct text.
-      final distinctReasoning = finalReasoning.isNotEmpty &&
-              finalReasoning.trim() != finalContent.trim()
-          ? finalReasoning
-          : null;
-
       final assistantMessage = Message.assistant(
-        content: finalContent.isNotEmpty ? finalContent : finalReasoning,
-        reasoning: distinctReasoning,
+        content: finalContent,
         model: completeModel,
         metadata:
             toolCallsMeta.isNotEmpty ? {'tool_calls': toolCallsMeta} : null,
@@ -786,7 +775,8 @@ class StreamingChatService extends ChangeNotifier {
 
       final fallbackModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
+        content:
+            userFacingChatError(e, isConnected: _connectionManager.isConnected),
         model: fallbackModel,
         status: MessageStatus.error,
         error: e.toString(),

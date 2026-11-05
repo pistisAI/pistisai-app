@@ -638,9 +638,9 @@ Add these comments to error handling code:
 
 - [SSH_LIBRARY_DOCUMENTATION.md](./SSH_LIBRARY_DOCUMENTATION.md) - SSH error handling
 - [CONTEXT7_BEST_PRACTICES.md](./CONTEXT7_BEST_PRACTICES.md) - WebSocket error handling
-- [error_categorization.dart](../../lib/services/tunnel/error_categorization.dart) - Client-side error categorization
-- [error_recovery_strategy.dart](../../lib/services/tunnel/error_recovery_strategy.dart) - Client-side recovery strategies
-- [ssh-error-handler.ts](./connection-pool/ssh-error-handler.ts) - Server-side SSH error handling
+- error_categorization.dart - Client-side error categorization
+- error_recovery_strategy.dart - Client-side recovery strategies
+- ssh-error-handler.ts - Server-side SSH error handling
 
 ---
 

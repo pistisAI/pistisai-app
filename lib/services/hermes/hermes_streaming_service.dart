@@ -468,15 +468,8 @@ class HermesStreamingService extends StreamingService {
           sequence: sequence,
           model: model,
         ),
-      AgentReasoningAvailable(:final text) when text.isNotEmpty =>
-        StreamingMessage.chunk(
-          id: messageId,
-          conversationId: conversationId,
-          chunk: '',
-          reasoning: text,
-          sequence: sequence,
-          model: model,
-        ),
+      // reasoning.available is chain-of-thought. It is not a chat delta.
+      AgentReasoningAvailable() => null,
       AgentRunFailed(:final error) => StreamingMessage.error(
           id: messageId,
           conversationId: conversationId,
@@ -595,21 +588,7 @@ class HermesStreamingService extends StreamingService {
                 _messageController.add(msg);
                 yield msg;
               }
-
-              // Check for reasoning/thinking content
-              final reasoning = delta?['reasoning_content'] as String?;
-              if (reasoning != null && reasoning.isNotEmpty) {
-                final msg = StreamingMessage.chunk(
-                  id: messageId,
-                  conversationId: conversationId,
-                  chunk: '',
-                  reasoning: reasoning,
-                  sequence: sequence++,
-                  model: model,
-                );
-                _messageController.add(msg);
-                yield msg;
-              }
+              // reasoning_content is chain-of-thought and is not forwarded.
             } catch (_) {
               // Skip malformed SSE data lines
             }

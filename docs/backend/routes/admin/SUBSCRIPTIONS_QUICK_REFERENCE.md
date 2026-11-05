@@ -202,4 +202,4 @@ curl -X POST "https://api.pistisai.app/api/admin/subscriptions/{id}/cancel" \
 
 - [Full API Documentation](./SUBSCRIPTIONS_API.md)
 - [Implementation Summary](./IMPLEMENTATION_SUMMARY.md)
-- [Admin API Overview](../../../docs/API/ADMIN_API.md)
+- Admin API Overview

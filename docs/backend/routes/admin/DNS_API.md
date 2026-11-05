@@ -525,6 +525,6 @@ curl -X POST https://api.pistisai.app/api/admin/dns/setup-google \
 ## Related Documentation
 
 - [Email Configuration API](./EMAIL_API.md)
-- [Cloudflare DNS Service](../services/cloudflare-dns-service.js)
-- [Admin Authentication](../middleware/admin-auth.js)
-- [Audit Logging](../utils/audit-logger.js)
+- Cloudflare DNS Service
+- Admin Authentication
+- Audit Logging
