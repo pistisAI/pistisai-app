@@ -39,58 +39,6 @@ const featureCheckSchema = {
   }),
 };
 
-/**
- * @swagger
- * /users/tier:
- *   get:
- *     summary: Get current user's tier information
- *     description: |
- *       Returns the current user's subscription tier and available features.
- *       Includes feature descriptions, limits, and upgrade options.
- *
- *       **Validates: Requirements 3.3**
- *       - Implements user tier management and upgrades
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: User tier information
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 currentTier:
- *                   type: string
- *                   enum: [free, premium, enterprise]
- *                   description: Current subscription tier
- *                 features:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       name:
- *                         type: string
- *                       enabled:
- *                         type: boolean
- *                       description:
- *                         type: string
- *                       value:
- *                         type: [string, number, boolean]
- *                 limits:
- *                   type: object
- *                   properties:
- *                     maxConnections:
- *                       type: integer
- *                     maxModels:
- *                       type: integer
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
 router.get('/tier', authenticateJWT, (req, res) => {
   try {
     if (!req.user) {
