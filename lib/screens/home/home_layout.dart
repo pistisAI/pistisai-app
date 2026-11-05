@@ -184,20 +184,6 @@ class _ChatPaneState extends State<_ChatPane> {
     );
   }
 
-  Widget _buildChannelSyncError(BuildContext context, String message) {
-    final theme = Theme.of(context);
-    final spacing = AppTheme.spacingOf(context);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(spacing.m, spacing.s, spacing.m, 0),
-      child: Text(
-        message,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: AppTheme.colorsOf(context).warning,
-        ),
-      ),
-    );
-  }
-
   Widget _buildConnectionWarning(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = AppTheme.spacingOf(context);
@@ -415,8 +401,6 @@ class _ChatPaneState extends State<_ChatPane> {
               _buildHeader(context),
               if (!connectionManager.isConnected && hasMessages)
                 _buildConnectionWarning(context),
-              if ((chatService.channelSyncError ?? '').isNotEmpty)
-                _buildChannelSyncError(context, chatService.channelSyncError!),
               Expanded(
                 child: !chatService.isStorageReady
                     ? const Center(child: CircularProgressIndicator())
