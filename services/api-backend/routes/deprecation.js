@@ -19,51 +19,6 @@ import {
 
 const router = express.Router();
 
-/**
- * @swagger
- * /api/deprecation/status:
- *   get:
- *     summary: Get API deprecation status report
- *     description: Returns information about all deprecated and sunset endpoints
- *     tags:
- *       - Deprecation
- *     responses:
- *       200:
- *         description: Deprecation status report
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 timestamp:
- *                   type: string
- *                   format: date-time
- *                 deprecatedEndpoints:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       path:
- *                         type: string
- *                       status:
- *                         type: string
- *                       deprecatedAt:
- *                         type: string
- *                       sunsetAt:
- *                         type: string
- *                       replacedBy:
- *                         type: string
- *                       daysUntilSunset:
- *                         type: integer
- *                 sunsetEndpoints:
- *                   type: array
- *                   items:
- *                     type: object
- *                 totalDeprecated:
- *                   type: integer
- *                 totalSunset:
- *                   type: integer
- */
 router.get('/status', (req, res) => {
   try {
     const report = getDeprecationStatusReport();
@@ -79,44 +34,6 @@ router.get('/status', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/deprecation/deprecated:
- *   get:
- *     summary: Get list of deprecated endpoints
- *     description: Returns all currently deprecated API endpoints
- *     tags:
- *       - Deprecation
- *     responses:
- *       200:
- *         description: List of deprecated endpoints
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 endpoints:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       path:
- *                         type: string
- *                       status:
- *                         type: string
- *                       deprecatedAt:
- *                         type: string
- *                       sunsetAt:
- *                         type: string
- *                       replacedBy:
- *                         type: string
- *                       reason:
- *                         type: string
- *                       daysUntilSunset:
- *                         type: integer
- *                 count:
- *                   type: integer
- */
 router.get('/deprecated', (req, res) => {
   try {
     const endpoints = getAllDeprecatedEndpoints();
@@ -135,38 +52,6 @@ router.get('/deprecated', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/deprecation/sunset:
- *   get:
- *     summary: Get list of sunset endpoints
- *     description: Returns all API endpoints that have been removed (sunset)
- *     tags:
- *       - Deprecation
- *     responses:
- *       200:
- *         description: List of sunset endpoints
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 endpoints:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       path:
- *                         type: string
- *                       status:
- *                         type: string
- *                       sunsetAt:
- *                         type: string
- *                       replacedBy:
- *                         type: string
- *                 count:
- *                   type: integer
- */
 router.get('/sunset', (req, res) => {
   try {
     const endpoints = getAllSunsetEndpoints();
@@ -185,55 +70,6 @@ router.get('/sunset', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/deprecation/migration-guide/{guideId}:
- *   get:
- *     summary: Get migration guide for deprecated endpoint
- *     description: Returns detailed migration guide for a deprecated endpoint
- *     tags:
- *       - Deprecation
- *     parameters:
- *       - in: path
- *         name: guideId
- *         required: true
- *         schema:
- *           type: string
- *         description: Migration guide identifier (e.g., MIGRATION_V1_TO_V2)
- *     responses:
- *       200:
- *         description: Migration guide
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 title:
- *                   type: string
- *                 description:
- *                   type: string
- *                 steps:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       step:
- *                         type: integer
- *                       title:
- *                         type: string
- *                       description:
- *                         type: string
- *                       before:
- *                         type: string
- *                       after:
- *                         type: string
- *                 resources:
- *                   type: object
- *                 timeline:
- *                   type: object
- *       404:
- *         description: Migration guide not found
- */
 router.get('/migration-guide/:guideId', (req, res) => {
   try {
     const { guideId } = req.params;
@@ -262,46 +98,6 @@ router.get('/migration-guide/:guideId', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/deprecation/endpoint-info:
- *   get:
- *     summary: Get deprecation info for a specific endpoint
- *     description: Returns deprecation information for a specific API endpoint
- *     tags:
- *       - Deprecation
- *     parameters:
- *       - in: query
- *         name: path
- *         required: true
- *         schema:
- *           type: string
- *         description: API endpoint path (e.g., /v1/users)
- *     responses:
- *       200:
- *         description: Endpoint deprecation information
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 path:
- *                   type: string
- *                 status:
- *                   type: string
- *                 deprecatedAt:
- *                   type: string
- *                 sunsetAt:
- *                   type: string
- *                 replacedBy:
- *                   type: string
- *                 reason:
- *                   type: string
- *                 migrationGuide:
- *                   type: object
- *       404:
- *         description: Endpoint not found or not deprecated
- */
 router.get('/endpoint-info', (req, res) => {
   try {
     const { path } = req.query;
