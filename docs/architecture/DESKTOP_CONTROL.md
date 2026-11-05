@@ -83,5 +83,4 @@ Typical GUI automation flow:
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Vision System](VISION_SYSTEM.md)
-- [Implementation Plan](../development/IMPLEMENTATION_PLAN.md)
 - [Product Specification](../../SPEC.md)

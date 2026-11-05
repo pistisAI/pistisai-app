@@ -8,7 +8,6 @@ This directory contains current architecture references for Pistisai.
 - [Agent Runtime Contract](AGENT_RUNTIME_CONTRACT.md)
 - [Secure Device Mesh](SECURE_DEVICE_MESH.md)
 - [Service Lifecycle](service_lifecycle.md)
-- [Architecture Codemap](architecture-codemap.md)
 - [Avatar System](AVATAR_SYSTEM.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
 - [Vision System](VISION_SYSTEM.md)
@@ -17,7 +16,6 @@ This directory contains current architecture references for Pistisai.
 ## Platform Architecture
 
 - [Unified Flutter Native System Tray](UNIFIED_FLUTTER_NATIVE_SYSTEM_TRAY.md)
-- [Unified Flutter Web](UNIFIED_FLUTTER_WEB.md)
 - [Frontend Accessibility Guide](frontend/ACCESSIBILITY_GUIDE.md)
 - [Frontend Configuration UI Guide](frontend/CONFIGURATION_UI_GUIDE.md)
 - [Platform Adapter](services/PLATFORM_ADAPTER.md)
