@@ -63,7 +63,7 @@ jobs:
             backend:
               - 'services/api-backend/**'
               - 'test/api-backend/**'
-              - 'scripts/tests/**'
+              - 'scripts/tests/test_no_hardcoded_dev_bypass_token.sh'
               - '.github/workflows/test.yml'
 
       - name: "Fail open if the path filter failed"
