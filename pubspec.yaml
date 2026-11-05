@@ -171,14 +171,11 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/brand/
-    - assets/animations/
     - assets/images/app_icon.png
     - assets/images/lobster_avatar.png
     - assets/images/lobster_avatar_64.png
     - assets/images/lobster_avatar_128.png
     - assets/version.json
-    - assets/component-versions.json
     - assets/pistisai/hermes/plugins/pistisai/
     - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/
