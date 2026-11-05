@@ -10,15 +10,15 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 ## Try It Now
 
-🖥️ **Start with the desktop app.** Your first Pistisai desktop install becomes your **primary desktop hub** — the main node that your web, mobile, and other desktop clients connect through. See [Desktop-as-Hub Topology](#desktop-as-hub-topology).
+🖥️ **Start with the desktop app.** Your first Pistisai desktop install is the **hub** — your web, mobile, and other desktop devices connect through it. See [Your devices, one hub](#your-devices-one-hub).
 
-🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. Handy for a quick look, but for real multi-device use the web app should connect through your primary desktop hub (not straight to your agent runtime).
+🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. Handy for a quick look; for real multi-device use it connects through your desktop hub, not straight to your agent.
 
 🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (AppImage + auto-update daemon; rolling out).
 
 📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/pistisAI/pistisai-app/releases/latest).
 
-**You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work. The primary desktop hub connects to the runtime; your other Pistisai clients connect to the hub.
+**You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work. Your desktop hub connects to the runtime; your other Pistisai devices connect to the hub.
 
 > 🚀 **Public launch is live.** Full quick-start, supported runtimes, and self-hosting steps → [docs/LAUNCH.md](docs/LAUNCH.md). Primary CTA: clone the repo, run a workflow, and open an issue or discussion with your real use case. Track the launch → [GitHub issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
 >
@@ -66,32 +66,19 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
          └─────────┘     └────────────┘
 ```
 
-### Desktop-as-Hub Topology
+### Your devices, one hub
 
 ```text
-  Telegram / Slack / Discord / ...          (messaging platforms)
-              │
-              ▼
-  ┌──────────────────────────┐
-  │  Hermes gateway          │  messaging-platform hub: owns Telegram/Slack/etc. adapters
-  │  (agent runtime)         │
-  └────────────┬─────────────┘
-               │ agent channel (local or Tailscale)
-               ▼
-  ┌──────────────────────────┐
-  │  Primary Pistisai desktop│  device/client hub: first installed app, main node
-  │  (embedded router :1337, │  exposes GET /api/pistisai/hub for discovery
-  │   desktop control,       │
-  │   vision, local brain)   │
-  └──┬──────────┬─────────┬──┘
-     │          │         │   Tailscale / private mesh
-     ▼          ▼         ▼
-   Web app   Mobile app  Secondary desktops     (Pistisai clients)
+  Your desktop app                ← install this first — it's the hub
+        │
+        │  (local or Tailscale)
+        ▼
+  Web app · Mobile app · Other desktops     ← connect through the hub
 ```
 
-- **Hermes = messaging-platform hub.** The Hermes gateway still owns its Telegram, Slack, and other messaging adapters directly; those do not route through the Pistisai app.
-- **Pistisai desktop = device/client hub.** The primary desktop install is required for web, mobile, and secondary desktop clients; they reach the agent runtime through it. Mobile finds it over Tailscale via `GET /api/pistisai/hub`.
-- **Transitional:** existing paths where a web/mobile/secondary client talks directly to Hermes are transitional and will be removed ([#492](https://github.com/pistisAI/pistisai-app/issues/492)).
+- Install the **desktop app** on the machine that stays on — it connects to your agent and becomes the **hub** for everything else.
+- Your **web, mobile, and other desktop devices** connect *through* that hub, not straight to your agent. Your data stays in your network.
+- Your agent still talks to messaging apps (Telegram, Slack, Discord) directly — the desktop hub is for your *devices*, not for messaging.
 
 Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
 
