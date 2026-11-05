@@ -86,8 +86,11 @@ RUN useradd -m -s /bin/bash testuser && \
 WORKDIR /app
 
 # Resolve from pubspec.yaml. pubspec.lock is excluded from the Docker context
-# so the image matches the web deploy builder.
+# so the image matches the web deploy builder. The cnativeapi path override
+# must be present before pub get.
 COPY --chown=testuser:testuser pubspec.yaml ./
+COPY --chown=testuser:testuser tool/cnativeapi/ tool/cnativeapi/
+COPY --chown=testuser:testuser tool/linux_native_deps/ tool/linux_native_deps/
 RUN chown testuser:testuser /app && su -s /bin/bash testuser -c "flutter pub get"
 
 # Build the Flutter Linux app inside the container (matches container's GLIBC)

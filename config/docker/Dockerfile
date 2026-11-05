@@ -3,8 +3,11 @@ FROM ghcr.io/cirruslabs/flutter:latest AS build
 
 WORKDIR /app
 
-# Copy pubspec files and get dependencies
+# Copy pubspec files and get dependencies.
+# The cnativeapi path override must exist before pub get.
 COPY pubspec.* ./
+COPY tool/cnativeapi/ tool/cnativeapi/
+COPY tool/linux_native_deps/ tool/linux_native_deps/
 RUN flutter pub get
 
 # Copy the rest of the app
