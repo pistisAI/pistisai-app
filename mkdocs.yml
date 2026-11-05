@@ -70,10 +70,10 @@ nav:
       - Desktop Control: architecture/DESKTOP_CONTROL.md
       - Vision System: architecture/VISION_SYSTEM.md
   - Deployment:
+      - Deployment: operations/cicd/WEB_DEPLOY.md
       - Docker: operations/backend/DEPLOYMENT.md
   - Operations:
       - CI/CD: operations/cicd/README.md
       - Security: operations/security/BACKEND_SECURITY.md
   - Development:
       - Building: development/BUILD_SCRIPTS.md
-      - Versioning: development/versioning/VERSIONING.md

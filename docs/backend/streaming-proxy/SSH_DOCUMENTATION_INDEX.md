@@ -1,10 +1,12 @@
 # SSH Documentation Index
 
+Task-summary files and the old `src/connection-pool/` sources are no longer in this tree. Names below that are not links are historical labels only.
+
 ## Quick Navigation
 
 ### 📋 Start Here
 
-- **[TASK_19_2_SUMMARY.md](./TASK_19_2_SUMMARY.md)** - Executive summary of task completion
+- **TASK_19_2_SUMMARY.md** - Executive summary of task completion
 
 ### 📚 Comprehensive Guides
 
@@ -13,12 +15,12 @@
 
 ### 🔍 Detailed Information
 
-- **[TASK_19_2_COMPLETION.md](./src/TASK_19_2_COMPLETION.md)** - Detailed task completion report (300+ lines)
+- **TASK_19_2_COMPLETION.md** - Detailed task completion report (300+ lines)
 
 ### 💻 Implementation Files
 
-- **[ssh-connection-impl.ts](./src/connection-pool/ssh-connection-impl.ts)** - SSH connection with enhanced comments
-- **[ssh-error-handler.ts](./src/connection-pool/ssh-error-handler.ts)** - SSH error handling
+- **ssh-connection-impl.ts** - SSH connection with enhanced comments
+- **ssh-error-handler.ts** - SSH error handling
 
 ---
 
@@ -99,7 +101,7 @@
 ### 👨‍💻 Developers
 
 1. Start with [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) for quick overview
-2. Review [ssh-connection-impl.ts](./src/connection-pool/ssh-connection-impl.ts) for implementation
+2. Review ssh-connection-impl.ts for implementation
 3. Reference [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) for detailed guidance
 4. Check code examples in reference guide
 
@@ -112,8 +114,8 @@
 
 ### 📊 Project Managers
 
-1. Read [TASK_19_2_SUMMARY.md](./TASK_19_2_SUMMARY.md) for overview
-2. Check [TASK_19_2_COMPLETION.md](./src/TASK_19_2_COMPLETION.md) for details
+1. Read TASK_19_2_SUMMARY.md for overview
+2. Check TASK_19_2_COMPLETION.md for details
 3. Review requirements coverage
 4. Check next steps and timeline
 
@@ -126,7 +128,7 @@
 
 ### 📚 Documentation Team
 
-1. Review [TASK_19_2_COMPLETION.md](./src/TASK_19_2_COMPLETION.md)
+1. Review TASK_19_2_COMPLETION.md
 2. Check all created files
 3. Review requirements mapping
 4. Plan user documentation
@@ -305,7 +307,7 @@ services/streaming-proxy/
 
 1. Read [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) (15 min)
 2. Review code examples (10 min)
-3. Check [ssh-connection-impl.ts](./src/connection-pool/ssh-connection-impl.ts) (15 min)
+3. Check ssh-connection-impl.ts (15 min)
 4. Reference [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) as needed
 
 ### For Security Review
@@ -318,7 +320,7 @@ services/streaming-proxy/
 ### For Implementation
 
 1. Review [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) - Code Examples (15 min)
-2. Check [ssh-connection-impl.ts](./src/connection-pool/ssh-connection-impl.ts) (20 min)
+2. Check ssh-connection-impl.ts (20 min)
 3. Reference [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) for details (30 min)
 4. Implement and test
 

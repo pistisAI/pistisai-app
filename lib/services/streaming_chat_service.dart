@@ -1,14 +1,18 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
+
 import '../models/agent_event.dart';
 import '../models/conversation.dart';
 import '../models/message.dart';
 import '../models/streaming_message.dart';
 
 import 'streaming_service.dart';
+import 'hermes/hermes_session_key.dart';
 import 'hermes/hermes_session_transcript.dart';
 import 'hermes/hermes_streaming_service.dart';
+import 'streaming_content_update.dart';
 
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
@@ -38,19 +42,19 @@ class StreamingChatService extends ChangeNotifier {
   final ConnectionManagerService _connectionManager;
   final ConversationStorageService _storageService;
 
-  StreamingChatService(
-    this._connectionManager,
-    AuthService authService,
-  ) : _storageService = ConversationStorageService(authService: authService) {
+  StreamingChatService(this._connectionManager, AuthService authService)
+    : _storageService = ConversationStorageService(authService: authService) {
     _initializeService();
     _bindAgentNameListener();
   }
 
-  /// The one conversation for this harness. Every connected device uses the
-  /// same `main-channel` session id and loads the transcript from the harness.
+  /// The one local conversation. Its id is not the Hermes session key.
+  /// Transcript reads use `agent:main:pistisai:dm:<chat_id>`.
   Conversation? _mainChannel;
   Timer? _sharedChannelTimer;
   bool _syncingSharedChannel = false;
+  final SharedChannelSyncGate _syncGate = SharedChannelSyncGate();
+  String? _channelSyncError;
   AvatarStateService? _avatarState;
 
   String? _selectedModel;
@@ -84,6 +88,9 @@ class StreamingChatService extends ChangeNotifier {
   bool get hasConversations => _mainChannel != null;
   bool get isStorageReady => _storageReady;
 
+  /// Set when the last shared-channel poll failed. Cleared after a 200.
+  String? get channelSyncError => _channelSyncError;
+
   /// Stream of current streaming content for real-time UI updates
   Stream<String> get streamingContentStream => _streamingContentSubject.stream;
 
@@ -103,9 +110,9 @@ class StreamingChatService extends ChangeNotifier {
 
   /// All tool calls (active + completed) for this streaming session.
   List<ToolCall> get allToolCalls => [
-        ..._completedToolCalls,
-        ..._activeToolCalls,
-      ];
+    ..._completedToolCalls,
+    ..._activeToolCalls,
+  ];
 
   /// Initialize the service
   void _initializeService() {
@@ -185,18 +192,34 @@ class StreamingChatService extends ChangeNotifier {
 
   /// Replace the on-screen thread with the harness transcript so every
   /// device shows the same conversation.
+  ///
+  /// A 404 or 409 backs off and surfaces [channelSyncError]. An empty list
+  /// from that failure is not applied as a successful sync.
   Future<void> _syncSharedChannel() async {
     if (_isStreaming || _syncingSharedChannel || _mainChannel == null) return;
+    if (!_syncGate.shouldPoll) return;
     final service = _getStreamingService();
     if (service is! HermesStreamingService) return;
 
     _syncingSharedChannel = true;
     try {
-      final harness = await service.fetchSessionMessages(_mainChannel!.id);
-      if (harness == null || _mainChannel == null || _isStreaming) return;
+      final poll = await service.pollSharedTranscript(_mainChannel!.id);
+      final plan = SharedChannelSyncPlan.fromPoll(
+        healthy: poll.isHealthy,
+        consecutiveFailures: poll.isHealthy ? 0 : _syncGate.failures + 1,
+      );
+      _syncGate.record(healthy: poll.isHealthy, retryAfter: plan.retryAfter);
+      appLogger.info(
+        '[StreamingChat] shared-channel poll status=${poll.statusCode} session=${poll.sessionKey} boundShortId=${poll.boundShortId} healthy=${poll.isHealthy}',
+      );
+      if (!poll.isHealthy || _mainChannel == null || _isStreaming) {
+        _setChannelSyncError(plan.error);
+        return;
+      }
+      _setChannelSyncError(null);
       final merged = mergeHarnessTranscript(
         local: _mainChannel!.messages,
-        harness: harness,
+        harness: poll.messages ?? const <Message>[],
       );
       if (_sameMessages(merged, _mainChannel!.messages)) return;
       _mainChannel = _mainChannel!.copyWith(
@@ -209,6 +232,12 @@ class StreamingChatService extends ChangeNotifier {
     } finally {
       _syncingSharedChannel = false;
     }
+  }
+
+  void _setChannelSyncError(String? error) {
+    if (_channelSyncError == error) return;
+    _channelSyncError = error;
+    notifyListeners();
   }
 
   bool _sameMessages(List<Message> left, List<Message> right) {
@@ -225,7 +254,8 @@ class StreamingChatService extends ChangeNotifier {
   void _createWelcomeConversation() {
     // Ensure we have a model selected before creating conversation
     final availableModels = _connectionManager.availableModels;
-    final modelToUse = _selectedModel ??
+    final modelToUse =
+        _selectedModel ??
         (availableModels.isNotEmpty ? availableModels.first : 'default');
 
     // Update selected model if it was null
@@ -242,8 +272,7 @@ class StreamingChatService extends ChangeNotifier {
     );
 
     final welcomeMessage = Message.system(
-      content:
-          'Welcome to Pistisai! I\'m ready to help you with any questions or tasks. What would you like to talk about?',
+      content: 'Welcome to Pistisai! I\'m ready to help you with any questions or tasks. What would you like to talk about?',
     );
 
     _mainChannel = _mainChannel!.addMessage(welcomeMessage);
@@ -310,9 +339,14 @@ class StreamingChatService extends ChangeNotifier {
 
     if (_selectedModel == null) {
       // Use gateway default model - don't require model selection
-      appLogger
-          .debug('[StreamingChat] No model selected, using gateway default');
+      appLogger.debug(
+        '[StreamingChat] No model selected, using gateway default',
+      );
     }
+
+    // A send should read the gateway transcript on the next poll, even if
+    // idle sync is in a failure backoff.
+    _syncGate.reset();
 
     // Cancel any ongoing streaming
     _cancelCurrentStream();
@@ -391,7 +425,10 @@ class StreamingChatService extends ChangeNotifier {
 
       final errorModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
+        content: userFacingChatError(
+          e,
+          isConnected: _connectionManager.isConnected,
+        ),
         model: errorModel,
         status: MessageStatus.error,
         error: e.toString(),
@@ -416,26 +453,19 @@ class StreamingChatService extends ChangeNotifier {
     }
 
     if (streamingMessage.isDataChunk) {
-      // Update content
+      // Transcript polls send a snapshot for this message id. True deltas are
+      // appended only when the new text is not already the full reply.
+      // Reasoning is never accumulated — chain-of-thought stays off the chat.
       if (streamingMessage.chunk.isNotEmpty) {
-        final currentContent = _streamingContentSubject.value;
-        final newContent = currentContent + streamingMessage.chunk;
-        _streamingContentSubject.add(newContent);
+        final next = nextStreamingContent(
+          previous: _streamingContentSubject.value,
+          incoming: streamingMessage.chunk,
+          replaces: streamingMessage.replacesContent,
+        );
+        _streamingContentSubject.add(next);
       }
 
-      // Update reasoning
-      if (streamingMessage.reasoning != null &&
-          streamingMessage.reasoning!.isNotEmpty) {
-        final currentReasoning = _streamingReasoningSubject.value;
-        final newReasoning = currentReasoning + streamingMessage.reasoning!;
-        _streamingReasoningSubject.add(newReasoning);
-      }
-
-      // Update the streaming message in the conversation
-      _updateStreamingMessage(
-        _streamingContentSubject.value,
-        _streamingReasoningSubject.value,
-      );
+      _updateStreamingMessage(_streamingContentSubject.value, null);
     }
   }
 
@@ -448,7 +478,10 @@ class StreamingChatService extends ChangeNotifier {
 
     final errorModel = _selectedModel ?? 'default';
     final errorMessage = Message.assistant(
-      content: userFacingChatError(error, isConnected: _connectionManager.isConnected),
+      content: userFacingChatError(
+        error,
+        isConnected: _connectionManager.isConnected,
+      ),
       model: errorModel,
       status: MessageStatus.error,
       error: error.toString(),
@@ -460,8 +493,9 @@ class StreamingChatService extends ChangeNotifier {
   void _handleStreamingComplete() {
     // Guard against re-entrant calls (isComplete + onDone double-fire)
     if (_currentStreamingMessageId.isEmpty) {
-      appLogger
-          .debug('[StreamingChat] Skipping duplicate _handleStreamingComplete');
+      appLogger.debug(
+        '[StreamingChat] Skipping duplicate _handleStreamingComplete',
+      );
       return;
     }
 
@@ -470,9 +504,10 @@ class StreamingChatService extends ChangeNotifier {
     _setStreaming(false);
     _isAgentRunning = false;
 
-    // Convert streaming message to final assistant message
+    // Convert streaming message to final assistant message.
+    // Do not fall back to reasoning text — that would persist chain-of-thought
+    // as the visible reply.
     var finalContent = _streamingContentSubject.value;
-    final finalReasoning = _streamingReasoningSubject.value;
 
     // Fallback: if no deltas were emitted but run.completed had output
     if (finalContent.isEmpty && _runCompletedOutput.isNotEmpty) {
@@ -486,33 +521,27 @@ class StreamingChatService extends ChangeNotifier {
       _removeLastMessage();
     }
 
-    if (finalContent.isNotEmpty || finalReasoning.isNotEmpty) {
+    if (finalContent.isNotEmpty) {
       final completeModel = _selectedModel ?? 'default';
 
       // Build metadata with tool call history
       final toolCallsMeta = _serializeToolCalls(includeLive: false);
 
-      // Hermes sometimes emits the final reply as reasoning.available as well
-      // as message deltas. Keep reasoning only when it adds distinct text.
-      final distinctReasoning = finalReasoning.isNotEmpty &&
-              finalReasoning.trim() != finalContent.trim()
-          ? finalReasoning
-          : null;
-
       final assistantMessage = Message.assistant(
-        content: finalContent.isNotEmpty ? finalContent : finalReasoning,
-        reasoning: distinctReasoning,
+        content: finalContent,
         model: completeModel,
-        metadata:
-            toolCallsMeta.isNotEmpty ? {'tool_calls': toolCallsMeta} : null,
+        metadata: toolCallsMeta.isNotEmpty
+            ? {'tool_calls': toolCallsMeta}
+            : null,
       );
       _addMessageToCurrentConversation(assistantMessage);
 
       // Auto-rename conversation if it's the first message
       _autoRenameConversation();
     } else {
-      appLogger
-          .warning('[StreamingChat] Streaming completed with empty content');
+      appLogger.warning(
+        '[StreamingChat] Streaming completed with empty content',
+      );
     }
 
     // Clear streaming content and agent state
@@ -522,6 +551,9 @@ class StreamingChatService extends ChangeNotifier {
     _runCompletedOutput = '';
     _activeToolCalls.clear();
     _completedToolCalls.clear();
+
+    _syncGate.reset();
+    unawaited(_syncSharedChannel());
   }
 
   /// Subscribe to agent events if the streaming service supports them.
@@ -570,8 +602,9 @@ class StreamingChatService extends ChangeNotifier {
           startedAt: DateTime.now(),
         );
         _activeToolCalls.add(toolCall);
-        appLogger
-            .info('[StreamingChat] Tool started: $tool (${preview ?? "..."})');
+        appLogger.info(
+          '[StreamingChat] Tool started: $tool (${preview ?? "..."})',
+        );
         notifyListeners();
 
       case AgentToolCompleted(:final tool, :final duration, :final isError):
@@ -665,8 +698,9 @@ class StreamingChatService extends ChangeNotifier {
     Message Function(Message) updater,
   ) {
     if (_mainChannel == null || messageId.isEmpty) return false;
-    final msgIndex =
-        _mainChannel!.messages.indexWhere((m) => m.id == messageId);
+    final msgIndex = _mainChannel!.messages.indexWhere(
+      (m) => m.id == messageId,
+    );
     if (msgIndex == -1) return false;
     final updatedMessage = updater(_mainChannel!.messages[msgIndex]);
     final updatedMessages = List<Message>.from(_mainChannel!.messages);
@@ -687,8 +721,9 @@ class StreamingChatService extends ChangeNotifier {
     // if a conversation was created with the 'New Chat' default title.
     if (conversation.userMessageCount != 1) return;
 
-    final firstUserMessage =
-        conversation.messages.firstWhere((m) => m.isUser).content;
+    final firstUserMessage = conversation.messages
+        .firstWhere((m) => m.isUser)
+        .content;
 
     appLogger.debug(
       '[StreamingChat] Auto-renaming conversation based on: "$firstUserMessage"',
@@ -706,8 +741,10 @@ class StreamingChatService extends ChangeNotifier {
       );
 
       if (newTitle != null && newTitle.trim().isNotEmpty) {
-        var cleanTitle =
-            newTitle.trim().replaceAll('"', '').replaceAll("'", '');
+        var cleanTitle = newTitle
+            .trim()
+            .replaceAll('"', '')
+            .replaceAll("'", '');
         // Remove trailing punctuation if it's just a period
         if (cleanTitle.endsWith('.') && !cleanTitle.endsWith('...')) {
           cleanTitle = cleanTitle.substring(0, cleanTitle.length - 1);
@@ -767,8 +804,7 @@ class StreamingChatService extends ChangeNotifier {
         await _autoRenameConversation();
       } else {
         final offlineMessage = Message.assistant(
-          content:
-              'Agent runtime not configured \u2014 your message has been saved locally. Configure an agent in Settings to get AI responses and use desktop control features. The app works fully offline in the meantime.',
+          content: 'Agent runtime not configured \u2014 your message has been saved locally. Configure an agent in Settings to get AI responses and use desktop control features. The app works fully offline in the meantime.',
           model: fallbackModel,
         );
         _addMessageToCurrentConversation(offlineMessage);
@@ -786,7 +822,10 @@ class StreamingChatService extends ChangeNotifier {
 
       final fallbackModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
+        content: userFacingChatError(
+          e,
+          isConnected: _connectionManager.isConnected,
+        ),
         model: fallbackModel,
         status: MessageStatus.error,
         error: e.toString(),
@@ -814,8 +853,10 @@ class StreamingChatService extends ChangeNotifier {
     try {
       if (_mainChannel == null || _mainChannel!.messages.isEmpty) return;
       final updated = _mainChannel!.copyWith(
-        messages: _mainChannel!.messages
-            .sublist(0, _mainChannel!.messages.length - 1),
+        messages: _mainChannel!.messages.sublist(
+          0,
+          _mainChannel!.messages.length - 1,
+        ),
         updatedAt: DateTime.now(),
       );
       _mainChannel = updated;

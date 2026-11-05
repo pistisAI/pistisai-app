@@ -118,10 +118,8 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                     'Monitor the status of all system connections and services',
                     style: Theme.of(
                       context,
-                    )
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+                    ).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.colorsOf(context).textColorLight),
                   ),
                   if (_lastRefresh != null) ...[
                     SizedBox(height: AppTheme.spacingS),
@@ -129,10 +127,8 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                       'Last updated: ${_formatDateTime(_lastRefresh!)}',
                       style: Theme.of(
                         context,
-                      )
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+                      ).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.colorsOf(context).textColorLight),
                     ),
                   ],
                   SizedBox(height: AppTheme.spacingXL),
@@ -180,16 +176,21 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildSectionHeader(
                 'Authentication',
                 Icons.security,
-                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
+                isAuthenticated
+                    ? AppTheme.colorsOf(context).success
+                    : AppTheme.colorsOf(context).danger,
               ),
               SizedBox(height: AppTheme.spacingM),
               _buildStatusRow(
                 'Status',
                 isAuthenticated ? 'Authenticated' : 'Not Authenticated',
-                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
+                isAuthenticated
+                    ? AppTheme.colorsOf(context).success
+                    : AppTheme.colorsOf(context).danger,
               ),
               if (isAuthenticated) ...[
-                _buildStatusRow('Provider', 'Supabase', AppTheme.colorsOf(context).info),
+                _buildStatusRow(
+                    'Provider', 'Supabase', AppTheme.colorsOf(context).info),
               ],
               SizedBox(height: AppTheme.spacingM),
               if (!isAuthenticated)
@@ -226,7 +227,8 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
         if (backend == BackendType.hermes) {
           backendLabel = 'Hermes Agent';
           backendColor = AppTheme.colorsOf(context).accent;
-          statusText = connectionManager.isConnected ? 'Active' : 'Disconnected';
+          statusText =
+              connectionManager.isConnected ? 'Active' : 'Disconnected';
         } else {
           backendLabel = 'None';
           backendColor = AppTheme.colorsOf(context).textColorLight;
@@ -247,7 +249,9 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildStatusRow(
                 'Status',
                 statusText,
-                connectionManager.isConnected ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).warning,
+                connectionManager.isConnected
+                    ? AppTheme.colorsOf(context).success
+                    : AppTheme.colorsOf(context).warning,
               ),
               if (backend != null) ...[
                 SizedBox(height: AppTheme.spacingM),
@@ -285,9 +289,11 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeader(gatewayLabel, Icons.computer, AppTheme.colorsOf(context).info),
+              _buildSectionHeader(gatewayLabel, Icons.computer,
+                  AppTheme.colorsOf(context).info),
               SizedBox(height: AppTheme.spacingM),
-              _buildStatusRow('Connection', 'Checking...', AppTheme.colorsOf(context).info),
+              _buildStatusRow(
+                  'Connection', 'Checking...', AppTheme.colorsOf(context).info),
               _buildStatusRow(
                 'URL',
                 gatewayUrl,
@@ -329,13 +335,17 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               _buildSectionHeader(
                 'Cloud Proxy',
                 Icons.cloud,
-                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
+                isAuthenticated
+                    ? AppTheme.colorsOf(context).success
+                    : AppTheme.colorsOf(context).textColorLight,
               ),
               SizedBox(height: AppTheme.spacingM),
               _buildStatusRow(
                 'Status',
                 isAuthenticated ? 'Available' : 'Requires Authentication',
-                isAuthenticated ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
+                isAuthenticated
+                    ? AppTheme.colorsOf(context).success
+                    : AppTheme.colorsOf(context).textColorLight,
               ),
               _buildStatusRow(
                 'Endpoint',
@@ -371,16 +381,21 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
           _buildSectionHeader(
             'System Tray',
             Icons.apps,
-            kIsWeb ? AppTheme.colorsOf(context).textColorLight : AppTheme.colorsOf(context).success,
+            kIsWeb
+                ? AppTheme.colorsOf(context).textColorLight
+                : AppTheme.colorsOf(context).success,
           ),
           SizedBox(height: AppTheme.spacingM),
           _buildStatusRow(
             'Platform Support',
             kIsWeb ? 'Not Available (Web)' : 'Available (Desktop)',
-            kIsWeb ? AppTheme.colorsOf(context).textColorLight : AppTheme.colorsOf(context).success,
+            kIsWeb
+                ? AppTheme.colorsOf(context).textColorLight
+                : AppTheme.colorsOf(context).success,
           ),
           if (!kIsWeb) ...[
-            _buildStatusRow('Daemon Status', 'Running', AppTheme.colorsOf(context).success),
+            _buildStatusRow(
+                'Daemon Status', 'Running', AppTheme.colorsOf(context).success),
             _buildStatusRow(
               'Icon Theme',
               'Monochrome',
@@ -390,7 +405,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to daemon settings
-                Navigator.of(context).pushNamed('/settings/daemon');
+                context.go('/settings/daemon');
               },
               icon: const Icon(Icons.settings),
               label: const Text('Daemon Settings'),
@@ -410,17 +425,24 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Network', Icons.network_check, AppTheme.colorsOf(context).success),
+          _buildSectionHeader('Network', Icons.network_check,
+              AppTheme.colorsOf(context).success),
           SizedBox(height: AppTheme.spacingM),
-          _buildStatusRow('Internet', 'Connected', AppTheme.colorsOf(context).success),
-          _buildStatusRow('DNS Resolution', 'Working', AppTheme.colorsOf(context).success),
-          _buildStatusRow('Firewall', 'Configured', AppTheme.colorsOf(context).success),
+          _buildStatusRow(
+              'Internet', 'Connected', AppTheme.colorsOf(context).success),
+          _buildStatusRow(
+              'DNS Resolution', 'Working', AppTheme.colorsOf(context).success),
+          _buildStatusRow(
+              'Firewall', 'Configured', AppTheme.colorsOf(context).success),
           SizedBox(height: AppTheme.spacingM),
           Text(
             'Network connectivity is required for authentication and cloud proxy features.',
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+            )
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
         ],
       ),
@@ -453,7 +475,10 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
             label,
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColor),
+            )
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppTheme.colorsOf(context).textColor),
           ),
           Text(
             value,

@@ -48,10 +48,10 @@ flutter run -d windows  # Run on Windows
 
 ```markdown
 # Good
-See the [Installation Guide](../INSTALLATION/README.md) for details.
+See the Installation Guide for details.
 
 # Avoid
-Click [here](../INSTALLATION/README.md) for more info.
+Click here for more info.
 ```
 
 ### Lists
@@ -93,7 +93,7 @@ Click [here](../INSTALLATION/README.md) for more info.
 
 ```markdown
 # Good
-Currently deployed on Azure AKS. For AWS EKS deployment, see [AWS Guide](aws-guide.md).
+Currently deployed on Azure AKS. For AWS EKS deployment, see AWS Guide.
 
 # Avoid
 Deployed on AWS EKS (when actually using Azure AKS)

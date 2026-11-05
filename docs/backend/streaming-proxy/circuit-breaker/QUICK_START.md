@@ -299,7 +299,7 @@ setInterval(() => {
 
 - Read the [full README](./README.md) for detailed documentation
 - Check [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) for architecture details
-- Review requirements in the [design document](../../.kiro/specs/ssh-websocket-tunnel-enhancement/design.md)
+- Review requirements in the design document
 - Integrate with other tunnel components (connection pool, rate limiter)
 
 ## Troubleshooting
@@ -325,5 +325,5 @@ setInterval(() => {
 For issues or questions:
 
 1. Check the [README](./README.md)
-2. Review the [design document](../../.kiro/specs/ssh-websocket-tunnel-enhancement/design.md)
+2. Review the design document
 3. Check existing implementations in connection-pool and rate-limiter modules

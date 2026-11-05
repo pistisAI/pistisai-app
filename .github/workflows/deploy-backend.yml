@@ -80,28 +80,6 @@ jobs:
             build_api=true
             build_proxy=true
             build_postgres=true
-          elif [ "${{ github.event_name }}" == "push" ]; then
-            BEFORE="${{ github.event.before }}"
-            AFTER="${{ github.event.after }}"
-            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || [ -z "$BEFORE" ]; then
-              echo "Zero/empty before SHA (first push or new branch), building all"
-              build_api=true
-              build_proxy=true
-              build_postgres=true
-            else
-              DIFF_FILES=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null || git diff --name-only HEAD^ HEAD 2>/dev/null || echo "")
-              echo "Changed files:"
-              echo "$DIFF_FILES"
-              if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend"; then
-                build_api=true
-              fi
-              if echo "$DIFF_FILES" | grep -qE "services/streaming-proxy/|config/docker/Dockerfile.streaming-proxy"; then
-                build_proxy=true
-              fi
-              if echo "$DIFF_FILES" | grep -qE "config/docker/Dockerfile.postgres|config/docker/postgres-|config/docker/init.sql|services/postgres/"; then
-                build_postgres=true
-              fi
-            fi
           else
             echo "Unknown trigger, falling back to diff against HEAD^ HEAD"
             DIFF_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null || echo "")

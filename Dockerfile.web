@@ -3,6 +3,8 @@ FROM gmeligio/flutter-android:3.47.9 AS builder
 
 WORKDIR /app
 COPY pubspec.* ./
+COPY tool/cnativeapi/ tool/cnativeapi/
+COPY tool/linux_native_deps/ tool/linux_native_deps/
 RUN flutter pub get
 RUN flutter config --enable-web
 COPY . .

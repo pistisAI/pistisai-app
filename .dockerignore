@@ -33,4 +33,3 @@ build/
 .dart_tool/
 android/
 .pub-cache/
-pubspec.lock
