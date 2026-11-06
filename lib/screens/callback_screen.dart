@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../utils/web_interop_stub.dart'
     if (dart.library.html) '../utils/web_interop.dart';
+import '../di/locator.dart' as di;
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
 import '../services/platform_adapter.dart';
@@ -471,7 +472,7 @@ class _CallbackScreenState extends State<CallbackScreen> {
     // Get theme and platform services
     // Watch ThemeProvider to rebuild when theme changes
     context.watch<ThemeProvider>();
-    final platformAdapter = context.read<PlatformAdapter>();
+    final platformAdapter = di.serviceLocator.get<PlatformAdapter>();
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
