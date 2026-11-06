@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../widgets/usage/metric_card.dart';
 import '../../widgets/navigation/popout_button.dart';
@@ -19,8 +22,26 @@ class UsageScreen extends StatefulWidget {
 class _UsageScreenState extends State<UsageScreen> {
   TimeRange _selectedTimeRange = TimeRange.today;
 
-  final RateLimitManager _rateLimitManager =
-      di.serviceLocator.get<RateLimitManager>();
+  RateLimitManager? _rateLimitManager;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _rateLimitManager ??= _resolveRateLimitManager(context);
+  }
+
+  static RateLimitManager? _resolveRateLimitManager(BuildContext context) {
+    try {
+      return context.read<RateLimitManager>();
+    } catch (_) {
+      // Not provided above this widget; fall back to the service locator.
+    }
+    try {
+      return di.serviceLocator.get<RateLimitManager>();
+    } catch (_) {
+      return null;
+    }
+  }
 
   Future<void> _onRefresh() async {
     // Capacities are streamed live via RateLimitManager; refresh triggers a
@@ -90,7 +111,8 @@ class _UsageScreenState extends State<UsageScreen> {
 
                         // Concurrency / active requests Card (real capacity data)
                         StreamBuilder<List<ModelCapacityData>>(
-                          stream: _rateLimitManager.watchCapacities(),
+                          stream: _rateLimitManager?.watchCapacities() ??
+                              const Stream.empty(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -132,7 +154,8 @@ class _UsageScreenState extends State<UsageScreen> {
 
                         // Requests-per-minute Card (real capacity data)
                         StreamBuilder<List<ModelCapacityData>>(
-                          stream: _rateLimitManager.watchCapacities(),
+                          stream: _rateLimitManager?.watchCapacities() ??
+                              const Stream.empty(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -170,7 +193,8 @@ class _UsageScreenState extends State<UsageScreen> {
 
                         // Tokens-per-minute Card (real capacity data)
                         StreamBuilder<List<ModelCapacityData>>(
-                          stream: _rateLimitManager.watchCapacities(),
+                          stream: _rateLimitManager?.watchCapacities() ??
+                              const Stream.empty(),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
