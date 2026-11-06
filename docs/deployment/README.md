@@ -38,7 +38,7 @@ Provider-specific notes are runbooks, not universal architecture. Prefer [Deploy
 ## Packaging And Releases
 
 - [AUR Status](AUR_STATUS.md)
-- [Versioning Strategy](VERSIONING_STRATEGY.md)
+- [CI/CD Quick Reference](../operations/cicd/CI_CD_QUICK_REFERENCE.md) — auto version bump on push to `main`
 - [Deployment Testing Guide](DEPLOYMENT_TESTING_GUIDE.md)
 - [Validation Testing Guide](VALIDATION_TESTING_GUIDE.md)
 

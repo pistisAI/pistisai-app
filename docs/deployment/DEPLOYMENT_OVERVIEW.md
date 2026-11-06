@@ -182,8 +182,7 @@ Pistisai tracks version in two synced files (see [AGENTS.md](../../AGENTS.md)):
 
 Example shape: `1.1.46+45` (not a timestamped `YYYYMMDDHHMM` build id).
 
-For packaging/version helper scripts, see [BUILD_SCRIPTS.md](../development/BUILD_SCRIPTS.md)
-and [docs/development/versioning/](../development/versioning/).
+[Auto Version Bump](../operations/cicd/CI_CD_QUICK_REFERENCE.md) rewrites those two files on pushes to `main`. For packaging helpers, see [BUILD_SCRIPTS.md](../development/BUILD_SCRIPTS.md).
 
 ---
 

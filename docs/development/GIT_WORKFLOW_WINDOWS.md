@@ -141,9 +141,6 @@ After performing manual version increment:
 # Version increment
 ./scripts/powershell/version_manager.ps1 increment patch
 
-# Stage version files
-git add pubspec.yaml assets/version.json lib/shared/lib/version.dart lib/config/app_config.dart lib/shared/pubspec.yaml
-
 # Commit version changes
 git commit -m "Increment version after deployment
 

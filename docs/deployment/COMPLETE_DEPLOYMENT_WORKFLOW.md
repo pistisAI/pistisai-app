@@ -11,7 +11,7 @@ This is the **ONE AND ONLY** deployment document for Pistisai. Follow this exact
 - [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
 - [k3s on Proxmox Deployment Workflow](./K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
 - [ArgoCD Proxmox Management VM Runbook](./ARGOCD_PROXMOX_MANAGEMENT_VM.md)
-- [Versioning Strategy](./VERSIONING_STRATEGY.md)
+- [CI/CD Quick Reference](../operations/cicd/CI_CD_QUICK_REFERENCE.md) — auto version bump on push to `main`
 
 ---
 
