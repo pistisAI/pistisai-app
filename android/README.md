@@ -57,7 +57,7 @@ See [Android Build Guide](../docs/development/ANDROID_BUILD_GUIDE.md).
 | Android Gradle Plugin | 8.11.1 (`android/settings.gradle`) |
 | Gradle wrapper | 8.14.3 |
 | Kotlin Gradle Plugin | 2.4.0 |
-| Flutter CI pin | `pubspec.yaml` → `environment.flutter` (3.47.7) |
+| Flutter CI pin | `pubspec.yaml` → `environment.flutter` (3.47.9) |
 | `compileSdk` / `compileSdkMinor` | 37 / 0 |
 | SDK package CI installs | `platforms;android-37.0` |
 | NDK, minSdk, targetSdk | Flutter's values (`flutter.ndkVersion`, `flutter.minSdkVersion`, `flutter.targetSdkVersion`) |

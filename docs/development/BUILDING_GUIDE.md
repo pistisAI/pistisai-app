@@ -20,7 +20,7 @@ This document provides comprehensive instructions for building Pistisai client a
 
 #### **Core Requirements**
 
-- **Flutter SDK**: CI pins exact `environment.flutter` in root `pubspec.yaml` (currently `3.47.7` stable; Dart `>=3.5.0 <4.0.0`)
+- **Flutter SDK**: CI pins exact `environment.flutter` in root `pubspec.yaml` (currently `3.47.9` stable; Dart `>=3.5.0 <4.0.0`)
 - **Dart SDK**: Included with Flutter
 - **Git**: For version control and dependency management
 - **Platform-specific tools**: See platform sections below

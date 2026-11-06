@@ -43,7 +43,7 @@ This guide helps you diagnose and fix common issues with Pistisai builds using G
 
 2. **Check Flutter version compatibility**:
    - Verify `FLUTTER_VERSION` in `.github/workflows/build-release.yml`
-   - Current version: `3.32.8`
+   - Current version: `3.47.9`
    - Update if needed to latest stable version
 
 3. **Clear GitHub Actions cache**:
