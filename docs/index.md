@@ -18,7 +18,6 @@ Pistisai is a Flutter desktop/web application with optional Node.js backend serv
 | Layer | Technology |
 |-------|------------|
 | Flutter app | Dart `>=3.5.0 <4.0.0`, package `pistisai` |
-| Shared package | `lib/shared` (`pistisai_shared`), Dart `>=3.9.0 <4.0.0` |
 | Local database | Drift / SQLite |
 | Embedded router | Shelf server, port `1337` |
 | API backend | Express 5 ESM, Node `>=22 <27`, port `8080` |

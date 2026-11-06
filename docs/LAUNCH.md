@@ -81,9 +81,8 @@ That's it. No build step.
 git clone https://github.com/pistisAI/pistisai-app.git
 cd pistisai-app
 
-# 2. Get Flutter dependencies (app + shared package)
+# 2. Get Flutter dependencies
 flutter pub get
-cd lib/shared && flutter pub get && cd ../..
 
 # 3. Run (pick your target)
 flutter run -d linux    # Linux desktop
@@ -95,9 +94,7 @@ flutter build web --release --no-web-resources-cdn
 flutter build apk --release --split-per-abi
 ```
 
-> The Flutter app package is `pistisai` (Dart SDK `>=3.5.0 <4.0.0`). The shared
-> package `lib/shared` (`pistisai_shared`) targets Dart `>=3.9.0 <4.0.0` and needs
-> its own `flutter pub get`.
+> The Flutter app package is `pistisai` (Dart SDK `>=3.5.0 <4.0.0`).
 
 ### Option C — Backend services (for self-hosted / full stack)
 

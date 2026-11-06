@@ -30,14 +30,12 @@ Pistisai is a Flutter desktop/web app plus Node.js backend services. You need bo
 
 - **Dart SDK**: `>=3.5.0 <4.0.0` (the app package `pistisai`)
 - **Flutter**: 3.x stable
-- A shared package `lib/shared` (`pistisai_shared`) targets Dart `>=3.9.0 <4.0.0`
 
 ```bash
 git clone https://github.com/pistisAI/pistisai-app.git
 cd pistisai-app
 
 flutter pub get
-cd lib/shared && flutter pub get && cd ../..   # shared package deps are separate
 flutter analyze lib/     # must pass — CI scopes analysis to lib/ (test-file lints are non-blocking)
 bash scripts/ci/flutter_security_basic_tests.sh   # CI Flutter gate suite
 
