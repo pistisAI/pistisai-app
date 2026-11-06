@@ -1,6 +1,6 @@
 # macOS Installation Guide
 
-macOS support is planned but not the primary packaged desktop target yet. This guide covers the current development build path and the intended setup direction.
+macOS desktop builds are supported in CI (`build_macos` on `macos-15` in `.github/workflows/build-desktop.yml`, packaged as `Pistisai-macOS-x64.zip`) but macOS is not the primary packaged desktop target yet. This guide covers the current development build path.
 
 Agent runtime selection belongs to the setup wizard. Pistisai can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
 

@@ -45,7 +45,7 @@ flutter test
 
 ## Features
 
-- **Complete Flutter Environment**: Flutter 3.32.2+ with Dart SDK
+- **Complete Flutter Environment**: Flutter 3.47.9+ with Dart SDK
 - **System Tray Support**: GTK3 and system tray libraries pre-installed
 - **Web Development**: Chrome for web testing and debugging
 - **Security**: Non-root development environment
@@ -63,8 +63,8 @@ flutter test
 
 | Component | Version/Details |
 |-----------|----------------|
-| Base Image | `ghcr.io/cirruslabs/flutter:3.32.2` |
-| Flutter SDK | 3.32.2+ |
+| Base Image | `ghcr.io/cirruslabs/flutter:3.47.9` |
+| Flutter SDK | 3.47.9+ |
 | Dart SDK | Bundled with Flutter |
 | User | `flutter` (UID 1000) |
 | Working Dir | `/workspace` |
