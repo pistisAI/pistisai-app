@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../config/theme.dart';
+import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
 import '../services/platform_adapter.dart';
@@ -27,6 +28,13 @@ class LoginScreen extends StatefulWidget {
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
+}
+
+/// Greeting for the signed-in user. Blank display names stay nameless.
+String _greetingFor(UserModel? user) {
+  final name = user?.displayName.trim() ?? '';
+  if (name.isEmpty) return 'Hey!';
+  return 'Hey $name!';
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -227,7 +235,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           // Welcome text with theme-aware colors (Requirement 7.1, 7.5)
                           Text(
-                            'Hey Christopher!',
+                            _greetingFor(
+                              context.watch<AuthService>().currentUser,
+                            ),
                             style: theme.textTheme.headlineMedium?.copyWith(
                               color: colorScheme.onSurface,
                               fontSize: titleFontSize,
