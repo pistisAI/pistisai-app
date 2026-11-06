@@ -192,55 +192,13 @@ jobs:
           path: build/app/outputs/flutter-apk/*.apk
           retention-days: 30
 
-  build_ios:
-    name: iOS Build
-    needs: analyze
-    if: contains(inputs.platforms || 'android', 'ios')
-    runs-on: macos-15
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Verify iOS platform is configured
-        run: |
-          if [ ! -f ios/Runner.xcodeproj/project.pbxproj ]; then
-            echo "iOS platform is not configured in this repository."
-            echo "Add it locally with: flutter create --platforms=ios ."
-            exit 1
-          fi
-
-      - name: Set Version
-        run: |
-          VERSION=${{ needs.analyze.outputs.version }}
-          sed -i "" "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
-          jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: pubspec.yaml
-          channel: "stable"
-          cache: true
-
-      - name: Flutter Build iOS
-        run: |
-          flutter pub get
-          flutter build ios --release --no-codesign --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
-
-      - name: Upload iOS build
-        uses: actions/upload-artifact@v7
-        with:
-          name: ios-build
-          path: build/ios/iphoneos/Runner.app
-          retention-days: 30
-
   create_release:
-    needs: [analyze, build_android, build_ios]
+    needs: [analyze, build_android]
     if: >-
       always() &&
       github.event_name != 'pull_request' &&
       needs.analyze.result == 'success' &&
-      (needs.build_android.result == 'success' || needs.build_android.result == 'skipped') &&
-      (needs.build_ios.result == 'success' || needs.build_ios.result == 'skipped')
+      (needs.build_android.result == 'success' || needs.build_android.result == 'skipped')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -265,9 +223,6 @@ jobs:
           fi
           printf 'Copying APK: %s\n' "${apks[@]}"
           cp -f "${apks[@]}" release-assets/
-          if [ -d "ios-build/Runner.app" ]; then
-            (cd ios-build && zip -r ../release-assets/Pistisai-iOS.app.zip Runner.app)
-          fi
           ls -lh release-assets/
 
       - name: Create Release
@@ -284,7 +239,4 @@ jobs:
 
             ### Android
             - APK(s) attached
-
-            ### iOS
-            - Runner.app zip attached (no codesign — dev build)
           token: ${{ secrets.GITHUB_TOKEN }}

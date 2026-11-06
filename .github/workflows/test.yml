@@ -59,6 +59,7 @@ jobs:
               - 'macos/**'
               - 'assets/**'
               - 'analysis_options.yaml'
+              - 'scripts/ci/flutter_security_basic_tests.sh'
               - '.github/workflows/test.yml'
             backend:
               - 'services/api-backend/**'

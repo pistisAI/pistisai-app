@@ -88,7 +88,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=min
           provenance: true
           sbom: true
 
@@ -207,7 +207,6 @@ jobs:
           done
 
       - name: Purge Cloudflare cache
-        if: always()
         env:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}

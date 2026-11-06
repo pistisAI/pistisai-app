@@ -114,13 +114,13 @@ jobs:
           mkdir -p ~/.ssh
           echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
           cat >> ~/.ssh/config << 'EOF'
             Host github.com
               HostName github.com
               User git
               IdentityFile ~/.ssh/deploy_key
               IdentitiesOnly yes
-              StrictHostKeyChecking no
           EOF
           git remote set-url origin git@github.com:${{ github.repository }}.git
           git push origin main
