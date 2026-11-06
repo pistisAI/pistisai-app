@@ -10,9 +10,6 @@ import '../../config/theme.dart';
 // Re-export HomepageScreen for use in router.dart's home route
 export 'homepage_screen.dart';
 
-// This file contains the route configuration for the marketing screens,
-// which will be lazy-loaded to improve initial application performance.
-
 final marketingRoutes = [
   GoRoute(
     path: '/',

@@ -302,30 +302,8 @@ Future<void> setupCoreServices() async {
       );
     }
 
-    // Authentication Provider - Using platform-specific provider
-    late AuthProvider authProvider;
-
-    try {
-      AppConfig.verboseLog('[Locator] Detecting platform...');
-
-      // Check if we're on web first
-      if (kIsWeb) {
-        AppConfig.verboseLog(
-            '[Locator] ✓ Web platform detected, using SupabaseAuthProvider');
-        authProvider = SupabaseAuthProvider();
-      } else {
-        // Use SupabaseAuthProvider for all desktop platforms
-        AppConfig.verboseLog(
-            '[Locator] Using SupabaseAuthProvider for desktop');
-        authProvider = SupabaseAuthProvider();
-      }
-    } catch (e, stack) {
-      AppConfig.verboseLog('[Locator] ERROR during platform detection: $e');
-      AppConfig.verboseLog('[Locator] Stack trace: $stack');
-      // Fallback to Supabase if platform detection fails
-      AppConfig.verboseLog('[Locator] Falling back to SupabaseAuthProvider');
-      authProvider = SupabaseAuthProvider();
-    }
+    // Web and desktop both authenticate through Supabase.
+    final authProvider = SupabaseAuthProvider();
 
     AppConfig.verboseLog(
         '[Locator] Selected auth provider: ${authProvider.runtimeType}');

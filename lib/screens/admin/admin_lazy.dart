@@ -5,9 +5,6 @@ import 'admin_center_screen.dart';
 import 'admin_data_flush_screen.dart';
 import '../../config/app_config.dart';
 
-// This file contains the route configuration for the admin screens,
-// which will be lazy-loaded to improve initial application performance.
-
 final adminRoutes = [
   GoRoute(
     path: '/admin/data-flush',
