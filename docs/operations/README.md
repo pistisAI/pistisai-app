@@ -6,7 +6,7 @@ Operational documentation covers running, monitoring, recovering, and securing P
 
 - [Deployment Index](../deployment/README.md)
 - [Self Hosting](../deployment/SELF_HOSTING.md)
-- [Docker Deployment](../deployment/DOCKER_DEPLOYMENT.md)
+- [Backend Deployment](backend/DEPLOYMENT.md) — API backend on Cloud Run
 - [Complete Deployment Workflow](../deployment/COMPLETE_DEPLOYMENT_WORKFLOW.md)
 - [Strict Deployment Policy](../deployment/STRICT_DEPLOYMENT_POLICY.md)
 
