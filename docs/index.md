@@ -33,7 +33,7 @@ Pistisai is a Flutter desktop/web application with optional Node.js backend serv
 - [Features Guide](user-guide/FEATURES_GUIDE.md)
 - [System Architecture](architecture/SYSTEM_ARCHITECTURE.md)
 - [Agent Runtime Contract](architecture/AGENT_RUNTIME_CONTRACT.md)
-- [Docker Deployment](deployment/DOCKER_DEPLOYMENT.md)
+- [Backend Deployment](operations/backend/DEPLOYMENT.md) — API backend on Cloud Run
 - [Self-Hosting](deployment/SELF_HOSTING.md)
 - [Web Deploy](operations/cicd/WEB_DEPLOY.md)
 

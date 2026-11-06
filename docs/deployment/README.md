@@ -8,7 +8,7 @@ This directory documents supported deployment paths for Pistisai.
 - [Deployment Overview](DEPLOYMENT_OVERVIEW.md)
 - [Complete Deployment Workflow](COMPLETE_DEPLOYMENT_WORKFLOW.md)
 - [Self Hosting](SELF_HOSTING.md)
-- [Docker Deployment](DOCKER_DEPLOYMENT.md)
+- [Backend Deployment](../operations/backend/DEPLOYMENT.md) — API backend on Cloud Run
 - [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md)
 - [Secrets Management](SECRETS_MANAGEMENT.md)
 
