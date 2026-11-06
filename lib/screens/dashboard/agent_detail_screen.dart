@@ -4,8 +4,8 @@ library;
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
+import '../../di/locator.dart' as di;
 import '../../services/agent_lifecycle_service.dart';
 
 /// Agent Detail Screen
@@ -32,7 +32,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
   Future<void> _loadAgentDetails() async {
     setState(() => _isLoading = true);
-    final service = context.read<AgentLifecycleService>();
+    final service = di.serviceLocator.get<AgentLifecycleService>();
     try {
       await service.getAgentStatus(widget.agentId);
     } catch (e) {
@@ -43,7 +43,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
   }
 
   Future<void> _startAgent() async {
-    final service = context.read<AgentLifecycleService>();
+    final service = di.serviceLocator.get<AgentLifecycleService>();
     final result = await service.startAgent(widget.agentId);
 
     if (!mounted) return;
@@ -59,7 +59,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
   }
 
   Future<void> _stopAgent() async {
-    final service = context.read<AgentLifecycleService>();
+    final service = di.serviceLocator.get<AgentLifecycleService>();
     final result = await service.stopAgent(widget.agentId);
 
     if (!mounted) return;
@@ -75,7 +75,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
   }
 
   Future<void> _restartAgent() async {
-    final service = context.read<AgentLifecycleService>();
+    final service = di.serviceLocator.get<AgentLifecycleService>();
     final result = await service.restartAgent(widget.agentId);
 
     if (!mounted) return;
@@ -92,8 +92,10 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AgentLifecycleService>(
-      builder: (context, service, child) {
+    final service = di.serviceLocator.get<AgentLifecycleService>();
+    return ListenableBuilder(
+      listenable: service,
+      builder: (context, child) {
         final agent = service.getAgent(widget.agentId);
 
         if (agent == null) {

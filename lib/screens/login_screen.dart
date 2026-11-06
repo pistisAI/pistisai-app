@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../config/theme.dart';
+import '../di/locator.dart' as di;
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
 import '../services/platform_adapter.dart';
-import '../services/platform_detection_service.dart';
 
 // Conditional import for debug panel - only import on web platform
 import '../widgets/auth_debug_panel.dart'
@@ -138,8 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Get unified theme and platform services (Requirements 7.1, 7.2, 7.6)
     // ThemeProvider is watched to ensure updates when system theme changes
     context.watch<ThemeProvider>();
-    final platformService = context.watch<PlatformDetectionService>();
-    final platformAdapter = PlatformAdapter(platformService);
+    final platformAdapter = di.serviceLocator.get<PlatformAdapter>();
 
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);

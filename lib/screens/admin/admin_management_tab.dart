@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
@@ -145,8 +144,17 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
 
   @override
   Widget build(BuildContext context) {
-    final adminService = context.watch<AdminCenterService>();
+    final adminService = di.serviceLocator.get<AdminCenterService>();
+    return ListenableBuilder(
+      listenable: adminService,
+      builder: (context, _) => _buildManagementBody(context, adminService),
+    );
+  }
 
+  Widget _buildManagementBody(
+    BuildContext context,
+    AdminCenterService adminService,
+  ) {
     // Check if user is Super Admin
     if (!adminService.isSuperAdmin) {
       return Center(

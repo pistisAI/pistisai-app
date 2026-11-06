@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../services/platform_detection_service.dart';
+import '../../di/locator.dart' as di;
 import '../../services/platform_adapter.dart';
 import '../../config/theme.dart';
 
@@ -112,8 +111,7 @@ class DocumentationScreen extends StatelessWidget {
     required bool isDark,
   }) {
     final theme = Theme.of(context);
-    final platformService = Provider.of<PlatformDetectionService>(context);
-    final platformAdapter = PlatformAdapter(platformService);
+    final platformAdapter = di.serviceLocator.get<PlatformAdapter>();
 
     return Container(
       decoration: BoxDecoration(
@@ -227,8 +225,7 @@ class DocumentationScreen extends StatelessWidget {
     required bool isDark,
   }) {
     final theme = Theme.of(context);
-    final platformService = Provider.of<PlatformDetectionService>(context);
-    final platformAdapter = PlatformAdapter(platformService);
+    final platformAdapter = di.serviceLocator.get<PlatformAdapter>();
 
     return Container(
       decoration: BoxDecoration(

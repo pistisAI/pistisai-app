@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../../di/locator.dart' as di;
 
 import '../../services/admin_data_flush_service.dart';
 import '../../services/platform_adapter.dart';
-import '../../services/platform_detection_service.dart';
 import '../../config/theme.dart';
 
 /// Administrative Data Flush Screen
@@ -65,8 +63,7 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final platformService = di.serviceLocator.get<PlatformDetectionService>();
-    final platformAdapter = PlatformAdapter(platformService);
+    final platformAdapter = di.serviceLocator.get<PlatformAdapter>();
 
     // Responsive layout breakpoints
     final screenWidth = MediaQuery.of(context).size.width;
@@ -126,8 +123,10 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
     PlatformAdapter platformAdapter,
     bool isMobile,
   ) {
-    return Consumer<AdminDataFlushService>(
-      builder: (context, adminService, child) {
+    final adminService = di.serviceLocator.get<AdminDataFlushService>();
+    return ListenableBuilder(
+      listenable: adminService,
+      builder: (context, child) {
         if (adminService.isLoading) {
           return Center(
             child: platformAdapter.buildProgressIndicator(
@@ -160,8 +159,10 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
     PlatformAdapter platformAdapter,
     bool isMobile,
   ) {
-    return Consumer<AdminDataFlushService>(
-      builder: (context, adminService, child) {
+    final adminService = di.serviceLocator.get<AdminDataFlushService>();
+    return ListenableBuilder(
+      listenable: adminService,
+      builder: (context, child) {
         if (_systemStats == null) {
           return platformAdapter.buildCard(
             padding: EdgeInsets.all(isMobile ? 12 : 16),
@@ -407,8 +408,10 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
     PlatformAdapter platformAdapter,
     bool isMobile,
   ) {
-    return Consumer<AdminDataFlushService>(
-      builder: (context, adminService, child) {
+    final adminService = di.serviceLocator.get<AdminDataFlushService>();
+    return ListenableBuilder(
+      listenable: adminService,
+      builder: (context, child) {
         final recentOps = adminService.operationHistory.take(5).toList();
 
         return platformAdapter.buildCard(
@@ -441,8 +444,10 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
     PlatformAdapter platformAdapter,
     bool isMobile,
   ) {
-    return Consumer<AdminDataFlushService>(
-      builder: (context, adminService, child) {
+    final adminService = di.serviceLocator.get<AdminDataFlushService>();
+    return ListenableBuilder(
+      listenable: adminService,
+      builder: (context, child) {
         return SingleChildScrollView(
           padding: EdgeInsets.all(isMobile ? 12 : 16),
           child: Column(
@@ -590,8 +595,10 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
     PlatformAdapter platformAdapter,
     bool isMobile,
   ) {
-    return Consumer<AdminDataFlushService>(
-      builder: (context, adminService, child) {
+    final adminService = di.serviceLocator.get<AdminDataFlushService>();
+    return ListenableBuilder(
+      listenable: adminService,
+      builder: (context, child) {
         return platformAdapter.buildCard(
           padding: EdgeInsets.all(isMobile ? 12 : 16),
           child: Column(
@@ -716,8 +723,10 @@ class _AdminDataFlushScreenState extends State<AdminDataFlushScreen>
     PlatformAdapter platformAdapter,
     bool isMobile,
   ) {
-    return Consumer<AdminDataFlushService>(
-      builder: (context, adminService, child) {
+    final adminService = di.serviceLocator.get<AdminDataFlushService>();
+    return ListenableBuilder(
+      listenable: adminService,
+      builder: (context, child) {
         return ListView.builder(
           padding: EdgeInsets.all(isMobile ? 12 : 16),
           itemCount: adminService.operationHistory.length,
