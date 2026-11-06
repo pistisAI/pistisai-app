@@ -4,7 +4,7 @@ Desktop Control lets Pistisai inspect and operate the local desktop through expl
 
 ## Current Status
 
-Core desktop control services are implemented. The system includes GUI automation, shell/system control, clipboard history, window management, and a file operations screen. Macro recording and a standalone action-history service are not currently present.
+Core desktop control services are implemented. The system includes GUI automation, shell/system control, app-window behavior, and a file operations screen. Macro recording and a standalone action-history service are not currently present.
 
 ## Current Components
 
@@ -12,8 +12,6 @@ Core desktop control services are implemented. The system includes GUI automatio
 | --- | --- | --- |
 | GUI automation | Implemented | `lib/services/gui_automation_service.dart` |
 | System control | Implemented | `lib/services/system_control_service.dart` |
-| Clipboard service | Implemented | `lib/services/desktop_control/clipboard_service.dart` |
-| Desktop window manager | Implemented | `lib/services/desktop_control/window_manager_service.dart` |
 | App window manager wrapper | Implemented | `lib/services/window_manager_service.dart` |
 | File operations UI | Implemented | `lib/screens/desktop/file_operations_screen.dart` |
 | GUI automation UI | Implemented | `lib/screens/gui_automation_screen.dart` |
@@ -30,18 +28,9 @@ Handles screenshot-based GUI automation workflows. It coordinates capture, analy
 
 Handles local command execution, system stats, notifications, process/file operations, and native screenshot calls where supported.
 
-### `ClipboardService`
-
-Handles clipboard copy/read operations and optional polling-based history on desktop platforms. Web monitoring is intentionally limited by browser security rules.
-
 ### `WindowManagerService`
 
-There are two window-manager-related services:
-
-- `lib/services/window_manager_service.dart` handles app-window behavior.
-- `lib/services/desktop_control/window_manager_service.dart` handles desktop-control window operations.
-
-Check imports before editing to avoid mixing these responsibilities.
+`lib/services/window_manager_service.dart` handles app-window behavior (show, hide, minimize, maximize) through the `window_manager` plugin.
 
 ## Data Flow
 
@@ -62,13 +51,11 @@ Typical GUI automation flow:
 | Screenshot | Supported where native APIs are available | Supported where native APIs are available | Not supported |
 | Window management | Desktop-only | Desktop-only | Not supported |
 | File operations | Full | Full | Browser-limited |
-| Clipboard | Full with optional monitoring | Full with optional monitoring | Limited |
 | Notifications | Desktop notifications | Desktop notifications | Browser-limited |
 
 ## Privacy And Safety
 
 - Desktop actions are local-first and should stay user-visible.
-- Clipboard monitoring is optional and should not be enabled silently.
 - Destructive file or shell actions should require clear user intent.
 - Shared Flutter code must not import `dart:io` directly; use platform helpers or conditional imports.
 

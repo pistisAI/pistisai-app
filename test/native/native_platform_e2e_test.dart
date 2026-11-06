@@ -26,19 +26,6 @@ void main() {
       expect(result, isTrue);
     });
 
-    testWidgets('Get windows test', (WidgetTester tester) async {
-      const windowChannel = MethodChannel('pistisai/window_manager');
-
-      await tester.pumpWidget(MaterialApp(home: Container()));
-      await tester.pumpAndSettle();
-
-      final result = await windowChannel.invokeMethod('getWindows');
-
-      debugPrint('Windows result: $result');
-      expect(result, isA<List>());
-      expect((result as List).isNotEmpty, isTrue);
-    });
-
     testWidgets('Keypress test', (WidgetTester tester) async {
       const guiChannel = MethodChannel('pistisai/gui_automation');
 
