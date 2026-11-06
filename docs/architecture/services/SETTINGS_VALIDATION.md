@@ -8,10 +8,9 @@ The settings validation and error handling system provides:
 
 1. **SettingsValidator** - Validates all setting types with detailed error messages
 2. **SettingsError** - Typed error representation with retry capability
-3. **SettingsErrorHandler** - User-friendly error display and messaging
-4. **SettingsState** - State management for validation errors and operation status
-5. **Error Display Widgets** - Reusable UI components for showing errors
-6. **Form Helper Widgets** - Validated input widgets with inline error display
+3. **SettingsState** - State management for validation errors and operation status
+4. **Error Display Widgets** - Reusable UI components for showing errors
+5. **Form Helper Widgets** - Validated input widgets with inline error display
 
 ## Components
 
@@ -79,32 +78,6 @@ SettingsError.connectionFailed(message, originalException);
 SettingsError.importExportFailed(message, originalException);
 SettingsError.storageUnavailable(message, originalException);
 SettingsError.unknown(message, originalException);
-```
-
-### SettingsErrorHandler
-
-Located in `lib/utils/settings_error_handler.dart`
-
-Provides user-friendly error display:
-
-```dart
-// Get user-friendly message
-String getUserMessage(SettingsError error);
-
-// Get error icon
-IconData getErrorIcon(SettingsError error);
-
-// Get error color
-Color getErrorColor(SettingsError error);
-
-// Show error snackbar
-void showErrorSnackbar(BuildContext context, SettingsError error, {VoidCallback? onRetry});
-
-// Show error dialog
-Future<void> showErrorDialog(BuildContext context, SettingsError error, {VoidCallback? onRetry});
-
-// Show success message
-void showSuccessMessage(BuildContext context, String message, {Duration duration});
 ```
 
 ### SettingsState
@@ -328,13 +301,6 @@ class _MySettingsFormState extends State<MySettingsForm> {
       // Save
       await saveSettings(theme: theme, host: host, port: port);
       settingsState.setSuccess();
-
-      if (mounted) {
-        SettingsErrorHandler.showSuccessMessage(
-          context,
-          'Settings saved successfully',
-        );
-      }
     } catch (e) {
       settingsState.setError(
         SettingsError.saveFailed('Failed to save settings', originalException: e as Exception),
@@ -379,32 +345,6 @@ class _MySettingsFormState extends State<MySettingsForm> {
         );
       },
     );
-  }
-}
-```
-
-### Error Handling with Retry
-
-```dart
-void _handleSettingsError(SettingsError error) {
-  if (error.isRetryable) {
-    SettingsErrorHandler.showErrorSnackbar(
-      context,
-      error,
-      onRetry: () {
-        settingsState.incrementRetryCount();
-        if (!settingsState.isMaxRetriesExceeded()) {
-          _saveSettings();
-        } else {
-          SettingsErrorHandler.showErrorDialog(
-            context,
-            SettingsError.error('Max retries exceeded. Please try again later.'),
-          );
-        }
-      },
-    );
-  } else {
-    SettingsErrorHandler.showErrorDialog(context, error);
   }
 }
 ```
