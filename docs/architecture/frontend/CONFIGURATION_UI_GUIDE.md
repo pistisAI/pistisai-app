@@ -36,22 +36,15 @@ abstract class ProviderConfiguration {
 - **LMStudioProviderConfiguration**: LM Studio support model settings with model parameters (temperature, topP, maxTokens)
 - **OpenAICompatibleProviderConfiguration**: OpenAI-compatible support model API settings with authentication and API versioning
 
-**Validation System**
+**Validation**
 
-```dart
-class ConfigurationValidationResult {
-  final bool isValid;
-  final List<String> errors;
-  final List<String> warnings;
-}
-```
+Each provider configuration implements `isValid()` for its required fields.
 
 #### 2. Configuration Manager (`lib/services/provider_configuration_manager.dart`)
 
 **Key Features**
 
 - Persistent configuration storage using SharedPreferences
-- Configuration validation with detailed feedback
 - Import/export functionality for backup and migration
 - Preferred provider management
 - Configuration versioning and migration support
