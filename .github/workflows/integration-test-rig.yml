@@ -108,7 +108,7 @@ jobs:
           tags: pistisai-test-desktop:ci
           provenance: false
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=min
 
       - name: "🚀 Start test-desktop hub"
         run: |
