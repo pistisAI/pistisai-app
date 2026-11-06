@@ -103,9 +103,6 @@ git clone https://github.com/pistisAI/pistisai-app.git
 cd pistisai-app
 flutter pub get
 
-# The app depends on a separate shared package — get its deps too:
-cd lib/shared && flutter pub get && cd ../..
-
 # Run
 
 flutter run -d linux   # Desktop

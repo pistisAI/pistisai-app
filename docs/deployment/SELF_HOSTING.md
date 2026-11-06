@@ -12,7 +12,7 @@ Current orientation is agent-runtime-first and Tailscale-first. The setup wizard
 
 - Docker and Docker Compose
 - Node.js >=22 <27 (for backend development; CI pins Node 26 via `.nvmrc`)
-- Flutter SDK >=3.5.0 <4.0.0 (for frontend development; shared package needs Dart >=3.9.0)
+- Flutter SDK >=3.5.0 <4.0.0 (for frontend development)
 - PostgreSQL >=14
 - Redis >=7
 - Git
@@ -40,9 +40,8 @@ Run only the Flutter frontend with local SQLite storage. No backend services req
 git clone https://github.com/pistisAI/pistisai-app.git
 cd pistisai-app
 
-# Install Flutter dependencies (app + shared package)
+# Install Flutter dependencies
 flutter pub get
-cd lib/shared && flutter pub get && cd ../..
 
 # Run the app (local-first mode)
 flutter run -d linux  # or windows, macos, chrome
@@ -100,7 +99,6 @@ docker compose up -d api-backend tailscale-relay
 ```bash
 # Get Flutter dependencies
 flutter pub get
-cd lib/shared && flutter pub get && cd ../..
 
 # Point the app at your self-hosted API (see lib/config/app_config.dart)
 

@@ -47,7 +47,6 @@ The **primary Pistisai desktop install** (normally the first app installed) is t
 | Layer | Current implementation |
 | --- | --- |
 | Flutter app | `pubspec.yaml`, Dart `>=3.5.0 <4.0.0`, package `pistisai` |
-| Shared Flutter package | `lib/shared/pubspec.yaml`, Dart `>=3.9.0 <4.0.0` |
 | Local database | Drift/SQLite in `lib/database/drift_local_brain.dart` |
 | Embedded router | Shelf server in `lib/services/router_server.dart`, default port `1337` |
 | API backend | Express 5 ESM in `services/api-backend/`, Node `>=22 <27`, default port `8080` |

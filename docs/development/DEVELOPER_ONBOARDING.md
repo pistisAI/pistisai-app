@@ -31,7 +31,6 @@ This guide is the current entry point for working on Pistisai.
 
 ```bash
 flutter pub get
-cd lib/shared && flutter pub get && cd ../..
 flutter analyze lib/
 bash scripts/ci/flutter_security_basic_tests.sh
 ```

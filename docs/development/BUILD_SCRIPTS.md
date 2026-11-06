@@ -69,5 +69,5 @@ Use Flutter/`build-desktop` CI for macOS until dedicated packaging scripts land.
 ## Troubleshooting
 
 - **GitHub upload fails**: install/auth GitHub CLI (`gh auth login`).
-- **Build fails**: run `flutter doctor`; also `cd lib/shared && flutter pub get`.
+- **Build fails**: run `flutter doctor`.
 - **Wrong script name**: inventory `scripts/packaging/` and `scripts/powershell/` instead of older root-level names.
