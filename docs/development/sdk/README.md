@@ -571,4 +571,4 @@ For issues, questions, or contributions, visit:
 
 ## License
 
-MIT
+Business Source License 1.1

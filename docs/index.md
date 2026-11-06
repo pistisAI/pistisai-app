@@ -39,4 +39,4 @@ Pistisai is a Flutter desktop/web application with optional Node.js backend serv
 
 ---
 
-**Open source** — [GitHub repo](https://github.com/pistisAI/pistisai-app)
+**Business Source License 1.1** — see [LICENSE](../LICENSE). [GitHub repo](https://github.com/pistisAI/pistisai-app)

@@ -573,4 +573,4 @@ For issues, questions, or contributions:
 
 ## License
 
-MIT
+Business Source License 1.1

@@ -177,6 +177,6 @@ Publishing is handled by maintainers. Once your PR is merged, it will be publish
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the Business Source License 1.1.
 
 Thank you for contributing!

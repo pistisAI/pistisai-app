@@ -417,4 +417,4 @@ See CHANGELOG.md for API changes and updates.
 
 ## License
 
-The Pistisai API is licensed under the MIT License.
+The Pistisai API is licensed under the Business Source License 1.1.

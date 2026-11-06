@@ -22,7 +22,7 @@
     "Pistisai"
   ],
   "author": "Pistisai",
-  "license": "MIT",
+  "license": "BUSL-1.1",
   "dependencies": {
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/auto-instrumentations-node": "^0.81.2",
