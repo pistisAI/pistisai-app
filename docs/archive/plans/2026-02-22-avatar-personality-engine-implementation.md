@@ -2232,7 +2232,7 @@ flutter test
 
 ## License
 
-MIT
+Business Source License 1.1
 EOF
 ```
 

@@ -475,7 +475,7 @@ When contributing to the avatar personality system:
 
 ## License
 
-MIT License - See LICENSE file for details
+Business Source License 1.1 — see [LICENSE](../../LICENSE).
 
 ## See Also
 

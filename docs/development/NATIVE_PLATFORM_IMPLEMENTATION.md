@@ -223,7 +223,7 @@ This implementation uses:
 - **X11** - MIT/X11 license
 - **Imlib2** (optional, for advanced image handling) - BSD license
 
-All code is part of the Pistisai project and follows the same license.
+Pistisai code is licensed under the Business Source License 1.1.
 
 ---
 

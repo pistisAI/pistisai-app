@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "BUSL-1.1",
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",

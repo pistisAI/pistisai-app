@@ -71,7 +71,7 @@ name: avatar_personality
 version: 1.0.0
 description: Avatar Personality Engine for Pistisai - Manages evolving personality traits and evolution stages
 author: Pistisai
-license: MIT
+license: BUSL-1.1
 
 triggers:
   - pattern: "(what is your personality|tell me about yourself|how do you evolve)"

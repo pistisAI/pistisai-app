@@ -18,7 +18,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "BUSL-1.1",
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.1032.0",
     "@aws-sdk/client-cost-explorer": "^3.1068.0",
