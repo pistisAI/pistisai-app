@@ -48,8 +48,6 @@ import 'package:pistisai/utils/single_instance.dart';
 import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 
-// navigatorKey is now imported from config/navigator_key.dart
-
 /// Resolve the OAuth callback URL from process arguments, if present.
 ///
 /// Returns the first argument that looks like a Pistisai callback scheme
@@ -95,7 +93,6 @@ void main([List<String> args = const []]) async {
     CameraDesktopPlugin.registerWith();
   }
 
-  // Immediate logging to verify Dart entry point is reached
   // Build trigger: force new release tag
   debugPrint('----- DART MAIN START ----- v1.0.0');
 
@@ -158,7 +155,6 @@ Future<void> _runAppWithSentry() async {
 
 void _runAppCommon() {
   Future<AppBootstrapData> loadApp() async {
-    // Run the main bootstrap process
     try {
       debugPrint('[Main] Bootstrapper loading...');
       final bootstrapper = AppBootstrapper();
@@ -320,8 +316,23 @@ class _PistisaiAppState extends State<PistisaiApp> {
 
       debugPrint('[App] Building MultiProvider...');
 
-      // Add providers one by one with debug
       final providersList = <SingleChildWidget>[];
+
+      void add<T extends Object>(
+        String name,
+        SingleChildWidget Function(T value) create,
+      ) {
+        try {
+          if (di.serviceLocator.isRegistered<T>()) {
+            providersList.add(create(di.serviceLocator.get<T>()));
+            debugPrint('[App] $name added');
+          } else {
+            debugPrint('[App] $name not registered, skipping');
+          }
+        } catch (e) {
+          debugPrint('[App] Error adding $name: $e');
+        }
+      }
 
       debugPrint('[App] Adding AuthService...');
       if (di.serviceLocator.isRegistered<AuthService>()) {
@@ -334,37 +345,36 @@ class _PistisaiAppState extends State<PistisaiApp> {
       }
 
       // Add other core services needed by HomeScreen
-      _addProviderIfAvailable<StreamingChatService>(
-          providersList, 'StreamingChatService');
-      _addProviderIfAvailable<AppInitializationService>(
-          providersList, 'AppInitializationService');
-      _addProviderIfAvailable<ThemeProvider>(providersList, 'ThemeProvider');
-      _addValueProviderIfAvailable<ProviderDiscoveryService>(
-          providersList, 'ProviderDiscoveryService');
-      _addValueProviderIfAvailable<ProviderConfigurationManager>(
-          providersList, 'ProviderConfigurationManager');
-      _addProviderIfAvailable<DesktopClientDetectionService>(
-          providersList, 'DesktopClientDetectionService');
-      _addProviderIfAvailable<WebDownloadPromptService>(
-          providersList, 'WebDownloadPromptService');
-      _addProviderIfAvailable<EnhancedUserTierService>(
-          providersList, 'EnhancedUserTierService');
-      _addProviderIfAvailable<ConnectionManagerService>(
-          providersList, 'ConnectionManagerService');
-      _addProviderIfAvailable<VoiceConversationService>(
-          providersList, 'VoiceConversationService');
-      _addProviderIfAvailable<LocalVoiceInputService>(
-          providersList, 'LocalVoiceInputService');
-      _addChangeNotifierProviderIfAvailable<AutoUpdateService>(
-          providersList, 'AutoUpdateService');
-      _addProviderIfAvailable<PlatformDetectionService>(
-          providersList, 'PlatformDetectionService');
-
-      // Add Setup Wizard Service
-      _addProviderIfAvailable<SetupWizardService>(
-          providersList, 'SetupWizardService');
-      _addProviderIfAvailable<MobileConnectionService>(
-          providersList, 'MobileConnectionService');
+      add<StreamingChatService>('StreamingChatService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<AppInitializationService>('AppInitializationService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<ThemeProvider>('ThemeProvider',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<ProviderDiscoveryService>('ProviderDiscoveryService',
+          (service) => Provider.value(value: service));
+      add<ProviderConfigurationManager>('ProviderConfigurationManager',
+          (service) => Provider.value(value: service));
+      add<DesktopClientDetectionService>('DesktopClientDetectionService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<WebDownloadPromptService>('WebDownloadPromptService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<EnhancedUserTierService>('EnhancedUserTierService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<ConnectionManagerService>('ConnectionManagerService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<VoiceConversationService>('VoiceConversationService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<LocalVoiceInputService>('LocalVoiceInputService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<AutoUpdateService>('AutoUpdateService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<PlatformDetectionService>('PlatformDetectionService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<SetupWizardService>('SetupWizardService',
+          (service) => ChangeNotifierProvider.value(value: service));
+      add<MobileConnectionService>('MobileConnectionService',
+          (service) => ChangeNotifierProvider.value(value: service));
 
       debugPrint(
           '[App] Returning MultiProvider with ${providersList.length} providers');
@@ -412,7 +422,6 @@ class _PistisaiAppState extends State<PistisaiApp> {
     _attachedAuthService = authService;
     _authListenerAttached = true;
 
-    // Listen for authenticated services to load and trigger rebuild
     authService.areAuthenticatedServicesLoaded.addListener(() {
       if (authService.areAuthenticatedServicesLoaded.value && mounted) {
         debugPrint(
@@ -428,7 +437,6 @@ class _PistisaiAppState extends State<PistisaiApp> {
       }
     });
 
-    // If authenticated services are already loaded, trigger a rebuild now
     if (authService.areAuthenticatedServicesLoaded.value) {
       debugPrint(
           '[App] Authenticated services already loaded, triggering rebuild...');
@@ -440,51 +448,6 @@ class _PistisaiAppState extends State<PistisaiApp> {
           });
         }
       });
-    }
-  }
-
-  void _addProviderIfAvailable<T extends ChangeNotifier>(
-      List<SingleChildWidget> providers, String name) {
-    try {
-      if (di.serviceLocator.isRegistered<T>()) {
-        final service = di.serviceLocator.get<T>();
-        providers.add(ChangeNotifierProvider<T>.value(value: service));
-        debugPrint('[App] $name added');
-      } else {
-        debugPrint('[App] $name not registered, skipping');
-      }
-    } catch (e) {
-      debugPrint('[App] Error adding $name: $e');
-    }
-  }
-
-  void _addValueProviderIfAvailable<T extends Object>(
-      List<SingleChildWidget> providers, String name) {
-    try {
-      if (di.serviceLocator.isRegistered<T>()) {
-        final service = di.serviceLocator.get<T>();
-        providers.add(Provider<T>.value(value: service));
-        debugPrint('[App] $name added');
-      } else {
-        debugPrint('[App] $name not registered, skipping');
-      }
-    } catch (e) {
-      debugPrint('[App] Error adding $name: $e');
-    }
-  }
-
-  void _addChangeNotifierProviderIfAvailable<T extends ChangeNotifier>(
-      List<SingleChildWidget> providers, String name) {
-    try {
-      if (di.serviceLocator.isRegistered<T>()) {
-        final service = di.serviceLocator.get<T>();
-        providers.add(ChangeNotifierProvider<T>.value(value: service));
-        debugPrint('[App] $name added');
-      } else {
-        debugPrint('[App] $name not registered, skipping');
-      }
-    } catch (e) {
-      debugPrint('[App] Error adding $name: $e');
     }
   }
 }
@@ -507,8 +470,6 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
         await PlatformFileUtils.writeCallbackFile(callbackUrl);
         debugPrint('[Main] Wrote callback URL to temp file');
 
-        // Process the OAuth callback directly
-        // This completes the authentication flow
         final session = await Supabase.instance.client.auth
             .getSessionFromUrl(Uri.parse(callbackUrl));
         debugPrint(
@@ -547,7 +508,6 @@ class _AppRouterHostState extends State<_AppRouterHost> {
   void _initializeRouterWhenReady() async {
     final authService = context.read<AuthService>();
 
-    // Skip waiting for bootstrap - initialize router immediately
     debugPrint('[Router] Initializing without waiting for bootstrap');
 
     if (!mounted) return;
@@ -591,7 +551,6 @@ class _AppRouterHostState extends State<_AppRouterHost> {
         themeMode: themeProvider?.themeMode ?? ThemeMode.system,
         routerConfig: router,
         builder: (context, child) {
-          // Error fallback
           if (child == null) {
             return const Scaffold(
               body: Center(
