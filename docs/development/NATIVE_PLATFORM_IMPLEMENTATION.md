@@ -232,5 +232,4 @@ All code is part of the Pistisai project and follows the same license.
 - `lib/services/vision/region_capture_service.dart` - Flutter-side service
 - `lib/services/vision/camera_capture_service.dart` - Flutter-side service
 - `lib/services/gui_automation_service.dart` - Flutter-side service
-- `lib/services/desktop_control/window_manager_service.dart` - Flutter-side service
 - `lib/screens/settings/vision_settings_screen.dart` - UI for testing

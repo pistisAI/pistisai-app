@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:pistisai/config/app_config.dart';
 
 import 'package:pistisai/services/admin_data_flush_service.dart';
-import 'package:pistisai/services/admin_service.dart';
 import 'package:pistisai/services/app_initialization_service.dart';
 import 'package:pistisai/services/auth_service.dart';
 import 'package:pistisai/services/session_storage_service.dart';
@@ -48,7 +47,6 @@ import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/services/agent_status_service.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
 import 'package:pistisai/services/subagent_registry_service.dart';
-import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
@@ -63,13 +61,10 @@ import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
 import 'package:pistisai/services/vision/camera_capture_service.dart';
 import 'package:pistisai/services/vision/ocr_engine_service.dart';
-import 'package:pistisai/services/vision/presence_service.dart';
 import 'package:pistisai/services/voice/cloud_tts_service.dart';
 import 'package:pistisai/services/voice/hermes_voice_bridge_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
-import 'package:pistisai/services/voice/local_tts_service.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
-import 'package:pistisai/services/desktop_control/window_manager_service.dart';
 import 'package:pistisai/services/popout/popout_manager.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/logging_service.dart';
@@ -286,12 +281,6 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<LocalVoiceInputService>(
         localVoiceInputService,
-      );
-
-      // Local Piper TTS service
-      final localTtsService = LocalTtsService();
-      serviceLocator.registerSingleton<LocalTtsService>(
-        localTtsService,
       );
 
       // Start the router server in the background.
@@ -895,21 +884,7 @@ Future<void> setupAuthenticatedServices() async {
     serviceLocator
         .registerSingleton<SubagentRegistryService>(subagentRegistryService);
 
-    // Clipboard Service - Desktop clipboard operations and history
-    AppConfig.verboseLog('[ServiceLocator] Initializing ClipboardService...');
-    final clipboardService = ClipboardService();
-    try {
-      await clipboardService.initialize(localBrain);
-    } catch (e) {
-      AppConfig.verboseLog(
-          '[ServiceLocator] Warning: ClipboardService initialization failed: $e');
-    }
-    serviceLocator.registerSingleton<ClipboardService>(clipboardService);
-
     // Admin services - require authentication and admin privileges
-    final adminService = AdminService(authService: authService);
-    serviceLocator.registerSingleton<AdminService>(adminService);
-
     final adminDataFlushService =
         AdminDataFlushService(authService: authService);
     serviceLocator.registerSingleton<AdminDataFlushService>(
@@ -937,19 +912,6 @@ Future<void> setupAuthenticatedServices() async {
     final ocrEngineService = OcrEngineService();
     serviceLocator
         .registerLazySingleton<OcrEngineService>(() => ocrEngineService);
-
-    final presenceService = PresenceService(
-      cameraCaptureService: cameraCaptureService,
-    );
-    serviceLocator
-        .registerLazySingleton<PresenceService>(() => presenceService);
-
-    // Desktop control services - window management
-    AppConfig.verboseLog(
-        '[ServiceLocator] Initializing Desktop Control services...');
-    final windowManagerService = WindowManagerService();
-    serviceLocator.registerLazySingleton<WindowManagerService>(
-        () => windowManagerService);
 
     // Pop-out window manager - manages pop-out window state for Gateway sections
     AppConfig.verboseLog('[ServiceLocator] Initializing PopOutManager...');

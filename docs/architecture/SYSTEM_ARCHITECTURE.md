@@ -132,8 +132,7 @@ Voice is part of the avatar companion experience. The main app can show compact 
 | --- | --- |
 | `GuiAutomationService` | `lib/services/gui_automation_service.dart` |
 | `SystemControlService` | `lib/services/system_control_service.dart` |
-| `ClipboardService` | `lib/services/desktop_control/clipboard_service.dart` |
-| `WindowManagerService` | `lib/services/desktop_control/window_manager_service.dart` |
+| `WindowManagerService` | `lib/services/window_manager_service.dart` |
 
 ### Vision
 
