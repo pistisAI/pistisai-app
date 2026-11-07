@@ -67,7 +67,7 @@ services:
     container_name: pistisai-tailscale-relay
     environment:
       - PORT=3002
-      - JWT_SECRET=${JWT_SECRET}
+      - PISTISAI_TUNNEL_AUTH=${PISTISAI_TUNNEL_AUTH:-access}
     restart: unless-stopped
     deploy:
       resources:
@@ -129,9 +129,9 @@ services:
       - PGDATABASE=pistisai
       - PGUSER=postgres
       - PGPASSWORD=postgres
-      - SUPABASE_URL=${SUPABASE_URL:-https://bpqwsjshoqxvtdttzvbr.supabase.co}
-      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET:-your-jwt-secret}
-      - SUPABASE_AUDIENCE=authenticated
+      - CF_ACCESS_TEAM_DOMAIN=${CF_ACCESS_TEAM_DOMAIN:-pistisai.cloudflareaccess.com}
+      - CF_ACCESS_ISSUER=${CF_ACCESS_ISSUER:-https://pistisai.cloudflareaccess.com}
+      - CF_ACCESS_AUD=${CF_ACCESS_AUD:-c0134585f8067b43908572f93046917aedfb9b8d111f3ed716e3fc204e8fe7d3}
     restart: unless-stopped
     depends_on:
       database:

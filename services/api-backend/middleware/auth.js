@@ -4,26 +4,23 @@
  * Provides JWT authentication and authorization for API endpoints
  * with user ID extraction utilities.
  *
- * Migrated from Auth0 to Supabase Auth.
+ * Cloudflare Access JWTs for the pistisai.app tunnel.
  */
 
 import { AuthService } from '../auth/auth-service.js';
+import { accessSettings, extractAccessToken } from '../auth/cloudflare-access-jwt.js';
 import logger from '../logger.js';
 
-// JWT configuration - Supabase Auth
-const SUPABASE_URL =
-  process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
-const SUPABASE_JWKS_URI =
-  process.env.SUPABASE_JWKS_URI ||
-  `${SUPABASE_URL}/auth/v1/.well-known/jwks.json`;
+const access = accessSettings();
 
 let authService = null;
 
 function getAuthService() {
   if (!authService) {
     authService = new AuthService({
-      SUPABASE_URL,
-      SUPABASE_JWKS_URI,
+      CF_ACCESS_ISSUER: access.issuer,
+      CF_ACCESS_JWKS_URI: access.jwksUrl,
+      CF_ACCESS_AUD: access.audience,
     });
   }
   return authService;
@@ -34,15 +31,11 @@ function getAuthService() {
  */
 export const authenticateJWT = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization || req.headers.Authorization;
-    const token =
-      authHeader && authHeader.startsWith('Bearer ')
-        ? authHeader.substring(7)
-        : null;
+    const token = extractAccessToken(req.headers);
 
     if (!token) {
       return res.status(401).json({
-        error: 'Authorization header missing or invalid',
+        error: 'Cloudflare Access token missing',
         code: 'AUTH_HEADER_MISSING',
       });
     }
@@ -54,9 +47,9 @@ export const authenticateJWT = async (req, res, next) => {
       req.auth = {
         token: service.devBypassToken,
         payload: {
-          iss: `${SUPABASE_URL}/auth/v1`,
+          iss: access.issuer,
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: access.audience,
           email: 'dev@pistisai.app',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',
@@ -244,9 +237,9 @@ export const optionalAuth = async (req, res, next) => {
       req.auth = {
         token: service.devBypassToken,
         payload: {
-          iss: `${SUPABASE_URL}/auth/v1`,
+          iss: access.issuer,
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: access.audience,
           email: 'dev@pistisai.app',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',

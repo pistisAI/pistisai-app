@@ -234,6 +234,10 @@ jobs:
         working-directory: .
         run: bash scripts/tests/test_no_hardcoded_dev_bypass_token.sh
 
+      - name: "Access relay runtime smoke"
+        working-directory: .
+        run: bash scripts/ci/access_relay_smoke.sh
+
       - name: "🔒 npm run test:ci:security"
         run: npm run test:ci:security
 

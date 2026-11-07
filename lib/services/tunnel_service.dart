@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import '../auth/providers/cloudflare_access_auth_provider.dart';
 import '../config/app_config.dart';
 import '../models/tunnel_config.dart';
 import '../models/tunnel_state.dart';
@@ -212,8 +213,11 @@ class TunnelService extends ChangeNotifier {
       final webSocket = await WebSocket.connect(
         wsUrl.toString(),
         headers: {
-          'Authorization': 'Bearer ${config.authToken}',
           'X-Tunnel-Test': 'true',
+          ...tunnelAccessHeaders(
+            customerNetwork: false,
+            accessToken: config.authToken,
+          ),
         },
       );
 

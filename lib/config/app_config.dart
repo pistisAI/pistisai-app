@@ -17,18 +17,9 @@ class AppConfig {
   static const String githubReleasesUrl =
       'https://github.com/pistisAI/pistisai-app/releases/latest';
 
-  // Configured Authentication Provider
-  static const AuthProviderType authProvider = AuthProviderType.supabase;
-
-  // Supabase Configuration
-  static const String supabaseUrl = 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
-  // SECURITY: key removed from source — must be provided at build time:
-  //   flutter run --dart-define=SUPABASE_ANON_KEY=your_key
-  //   flutter build --dart-define=SUPABASE_ANON_KEY=your_key
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: '',
-  );
+  // Tunnel sign-in uses Cloudflare Access. Local use does not.
+  static const AuthProviderType authProvider =
+      AuthProviderType.cloudflareAccess;
 
   // Sentry Configuration
   // Override at compile time: flutter build --dart-define=SENTRY_DSN=your_dsn
@@ -271,7 +262,7 @@ class AppConfig {
 }
 
 enum AuthProviderType {
-  supabase,
+  cloudflareAccess,
   none,
 }
 

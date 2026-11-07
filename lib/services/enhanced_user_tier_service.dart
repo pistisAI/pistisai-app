@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum UserTier {
   free,
   premium,
+  business,
   enterprise,
 }
 
@@ -83,6 +84,7 @@ class EnhancedUserTierService extends ChangeNotifier {
 
   List<String> get tierBenefits {
     switch (_currentTier) {
+      case UserTier.business:
       case UserTier.enterprise:
         return [
           'Unlimited local models',
@@ -105,6 +107,7 @@ class EnhancedUserTierService extends ChangeNotifier {
   List<String> get tierLimitations {
     switch (_currentTier) {
       case UserTier.enterprise:
+      case UserTier.business:
       case UserTier.premium:
         return [];
       case UserTier.free:

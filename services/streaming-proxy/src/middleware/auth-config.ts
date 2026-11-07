@@ -1,12 +1,14 @@
 /**
- * Authentication Configuration
- * Centralized configuration for authentication middleware (Supabase)
+ * Authentication configuration for Cloudflare Access.
+ * Defaults are the public pistisai.app tunnel application. Override with
+ * CF_ACCESS_* env vars. No secrets.
  */
 
 export interface AuthConfig {
-  supabase: {
+  access: {
     jwksUri: string;
     audience: string;
+    issuer: string;
   };
   cache: {
     validationDuration: number; // milliseconds
@@ -27,29 +29,20 @@ export interface AuthConfig {
  * Load authentication configuration from environment variables
  */
 export function loadAuthConfig(): AuthConfig {
-  const supabaseAudience = process.env.SUPABASE_AUDIENCE || 'authenticated';
-  const supabaseUrl = process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
-
-  // Derive JWKS URI with no hardcoded fallback
-  const supabaseJwksUri =
-    process.env.SUPABASE_JWKS_URI ||
-    `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
-
-  if (!supabaseJwksUri) {
-    const missing = [];
-    if (!supabaseAudience) missing.push('SUPABASE_AUDIENCE');
-    if (!supabaseJwksUri) missing.push('SUPABASE_JWKS_URI (or SUPABASE_URL)');
-    throw new Error(
-      `CRITICAL: Missing Supabase configuration: ${missing.join(
-        ', '
-      )}. Zero-fallback policy in effect.`
-    );
-  }
+  const audience =
+    process.env.CF_ACCESS_AUD ||
+    'c0134585f8067b43908572f93046917aedfb9b8d111f3ed716e3fc204e8fe7d3';
+  const issuer =
+    process.env.CF_ACCESS_ISSUER || 'https://pistisai.cloudflareaccess.com';
+  const jwksUri =
+    process.env.CF_ACCESS_JWKS_URL ||
+    'https://pistisai.cloudflareaccess.com/cdn-cgi/access/certs';
 
   return {
-    supabase: {
-      jwksUri: supabaseJwksUri,
-      audience: supabaseAudience,
+    access: {
+      jwksUri,
+      audience,
+      issuer,
     },
     cache: {
       validationDuration: parseInt(process.env.AUTH_CACHE_DURATION || '300000'), // 5 minutes

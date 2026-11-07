@@ -25,7 +25,6 @@ dependencies:
   # Authentication
   provider: ^6.1.2
   jwt_decoder: ^2.0.1
-  supabase_flutter: ^2.0.0
   shared_preferences: ^2.5.4
 
   # Database - Local Brain
@@ -164,6 +163,9 @@ dependency_overrides:
   # (a dependency of this path package) installs them before that hook runs.
   cnativeapi:
     path: tool/cnativeapi
+  # Keep nativeapi in lockstep with the vendored cnativeapi 0.5.2 bindings.
+  nativeapi: 0.5.2
+  nativeapi_flutter: 0.5.2
 
 flutter:
   uses-material-design: true

@@ -11,7 +11,7 @@ import '../services/platform_detection_service.dart';
 import '../widgets/auth_debug_panel.dart'
     if (dart.library.io) '../widgets/auth_debug_panel_stub.dart';
 
-/// Modern login screen with Supabase integration and unified theming
+/// Sign-in for the pistisai.app tunnel. Local use does not require it.
 ///
 /// Requirements:
 /// - 7.1: Apply unified theme system to all UI elements
@@ -285,14 +285,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                             MainAxisAlignment.center,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(
-                                              Icons.cloud_queue, size: 20),
+                                          const Icon(Icons.cloud_queue,
+                                              size: 20),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Connect to Cloud Relay',
+                                            'Sign in to sync devices',
                                             style: TextStyle(
-                                              fontSize:
-                                                  isMobile ? 16.0 : 18.0,
+                                              fontSize: isMobile ? 16.0 : 18.0,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
@@ -311,26 +310,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           const SizedBox(height: 8.0),
 
-                           TextButton(
-                             onPressed: _isLoading
-                                 ? null
-                                 : () async {
-                                     final authService = context.read<AuthService>();
-                                     setState(() => _isLoading = true);
-                                     try {
-                                       await authService.loginMockDeveloper();
-                                       if (!context.mounted) return;
-                                       context.go('/');
-                                     } catch (e) {
-                                       debugPrint('Bypass failed: $e');
-                                     } finally {
-                                       if (mounted) {
-                                         setState(() => _isLoading = false);
-                                       }
-                                     }
-                                   },
+                          TextButton(
+                            onPressed: _isLoading
+                                ? null
+                                : () async {
+                                    final authService =
+                                        context.read<AuthService>();
+                                    setState(() => _isLoading = true);
+                                    try {
+                                      await authService.loginMockDeveloper();
+                                      if (!context.mounted) return;
+                                      context.go('/');
+                                    } catch (e) {
+                                      debugPrint('Bypass failed: $e');
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() => _isLoading = false);
+                                      }
+                                    }
+                                  },
                             style: TextButton.styleFrom(
-                              foregroundColor: AppTheme.colorsOf(context).warning,
+                              foregroundColor:
+                                  AppTheme.colorsOf(context).warning,
                             ),
                             child: const Text('Bypass to Test User (Debug)'),
                           ),

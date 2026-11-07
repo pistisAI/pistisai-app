@@ -14,7 +14,7 @@ import 'package:pistisai/services/session_storage_service.dart';
 import 'package:pistisai/services/connection_manager_service.dart'
     hide BackendType;
 import 'package:pistisai/auth/auth_provider.dart';
-import 'package:pistisai/auth/providers/supabase_auth_provider.dart';
+import 'package:pistisai/auth/providers/cloudflare_access_auth_provider.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
 import 'package:pistisai/services/enhanced_user_tier_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
@@ -311,20 +311,18 @@ Future<void> setupCoreServices() async {
       // Check if we're on web first
       if (kIsWeb) {
         AppConfig.verboseLog(
-            '[Locator] ✓ Web platform detected, using SupabaseAuthProvider');
-        authProvider = SupabaseAuthProvider();
+            '[Locator] ✓ Web platform detected, using Cloudflare Access');
+        authProvider = CloudflareAccessAuthProvider();
       } else {
-        // Use SupabaseAuthProvider for all desktop platforms
         AppConfig.verboseLog(
-            '[Locator] Using SupabaseAuthProvider for desktop');
-        authProvider = SupabaseAuthProvider();
+            '[Locator] Using Cloudflare Access for desktop tunnel sign-in');
+        authProvider = CloudflareAccessAuthProvider();
       }
     } catch (e, stack) {
       AppConfig.verboseLog('[Locator] ERROR during platform detection: $e');
       AppConfig.verboseLog('[Locator] Stack trace: $stack');
-      // Fallback to Supabase if platform detection fails
-      AppConfig.verboseLog('[Locator] Falling back to SupabaseAuthProvider');
-      authProvider = SupabaseAuthProvider();
+      AppConfig.verboseLog('[Locator] Falling back to Cloudflare Access');
+      authProvider = CloudflareAccessAuthProvider();
     }
 
     AppConfig.verboseLog(
@@ -598,7 +596,8 @@ Future<void> _registerWebFallbackCoreServices() async {
   }
 
   if (!serviceLocator.isRegistered<AuthProvider>()) {
-    serviceLocator.registerSingleton<AuthProvider>(SupabaseAuthProvider());
+    serviceLocator
+        .registerSingleton<AuthProvider>(CloudflareAccessAuthProvider());
   }
 
   if (!serviceLocator.isRegistered<AuthService>()) {

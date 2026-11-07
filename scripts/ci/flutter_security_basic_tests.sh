@@ -6,6 +6,7 @@ cd "$(dirname "$0")/../.."
 
 flutter test \
   test/smoke/ \
+  test/auth/ \
   test/config/ \
   test/services/onboarding/mobile_connection_service_test.dart \
   test/screens/onboarding/mobile_connection_screen_test.dart \

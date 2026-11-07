@@ -9,6 +9,7 @@ import crypto from 'crypto';
 import jwksClient from 'jwks-rsa';
 import { TunnelLogger } from '../utils/logger.js';
 import { DatabaseMigratorPG } from '../database/migrate-pg.js';
+import { accessSettings } from './cloudflare-access-jwt.js';
 
 /**
  * Authentication service with JWT integration
@@ -16,11 +17,11 @@ import { DatabaseMigratorPG } from '../database/migrate-pg.js';
  */
 export class AuthService {
   constructor(config) {
+    const access = accessSettings();
     this.config = {
-      SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
-      SUPABASE_JWKS_URI:
-        process.env.SUPABASE_JWKS_URI ||
-        `${process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co'}/auth/v1/.well-known/jwks.json`,
+      CF_ACCESS_ISSUER: access.issuer,
+      CF_ACCESS_JWKS_URI: access.jwksUrl,
+      CF_ACCESS_AUD: access.audience,
       SESSION_TIMEOUT: parseInt(process.env.SESSION_TIMEOUT) || 3600000, // 1 hour
       MAX_SESSIONS_PER_USER: parseInt(process.env.MAX_SESSIONS_PER_USER) || 5,
       ...config,
@@ -53,9 +54,9 @@ export class AuthService {
 
     this.initialized = false;
 
-    // Initialize JWKS client for Supabase
+    // Initialize JWKS client for Cloudflare Access (RS256).
     this.jwksClient = jwksClient({
-      jwksUri: this.config.SUPABASE_JWKS_URI,
+      jwksUri: this.config.CF_ACCESS_JWKS_URI,
       cache: true,
       rateLimit: true,
       jwksRequestsPerMinute: 5,
@@ -88,7 +89,7 @@ export class AuthService {
       this.initialized = true;
 
       this.logger.info(
-        'Authentication service initialized (Supabase ES256)',
+        'Authentication service initialized (Cloudflare Access RS256)',
       );
 
       this.startSessionCleanup();
@@ -209,8 +210,9 @@ export class AuthService {
   }
 
   /**
-   * Validate Supabase JWT token
-   * Supabase JWTs: iss = {supabase_url}/auth/v1, aud = "authenticated", sub = user UUID
+   * Validate a Cloudflare Access JWT.
+   * iss is the team issuer, aud is the api.pistisai.app application tag,
+   * and email is the Access identity claim.
    */
   async validateToken(token, req = {}, preValidatedPayload = null) {
     try {
@@ -222,9 +224,9 @@ export class AuthService {
       } else if (this.isDevBypassToken(token)) {
         this.logger.info('Using dev bypass token');
         payload = {
-          iss: `${this.config.SUPABASE_URL}/auth/v1`,
+          iss: this.config.CF_ACCESS_ISSUER,
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',
@@ -248,7 +250,11 @@ export class AuthService {
           jwt.verify(
             token,
             this.getKey.bind(this),
-            { algorithms: ['ES256'] },
+            {
+              algorithms: ['RS256'],
+              audience: this.config.CF_ACCESS_AUD,
+              issuer: this.config.CF_ACCESS_ISSUER,
+            },
             (err, decodedToken) => {
               if (err) {
                 reject(err);
@@ -301,9 +307,9 @@ export class AuthService {
       if (this.isDevBypassToken(token)) {
         this.logger.info('Bypassing WebSocket token verification for dev token');
         return {
-          iss: `${this.config.SUPABASE_URL}/auth/v1`,
+          iss: this.config.CF_ACCESS_ISSUER,
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
           name: 'Christopher (Dev)',
           nickname: 'rightguy',
@@ -325,7 +331,11 @@ export class AuthService {
         jwt.verify(
           token,
           this.getKey.bind(this),
-          { algorithms: ['ES256'] },
+          {
+            algorithms: ['RS256'],
+            audience: this.config.CF_ACCESS_AUD,
+            issuer: this.config.CF_ACCESS_ISSUER,
+          },
           (err, decodedToken) => {
             if (err) {
               reject(err);

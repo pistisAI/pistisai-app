@@ -61,8 +61,9 @@ validateAuthConfig(authConfig);
 
 // Initialize Supabase Validator
 const supabaseValidator = new SupabaseJWTValidator(
-  authConfig.supabase.jwksUri,
-  authConfig.supabase.audience
+  authConfig.access.jwksUri,
+  authConfig.access.audience,
+  authConfig.access.issuer,
 );
 
 // ... (pool and rate limiter initialization)

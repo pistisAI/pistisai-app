@@ -10,6 +10,7 @@ import {
   ErrorResponseBuilder,
 } from '../utils/logger.js';
 import { AuthService } from '../auth/auth-service.js';
+import { extractAccessToken } from '../auth/cloudflare-access-jwt.js';
 import { addTierInfo, requireFeature } from '../middleware/tier-check.js';
 
 /**
@@ -31,30 +32,30 @@ export function createTunnelRoutes(
 
   // Use provided auth service or create a new one (fallback)
   if (!authService) {
-    authService = new AuthService({
-      SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
-    });
+    authService = new AuthService();
   }
 
   async function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = extractAccessToken(req.headers);
 
     if (!token) {
       return res
         .status(401)
         .json(
           ErrorResponseBuilder.authenticationError(
-            'Bearer token is required.',
+            'Cloudflare Access token is required.',
             ERROR_CODES.AUTH_TOKEN_MISSING,
           ),
         );
     }
 
     try {
-      const payload = await authService.validateToken(token);
-      req.userId = payload.sub;
-      req.user = payload; // Also set req.user for addTierInfo middleware
+      const result = await authService.validateToken(token, req);
+      if (!result.valid) {
+        throw new Error(result.error || 'Invalid token');
+      }
+      req.userId = result.payload.sub;
+      req.user = result.payload;
       next();
     } catch (error) {
       tunnelLogger.logSecurity('auth_token_invalid', null, {

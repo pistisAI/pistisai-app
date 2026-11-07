@@ -15,9 +15,11 @@ interface JWTPayload {
 export class SupabaseJWTValidator implements JWTValidator {
   private readonly client: jwksClient.JwksClient;
   private readonly audience: string;
+  private readonly issuer: string;
 
-  constructor(jwksUri: string, audience: string) {
+  constructor(jwksUri: string, audience: string, issuer: string) {
     this.audience = audience;
+    this.issuer = issuer;
     this.client = jwksClient({
       jwksUri,
       cache: true,
@@ -42,7 +44,11 @@ export class SupabaseJWTValidator implements JWTValidator {
       jwt.verify(
         token,
         this.getKey.bind(this),
-        { algorithms: ['ES256'] },
+        {
+          algorithms: ['RS256'],
+          audience: this.audience,
+          issuer: this.issuer,
+        },
         (err: jwt.VerifyErrors | null, decoded: string | jwt.JwtPayload | undefined) => {
           if (err) {
             if (err instanceof jwt.TokenExpiredError) {
@@ -64,7 +70,11 @@ export class SupabaseJWTValidator implements JWTValidator {
 
           const payload = decoded as JWTPayload;
 
-          if (payload.aud !== this.audience) {
+          const aud = payload.aud;
+          const audienceOk =
+            aud === this.audience ||
+            (Array.isArray(aud) && aud.includes(this.audience));
+          if (!audienceOk) {
             resolve({
               valid: false,
               error: `Invalid audience: expected ${this.audience}, got ${payload.aud}`,
