@@ -931,21 +931,21 @@ packages:
     source: hosted
     version: "0.19.5"
   nativeapi:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: nativeapi
-      sha256: "87b0912bde3c9b7e0649c5e12047baf2bf179d3844a9b984313e897872120267"
+      sha256: c4625e81f5ce2f4a9044c0ec1bdb38355119ffcf89e24eb20ae9fc5027a01e59
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.8"
+    version: "0.5.2"
   nativeapi_flutter:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: nativeapi_flutter
-      sha256: b62a42b8a86538119ba67b8eab8328eb89d69ac4a2142d623d08ac163faa9cd8
+      sha256: "4feaa68cb5c4fc3b2eeaee1a25e56e2d092178e1c59516d9db5dd34940dcf36c"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.8"
+    version: "0.5.2"
   nested:
     dependency: transitive
     description:
