@@ -499,6 +499,18 @@ Future<void> setupCoreServices() async {
     );
     serviceLocator.registerSingleton<SetupWizardService>(setupWizardService);
 
+    // Required by AppRouter on desktop and mobile. Hermes may be absent on
+    // degraded/web startup paths — the service accepts a null streamer.
+    final mobileConnectionService = MobileConnectionService(
+      settings: settingsPreferenceService,
+      hermesStreamingService:
+          serviceLocator.isRegistered<HermesStreamingService>()
+              ? serviceLocator.get<HermesStreamingService>()
+              : null,
+    );
+    serviceLocator
+        .registerSingleton<MobileConnectionService>(mobileConnectionService);
+
     // Web download prompt service - can be created but won't do heavy work until auth
     final webDownloadPromptService = WebDownloadPromptService(
       authService: authService,

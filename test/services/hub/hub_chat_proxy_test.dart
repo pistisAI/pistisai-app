@@ -46,6 +46,54 @@ void main() {
     await hermes.close(force: true);
   });
 
+  test('broker reads the generated pistisai session when Hermes lists one',
+      () async {
+    final hermes = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    final paths = <String>[];
+    const generated = '20261104_190859_119a1e2b';
+    hermes.listen((HttpRequest request) async {
+      paths.add(request.uri.path);
+      request.response.headers.contentType = ContentType.json;
+      if (request.uri.path == '/api/sessions') {
+        request.response.write(jsonEncode(<String, Object>{
+          'data': <Map<String, Object>>[
+            <String, Object>{
+              'id': generated,
+              'source': 'pistisai',
+              'last_active': 10,
+            },
+          ],
+        }));
+      } else if (request.uri.path == '/api/sessions/$generated/messages') {
+        request.response.write(jsonEncode(<String, Object>{
+          'data': <Map<String, Object>>[],
+        }));
+      } else {
+        request.response.statusCode = HttpStatus.notFound;
+        request.response.write('{"error":"unexpected"}');
+      }
+      await request.response.close();
+    });
+
+    final broker = HermesHubBroker(
+      hermesBaseUrl: 'http://127.0.0.1:${hermes.port}',
+      hermesApiKey: 'hub-hermes-key',
+    );
+    final result = await broker.forwardSessionMessages(
+      sessionKey: hermesSessionKeyForUiId('pistisai'),
+    );
+    expect(result.statusCode, HttpStatus.ok);
+    expect(paths, contains('/api/sessions'));
+    expect(paths, contains('/api/sessions/$generated/messages'));
+    expect(
+      paths.any((path) => path.contains('agent:main')),
+      isFalse,
+    );
+
+    broker.close();
+    await hermes.close(force: true);
+  });
+
   group('hub discovery and proxied chat', () {
     HttpServer? hermes;
     RouterServer? hub;
@@ -240,17 +288,25 @@ void main() {
       expect(ok.statusCode, HttpStatus.ok);
       final dynamic transcript = jsonDecode(ok.body);
       expect(transcript['messages'], isA<List>());
-      expect(hermesRequests.single, isNot(contains('%253A')));
+      final transcriptReads =
+          hermesRequests.where((entry) => entry.contains('/messages')).toList();
+      expect(transcriptReads, hasLength(1));
+      expect(transcriptReads.single, isNot(contains('%253A')));
       expect(
-        hermesRequests.single.contains('agent:main:pistisai:dm:pistisai') ||
-            hermesRequests.single.contains(
+        transcriptReads.single.contains('agent:main:pistisai:dm:pistisai') ||
+            transcriptReads.single.contains(
               'agent%3Amain%3Apistisai%3Adm%3Apistisai',
             ),
         isTrue,
       );
+      expect(
+        hermesRequests,
+        contains('GET /api/sessions'),
+      );
 
-      expect(upstreamAuthorization.single, 'Bearer hub-hermes-key');
-      expect(upstreamQueries.single, 'order=oldest&limit=500');
+      expect(upstreamAuthorization, everyElement('Bearer hub-hermes-key'));
+      expect(upstreamQueries, contains('order=oldest&limit=500'));
+      expect(upstreamQueries, contains('source=pistisai&limit=20'));
 
       final missing = await http.get(
         hermesSessionMessagesUri(hubUri!.toString(), sessionKey),
@@ -303,8 +359,9 @@ void main() {
         },
       );
       expect(kept.statusCode, HttpStatus.ok);
-      expect(upstreamQueries.single, 'order=oldest&limit=500');
-      expect(upstreamAuthorization.single, 'Bearer hub-hermes-key');
+      expect(upstreamQueries, contains('order=oldest&limit=500'));
+      expect(upstreamQueries, isNot(contains('order=newest&limit=1')));
+      expect(upstreamAuthorization, everyElement('Bearer hub-hermes-key'));
     });
 
     test('main-channel is read as the Pistisai DM session key', () async {
@@ -313,9 +370,12 @@ void main() {
         headers: {'Authorization': 'Bearer router-secret'},
       );
       expect(shell.statusCode, HttpStatus.ok);
+      final transcriptReads =
+          hermesRequests.where((entry) => entry.contains('/messages')).toList();
+      expect(transcriptReads, hasLength(1));
       expect(
-        hermesRequests.single.contains('agent:main:pistisai:dm:pistisai') ||
-            hermesRequests.single.contains(
+        transcriptReads.single.contains('agent:main:pistisai:dm:pistisai') ||
+            transcriptReads.single.contains(
               'agent%3Amain%3Apistisai%3Adm%3Apistisai',
             ),
         isTrue,

@@ -615,17 +615,30 @@ class _AppRouterHostState extends State<_AppRouterHost> {
   }
 
   void _initializeRouter(AuthService authService) {
-    final setupWizardService = di.serviceLocator.get<SetupWizardService>();
-    final mobileConnectionService =
-        di.serviceLocator.get<MobileConnectionService>();
-    setState(() {
-      _router = AppRouter.createRouter(
-        navigatorKey: navigatorKey,
-        authService: authService,
-        setupWizardService: setupWizardService,
-        mobileConnectionService: mobileConnectionService,
-      );
-    });
+    try {
+      final setupWizardService = di.serviceLocator.get<SetupWizardService>();
+      if (!di.serviceLocator.isRegistered<MobileConnectionService>()) {
+        debugPrint(
+          '[Router] MobileConnectionService missing — registering fallback',
+        );
+        di.serviceLocator.registerSingleton<MobileConnectionService>(
+          MobileConnectionService(),
+        );
+      }
+      final mobileConnectionService =
+          di.serviceLocator.get<MobileConnectionService>();
+      setState(() {
+        _router = AppRouter.createRouter(
+          navigatorKey: navigatorKey,
+          authService: authService,
+          setupWizardService: setupWizardService,
+          mobileConnectionService: mobileConnectionService,
+        );
+      });
+    } catch (e, st) {
+      debugPrint('[Router] Failed to initialize router: $e');
+      debugPrint('[Router] $st');
+    }
   }
 }
 // Deployment trigger 1770824833

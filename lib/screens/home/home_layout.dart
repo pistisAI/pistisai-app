@@ -98,7 +98,7 @@ class _ChatPaneState extends State<_ChatPane> {
   }
 
   void _ensureChannelExists() {
-    // Storage load creates or restores the single main-channel session.
+    // Storage load creates or restores the single pistisai platform session.
     // Do not call resetContext() here — that wipes persisted history.
     try {
       context.read<StreamingChatService>();
@@ -277,10 +277,14 @@ class _ChatPaneState extends State<_ChatPane> {
       state = AgentState.idle;
     }
 
-    return AgentAvatar(
-      state: state,
-      size: 32,
-      showGlow: false,
+    return SizedBox(
+      width: 32,
+      height: 32,
+      child: AgentAvatar(
+        state: state,
+        size: 32,
+        showGlow: false,
+      ),
     );
   }
 

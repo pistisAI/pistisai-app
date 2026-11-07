@@ -71,17 +71,59 @@ class HermesHubBroker {
   /// `GET /api/sessions/{session_key}/messages`.
   ///
   /// [sessionKey] must already be the allowlisted Pistisai DM key
-  /// (`agent:main:pistisai:dm:pistisai`). It is percent-encoded as one path
-  /// segment. The transcript query is fixed; caller query strings are not
-  /// copied.
+  /// (`agent:main:pistisai:dm:pistisai`). Hermes stores that DM under a
+  /// generated `source=pistisai` session id, which is not addressable as the
+  /// gateway key, so the hub resolves that id first and falls back to
+  /// [sessionKey] when the list is empty. The transcript query is fixed;
+  /// caller query strings are not copied.
   Future<HubForwardResult> forwardSessionMessages({
     required String sessionKey,
   }) async {
-    final uri = hermesSessionMessagesUri(hermesBaseUrl, sessionKey);
+    final resolved = await _resolvePistisaiSessionId();
+    final target =
+        (resolved == null || resolved.isEmpty) ? sessionKey : resolved;
+    final uri = hermesSessionMessagesUri(hermesBaseUrl, target);
     final response = await _client
         .get(uri, headers: _headers())
         .timeout(hermesHubUpstreamTimeout);
     return _result(response);
+  }
+
+  /// Most recently active `source=pistisai` session, if Hermes lists one.
+  Future<String?> _resolvePistisaiSessionId() async {
+    try {
+      final response = await _client
+          .get(
+            Uri.parse('$hermesBaseUrl/api/sessions?source=pistisai&limit=20'),
+            headers: _headers(),
+          )
+          .timeout(hermesHubUpstreamTimeout);
+      if (response.statusCode != 200) return null;
+      final decoded = jsonDecode(response.body);
+      final data = decoded is Map ? decoded['data'] : null;
+      if (data is! List) return null;
+      String? bestId;
+      var bestActive = double.negativeInfinity;
+      for (final row in data) {
+        if (row is! Map) continue;
+        if (row['source'] != null && row['source'] != 'pistisai') continue;
+        if (row['archived'] == true || row['is_internal_child'] == true) {
+          continue;
+        }
+        final id = row['id'];
+        if (id is! String || id.isEmpty) continue;
+        final active = row['last_active'] ?? row['started_at'];
+        final ts =
+            active is num ? active.toDouble() : double.tryParse('$active') ?? 0;
+        if (ts > bestActive) {
+          bestActive = ts;
+          bestId = id;
+        }
+      }
+      return bestId;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Upstream identity is the hub's discovered Hermes key only.

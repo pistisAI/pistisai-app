@@ -33,10 +33,14 @@ class Conversation {
     );
   }
 
-  /// Local shell for the one shared desktop conversation.
+  /// Stable UI + Hermes chat id for the Pistisai platform channel.
   ///
   /// This id is not the Hermes session key. Transcript reads use
-  /// `agent:main:pistisai:dm:<chat_id>`.
+  /// `agent:main:pistisai:dm:pistisai`.
+  static const String pistisaiChannelId = 'pistisai';
+
+  /// The one harness conversation. Every device uses this id as the session
+  /// id, then loads the transcript from the harness.
   ///
   /// [agentName] is the companion the user set up — never a hardcoded
   /// personal name like "Zoid Maltek".
@@ -44,7 +48,7 @@ class Conversation {
     final now = DateTime.now();
     final name = (agentName ?? '').trim();
     return Conversation(
-      id: 'main-channel',
+      id: pistisaiChannelId,
       title: name.isEmpty ? 'Agent' : name,
       messages: [],
       createdAt: now,

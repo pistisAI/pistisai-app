@@ -7,10 +7,10 @@ import 'package:http/http.dart' as http;
 
 import '../../config/app_config.dart';
 import '../../models/agent_event.dart';
+import '../../models/conversation.dart';
 import '../../models/message.dart';
 import '../../models/streaming_message.dart';
 import '../hub/client_connectivity.dart';
-import '../hub/hermes_hub_broker.dart';
 import '../streaming_service.dart';
 import 'hermes_session_key.dart';
 import 'hermes_session_transcript.dart';
@@ -22,40 +22,30 @@ import '../../utils/logger.dart';
 /// comes back as a proxy status instead of a client timeout.
 const Duration hermesHubPlatformSendTimeout = Duration(seconds: 12);
 
-/// Streaming service implementation for Hermes Agent API server.
+/// Streaming service for the first-class Hermes **pistisai** messaging platform.
 ///
-/// Connects to the Hermes built-in OpenAI-compatible HTTP API
-/// (default: http://127.0.0.1:8642) and exposes streaming chat
-/// through the [StreamingService] interface used by [StreamingChatService].
+/// The primary desktop hub dials the local Hermes gateway
+/// (default: http://127.0.0.1:8642). Web, mobile, and secondary desktops
+/// attach to that hub (`:1337`) and never open the gateway themselves.
 ///
-/// **Primary mode:** Uses `/v1/runs` + `/v1/runs/{run_id}/events` for
-/// full agent lifecycle events (tool calls, reasoning, structured completion).
-/// **Fallback mode:** Uses `/v1/chat/completions` SSE for text-only streaming.
+/// Chat goes through the pistisai platform only:
+/// - POST `/api/pistisai/messages` — inbound user turn (`platform: pistisai`)
+/// - GET  `/api/sessions/{id}/messages` — shared transcript / reply poll
+/// - GET  `/v1/models`, `/health` — discovery and readiness on the gateway
 ///
-/// Endpoints used:
-/// - POST /v1/runs               — start an agent run (returns run_id)
-/// - GET  /v1/runs/{run_id}/events — SSE stream of agent lifecycle events
-/// - POST /v1/chat/completions   — fallback text-only streaming
-/// - GET  /v1/models              — list available models
-/// - GET  /health                 — health check
-/// - POST /api/pistisai/messages  — platform chat id, not the session key
-/// - GET  /api/sessions/{key}/messages — gateway session key transcript
+/// There is no generic `api_server` / `/v1/runs` chat path. Hub clients probe
+/// `GET /api/pistisai/hub` instead of the router's `/health` or `/v1/models`.
 class HermesStreamingService extends StreamingService {
   String _baseUrl;
   final String? _apiKey;
   ClientInstallRole _role;
 
-  /// Non-primary installs talk to the hub. Live `/v1/runs` stays on the
-  /// primary desktop; the hub proxies platform send and session sync.
+  /// Non-primary installs talk to the hub. The hub proxies platform send and
+  /// session sync. Live reply polling stays on the primary desktop.
   bool _viaHub = false;
 
   /// Set when a non-primary install was pointed at a Hermes gateway URL.
   bool _refusedDirectHermes = false;
-
-  /// Gateway session key learned from a 2xx platform response.
-  ///
-  /// Never set to the short chat id, including when Hermes returns 409.
-  String? _boundGatewaySessionKey;
 
   /// HTTP client — kept alive for connection pooling.
   http.Client? _client;
@@ -75,15 +65,21 @@ class HermesStreamingService extends StreamingService {
   final StreamController<AgentEvent> _agentEventController =
       StreamController<AgentEvent>.broadcast();
 
-  /// Whether to use the full agent runs API (vs text-only chat completions).
-  /// Defaults to true for rich agent integration.
-  /// This flag resets to true on app restart — transient failures must not
-  /// permanently disable session-bound agent runs.
-  bool _useAgentRuns = true;
+  /// Hermes session ids keyed by the app conversation id (`pistisai`).
+  final Map<String, String> _runtimeSessionsByConversation = {};
 
-  /// Re-enable agent runs mode after a transient failure.
-  /// Call from connection recovery logic.
-  void enableAgentRuns() => _useAgentRuns = true;
+  /// Hermes session currently bound to [conversationId], if any.
+  String? runtimeSessionIdFor(String conversationId) =>
+      _runtimeSessionsByConversation[conversationId];
+
+  void _bindRuntimeSession(String conversationId, String? sessionId) {
+    final trimmed = sessionId?.trim();
+    if (trimmed == null || trimmed.isEmpty) return;
+    _runtimeSessionsByConversation[conversationId] = trimmed;
+  }
+
+  String _sessionForConversation(String conversationId) =>
+      _runtimeSessionsByConversation[conversationId] ?? conversationId;
 
   HermesStreamingService({
     String? baseUrl,
@@ -94,9 +90,7 @@ class HermesStreamingService extends StreamingService {
         _apiKey = apiKey,
         _client = client,
         _role = role {
-    _viaHub = !allowsDirectHermesGateway(_role) && isHubBaseUrl(_baseUrl);
-    _refusedDirectHermes =
-        !allowsDirectHermesGateway(_role) && !isHubBaseUrl(_baseUrl);
+    _applyRole();
   }
 
   ClientInstallRole get installRole => _role;
@@ -108,15 +102,16 @@ class HermesStreamingService extends StreamingService {
   /// Bind this client to [role] before the next connection attempt.
   void bindRole(ClientInstallRole role) {
     _role = role;
+    _applyRole();
+  }
+
+  void _applyRole() {
     _viaHub = !allowsDirectHermesGateway(_role) && isHubBaseUrl(_baseUrl);
     _refusedDirectHermes =
         !allowsDirectHermesGateway(_role) && !isHubBaseUrl(_baseUrl);
   }
 
   String get baseUrl => _baseUrl;
-
-  /// Session key adopted from Hermes, when the platform response included one.
-  String? get boundGatewaySessionKey => _boundGatewaySessionKey;
 
   /// Point this client at a hub (`:1337`) or, for the primary desktop only,
   /// at the co-resident Hermes gateway.
@@ -129,15 +124,13 @@ class HermesStreamingService extends StreamingService {
     if (trimmed.isEmpty) {
       return;
     }
-    final normalized = trimmed.endsWith('/')
-        ? trimmed.substring(0, trimmed.length - 1)
-        : trimmed;
+    final normalized = _normalizeBase(trimmed);
     if (!allowsDirectHermesGateway(_role) && !isHubBaseUrl(normalized)) {
       _refusedDirectHermes = true;
       return;
     }
     _baseUrl = normalized;
-    _viaHub = !allowsDirectHermesGateway(_role) && isHubBaseUrl(_baseUrl);
+    _applyRole();
     _refusedDirectHermes = false;
   }
 
@@ -176,12 +169,14 @@ class HermesStreamingService extends StreamingService {
     }
     try {
       final response = await _client!
-          .get(Uri.parse('$_baseUrl/health'), headers: _headers())
+          .get(
+            Uri.parse('$_baseUrl/health'),
+            headers: _headers(),
+          )
           .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         _connection = StreamingConnection.connected(_baseUrl);
-        _useAgentRuns = true; // Re-enable agent runs on fresh connection
         debugPrint('[Hermes] Connected to $_baseUrl');
         await _fetchModels();
         notifyListeners();
@@ -213,34 +208,6 @@ class HermesStreamingService extends StreamingService {
     }
   }
 
-  @override
-  Future<void> closeConnection() async {
-    _connection = StreamingConnection.disconnected();
-    _client?.close();
-    _client = null;
-    notifyListeners();
-  }
-
-  @override
-  Future<bool> testConnection() async {
-    try {
-      await establishConnection();
-      return _connection.isActive;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  @override
-  Future<List<String>> getAvailableModels() async {
-    if (_viaHub) {
-      _modelIds = const <String>[];
-      return _modelIds;
-    }
-    await _fetchModels();
-    return _modelIds;
-  }
-
   /// Hub clients are connected when discovery reports `primary_hub`.
   ///
   /// Router `/health` and `/v1/models` are the local model router, not Hermes.
@@ -256,7 +223,6 @@ class HermesStreamingService extends StreamingService {
       if (response.statusCode == 200 && _isPrimaryHubDocument(response.body)) {
         _connection = StreamingConnection.connected(_baseUrl);
         _modelIds = const <String>[];
-        _useAgentRuns = true;
         debugPrint('[Hermes] Attached to primary hub at $_baseUrl');
         notifyListeners();
         return;
@@ -288,8 +254,40 @@ class HermesStreamingService extends StreamingService {
   }
 
   bool _isPrimaryHubDocument(String body) {
-    final decoded = _decodeJsonObject(body);
-    return decoded != null && decoded['role'] == 'primary_hub';
+    try {
+      final decoded = jsonDecode(body);
+      return decoded is Map && decoded['role'] == 'primary_hub';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<void> closeConnection() async {
+    _connection = StreamingConnection.disconnected();
+    _client?.close();
+    _client = null;
+    notifyListeners();
+  }
+
+  @override
+  Future<bool> testConnection() async {
+    try {
+      await establishConnection();
+      return _connection.isActive;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<List<String>> getAvailableModels() async {
+    if (_viaHub) {
+      _modelIds = const <String>[];
+      return _modelIds;
+    }
+    await _fetchModels();
+    return _modelIds;
   }
 
   @override
@@ -319,788 +317,437 @@ class HermesStreamingService extends StreamingService {
       // Platform send is proxied by the hub. The shared-channel poll reads
       // the transcript through the same hub. Do not call `/v1/runs` or
       // `/v1/chat/completions` here: those hub routes are not Hermes.
-      final delivery = await postPistisaiMessage(
-        text: prompt,
-        conversationId: conversationId,
-      );
-      final status = delivery.statusCode;
-      final accepted = status != null && status >= 200 && status < 300;
-      if (!accepted) {
-        final errorMsg = StreamingMessage.error(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          conversationId: conversationId,
-          error: status == null
-              ? 'The primary hub did not accept the message.'
-              : 'The primary hub rejected the message ($status).',
-          sequence: 0,
-        );
-        _messageController.add(errorMsg);
-        yield errorMsg;
-        return;
-      }
-      final completeMsg = StreamingMessage.complete(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        conversationId: conversationId,
-        sequence: 0,
+      yield* _streamViaHub(
+        prompt: prompt,
         model: model,
+        conversationId: conversationId,
       );
-      _messageController.add(completeMsg);
-      yield completeMsg;
       return;
     }
 
-    await _attachPlatformTurn(conversationId: conversationId, text: prompt);
-
-    // Try agent runs first (full structured events), fall back to chat completions
-    if (_useAgentRuns) {
-      yield* _streamViaAgentRuns(
-        prompt: prompt,
-        model: model,
-        conversationId: conversationId,
-        history: history,
-      );
-    } else {
-      yield* _streamViaChatCompletions(
-        prompt: prompt,
-        model: model,
-        conversationId: conversationId,
-        history: history,
-      );
-    }
+    yield* _streamViaPistisaiChannel(
+      prompt: prompt,
+      model: model,
+      conversationId: conversationId,
+    );
   }
 
   // ---------------------------------------------------------------------------
-  // Agent Runs mode — full structured events
+  // Hub clients: post through the desktop hub, then let transcript sync poll
   // ---------------------------------------------------------------------------
 
-  /// Stream using /v1/runs + /v1/runs/{run_id}/events.
-  ///
-  /// This is the primary path for Hermes integration. It gives access to:
-  /// - Tool call lifecycle (started, completed)
-  /// - Reasoning/thinking content
-  /// - Structured text deltas
-  /// - Run completion with usage stats
-  Stream<StreamingMessage> _streamViaAgentRuns({
+  Stream<StreamingMessage> _streamViaHub({
     required String prompt,
     required String model,
     required String conversationId,
-    List<Map<String, String>>? history,
   }) async* {
-    final client = _client ?? http.Client();
     final messageId = DateTime.now().millisecondsSinceEpoch.toString();
-    int sequence = 0;
-
-    // Build input payload
-    final input = <Map<String, String>>[];
-    if (history != null) {
-      for (final entry in history) {
-        input.add({
-          'role': entry['role'] ?? 'user',
-          'content': entry['content'] ?? '',
-        });
-      }
+    final status = await _postPlatformMessage(
+      prompt: prompt,
+      messageId: messageId,
+      chatId: platformChatIdForUiId(conversationId),
+      timeout: hermesHubPlatformSendTimeout,
+    );
+    final accepted = status != null && status >= 200 && status < 300;
+    if (!accepted) {
+      final errorMsg = StreamingMessage.error(
+        id: messageId,
+        conversationId: conversationId,
+        error: status == null
+            ? 'The primary hub did not accept the message.'
+            : 'The primary hub rejected the message ($status).',
+        sequence: 0,
+      );
+      _messageController.add(errorMsg);
+      yield errorMsg;
+      return;
     }
-    input.add({'role': 'user', 'content': prompt});
+    final completeMsg = StreamingMessage.complete(
+      id: messageId,
+      conversationId: conversationId,
+      sequence: 0,
+      model: model,
+    );
+    _messageController.add(completeMsg);
+    yield completeMsg;
+  }
 
-    final sessionKey = _sessionKeyFor(conversationId);
-    final body = jsonEncode({
-      'input': input,
-      'model': model == 'default' ? 'hermes-agent' : model,
-      // Transcript id is the gateway session key, not the platform chat id.
-      'session_id': sessionKey,
-    });
+  // ---------------------------------------------------------------------------
+  // First-class pistisai platform channel (primary desktop)
+  // ---------------------------------------------------------------------------
+
+  /// Post to `/api/pistisai/messages` then poll the shared session transcript
+  /// for the assistant reply. No generic api_server / `/v1/runs` path.
+  Stream<StreamingMessage> _streamViaPistisaiChannel({
+    required String prompt,
+    required String model,
+    required String conversationId,
+  }) async* {
+    final messageId = DateTime.now().millisecondsSinceEpoch.toString();
+    var sequence = 0;
+    // The UI chat id (`pistisai`) is the platform chat_id; Hermes derives the
+    // session key `agent:main:pistisai:dm:<chat_id>` itself. Never post a
+    // resolved Hermes session id here — that would open a new chat/session.
+    final chatId = conversationId;
 
     _connection = StreamingConnection.streaming(_baseUrl);
     notifyListeners();
 
-    // Step 1: Start the run
-    String? runId;
+    // Snapshot assistant message ids already in the transcript so we can
+    // detect the new reply after inbound dispatch.
+    final beforeIds = <String>{};
+    try {
+      final existing = await fetchSessionMessages(conversationId);
+      if (existing != null) {
+        for (final message in existing) {
+          if (message.role == MessageRole.assistant) {
+            beforeIds.add(message.id);
+          }
+        }
+      }
+    } catch (e) {
+      appLogger.warning('[Hermes] pre-send transcript snapshot failed: $e');
+    }
+
+    final status = await _postPlatformMessage(
+      prompt: prompt,
+      messageId: messageId,
+      chatId: chatId,
+      timeout: const Duration(seconds: 15),
+    );
+    if (status == null || status != 200) {
+      final errorMsg = StreamingMessage.error(
+        id: messageId,
+        conversationId: conversationId,
+        error: status == null
+            ? 'Pistisai channel post failed'
+            : 'Pistisai channel failed ($status)',
+        sequence: sequence++,
+      );
+      _messageController.add(errorMsg);
+      yield errorMsg;
+      return;
+    }
+
+    appLogger.info(
+      '[Hermes] Posted to pistisai channel chat_id=$chatId '
+      '(session key agent:main:pistisai:dm:$chatId)',
+    );
+
+    // Poll the harness transcript for the new assistant reply.
+    const pollInterval = Duration(milliseconds: 750);
+    const maxWait = Duration(minutes: 10);
+    final deadline = DateTime.now().add(maxWait);
+    var lastEmitted = '';
+    var sawReply = false;
+
+    while (DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(pollInterval);
+      final harness = await fetchSessionMessages(conversationId);
+      if (harness == null) continue;
+
+      Message? newest;
+      for (final message in harness.reversed) {
+        if (message.role != MessageRole.assistant) continue;
+        if (beforeIds.contains(message.id)) continue;
+        newest = message;
+        break;
+      }
+      if (newest == null) continue;
+
+      sawReply = true;
+      final content = newest.content;
+      if (content != lastEmitted) {
+        final extended = content.startsWith(lastEmitted);
+        final replaces = !extended && lastEmitted.isNotEmpty;
+        final delta =
+            extended ? content.substring(lastEmitted.length) : content;
+        lastEmitted = content;
+        if (delta.isNotEmpty) {
+          final chunk = StreamingMessage.chunk(
+            id: messageId,
+            conversationId: conversationId,
+            chunk: replaces ? content : delta,
+            replacesContent: replaces,
+            sequence: sequence++,
+            model: model == 'default' ? 'hermes-agent' : model,
+          );
+          _messageController.add(chunk);
+          yield chunk;
+        }
+      }
+
+      // Heuristic: once we have assistant text and the last harness row is
+      // that assistant (not a newer user turn), treat the turn as complete.
+      if (content.trim().isNotEmpty && harness.last.id == newest.id) {
+        // Give the agent a short settle window for late tool/final text.
+        await Future<void>.delayed(const Duration(milliseconds: 1200));
+        final settled = await fetchSessionMessages(conversationId);
+        if (settled == null) break;
+        Message? settledNewest;
+        for (final message in settled.reversed) {
+          if (message.role != MessageRole.assistant) continue;
+          if (beforeIds.contains(message.id)) continue;
+          settledNewest = message;
+          break;
+        }
+        if (settledNewest != null &&
+            settledNewest.content == lastEmitted &&
+            settled.last.id == settledNewest.id) {
+          break;
+        }
+        if (settledNewest != null && settledNewest.content != lastEmitted) {
+          final content2 = settledNewest.content;
+          final extended = content2.startsWith(lastEmitted);
+          final replaces = !extended && lastEmitted.isNotEmpty;
+          final delta =
+              extended ? content2.substring(lastEmitted.length) : content2;
+          lastEmitted = content2;
+          if (delta.isNotEmpty) {
+            final chunk = StreamingMessage.chunk(
+              id: messageId,
+              conversationId: conversationId,
+              chunk: replaces ? content2 : delta,
+              replacesContent: replaces,
+              sequence: sequence++,
+              model: model == 'default' ? 'hermes-agent' : model,
+            );
+            _messageController.add(chunk);
+            yield chunk;
+          }
+        }
+        break;
+      }
+    }
+
+    if (!sawReply) {
+      final errorMsg = StreamingMessage.error(
+        id: messageId,
+        conversationId: conversationId,
+        error: 'Pistisai channel produced no assistant reply',
+        sequence: sequence++,
+      );
+      _messageController.add(errorMsg);
+      yield errorMsg;
+      return;
+    }
+
+    final complete = StreamingMessage.complete(
+      id: messageId,
+      conversationId: conversationId,
+      sequence: sequence++,
+      model: model == 'default' ? 'hermes-agent' : model,
+    );
+    _messageController.add(complete);
+    yield complete;
+    _connection = StreamingConnection.connected(_baseUrl);
+    notifyListeners();
+  }
+
+  /// Returns the HTTP status, or null when the post did not complete.
+  Future<int?> _postPlatformMessage({
+    required String prompt,
+    required String messageId,
+    required String chatId,
+    required Duration timeout,
+  }) async {
+    final client = _client ?? http.Client();
     try {
       final response = await client
           .post(
-            Uri.parse('$_baseUrl/v1/runs'),
-            headers: _sessionHeaders(sessionKey),
-            body: body,
+            Uri.parse('$_baseUrl/api/pistisai/messages'),
+            headers: {
+              ..._headers(),
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({
+              'message': prompt,
+              'conversation_id': chatId,
+              'user_id': 'operator',
+              'user_name': 'Christopher',
+              'message_id': messageId,
+            }),
           )
-          .timeout(const Duration(seconds: 15));
-
-      if (response.statusCode == 202) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        runId = json['run_id'] as String?;
-      } else if (response.statusCode == 404) {
-        // /v1/runs not available — per-call fallback only, do NOT permanently disable
-        appLogger.warning(
-          '[Hermes] /v1/runs returned 404, falling back to chat completions for this message',
-        );
-        yield* _streamViaChatCompletions(
-          prompt: prompt,
-          model: model,
-          conversationId: conversationId,
-          history: history,
-        );
-        return;
-      } else {
-        final errorBody = response.body;
+          .timeout(timeout);
+      if (response.statusCode != 200 && response.statusCode != 202) {
         appLogger.error(
-          '[Hermes] startRun error ${response.statusCode}: $errorBody',
+          '[Hermes] pistisai messages error ${response.statusCode}: '
+          '${response.body}',
         );
-        final errorMsg = StreamingMessage.error(
-          id: messageId,
-          conversationId: conversationId,
-          error: 'Hermes run start failed (${response.statusCode}): $errorBody',
-          sequence: sequence++,
-        );
-        _messageController.add(errorMsg);
-        yield errorMsg;
-        return;
       }
+      return response.statusCode;
     } on TimeoutException {
       appLogger.warning(
-        '[Hermes] startRun timed out, per-call fallback to chat completions',
+        '[Hermes] platform turn timed out for chatId=$chatId',
       );
-      yield* _streamViaChatCompletions(
-        prompt: prompt,
-        model: model,
-        conversationId: conversationId,
-        history: history,
-      );
-      return;
+      return null;
     } catch (e) {
-      appLogger.warning(
-        '[Hermes] startRun failed: $e, per-call fallback to chat completions',
-      );
-      yield* _streamViaChatCompletions(
-        prompt: prompt,
-        model: model,
-        conversationId: conversationId,
-        history: history,
-      );
-      return;
-    }
-
-    if (runId == null) {
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: 'Hermes did not return a run_id',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
-      return;
-    }
-
-    appLogger.info('[Hermes] Agent run started: $runId');
-
-    // Step 2: Stream events from the run
-    try {
-      final request = http.Request(
-        'GET',
-        Uri.parse('$_baseUrl/v1/runs/$runId/events'),
-      )..headers.addAll(_headers());
-
-      final streamedResponse =
-          await client.send(request).timeout(const Duration(seconds: 600));
-
-      if (streamedResponse.statusCode != 200) {
-        final errorBody = await streamedResponse.stream.bytesToString();
-        appLogger.error(
-          '[Hermes] run events error ${streamedResponse.statusCode}: $errorBody',
-        );
-        final errorMsg = StreamingMessage.error(
-          id: messageId,
-          conversationId: conversationId,
-          error:
-              'Hermes run events failed (${streamedResponse.statusCode}): $errorBody',
-          sequence: sequence++,
-        );
-        _messageController.add(errorMsg);
-        yield errorMsg;
-        return;
-      }
-
-      // Parse SSE events
-      String buffer = '';
-      await for (final chunk in streamedResponse.stream.transform(
-        utf8.decoder,
-      )) {
-        // ignore: use_string_buffers
-        buffer += chunk;
-        while (buffer.contains('\n\n')) {
-          final eventEnd = buffer.indexOf('\n\n');
-          final eventBlock = buffer.substring(0, eventEnd);
-          buffer = buffer.substring(eventEnd + 2);
-
-          for (final line in eventBlock.split('\n')) {
-            if (!line.startsWith('data: ')) continue;
-            final data = line.substring(6).trim();
-            if (data.startsWith(':')) continue; // SSE comment/keepalive
-
-            try {
-              final eventJson = jsonDecode(data) as Map<String, dynamic>;
-              final agentEvent = AgentEvent.fromJson(eventJson);
-
-              // Emit on the agent event stream (for consumers that want
-              // full tool call awareness)
-              _agentEventController.add(agentEvent);
-
-              // Also emit as StreamingMessage for backward compatibility
-              // with StreamingChatService's text/reasoning pipeline
-              final sm = _agentEventToStreamingMessage(
-                agentEvent: agentEvent,
-                messageId: messageId,
-                conversationId: conversationId,
-                sequence: sequence++,
-                model: model,
-              );
-              if (sm != null) {
-                _messageController.add(sm);
-                yield sm;
-              }
-            } catch (e) {
-              appLogger.warning('[Hermes] Failed to parse run event: $e');
-            }
-          }
-        }
-      }
-
-      // Signal completion
-      final completeMsg = StreamingMessage.complete(
-        id: messageId,
-        conversationId: conversationId,
-        sequence: sequence,
-        model: model,
-      );
-      _messageController.add(completeMsg);
-      yield completeMsg;
-
-      _connection = StreamingConnection.connected(_baseUrl);
-      notifyListeners();
-    } on TimeoutException {
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: 'Hermes run events timed out',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
-    } on SocketException catch (e) {
-      _connection = StreamingConnection.error(
-        'Connection lost: $e',
-        endpoint: _baseUrl,
-      );
-      notifyListeners();
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: 'Connection lost during agent run: $e',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
-    } catch (e) {
-      appLogger.error('[Hermes] agent run stream error', error: e);
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: 'Agent run stream error: $e',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
-    }
-  }
-
-  /// Convert an [AgentEvent] to a [StreamingMessage] for backward compatibility
-  /// with the text/reasoning pipeline in StreamingChatService.
-  ///
-  /// Returns null for events that don't produce text/reasoning output
-  /// (tool.started, tool.completed are emitted only on agentEventStream).
-  StreamingMessage? _agentEventToStreamingMessage({
-    required AgentEvent agentEvent,
-    required String messageId,
-    required String conversationId,
-    required int sequence,
-    required String model,
-  }) {
-    return switch (agentEvent) {
-      AgentMessageDelta(:final delta) when delta.isNotEmpty =>
-        StreamingMessage.chunk(
-          id: messageId,
-          conversationId: conversationId,
-          chunk: delta,
-          sequence: sequence,
-          model: model,
-        ),
-      // reasoning.available is chain-of-thought. It is not a chat delta.
-      AgentReasoningAvailable() => null,
-      AgentRunFailed(:final error) => StreamingMessage.error(
-          id: messageId,
-          conversationId: conversationId,
-          error: error,
-          sequence: sequence,
-        ),
-      // run.completed output is the full response text, which is
-      // already accumulated from message.delta events. Emitting it
-      // as a chunk would DOUBLE the content (deltas + final output).
-      // Skip it here — the complete signal is handled by the stream
-      // onDone callback and the agentEventStream consumer.
-      AgentRunCompleted() => null,
-      // Skip tool events, empty events, and unknown events in the
-      // text stream — they're only on agentEventStream.
-      _ => null,
-    };
-  }
-
-  // ---------------------------------------------------------------------------
-  // Chat Completions mode — text-only fallback
-  // ---------------------------------------------------------------------------
-
-  /// Stream using /v1/chat/completions SSE (text-only, no tool awareness).
-  Stream<StreamingMessage> _streamViaChatCompletions({
-    required String prompt,
-    required String model,
-    required String conversationId,
-    List<Map<String, String>>? history,
-  }) async* {
-    final client = _client ?? http.Client();
-    final messageId = DateTime.now().millisecondsSinceEpoch.toString();
-    int sequence = 0;
-
-    // Build OpenAI-format messages array
-    final messages = <Map<String, dynamic>>[];
-    if (history != null) {
-      for (final entry in history) {
-        messages.add({
-          'role': entry['role'] ?? 'user',
-          'content': entry['content'] ?? '',
-        });
-      }
-    }
-    messages.add({'role': 'user', 'content': prompt});
-
-    final body = jsonEncode({
-      'model': model == 'default' ? 'hermes-agent' : model,
-      'messages': messages,
-      'stream': true,
-    });
-
-    _connection = StreamingConnection.streaming(_baseUrl);
-    notifyListeners();
-
-    try {
-      final request =
-          http.Request('POST', Uri.parse('$_baseUrl/v1/chat/completions'))
-            ..headers.addAll(_sessionHeaders(_sessionKeyFor(conversationId)))
-            ..body = body;
-
-      final streamedResponse =
-          await client.send(request).timeout(const Duration(seconds: 300));
-
-      if (streamedResponse.statusCode != 200) {
-        final errorBody = await streamedResponse.stream.bytesToString();
-        appLogger.error(
-          '[Hermes] API error ${streamedResponse.statusCode}: $errorBody',
-        );
-        final errorMsg = StreamingMessage.error(
-          id: messageId,
-          conversationId: conversationId,
-          error: 'Hermes API error ${streamedResponse.statusCode}: $errorBody',
-          sequence: sequence++,
-        );
-        _messageController.add(errorMsg);
-        yield errorMsg;
-        return;
-      }
-
-      // Parse SSE stream
-      String buffer = '';
-      await for (final chunk in streamedResponse.stream.transform(
-        utf8.decoder,
-      )) {
-        // ignore: use_string_buffers
-        buffer += chunk;
-        while (buffer.contains('\n\n')) {
-          final eventEnd = buffer.indexOf('\n\n');
-          final eventBlock = buffer.substring(0, eventEnd);
-          buffer = buffer.substring(eventEnd + 2);
-
-          for (final line in eventBlock.split('\n')) {
-            if (!line.startsWith('data: ')) continue;
-            final data = line.substring(6).trim();
-            if (data == '[DONE]') continue;
-
-            try {
-              final json = jsonDecode(data) as Map<String, dynamic>;
-              final choices = json['choices'] as List<dynamic>?;
-              if (choices == null || choices.isEmpty) continue;
-
-              final delta = choices[0]['delta'] as Map<String, dynamic>?;
-              final content = delta?['content'] as String?;
-
-              if (content != null && content.isNotEmpty) {
-                final msg = StreamingMessage.chunk(
-                  id: messageId,
-                  conversationId: conversationId,
-                  chunk: content,
-                  sequence: sequence++,
-                  model: model,
-                );
-                _messageController.add(msg);
-                yield msg;
-              }
-              // reasoning_content is chain-of-thought and is not forwarded.
-            } catch (_) {
-              // Skip malformed SSE data lines
-            }
-          }
-        }
-      }
-
-      // Signal completion
-      final completeMsg = StreamingMessage.complete(
-        id: messageId,
-        conversationId: conversationId,
-        sequence: sequence,
-        model: model,
-      );
-      _messageController.add(completeMsg);
-      yield completeMsg;
-
-      _connection = StreamingConnection.connected(_baseUrl);
-      notifyListeners();
-    } on TimeoutException {
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: 'Hermes request timed out',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
-    } on SocketException catch (e) {
-      _connection = StreamingConnection.error(
-        'Connection lost: $e',
-        endpoint: _baseUrl,
-      );
-      notifyListeners();
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: 'Connection lost: $e',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
-    } catch (e) {
-      appLogger.error('[Hermes] streamResponse error', error: e);
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: 'Stream error: $e',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
+      appLogger.warning('[Hermes] platform turn failed for chatId=$chatId: $e');
+      return null;
     }
   }
 
   // ---------------------------------------------------------------------------
-  // Non-streaming completion (for simpler use cases)
+  // Non-streaming completion (pistisai channel)
   // ---------------------------------------------------------------------------
 
-  /// Send a non-streaming chat completion request to Hermes.
+  /// Send a prompt on the pistisai channel and return the assistant reply text.
   Future<String?> complete({
     required String prompt,
     String model = 'hermes-agent',
+    String conversationId = Conversation.pistisaiChannelId,
     List<Map<String, String>>? history,
   }) async {
     if (!_connection.isActive) {
       await establishConnection();
     }
+    if (!_connection.isActive) return null;
 
-    final client = _client ?? http.Client();
-    final messages = <Map<String, dynamic>>[];
-    if (history != null) {
-      for (final entry in history) {
-        messages.add({
-          'role': entry['role'] ?? 'user',
-          'content': entry['content'] ?? '',
-        });
-      }
+    final buffer = StringBuffer();
+    await for (final message in streamResponse(
+      prompt: prompt,
+      model: model,
+      conversationId: conversationId,
+      history: history,
+    )) {
+      if (message.hasError) return null;
+      if (message.chunk.isNotEmpty) buffer.write(message.chunk);
     }
-    messages.add({'role': 'user', 'content': prompt});
+    final text = buffer.toString().trim();
+    return text.isEmpty ? null : text;
+  }
 
-    final response = await client
-        .post(
-          Uri.parse('$_baseUrl/v1/chat/completions'),
-          headers: _headers(),
-          body: jsonEncode({
-            'model': model,
-            'messages': messages,
-            'stream': false,
-          }),
-        )
-        .timeout(const Duration(seconds: 120));
+  /// Load the shared harness transcript for [sessionId].
+  ///
+  /// Every Pistisai device uses the same UI channel id (`pistisai`).
+  /// Returns an empty list when the session does not exist yet, and null when
+  /// the harness cannot be read.
+  Future<List<Message>?> fetchSessionMessages(String sessionId) async {
+    if (_viaHub) {
+      return _fetchHubTranscript(sessionId);
+    }
+    try {
+      final client = _client ?? http.Client();
+      final runtimeId = _sessionForConversation(sessionId);
 
-    if (response.statusCode != 200) {
-      appLogger.error(
-        '[Hermes] complete error ${response.statusCode}: ${response.body}',
-      );
+      Future<http.Response> getMessages(String id) {
+        return client.get(
+          Uri.parse(
+            '$_baseUrl/api/sessions/${Uri.encodeComponent(id)}/messages'
+            '?order=oldest&limit=500',
+          ),
+          headers: {
+            ..._headers(),
+            'Accept': 'application/json',
+          },
+        ).timeout(const Duration(seconds: 8));
+      }
+
+      // The pistisai DM key (`agent:main:pistisai:dm:<chat_id>`) is not
+      // addressable on /api/sessions/{id}; Hermes stores it under a generated
+      // session id (e.g. `20261104_190859_119a1e2b`, source=pistisai). Resolve
+      // it each poll so resets/new sessions are followed.
+      var targetId = runtimeId;
+      if (sessionId == Conversation.pistisaiChannelId) {
+        targetId = await _resolvePistisaiSessionId() ?? runtimeId;
+      }
+      var response = await getMessages(targetId);
+      if (response.statusCode == 404 && targetId != sessionId) {
+        response = await getMessages(sessionId);
+      }
+      if (response.statusCode == 404) {
+        // No session yet (first message not processed). Never invent one via
+        // POST /api/sessions — that creates junk rows / 409 loops.
+        _logPollTarget(sessionId, targetId, 404);
+        return const [];
+      }
+      _logPollTarget(sessionId, targetId, response.statusCode);
+      if (response.statusCode != 200) return null;
+
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map && decoded['session_id'] is String) {
+        _bindRuntimeSession(sessionId, decoded['session_id'] as String);
+      }
+      return messagesFromHermesSessionBody(response.body);
+    } catch (e) {
+      appLogger.error('[Hermes] Failed to load shared session', error: e);
       return null;
     }
-
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    final choices = json['choices'] as List<dynamic>?;
-    if (choices != null && choices.isNotEmpty) {
-      return choices[0]['message']?['content'] as String?;
-    }
-    return null;
   }
 
-  // ---------------------------------------------------------------------------
-  // Direct run API access (for advanced consumers)
-  // ---------------------------------------------------------------------------
-
-  /// Trigger a Hermes run and get a run_id for SSE event streaming.
+  /// Read the shared DM through the hub's allowlisted session route.
   ///
-  /// Returns the run_id. Use [streamRunEvents] to consume the event stream.
-  Future<String?> startRun({
-    required String input,
-    String? instructions,
-    String? previousResponseId,
-    String? sessionId,
-  }) async {
-    if (!_connection.isActive) {
-      await establishConnection();
+  /// A 404 is an empty transcript (the session does not exist yet). Any other
+  /// non-200, including 409, is an unreadable transcript.
+  Future<List<Message>?> _fetchHubTranscript(String sessionId) async {
+    final allowed = hubAllowlistedSessionKey(sessionId);
+    if (allowed == null) return null;
+    final uri = hermesSessionMessagesUri(_baseUrl, allowed);
+    try {
+      final client = _client ?? http.Client();
+      final response = await client.get(
+        uri,
+        headers: {
+          ..._headers(),
+          'Accept': 'application/json',
+        },
+      ).timeout(const Duration(seconds: 8));
+      if (response.statusCode == 404) return const [];
+      if (response.statusCode != 200) return null;
+      return messagesFromHermesSessionBody(response.body);
+    } catch (e) {
+      appLogger.error('[Hermes] Failed to load hub transcript', error: e);
+      return null;
     }
-
-    final client = _client ?? http.Client();
-    final body = <String, dynamic>{'input': input};
-    if (instructions != null) body['instructions'] = instructions;
-    if (previousResponseId != null) {
-      body['previous_response_id'] = previousResponseId;
-    }
-    if (sessionId != null) body['session_id'] = sessionId;
-
-    final response = await client
-        .post(
-          Uri.parse('$_baseUrl/v1/runs'),
-          headers: _headers(),
-          body: jsonEncode(body),
-        )
-        .timeout(const Duration(seconds: 10));
-
-    if (response.statusCode == 202) {
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
-      return json['run_id'] as String?;
-    }
-    appLogger.error(
-      '[Hermes] startRun error ${response.statusCode}: ${response.body}',
-    );
-    return null;
   }
 
-  /// Stream structured events from a Hermes run.
-  Stream<AgentEvent> streamRunEvents(String runId) async* {
-    final client = _client ?? http.Client();
-    final request = http.Request(
-      'GET',
-      Uri.parse('$_baseUrl/v1/runs/$runId/events'),
-    )..headers.addAll(_headers());
+  final Map<String, String> _lastPollLog = {};
 
-    final streamedResponse =
-        await client.send(request).timeout(const Duration(seconds: 600));
+  void _logPollTarget(String chatId, String targetId, int status) {
+    final key = '$targetId:$status';
+    if (_lastPollLog[chatId] == key) return;
+    _lastPollLog[chatId] = key;
+    debugPrint('[Hermes] transcript poll chat=$chatId -> session=$targetId '
+        'HTTP $status');
+  }
 
-    if (streamedResponse.statusCode != 200) {
-      yield AgentRunFailed(
-        runId: runId,
-        timestamp: DateTime.now().millisecondsSinceEpoch / 1000,
-        error: 'Failed to connect to run events stream',
-      );
-      return;
-    }
-
-    String buffer = '';
-    await for (final chunk in streamedResponse.stream.transform(utf8.decoder)) {
-      // ignore: use_string_buffers
-      buffer += chunk;
-      while (buffer.contains('\n\n')) {
-        final eventEnd = buffer.indexOf('\n\n');
-        final eventBlock = buffer.substring(0, eventEnd);
-        buffer = buffer.substring(eventEnd + 2);
-
-        for (final line in eventBlock.split('\n')) {
-          if (!line.startsWith('data: ')) continue;
-          final data = line.substring(6).trim();
-          if (data.startsWith(':')) continue; // SSE comment/keepalive
-
-          try {
-            final event = AgentEvent.fromJson(
-              jsonDecode(data) as Map<String, dynamic>,
-            );
-            yield event;
-
-            // Terminal events close the stream
-            if (event is AgentRunCompleted || event is AgentRunFailed) {
-              return;
-            }
-          } catch (_) {
-            // Skip malformed events
-          }
+  /// Resolve the Hermes session id currently backing the pistisai DM
+  /// (session key `agent:main:pistisai:dm:pistisai`): the most recently
+  /// active `source=pistisai` session.
+  Future<String?> _resolvePistisaiSessionId() async {
+    try {
+      final client = _client ?? http.Client();
+      final response = await client.get(
+        Uri.parse('$_baseUrl/api/sessions?source=pistisai&limit=20'),
+        headers: {..._headers(), 'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 8));
+      if (response.statusCode != 200) return null;
+      final decoded = jsonDecode(response.body);
+      final data = decoded is Map ? decoded['data'] : null;
+      if (data is! List) return null;
+      String? bestId;
+      var bestActive = double.negativeInfinity;
+      for (final row in data) {
+        if (row is! Map) continue;
+        if (row['source'] != null && row['source'] != 'pistisai') continue;
+        if (row['archived'] == true || row['is_internal_child'] == true) {
+          continue;
+        }
+        final id = row['id'];
+        if (id is! String || id.isEmpty) continue;
+        final active = row['last_active'] ?? row['started_at'];
+        final ts =
+            active is num ? active.toDouble() : double.tryParse('$active') ?? 0;
+        if (ts > bestActive) {
+          bestActive = ts;
+          bestId = id;
         }
       }
-    }
-  }
-
-  /// Load the shared harness transcript for a UI conversation id.
-  ///
-  /// Returns null unless the gateway session key answered HTTP 200. A 404 or
-  /// 409 is a failed read, not an empty transcript, and does not bind the
-  /// short chat id.
-  Future<List<Message>?> fetchSessionMessages(String sessionId) async {
-    final poll = await pollSharedTranscript(sessionId);
-    if (!poll.isHealthy) return null;
-    return poll.messages;
-  }
-
-  /// GET the gateway transcript for [uiId].
-  ///
-  /// Does not `POST /api/sessions`. A missing session stays missing until
-  /// Hermes creates it from a platform turn.
-  Future<HermesTranscriptPoll> pollSharedTranscript(String uiId) async {
-    final sessionKey = _sessionKeyFor(uiId);
-    final uri = hermesSessionMessagesUri(_baseUrl, sessionKey);
-    try {
-      final client = _client ?? http.Client();
-      final response = await client.get(uri, headers: {
-        ..._headers(),
-        'Accept': 'application/json'
-      }).timeout(const Duration(seconds: 8));
-
-      appLogger.info(
-        '[Hermes] transcript poll status=${response.statusCode} session=$sessionKey boundShortId=false',
-      );
-
-      if (response.statusCode == 404 || response.statusCode == 409) {
-        return HermesTranscriptPoll(
-          sessionKey: sessionKey,
-          pollUri: uri,
-          statusCode: response.statusCode,
-          messages: null,
-        );
-      }
-      if (response.statusCode != 200) {
-        return HermesTranscriptPoll(
-          sessionKey: sessionKey,
-          pollUri: uri,
-          statusCode: response.statusCode,
-          messages: null,
-        );
-      }
-      return HermesTranscriptPoll(
-        sessionKey: sessionKey,
-        pollUri: uri,
-        statusCode: response.statusCode,
-        messages: messagesFromHermesSessionBody(response.body),
-      );
+      return bestId;
     } catch (e) {
-      appLogger.error(
-        '[Hermes] Failed to load shared session $sessionKey',
-        error: e,
-      );
-      return HermesTranscriptPoll(
-        sessionKey: sessionKey,
-        pollUri: uri,
-        statusCode: null,
-        messages: null,
-      );
+      appLogger.warning('[Hermes] pistisai session resolve failed: $e');
+      return null;
     }
-  }
-
-  /// Tell the pistisai platform about a turn.
-  ///
-  /// [conversationId] is the UI id. The JSON `conversation_id` is the
-  /// platform chat id (`pistisai`), never the gateway session key.
-  Future<HermesChannelDelivery> postPistisaiMessage({
-    required String text,
-    required String conversationId,
-  }) async {
-    final chatId = platformChatIdForUiId(conversationId);
-    final sessionKey = _sessionKeyFor(conversationId);
-    final uri = Uri.parse('$_baseUrl/api/pistisai/messages');
-    try {
-      final client = _client ?? http.Client();
-      final response = await client
-          .post(
-            uri,
-            headers: {..._headers(), 'Accept': 'application/json'},
-            body: jsonEncode(<String, String>{
-              'conversation_id': chatId,
-              'text': text,
-            }),
-          )
-          .timeout(
-            _viaHub ? hermesHubPlatformSendTimeout : const Duration(seconds: 3),
-          );
-
-      final adopted = adoptGatewaySessionKey(
-        statusCode: response.statusCode,
-        body: _decodeJsonObject(response.body),
-      );
-      if (adopted != null) {
-        _boundGatewaySessionKey = adopted;
-      }
-      final activeKey = _sessionKeyFor(conversationId);
-      appLogger.info(
-        '[Hermes] platform turn status=${response.statusCode} chatId=$chatId session=$activeKey boundShortId=false',
-      );
-      return HermesChannelDelivery(
-        conversationId: chatId,
-        sessionKey: activeKey,
-        statusCode: response.statusCode,
-        adoptedSessionKey: adopted,
-      );
-    } catch (e) {
-      appLogger.warning('[Hermes] platform turn failed for chatId=$chatId: $e');
-      return HermesChannelDelivery(
-        conversationId: chatId,
-        sessionKey: sessionKey,
-        statusCode: null,
-        adoptedSessionKey: null,
-      );
-    }
-  }
-
-  String _sessionKeyFor(String uiId) {
-    final bound = _boundGatewaySessionKey;
-    if (bound != null && isHermesGatewaySessionKey(bound)) return bound;
-    return hermesSessionKeyForUiId(uiId);
-  }
-
-  Map<String, String> _sessionHeaders(String sessionKey) {
-    return <String, String>{
-      ..._headers(),
-      'X-Hermes-Session-Key': sessionKey,
-      'X-Hermes-Session-Id': sessionKey,
-    };
-  }
-
-  Future<void> _attachPlatformTurn({
-    required String conversationId,
-    required String text,
-  }) async {
-    await postPistisaiMessage(text: text, conversationId: conversationId);
-  }
-
-  Map<String, dynamic>? _decodeJsonObject(String body) {
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) return Map<String, dynamic>.from(decoded);
-    } catch (_) {}
-    return null;
   }
 
   // ---------------------------------------------------------------------------
@@ -1126,7 +773,10 @@ class HermesStreamingService extends StreamingService {
     try {
       final client = _client ?? http.Client();
       final response = await client
-          .get(Uri.parse('$_baseUrl/v1/models'), headers: _headers())
+          .get(
+            Uri.parse('$_baseUrl/v1/models'),
+            headers: _headers(),
+          )
           .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {

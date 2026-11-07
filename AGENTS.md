@@ -2,6 +2,14 @@
 
 Flutter desktop/web app + Node.js backend services: local-first companion layer for agent runtimes (Hermes primary test path, OpenClaw Gateway, compatible gateways). Ollama/LM Studio are support model providers for app-owned features (e.g. embeddings) — not primary runtimes unless wrapped by an agent runtime.
 
+## Hub topology (rules for agents)
+
+- The primary Pistisai desktop install is the **device/client hub** (main node). Web, mobile, and secondary desktop clients must connect through it, not directly to Hermes or another runtime.
+- Hermes is the **messaging-platform hub**: it owns Telegram/Slack/etc. adapters directly. Never claim or build those routing through the Flutter app.
+- Existing direct client-to-Hermes paths are transitional / to-be-removed (#492); don't extend them.
+- Mobile discovers the hub over Tailscale via `GET /api/pistisai/hub` (`AppConfig.hubPath`, served by `lib/services/router_server.dart`); keep that contract intact.
+- Details: `docs/architecture/SYSTEM_ARCHITECTURE.md#desktop-as-hub-topology`.
+
 ## Layout (service → port / contract)
 
 - `lib/main.dart`, `lib/di/locator.dart` — app entry, two-phase DI: `setupCoreServices()` → `setupAuthenticatedServices()`

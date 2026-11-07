@@ -62,11 +62,20 @@ class SecureSetupStatusStorage implements SetupStatusStorage {
   /// Clear all setup data (for testing/reset)
   Future<void> clearAll() async {
     try {
-      await _secureStorage.delete(key: 'pistisai_setup_status');
-      await _secureStorage.delete(key: 'pistisai_setup_progress');
+      // Prefer a full wipe of this app's secure-storage namespace so per-user
+      // keys (e.g. pistisai_setup_status_local_user) cannot resurrect a
+      // completed-setup flag after a shared-preferences-only flush.
+      await _secureStorage.deleteAll();
       debugPrint('[SecureSetupStatusStorage] Cleared all setup data');
     } catch (e) {
       debugPrint('[SecureSetupStatusStorage] Error clearing data: $e');
+      // Fall back to known keys if deleteAll is unavailable on a platform.
+      try {
+        await _secureStorage.delete(key: 'pistisai_setup_status');
+        await _secureStorage.delete(key: 'pistisai_setup_progress');
+        await _secureStorage.delete(key: 'pistisai_setup_status_local_user');
+        await _secureStorage.delete(key: 'pistisai_setup_status_local');
+      } catch (_) {}
     }
   }
 }

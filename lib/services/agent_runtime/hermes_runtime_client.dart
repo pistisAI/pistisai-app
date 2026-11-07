@@ -124,7 +124,7 @@ class HermesRuntimeClient implements AgentRuntimeClient {
     required String prompt,
     required String model,
     List<Map<String, String>>? history,
-    String conversationId = 'main-channel',
+    String conversationId = 'pistisai',
   }) async {
     final chunks = StringBuffer();
 
