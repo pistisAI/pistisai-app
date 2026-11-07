@@ -20,18 +20,26 @@ Ollama, LM Studio, and similar local model providers are not agent runtime nodes
 
 Pistisai can be installed on multiple user devices. The secure agent channel can sync across those devices, while desktop control and vision remain targeted to a specific device.
 
+### Desktop-as-Hub
+
+The primary Pistisai desktop install (the first installed app) is the **device/client hub**. Web, mobile, and secondary desktop clients connect through it; the hub owns the connection to the agent runtime. Mobile discovers the hub over Tailscale via `GET /api/pistisai/hub` on the hub's embedded router. Hermes remains the **messaging-platform hub** and keeps its Telegram/Slack/etc. adapters directly — those do not pass through the Pistisai hub. Current direct client-to-Hermes paths are transitional and will be removed (issue #492).
+
 ## Preferred Transport
 
 Tailscale is the preferred private network transport.
 
 ```text
-Client UI / web / phone
+Web / phone / secondary desktop (Pistisai clients)
         |
 Optional per-user Pistisai cloud connector
         |
 User's Tailscale tailnet
         |
-Pistisai desktop apps and user-selected agent runtimes
+Primary Pistisai desktop hub  (GET /api/pistisai/hub)
+        |
+User-selected agent runtime (Hermes, OpenClaw, ...)
+        |
+Hermes-owned messaging adapters (Telegram, Slack, ...)
 ```
 
 ## Per-User Cloud Connector

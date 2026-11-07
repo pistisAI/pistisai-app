@@ -16,7 +16,7 @@ RIGHT-PC now has a local detached background lane:
 
 Pistisai can make that lane visible as a "thought train": a local companion panel showing what Hermes is doing in the background, what finished, what was skipped by wake gates, and which jobs are chained together.
 
-Christopher's stronger product direction: the main window should not hide this in a secondary diagnostics page. It should become the primary cockpit: a permanent direct chat channel synced across devices through the Tailscale/private mesh, with the Hermes thought-train/activity stream and verbose tool/event log mixed into the same timeline in a controlled way.
+Christopher's stronger product direction: the main window should not hide this in a secondary diagnostics page. It should become the primary cockpit: a permanent chat channel synced across devices through the primary desktop hub over the Tailscale/private mesh, with the Hermes thought-train/activity stream and verbose tool/event log mixed into the same timeline in a controlled way.
 
 ## Current split
 
@@ -164,7 +164,8 @@ Recommended sync model:
 - local append-only event log for chat messages, assistant replies, tool summaries, local-think job events, and delivery acknowledgements
 - device sync over Tailscale/private mesh first
 - each device keeps a local copy and reconciles by monotonic event ids / timestamps
-- Hermes gateway/Telegram remains the external text bridge; Pistisai is the local desktop/mobile cockpit
+- Hermes gateway remains the messaging-platform hub and owns the Telegram/Slack/etc. bridges directly; Pistisai is the cockpit (the UI surface), with the primary Pistisai desktop acting as the device/client hub that web, mobile, and secondary desktops sync through (mobile discovers it via `GET /api/pistisai/hub`)
+- direct client-to-Hermes connections from web/mobile/secondary desktops are transitional and to be removed (issue #492)
 - message/event payloads should be encrypted at rest and in transit when leaving localhost
 - if Tailscale is offline, queue locally and reconcile later
 

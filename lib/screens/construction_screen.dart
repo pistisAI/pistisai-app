@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../config/theme.dart';
 
 /// Construction Page - Shows current features with progress and roadmap
@@ -11,6 +12,10 @@ class ConstructionScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Construction'),
         elevation: 0,
+        leading: BackButton(
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go('/config'),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -34,7 +39,9 @@ class ConstructionScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.bolt, color: AppTheme.colorsOf(context).textColor, size: 24),
+                      Icon(Icons.bolt,
+                          color: AppTheme.colorsOf(context).textColor,
+                          size: 24),
                       SizedBox(width: 12),
                       Text(
                         'Beta / Active Development',
@@ -50,7 +57,9 @@ class ConstructionScreen extends StatelessWidget {
                   Text(
                     'We are building something amazing. Check back soon!',
                     style: TextStyle(
-                      color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.7),
+                      color: AppTheme.colorsOf(context)
+                          .textColor
+                          .withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
                   ),
@@ -306,13 +315,19 @@ class ConstructionScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: isCompleted
-                        ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
-                        : AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
+                        ? AppTheme.colorsOf(context)
+                            .success
+                            .withValues(alpha: 0.1)
+                        : AppTheme.colorsOf(context)
+                            .info
+                            .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     isCompleted ? Icons.check_circle : Icons.event,
-                    color: isCompleted ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).info,
+                    color: isCompleted
+                        ? AppTheme.colorsOf(context).success
+                        : AppTheme.colorsOf(context).info,
                     size: 20,
                   ),
                 ),
@@ -357,7 +372,9 @@ class ConstructionScreen extends StatelessWidget {
                             ? Icons.check_circle
                             : Icons.circle_outlined,
                         size: 16,
-                        color: isCompleted ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
+                        color: isCompleted
+                            ? AppTheme.colorsOf(context).success
+                            : AppTheme.colorsOf(context).textColorLight,
                       ),
                       const SizedBox(width: 8),
                       Text(item),

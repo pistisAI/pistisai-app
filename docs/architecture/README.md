@@ -5,10 +5,10 @@ This directory contains current architecture references for Pistisai.
 ## Canonical Architecture
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
+- [Desktop-as-Hub Topology](SYSTEM_ARCHITECTURE.md#desktop-as-hub-topology) — primary desktop is the device/client hub for web, mobile, and secondary desktops; Hermes stays the messaging-platform hub (issue #492)
 - [Agent Runtime Contract](AGENT_RUNTIME_CONTRACT.md)
 - [Secure Device Mesh](SECURE_DEVICE_MESH.md)
 - [Service Lifecycle](service_lifecycle.md)
-- [Architecture Codemap](architecture-codemap.md)
 - [Avatar System](AVATAR_SYSTEM.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
 - [Vision System](VISION_SYSTEM.md)
@@ -17,7 +17,6 @@ This directory contains current architecture references for Pistisai.
 ## Platform Architecture
 
 - [Unified Flutter Native System Tray](UNIFIED_FLUTTER_NATIVE_SYSTEM_TRAY.md)
-- [Unified Flutter Web](UNIFIED_FLUTTER_WEB.md)
 - [Frontend Accessibility Guide](frontend/ACCESSIBILITY_GUIDE.md)
 - [Frontend Configuration UI Guide](frontend/CONFIGURATION_UI_GUIDE.md)
 - [Platform Adapter](services/PLATFORM_ADAPTER.md)

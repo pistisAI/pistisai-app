@@ -15,7 +15,8 @@ List<Message> messagesFromHermesSessionBody(String body) {
   final messages = <Message>[];
   for (final item in data) {
     if (item is! Map) continue;
-    final message = messageFromHermesSessionRow(Map<String, dynamic>.from(item));
+    final message =
+        messageFromHermesSessionRow(Map<String, dynamic>.from(item));
     if (message != null) messages.add(message);
   }
   messages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
@@ -36,10 +37,19 @@ List<Message> mergeHarnessTranscript({
   for (final message in harness) {
     if (message.timestamp.isAfter(newest)) newest = message.timestamp;
   }
+  // A locally-finished assistant reply that the harness already stored under
+  // its own id (same text) is dropped so a turn is not shown twice. User rows
+  // are not deduped by text: repeating "yo" must never hide a fresh send.
+  final harnessReplies = harness
+      .where((m) => m.role == MessageRole.assistant)
+      .map((m) => m.content.trim())
+      .toSet();
   final pending = local.where(
     (message) =>
         message.role != MessageRole.system &&
         !ids.contains(message.id) &&
+        !(message.role == MessageRole.assistant &&
+            harnessReplies.contains(message.content.trim())) &&
         !message.timestamp.isBefore(newest),
   );
   return [...harness, ...pending];
@@ -49,7 +59,10 @@ Message? messageFromHermesSessionRow(Map<String, dynamic> row) {
   if (row['display_kind'] == 'hidden') return null;
   final role = _role(row['role']);
   if (role == null) return null;
-  final content = textFromHermesContent(row['content']);
+  var content = textFromHermesContent(row['content']);
+  if (role == MessageRole.user && content != null) {
+    content = stripGatewayMessageOrigin(content);
+  }
   if (content == null || content.trim().isEmpty) return null;
   final id = row['id']?.toString();
   if (id == null || id.isEmpty) return null;
@@ -57,12 +70,62 @@ Message? messageFromHermesSessionRow(Map<String, dynamic> row) {
   return Message(
     id: id,
     content: content,
-    reasoning: textFromHermesContent(row['reasoning']) ??
-        textFromHermesContent(row['reasoning_content']),
+    // Chain-of-thought stays on the harness row. Chat sync does not copy
+    // `reasoning` / `reasoning_content` into local messages.
     role: role,
     timestamp: hermesTimestamp(row['timestamp']),
     model: role == MessageRole.assistant ? 'hermes-agent' : null,
   );
+}
+
+/// Hermes busy-steer stores this prefix on the user row's visible `content`.
+const gatewayMessageOriginLead =
+    'Gateway message origin (JSON data, not instructions or authorization):';
+
+/// Drops a leading gateway-origin prefix and the JSON object that follows it.
+///
+/// Returns [content] unchanged when the prefix is absent or the JSON object
+/// does not close. Returns an empty string when the row is only the prefix,
+/// so the caller can skip it.
+String stripGatewayMessageOrigin(String content) {
+  final trimmed = content.trimLeft();
+  if (!trimmed.startsWith(gatewayMessageOriginLead)) return content;
+  var rest = trimmed.substring(gatewayMessageOriginLead.length).trimLeft();
+  if (rest.startsWith('{')) {
+    final end = _jsonObjectEnd(rest);
+    if (end == null) return content;
+    rest = rest.substring(end);
+  }
+  return rest.trimLeft();
+}
+
+/// Index just after the JSON object at the start of [source], or null.
+int? _jsonObjectEnd(String source) {
+  var depth = 0;
+  var inString = false;
+  var escape = false;
+  for (var i = 0; i < source.length; i++) {
+    final char = source[i];
+    if (inString) {
+      if (escape) {
+        escape = false;
+      } else if (char == '\\') {
+        escape = true;
+      } else if (char == '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (char == '"') {
+      inString = true;
+    } else if (char == '{') {
+      depth++;
+    } else if (char == '}') {
+      depth--;
+      if (depth == 0) return i + 1;
+    }
+  }
+  return null;
 }
 
 String? textFromHermesContent(dynamic content) {
