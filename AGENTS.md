@@ -48,7 +48,7 @@ npm run test:full          # full root Jest run (cross-env NODE_ENV=test); most 
 
 # Per-service (cd into dir first)
 # api-backend:     npm run dev | npm run test:unit (../../test/api-backend/, --detectOpenHandles) | npm run test:auth (single file) | npm run lint | npm run db:validate | npm run db:stats | npm run db:test
-# streaming-proxy: npm run dev (node --inspect) | npm run health | npm test (uses root jest) | npm run build (tsc) | npm run lint
+# streaming-proxy: npm run dev (node --inspect) | npm test (uses root jest) | npm run build (tsc) | npm run lint
 # sdk:             npm run build (tsc) | npm test (jest ^29) | npm run lint
 # openclaw skill:  npm run build (tsc) | npm test (vitest run)
 ```

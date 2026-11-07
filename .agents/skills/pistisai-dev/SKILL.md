@@ -77,13 +77,12 @@ All backend service directories are ESM (except `backend/auth/` which is CommonJ
 #### API Backend (`services/api-backend/`)
 - **Install packages**: `npm install`
 - **Start dev server**: `npm run dev`
-- **Run unit & integration tests**:
+- **Run unit tests**:
   - Root runner (API tests are at repository root):
     ```bash
     npm test ../../test/api-backend/security/authentication-authorization.test.js
     ```
   - Unit tests: `npm run test:unit`
-  - Integration tests: `npm run test:integration`
   - Complete security/auth tests: `npm run test:security` / `npm run test:auth`
 - **Database helpers**: `npm run db:validate` / `npm run db:stats` / `npm run db:test` (there is no `db:migrate`)
 
