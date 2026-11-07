@@ -25,7 +25,7 @@ Use `127.0.0.1`, not `localhost`. In this image `localhost` can resolve to IPv6 
 
 ## Cache rules
 
-`nginx.conf` is a single server. It is not the domain-split proxy sketched in [Unified Flutter Web](../../architecture/UNIFIED_FLUTTER_WEB.md).
+`nginx.conf` is a single server.
 
 | Request | Policy |
 | --- | --- |

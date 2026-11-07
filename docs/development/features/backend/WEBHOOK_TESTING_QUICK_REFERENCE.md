@@ -391,5 +391,5 @@ Standard API rate limits apply to webhook testing endpoints.
 ## Related Documentation
 
 - [Webhook Testing Implementation](./WEBHOOK_TESTING_IMPLEMENTATION.md)
-- [Webhook Implementation Summary](./routes/WEBHOOK_IMPLEMENTATION_SUMMARY.md)
-- [Webhook API Reference](./routes/WEBHOOK_API.md)
+- Webhook Implementation Summary
+- Webhook API Reference

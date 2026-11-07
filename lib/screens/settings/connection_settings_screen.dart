@@ -29,7 +29,7 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
         elevation: 0,
         leading: BackButton(
           onPressed: () {
-            context.go('/');
+            context.go('/config');
           },
         ),
       ),
@@ -44,18 +44,6 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                 const SizedBox(height: 16),
                 const Text('Manage tunnel and daemon connections.'),
                 const SizedBox(height: 32),
-
-                // Tunnel Settings
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.vpn_key),
-                    title: const Text('Tunnel Settings'),
-                    subtitle: const Text('Configure SSH tunnel settings'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.go('/settings/tunnel'),
-                  ),
-                ),
-                const SizedBox(height: 8),
 
                 // Daemon Settings
                 Card(
@@ -118,7 +106,8 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                             FilledButton(
                               onPressed: () => Navigator.of(context).pop(true),
                               style: FilledButton.styleFrom(
-                                backgroundColor: AppTheme.colorsOf(context).warning,
+                                backgroundColor:
+                                    AppTheme.colorsOf(context).warning,
                               ),
                               child: const Text('Clear & Re-run'),
                             ),
@@ -148,7 +137,8 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Failed to clear setup data: $e'),
-                                backgroundColor: AppTheme.colorsOf(context).danger,
+                                backgroundColor:
+                                    AppTheme.colorsOf(context).danger,
                               ),
                             );
                           }

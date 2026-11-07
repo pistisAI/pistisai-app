@@ -84,5 +84,4 @@ Typical camera flow:
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
-- [Implementation Plan](../development/IMPLEMENTATION_PLAN.md)
 - [Product Specification](../../SPEC.md)

@@ -12,9 +12,9 @@ This directory contains comprehensive testing documentation for Pistisai.
 
 ### Test Implementation
 
-- **[Implementation Complete Summary](IMPLEMENTATION_COMPLETE_SUMMARY.md)** - Testing implementation status
-- **[Task 26 Completion Summary](TASK_26_COMPLETION_SUMMARY.md)** - Specific testing milestone completion
-- **[Linter and TODO Fixes](LINTER_AND_TODO_FIXES.md)** - Code quality and maintenance testing
+- **Implementation Complete Summary** - Testing implementation status
+- **Task 26 Completion Summary** - Specific testing milestone completion
+- **Linter and TODO Fixes** - Code quality and maintenance testing
 
 ### End-to-End Testing
 
@@ -22,9 +22,9 @@ This directory contains comprehensive testing documentation for Pistisai.
 
 ## 🔗 Related Documentation
 
-- **[Development Documentation](../DEVELOPMENT/README.md)** - Development testing practices
-- **[Operations Documentation](../OPERATIONS/README.md)** - Operational testing and monitoring
-- **[API Documentation](../API/README.md)** - API testing and validation
+- **[Docs index](../../README.md)** - Development testing practices
+- **[Operations Documentation](../../operations/README.md)** - Operational testing and monitoring
+- **[API Documentation](../../api/README.md)** - API testing and validation
 
 ## 📖 Testing Overview
 

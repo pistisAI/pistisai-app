@@ -27,7 +27,6 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   ConnectionMethod? _lastMethod;
   HermesLocation? _lastHermesLocation;
   String? _lastErrorSnackbarMessage;
-  bool _installReportReady = false;
 
   @override
   void dispose() {
@@ -222,7 +221,6 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
             Expanded(
               child: OutlinedButton(
                 onPressed: () {
-                  _installReportReady = false;
                   wizard.previousStep();
                 },
                 child: const Text('Back'),
@@ -235,12 +233,6 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                   ? null
                   : () async {
                       if (isLastStep) {
-                        if (_installReportReady) {
-                          if (mounted) {
-                            context.go('/');
-                          }
-                          return;
-                        }
                         _lastErrorSnackbarMessage = null;
                         final success = await wizard.completeSetup();
 
@@ -256,13 +248,11 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
 
                         _lastErrorSnackbarMessage = null;
 
-                        if (wizard.state.hermesLocation == HermesLocation.local) {
-                          setState(() => _installReportReady = true);
-                          return;
-                        }
-
+                        // Leave the wizard immediately after marking setup
+                        // done. Local Hermes used to stay on this same
+                        // CompletionStep for a second "Continue" click.
                         if (mounted) {
-                          context.go('/');
+                          context.go('/chat');
                         }
                         return;
                       }
@@ -271,7 +261,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                     },
               child: Text(
                 isLastStep
-                    ? (_installReportReady ? 'Continue' : 'Complete')
+                    ? 'Complete'
                     : wizard.state.isLoading
                         ? 'Loading...'
                         : 'Next',

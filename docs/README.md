@@ -26,13 +26,11 @@ For project-wide agent instructions, see [AGENTS.md](../AGENTS.md). For the prod
 - [Vision System](architecture/VISION_SYSTEM.md)
 - [Tunnel System](architecture/TUNNEL_SYSTEM.md) - legacy/fallback tunnel reference
 - [Service Lifecycle](architecture/service_lifecycle.md)
-- [Architecture Codemap](architecture/architecture-codemap.md)
 
 ## Development
 
 - [Developer Onboarding](development/DEVELOPER_ONBOARDING.md)
 - [Development Workflow](development/DEVELOPMENT_WORKFLOW.md)
-- [Implementation Plan](development/IMPLEMENTATION_PLAN.md)
 - [Building Guide](development/BUILDING_GUIDE.md)
 - [Build Scripts](development/BUILD_SCRIPTS.md)
 - [Testing Guide](development/testing/COMPREHENSIVE_TESTING_GUIDE.md)

@@ -300,10 +300,10 @@ curl http://localhost:3001/api/tunnel/diagnostics
 ## Related Documentation
 
 - [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) - Comprehensive SSH best practices
-- [ssh-connection-impl.ts](./src/connection-pool/ssh-connection-impl.ts) - SSH connection implementation
-- [ssh-error-handler.ts](./src/connection-pool/ssh-error-handler.ts) - SSH error handling
-- [connection-pool-impl.ts](./src/connection-pool/connection-pool-impl.ts) - Connection pool management
-- [Requirements Document](../../.kiro/specs/ssh-websocket-tunnel-enhancement/requirements.md) - Full requirements
+- ssh-connection-impl.ts - SSH connection implementation
+- ssh-error-handler.ts - SSH error handling
+- connection-pool-impl.ts - Connection pool management
+- Requirements Document - Full requirements
 
 ---
 

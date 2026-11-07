@@ -8,7 +8,7 @@ This is the **ONE AND ONLY** deployment document for Pistisai. Follow this exact
 
 **Related Documentation:**
 
-- [System Architecture](../ARCHITECTURE/SYSTEM_ARCHITECTURE.md)
+- [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
 - [k3s on Proxmox Deployment Workflow](./K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
 - [ArgoCD Proxmox Management VM Runbook](./ARGOCD_PROXMOX_MANAGEMENT_VM.md)
 - [Versioning Strategy](./VERSIONING_STRATEGY.md)
@@ -200,4 +200,4 @@ kubectl get ingress -n Pistisai
 - **Ingress Issues:** Check ingress controller and DNS configuration
 - **Authentication Errors:** Verify Auth0 environment variables in ConfigMap and Secrets
 
-For more detailed troubleshooting, see [Kubernetes README](../../k8s/README.md).
+For more detailed troubleshooting, see Kubernetes README.

@@ -389,6 +389,6 @@ This implementation satisfies the following requirements:
 
 ## Related Documentation
 
-- [ThemeProvider](./theme_provider.dart) - Theme management
-- [Platform Settings Screen](.kiro/specs/platform-settings-screen/) - Platform-specific settings
-- [Unified App Theming](.kiro/specs/unified-app-theming/) - Unified theming system
+- ThemeProvider - Theme management
+- Platform Settings Screen - Platform-specific settings
+- Unified App Theming - Unified theming system

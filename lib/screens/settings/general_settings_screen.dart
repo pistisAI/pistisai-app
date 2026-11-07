@@ -18,7 +18,7 @@ class GeneralSettingsScreen extends StatelessWidget {
         elevation: 0,
         leading: BackButton(
           onPressed: () {
-            context.go('/');
+            context.go('/config');
           },
         ),
       ),
@@ -46,6 +46,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                     onTap: () => context.go('/settings/appearance'),
                   ),
                 ),
+                const SizedBox(height: 8),
               ],
             ),
           ),

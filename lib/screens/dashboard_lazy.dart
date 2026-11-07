@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'dashboard/agent_detail_screen.dart';
+import '../config/app_config.dart';
 
 // Lazy-loaded dashboard routes
 // NOTE: /dashboard route removed - functionality moved to /overview in StatefulShellRoute
@@ -13,7 +14,7 @@ final dashboardRoutes = [
     name: 'agent-detail',
     pageBuilder: (context, state) {
       final agentId = state.pathParameters['id'] ?? '';
-      debugPrint('[Router] Building AgentDetailScreen for: $agentId');
+      AppConfig.verboseLog('[Router] Building AgentDetailScreen for: $agentId');
       return MaterialPage(
         key: state.pageKey,
         child: AgentDetailScreen(agentId: agentId),
