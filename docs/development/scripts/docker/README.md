@@ -36,5 +36,5 @@ scripts/docker/
 ## 🔗 Related Documentation
 
 - [Deployment Workflow](../deploy/README.md) - Current deployment processes
-- [Package Building](../packaging/README.md) - Available package formats
-- [Version Management](../version_manager.sh) - Version management tools
+- Package Building - Available package formats
+- Version Management - Version management tools

@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 /// BreadcrumbBar(
 ///   items: [
 ///     BreadcrumbItem(label: 'Home', route: '/'),
-///     BreadcrumbItem(label: 'Settings', route: '/settings'),
+///     BreadcrumbItem(label: 'Settings', route: '/config'),
 ///     BreadcrumbItem(label: 'Connection', route: '/settings/connection'),
 ///   ],
 /// )
@@ -165,84 +165,69 @@ class AutoBreadcrumbBar extends StatelessWidget {
     '/': [
       BreadcrumbItem(label: 'Home', route: '/'),
     ],
-    '/settings': [
+    '/config': [
       BreadcrumbItem(label: 'Home', route: '/'),
       const BreadcrumbItem(label: 'Settings'),
     ],
     '/settings/general': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       const BreadcrumbItem(label: 'General'),
     ],
     '/settings/appearance': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       const BreadcrumbItem(label: 'Appearance'),
     ],
     '/settings/connection': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       const BreadcrumbItem(label: 'Connection'),
     ],
     '/settings/avatar': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       const BreadcrumbItem(label: 'Avatar'),
     ],
     '/settings/desktop': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       const BreadcrumbItem(label: 'Desktop'),
     ],
     '/settings/about': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       const BreadcrumbItem(label: 'About'),
     ],
     '/settings/daemon': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       BreadcrumbItem(label: 'Connection', route: '/settings/connection'),
       const BreadcrumbItem(label: 'Daemon Settings'),
     ],
     '/settings/connection-status': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       BreadcrumbItem(label: 'Connection', route: '/settings/connection'),
       const BreadcrumbItem(label: 'Connection Status'),
     ],
     '/settings/avatar/customization': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       BreadcrumbItem(label: 'Avatar', route: '/settings/avatar'),
       const BreadcrumbItem(label: 'Customization'),
     ],
     '/settings/desktop/files': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       BreadcrumbItem(label: 'Desktop', route: '/settings/desktop'),
       const BreadcrumbItem(label: 'File Operations'),
     ],
     '/upgrade': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       BreadcrumbItem(label: 'About', route: '/settings/about'),
       const BreadcrumbItem(label: 'Upgrade'),
-    ],
-    '/settings/downloads': [
-      BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
-      const BreadcrumbItem(label: 'Downloads'),
-    ],
-    '/settings/tunnel': [
-      BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
-      BreadcrumbItem(label: 'Connection', route: '/settings/connection'),
-      const BreadcrumbItem(label: 'Tunnel Settings'),
-    ],
-    '/dashboard': [
-      BreadcrumbItem(label: 'Home', route: '/'),
-      const BreadcrumbItem(label: 'Dashboard'),
     ],
     '/overview': [
       BreadcrumbItem(label: 'Home', route: '/'),
@@ -254,7 +239,7 @@ class AutoBreadcrumbBar extends StatelessWidget {
     ],
     '/gui-automation': [
       BreadcrumbItem(label: 'Home', route: '/'),
-      BreadcrumbItem(label: 'Settings', route: '/settings'),
+      BreadcrumbItem(label: 'Settings', route: '/config'),
       BreadcrumbItem(label: 'Desktop', route: '/settings/desktop'),
       const BreadcrumbItem(label: 'GUI Automation'),
     ],

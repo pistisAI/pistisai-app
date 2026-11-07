@@ -196,4 +196,4 @@ kubectl get ingress -n Pistisai
 - **Ingress Issues:** Check ingress controller and DNS configuration
 - **Authentication Errors:** Verify Auth0 environment variables in ConfigMap and Secrets
 
-For more detailed troubleshooting, see [Kubernetes README](../../k8s/README.md).
+For more detailed troubleshooting, see Kubernetes README.

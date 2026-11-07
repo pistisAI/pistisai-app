@@ -2,6 +2,14 @@
 
 Flutter desktop/web app + Node.js backend services: local-first companion layer for agent runtimes (Hermes primary test path, OpenClaw Gateway, compatible gateways). Ollama/LM Studio are support model providers for app-owned features (e.g. embeddings) — not primary runtimes unless wrapped by an agent runtime.
 
+## Hub topology (rules for agents)
+
+- The primary Pistisai desktop install is the **device/client hub** (main node). Web, mobile, and secondary desktop clients must connect through it, not directly to Hermes or another runtime.
+- Hermes is the **messaging-platform hub**: it owns Telegram/Slack/etc. adapters directly. Never claim or build those routing through the Flutter app.
+- Existing direct client-to-Hermes paths are transitional / to-be-removed (#492); don't extend them.
+- Mobile discovers the hub over Tailscale via `GET /api/pistisai/hub` (`AppConfig.hubPath`, served by `lib/services/router_server.dart`); keep that contract intact.
+- Details: `docs/architecture/SYSTEM_ARCHITECTURE.md#desktop-as-hub-topology`.
+
 ## Layout (service → port / contract)
 
 - `lib/main.dart`, `lib/di/locator.dart` — app entry, two-phase DI: `setupCoreServices()` → `setupAuthenticatedServices()`
@@ -13,14 +21,12 @@ Flutter desktop/web app + Node.js backend services: local-first companion layer 
 - `backend/auth/` — Express 5 **CommonJS** (`"type": "commonjs"`), `PORT || 3000`, entry `handlers.js`; no `dev` script; Jest 29
 - `services/sdk/` — TypeScript SDK (ESM, Node `>=26.0.0 <28.0.0`), `main: dist/index.js` — run `npm run build` (`tsc`) before use
 - `services/openclaw-skills/pistisai/` — avatar personality skill, tests use **Vitest** (`vitest run`), not Jest
-- `lib/shared/` — separate package `pistisai_shared` (Dart `>=3.9.0 <4.0.0`, version `1.0.6+33`) needing its own `flutter pub get`
 - Discovery defaults: OpenClaw Gateway `localhost:18789`, Hermes `127.0.0.1:8642`, Ollama `localhost:11434`, LM Studio `localhost:1234`
 
 ## Setup & verify (exact commands, from repo root)
 
 ```bash
 flutter pub get
-cd lib/shared && flutter pub get && cd ../..   # shared package deps are separate
 npm install                                     # root Node tooling (backend only, NOT the Flutter package)
 cd services/api-backend && npm install          # repeat per service you touch
 ```
@@ -42,7 +48,7 @@ npm run test:full          # full root Jest run (cross-env NODE_ENV=test); most 
 
 # Per-service (cd into dir first)
 # api-backend:     npm run dev | npm run test:unit (../../test/api-backend/, --detectOpenHandles) | npm run test:auth (single file) | npm run lint | npm run db:validate | npm run db:stats | npm run db:test
-# streaming-proxy: npm run dev (node --inspect) | npm run health | npm test (uses root jest) | npm run build (tsc) | npm run lint
+# streaming-proxy: npm run dev (node --inspect) | npm test (uses root jest) | npm run build (tsc) | npm run lint
 # sdk:             npm run build (tsc) | npm test (jest ^29) | npm run lint
 # openclaw skill:  npm run build (tsc) | npm test (vitest run)
 ```

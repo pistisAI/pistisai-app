@@ -63,7 +63,13 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    // Do not call Theme.of / AppTheme here — InheritedTheme is not available
+    // until after initState. Personality colors resolve in didChangeDependencies.
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _updatePersonalityDerived();
   }
 
@@ -298,48 +304,58 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
 
         final totalScale = pulse * bounce * _bounceScale;
 
-        return AnimatedContainer(
-          duration: widget.transitionDuration,
-          curve: Curves.easeInOut,
-          width: widget.size * totalScale,
-          height: widget.size * totalScale,
-          decoration: BoxDecoration(
-            color: bgColor,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: borderColor,
-              width: 4,
-            ),
-            boxShadow: widget.showGlow
-                ? [
-                    BoxShadow(
-                      color: glowColor,
-                      blurRadius: 20 * pulse,
-                      spreadRadius: 5 * pulse,
-                    ),
-                  ]
-                : null,
-          ),
-          child: Center(
-            child: AnimatedSwitcher(
+        // Keep a fixed layout size; animate with Transform.scale so parent
+        // Rows/Columns never get unbounded or exploding constraints.
+        return SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: Transform.scale(
+            scale: totalScale,
+            child: AnimatedContainer(
               duration: widget.transitionDuration,
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeIn,
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: ScaleTransition(
-                    scale: Tween<double>(begin: 0.5, end: 1.0)
-                        .animate(animation),
-                    child: child,
+              curve: Curves.easeInOut,
+              width: widget.size,
+              height: widget.size,
+              decoration: BoxDecoration(
+                color: bgColor,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: borderColor,
+                  width: 4,
+                ),
+                boxShadow: widget.showGlow
+                    ? [
+                        BoxShadow(
+                          color: glowColor,
+                          blurRadius: 20 * pulse,
+                          spreadRadius: 5 * pulse,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: widget.transitionDuration,
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(
+                        scale: Tween<double>(begin: 0.5, end: 1.0)
+                            .animate(animation),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Text(
+                    emoji,
+                    key: ValueKey('${emoji}_${widget.state.name}'),
+                    style: TextStyle(
+                      fontSize: widget.size * 0.5,
+                    ),
                   ),
-                );
-              },
-              child: Text(
-                emoji,
-                key: ValueKey('${emoji}_${widget.state.name}'),
-                style: TextStyle(
-                  fontSize: widget.size * 0.5,
                 ),
               ),
             ),

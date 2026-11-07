@@ -61,7 +61,7 @@ When you modify Drift table definitions or queries in `lib/database/`, you must 
 ### 3.1 Flutter Frontend Operations
 Run these commands from the root directory of the repository:
 
-- **Get dependencies**: `flutter pub get` then `cd lib/shared && flutter pub get && cd ../..`
+- **Get dependencies**: `flutter pub get`
 - **Linter checks**: `flutter analyze lib/`
 - **CI Flutter gate**: `bash scripts/ci/flutter_security_basic_tests.sh`
 - **Run specific test file**: `flutter test test/services/some_test.dart`

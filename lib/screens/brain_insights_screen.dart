@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../components/brain_insight_widget.dart';
 import '../components/app_logo.dart';
 
@@ -12,7 +13,8 @@ class BrainInsightsScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go('/config'),
           tooltip: 'Back',
         ),
         title: Row(

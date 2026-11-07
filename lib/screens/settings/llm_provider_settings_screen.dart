@@ -14,7 +14,7 @@ class LLMProviderSettingsScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/settings'),
+          onPressed: () => context.go('/config'),
           tooltip: 'Back to Settings',
         ),
         title: const Text('LLM Provider Settings'),

@@ -479,7 +479,6 @@ MIT License - See LICENSE file for details
 
 ## See Also
 
-- [CLAUDE.md](../../CLAUDE.md) - Project documentation
-- [IMPLEMENTATION_PLAN.md](../development/IMPLEMENTATION_PLAN.md) - Implementation status
+- CLAUDE.md - Project documentation
 - [SYSTEM_ARCHITECTURE.md](../architecture/SYSTEM_ARCHITECTURE.md) - Technical architecture
 - [OpenClaw Gateway Documentation](https://github.com/openclaw/gateway) - OpenClaw integration

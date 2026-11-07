@@ -234,10 +234,10 @@ grep -r "SSL" scripts/ --include="*.sh"
 
 ## 📚 Related Documentation
 
-- [Main README](../README.md) - Project overview and setup
-- [Deployment Guide](../docs/DEPLOYMENT/) - Detailed deployment instructions
-- [Development Guide](../docs/DEVELOPMENT/) - Development workflow
-- [Operations Guide](../docs/OPERATIONS/) - System operations and maintenance
+- [Main README](../../../README.md) - Project overview and setup
+- [Deployment Guide](../../deployment/README.md) - Detailed deployment instructions
+- [Docs index](../../README.md) - Development workflow index
+- [Operations Guide](../../operations/README.md) - System operations and maintenance
 
 ---
 

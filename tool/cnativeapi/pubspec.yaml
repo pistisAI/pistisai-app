@@ -1,0 +1,28 @@
+name: cnativeapi
+description: >-
+  Path override of cnativeapi 0.5.2. Depends on linux_native_deps so that
+  package's build hook installs GTK/X11/Xi headers and fetches cxx_impl
+  before this hook compiles the native library.
+publish_to: none
+version: 0.5.2
+homepage: https://github.com/libnativeapi/nativeapi
+repository: https://github.com/libnativeapi/nativeapi/tree/main/bindings/dart/cnativeapi
+
+environment:
+  sdk: ^3.13.0
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
+dependencies:
+  code_assets: ^2.1.0
+  ffi: ">=1.2.1 <3.0.0"
+  hooks: ^2.2.0
+  logging: ^1.3.0
+  native_toolchain_c: ^0.19.5
+  linux_native_deps:
+    path: ../linux_native_deps

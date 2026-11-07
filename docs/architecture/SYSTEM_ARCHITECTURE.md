@@ -8,6 +8,40 @@ Core functionality is local-first. Cloud services add authentication, sync, pres
 
 The setup wizard is the authority for agent runtime selection. Do not assume one universal default runtime. Hermes is the current first test path; OpenClaw remains a supported agent runtime and original integration.
 
+## Desktop-as-Hub Topology
+
+The **primary Pistisai desktop install** (normally the first app installed) is the main node: the **device/client hub** for all Pistisai clients. Web, mobile, and secondary desktop clients connect through that hub, not directly to the agent runtime.
+
+```text
+  Telegram / Slack / Discord / ...          (messaging platforms)
+              │
+              ▼
+  ┌──────────────────────────┐
+  │  Hermes gateway          │  messaging-platform hub: owns Telegram/Slack/etc. adapters
+  │  (agent runtime)         │
+  └────────────┬─────────────┘
+               │ agent channel (local or Tailscale)
+               ▼
+  ┌──────────────────────────┐
+  │  Primary Pistisai desktop│  device/client hub: first installed app, main node
+  │  (embedded router :1337, │  exposes GET /api/pistisai/hub for discovery
+  │   desktop control,       │
+  │   vision, local brain)   │
+  └──┬──────────┬─────────┬──┘
+     │          │         │   Tailscale / private mesh
+     ▼          ▼         ▼
+   Web app   Mobile app  Secondary desktops     (Pistisai clients)
+```
+
+| Role | Owner | Scope |
+| --- | --- | --- |
+| Messaging-platform hub | Hermes gateway | Telegram, Slack, Discord, and other messaging adapters, owned directly by Hermes. They do **not** route through the Flutter app. |
+| Device/client hub | Primary Pistisai desktop | Web app, mobile app, secondary desktops. Owns the agent-channel connection, desktop control, vision, and channel sync for Pistisai clients. |
+
+- Discovery: the hub's embedded router (`lib/services/router_server.dart`) serves `GET /api/pistisai/hub` (`AppConfig.hubPath`); mobile clients use it over Tailscale to locate the primary desktop hub.
+- Transitional: any current code path where web, mobile, or a secondary desktop connects straight to Hermes (or another runtime) is transitional and slated for removal (issue #492). New client work should target the hub.
+- Single-device local use is unchanged: the desktop is both hub and client.
+
 ## Technology Stack
 
 | Layer | Current implementation |
