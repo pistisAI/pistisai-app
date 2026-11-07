@@ -196,8 +196,6 @@ const LEGACY_DIRECT_PROXY_ROUTES_ENABLED =
   LEGACY_PROXY_ROUTES_ENABLED ||
   process.env.PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES === 'true';
 
-// AuthService will be initialized in initializeHttpPollingSystem()
-
 // Express app setup
 const app = express();
 
@@ -228,7 +226,6 @@ const shutdownManager = setupGracefulShutdown(server, {
   shutdownTimeoutMs: 10000,
   onShutdown: async () => {
     logger.info('Running custom shutdown handlers');
-    // Custom shutdown logic will be added here
   },
 });
 
@@ -249,8 +246,6 @@ async function authenticateToken(req, res, next) {
   const authMiddleware = getAuthMiddleware();
   return authMiddleware(req, res, next);
 }
-
-// Bridge connections removed - using HTTP polling only
 
 // Initialize streaming proxy manager
 
@@ -362,7 +357,6 @@ if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   registerRoutes('/tunnel-webhooks', tunnelWebhooksRoutes);
 }
 registerRoutes('/user-activity', userActivityRoutes);
-// Note: versionedRoutes is a utility module, not a router - don't register it
 registerRoutes(
   '/webhook-payload-transformations',
   webhookPayloadTransformationsRoutes,
@@ -374,7 +368,6 @@ if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   registerRoutes('/infrastructure/tunnel', infrastructureTunnelRoutes);
 }
 registerRoutes('/agent/events', agentEventsRoutes);
-app.post('/api/agent/events', agentEventsRoutes);
 
 // LLM Tunnel Cloud Proxy Endpoints (support both /api/ollama and /ollama)
 setSshProxy(sshProxy);
@@ -457,8 +450,6 @@ registerRoutes('/queue/status', authenticateJWT, queueStatusHandler);
 // Queue drain endpoint (for testing/debugging)
 registerRoutes('/queue/drain', authenticateJWT, queueDrainHandler);
 
-// WebSocket bridge endpoints removed - using HTTP polling only
-
 // WebSocket upgrade handling for SSH tunnel
 server.on('upgrade', (request, socket, head) => {
   const pathname = new URL(request.url, `http://${request.headers.host}`)
@@ -514,24 +505,10 @@ if (LEGACY_STREAMING_PROXY_ROUTES_ENABLED) {
   registerRoutes('/proxy/status', ...proxyStatusRoute);
 }
 
-// Ollama proxy endpoints removed - using HTTP polling tunnel system instead
-
 // The error handler must be registered before any other error middleware and after all controllers
 
 // Sentry Error Handler must be before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
-
-// Error handling middleware
-app.use((error, req, res, _next) => {
-  logger.error('Unhandled error:', error);
-  res.status(500).json({
-    error: 'Internal server error',
-    message:
-      process.env.NODE_ENV === 'development'
-        ? error.message
-        : 'Something went wrong',
-  });
-});
 
 // Conversation routes - defined as a placeholder, will be initialized in initializeTunnelSystem
 let conversationRouter = null;
@@ -624,9 +601,6 @@ async function initializeTunnelSystem(retries = 10) {
 
     // Register conversation routes now that database is ready
     await registerConversationRoutes(dbMigrator);
-
-    // Setup final handlers (404, Sentry, Error)
-    setupFinalHandlers();
 
     // Register database with health check service
     healthCheckService.registerDatabase(dbMigrator);
@@ -779,6 +753,10 @@ async function initializeTunnelSystem(retries = 10) {
     logger.warn(
       'Server starting with degraded functionality due to initialization failure',
     );
+  } finally {
+    // One 404 and one error handler, after every route mounted above,
+    // including when database init fails before conversation routes exist.
+    setupFinalHandlers();
   }
 }
 
@@ -839,4 +817,3 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export { app, server, startServer };
-// Deploy test:
