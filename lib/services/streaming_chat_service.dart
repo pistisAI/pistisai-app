@@ -9,6 +9,7 @@ import '../models/streaming_message.dart';
 import 'streaming_service.dart';
 import 'hermes/hermes_session_transcript.dart';
 import 'hermes/hermes_streaming_service.dart';
+import 'streaming_content_update.dart';
 
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
@@ -47,10 +48,11 @@ class StreamingChatService extends ChangeNotifier {
   }
 
   /// The one conversation for this harness. Every connected device uses the
-  /// same `main-channel` session id and loads the transcript from the harness.
+  /// same `pistisai` session id and loads the transcript from the harness.
   Conversation? _mainChannel;
   Timer? _sharedChannelTimer;
   bool _syncingSharedChannel = false;
+  String? _channelSyncError;
   AvatarStateService? _avatarState;
 
   String? _selectedModel;
@@ -83,6 +85,10 @@ class StreamingChatService extends ChangeNotifier {
   bool get isStreaming => _isStreaming;
   bool get hasConversations => _mainChannel != null;
   bool get isStorageReady => _storageReady;
+
+  /// Set when the last shared-channel sync failed (fetch returned null).
+  /// Cleared after a successful sync. Surfaced in the chat header.
+  String? get channelSyncError => _channelSyncError;
 
   /// Stream of current streaming content for real-time UI updates
   Stream<String> get streamingContentStream => _streamingContentSubject.stream;
@@ -151,19 +157,29 @@ class StreamingChatService extends ChangeNotifier {
       final loaded = await _storageService.loadConversations();
 
       if (loaded.isNotEmpty) {
-        // Find or create the main channel
-        final existing = loaded.firstWhere(
-          (c) => c.id == 'main-channel',
-          orElse: () => Conversation.mainChannel(
-            model: _selectedModel,
-            agentName: configuredAgentName(),
-          ),
-        );
-        _mainChannel = existing;
-        _applyAgentNameToMainChannel();
-        appLogger.info(
-          '[StreamingChat] Loaded main channel (${existing.messages.length} messages)',
-        );
+        // Prefer the pistisai platform channel; ignore leftover main-channel
+        // api_server test sessions so we never poll that harness id again.
+        Conversation? existing;
+        for (final conversation in loaded) {
+          if (conversation.id == Conversation.pistisaiChannelId) {
+            existing = conversation;
+            break;
+          }
+        }
+        if (existing != null) {
+          _mainChannel = existing;
+          _applyAgentNameToMainChannel();
+          appLogger.info(
+            '[StreamingChat] Loaded pistisai channel '
+            '(${existing.messages.length} messages)',
+          );
+        } else {
+          appLogger.info(
+            '[StreamingChat] No pistisai channel in storage — creating fresh '
+            '(ignoring legacy main-channel if present)',
+          );
+          _createWelcomeConversation();
+        }
       } else {
         _createWelcomeConversation();
       }
@@ -186,14 +202,34 @@ class StreamingChatService extends ChangeNotifier {
   /// Replace the on-screen thread with the harness transcript so every
   /// device shows the same conversation.
   Future<void> _syncSharedChannel() async {
-    if (_isStreaming || _syncingSharedChannel || _mainChannel == null) return;
+    // A send is in flight until its stream completes/errors. sendMessage()
+    // clears _isStreaming in its finally block right after subscribing, so
+    // also gate on the placeholder id; otherwise a harness merge drops the
+    // just-sent user row / Thinking placeholder mid-turn.
+    if (_isStreaming ||
+        _currentStreamingMessageId.isNotEmpty ||
+        _syncingSharedChannel ||
+        _mainChannel == null) {
+      return;
+    }
     final service = _getStreamingService();
     if (service is! HermesStreamingService) return;
 
     _syncingSharedChannel = true;
     try {
       final harness = await service.fetchSessionMessages(_mainChannel!.id);
-      if (harness == null || _mainChannel == null || _isStreaming) return;
+      if (harness == null ||
+          _mainChannel == null ||
+          _isStreaming ||
+          _currentStreamingMessageId.isNotEmpty) {
+        if (harness == null && _mainChannel != null) {
+          _setChannelSyncError(
+            'Could not reach the hub transcript — check your connection.',
+          );
+        }
+        return;
+      }
+      _setChannelSyncError(null);
       final merged = mergeHarnessTranscript(
         local: _mainChannel!.messages,
         harness: harness,
@@ -209,6 +245,12 @@ class StreamingChatService extends ChangeNotifier {
     } finally {
       _syncingSharedChannel = false;
     }
+  }
+
+  void _setChannelSyncError(String? error) {
+    if (_channelSyncError == error) return;
+    _channelSyncError = error;
+    notifyListeners();
   }
 
   bool _sameMessages(List<Message> left, List<Message> right) {
@@ -391,7 +433,8 @@ class StreamingChatService extends ChangeNotifier {
 
       final errorModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
+        content:
+            userFacingChatError(e, isConnected: _connectionManager.isConnected),
         model: errorModel,
         status: MessageStatus.error,
         error: e.toString(),
@@ -416,26 +459,19 @@ class StreamingChatService extends ChangeNotifier {
     }
 
     if (streamingMessage.isDataChunk) {
-      // Update content
+      // Transcript polls send a snapshot for this message id. True deltas are
+      // appended only when the new text is not already the full reply.
+      // Reasoning is never accumulated — chain-of-thought stays off the chat.
       if (streamingMessage.chunk.isNotEmpty) {
-        final currentContent = _streamingContentSubject.value;
-        final newContent = currentContent + streamingMessage.chunk;
-        _streamingContentSubject.add(newContent);
+        final next = nextStreamingContent(
+          previous: _streamingContentSubject.value,
+          incoming: streamingMessage.chunk,
+          replaces: streamingMessage.replacesContent,
+        );
+        _streamingContentSubject.add(next);
       }
 
-      // Update reasoning
-      if (streamingMessage.reasoning != null &&
-          streamingMessage.reasoning!.isNotEmpty) {
-        final currentReasoning = _streamingReasoningSubject.value;
-        final newReasoning = currentReasoning + streamingMessage.reasoning!;
-        _streamingReasoningSubject.add(newReasoning);
-      }
-
-      // Update the streaming message in the conversation
-      _updateStreamingMessage(
-        _streamingContentSubject.value,
-        _streamingReasoningSubject.value,
-      );
+      _updateStreamingMessage(_streamingContentSubject.value, null);
     }
   }
 
@@ -444,11 +480,15 @@ class StreamingChatService extends ChangeNotifier {
     appLogger.error('[StreamingChat] Streaming error: $error');
 
     _setStreaming(false);
-    _removeLastMessage();
+    // Remove only the Thinking placeholder — never blindly drop the last row,
+    // which may be the user's just-sent message.
+    _removeStreamingPlaceholder();
+    _currentStreamingMessageId = '';
 
     final errorModel = _selectedModel ?? 'default';
     final errorMessage = Message.assistant(
-      content: userFacingChatError(error, isConnected: _connectionManager.isConnected),
+      content: userFacingChatError(error,
+          isConnected: _connectionManager.isConnected),
       model: errorModel,
       status: MessageStatus.error,
       error: error.toString(),
@@ -470,9 +510,10 @@ class StreamingChatService extends ChangeNotifier {
     _setStreaming(false);
     _isAgentRunning = false;
 
-    // Convert streaming message to final assistant message
+    // Convert streaming message to final assistant message.
+    // Do not fall back to reasoning text — that would persist chain-of-thought
+    // as the visible reply.
     var finalContent = _streamingContentSubject.value;
-    final finalReasoning = _streamingReasoningSubject.value;
 
     // Fallback: if no deltas were emitted but run.completed had output
     if (finalContent.isEmpty && _runCompletedOutput.isNotEmpty) {
@@ -480,28 +521,16 @@ class StreamingChatService extends ChangeNotifier {
     }
 
     // Always remove the streaming placeholder if it exists
-    if (_mainChannel != null &&
-        _mainChannel!.messages.isNotEmpty &&
-        _mainChannel!.messages.last.id == _currentStreamingMessageId) {
-      _removeLastMessage();
-    }
+    _removeStreamingPlaceholder();
 
-    if (finalContent.isNotEmpty || finalReasoning.isNotEmpty) {
+    if (finalContent.isNotEmpty) {
       final completeModel = _selectedModel ?? 'default';
 
       // Build metadata with tool call history
       final toolCallsMeta = _serializeToolCalls(includeLive: false);
 
-      // Hermes sometimes emits the final reply as reasoning.available as well
-      // as message deltas. Keep reasoning only when it adds distinct text.
-      final distinctReasoning = finalReasoning.isNotEmpty &&
-              finalReasoning.trim() != finalContent.trim()
-          ? finalReasoning
-          : null;
-
       final assistantMessage = Message.assistant(
-        content: finalContent.isNotEmpty ? finalContent : finalReasoning,
-        reasoning: distinctReasoning,
+        content: finalContent,
         model: completeModel,
         metadata:
             toolCallsMeta.isNotEmpty ? {'tool_calls': toolCallsMeta} : null,
@@ -520,6 +549,8 @@ class StreamingChatService extends ChangeNotifier {
     _streamingReasoningSubject.add('');
     _currentStreamingMessageId = '';
     _runCompletedOutput = '';
+    // Reconcile local reply rows with the harness copy now the turn is done.
+    unawaited(_syncSharedChannel());
     _activeToolCalls.clear();
     _completedToolCalls.clear();
   }
@@ -786,7 +817,8 @@ class StreamingChatService extends ChangeNotifier {
 
       final fallbackModel = _selectedModel ?? 'default';
       final errorMessage = Message.assistant(
-        content: userFacingChatError(e, isConnected: _connectionManager.isConnected),
+        content:
+            userFacingChatError(e, isConnected: _connectionManager.isConnected),
         model: fallbackModel,
         status: MessageStatus.error,
         error: e.toString(),
@@ -810,6 +842,15 @@ class StreamingChatService extends ChangeNotifier {
   }
 
   /// Remove the last message from current conversation
+  void _removeStreamingPlaceholder() {
+    final id = _currentStreamingMessageId;
+    if (id.isEmpty || _mainChannel == null) return;
+    if (!_mainChannel!.messages.any((m) => m.id == id)) return;
+    _mainChannel = _mainChannel!.removeMessage(id);
+    _saveConversations();
+    notifyListeners();
+  }
+
   void _removeLastMessage() {
     try {
       if (_mainChannel == null || _mainChannel!.messages.isEmpty) return;

@@ -61,7 +61,7 @@ When you modify Drift table definitions or queries in `lib/database/`, you must 
 ### 3.1 Flutter Frontend Operations
 Run these commands from the root directory of the repository:
 
-- **Get dependencies**: `flutter pub get` then `cd lib/shared && flutter pub get && cd ../..`
+- **Get dependencies**: `flutter pub get`
 - **Linter checks**: `flutter analyze lib/`
 - **CI Flutter gate**: `bash scripts/ci/flutter_security_basic_tests.sh`
 - **Run specific test file**: `flutter test test/services/some_test.dart`
@@ -77,13 +77,12 @@ All backend service directories are ESM (except `backend/auth/` which is CommonJ
 #### API Backend (`services/api-backend/`)
 - **Install packages**: `npm install`
 - **Start dev server**: `npm run dev`
-- **Run unit & integration tests**:
+- **Run unit tests**:
   - Root runner (API tests are at repository root):
     ```bash
     npm test ../../test/api-backend/security/authentication-authorization.test.js
     ```
   - Unit tests: `npm run test:unit`
-  - Integration tests: `npm run test:integration`
   - Complete security/auth tests: `npm run test:security` / `npm run test:auth`
 - **Database helpers**: `npm run db:validate` / `npm run db:stats` / `npm run db:test` (there is no `db:migrate`)
 

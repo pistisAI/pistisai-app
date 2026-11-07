@@ -338,5 +338,5 @@ Set up alerts for:
 
 - [node-postgres Documentation](https://node-postgres.com/)
 - [PostgreSQL Connection Pooling](https://www.postgresql.org/docs/current/runtime-config-connection.html)
-- [Admin Center Requirements](../../.kiro/specs/admin-center/requirements.md)
-- [Task 27 Completion Summary](../../.kiro/specs/admin-center/TASK_27_COMPLETION_SUMMARY.md)
+- Admin Center Requirements
+- Task 27 Completion Summary

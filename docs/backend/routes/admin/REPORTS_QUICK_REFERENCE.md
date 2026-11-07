@@ -255,7 +255,7 @@ a.click();
 
 ## Related APIs
 
-- [Users API](./README.md) - User management
+- Users API - User management
 - [Payments API](./PAYMENTS_API.md) - Payment transactions
 - [Subscriptions API](./SUBSCRIPTIONS_API.md) - Subscription management
 

@@ -116,21 +116,13 @@ void main() {
       });
     });
 
-    group('startRun', () {
-      test('returns null when not connected', () async {
-        final service = HermesStreamingService();
-        final runId = await service.startRun(input: 'Hello');
-        expect(runId, isNull);
-        service.dispose();
-      });
-    });
-
-    group('streamRunEvents', () {
-      test('yields AgentRunFailed on connection error', () async {
-        final service = HermesStreamingService();
-        final events = await service.streamRunEvents('run-123').toList();
-        expect(events, isNotEmpty);
-        expect(events.first, isA<AgentRunFailed>());
+    group('complete (pistisai channel)', () {
+      test('returns null when Hermes is unreachable', () async {
+        final service = HermesStreamingService(
+          baseUrl: 'http://127.0.0.1:1',
+        );
+        final result = await service.complete(prompt: 'Hello');
+        expect(result, isNull);
         service.dispose();
       });
     });

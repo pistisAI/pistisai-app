@@ -29,7 +29,7 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
         elevation: 0,
         leading: BackButton(
           onPressed: () {
-            context.go('/');
+            context.go('/config');
           },
         ),
       ),

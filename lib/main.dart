@@ -119,7 +119,7 @@ void main([List<String> args = const []]) async {
 
   // Sentry DSN is empty by default; set via --dart-define=SENTRY_DSN=...
   if (AppConfig.sentryDsn.isNotEmpty) {
-    _runAppWithSentry();
+    await _runAppWithSentry();
   } else {
     debugPrint('[Main] Sentry DSN not configured, running without Sentry');
     unawaited(_registerWindowsUrlScheme());
@@ -139,10 +139,21 @@ Future<void> _registerWindowsUrlScheme() async {
 
 /// Run the app with Sentry error tracking enabled.
 /// Sentry DSN is configured via --dart-define=SENTRY_DSN=... at build time.
-void _runAppWithSentry() {
+Future<void> _runAppWithSentry() async {
   debugPrint('[Main] Running app with Sentry');
   _initializeClientLogBuffer();
-  _runAppCommon();
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = AppConfig.sentryDsn;
+      options.environment = AppConfig.sentryEnvironment;
+      // Capture full stack traces for all errors, not just catch-block exceptions.
+      options.attachStacktrace = true;
+      // Balanced sampling: real errors always reported, traces sampled at 10%.
+      options.tracesSampleRate = 0.1;
+    },
+    // Start the app inside Sentry's error-tracking zone once the SDK is live.
+    appRunner: _runAppCommon,
+  );
 }
 
 void _runAppCommon() {
@@ -604,17 +615,30 @@ class _AppRouterHostState extends State<_AppRouterHost> {
   }
 
   void _initializeRouter(AuthService authService) {
-    final setupWizardService = di.serviceLocator.get<SetupWizardService>();
-    final mobileConnectionService =
-        di.serviceLocator.get<MobileConnectionService>();
-    setState(() {
-      _router = AppRouter.createRouter(
-        navigatorKey: navigatorKey,
-        authService: authService,
-        setupWizardService: setupWizardService,
-        mobileConnectionService: mobileConnectionService,
-      );
-    });
+    try {
+      final setupWizardService = di.serviceLocator.get<SetupWizardService>();
+      if (!di.serviceLocator.isRegistered<MobileConnectionService>()) {
+        debugPrint(
+          '[Router] MobileConnectionService missing — registering fallback',
+        );
+        di.serviceLocator.registerSingleton<MobileConnectionService>(
+          MobileConnectionService(),
+        );
+      }
+      final mobileConnectionService =
+          di.serviceLocator.get<MobileConnectionService>();
+      setState(() {
+        _router = AppRouter.createRouter(
+          navigatorKey: navigatorKey,
+          authService: authService,
+          setupWizardService: setupWizardService,
+          mobileConnectionService: mobileConnectionService,
+        );
+      });
+    } catch (e, st) {
+      debugPrint('[Router] Failed to initialize router: $e');
+      debugPrint('[Router] $st');
+    }
   }
 }
 // Deployment trigger 1770824833

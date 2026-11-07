@@ -183,7 +183,7 @@ jobs:
       - name: Flutter Build APK
         run: |
           flutter pub get
-          flutter build apk --release --split-per-abi
+          flutter build apk --release --split-per-abi --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
 
       - name: Upload APKs
         uses: actions/upload-artifact@v7
@@ -224,7 +224,7 @@ jobs:
       - name: Flutter Build iOS
         run: |
           flutter pub get
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
 
       - name: Upload iOS build
         uses: actions/upload-artifact@v7

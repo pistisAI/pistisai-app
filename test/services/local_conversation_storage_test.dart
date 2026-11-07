@@ -18,7 +18,7 @@ void main() {
     }
   });
 
-  test('main-channel survives a new storage instance without a keyring',
+  test('pistisai channel survives a new storage instance without a keyring',
       () async {
     Future<Directory> docs() async => tempDir;
 
@@ -38,7 +38,7 @@ void main() {
     final loaded = await second.loadConversations();
 
     expect(loaded, hasLength(1));
-    expect(loaded.first.id, 'main-channel');
+    expect(loaded.first.id, Conversation.pistisaiChannelId);
     expect(loaded.first.messages, hasLength(1));
     expect(loaded.first.messages.first.content, contains('Who are you?'));
     final keyFile = File('${tempDir.path}/Pistisai/.conversation_key');
@@ -89,9 +89,13 @@ void main() {
     );
   });
 
-  test('Conversation.mainChannel always uses the stable session id', () {
-    expect(Conversation.mainChannel().id, 'main-channel');
-    expect(Conversation.mainChannel(model: 'hermes-agent').id, 'main-channel');
+  test('Conversation.mainChannel always uses the stable pistisai session id', () {
+    expect(Conversation.mainChannel().id, Conversation.pistisaiChannelId);
+    expect(
+      Conversation.mainChannel(model: 'hermes-agent').id,
+      Conversation.pistisaiChannelId,
+    );
+    expect(Conversation.pistisaiChannelId, 'pistisai');
   });
 
   test('Conversation.mainChannel titles the thread with the setup agent', () {

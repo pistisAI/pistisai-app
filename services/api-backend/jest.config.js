@@ -105,7 +105,6 @@ export default {
     '!tunnel/**',
     '!utils/globals.js',
     '!server.js',
-    '!admin-server.js',
     '!streaming-proxy-manager.js',
     '!tracing.js',
     '!config/**',

@@ -20,7 +20,6 @@ import 'package:pistisai/services/enhanced_user_tier_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/streaming_chat_service.dart';
 import 'package:pistisai/services/unified_connection_service.dart';
-import 'package:pistisai/services/user_container_service.dart';
 import 'package:pistisai/services/cloud_connector_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
@@ -35,7 +34,6 @@ import 'package:pistisai/services/url_scheme_registration_service.dart';
 import 'package:pistisai/services/token_storage_service.dart';
 import 'package:pistisai/database/local_brain.dart';
 import 'package:pistisai/services/brain_sync_service.dart';
-import 'package:pistisai/services/full_context_indexer.dart';
 import 'package:pistisai/services/rate_limit_manager.dart';
 import 'package:pistisai/services/router_server.dart';
 import 'package:pistisai/services/providers/zhipu_adapter.dart';
@@ -50,6 +48,7 @@ import 'package:pistisai/services/subagent_registry_service.dart';
 import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
@@ -57,7 +56,6 @@ import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
-import 'package:pistisai/services/coordinator_service.dart';
 import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
 import 'package:pistisai/services/vision/camera_capture_service.dart';
@@ -95,7 +93,7 @@ String _getOpenClawSkillsPath() {
   try {
     home = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
   } catch (e) {
-    debugPrint('[ServiceLocator] Failed to read home directory: $e');
+    AppConfig.verboseLog('[ServiceLocator] Failed to read home directory: $e');
   }
 
   // Check common locations for OpenClaw skills directory
@@ -127,12 +125,14 @@ String _getOpenClawSkillsPath() {
 /// initialized during app bootstrap.
 Future<void> setupCoreServices() async {
   if (_coreServicesRegistered) {
-    debugPrint('[ServiceLocator] Core services already registered, skipping');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Core services already registered, skipping');
     return;
   }
 
-  debugPrint('[ServiceLocator] ===== REGISTERING CORE SERVICES START =====');
-  debugPrint('[ServiceLocator] Registering core services...');
+  AppConfig.verboseLog(
+      '[ServiceLocator] ===== REGISTERING CORE SERVICES START =====');
+  AppConfig.verboseLog('[ServiceLocator] Registering core services...');
 
   try {
     // Settings preference service - manages user preferences
@@ -153,18 +153,22 @@ Future<void> setupCoreServices() async {
       try {
         await tokenStorageService.init();
       } catch (e, stack) {
-        debugPrint('[ServiceLocator] TokenStorageService init failed: $e');
-        debugPrint('[ServiceLocator] TokenStorageService stack: $stack');
-        debugPrint(
+        AppConfig.verboseLog(
+            '[ServiceLocator] TokenStorageService init failed: $e');
+        AppConfig.verboseLog(
+            '[ServiceLocator] TokenStorageService stack: $stack');
+        AppConfig.verboseLog(
           '[ServiceLocator] Continuing with degraded token storage initialization',
         );
       }
       serviceLocator
           .registerSingleton<TokenStorageService>(tokenStorageService);
     } catch (e, stack) {
-      debugPrint('[ServiceLocator] TokenStorageService unavailable: $e');
-      debugPrint('[ServiceLocator] TokenStorageService ctor stack: $stack');
-      debugPrint(
+      AppConfig.verboseLog(
+          '[ServiceLocator] TokenStorageService unavailable: $e');
+      AppConfig.verboseLog(
+          '[ServiceLocator] TokenStorageService ctor stack: $stack');
+      AppConfig.verboseLog(
         '[ServiceLocator] Continuing without TokenStorageService registration',
       );
     }
@@ -209,15 +213,13 @@ Future<void> setupCoreServices() async {
       try {
         await avatarStateService.loadProfile();
       } catch (e) {
-        debugPrint('[ServiceLocator] Avatar profile load skipped: $e');
+        AppConfig.verboseLog(
+            '[ServiceLocator] Avatar profile load skipped: $e');
       }
 
       final brainSyncService = BrainSyncService(localBrain);
       serviceLocator.registerSingleton<BrainSyncService>(brainSyncService);
       brainSyncService.startSync();
-
-      final fullContextIndexer = FullContextIndexer(localBrain);
-      serviceLocator.registerSingleton<FullContextIndexer>(fullContextIndexer);
 
       final rateLimitManager = RateLimitManager(localBrain);
       serviceLocator.registerSingleton<RateLimitManager>(rateLimitManager);
@@ -227,14 +229,6 @@ Future<void> setupCoreServices() async {
       );
       serviceLocator.registerSingleton<ConscienceStorageService>(
         conscienceStorageService,
-      );
-
-      final coordinatorService = CoordinatorService(
-        database: localBrain,
-        conscienceStorage: conscienceStorageService,
-      );
-      serviceLocator.registerSingleton<CoordinatorService>(
-        coordinatorService,
       );
 
       final routerServer = RouterServer(
@@ -300,7 +294,7 @@ Future<void> setupCoreServices() async {
       // Start the router server in the background.
       unawaited(routerServer.start());
     } else {
-      debugPrint(
+      AppConfig.verboseLog(
         '[ServiceLocator] Skipping desktop-only LocalBrain/router core services on web',
       );
     }
@@ -309,48 +303,52 @@ Future<void> setupCoreServices() async {
     late AuthProvider authProvider;
 
     try {
-      debugPrint('[Locator] Detecting platform...');
+      AppConfig.verboseLog('[Locator] Detecting platform...');
 
       // Check if we're on web first
       if (kIsWeb) {
-        debugPrint(
+        AppConfig.verboseLog(
             '[Locator] ✓ Web platform detected, using SupabaseAuthProvider');
         authProvider = SupabaseAuthProvider();
       } else {
         // Use SupabaseAuthProvider for all desktop platforms
-        debugPrint('[Locator] Using SupabaseAuthProvider for desktop');
+        AppConfig.verboseLog(
+            '[Locator] Using SupabaseAuthProvider for desktop');
         authProvider = SupabaseAuthProvider();
       }
     } catch (e, stack) {
-      debugPrint('[Locator] ERROR during platform detection: $e');
-      debugPrint('[Locator] Stack trace: $stack');
+      AppConfig.verboseLog('[Locator] ERROR during platform detection: $e');
+      AppConfig.verboseLog('[Locator] Stack trace: $stack');
       // Fallback to Supabase if platform detection fails
-      debugPrint('[Locator] Falling back to SupabaseAuthProvider');
+      AppConfig.verboseLog('[Locator] Falling back to SupabaseAuthProvider');
       authProvider = SupabaseAuthProvider();
     }
 
-    debugPrint('[Locator] Selected auth provider: ${authProvider.runtimeType}');
+    AppConfig.verboseLog(
+        '[Locator] Selected auth provider: ${authProvider.runtimeType}');
 
     // Register strictly as AuthProvider interface to enforce abstraction
     try {
-      debugPrint('[Locator] Registering AuthProvider...');
+      AppConfig.verboseLog('[Locator] Registering AuthProvider...');
       serviceLocator.registerSingleton<AuthProvider>(authProvider);
-      debugPrint('[Locator] ✓ AuthProvider registered successfully');
+      AppConfig.verboseLog('[Locator] ✓ AuthProvider registered successfully');
     } catch (e, stack) {
-      debugPrint('[Locator] ❌ CRITICAL ERROR registering AuthProvider: $e');
-      debugPrint('[Locator] Stack trace: $stack');
+      AppConfig.verboseLog(
+          '[Locator] ❌ CRITICAL ERROR registering AuthProvider: $e');
+      AppConfig.verboseLog('[Locator] Stack trace: $stack');
       rethrow;
     }
 
     late final AuthService authService;
     try {
-      debugPrint('[Locator] Registering AuthService...');
+      AppConfig.verboseLog('[Locator] Registering AuthService...');
       authService = AuthService(authProvider);
       serviceLocator.registerSingleton<AuthService>(authService);
-      debugPrint('[Locator] ✓ AuthService registered successfully');
+      AppConfig.verboseLog('[Locator] ✓ AuthService registered successfully');
     } catch (e, stack) {
-      debugPrint('[Locator] ❌ CRITICAL ERROR registering AuthService: $e');
-      debugPrint('[Locator] Stack trace: $stack');
+      AppConfig.verboseLog(
+          '[Locator] ❌ CRITICAL ERROR registering AuthService: $e');
+      AppConfig.verboseLog('[Locator] Stack trace: $stack');
       rethrow;
     }
 
@@ -389,34 +387,35 @@ Future<void> setupCoreServices() async {
     serviceLocator.registerSingleton<PlatformDetectionService>(
       platformDetectionService,
     );
-    debugPrint('[ServiceLocator] ✓ PlatformDetectionService registered');
+    AppConfig.verboseLog(
+        '[ServiceLocator] ✓ PlatformDetectionService registered');
 
     // Platform adapter - provides platform-appropriate UI components
     final platformAdapter = PlatformAdapter(platformDetectionService);
     serviceLocator.registerSingleton<PlatformAdapter>(platformAdapter);
 
     // Logging service — reads local Hermes log files
-    debugPrint('[ServiceLocator] Initializing LoggingService...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing LoggingService...');
     final loggingService = LoggingService();
     serviceLocator.registerSingleton<LoggingService>(loggingService);
 
     // Skill service — reads local Hermes skill files
-    debugPrint('[ServiceLocator] Initializing SkillService...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing SkillService...');
     final skillService = SkillService();
     serviceLocator.registerSingleton<SkillService>(skillService);
 
     // Cron service — shells out to `hermes cron list`
-    debugPrint('[ServiceLocator] Initializing CronService...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing CronService...');
     final cronService = CronService();
     serviceLocator.registerSingleton<CronService>(cronService);
 
     // Session service — shells out to `hermes sessions list`
-    debugPrint('[ServiceLocator] Initializing SessionService...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing SessionService...');
     final sessionService = SessionService();
     serviceLocator.registerSingleton<SessionService>(sessionService);
 
     // Channel service — shells out to `hermes gateway list`
-    debugPrint('[ServiceLocator] Initializing ChannelService...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing ChannelService...');
     final channelService = ChannelService();
     serviceLocator.registerSingleton<ChannelService>(channelService);
 
@@ -459,6 +458,18 @@ Future<void> setupCoreServices() async {
     );
     serviceLocator.registerSingleton<SetupWizardService>(setupWizardService);
 
+    // Required by AppRouter on desktop and mobile. Hermes may be absent on
+    // degraded/web startup paths — the service accepts a null streamer.
+    final mobileConnectionService = MobileConnectionService(
+      settings: settingsPreferenceService,
+      hermesStreamingService:
+          serviceLocator.isRegistered<HermesStreamingService>()
+              ? serviceLocator.get<HermesStreamingService>()
+              : null,
+    );
+    serviceLocator
+        .registerSingleton<MobileConnectionService>(mobileConnectionService);
+
     // Web download prompt service - can be created but won't do heavy work until auth
     final webDownloadPromptService = WebDownloadPromptService(
       authService: authService,
@@ -484,19 +495,20 @@ Future<void> setupCoreServices() async {
     final autoUpdateService = AutoUpdateService();
     serviceLocator.registerSingleton<AutoUpdateService>(autoUpdateService);
 
-    debugPrint('[ServiceLocator] Core services registered successfully');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Core services registered successfully');
 
     // Initialize AuthService last, after all dependencies are registered
     try {
-      debugPrint('[Locator] Initializing AuthService...');
+      AppConfig.verboseLog('[Locator] Initializing AuthService...');
       final authService = serviceLocator.get<AuthService>();
       await authService.init();
-      debugPrint('[Locator] ✓ AuthService initialized successfully');
+      AppConfig.verboseLog('[Locator] ✓ AuthService initialized successfully');
 
       // On Desktop, auto-bootstrap authenticated services immediately
       // This allows local use without mandatory login
       if (!kIsWeb) {
-        debugPrint(
+        AppConfig.verboseLog(
             '[Locator] Desktop detected, auto-bootstrapping services for local use...');
         // Wait for authenticated services to complete initialization
         // with timeout to prevent blocking forever
@@ -504,45 +516,49 @@ Future<void> setupCoreServices() async {
           await setupAuthenticatedServices().timeout(
             const Duration(seconds: 30),
             onTimeout: () {
-              debugPrint(
+              AppConfig.verboseLog(
                   '[Locator] ⚠ Authenticated services initialization timed out after 30s');
               // Don't throw - allow app to continue with core services
             },
           );
-          debugPrint('[Locator] ✓ Authenticated services initialized');
+          AppConfig.verboseLog(
+              '[Locator] ✓ Authenticated services initialized');
         } catch (e, stack) {
-          debugPrint(
+          AppConfig.verboseLog(
               '[Locator] ⚠ Authenticated services initialization failed: $e');
-          debugPrint('[Locator] Stack trace: $stack');
+          AppConfig.verboseLog('[Locator] Stack trace: $stack');
           // Don't rethrow - allow app to continue with core services
         }
       }
     } catch (e, stack) {
-      debugPrint('[Locator] ❌ CRITICAL ERROR initializing AuthService: $e');
-      debugPrint('[Locator] Stack trace: $stack');
+      AppConfig.verboseLog(
+          '[Locator] ❌ CRITICAL ERROR initializing AuthService: $e');
+      AppConfig.verboseLog('[Locator] Stack trace: $stack');
       rethrow;
     }
 
-    debugPrint('[ServiceLocator] ===== REGISTERING CORE SERVICES END =====');
+    AppConfig.verboseLog(
+        '[ServiceLocator] ===== REGISTERING CORE SERVICES END =====');
 
     // Verify all core services are registered
     _verifyCoreServicesRegistered();
 
     // Only mark as registered if we got this far without exceptions
     _coreServicesRegistered = true;
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Core services registration completed successfully');
   } catch (e, stack) {
-    debugPrint('[ServiceLocator] Core services registration failed: $e');
-    debugPrint('[ServiceLocator] Stack trace: $stack');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Core services registration failed: $e');
+    AppConfig.verboseLog('[ServiceLocator] Stack trace: $stack');
 
     if (kIsWeb) {
-      debugPrint(
+      AppConfig.verboseLog(
         '[ServiceLocator] Attempting web-safe fallback core registration',
       );
       await _registerWebFallbackCoreServices();
       _coreServicesRegistered = true;
-      debugPrint(
+      AppConfig.verboseLog(
           '[ServiceLocator] Web-safe fallback core registration complete');
       return;
     }
@@ -615,7 +631,8 @@ Future<void> _registerWebFallbackCoreServices() async {
   try {
     await serviceLocator.get<AuthService>().init();
   } catch (e) {
-    debugPrint('[ServiceLocator] Web fallback AuthService init failed: $e');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Web fallback AuthService init failed: $e');
   }
 }
 
@@ -629,7 +646,8 @@ void _verifyCoreServicesRegistered() {
     'AppInitializationService',
   ];
 
-  debugPrint('[ServiceLocator] Verifying core services registration...');
+  AppConfig.verboseLog(
+      '[ServiceLocator] Verifying core services registration...');
   bool allServicesRegistered = true;
 
   for (final serviceName in criticalServices) {
@@ -657,13 +675,13 @@ void _verifyCoreServicesRegistered() {
       }
 
       if (isRegistered) {
-        debugPrint('[ServiceLocator] ✓ $serviceName registered');
+        AppConfig.verboseLog('[ServiceLocator] ✓ $serviceName registered');
       } else {
-        debugPrint('[ServiceLocator] ✗ $serviceName NOT registered');
+        AppConfig.verboseLog('[ServiceLocator] ✗ $serviceName NOT registered');
         allServicesRegistered = false;
       }
     } catch (e) {
-      debugPrint('[ServiceLocator] Error checking $serviceName: $e');
+      AppConfig.verboseLog('[ServiceLocator] Error checking $serviceName: $e');
       allServicesRegistered = false;
     }
   }
@@ -678,14 +696,14 @@ void _verifyCoreServicesRegistered() {
 /// This prevents unnecessary initialization and improves security.
 Future<void> setupAuthenticatedServices() async {
   if (_authenticatedServicesRegistered) {
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Authenticated services already registered (Early Exit)');
     // Services are already registered, so we're done
     return;
   }
 
   if (_isRegisteringAuthenticatedServices) {
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Authenticated services registration already in progress (Race Condition Avoided)');
     return;
   }
@@ -693,16 +711,19 @@ Future<void> setupAuthenticatedServices() async {
   _isRegisteringAuthenticatedServices = true;
 
   try {
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] ===== REGISTERING AUTHENTICATED SERVICES START =====');
-    debugPrint('[Locator] setupAuthenticatedServices called (Entry Point)');
+    AppConfig.verboseLog(
+        '[Locator] setupAuthenticatedServices called (Entry Point)');
 
     // Verify authentication before proceeding
-    debugPrint('[Locator] Getting AuthService from serviceLocator...');
+    AppConfig.verboseLog(
+        '[Locator] Getting AuthService from serviceLocator...');
     final authService = serviceLocator.get<AuthService>();
-    debugPrint('[Locator] Got AuthService instance');
+    AppConfig.verboseLog('[Locator] Got AuthService instance');
 
-    debugPrint('[ServiceLocator] Registering authenticated services...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Registering authenticated services...');
     _authenticatedServicesRegistered = true;
 
     final providerDiscoveryService =
@@ -713,30 +734,31 @@ Future<void> setupAuthenticatedServices() async {
         serviceLocator.get<WebDownloadPromptService>();
 
     // Initialize enhanced user tier service now that we have auth
-    debugPrint('[ServiceLocator] Initializing EnhancedUserTierService...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Initializing EnhancedUserTierService...');
     unawaited(enhancedUserTierService.initialize());
 
     // Initialize web download prompt service
-    debugPrint('[ServiceLocator] Initializing WebDownloadPromptService...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Initializing WebDownloadPromptService...');
     await webDownloadPromptService.initialize();
 
     // Initialize Provider Discovery Service and auto-configure discovered providers
     // Skip if forcing setup wizard for testing
     if (!AppConfig.forceSetupWizard) {
-      debugPrint('[ServiceLocator] Initializing ProviderDiscoveryService...');
+      AppConfig.verboseLog(
+          '[ServiceLocator] Initializing ProviderDiscoveryService...');
       await _initializeProviderDiscoveryAndAutoConfig(
         providerDiscoveryService,
         serviceLocator.get<ProviderConfigurationManager>(),
       );
     } else {
-      debugPrint(
+      AppConfig.verboseLog(
           '[ServiceLocator] Skipping provider discovery (force setup wizard mode)');
     }
 
-    // User container service - requires authentication token
-    final userContainerService = UserContainerService(authService: authService);
-    serviceLocator
-        .registerSingleton<UserContainerService>(userContainerService);
+    // Legacy SSH tunnel and streaming-proxy clients are not registered.
+    // Tailscale and the desktop hub are the connectivity path.
 
     // Cloud connector - device registry + presence for the secure device mesh
     final cloudConnectorService = CloudConnectorService(
@@ -747,9 +769,11 @@ Future<void> setupAuthenticatedServices() async {
     );
     unawaited(
       cloudConnectorService.registerAndStart().then((registered) {
-        debugPrint('[Locator] Cloud connector registered: $registered');
+        AppConfig.verboseLog(
+            '[Locator] Cloud connector registered: $registered');
       }).catchError((Object error) {
-        debugPrint('[Locator] Cloud connector registration failed: $error');
+        AppConfig.verboseLog(
+            '[Locator] Cloud connector registration failed: $error');
       }),
     );
 
@@ -775,21 +799,21 @@ Future<void> setupAuthenticatedServices() async {
       }
       if (discoveredModels.isNotEmpty) {
         connectionManager.setAvailableModels(discoveredModels);
-        debugPrint(
+        AppConfig.verboseLog(
             '[ServiceLocator] ✓ Loaded ${discoveredModels.length} runtime models into ConnectionManagerService');
       }
     } catch (e) {
-      debugPrint(
+      AppConfig.verboseLog(
           '[ServiceLocator] Warning: ConnectionManagerService initialization failed: $e');
     }
     serviceLocator
         .registerSingleton<ConnectionManagerService>(connectionManager);
 
     // Wire up GatewayControlService with ConnectionManagerService now that both exist
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Wiring GatewayControlService with ConnectionManagerService...');
     gatewayControlService.setConnectionManager(connectionManager);
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] ✓ GatewayControlService now listens to connection changes');
 
     // Streaming chat service - requires connection manager
@@ -801,7 +825,8 @@ Future<void> setupAuthenticatedServices() async {
         .registerSingleton<StreamingChatService>(streamingChatService);
 
     // Unified connection service - requires connection manager
-    debugPrint('[ServiceLocator] Initializing UnifiedConnectionService...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Initializing UnifiedConnectionService...');
     final unifiedConnectionService = UnifiedConnectionService();
     unifiedConnectionService.setConnectionManager(connectionManager);
     try {
@@ -809,7 +834,7 @@ Future<void> setupAuthenticatedServices() async {
           .initialize()
           .timeout(const Duration(seconds: 10));
     } catch (e) {
-      debugPrint(
+      AppConfig.verboseLog(
           '[ServiceLocator] Warning: UnifiedConnectionService initialization failed: $e');
     }
     serviceLocator.registerSingleton<UnifiedConnectionService>(
@@ -817,7 +842,7 @@ Future<void> setupAuthenticatedServices() async {
     );
 
     // Agent Status Service - monitors OpenClaw Gateway agent status via WebSocket
-    debugPrint('[ServiceLocator] Initializing AgentStatusService...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing AgentStatusService...');
     final localBrain = serviceLocator.get<LocalBrain>();
     final agentStatusService = AgentStatusService(
       connectionManager: connectionManager,
@@ -826,7 +851,8 @@ Future<void> setupAuthenticatedServices() async {
     serviceLocator.registerSingleton<AgentStatusService>(agentStatusService);
 
     // Agent Lifecycle Service - manages agent start/stop/restart operations
-    debugPrint('[ServiceLocator] Initializing AgentLifecycleService...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Initializing AgentLifecycleService...');
     final agentLifecycleService = AgentLifecycleService(
       connectionManager: connectionManager,
     );
@@ -834,18 +860,19 @@ Future<void> setupAuthenticatedServices() async {
         .registerSingleton<AgentLifecycleService>(agentLifecycleService);
 
     // Subagent Registry Service - manages subagent lifecycle via API
-    debugPrint('[ServiceLocator] Initializing SubagentRegistryService...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Initializing SubagentRegistryService...');
     final subagentRegistryService = SubagentRegistryService();
     serviceLocator
         .registerSingleton<SubagentRegistryService>(subagentRegistryService);
 
     // Clipboard Service - Desktop clipboard operations and history
-    debugPrint('[ServiceLocator] Initializing ClipboardService...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing ClipboardService...');
     final clipboardService = ClipboardService();
     try {
       await clipboardService.initialize(localBrain);
     } catch (e) {
-      debugPrint(
+      AppConfig.verboseLog(
           '[ServiceLocator] Warning: ClipboardService initialization failed: $e');
     }
     serviceLocator.registerSingleton<ClipboardService>(clipboardService);
@@ -865,7 +892,7 @@ Future<void> setupAuthenticatedServices() async {
     serviceLocator.registerSingleton<AdminCenterService>(adminCenterService);
 
     // Vision services - screen capture, camera input, and OCR
-    debugPrint('[ServiceLocator] Initializing Vision services...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing Vision services...');
     final mainVisionService = MainVisionService();
     serviceLocator
         .registerLazySingleton<MainVisionService>(() => mainVisionService);
@@ -889,19 +916,20 @@ Future<void> setupAuthenticatedServices() async {
         .registerLazySingleton<PresenceService>(() => presenceService);
 
     // Desktop control services - window management
-    debugPrint('[ServiceLocator] Initializing Desktop Control services...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Initializing Desktop Control services...');
     final windowManagerService = WindowManagerService();
     serviceLocator.registerLazySingleton<WindowManagerService>(
         () => windowManagerService);
 
     // Pop-out window manager - manages pop-out window state for Gateway sections
-    debugPrint('[ServiceLocator] Initializing PopOutManager...');
+    AppConfig.verboseLog('[ServiceLocator] Initializing PopOutManager...');
     final popOutManager = PopOutManager();
     serviceLocator.registerSingleton<PopOutManager>(popOutManager);
 
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Authenticated services registered successfully');
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] ===== REGISTERING AUTHENTICATED SERVICES END =====');
   } finally {
     _isRegisteringAuthenticatedServices = false;
@@ -914,11 +942,12 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
   ProviderConfigurationManager configManager,
 ) async {
   try {
-    debugPrint('[ServiceLocator] Starting provider discovery scan...');
+    AppConfig.verboseLog(
+        '[ServiceLocator] Starting provider discovery scan...');
 
     // Scan for available providers
     final discoveredProviders = await discoveryService.scanForProviders();
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Found ${discoveredProviders.length} providers');
 
     // Auto-configure discovered providers if not already configured
@@ -927,12 +956,13 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
 
       // Skip if already configured
       if (configManager.isProviderConfigured(providerId)) {
-        debugPrint(
+        AppConfig.verboseLog(
             '[ServiceLocator] Provider ${providerInfo.name} already configured, skipping');
         continue;
       }
 
-      debugPrint('[ServiceLocator] Auto-configuring ${providerInfo.name}...');
+      AppConfig.verboseLog(
+          '[ServiceLocator] Auto-configuring ${providerInfo.name}...');
 
       try {
         ProviderConfiguration? config;
@@ -964,10 +994,11 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
               // the port and breaks chat against :8642.
               await settings.setHermesUrl(providerInfo.url);
               await settings.setActiveBackend(BackendType.hermes);
-              debugPrint(
+              AppConfig.verboseLog(
                   '[ServiceLocator] ✓ Auto-activated Hermes as default runtime');
             } catch (e) {
-              debugPrint('[ServiceLocator] Could not auto-activate Hermes: $e');
+              AppConfig.verboseLog(
+                  '[ServiceLocator] Could not auto-activate Hermes: $e');
             }
             break;
 
@@ -1027,27 +1058,27 @@ Future<void> _initializeProviderDiscoveryAndAutoConfig(
 
           case ProviderType.custom:
             // Skip custom providers for auto-configuration
-            debugPrint(
+            AppConfig.verboseLog(
                 '[ServiceLocator] Skipping custom provider ${providerInfo.name}');
             continue;
         }
 
         await configManager.setConfiguration(config);
-        debugPrint(
+        AppConfig.verboseLog(
             '[ServiceLocator] ✓ Auto-configured ${providerInfo.name} as $providerId');
 
         // Support model providers are intentionally not selected as the main
         // runtime. The setup wizard or explicit settings choose the runtime.
       } catch (e) {
-        debugPrint(
+        AppConfig.verboseLog(
             '[ServiceLocator] Failed to auto-configure ${providerInfo.name}: $e');
       }
     }
 
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Provider discovery completed (periodic scan disabled)');
   } catch (e) {
-    debugPrint(
+    AppConfig.verboseLog(
         '[ServiceLocator] Error during provider discovery initialization: $e');
   }
 }

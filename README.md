@@ -10,14 +10,15 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 
 ## Try It Now
 
-🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. One-liner:
-`open https://pistisai.app && log in`. No build step. That's the fastest way to try Pistisai.
+🖥️ **Start with the desktop app.** Your first Pistisai desktop install is the **hub** — your web, mobile, and other desktop devices connect through it. See [Your devices, one hub](#your-devices-one-hub).
+
+🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. Handy for a quick look; for real multi-device use it connects through your desktop hub, not straight to your agent.
 
 🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (AppImage + auto-update daemon; rolling out).
 
 📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/pistisAI/pistisai-app/releases/latest).
 
-**You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work.
+**You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work. Your desktop hub connects to the runtime; your other Pistisai devices connect to the hub.
 
 > 🚀 **Public launch is live.** Full quick-start, supported runtimes, and self-hosting steps → [docs/LAUNCH.md](docs/LAUNCH.md). Primary CTA: clone the repo, run a workflow, and open an issue or discussion with your real use case. Track the launch → [GitHub issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
 >
@@ -64,6 +65,20 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
          │         │     │  LM Studio)│
          └─────────┘     └────────────┘
 ```
+
+### Your devices, one hub
+
+```text
+  Your desktop app                ← install this first — it's the hub
+        │
+        │  (local or Tailscale)
+        ▼
+  Web app · Mobile app · Other desktops     ← connect through the hub
+```
+
+- Install the **desktop app** on the machine that stays on — it connects to your agent and becomes the **hub** for everything else.
+- Your **web, mobile, and other desktop devices** connect *through* that hub, not straight to your agent. Your data stays in your network.
+- Your agent still talks to messaging apps (Telegram, Slack, Discord) directly — the desktop hub is for your *devices*, not for messaging.
 
 Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
 
@@ -138,4 +153,4 @@ Command reference → [AGENTS.md](AGENTS.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Business Source License 1.1 — see [LICENSE](LICENSE).

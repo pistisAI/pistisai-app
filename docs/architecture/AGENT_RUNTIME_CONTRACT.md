@@ -16,7 +16,8 @@ Pistisai is agent-first. The main application channel connects to an agent runti
 
 ## Non-Negotiable Rules
 
-- The main secure channel connects to an agent runtime.
+- The main secure channel connects to an agent runtime **from the primary Pistisai desktop hub**. Web, mobile, and secondary desktop clients reach the runtime through that hub (discovered via `GET /api/pistisai/hub`), not directly. Direct client-to-Hermes paths are transitional and to be removed (issue #492).
+- The hub is for Pistisai clients only. Hermes keeps owning its messaging-platform adapters (Telegram, Slack, etc.) directly; they do not route through Pistisai.
 - Hermes is the first agent runtime path for current testing.
 - OpenClaw remains a supported agent runtime and original integration.
 - Ollama and LM Studio are not primary app runtimes unless wrapped by an agent runtime.
@@ -41,7 +42,7 @@ Responsibilities:
 - voice/avatar state handoff
 - multi-device channel sync
 
-Valid primary targets:
+Valid primary targets (configured on the primary desktop hub; other Pistisai clients inherit the hub's target):
 
 - Hermes on this device
 - Hermes on another private or Tailscale device

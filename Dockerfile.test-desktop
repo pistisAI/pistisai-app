@@ -47,7 +47,7 @@ RUN curl -fSsL https://storage.googleapis.com/dart-archive/channels/stable/relea
     ln -s /opt/dart/bin/dartaotruntime /usr/local/bin/dartaotruntime
 
 # Install Flutter SDK (stable channel) for running flutter test inside the container
-ENV FLUTTER_VERSION=3.47.7
+ENV FLUTTER_VERSION=3.47.9
 RUN curl -fSsL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -o /tmp/flutter.tar.xz && \
     tar -xf /tmp/flutter.tar.xz -C /opt && \
     mv /opt/flutter /opt/flutter_${FLUTTER_VERSION} && \
@@ -66,6 +66,9 @@ RUN apt-get update && apt-get install -y \
     libsecret-1-dev libjsoncpp-dev \
     libnotify-dev libcurl4-openssl-dev \
     libayatana-appindicator3-dev \
+    # X11/Xi dev headers for cnativeapi native-assets build (pkg-config x11 + xi)
+    libx11-dev \
+    libxi-dev \
     # GStreamer for camera_desktop plugin
     libgstreamer1.0-dev \
     libgstreamer-plugins-base1.0-dev \
@@ -82,9 +85,12 @@ RUN useradd -m -s /bin/bash testuser && \
 
 WORKDIR /app
 
-# Resolve from pubspec.yaml. pubspec.lock is excluded from the Docker context
-# so the image matches the web deploy builder.
-COPY --chown=testuser:testuser pubspec.yaml ./
+# Resolve the locked graph. Without pubspec.lock, pub get floats nativeapi
+# ahead of the cnativeapi 0.5.2 path override and the Linux build fails.
+# The cnativeapi path override must be present before pub get.
+COPY --chown=testuser:testuser pubspec.yaml pubspec.lock ./
+COPY --chown=testuser:testuser tool/cnativeapi/ tool/cnativeapi/
+COPY --chown=testuser:testuser tool/linux_native_deps/ tool/linux_native_deps/
 RUN chown testuser:testuser /app && su -s /bin/bash testuser -c "flutter pub get"
 
 # Build the Flutter Linux app inside the container (matches container's GLIBC)

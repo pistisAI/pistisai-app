@@ -24,7 +24,7 @@ void main() {
     expect(find.text('OK\nOK'), findsOneWidget);
   });
 
-  testWidgets('shows Thinking when reasoning is distinct', (tester) async {
+  testWidgets('hides Thinking even when reasoning is distinct', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -39,8 +39,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Thinking'), findsOneWidget);
-    expect(find.text('Step by step plan'), findsOneWidget);
+    expect(find.text('Thinking'), findsNothing);
+    expect(find.text('Step by step plan'), findsNothing);
     expect(find.text('Final answer'), findsOneWidget);
   });
 }

@@ -5,7 +5,9 @@ import 'package:pistisai/services/settings_preference_service.dart';
 class AppConfig {
   // App Information
   static const String appName = 'Pistisai';
-  static const String appVersion = '1.0.6';
+  static const String appVersion = '1.1.100';
+  static const String appDescription =
+      'Local-first agent companion. Offline until you choose to connect.';
 
   // URLs
   static const String homepageUrl = 'https://pistisai.app';
@@ -30,6 +32,10 @@ class AppConfig {
     'SENTRY_DSN',
     defaultValue: '',
   );
+  static const String sentryEnvironment = String.fromEnvironment(
+    'SENTRY_ENVIRONMENT',
+    defaultValue: kReleaseMode ? 'production' : 'development',
+  );
 
   // Testing mode settings
   static const bool forceSetupWizard =
@@ -43,6 +49,28 @@ class AppConfig {
 
   // Feature Flags
   static const bool enableDarkMode = true;
+  static const bool enableAnalytics = false; // Disabled for privacy
+  static bool get enableDebugMode => !kReleaseMode;
+  static bool get showTunnelDebugInfo => !kReleaseMode;
+  static bool get enableVerboseLogging => !kReleaseMode;
+
+  /// Router, locator, and callback traces. Off unless the build passes
+  /// `--dart-define=PISTISAI_VERBOSE_LOGS=true`.
+  static const bool verboseDiagnostics = bool.fromEnvironment(
+    'PISTISAI_VERBOSE_LOGS',
+  );
+
+  static void verboseLog(String? message, {int? wrapWidth}) {
+    if (!verboseDiagnostics) return;
+    debugPrint(message, wrapWidth: wrapWidth);
+  }
+
+  // Tier-based feature flags
+  static const bool enableTierDetection = true;
+  static const bool showTierInformation = true;
+  static const bool enableDirectTunnelMode = false;
+  static const bool enableLegacyTunnelServices = false;
+  static const bool enableLegacyStreamingProxyServices = false;
 
   // ==========================================================================
   // Gateway Configuration (Runtime Configurable)

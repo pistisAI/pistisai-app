@@ -15,9 +15,9 @@ This directory contains security policies, procedures, and audit reports for Pis
 
 ## 🔗 Related Documentation
 
-- **[Operations Documentation](../OPERATIONS/README.md)** - Operational security procedures
-- **[Deployment Documentation](../DEPLOYMENT/README.md)** - Secure deployment practices
-- **[Legal Documentation](../LEGAL/README.md)** - Privacy and compliance policies
+- **Operations Documentation** - Operational security procedures
+- **Deployment Documentation** - Secure deployment practices
+- **Legal Documentation** - Privacy and compliance policies
 
 ## 📖 Security Overview
 

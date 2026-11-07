@@ -56,17 +56,6 @@ Sentry.init({
 import express from 'express';
 import http from 'http';
 import winston from 'winston';
-import swaggerUi from 'swagger-ui-express';
-const specs = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Pistisai API Backend',
-    version: '2.0.0',
-    description:
-      'Comprehensive API for Pistisai - Bridge cloud AI services with local models',
-  },
-  paths: {},
-};
 import {
   setupMiddlewarePipeline,
   getAuthMiddleware,
@@ -90,7 +79,6 @@ import webhookRoutes from './routes/webhooks.js';
 import authRoutes from './routes/auth.js';
 import apiKeysRouter from './routes/api-keys.js';
 import tunnelRoutes, { initializeTunnelService } from './routes/tunnels.js';
-import adaptiveRateLimitingRoutes from './routes/adaptive-rate-limiting.js';
 import adminMetricsRoutes from './routes/admin-metrics.js';
 import alertConfigurationRoutes from './routes/alert-configuration.js';
 import authAuditRoutes from './routes/auth-audit.js';
@@ -109,8 +97,6 @@ import proxyMetricsRoutes from './routes/proxy-metrics.js';
 import proxyScalingRoutes from './routes/proxy-scaling.js';
 import proxyUsageRoutes from './routes/proxy-usage.js';
 import proxyWebhooksRoutes from './routes/proxy-webhooks.js';
-import quotasRoutes from './routes/quotas.js';
-import rateLimitExemptionsRoutes from './routes/rate-limit-exemptions.js';
 import rateLimitViolationsRoutes from './routes/rate-limit-violations.js';
 import sandboxRoutes from './routes/sandbox.js';
 import dashboardWSManager from './websocket/dashboard-ws.js';
@@ -120,8 +106,6 @@ import tunnelSharingRoutes from './routes/tunnel-sharing.js';
 import tunnelUsageRoutes from './routes/tunnel-usage.js';
 import tunnelWebhooksRoutes from './routes/tunnel-webhooks.js';
 import userActivityRoutes from './routes/user-activity.js';
-import userDeletionRoutes from './routes/user-deletion.js';
-import webhookEventFiltersRoutes from './routes/webhook-event-filters.js';
 import webhookPayloadTransformationsRoutes from './routes/webhook-payload-transformations.js';
 import webhookRateLimitingRoutes from './routes/webhook-rate-limiting.js';
 import webhookTestingRoutes from './routes/webhook-testing.js';
@@ -212,8 +196,6 @@ const LEGACY_DIRECT_PROXY_ROUTES_ENABLED =
   LEGACY_PROXY_ROUTES_ENABLED ||
   process.env.PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES === 'true';
 
-// AuthService will be initialized in initializeHttpPollingSystem()
-
 // Express app setup
 const app = express();
 
@@ -230,7 +212,6 @@ setupMiddlewarePipeline(app, {
     bridgeMax: 500,
   },
   timeoutMs: 30000,
-  enableCompression: true,
 });
 
 const server = http.createServer(app);
@@ -245,7 +226,6 @@ const shutdownManager = setupGracefulShutdown(server, {
   shutdownTimeoutMs: 10000,
   onShutdown: async () => {
     logger.info('Running custom shutdown handlers');
-    // Custom shutdown logic will be added here
   },
 });
 
@@ -261,59 +241,11 @@ const healthCheckService = new HealthCheckService(logger);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/webhooks', webhookRoutes); // Also register without /api prefix for api subdomain
 
-// Swagger UI documentation endpoint
-// Serves OpenAPI specification and interactive Swagger UI
-app.use(
-  '/api/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(specs, {
-    swaggerOptions: {
-      url: '/api/docs/swagger.json',
-      displayOperationId: true,
-      filter: true,
-      showExtensions: true,
-      deepLinking: true,
-    },
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Pistisai API Documentation',
-  }),
-);
-
-// Serve OpenAPI specification as JSON
-app.get('/api/docs/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(specs);
-});
-
-// Also serve docs without /api prefix for api subdomain
-app.use(
-  '/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(specs, {
-    swaggerOptions: {
-      url: '/docs/swagger.json',
-      displayOperationId: true,
-      filter: true,
-      showExtensions: true,
-      deepLinking: true,
-    },
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Pistisai API Documentation',
-  }),
-);
-
-app.get('/docs/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(specs);
-});
-
 // Auth middleware wrapper for backward compatibility
 async function authenticateToken(req, res, next) {
   const authMiddleware = getAuthMiddleware();
   return authMiddleware(req, res, next);
 }
-
-// Bridge connections removed - using HTTP polling only
 
 // Initialize streaming proxy manager
 
@@ -392,7 +324,6 @@ if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   registerRoutes('/tunnels', tunnelRoutes);
 }
 
-registerRoutes('/adaptive-rate-limiting', adaptiveRateLimitingRoutes);
 registerRoutes('/admin-metrics', adminMetricsRoutes);
 registerRoutes('/alert-configuration', alertConfigurationRoutes);
 registerRoutes('/auth-audit', authAuditRoutes);
@@ -416,8 +347,6 @@ if (LEGACY_DIRECT_PROXY_ROUTES_ENABLED) {
   registerRoutes('/proxy-usage', proxyUsageRoutes);
   registerRoutes('/proxy-webhooks', proxyWebhooksRoutes);
 }
-registerRoutes('/quotas', quotasRoutes);
-registerRoutes('/rate-limit-exemptions', rateLimitExemptionsRoutes);
 registerRoutes('/rate-limit-violations', rateLimitViolationsRoutes);
 registerRoutes('/sandbox', sandboxRoutes);
 if (LEGACY_TUNNEL_ROUTES_ENABLED) {
@@ -428,9 +357,6 @@ if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   registerRoutes('/tunnel-webhooks', tunnelWebhooksRoutes);
 }
 registerRoutes('/user-activity', userActivityRoutes);
-registerRoutes('/user-deletion', userDeletionRoutes);
-// Note: versionedRoutes is a utility module, not a router - don't register it
-registerRoutes('/webhook-event-filters', webhookEventFiltersRoutes);
 registerRoutes(
   '/webhook-payload-transformations',
   webhookPayloadTransformationsRoutes,
@@ -442,7 +368,6 @@ if (LEGACY_TUNNEL_ROUTES_ENABLED) {
   registerRoutes('/infrastructure/tunnel', infrastructureTunnelRoutes);
 }
 registerRoutes('/agent/events', agentEventsRoutes);
-app.post('/api/agent/events', agentEventsRoutes);
 
 // LLM Tunnel Cloud Proxy Endpoints (support both /api/ollama and /ollama)
 setSshProxy(sshProxy);
@@ -464,7 +389,7 @@ if (LEGACY_OLLAMA_PROXY_ENABLED) {
 // User tier endpoint
 registerRoutes(
   '/user/tier',
-  ...authenticateJWT,
+  authenticateJWT,
   addTierInfo,
   ...userTierHandler,
 );
@@ -508,24 +433,6 @@ registerRoutes('/health', (req, res) => {
 
 // API Version Information Endpoint
 // Returns information about supported API versions
-/**
- * @swagger
- * /api/versions:
- *   get:
- *     summary: Get API version information
- *     description: Returns information about all supported API versions, including current version, default version, and deprecation status
- *     tags:
- *       - System
- *     responses:
- *       200:
- *         description: API version information
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/APIVersionInfo'
- *       500:
- *         $ref: '#/components/responses/ServerError'
- */
 registerRoutes('/versions', versionInfoHandler);
 
 // Rate limit metrics routes
@@ -538,12 +445,10 @@ registerRoutes('/prometheus', prometheusMetricsRoutes);
 registerRoutes('/changelog', changelogRoutes);
 
 // Queue status endpoints
-registerRoutes('/queue/status', ...authenticateJWT, queueStatusHandler);
+registerRoutes('/queue/status', authenticateJWT, queueStatusHandler);
 
 // Queue drain endpoint (for testing/debugging)
-registerRoutes('/queue/drain', ...authenticateJWT, queueDrainHandler);
-
-// WebSocket bridge endpoints removed - using HTTP polling only
+registerRoutes('/queue/drain', authenticateJWT, queueDrainHandler);
 
 // WebSocket upgrade handling for SSH tunnel
 server.on('upgrade', (request, socket, head) => {
@@ -600,24 +505,10 @@ if (LEGACY_STREAMING_PROXY_ROUTES_ENABLED) {
   registerRoutes('/proxy/status', ...proxyStatusRoute);
 }
 
-// Ollama proxy endpoints removed - using HTTP polling tunnel system instead
-
 // The error handler must be registered before any other error middleware and after all controllers
 
 // Sentry Error Handler must be before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
-
-// Error handling middleware
-app.use((error, req, res, _next) => {
-  logger.error('Unhandled error:', error);
-  res.status(500).json({
-    error: 'Internal server error',
-    message:
-      process.env.NODE_ENV === 'development'
-        ? error.message
-        : 'Something went wrong',
-  });
-});
 
 // Conversation routes - defined as a placeholder, will be initialized in initializeTunnelSystem
 let conversationRouter = null;
@@ -625,8 +516,8 @@ let conversationRouter = null;
 // Register versioned conversations route after initialization
 async function registerConversationRoutes(migrator) {
   conversationRouter = createConversationRoutes(migrator, logger);
-  app.use('/api/conversations', ...authenticateJWT, conversationRouter);
-  app.use('/conversations', ...authenticateJWT, conversationRouter);
+  app.use('/api/conversations', authenticateJWT, conversationRouter);
+  app.use('/conversations', authenticateJWT, conversationRouter);
   logger.info('Conversation routes registered with authentication');
 }
 
@@ -638,9 +529,6 @@ function setupFinalHandlers() {
     }
     res.status(404).json({ error: 'Not found' });
   });
-
-  // Sentry Error Handler
-  Sentry.setupExpressErrorHandler(app);
 
   // Error handling middleware
   app.use((error, req, res, _next) => {
@@ -713,9 +601,6 @@ async function initializeTunnelSystem(retries = 10) {
 
     // Register conversation routes now that database is ready
     await registerConversationRoutes(dbMigrator);
-
-    // Setup final handlers (404, Sentry, Error)
-    setupFinalHandlers();
 
     // Register database with health check service
     healthCheckService.registerDatabase(dbMigrator);
@@ -868,6 +753,10 @@ async function initializeTunnelSystem(retries = 10) {
     logger.warn(
       'Server starting with degraded functionality due to initialization failure',
     );
+  } finally {
+    // One 404 and one error handler, after every route mounted above,
+    // including when database init fails before conversation routes exist.
+    setupFinalHandlers();
   }
 }
 
@@ -900,11 +789,6 @@ async function gracefulShutdown() {
   }
 }
 
-app.post('/test-hook', (req, res) => {
-  logger.info('Received test hook');
-  res.json({ ok: true });
-});
-
 // Start server with enhanced tunnel system
 async function startServer() {
   logger.info('Starting server...');
@@ -933,4 +817,3 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export { app, server, startServer };
-// Deploy test:

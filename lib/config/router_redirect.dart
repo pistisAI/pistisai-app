@@ -91,6 +91,10 @@ String? resolveAppRedirect(RouterRedirectInput input) {
     if (_mobileNeedsConnection(input)) {
       return AppRoutePaths.connect;
     }
+    // Desktop first-run must hit the setup wizard before chat/coach.
+    if (!input.isWeb && input.shouldShowDesktopWizard) {
+      return AppRoutePaths.setup;
+    }
     if (input.isAuthenticated || !input.isWeb || input.isAppSubdomain) {
       return AppRoutePaths.chat;
     }
@@ -98,6 +102,10 @@ String? resolveAppRedirect(RouterRedirectInput input) {
   }
 
   if (input.isAuthenticated) {
+    // Do not let a local/desktop session skip unfinished first-run setup.
+    if (!input.isWeb && input.shouldShowDesktopWizard && !isSetup) {
+      return AppRoutePaths.setup;
+    }
     if (isLoggingIn || isConnect || isSetup) {
       return AppRoutePaths.chat;
     }

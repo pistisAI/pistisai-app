@@ -72,15 +72,31 @@ jobs:
           cache: true
 
       - name: "📦 flutter pub get"
-        run: |
-          flutter pub get
-          (cd lib/shared && flutter pub get)
+        run: flutter pub get
 
       - name: "🐳 Docker Compose"
         run: docker compose version
 
       - name: "🐳 Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
+
+      # ubuntu-24.04 images ship large unused SDKs. The test-desktop build
+      # (Flutter SDK plus a Linux release build) fills the runner disk.
+      - name: "🧹 Free disk space"
+        run: |
+          set -eux
+          df -h
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/share/boost \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /opt/hostedtoolcache/CodeQL \
+            /usr/share/swift \
+            /usr/local/share/powershell \
+            /usr/share/miniconda || true
+          sudo apt-get clean
+          df -h
 
       - name: "🐳 Build test-desktop image"
         uses: docker/build-push-action@v6
