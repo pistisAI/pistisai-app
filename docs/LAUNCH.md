@@ -1,37 +1,29 @@
-# Pistisai — Public Launch Guide
+# PistisAI — Public launch guide
 
-> Canonical launch issue: [#39 — Pistisai — public launch](https://github.com/pistisAI/pistisai-app/issues/39)
+> Canonical launch issue: [#39 — PistisAI — public launch](https://github.com/pistisAI/pistisai-app/issues/39)
 > Repo: [github.com/pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app)
-> Web app: [pistisai.app](https://pistisai.app)
+> Web app: [app.pistisai.app](https://app.pistisai.app)
+> Product page: [PRODUCT.md](PRODUCT.md)
 
-This document is the single entry point for anyone arriving at Pistisai from a
-launch channel. It covers what the product is, what it runs on, and the exact
-steps to try it — web, desktop, or self-hosted — and how to connect your own
-agent runtime.
+This document is the entry point for anyone arriving from a launch channel. It covers what the product is, what it runs on, and how to try it.
 
 ---
 
-## What Pistisai is
+## What PistisAI is
 
-Pistisai (ΠΙΣΤΙΣΑΙ — "trust") is a **local-first companion and desktop
-capability layer for your AI agent**. Your agent runs on hardware you control.
-Pistisai gives that agent a secure channel, voice + avatar, desktop control,
-vision, and a private device mesh — so no data leaves your network unless you
-decide otherwise.
+PistisAI (ΠΙΣΤΙΣΑΙ — "trust") is the tool stack: a desktop hub built around the Hermes agent, plus skills. The agent runs on the client's own computer. No special hardware is required.
 
-It is **not** a model. It is the layer in front of an agent runtime
-(Hermes, OpenClaw, or any compatible agent gateway). Those runtimes are where
-the reasoning happens. Ollama, LM Studio, and similar model servers are
-*support providers* for app-owned features (memory, embeddings, OCR, speech) —
-they are not the primary app runtime.
+IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company.
+
+The hub adds a secure channel, voice and avatar, permissioned desktop control, and vision. Cloud services the client already uses, and online language models for heavy work, are available when that path is secure, the client agrees, and it complies with Quebec Law 25.
+
+It is not a model. Hermes, OpenClaw, or a compatible gateway is the agent. Ollama, LM Studio, and similar model servers are support providers for app-owned features (memory, embeddings, OCR, speech).
 
 ---
 
 ## Positioning (one-liner)
 
-> **Pistisai turns your AI agent into a private desktop companion: voice,
-> vision, and audited desktop control, connected over your own Tailscale mesh —
-> local-first, no data leaves your network unless you say so.**
+> **PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.**
 
 ---
 
@@ -39,15 +31,13 @@ they are not the primary app runtime.
 
 | Runtime | Status | Notes |
 |---------|--------|-------|
-| **Hermes** | ✅ Primary test path | First-class integration; sessions, channels, tools wired in. |
-| **OpenClaw** | ✅ Supported | Gateway control + skill management built in. |
-| Compatible agent gateways | ✅ Supported | Any agent exposing the runtime contract (see [Agent Runtime Contract](architecture/AGENT_RUNTIME_CONTRACT.md)). |
-| Ollama / LM Studio / model servers | 🔌 Support only | Used for app-owned memory/embeddings/OCR/speech, not as the main runtime. |
-| Pistisai-hosted compute | 🔜 Optional | Paid, opt-in hosted agent runtime (per-user container). |
+| **Hermes** | Primary test path | Sessions, channels, and tools wired in. |
+| **OpenClaw** | Supported | Gateway control and skill management. |
+| Compatible agent gateways | Supported | Any agent exposing the runtime contract (see [Agent Runtime Contract](architecture/AGENT_RUNTIME_CONTRACT.md)). |
+| Ollama / LM Studio / model servers | Support only | App-owned memory, embeddings, OCR, and speech. Not the agent. |
+| Online language models | With consent | Heavy work, when the client agrees and the provider fits Law 25 for Quebec clients. |
 
-The **setup wizard** decides where the active agent runtime lives: this device,
-another private device, a Tailscale device, a manual/private URL, or optional
-paid Pistisai-hosted compute. There is no universal hardcoded default.
+The setup wizard chooses where the agent runtime lives: this computer, another computer the client already has, a Tailscale device, or a private URL. There is no universal hardcoded default. The agent is not a hosted PistisAI service.
 
 ---
 
@@ -55,24 +45,23 @@ paid Pistisai-hosted compute. There is no universal hardcoded default.
 
 | Platform | Status | How to get it |
 |----------|--------|---------------|
-| 🌐 Web | ✅ Live | [pistisai.app](https://pistisai.app) — any browser, log in. |
-| 🐧 Linux | ✅ AppImage + auto-update daemon | Releases / CI. |
-| 📱 Android | ✅ APK from CI | [Latest release](https://github.com/pistisAI/pistisai-app/releases/latest). |
-| 🪟 Windows | 🚧 Installer in development | — |
-| 🍎 macOS | 📋 Planned | — |
+| Web | Live | [app.pistisai.app](https://app.pistisai.app). Cloudflare Access protects the host. |
+| Linux | CI | AppImage from [releases](https://github.com/pistisAI/pistisai-app/releases/latest). |
+| Android | CI | APK from [releases](https://github.com/pistisAI/pistisai-app/releases/latest). |
+| Windows | CI | Installer and portable zip from `build-desktop.yml`. |
+| macOS | CI | Zip from `build-desktop.yml`. |
 
 ---
 
 ## Quick start
 
-### Option A — Web (fastest, zero install)
+### Option A — Web
 
-1. Open [pistisai.app](https://pistisai.app).
-2. Log in.
-3. Run the in-app **setup wizard** and point it at your agent runtime
-   (Hermes on this device, a Tailscale peer, a private URL, etc.).
+1. Open [app.pistisai.app](https://app.pistisai.app).
+2. Sign in only if you are using tunnel or sync. Cloudflare Access protects that host.
+3. Run the in-app setup wizard and point it at the agent runtime on the client's computer (Hermes on this computer, another computer the client already has, or a private URL).
 
-That's it. No build step.
+The desktop app is the hub for real multi-device use. The web app connects through that hub.
 
 ### Option B — Desktop from source (developers / self-hosters)
 
@@ -126,13 +115,12 @@ Command reference → [AGENTS.md](../AGENTS.md).
 Pistisai does **not** assume a default agent. The connection is made by the
 setup wizard, which supports:
 
-- **This device** — Hermes / OpenClaw running locally.
-- **Another private device** — a machine on your LAN.
-- **Tailscale device** — preferred secure path; one private network across all
-  your machines (see [Secure Device Mesh](architecture/SECURE_DEVICE_MESH.md)).
-- **Manual / private URL** — bring your own agent gateway endpoint.
-- **Pistisai-hosted compute** — optional paid runtime (per-user container joined
-  to your tailnet).
+- **This computer** — Hermes or OpenClaw running locally. This is the normal path.
+- **Another computer the client already has** — a machine on the LAN.
+- **Tailscale device** — Business and Enterprise path, on the customer's own network (see [Secure Device Mesh](architecture/SECURE_DEVICE_MESH.md)).
+- **Manual / private URL** — a private compatible agent gateway.
+
+Free-tier sync uses the tunnel at `api.pistisai.app` (Cloudflare Access). See [Tunnel and sync sign-in](development/TUNNEL_SIGN_IN.md).
 
 Desktop control, vision, and the secure channel are all scoped to the device
 and permissioned per action — explicit consent, fully auditable.
@@ -155,8 +143,7 @@ and permissioned per action — explicit consent, fully auditable.
   (direct-push model, per `AGENTS.md`).
 - Secret scanning + push protection.
 - CodeQL on every push; Dependabot automated updates.
-- Tailscale-first private connectivity; the cloud connector is one isolated
-  container per user, joined to that user's tailnet.
+- Free-tier tunnel sign-in is Cloudflare Access on `api.pistisai.app`. Business and Enterprise stay on the customer's Tailscale network or VPN.
 - Desktop control is explicit, device-scoped, permissioned, and auditable.
 
 ---
@@ -200,6 +187,6 @@ Clone the repo, run a workflow, and open an issue or discussion with your real
 use case. Feedback, failure reports, and contribution PRs are the lifeblood of
 this launch.
 
-- Web: https://pistisai.app
+- Web: https://app.pistisai.app
 - GitHub: https://github.com/pistisAI/pistisai-app
 - Launch thread (issues): [#39](https://github.com/pistisAI/pistisai-app/issues/39)

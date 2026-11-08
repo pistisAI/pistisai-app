@@ -8,27 +8,26 @@ positioning, supported runtimes, and tone defined here.
 
 ## Product at a glance
 
-- **What it is:** A local-first companion and desktop capability layer for your AI agent.
-  Private, secure, yours.
-- **What it is NOT:** A model, and not a hosted chatbot. It is the layer in front of an agent
-  runtime (Hermes, OpenClaw, or any compatible agent gateway).
-- **Core promise:** Voice, vision, and audited desktop control over your own private
-  (Tailscale-first) mesh. No data leaves your network unless you decide otherwise.
+Follow [docs/PRODUCT.md](../PRODUCT.md). Do not publish a different product story.
+
+- **What it is:** PistisAI, a desktop hub for a Hermes-based agent, plus skills. It runs on the client's own computer. No special hardware.
+- **Who delivers it in Quebec:** IAClé, Christopher Maltais's company. Same stack, not a second product.
+- **What it is not:** A model, a hosted agent, or a separate IAClé application.
+- **Cloud:** Services the client already uses, and online models for heavy work, only when that is secure, the client agrees, and it fits Quebec Law 25.
+- **Sign-in:** Tunnel and sync only. Free tier: Cloudflare Access on `api.pistisai.app`. Business and Enterprise: the customer's Tailscale network or VPN.
 
 ## One-liner (canonical)
 
-> **Pistisai turns your AI agent into a private desktop companion: voice, vision, and audited
-> desktop control, connected over your own Tailscale mesh — local-first, no data leaves your
-> network unless you say so.**
+> **PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.**
 
-Use this verbatim across all channels. Variations for space-constrained surfaces (e.g. social
-bio) live in `publish-ready/social-thread-pack.md`.
+Use this verbatim across channels. Short variants live in `publish-ready/social-thread-pack.md`.
 
 ## Primary CTA
 
 Clone the repo, run a workflow, and open an issue or discussion with your real use case.
 
-- Web: https://pistisai.app
+- Web: https://app.pistisai.app
+- API and tunnel: https://api.pistisai.app
 - GitHub: https://github.com/pistisAI/pistisai-app
 
 ## Voice and tone
@@ -36,7 +35,8 @@ Clone the repo, run a workflow, and open an issue or discussion with your real u
 - Plain, confident, technical but not jargon-heavy.
 - Lead with the user's control and privacy, not features for their own sake.
 - No hype superlatives ("revolutionary", "world's first"). Show, don't claim.
-- Acknowledge what's in development (Windows installer, macOS) honestly.
+- Windows, macOS, Linux, and Android builds come from CI. The web app is https://app.pistisai.app.
+- Do not link `pistisai.app`, `docs.pistisai.app`, or `adminmatrix.pistisai.app`. Those hosts are not current.
 
 ## Channels and owners
 

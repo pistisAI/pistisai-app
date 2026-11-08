@@ -175,7 +175,7 @@ test_external_access() {
         ["https://grafana.pistisai.app/"]="Grafana"
         ["https://api.pistisai.app/health"]="API Backend"
         ["https://app.pistisai.app/"]="Web Frontend"
-        ["https://pistisai.app/"]="Root Domain"
+        ["https://app.pistisai.app/"]="Root Domain"
     )
 
     local success_count=0

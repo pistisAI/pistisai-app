@@ -139,17 +139,22 @@ function targetExists(sourceFile, target) {
   });
 }
 
+function stripFencedCode(markdown) {
+  return markdown.replace(/```[\s\S]*?```/g, '');
+}
+
 function extractTargets(markdown) {
+  const source = stripFencedCode(markdown);
   const targets = [];
   const inline = /!?\[[^\]]*]\(([^)]+)\)/g;
   const reference = /^\s*\[[^\]]+]:\s*(\S+)/gm;
   let match;
 
-  while ((match = inline.exec(markdown)) !== null) {
+  while ((match = inline.exec(source)) !== null) {
     targets.push(match[1]);
   }
 
-  while ((match = reference.exec(markdown)) !== null) {
+  while ((match = reference.exec(source)) !== null) {
     targets.push(match[1]);
   }
 

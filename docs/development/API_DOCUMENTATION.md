@@ -1,4 +1,6 @@
-# Pistisai API Documentation
+# PistisAI API documentation
+
+> **Hosts and sign-in.** The API is `https://api.pistisai.app`. The web app is `https://app.pistisai.app`. Tunnel sign-in is Cloudflare Access. See [Tunnel and sync sign-in](TUNNEL_SIGN_IN.md). Sections below that still name Auth0 describe an earlier setup. Do not follow them for new work.
 
 ## 📋 Overview
 
@@ -6,16 +8,18 @@ Pistisai v3.6.2+ provides APIs for bridge communication, legacy streaming proxy 
 
 **API Base URLs:**
 
-- **Production**: `https://app.pistisai.app/api`
+- **Production**: `https://api.pistisai.app`
 - **Local Development**: `http://localhost:8080/api`
 
 ---
 
 ## 🔐 **Authentication**
 
-### **Auth0 JWT Authentication**
+### **Tunnel sign-in**
 
-All API endpoints require valid JWT tokens obtained through Auth0 authentication.
+Free-tier tunnel calls use a Cloudflare Access JWT for `api.pistisai.app`. Business and Enterprise relays set `PISTISAI_TUNNEL_AUTH=customer` and do not contact Cloudflare. Local desktop use does not require a token.
+
+The notes below this heading are the previous Auth0 token shape. They are not the current provider.
 
 #### **Token Format**
 

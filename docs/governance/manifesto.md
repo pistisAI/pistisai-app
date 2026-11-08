@@ -11,12 +11,7 @@ the mythology gives it a face. Athens and Jerusalem answering the same question:
 
 ## Why we exist
 
-Most AI today betrays trust by design — it extracts, manipulates, and hides where
-your data goes. Pistisai is an agent layer that *keeps its word*: local-first,
-consent-gated, auditable, honest about what it does. Privacy is a feature;
-faithfulness is a character. The mission is not a feature roadmap — it is to build
-technology people can actually trust, and in doing so, point at something higher
-than the technology.
+Most AI hides where data goes. PistisAI keeps its word: the agent runs on the client's own computer, actions are permissioned, and cloud services or online models are used when the client agrees. For Quebec clients, that path has to fit Law 25. IAClé is the company that delivers this same stack. The product page is [docs/PRODUCT.md](../PRODUCT.md).
 
 ## The Four Pillars
 
@@ -46,7 +41,7 @@ decoration — it is structure.
 
 These are engineering constraints, not values posters:
 
-- Local-first by default; nothing leaves the network without explicit consent.
+- The agent runs on the client's computer. Cloud services and online models are used with explicit consent, and for Quebec clients under Law 25.
 - Every privileged action permissioned, auditable, and reversible where possible.
 - No dark patterns, no attention capture, no data resale — the product is built
   on faithfulness, not engagement.

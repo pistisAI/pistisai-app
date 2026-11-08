@@ -1,6 +1,6 @@
 # Secure Device Mesh
 
-Pistisai uses a Tailscale-first secure device mesh to connect the user's devices, selected agent runtime, and optional cloud connector.
+The desktop app is the hub. Free-tier sync uses Cloudflare Access on `api.pistisai.app`. Business and Enterprise use the customer's Tailscale network or VPN. See [PistisAI and IAClé](../PRODUCT.md).
 
 ## Goal
 
@@ -10,11 +10,10 @@ Give Hermes, OpenClaw, and other compatible agent runtimes secure, permissioned 
 
 The agent runtime location is chosen by setup. It can be:
 
-- on this device
-- on another private device
-- on a Tailscale device
+- on this computer
+- on another computer the client already has
+- on the customer's Tailscale network (Business and Enterprise)
 - behind a manual/private URL
-- in an optional paid Pistisai-hosted agent runtime
 
 Ollama, LM Studio, and similar local model providers are not agent runtime nodes. They can live on the same tailnet, but they support app-owned local intelligence features rather than the main secure agent channel.
 
@@ -83,8 +82,7 @@ Examples:
 - Hermes on the same workstation
 - Hermes on another workstation/server
 - OpenClaw Gateway on a lab machine
-- compatible custom agent gateway
-- Pistisai-hosted agent runtime as paid compute
+- compatible custom agent gateway on a computer the client already has
 
 The app should present runtime location as setup state, not product destiny.
 
@@ -125,13 +123,13 @@ Device-scoped:
 - Use Tailscale ACLs/tags to narrow cloud connector access.
 - Treat the cloud connector as a service device, not a user desktop.
 - Use local app permissions as the final authorization layer for desktop actions.
-- Keep cloud-hosted agent runtime separate from cloud connector where practical.
+- The agent stays on a computer the client already has.
 - Prefer explicit device targeting for every action that changes local state.
 - Make active vision/desktop-control state visible to the user.
 
 ## Relationship To Legacy Tunnels
 
-The custom SSH/WebSocket tunnel system should be treated as legacy or fallback infrastructure unless a specific task requires it. New multi-device and cloud connector design should prefer Tailscale.
+Free-tier sync uses the pistisai.app tunnel at `api.pistisai.app`, protected by Cloudflare Access. Business and Enterprise set `PISTISAI_TUNNEL_AUTH=customer` and use the customer's Tailscale network or VPN. Direct client-to-Hermes paths are transitional ([#492](https://github.com/pistisAI/pistisai-app/issues/492)).
 
 Reasons:
 

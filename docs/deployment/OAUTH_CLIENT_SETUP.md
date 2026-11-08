@@ -1,3 +1,5 @@
+> **Not current for sign-in.** Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md). Do not follow Auth0 or Supabase instructions on this page.
+
 # Google OAuth Client Setup for Pistisai
 
 This guide helps you set up Google OAuth Client IDs to fix the "401: invalid_client" error.
@@ -33,7 +35,7 @@ You need to create separate client IDs for different platforms:
    - **Name**: `Pistisai Web Client`
    - **Authorized JavaScript origins**:
      - `https://app.pistisai.app`
-     - `https://pistisai.app`
+     - `https://app.pistisai.app`
      - `http://localhost:3000` (for development)
    - **Authorized redirect URIs**:
      - `https://app.pistisai.app/callback`

@@ -3,20 +3,18 @@
 Publish-ready copy for the launch channels. All copy is consistent with
 [LAUNCH_CONTENT_BRIEF.md](../LAUNCH_CONTENT_BRIEF.md) and [docs/LAUNCH.md](../../LAUNCH.md).
 
-Canonical one-liner:
+Canonical one-liner, from [LAUNCH_CONTENT_BRIEF.md](../LAUNCH_CONTENT_BRIEF.md):
 
-> Pistisai turns your AI agent into a private desktop companion: voice, vision, and audited
-> desktop control, connected over your own Tailscale mesh — local-first, no data leaves your
-> network unless you say so.
+> PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.
 
 ---
 
 ## Twitter / X thread
 
 **1/**
-Your AI agent shouldn't need a cloud to be useful on your desktop.
-Pistisai is now public: a local-first companion + desktop layer for your agent.
-🌐 Try it: https://pistisai.app
+PistisAI is public: a desktop hub and skills for a Hermes-based agent, on the computer you already have.
+IAClé delivers that same stack to Quebec businesses.
+🌐 https://app.pistisai.app
 🐙 https://github.com/pistisAI/pistisai-app
 
 **2/**
@@ -29,30 +27,22 @@ Desktop control is explicit, device-scoped, permissioned, and audited. Nothing m
 mouse or reads your screen without per-action consent. That's the whole point.
 
 **4/**
-Connectivity is Tailscale-first. One private mesh across all your machines. The optional cloud
-connector is a single isolated container per user, joined to your own tailnet.
+The desktop app is the hub. Sign-in is only for tunnel and sync. Free tier uses Cloudflare Access on api.pistisai.app. Business and Enterprise use your own Tailscale network or VPN.
 
 **5/**
-Local-first means it keeps working offline. No data leaves your network unless you decide.
-Clone it, run it, break it, and open an issue with your real use case.
+Online models and cloud tools you already use are available when you agree, and for Quebec clients that path has to fit Law 25.
+Clone it, run it, and open an issue with your real use case.
 👉 https://github.com/pistisAI/pistisai-app
 
 ---
 
 ## LinkedIn operator post
 
-We just opened up Pistisai to the public.
+PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the computer you already have. IAClé delivers that same stack to Quebec businesses.
 
-If you run an AI agent (Hermes, OpenClaw, or a compatible gateway), Pistisai gives it a
-private desktop presence: a voice + avatar companion, screen/vision awareness, and audited
-desktop control — all over your own Tailscale mesh.
+The hub adds voice, an avatar, screen awareness, and permissioned desktop control. Cloud services you already use, and online models for heavy work, are used when you agree and, in Quebec, when that fits Law 25.
 
-We built it local-first on purpose. Your agent's context stays on your hardware. The optional
-cloud piece is a single isolated container per user, joined to your tailnet — not a shared
-multi-tenant bucket.
-
-It runs in a browser today (https://pistisai.app), with Linux and Android builds from CI, and
-Windows/macOS on the way.
+The web app is https://app.pistisai.app. Linux, Windows, macOS, and Android builds come from CI. Sign-in is only for tunnel and sync.
 
 If you're shipping an agent runtime or just want a private desktop front-end for one, clone
 the repo and tell us what you're building: https://github.com/pistisAI/pistisai-app
@@ -66,12 +56,11 @@ the repo and tell us what you're building: https://github.com/pistisAI/pistisai-
 What it is: a local-first companion + desktop capability layer for your AI agent. Works with
 Hermes, OpenClaw, or any compatible agent gateway.
 
-- 🌐 Web: https://pistisai.app (log in, zero install)
+- 🌐 Web: https://app.pistisai.app
 - 🐙 Repo + issues: https://github.com/pistisAI/pistisai-app
 - 📖 Launch guide: https://github.com/pistisAI/pistisai-app/blob/main/docs/LAUNCH.md
 
 New here? Start with the setup wizard, point it at your agent runtime, and say hi in
 #introductions. Hit a wall? Open an issue or drop a failure report — those are gold to us.
 
-Glue flags: desktop control is permissioned per action and fully auditable; connectivity is
-Tailscale-first.
+Desktop control is permissioned per action. Free-tier sync uses Cloudflare Access. Business and Enterprise use the customer's own network.

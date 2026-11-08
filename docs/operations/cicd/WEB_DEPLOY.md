@@ -6,7 +6,7 @@ A second Dockerfile, [`config/docker/Dockerfile.web`](../../../config/docker/Doc
 
 ## What the production image does
 
-The builder is `gmeligio/flutter-android:3.47.7` (match `environment.flutter` in `pubspec.yaml`). That image does not enable Flutter web on its own, so the Dockerfile runs `flutter config --enable-web` before `flutter build web`.
+The builder is `gmeligio/flutter-android:3.47.9` (match `environment.flutter` in `pubspec.yaml`). That image does not enable Flutter web on its own, so the Dockerfile runs `flutter config --enable-web` before `flutter build web`.
 
 The release build passes `--no-web-resources-cdn`. The site content policy blocks the Google-hosted CanvasKit script. With the CDN build, the Flutter view never paints and the splash clears to a white page. CanvasKit must be served from this origin.
 
@@ -63,7 +63,7 @@ The job then polls `GET /api/v1/deployments/{uuid}` up to 60 times, 15 seconds a
 
 ### Public check and cache purge
 
-The job requests `https://pistisai.app/` and `https://www.pistisai.app/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `Pistisai`, and must not contain `404 page not found` (the Traefik placeholder while the container is unhealthy or unrouted).
+The job requests `https://app.pistisai.app/` and `https://www.pistisai.app/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `Pistisai`, and must not contain `404 page not found` (the Traefik placeholder while the container is unhealthy or unrouted).
 
 Cloudflare purge runs with `if: always()`. It no-ops when `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset, and a failed purge does not fail the job. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
 

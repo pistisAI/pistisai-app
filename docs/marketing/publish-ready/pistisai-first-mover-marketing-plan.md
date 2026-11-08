@@ -1,4 +1,6 @@
-# Pistisai.app — First-Mover Marketing Plan
+# PistisAI — marketing plan
+
+Positioning source: [docs/PRODUCT.md](../../PRODUCT.md). Web app: https://app.pistisai.app. Do not link pistisai.app.
 
 > Drafted by CMO to establish first-mover positioning ahead of public launch.
 > Final gate: CEO/UX/Legal approval before channel execution.
@@ -7,13 +9,13 @@
 
 ## 1. Positioning
 
-Pistisai is not another AI wrapper. It is a **local-first companion and desktop capability layer for your AI agent runtime: private, secure, yours.**
+PistisAI is the desktop hub and skills. IAClé is the Quebec company that delivers that same stack. The agent runs on the client's own computer.
 
 Elevator pitch:
-> Your AI runs on your hardware. Pistisai gives it a secure channel, voice, vision, desktop control, and a Tailscale-first device mesh.
+> The agent runs on the computer the client already has. PistisAI gives it a hub, voice, vision, and permissioned desktop control. IAClé delivers that stack in Quebec.
 
 One-liner for bios/launch:
-> Local-first companion for Hermes, OpenClaw, and compatible agent runtimes: secure channel, voice, vision, desktop control, and private device mesh.
+> PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.
 
 Value pillars from product truth:
 1. Privacy/local-first — core experience stays on your machine
@@ -28,13 +30,12 @@ Value pillars from product truth:
 ## 2. Audience Definition
 
 Primary:
-- Solo developers and power users running local models via Ollama/LM Studio/Hermes/OpenClaw
-- Privacy-conscious operators who do not want secrets or chats leaving their environment
-- Multi-device users who already use Tailscale or want a private mesh
+- Quebec small and medium businesses, including regulated practices, served by IAClé in French
+- People who want the agent on a computer they already have
 
 Secondary:
-- Open-source contributors interested in agent-channel plumbing, Flutter desktop, or Node backend services
-- Technical founders evaluating local-first architectures for internal tools
+- Open-source contributors working on the same stack
+- Operators who connect Hermes or OpenClaw on their own computer
 
 Anti-persona:
 - Casual users expecting hosted SaaS signup

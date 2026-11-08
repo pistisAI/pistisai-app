@@ -4,9 +4,9 @@ This guide explains how to deploy Pistisai for self-hosted, privacy-first operat
 
 ## Overview
 
-Pistisai is designed to run primarily on local devices with optional cloud/SaaS features. Self-hosting allows you to run backend services on your own infrastructure while maintaining control over your data.
+The agent runs on the client's own computer. Self-hosting here means running the optional API and tunnel services yourself. See [PistisAI and IAClé](../PRODUCT.md) and [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
-Current orientation is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are optional support model providers for app-owned memory/background features, not primary app runtimes. Remote agent runtimes and cloud connectors should live inside the user's Tailscale tailnet where possible.
+Hermes is the first agent runtime under test. OpenClaw remains supported. Ollama and LM Studio are optional support model providers, not the agent. A customer-operated relay sets `PISTISAI_TUNNEL_AUTH=customer` and does not contact Cloudflare Access.
 
 ## Prerequisites
 
@@ -26,7 +26,7 @@ When self-hosted, Pistisai consists of:
    - API Backend (Express 5, PostgreSQL)
    - Tailscale Relay and cloud connector support for secure device mesh
    - Streaming Proxy (legacy/fallback WebSocket proxy for tunnel-heavy paths)
-   - Auth Backend (JWT validation)
+   - Older auth service in `backend/auth/` (not the product sign-in; see the tunnel sign-in doc)
    - SDK (TypeScript service SDK)
 
 ## Deployment Options

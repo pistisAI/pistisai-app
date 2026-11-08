@@ -207,7 +207,7 @@ Cloud features are optional. Local runtime use should remain possible without au
 - Check system time and timezone.
 - Clear browser cookies for the app domain on web.
 - Confirm OS credential storage is available on desktop.
-- Check Auth0 status if account-backed features are down.
+- For free-tier tunnel sign-in, check Cloudflare Access on `api.pistisai.app`. Business and Enterprise use the customer's own network.
 
 ---
 
@@ -218,7 +218,7 @@ Cloud features are optional. Local runtime use should remain possible without au
 - Check agent runtime health and latency.
 - Use a smaller or faster model inside the agent runtime if it exposes model choice.
 - Reduce conversation context length.
-- Move the agent runtime to a stronger local device or optional hosted agent runtime.
+- Move the agent runtime to another computer you already have, if this one is too small. Online models can take heavy work when you agree.
 - Confirm Tailscale latency for remote runtimes.
 - If only memory/summaries are slow, check the configured local model provider.
 

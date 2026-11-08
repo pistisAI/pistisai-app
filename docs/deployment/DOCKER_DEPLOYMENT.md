@@ -1,8 +1,10 @@
+> **Not current for sign-in.** Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md). Do not follow Auth0 or Supabase instructions on this page.
+
 # Pistisai Docker Compose Deployment Guide
 
 **⚠️ DEVELOPMENT/TESTING ONLY**: This Docker Compose deployment is suitable for development, testing, and small-scale deployments. For production use, **Kubernetes deployment is strongly recommended**.
 
-> **Current orientation**: Pistisai is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers, not primary app runtimes. Docker Compose deployment documents may still describe older WebSocket tunnel flows; use those as fallback/migration references unless the deployment explicitly depends on them.
+> **Current orientation**: The agent runs on the client's own computer. This compose file is for the optional API and tunnel services. See [Deployment overview](DEPLOYMENT_OVERVIEW.md) and [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
 See [Deployment Overview](DEPLOYMENT_OVERVIEW.md) for all deployment options.
 
@@ -446,5 +448,5 @@ Kubernetes manifests live in `k8s/`. For private deployments, start with [Self-H
 For issues or questions:
 
 - GitHub Issues: https://github.com/pistisAI/pistisai-app/issues
-- Documentation: https://docs.pistisai.app
+- Documentation: https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md
 - Email: support@pistisai.app

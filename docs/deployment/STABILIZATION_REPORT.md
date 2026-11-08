@@ -28,7 +28,7 @@ This document outlines the remediation measures implemented to stabilize the Git
 
 | Domain/Subdomain | Status | issue | Resolution |
 |------------------|--------|-------|------------|
-| `https://pistisai.app/` | ✅ Pending | 530 Error | Config updated, requires Dashboard sync |
+| `https://app.pistisai.app/` | ✅ Pending | 530 Error | Config updated, requires Dashboard sync |
 | `https://app.pistisai.app/` | ✅ Pending | 530 Error | Config updated, requires Dashboard sync |
 | `https://api.pistisai.app/` | ✅ Pending | 530 Error | Config updated, requires Dashboard sync |
 | `https://argocd.pistisai.app/` | ❌ Removed | - | Service decommissioned |

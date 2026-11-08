@@ -156,7 +156,7 @@ Using Global API Key: `[REDACTED - stored in GitHub Secrets]`
 2. Update `.github/workflows/deploy-web.yml`:
    - Build → push to GHCR
    - Trigger Coolify via webhook (not SSH)
-3. Pin Flutter base image: `ghcr.io/cirruslabs/flutter:3.47.7` (match `environment.flutter` in `pubspec.yaml`, not `stable`)
+3. Pin Flutter base image: `ghcr.io/cirruslabs/flutter:3.47.9` (match `environment.flutter` in `pubspec.yaml`, not `stable`)
 
 ---
 

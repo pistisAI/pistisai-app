@@ -213,7 +213,7 @@ Should show: `READY=True`
 kubectl get pods -n Pistisai
 
 # Test web app
-curl -I https://pistisai.app
+curl -I https://app.pistisai.app
 
 # Test API
 curl https://api.pistisai.app/health
@@ -363,7 +363,7 @@ dig pistisai.app +short
 6. **Test your deployment**
 
    ```bash
-   curl https://pistisai.app
+   curl https://app.pistisai.app
    curl https://api.pistisai.app/health
    ```
 

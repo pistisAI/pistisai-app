@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Pistisai Privacy Policy — how Pistisai handles your data, including Google account information used for sign-in. Local-first by design.">
+  <meta name="description" content="PistisAI privacy policy. The agent runs on your computer. Sign-in is only for tunnel and sync, using Cloudflare Access on the free tier.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://pistisai.app/privacy">
+  <link rel="canonical" href="https://app.pistisai.app/privacy">
   <link rel="icon" type="image/png" href="/favicon.png">
   <title>Privacy Policy — Pistisai</title>
   <style>
@@ -48,15 +48,14 @@
     <header>
       <p class="brand">Pistisai</p>
       <h1>Privacy Policy</h1>
-      <p class="meta">Last updated: 4 September 2026 &middot; Effective: 4 September 2026</p>
+      <p class="meta">Last updated: 8 November 2026 &middot; Effective: 8 November 2026</p>
     </header>
 
     <p>
-      Pistisai (&ldquo;Pistisai,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) is a
-      local-first AI companion for desktop and web. This Privacy Policy explains what information we
-      collect, how we use it, and the choices you have. Pistisai is designed to keep your data on your
-      own device by default; cloud features are optional and only take effect when you explicitly enable
-      them.
+      PistisAI (&ldquo;PistisAI,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) is a
+      desktop hub for a Hermes-based agent, plus skills. It runs on your own computer. IAClé is the
+      Quebec company that delivers this same stack. Cloud services and online models are used when you
+      agree. For clients in Quebec, that path has to fit Law 25.
     </p>
 
     <div class="callout">
@@ -77,20 +76,16 @@
 
     <h2>2. Information we collect</h2>
 
-    <h3>2.1 Account information (Google Sign-In)</h3>
+    <h3>2.1 Account information (tunnel and sync)</h3>
+    <p>Local use of the desktop app does not require an account.</p>
     <p>
-      When you sign in with Google, our authentication provider (Supabase Auth) receives basic profile
-      information from your Google Account so we can create and secure your account. This includes:
+      Free-tier tunnel and sync sign-in uses Cloudflare Access. Access sends a one-time email PIN.
+      The Access token includes the email address so the tunnel can identify the session. Sign-in does
+      not use Google, and it does not use Supabase.
     </p>
-    <ul>
-      <li>your email address;</li>
-      <li>your name and profile picture, where available;</li>
-      <li>a unique Google account identifier;</li>
-      <li>the OAuth scopes <code>email</code> and <code>profile</code> only.</li>
-    </ul>
     <p>
-      We request the minimum scopes necessary to identify you. We do not request access to your Gmail,
-      Google Drive, contacts, or other Google services.
+      Business and Enterprise use the customer's own Tailscale network or VPN. That path does not
+      contact Cloudflare Access.
     </p>
 
     <h3>2.2 Content you create</h3>
@@ -124,25 +119,18 @@
     </ul>
     <p>We do not sell your personal information and we do not use it for advertising.</p>
 
-    <h2>4. Google user data</h2>
+    <h2>4. Sign-in data</h2>
     <p>
-      Pistisai&rsquo;s use and transfer to any other app of information received from Google APIs will
-      adhere to the
-      <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener noreferrer" target="_blank">Google API Services User Data Policy</a>,
-      including the Limited Use requirements. Specifically:
+      Free-tier sign-in receives the email address in the Cloudflare Access token. We use that address
+      to authorize the tunnel session. We do not request Google account data for sign-in. If you later
+      connect a Google service yourself, that service's own policy applies to the data you send it.
     </p>
-    <ul>
-      <li>we use Google account data solely to provide and improve sign-in and the user-facing features you request;</li>
-      <li>we do not transfer Google user data to third parties except as necessary to provide or improve the app, to comply with applicable law, or as part of a merger or acquisition;</li>
-      <li>we do not use Google user data for advertising;</li>
-      <li>we do not allow humans to read Google user data unless we have your consent, it is necessary for security, or it is required by law.</li>
-    </ul>
 
     <h2>5. How we store and protect your information</h2>
     <ul>
       <li><strong>On-device:</strong> app content is stored in an encrypted local database on your machine.</li>
-      <li><strong>Authentication:</strong> account and session data are handled by Supabase Auth on our behalf.</li>
-      <li><strong>In transit:</strong> connections to first-party services use encrypted transport (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.</li>
+      <li><strong>Authentication:</strong> free-tier tunnel sessions are Cloudflare Access tokens. Business and Enterprise stay on the customer's network.</li>
+      <li><strong>In transit:</strong> connections to first-party services use HTTPS/TLS. Customer networks may use Tailscale or another VPN.</li>
     </ul>
     <p>
       No method of storage or transmission is completely secure, but we apply reasonable technical and
@@ -152,8 +140,7 @@
     <h2>6. Sharing and third parties</h2>
     <p>We share information only in these limited circumstances:</p>
     <ul>
-      <li><strong>Google</strong> — to authenticate you when you choose Google Sign-In;</li>
-      <li><strong>Supabase</strong> — our authentication and account infrastructure provider;</li>
+      <li><strong>Cloudflare</strong> — to protect free-tier sign-in on app.pistisai.app and api.pistisai.app;</li>
       <li><strong>Error diagnostics (Sentry)</strong> — for crash and stability reporting, when enabled;</li>
       <li><strong>Runtimes and providers you choose</strong> — only the data you direct Pistisai to send to them.</li>
     </ul>
@@ -171,9 +158,8 @@
     <ul>
       <li>access, correct, or delete your account information;</li>
       <li>export or delete your local data from within the app;</li>
-      <li>revoke Google access at any time via your
-        <a href="https://myaccount.google.com/permissions" rel="noopener noreferrer" target="_blank">Google Account permissions</a>;</li>
-      <li>choose whether to enable cloud sync or keep Pistisai fully local.</li>
+      <li>use the desktop app on your own computer without an account;</li>
+      <li>choose whether to enable tunnel sync or keep the app local.</li>
     </ul>
 
     <h2>9. Children&rsquo;s privacy</h2>

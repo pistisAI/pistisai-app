@@ -1,98 +1,84 @@
-# Pistisai — ΠΙΣΤΙΣΑΙ
+# PistisAI — ΠΙΣΤΙΣΑΙ
 
-**A local-first companion and desktop capability layer for your AI agent. Private, secure, yours.**
+**A desktop hub for a Hermes-based agent, plus skills. It runs on the client's own computer.**
 
-> *Πίστις (Pistis) — the ancient spirit of trust, honesty, and good faith. After fleeing Pandora's box, she returned to Olympus. Pistisai builds a Stoa worthy of her return.*
+PistisAI is the tool stack. IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company. IAClé is not a separate product.
 
-Your AI runs on your hardware. The app gives it voice, vision, desktop control, and a secure channel across all your devices — no data leaves your network unless you decide otherwise.
+The agent runs on the computer the client already has. No special hardware is required. It can use cloud services the client already uses, and online language models for heavy work, only when that is secure, the client agrees, and it complies with Quebec Law 25.
+
+Full positioning: [docs/PRODUCT.md](docs/PRODUCT.md). French: [docs/PRODUCT.fr.md](docs/PRODUCT.fr.md).
 
 ---
 
-## Try It Now
+## Try it
 
-🖥️ **Start with the desktop app.** Your first Pistisai desktop install is the **hub** — your web, mobile, and other desktop devices connect through it. See [Your devices, one hub](#your-devices-one-hub).
+Install the **desktop app** first. That install is the hub. Web, mobile, and other desktops connect through it. See [Your devices, one hub](#your-devices-one-hub).
 
-🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. Handy for a quick look; for real multi-device use it connects through your desktop hub, not straight to your agent.
+- Web app: [app.pistisai.app](https://app.pistisai.app)
+- API and free-tier tunnel: [api.pistisai.app](https://api.pistisai.app)
+- Desktop and mobile builds: [Releases](https://github.com/pistisAI/pistisai-app/releases/latest) (Linux, Windows, macOS, and Android are built in CI)
 
-🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (AppImage + auto-update daemon; rolling out).
+Sign-in is only for tunnel and sync. Local desktop use does not require an account. The free tier uses the pistisai.app tunnel, protected by Cloudflare Access. Business and Enterprise use the customer's own Tailscale network or VPN. See [Tunnel and sync sign-in](docs/development/TUNNEL_SIGN_IN.md).
 
-📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/pistisAI/pistisai-app/releases/latest).
+You need an agent runtime. Hermes is the primary test path. OpenClaw and compatible gateways also work. Messaging apps such as Telegram and Slack stay on Hermes. They do not route through this app.
 
-**You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work. Your desktop hub connects to the runtime; your other Pistisai devices connect to the hub.
-
-> 🚀 **Public launch is live.** Full quick-start, supported runtimes, and self-hosting steps → [docs/LAUNCH.md](docs/LAUNCH.md). Primary CTA: clone the repo, run a workflow, and open an issue or discussion with your real use case. Track the launch → [GitHub issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
+> Launch steps: [docs/LAUNCH.md](docs/LAUNCH.md). Track the launch: [issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
 >
-> 🏛️ **Why we exist** → [docs/governance/manifesto.md](docs/governance/manifesto.md) — the meaning of Πίστις and the Four Pillars behind the product.
+> Why the name exists: [docs/governance/manifesto.md](docs/governance/manifesto.md).
 
 ---
 
-## What Sets It Apart
+## What you get
 
 | Layer | What it gives you |
-|-------|-------------------|
-| **Secure Channel** | Direct line to your agent, synced across devices |
-| **Voice + Avatar** | Sidecar companion with personality, memory, natural conversation |
-| **Desktop Control** | Permissioned access to apps, windows, keyboard, files |
-| **Vision** | Screen awareness, OCR, camera — explicit per-action consent |
-| **Device Mesh** | Tailscale-first private network across all your machines |
-| **Runtime Manager** | Manage agents, skills, sessions, tools, diagnostics |
+| --- | --- |
+| Desktop hub | The machine that stays on. Other PistisAI clients connect through it. |
+| Agent channel | Hermes, OpenClaw, or a compatible gateway on a computer the client controls. |
+| Voice and avatar | Sidecar companion with a persistent presence. |
+| Desktop control | Permissioned access to apps, windows, keyboard, and files. |
+| Vision | Screen awareness and OCR, with permission on that device. |
+| Skills | Scheduled tasks, sessions, and added capabilities. Same stack, not new products. |
+| Device mesh | Free tier through the Access-protected tunnel. Business and Enterprise on the customer's Tailscale or VPN. |
 
 ---
 
 ## Architecture
 
-```
-┌────────────────────────────────────────────────────────┐
-│                  Pistisai App                     │
-│  ┌──────────┐  ┌──────────┐  ┌────────────────────┐    │
-│  │  Agent   │  │  Avatar  │  │  Desktop Control   │    │
-│  │  Channel │  │  Voice   │  │  Vision            │    │
-│  └────┬─────┘  └────┬─────┘  └───────┬────────────┘    │
-│       └──────────────┼────────────────┘                  │
-│                      ▼                                   │
-│           ┌──────────────────────┐                       │
-│           │   Agent Adapter     │                        │
-│           │  Hermes / OpenClaw  │                        │
-│           └──────────┬──────────┘                        │
-└──────────────────────┼───────────────────────────────────┘
-                       │
-              ┌────────┴────────┐
-              │                 │
-         ┌────▼────┐     ┌─────▼──────┐
-         │  Local  │     │  Model     │
-         │  Agent  │     │  Providers │
-         │  Runtime│     │  (Ollama,  │
-         │         │     │  LM Studio)│
-         └─────────┘     └────────────┘
+```text
+  Telegram / Slack / ...        Hermes owns these adapters
+              │
+              ▼
+        Hermes (agent runtime)  on the client's computer
+              │
+              ▼
+     PistisAI desktop hub       voice, vision, desktop control, skills
+              │
+              ├── Web app, mobile, other desktops
+              │
+              └── Tunnel / sync, only when needed
+                    Free: api.pistisai.app (Cloudflare Access)
+                    Business / Enterprise: customer Tailscale or VPN
 ```
 
 ### Your devices, one hub
 
-```text
-  Your desktop app                ← install this first — it's the hub
-        │
-        │  (local or Tailscale)
-        ▼
-  Web app · Mobile app · Other desktops     ← connect through the hub
-```
+- Install the desktop app on the computer that stays on. It connects to the agent and becomes the hub.
+- Web, mobile, and other desktops connect through that hub.
+- The agent still talks to messaging apps directly.
 
-- Install the **desktop app** on the machine that stays on — it connects to your agent and becomes the **hub** for everything else.
-- Your **web, mobile, and other desktop devices** connect *through* that hub, not straight to your agent. Your data stays in your network.
-- Your agent still talks to messaging apps (Telegram, Slack, Discord) directly — the desktop hub is for your *devices*, not for messaging.
-
-Technical deep-dive → [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
+Technical map: [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md).
 
 ---
 
 ## Platforms
 
 | Platform | Status |
-|----------|--------|
-| 🐧 Linux | ✅ AppImage + auto-update daemon |
-| 🌐 Web | [pistisai.app](https://pistisai.app) |
-| 📱 Android | ✅ APK builds from CI |
-| 🪟 Windows | ✅ Installer (InnoSetup) + CI |
-| 🍎 macOS | ✅ Installer + CI |
+| --- | --- |
+| Linux | AppImage built in CI |
+| Windows | Installer and portable zip built in CI |
+| macOS | Zip built in CI |
+| Android | APK built in CI |
+| Web | [app.pistisai.app](https://app.pistisai.app) |
 
 ---
 
@@ -106,15 +92,11 @@ flutter pub get
 # The app depends on a separate shared package — get its deps too:
 cd lib/shared && flutter pub get && cd ../..
 
-# Run
-
 flutter run -d linux   # Desktop
 flutter run -d chrome  # Web
 ```
 
 ```bash
-# Build
-
 flutter build linux --release
 flutter build web --release --no-web-resources-cdn
 flutter build apk --release --split-per-abi
@@ -122,35 +104,35 @@ flutter build windows --release
 flutter build macos --release
 ```
 
-### Backend Services
+### Backend services
 
 ```bash
 cd services/api-backend && npm install && npm run dev
 cd services/streaming-proxy && npm install && npm run dev
 ```
 
-Developer onboarding → [docs/development/DEVELOPER_ONBOARDING.md](docs/development/DEVELOPER_ONBOARDING.md).
-Command reference → [AGENTS.md](AGENTS.md).
+Developer onboarding: [docs/development/DEVELOPER_ONBOARDING.md](docs/development/DEVELOPER_ONBOARDING.md).
+Command reference: [AGENTS.md](AGENTS.md).
 
 ---
 
 ## Documentation
 
-📖 [docs.pistisai.app](https://docs.pistisai.app)
-
 | Guide | What's in it |
-|-------|-------------|
-| [User Guide](docs/user-guide/USER_GUIDE.md) | Features and usage |
-| [Setup Guide](docs/user-guide/SETUP_GUIDE.md) | Step-by-step installation |
+| --- | --- |
+| [Product](docs/PRODUCT.md) | PistisAI, IAClé, tiers, hosts |
+| [Produit (français)](docs/PRODUCT.fr.md) | Same page for Quebec clients |
+| [User guide](docs/user-guide/USER_GUIDE.md) | Features and usage |
+| [Setup guide](docs/user-guide/SETUP_GUIDE.md) | Installation |
 | [Troubleshooting](docs/user-guide/TROUBLESHOOTING.md) | Common issues |
-| [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical deep-dive |
-| [Deployment Guide](docs/operations/backend/) | Production setup |
-| [Security Guide](SECURITY.md) | Reporting policy + security posture |
-| [Public Launch Guide](docs/LAUNCH.md) | Quick-start, runtimes, self-hosting |
-| [Contributing](CONTRIBUTING.md) | How to file issues, set up, and open PRs |
+| [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical map |
+| [Tunnel sign-in](docs/development/TUNNEL_SIGN_IN.md) | Cloudflare Access and customer VPN |
+| [Security](SECURITY.md) | Reporting policy |
+| [Launch guide](docs/LAUNCH.md) | Quick start |
+| [Contributing](CONTRIBUTING.md) | Issues, setup, and pull requests |
 
 ---
 
 ## License
 
-Business Source License 1.1 — see [LICENSE](LICENSE).
+Business Source License 1.1. See [LICENSE](LICENSE).

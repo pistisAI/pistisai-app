@@ -110,8 +110,8 @@ kubectl describe svc -n Pistisai
 
 ### Step 5: Test Application
 
-- Access `https://pistisai.app` in browser
-- Verify API endpoints: `https://pistisai.app/api/health`
+- Access `https://app.pistisai.app` in browser
+- Verify API endpoints: `https://app.pistisai.app/api/health`
 - Check TLS certificate validity
 
 ## Rollback Procedures

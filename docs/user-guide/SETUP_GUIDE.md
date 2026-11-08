@@ -1,10 +1,10 @@
-# Pistisai Setup Guide
+# PistisAI setup guide
 
-Pistisai is a privacy-first companion shell for an agent runtime you choose during setup. It can connect to Hermes, OpenClaw, or another compatible agent gateway running on this device, another device in your tailnet, or an optional hosted agent runtime.
+PistisAI runs on the computer you already have. No special hardware is required. The desktop app is the hub. See [Product](../PRODUCT.md).
 
-There is no universal default runtime. Hermes is the first agent runtime path used for current testing. OpenClaw remains supported as the original agent integration target.
+It connects to Hermes, OpenClaw, or another compatible agent gateway on this computer or another computer you already have. There is no hosted PistisAI agent and no universal default runtime. Hermes is the first path under test.
 
-Ollama, LM Studio, and similar local model servers are optional support model providers for app-owned memory and background features. They are not the main agent endpoint.
+Ollama and LM Studio are optional support model providers. They are not the agent. Online models are for heavy work, and only with your agreement.
 
 ---
 
@@ -14,13 +14,13 @@ Ollama, LM Studio, and similar local model servers are optional support model pr
 | --- | --- | --- |
 | OS | Windows 10+, Ubuntu 20.04+ | Windows 11, Ubuntu 22.04+ |
 | RAM | 8 GB | 16 GB+ |
-| GPU | None | GPU for local agent runtime or support model acceleration |
+| GPU | None required | A GPU helps only if you choose to run a local model |
 | Storage | 500 MB app space | 2 GB+ plus model/agent runtime storage |
 | Agent runtime | Hermes, OpenClaw, or compatible agent gateway | Hermes for current test path |
 | Support model provider | Optional | Ollama or LM Studio for memory/background features |
 | Secure mesh | Optional | Tailscale for multi-device and remote agent runtime paths |
 
-Cloud features are optional. Local agent runtime use should work without a Pistisai-hosted agent runtime.
+Local use does not require an account. Sign-in is for tunnel and sync. See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
 ---
 
@@ -148,16 +148,14 @@ Select the agent runtime this device should use:
 - Hermes
 - OpenClaw Gateway
 - Custom compatible agent gateway
-- Optional hosted agent runtime
 
 ### Runtime Location
 
 Choose where that runtime lives:
 
 - This computer
-- Another device in your Tailscale tailnet
-- A private server or VPS in your tailnet
-- Optional Pistisai-hosted agent runtime container
+- Another computer you already have
+- A machine on your own Tailscale network (Business and Enterprise)
 
 ### Connection Test
 
@@ -219,13 +217,9 @@ tailscale ping <runtime-device-name>
 
 4. In Pistisai, choose the agent runtime device or enter its tailnet endpoint.
 
-### Cloud Connector
+### Tunnel and sync
 
-For web/mobile access or cloud coordination, Pistisai should add an isolated per-user connector container to the user's tailnet. That connector coordinates sync and reachability. It does not grant desktop permissions by itself.
-
-### Hosted Agent Runtime
-
-Running the agent runtime in Pistisai-hosted infrastructure is an optional paid compute path. It should use a per-user isolated container and join the user's tailnet only after setup approval.
+The desktop app is the hub. Other devices connect through it. Free-tier sync uses Cloudflare Access on `api.pistisai.app`. Business and Enterprise use your own Tailscale network or VPN. Sync does not grant desktop permissions by itself. The agent stays on a computer you already have.
 
 ---
 

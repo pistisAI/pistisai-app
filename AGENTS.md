@@ -1,6 +1,10 @@
 # Pistisai — Agent Guide
 
-Flutter desktop/web app + Node.js backend services: local-first companion layer for agent runtimes (Hermes primary test path, OpenClaw Gateway, compatible gateways). Ollama/LM Studio are support model providers for app-owned features (e.g. embeddings) — not primary runtimes unless wrapped by an agent runtime.
+PistisAI is the tool stack: a Hermes-based desktop hub plus skills. It runs on the client's own computer. IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company. IAClé is not a separate product. Product page: `docs/PRODUCT.md`.
+
+Flutter desktop/web app + Node.js backend services. Hermes is the primary agent runtime under test. OpenClaw Gateway and compatible gateways also work. Ollama and LM Studio are support model providers for app-owned features (for example embeddings). They are not the agent. Online language models may be used for heavy work only when that is secure, consented, and compliant with Quebec Law 25.
+
+Tunnel and sync sign-in is Cloudflare Access on `api.pistisai.app` for the free tier. Business and Enterprise use the customer's Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`). See `docs/development/TUNNEL_SIGN_IN.md`. Open pull request #550 replaces the Supabase client still present on `main`. Do not extend Supabase, and do not edit that auth work from a docs change. Public hosts are `app.pistisai.app` and `api.pistisai.app`. `adminmatrix.pistisai.app` was removed on 7 November 2026.
 
 ## Hub topology (rules for agents)
 
@@ -31,7 +35,7 @@ npm install                                     # root Node tooling (backend onl
 cd services/api-backend && npm install          # repeat per service you touch
 ```
 
-CI pins Flutter via exact `environment.flutter` in root `pubspec.yaml` (currently `3.47.7`, stable; workflows use `flutter-version-file: pubspec.yaml`) and Node `26` (`.nvmrc` — **single source of truth** for Node); service engines allow Node `>=22 <27` (sdk `>=18`). Android builds use AGP `8.11.1`, Gradle `8.14.3`, Kotlin `2.4.0` (Flutter `3.47.7` floor; Gradle 9 / AGP 9 blocked until `tesseract_ocr` drops `jcenter()`). Integration test rig (shared `docker-compose.test.yml` hub): `bash scripts/run_integration_test_rig.sh` (prefers **emulator**, not USB); local PC: `bash scripts/run_pc_integration_test_rig.sh` (`docs/development/testing/PHYSICAL_INTEGRATION_TEST_RIG.md`). USB phone smoke: `scripts/test-android-phone.sh`. CI: `integration-test-rig.yml`; optional self-hosted `integration-test-rig-physical.yml` (label `integration-rig`).
+CI pins Flutter via exact `environment.flutter` in root `pubspec.yaml` (currently `3.47.9`, stable; workflows use `flutter-version-file: pubspec.yaml`) and Node `26` (`.nvmrc` — **single source of truth** for Node); service engines allow Node `>=22 <27` (sdk `>=18`). Android builds use AGP `8.11.1`, Gradle `8.14.3`, Kotlin `2.4.0` (Flutter `3.47.9` floor; Gradle 9 / AGP 9 blocked until `tesseract_ocr` drops `jcenter()`). Integration test rig (shared `docker-compose.test.yml` hub): `bash scripts/run_integration_test_rig.sh` (prefers **emulator**, not USB); local PC: `bash scripts/run_pc_integration_test_rig.sh` (`docs/development/testing/PHYSICAL_INTEGRATION_TEST_RIG.md`). USB phone smoke: `scripts/test-android-phone.sh`. CI: `integration-test-rig.yml`; optional self-hosted `integration-test-rig-physical.yml` (label `integration-rig`).
 
 ```bash
 # Flutter — CI scopes analysis to lib/ only; gate suite is the script, not bare flutter test

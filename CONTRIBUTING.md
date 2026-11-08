@@ -1,8 +1,6 @@
 # Contributing to Pistisai
 
-Thanks for showing up. Pistisai is **local-first, open, and built in the open** — your
-issues, failure reports, and pull requests are the lifeblood of this launch. This guide
-gets you from "I cloned the repo" to "my change is in `main`" without surprises.
+Thanks for showing up. PistisAI is the desktop hub and skills that run on the client's own computer. IAClé is the Quebec company that delivers that same stack. Read [docs/PRODUCT.md](docs/PRODUCT.md) before describing the product. This guide gets you from "I cloned the repo" to "my change is in `main`".
 
 > Launch anchor issue: [#39 — Pistisai — public launch](https://github.com/pistisAI/pistisai-app/issues/39).
 > Read it first if you're here from a launch channel. Open an issue or discussion with your

@@ -132,9 +132,10 @@ CIRCUIT_BREAKER_FAILURE_THRESHOLD=5
 CIRCUIT_BREAKER_SUCCESS_THRESHOLD=2
 CIRCUIT_BREAKER_TIMEOUT=60000
 
-# Auth0 Configuration
-JWT_ISSUER_DOMAIN=your-auth0-domain.auth0.com
-JWT_AUDIENCE=https://api.pistisai.app
+# Tunnel sign-in is Cloudflare Access on api.pistisai.app.
+# Business and Enterprise set PISTISAI_TUNNEL_AUTH=customer.
+# See docs/development/TUNNEL_SIGN_IN.md.
+PISTISAI_TUNNEL_AUTH=customer
 
 # Monitoring
 METRICS_ENABLED=true
@@ -151,10 +152,8 @@ Create `.env` file in project root:
 API_BASE_URL=http://localhost:3001
 WS_URL=ws://localhost:3001
 
-# Auth0 Configuration
-JWT_ISSUER_DOMAIN=your-auth0-domain.auth0.com
-JWT_CLIENT_ID=your-client-id
-JWT_REDIRECT_URI=http://localhost:5000/callback
+# Tunnel sign-in is Cloudflare Access. Do not configure Auth0 here.
+# See docs/development/TUNNEL_SIGN_IN.md.
 
 # SSH Configuration
 SSH_HOST=localhost

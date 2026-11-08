@@ -1,6 +1,6 @@
-# Pistisai Features Guide
+# PistisAI features guide
 
-Pistisai is a local-first, privacy-first companion shell and desktop capability layer for user-selected agent runtimes. It gives your chosen agent runtime (Hermes, OpenClaw, or custom compatible gateways) a secure connection channel to your desktop, combined with structured permissions for GUI automation, voice conversation, vision capabilities, and multi-device Tailscale mesh coordination.
+PistisAI is a desktop hub for a Hermes-based agent, plus skills, on the computer you already have. It gives that agent a secure channel, permissioned desktop control, voice, vision, and sync. Free-tier sync uses Cloudflare Access. Business and Enterprise use your own Tailscale network or VPN. See [Product](../PRODUCT.md).
 
 ---
 

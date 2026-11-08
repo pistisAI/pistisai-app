@@ -1,12 +1,12 @@
-# Pistisai System Architecture
+# PistisAI system architecture
 
-Pistisai is a Flutter desktop/web application with optional Node.js backend services. It is a local-first companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, and compatible custom agent gateways.
+PistisAI is the tool stack: a Flutter desktop hub built around Hermes, plus skills. IAClé is the Quebec company that delivers this same stack. Product page: [PistisAI and IAClé](../PRODUCT.md).
 
-Ollama, LM Studio, and similar local model servers are support model providers. They can power memory, embeddings, summarization, semantic search, OCR cleanup, speech helpers, and other app-owned background intelligence, but they are not primary app runtimes.
+The agent runs on the client's own computer. No special hardware is required. Ollama, LM Studio, and similar local model servers are support providers for memory, embeddings, summarization, OCR cleanup, speech helpers, and other app-owned background work. They are not the agent. Online language models may be used for heavy work when the client agrees and, for Quebec clients, the provider fits Law 25.
 
-Core functionality is local-first. Cloud services add authentication, sync, presence, admin, per-user cloud connector containers, and optional hosted agent runtime compute. They should not be required for the single-device local path.
+Single-computer use does not require an account. Sign-in is for tunnel and sync: Cloudflare Access on `api.pistisai.app` for the free tier, and the customer's Tailscale network or VPN for Business and Enterprise (`PISTISAI_TUNNEL_AUTH=customer`). See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md). Open pull request [#550](https://github.com/pistisAI/pistisai-app/pull/550) removes the Supabase client still present on `main`.
 
-The setup wizard is the authority for agent runtime selection. Do not assume one universal default runtime. Hermes is the current first test path; OpenClaw remains a supported agent runtime and original integration.
+The setup wizard chooses the agent runtime. Hermes is the current first test path. OpenClaw remains a supported runtime. Do not assume one universal default.
 
 ## Desktop-as-Hub Topology
 
@@ -53,7 +53,8 @@ The **primary Pistisai desktop install** (normally the first app installed) is t
 | API backend | Express 5 ESM in `services/api-backend/`, Node `>=22 <27`, default port `8080` |
 | Streaming proxy | Express 5 ESM in `services/streaming-proxy/`, Node `>=22 <27`, default port `3001` |
 | Tailscale relay | ESM service in `services/tailscale-relay/`, default port `3002` |
-| Auth backend | CommonJS Express 5 app in `backend/auth/`, default port `3000` |
+| Tunnel sign-in | Cloudflare Access on `api.pistisai.app` for the free tier. Customer Tailscale or VPN for Business and Enterprise. See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md). |
+| Older auth service | CommonJS Express 5 app in `backend/auth/`, default port `3000`. Not the product sign-in. |
 
 ## Flutter Structure
 

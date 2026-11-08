@@ -264,7 +264,7 @@ Response:
 For questions about API versioning or migration help, contact:
 
 - Email: support@pistisai.app
-- Documentation: https://docs.pistisai.app
+- Documentation: https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md
 - GitHub Issues: https://github.com/ghcr.io/pistisai/Pistisai/api/issues
 
 ## Implementation Details

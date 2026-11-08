@@ -1,25 +1,24 @@
-# Pistisai Specification
+# PistisAI specification
 
-## Project Vision
+Positioning: [docs/PRODUCT.md](docs/PRODUCT.md). This file is the technical specification of the stack.
 
-**Pistisai** is a local-first companion and desktop capability layer for user-selected agent runtimes. It gives Hermes, OpenClaw, and compatible agent gateways a secure channel to the user and permissioned hands and eyes on the user's desktops.
+## Project vision
 
-The primary audience is personal users — individuals who want a private, capable AI companion on their own hardware. Business and team usage is a secondary path that follows the personal foundation.
+**PistisAI** is a desktop hub for a Hermes-based agent, plus skills. The agent runs on the client's own computer. No special hardware is required. IAClé is the Quebec company that delivers this same stack. One stack, one company.
 
-The main app does not connect directly to raw local model providers as its primary experience. Ollama, LM Studio, and similar endpoints are support model providers for app-owned features such as memory, embeddings, summarization, classification, OCR cleanup, and speech helpers.
+The hub gives the agent a secure channel and permissioned hands and eyes on that computer. Web, mobile, and other desktops connect through the hub.
 
-Hermes is the current first test path. OpenClaw remains a supported agent runtime and original integration, but it is not the universal default.
+The main app does not connect directly to raw local model providers as its primary experience. Ollama, LM Studio, and similar endpoints are support model providers for app-owned features such as memory, embeddings, summarization, classification, OCR cleanup, and speech helpers. Online language models may be used for heavy work when the client agrees and, for Quebec clients, the provider fits Law 25.
 
-## Product Model
+Hermes is the current first test path. OpenClaw remains a supported agent runtime, and it is not the universal default.
 
-Pistisai has four product layers:
+## Product model
 
-1. **User-owned agent runtime**: the normal path. The user runs Hermes, OpenClaw, or a compatible agent gateway on hardware they control.
+1. **Agent on the client's computer**: the normal path. Hermes, OpenClaw, or a compatible gateway runs on a computer the client already has.
 2. **Support model provider**: optional local model infrastructure such as Ollama or LM Studio for memory and other app-owned background features.
-3. **Cloud connector and sync**: optional per-user cloud connector container that can join the user's Tailscale tailnet for secure channel sync, presence, and web/mobile access.
-4. **Hosted agent runtime**: optional paid compute add-on for users who want Pistisai to run an isolated agent runtime for them.
+3. **Tunnel and sync**: sign-in exists only for this. Free tier uses Cloudflare Access on `api.pistisai.app`. Business and Enterprise use the customer's Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`).
 
-Cloud services coordinate identity, sync, presence, and optional hosted compute. They are not required for the core single-device local experience.
+Local desktop use does not require an account. A `pistisai_hosted` runtime-location value still exists in code. It is not the product offer. Do not document a PistisAI-hosted agent as the way the product runs.
 
 ## Core Pillars
 
@@ -82,8 +81,7 @@ Agent runtime setup paths:
 2. **Another private device**: agent runtime running on another desktop, workstation, or server.
 3. **Tailscale device**: agent runtime discovered through the user's tailnet.
 4. **Manual/private URL**: custom LAN, VPN, tailnet DNS, or private compatible agent gateway.
-5. **Cloud-hosted agent runtime**: optional paid Pistisai-managed runtime.
-6. **No runtime yet**: guide the user through installing or configuring Hermes, OpenClaw, or another compatible agent gateway.
+5. **No runtime yet**: guide the user through installing or configuring Hermes, OpenClaw, or another compatible agent gateway on a computer the client already has.
 
 Optional support model setup paths:
 
@@ -120,10 +118,9 @@ The wizard must not present Ollama or LM Studio as primary agent runtime choices
 | --- | --- |
 | API Backend | Auth, user/device metadata, admin APIs, optional cloud coordination |
 | Streaming Proxy | Legacy/fallback streaming path and web transport support |
-| Per-user cloud connector | Isolated optional container that joins the user's Tailscale tailnet |
-| Tailscale Relay | Existing service area for Tailscale integration |
-| Hosted agent runtime | Optional paid isolated runtime compute |
-| Auth Backend | Lightweight Auth0 JWT validation |
+| Tailscale relay | Customer-network path for Business and Enterprise. |
+| Tunnel sign-in | Cloudflare Access for the free tier. Customer Tailscale or VPN for Business and Enterprise. See [Tunnel and sync sign-in](docs/development/TUNNEL_SIGN_IN.md). |
+| Older auth service | `backend/auth/`, CommonJS. Not the product sign-in. |
 | SDK | TypeScript SDK |
 | OpenClaw Skills | Avatar personality/evolution skill package |
 
@@ -145,16 +142,17 @@ Memory and voice integration are important but may phase in behind the first Her
 
 ### Secure Device Mesh
 
-Primary private transport should be Tailscale:
+The desktop app is the hub. Other clients connect through it. See [Desktop-as-hub topology](docs/architecture/SYSTEM_ARCHITECTURE.md#desktop-as-hub-topology).
 
 ```text
-Client UI / Web / Phone
+Hermes on the client's computer
         |
-Optional per-user Pistisai cloud connector
+PistisAI desktop hub
         |
-User's Tailscale tailnet
+Web, mobile, other desktops
         |
-Pistisai desktop apps and user-selected agent runtimes
+Free tier: api.pistisai.app (Cloudflare Access)
+Business and Enterprise: customer Tailscale or VPN
 ```
 
 Rules:
@@ -168,11 +166,11 @@ Rules:
 
 ## Privacy And Security Model
 
-- Core single-device use must work without mandatory cloud dependencies.
-- The active agent runtime location is chosen by setup, not assumed.
-- User-owned agent runtimes normally live inside the user's network or tailnet.
-- Cloud-hosted agent runtime is optional paid compute.
+- Core single-computer use works without an account.
+- The active agent runtime location is chosen by setup, and it is a computer the client already has.
 - Desktop control and vision are always device-scoped and permissioned.
+- Cloud services and online models are used when the client agrees. For Quebec clients, that path has to fit Law 25.
+- Free-tier sync uses Cloudflare Access. Business and Enterprise stay on the customer's network.
 - Cloud sync must not grant direct desktop access without local app approval.
 - Local model providers do not receive desktop-control authority.
 - Local data ownership remains central through LocalBrain/SQLite and explicit sync settings.
@@ -186,7 +184,7 @@ Rules:
 5. **Vision**: runtime can inspect selected screen/camera context with user consent.
 6. **Local intelligence**: optional local model providers can support memory and background features without becoming the main agent endpoint.
 7. **Multi-device sync**: channel state can continue across authorized devices.
-8. **Isolation**: cloud connector and cloud-hosted agent runtime paths are isolated per user.
+8. **Tunnel isolation**: free-tier Access and customer-network relays do not grant desktop actions without local approval.
 
 ## Out Of Scope For The Immediate MVP
 

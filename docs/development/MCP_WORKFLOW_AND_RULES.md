@@ -164,14 +164,13 @@ In addition to MCP servers, I will leverage powerful command-line interface (CLI
   * Always specify `--release` flag for production builds.
 
 * **Authentication**:
-  * Use Auth0 for web applications (no GCIP/Google Sign-In).
+  * Tunnel and sync sign-in is Cloudflare Access. See `docs/development/TUNNEL_SIGN_IN.md`. Do not add Supabase or Auth0 sign-in. Open pull request #550 owns the auth code change.
   * Use `dart:js_interop` for JavaScript interop (replaces deprecated `js` package).
-  * Implement platform-specific auth services (Auth0WebService for web, others for mobile/desktop).
+  * Local desktop use does not require an account.
 
 * **Web-Specific**:
   * Use `package:web/web.dart` for web platform detection and DOM manipulation.
-  * Bridge JavaScript SDKs (like Auth0) through custom bridge files (`auth0-bridge.js`).
-  * Handle redirect callbacks properly for OAuth flows.
+  * `web/auth0-bridge.js` is not in the tree. Do not recreate it.
 
 ### E. Version Management
 
@@ -231,7 +230,7 @@ In addition to MCP servers, I will leverage powerful command-line interface (CLI
       ```
 
 * **API Development**:
-  * Use Express.js middleware for authentication (e.g., `express-oauth2-jwt-bearer` for Auth0).
+  * Free-tier tunnel JWTs are Cloudflare Access tokens. A customer relay sets `PISTISAI_TUNNEL_AUTH=customer`.
   * Implement proper CORS configuration for web clients.
   * Use environment variables for configuration (domain, audience, client IDs).
   * Validate JWT tokens before processing requests.

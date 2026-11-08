@@ -1,8 +1,10 @@
-# Pistisai
+# PistisAI
 
-**A local-first companion and desktop capability layer for agent runtimes.**
+**Desktop hub for a Hermes-based agent, plus skills. It runs on the client's own computer.**
 
-Pistisai is a Flutter desktop/web application with optional Node.js backend services. It provides a secure agent channel, avatar/voice companion, desktop control, vision system, agent runtime management, and multi-device sync through a Tailscale-first secure device mesh.
+PistisAI is the tool stack. IAClé is the Quebec company that delivers it. See [Product](PRODUCT.md) and [Produit (français)](PRODUCT.fr.md).
+
+The repository is a Flutter desktop/web application with optional Node.js services for the API and tunnel. Sign-in is only for tunnel and sync: Cloudflare Access on the free tier, the customer's Tailscale network or VPN for Business and Enterprise. See [Tunnel and sync sign-in](development/TUNNEL_SIGN_IN.md).
 
 ## What It Does
 

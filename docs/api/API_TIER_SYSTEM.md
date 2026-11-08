@@ -1,38 +1,41 @@
-# Pistisai Tier-Based API Documentation
+# PistisAI tier behavior
 
 ## Overview
 
-The Pistisai API supports tier-aware behavior for cloud features, per-user connectors, optional hosted agent runtimes, and legacy proxy paths.
+Sign-in and sync follow [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
-> **Status**: This document still contains older Ollama/direct-proxy endpoint examples. Current product direction is agent-runtime-first and Tailscale-first. New tier policy should apply to selected agent runtimes, optional cloud connectors, optional support model providers, and optional paid hosted agent runtime containers. Do not design new primary app flows around direct Ollama proxy endpoints.
+| Tier | Network |
+| --- | --- |
+| Free | pistisai.app tunnel at `api.pistisai.app`, Cloudflare Access |
+| Business | Customer Tailscale or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
+| Enterprise | Customer Tailscale or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
 
-## User Tiers
+Premium is an older name still present in the app. It uses the customer network, the same as Business and Enterprise. It is not a separate product. The agent runs on the client's own computer. There is no PistisAI-hosted agent.
 
-### Free Tier
+> **Status**: The endpoint notes below are older proxy and rate-limit examples. Do not treat them as the product offer, and do not design new flows around a hosted agent or a direct Ollama proxy.
 
-- **Local/user-owned agent runtime access** without hosted runtime compute
-- **No Docker required** on user's machine
-- **Single local or private-network agent runtime path**
-- **Basic features** with upgrade prompts for advanced functionality
+## Older endpoint notes
 
-### Premium Tier
+### Free tier (historical notes)
 
-- **Optional hosted agent runtime or cloud connector orchestration** with isolated environments
-- **Team features** and collaboration tools
-- **API access** for custom integrations
-- **Multiple connections** and advanced networking
-- **Priority support**
+- Local agent runtime on the client's computer
+- No special hardware
+- Tunnel sync through Cloudflare Access when sync is enabled
 
-### Enterprise Tier
+### Premium (historical name)
 
-- **Unlimited resources** and connections
-- **Custom configurations** and on-premise deployment
-- **Advanced security** and compliance features
-- **Dedicated support** and SLA guarantees
+- Same customer-network path as Business and Enterprise
+- Not a separate product
 
-## Authentication & Tier Detection
+### Enterprise (historical notes)
 
-All API endpoints require authentication via Auth0 JWT tokens. User tier information is extracted from the token's metadata:
+These bullets are old API notes, not the current offer. Enterprise uses the customer's Tailscale network or VPN.
+
+## Authentication and tier detection (historical)
+
+The notes below describe an Auth0 token shape. Current free-tier sign-in is a Cloudflare Access JWT. See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
+
+Historical claim, do not implement: all API endpoints require Auth0 JWT tokens, and tier was read from token metadata:
 
 ```javascript
 // Tier information locations (in priority order)

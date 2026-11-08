@@ -5,8 +5,7 @@ consistent with [LAUNCH_CONTENT_BRIEF.md](../LAUNCH_CONTENT_BRIEF.md).
 
 ## Elevator pitch (short)
 
-Pistisai is a local-first companion and desktop layer for your AI agent — voice, vision, and
-audited desktop control over your own private mesh. Your agent, your hardware, your rules.
+PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.
 
 ## FAQ-ready answers
 
@@ -21,8 +20,7 @@ contract works. Ollama / LM Studio are support providers for app-owned features
 (memory, embeddings, OCR, speech) — not the main runtime.
 
 **Where does my data go?**
-Nowhere off your network unless you choose. Connectivity is Tailscale-first. The optional
-cloud connector is one isolated container per user, joined to your tailnet.
+The agent runs on the client's computer. Cloud services the client already uses, and online models for heavy work, are used when the client agrees. For Quebec clients that path has to fit Law 25. Free-tier sync uses Cloudflare Access on api.pistisai.app. Business and Enterprise use the customer's Tailscale network or VPN.
 
 **Is desktop control safe?**
 It's explicit, device-scoped, permissioned per action, and fully auditable. No action runs
@@ -36,7 +34,7 @@ Full steps in [docs/LAUNCH.md](../../LAUNCH.md).
 ## Issue / discussion reply templates
 
 **Welcome reply (newcomer):**
-> Welcome! The fastest path is https://pistisai.app — log in and run the setup wizard. Point
+> Welcome! The web app is https://app.pistisai.app. Install the desktop app first if you want the hub. Point
 > it at your agent runtime and you're set. If you hit anything, open an issue with your runtime
 > + OS and we'll dig in.
 
@@ -52,4 +50,4 @@ Full steps in [docs/LAUNCH.md](../../LAUNCH.md).
 ## Call to action (standard)
 
 Clone the repo, run a workflow, and open an issue or discussion with your real use case.
-Web: https://pistisai.app · GitHub: https://github.com/pistisAI/pistisai-app
+Web: https://app.pistisai.app · GitHub: https://github.com/pistisAI/pistisai-app

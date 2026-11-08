@@ -1,3 +1,5 @@
+> **Not current for sign-in.** Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../../../development/TUNNEL_SIGN_IN.md). Do not follow Auth0 or Supabase instructions on this page.
+
 # Pistisai Authentication Guide
 
 ## Overview
@@ -804,4 +806,4 @@ For authentication issues:
 - Check API Documentation
 - Review Error Codes
 - Contact support@pistisai.app
-- Visit https://docs.pistisai.app
+- Visit https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md

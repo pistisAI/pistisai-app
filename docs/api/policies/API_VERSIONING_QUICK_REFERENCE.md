@@ -163,6 +163,6 @@ mountVersionedRoutes(app, '/users', {
 
 ## Support
 
-- Documentation: https://docs.pistisai.app
+- Documentation: https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md
 - Migration Guide: See API_VERSIONING_GUIDE.md
 - Issues: https://github.com/ghcr.io/pistisai/Pistisai/api/issues

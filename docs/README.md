@@ -1,13 +1,15 @@
-# Pistisai Documentation
+# PistisAI documentation
 
-This is the canonical documentation hub for Pistisai. Prefer linking here from new docs instead of adding another top-level index.
+This is the canonical documentation hub for PistisAI. Prefer linking here from new docs instead of adding another top-level index.
 
-For project-wide agent instructions, see [AGENTS.md](../AGENTS.md). For the product specification, see [SPEC.md](../SPEC.md).
+Product positioning: [PistisAI and IAClé](PRODUCT.md) and [Produit (français)](PRODUCT.fr.md). For project-wide agent instructions, see [AGENTS.md](../AGENTS.md). For the technical specification, see [SPEC.md](../SPEC.md).
 
 ## Start Here
 
 | Audience | Document |
 | --- | --- |
+| Product and positioning | [PistisAI and IAClé](PRODUCT.md) |
+| Quebec clients | [Produit (français)](PRODUCT.fr.md) |
 | Users | [User Guide](user-guide/USER_GUIDE.md) |
 | New developers | [Developer Onboarding](development/DEVELOPER_ONBOARDING.md) |
 | Contributors | [Development Workflow](development/DEVELOPMENT_WORKFLOW.md) |
@@ -29,6 +31,7 @@ For project-wide agent instructions, see [AGENTS.md](../AGENTS.md). For the prod
 
 ## Development
 
+- [Tunnel and sync sign-in](development/TUNNEL_SIGN_IN.md)
 - [Developer Onboarding](development/DEVELOPER_ONBOARDING.md)
 - [Development Workflow](development/DEVELOPMENT_WORKFLOW.md)
 - [Building Guide](development/BUILDING_GUIDE.md)

@@ -26,10 +26,9 @@ Install or prepare at least one agent runtime before completing setup:
 | --- | --- | --- |
 | Hermes | Configured in wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `http://localhost:18789` | Supported original integration |
-| Custom agent gateway | User supplied | Private server, VPS, or compatible agent runtime API |
-| Hosted agent runtime | Pistisai managed | Optional paid compute |
+| Custom agent gateway | User supplied | Private compatible agent runtime on a computer the client already has |
 
-Most users should run the agent runtime locally or on another machine they control. Running an agent runtime in Pistisai-hosted infrastructure is optional paid compute and should use an isolated per-user container.
+The agent runs on a computer the client already has. No special hardware is required.
 
 ### Optional Support Model Provider
 

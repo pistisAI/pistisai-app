@@ -33,7 +33,7 @@ show_help() {
     cat << EOF
 Pistisai Linux Installer
 
-Usage: curl -fsSL https://pistisai.app/install.sh | bash [OPTIONS]
+Usage: curl -fsSL https://app.pistisai.app/install.sh | bash [OPTIONS]
 
 Options:
     --system              Install system-wide to /opt (requires sudo)
@@ -49,13 +49,13 @@ Environment Variables:
 
 Examples:
     # User-local installation (default)
-    curl -fsSL https://pistisai.app/install.sh | bash
+    curl -fsSL https://app.pistisai.app/install.sh | bash
 
     # System-wide installation
-    curl -fsSL https://pistisai.app/install.sh | bash -s -- --system
+    curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --system
 
     # Beta channel
-    curl -fsSL https://pistisai.app/install.sh | bash -s -- --channel beta
+    curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --channel beta
 EOF
 }
 
@@ -577,7 +577,7 @@ Create `scripts/packaging/update-daemon/pistisai-updated.service`:
 ```ini
 [Unit]
 Description=Pistisai Update Daemon
-Documentation=https://pistisai.app
+Documentation=https://app.pistisai.app
 After=network-online.target
 
 [Service]
@@ -608,7 +608,7 @@ Create `scripts/packaging/update-daemon/pistisai-updated.timer`:
 ```ini
 [Unit]
 Description=Pistisai Update Checker
-Documentation=https://pistisai.app
+Documentation=https://app.pistisai.app
 Requires=pistisai-updated.service
 
 [Timer]
@@ -1259,7 +1259,7 @@ Modify the `ncipollo/release-action` step:
     body: |
       ## Quick Install
       ```bash
-      curl -fsSL https://pistisai.app/install.sh | bash
+      curl -fsSL https://app.pistisai.app/install.sh | bash
       ```
 
       ## Downloads
@@ -1369,20 +1369,20 @@ Add to README.md:
 ### Quick Install
 
 ```bash
-curl -fsSL https://pistisai.app/install.sh | bash
+curl -fsSL https://app.pistisai.app/install.sh | bash
 ```
 
 ### Installation Options
 
 ```bash
 # System-wide installation (requires sudo)
-curl -fsSL https://pistisai.app/install.sh | bash -s -- --system
+curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --system
 
 # Beta channel
-curl -fsSL https://pistisai.app/install.sh | bash -s -- --channel beta
+curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --channel beta
 
 # Custom directory
-curl -fsSL https://pistisai.app/install.sh | bash -s -- --dir /opt/myapp
+curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --dir /opt/myapp
 ```
 
 ### Manual Installation

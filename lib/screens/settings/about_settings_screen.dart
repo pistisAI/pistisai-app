@@ -34,6 +34,20 @@ class AboutSettingsScreen extends StatelessWidget {
                 _buildSection(
                   context: context,
                   theme: theme,
+                  icon: Icons.computer,
+                  title: 'What PistisAI is',
+                  child: Text(
+                    'PistisAI is a desktop hub for a Hermes-based agent, plus skills. '
+                    'It runs on this computer. No special hardware is required. '
+                    'Sign-in is only for tunnel and sync. '
+                    'IAClé is the Quebec company that delivers this same stack to Quebec businesses.',
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                _buildSection(
+                  context: context,
+                  theme: theme,
                   icon: Icons.auto_awesome,
                   title: 'The Vision',
                   child: Text(
@@ -201,7 +215,8 @@ class AboutSettingsScreen extends StatelessWidget {
                             style: theme.textTheme.titleMedium),
                         const SizedBox(height: 12),
                         _buildInfoRow(context, 'Version', AppConfig.appVersion),
-                        _buildInfoRow(context, 'Repository', 'pistisAI/pistisai-app'),
+                        _buildInfoRow(
+                            context, 'Repository', 'pistisAI/pistisai-app'),
                       ],
                     ),
                   ),
@@ -227,11 +242,15 @@ class AboutSettingsScreen extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [AppTheme.colorsOf(context).secondary, AppTheme.colorsOf(context).primary],
+                colors: [
+                  AppTheme.colorsOf(context).secondary,
+                  AppTheme.colorsOf(context).primary
+                ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
+                  color:
+                      AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),
@@ -243,7 +262,9 @@ class AboutSettingsScreen extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Center(
                   child: Text('P',
-                      style: TextStyle(fontSize: 48, color: AppTheme.colorsOf(context).textColor)),
+                      style: TextStyle(
+                          fontSize: 48,
+                          color: AppTheme.colorsOf(context).textColor)),
                 ),
               ),
             ),
@@ -405,8 +426,11 @@ class AboutSettingsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
-          Text(value, style: TextStyle(color: AppTheme.colorsOf(context).textColor)),
+          Text(label,
+              style:
+                  TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
+          Text(value,
+              style: TextStyle(color: AppTheme.colorsOf(context).textColor)),
         ],
       ),
     );

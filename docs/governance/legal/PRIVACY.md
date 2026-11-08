@@ -1,16 +1,12 @@
 # Privacy Policy
 
-_Last updated: 4 September 2026 · Effective: 4 September 2026_
+_Last updated: 8 November 2026 · Effective: 8 November 2026_
 
 > The canonical, user-facing version of this policy is published at
-> [https://pistisai.app/privacy](https://pistisai.app/privacy) (served from
+> [https://app.pistisai.app/privacy](https://app.pistisai.app/privacy) (served from
 > `web/privacy.html`). Keep the two in sync when editing.
 
-Pistisai ("Pistisai," "we," "us," or "our") is a local-first AI companion for
-desktop and web. This Privacy Policy explains what information we collect, how we
-use it, and the choices you have. Pistisai is designed to keep your data on your
-own device by default; cloud features are optional and only take effect when you
-explicitly enable them.
+PistisAI ("PistisAI," "we," "us," or "our") is a desktop hub for a Hermes-based agent, plus skills. It runs on your own computer. IAClé is the Quebec company that delivers this same stack. This policy explains what information the stack collects. Cloud services and online models are used when you agree. For clients in Quebec, that path has to fit Law 25.
 
 **Local-first summary.** Your conversations, memory ("local brain"), and settings
 are stored in an encrypted database on your own machine. We do not sell your data,
@@ -28,19 +24,13 @@ their handling of your data is governed by their own policies.
 
 ## 2. Information we collect
 
-### 2.1 Account information (Google Sign-In)
+### 2.1 Account information (tunnel and sync)
 
-When you sign in with Google, our authentication provider (Supabase Auth) receives
-basic profile information from your Google Account so we can create and secure your
-account. This includes:
+Local use of the desktop app does not require an account.
 
-- your email address;
-- your name and profile picture, where available;
-- a unique Google account identifier;
-- the OAuth scopes `email` and `profile` only.
+Free-tier tunnel and sync sign-in uses Cloudflare Access. Access sends a one-time email PIN. The Access token includes the email address so the tunnel can identify the session. Sign-in does not use Google, and it does not use Supabase.
 
-We request the minimum scopes necessary to identify you. We do not request access
-to your Gmail, Google Drive, contacts, or other Google services.
+Business and Enterprise use the customer's own Tailscale network or VPN. That path does not contact Cloudflare Access.
 
 ### 2.2 Content you create
 
@@ -72,28 +62,15 @@ collect or retain this content on our servers.
 
 We do not sell your personal information and we do not use it for advertising.
 
-## 4. Google user data
+## 4. Sign-in data
 
-Pistisai's use and transfer to any other app of information received from Google
-APIs will adhere to the
-[Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy),
-including the Limited Use requirements. Specifically:
-
-- we use Google account data solely to provide and improve sign-in and the
-  user-facing features you request;
-- we do not transfer Google user data to third parties except as necessary to
-  provide or improve the app, to comply with applicable law, or as part of a merger
-  or acquisition;
-- we do not use Google user data for advertising;
-- we do not allow humans to read Google user data unless we have your consent, it
-  is necessary for security, or it is required by law.
+Free-tier sign-in receives the email address in the Cloudflare Access token. We use that address to authorize the tunnel session. We do not request Google account data for sign-in. If you later connect a Google service yourself, that service's own policy applies to the data you send it.
 
 ## 5. How we store and protect your information
 
 - **On-device:** app content is stored in an encrypted local database on your machine.
-- **Authentication:** account and session data are handled by Supabase Auth on our behalf.
-- **In transit:** connections to first-party services use encrypted transport
-  (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
+- **Authentication:** free-tier tunnel sessions are Cloudflare Access tokens. Business and Enterprise stay on the customer's network.
+- **In transit:** connections to first-party services use HTTPS/TLS. Customer networks may use Tailscale or another VPN.
 
 No method of storage or transmission is completely secure, but we apply reasonable
 technical and organizational safeguards appropriate to the data involved.
@@ -102,8 +79,7 @@ technical and organizational safeguards appropriate to the data involved.
 
 We share information only in these limited circumstances:
 
-- **Google** — to authenticate you when you choose Google Sign-In;
-- **Supabase** — our authentication and account infrastructure provider;
+- **Cloudflare** — to protect free-tier sign-in on `app.pistisai.app` and `api.pistisai.app`;
 - **Error diagnostics (Sentry)** — for crash and stability reporting, when enabled;
 - **Runtimes and providers you choose** — only the data you direct Pistisai to send to them.
 
@@ -121,9 +97,8 @@ data unless we are required to retain it by law.
 
 - access, correct, or delete your account information;
 - export or delete your local data from within the app;
-- revoke Google access at any time via your
-  [Google Account permissions](https://myaccount.google.com/permissions);
-- choose whether to enable cloud sync or keep Pistisai fully local.
+- use the desktop app on your own computer without an account;
+- choose whether to enable tunnel sync or keep the app local.
 
 ## 9. Children's privacy
 

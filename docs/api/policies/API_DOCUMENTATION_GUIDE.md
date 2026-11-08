@@ -406,7 +406,7 @@ The API uses URL-based versioning:
 
 For API support:
 
-- **Documentation**: https://docs.pistisai.app
+- **Documentation**: https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md
 - **Issues**: https://github.com/pistisAI/pistisai-app/issues
 - **Email**: support@pistisai.app
 - **Discord**: https://discord.gg/Pistisai

@@ -14,7 +14,7 @@ The installer provides a one-line installation command that downloads the AppIma
 
 **Quick Install Command:**
 ```bash
-curl -fsSL https://pistisai.app/install.sh | bash
+curl -fsSL https://app.pistisai.app/install.sh | bash
 ```
 
 ## Architecture
@@ -49,16 +49,16 @@ curl -fsSL https://pistisai.app/install.sh | bash
 
 ```bash
 # Basic install (user-local)
-curl -fsSL https://pistisai.app/install.sh | bash
+curl -fsSL https://app.pistisai.app/install.sh | bash
 
 # System-wide install
-curl -fsSL https://pistisai.app/install.sh | bash -s -- --system
+curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --system
 
 # Specific channel
-curl -fsSL https://pistisai.app/install.sh | bash -s -- --channel beta
+curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --channel beta
 
 # Silent install (no prompts)
-curl -fsSL https://pistisai.app/install.sh | bash -s -- --silent
+curl -fsSL https://app.pistisai.app/install.sh | bash -s -- --silent
 ```
 
 ### Options
@@ -192,7 +192,7 @@ fi
     body: |
       ## Quick Install
       ```bash
-      curl -fsSL https://pistisai.app/install.sh | bash
+      curl -fsSL https://app.pistisai.app/install.sh | bash
       ```
 ```
 
@@ -231,7 +231,7 @@ pistisai/
 ### First-Time Install
 
 ```bash
-$ curl -fsSL https://pistisai.app/install.sh | bash
+$ curl -fsSL https://app.pistisai.app/install.sh | bash
 
 🦞 Installing Pistisai v10.1.200...
 ✓ Downloaded AppImage to ~/.local/share/pistisai/

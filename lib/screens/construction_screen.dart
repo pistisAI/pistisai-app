@@ -79,9 +79,10 @@ class ConstructionScreen extends StatelessWidget {
 
             _buildFeatureCard(
               context,
-              title: 'Agent Dashboard',
-              description: 'Real-time visibility into all your AI agents',
-              progress: 90,
+              title: 'Desktop hub',
+              description:
+                  'This computer is the hub. Web, mobile, and other desktops connect through it.',
+              progress: 100,
               icon: Icons.dashboard,
               color: AppTheme.colorsOf(context).info,
             ),
@@ -89,9 +90,10 @@ class ConstructionScreen extends StatelessWidget {
 
             _buildFeatureCard(
               context,
-              title: 'Local LLM Support',
-              description: 'Run powerful AI models locally with Hermes',
-              progress: 95,
+              title: 'Agent on this computer',
+              description:
+                  'Hermes-based agent and skills. No special hardware. Online models only when you allow them.',
+              progress: 100,
               icon: Icons.memory,
               color: AppTheme.colorsOf(context).success,
             ),
@@ -99,9 +101,9 @@ class ConstructionScreen extends StatelessWidget {
 
             _buildFeatureCard(
               context,
-              title: 'Privacy-First',
+              title: 'Your data',
               description:
-                  'Your data stays on your device unless you enable cloud relay',
+                  'Stays on this computer unless you agree to a cloud service. Quebec delivery follows Law 25.',
               progress: 100,
               icon: Icons.shield,
               color: AppTheme.colorsOf(context).accent,
@@ -110,9 +112,10 @@ class ConstructionScreen extends StatelessWidget {
 
             _buildFeatureCard(
               context,
-              title: 'Multi-Platform',
-              description: 'Linux, Windows, macOS, and Web support',
-              progress: 85,
+              title: 'Where to open it',
+              description:
+                  'Linux, Windows, macOS, and Android from CI. Web app at app.pistisai.app.',
+              progress: 100,
               icon: Icons.devices,
               color: AppTheme.colorsOf(context).warning,
             ),
@@ -129,46 +132,43 @@ class ConstructionScreen extends StatelessWidget {
 
             _buildRoadmapCard(
               context,
-              title: 'Phase 1: Foundation',
+              title: 'Desktop hub',
               description:
-                  'Agent Dashboard polish, retry logic, error handling',
-              date: 'Completed',
+                  'The app on this computer connects to the agent. Other devices use that hub.',
+              date: 'Now',
               isCompleted: true,
-              items: [
-                '✓ Agent Dashboard v1',
-                '✓ Retry/Backoff Logic',
-                '✓ Error Handling',
-                '✓ Configurable URLs'
+              items: const [
+                'Hermes-based agent and skills',
+                'Voice, vision, and permissioned desktop actions',
+                'No special hardware',
               ],
             ),
             const SizedBox(height: 12),
 
             _buildRoadmapCard(
               context,
-              title: 'Phase 2: Mobile Experience',
-              description: 'Location-aware agents, offline optimization',
-              date: 'Q2 2026',
-              isCompleted: false,
-              items: [
-                '📱 Follow Mode',
-                '📍 Geofencing',
-                '⚡ Offline Mode',
-                '🔔 Push Notifications'
+              title: 'Tunnel and sync',
+              description:
+                  'Sign-in exists only for tunnel and sync. Local use does not require an account.',
+              date: 'Now',
+              isCompleted: true,
+              items: const [
+                'Free: pistisai.app tunnel, Cloudflare Access',
+                'Business and Enterprise: your Tailscale network or VPN',
               ],
             ),
             const SizedBox(height: 12),
 
             _buildRoadmapCard(
               context,
-              title: 'Phase 3: Cloud Integrations',
-              description: 'Google Workspace, Apple Ecosystem, Health APIs',
-              date: 'Q3 2026',
-              isCompleted: false,
-              items: [
-                '📧 Gmail Integration',
-                '📅 Calendar Sync',
-                '📱 HealthKit Access',
-                '🚀 Production Deployment'
+              title: 'Quebec delivery',
+              description:
+                  'IAClé delivers this same stack to Quebec businesses, including regulated SMBs.',
+              date: 'Now',
+              isCompleted: true,
+              items: const [
+                'One stack, one company',
+                'Cloud and online models only with consent and Law 25',
               ],
             ),
             const SizedBox(height: 32),
@@ -194,18 +194,19 @@ class ConstructionScreen extends StatelessWidget {
             _buildLinkCard(
               context,
               title: 'Documentation',
-              description: 'Learn how to use Pistisai',
-              url: 'https://docs.pistisai.app',
+              description: 'Product page and guides in the repository',
+              url:
+                  'https://github.com/pistisAI/pistisai-app/blob/main/docs/PRODUCT.md',
               icon: Icons.book,
             ),
             const SizedBox(height: 12),
 
             _buildLinkCard(
               context,
-              title: 'Discord Community',
-              description: 'Join discussions, get support',
-              url: 'https://discord.gg/clawd',
-              icon: Icons.discord,
+              title: 'Issues',
+              description: 'Report a problem or a real use case',
+              url: 'https://github.com/pistisAI/pistisai-app/issues',
+              icon: Icons.bug_report,
             ),
             const SizedBox(height: 32),
 

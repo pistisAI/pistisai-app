@@ -183,13 +183,13 @@ Response:
       "title": "Test Thoroughly",
       "description": "Test all API endpoints with v2 before deploying to production",
       "resources": [
-        "https://docs.pistisai.app/api/v2",
+        "https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md/api/v2",
         "https://api.pistisai.app/api/docs"
       ]
     }
   ],
   "resources": {
-    "documentation": "https://docs.pistisai.app/api/migration",
+    "documentation": "https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md/api/migration",
     "apiDocs": "https://api.pistisai.app/api/docs",
     "support": "support@pistisai.app"
   },
@@ -348,7 +348,7 @@ When v3 is released:
 For questions about API deprecation or migration help:
 
 - **Email**: support@pistisai.app
-- **Documentation**: https://docs.pistisai.app
+- **Documentation**: https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md
 - **API Docs**: https://api.pistisai.app/api/docs
 - **GitHub Issues**: https://github.com/ghcr.io/pistisai/Pistisai/api/issues
 

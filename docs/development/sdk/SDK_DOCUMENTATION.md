@@ -1,3 +1,5 @@
+> **Not current for sign-in.** Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../TUNNEL_SIGN_IN.md). Do not follow Auth0 or Supabase instructions on this page.
+
 # Pistisai SDK Documentation
 
 ## Overview
@@ -568,7 +570,7 @@ console.log(`Total deliveries: ${deliveries.pagination.total}`);
 For issues, questions, or contributions:
 
 - GitHub: https://github.com/pistisAI/pistisai-app
-- Documentation: https://pistisai.app/docs
+- Documentation: https://app.pistisai.app/docs
 - API Docs: https://api.pistisai.app/api/docs
 
 ## License

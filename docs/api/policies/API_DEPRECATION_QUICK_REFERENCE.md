@@ -237,7 +237,7 @@ curl "https://api.pistisai.app/api/deprecation/endpoint-info?path=/v1/users" | \
 
 ## Support
 
-- **Documentation**: https://docs.pistisai.app/api/deprecation
+- **Documentation**: https://github.com/pistisAI/pistisai-app/blob/main/docs/README.md/api/deprecation
 - **API Docs**: https://api.pistisai.app/api/docs
 - **Support**: support@pistisai.app
 - **Issues**: https://github.com/ghcr.io/pistisai/Pistisai/api/issues

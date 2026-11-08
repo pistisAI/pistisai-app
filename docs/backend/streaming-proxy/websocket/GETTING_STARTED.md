@@ -1,3 +1,5 @@
+> **Not current for sign-in.** Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../../../development/TUNNEL_SIGN_IN.md). Do not follow Auth0 or Supabase instructions on this page.
+
 # Getting Started with WebSocket Connection Management
 
 ## Prerequisites

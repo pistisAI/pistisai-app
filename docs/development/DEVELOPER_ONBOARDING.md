@@ -1,6 +1,6 @@
 # Developer Onboarding
 
-This guide is the current entry point for working on Pistisai.
+This guide is the current entry point for working on PistisAI. Product positioning: [PistisAI and IAClé](../PRODUCT.md). Tunnel sign-in: [Tunnel and sync sign-in](TUNNEL_SIGN_IN.md).
 
 ## Repository Shape
 
@@ -14,14 +14,14 @@ This guide is the current entry point for working on Pistisai.
 | `services/streaming-proxy/` | Streaming proxy service |
 | `services/sdk/` | TypeScript SDK |
 | `services/tailscale-relay/` | Tailscale relay |
-| `backend/auth/` | Lightweight CommonJS Auth0 backend |
+| `backend/auth/` | Older CommonJS JWT service. Not the product sign-in. |
 | `test/` | Flutter tests and root API backend Jest tests |
 | `docs/` | Documentation |
 | `scripts/` | Build, deployment, maintenance, and release helpers |
 
 ## Required Tools
 
-- Flutter matching `environment.flutter` in `pubspec.yaml` (currently `3.47.7`) with Dart `>=3.5.0 <4.0.0`.
+- Flutter matching `environment.flutter` in `pubspec.yaml` (currently `3.47.9`) with Dart `>=3.5.0 <4.0.0`.
 - Node.js `>=22 <27` for `services/api-backend/` and `services/streaming-proxy/` (CI pins Node `26` via `.nvmrc`).
 - Node.js `>=18` is sufficient for `services/sdk/`.
 - Docker or a compatible container runtime for backend/deployment work.

@@ -7,7 +7,7 @@ Curated announcement set for the public launch (issue #39). Mirrors the publish-
 ## Primary CTA
 
 Clone the repo, run a workflow, and open an issue or discussion with your real use case.
-- Web: https://pistisai.app
+- Web: https://app.pistisai.app
 - GitHub: https://github.com/pistisAI/pistisai-app
 
 ## Announcement posts
@@ -15,7 +15,7 @@ Clone the repo, run a workflow, and open an issue or discussion with your real u
 ### X / Twitter (thread)
 
 1. Your AI agent shouldn't need a cloud to be useful on your desktop. Pistisai is now public —
-   a local-first companion + desktop layer for your agent. 🌐 https://pistisai.app ·
+   a local-first companion + desktop layer for your agent. 🌐 https://app.pistisai.app ·
    🐙 https://github.com/pistisAI/pistisai-app
 2. It's not a model. It's the layer in front of an agent runtime — Hermes, OpenClaw, or any
    compatible gateway. Pistisai gives it voice, vision, desktop control, and a secure channel.
@@ -35,7 +35,7 @@ screen/vision awareness, and audited desktop control — all over your own Tails
 We built it local-first on purpose. Your agent's context stays on your hardware. The optional
 cloud piece is a single isolated container per user, joined to your tailnet.
 
-It runs in a browser today (https://pistisai.app), with Linux and Android builds from CI, and
+It runs in a browser today (https://app.pistisai.app), with Linux and Android builds from CI, and
 Windows/macOS on the way. Clone the repo and tell us what you're building:
 https://github.com/pistisAI/pistisai-app
 
@@ -43,7 +43,7 @@ https://github.com/pistisAI/pistisai-app
 
 📣 Pistisai is live for public launch. Local-first companion + desktop layer for your AI agent.
 Works with Hermes, OpenClaw, or any compatible gateway.
-🌐 https://pistisai.app · 🐙 https://github.com/pistisAI/pistisai-app
+🌐 https://app.pistisai.app · 🐙 https://github.com/pistisAI/pistisai-app
 New here? Run the setup wizard, point it at your runtime, and say hi in #introductions.
 
 ## Routing
