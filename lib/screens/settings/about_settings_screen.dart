@@ -146,38 +146,50 @@ class AboutSettingsScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                _buildSection(
-                  context: context,
-                  theme: theme,
-                  icon: Icons.science_outlined,
-                  title: 'The Myth of Pistis',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Pistis (Πίστις) was the spirit of trust, honesty, and good faith. '
-                        'When Pandora opened the forbidden jar, all the evils of the world '
-                        'escaped — but so did the good spirits, including Pistis. '
-                        'She fled straight back to Olympus, abandoning humanity.',
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'The poet Theognis wrote: "Pistis (Trust), a mighty god, has gone... '
-                        'the race of pious men has perished."',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontStyle: FontStyle.italic,
-                          color: AppTheme.colorsOf(context).textColorLight,
+                if (Brand.current.id == 'pistisai')
+                  _buildSection(
+                    context: context,
+                    theme: theme,
+                    icon: Icons.science_outlined,
+                    title: 'The Myth of Pistis',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Pistis (Πίστις) was the spirit of trust, honesty, and good faith. '
+                          'When Pandora opened the forbidden jar, all the evils of the world '
+                          'escaped — but so did the good spirits, including Pistis. '
+                          'She fled straight back to Olympus, abandoning humanity.',
+                          style: theme.textTheme.bodyLarge,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${BrandCopy.existsLine}trust can finally return to the world of intelligent machines.',
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          'The poet Theognis wrote: "Pistis (Trust), a mighty god, has gone... '
+                          'the race of pious men has perished."',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: AppTheme.colorsOf(context).textColorLight,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          BrandCopy.existsLine,
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  _buildSection(
+                    context: context,
+                    theme: theme,
+                    icon: Icons.science_outlined,
+                    title: 'About',
+                    child: Text(
+                      BrandCopy.existsLine,
+                      style: theme.textTheme.bodyLarge,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 32),
                 // App info
                 Card(

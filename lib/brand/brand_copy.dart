@@ -60,8 +60,7 @@ class BrandCopy {
       'Four pillars hold ${brand.productName} together.';
   static String get stoaLine =>
       'Like the Stoa Poikile, ${brand.productName} is a space held up by four pillars, ';
-  static String get existsLine =>
-      '${brand.productName} exists to build a space worthy of Pistis — a Stoa where ';
+  static String get existsLine => brand.closingLine;
   static String get cloudContinue => 'Continue with ${brand.websiteDomain}';
   static String get cloudConnectedTitle =>
       'Connected via ${brand.websiteDomain}';

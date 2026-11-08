@@ -14,9 +14,9 @@ brand/<id>/assets/icon.png
 
 `brand/pistisai/` is the upstream product. `brand/example/` is a placeholder with no real company behind it. Copy `brand/example/` to `brand/<id>/` and replace the fields.
 
-`brand.yaml` holds the product name, short name, company name, tagline, support email and URL, privacy email, website, app URL, default locale, logo and icon paths, colors, app id, bundle id, Linux application id, executable name, window title, about text, legal line, copyright lines, repository, docs URL, release URL, and the strings used on the website and desktop metadata.
+`brand.yaml` holds the product name, short name, company name, tagline, support email and URL, privacy email, website, app URL, default locale, logo and icon paths, colors, app id, bundle id, Linux application id, executable name, window title, about text, closing line, legal line, copyright lines, repository, docs URL, release URL, and the strings used on the website and desktop metadata.
 
-The default locale is applied only when `lock_locale` is `true`. The upstream brand leaves it `false`, so the app keeps following the device locale.
+The default locale is applied only when `lock_locale` is `true`. The upstream brand leaves it `false` and does not set `locale` or `supportedLocales`, so Material resolution stays as it was. A locked brand sets its locale and loads Flutter's French and English localizations.
 
 Logo and icon paths must be listed under `flutter: assets:` in `pubspec.yaml` (a directory entry per brand folder).
 

@@ -30,6 +30,7 @@ const BrandConfig activeBrand = BrandConfig(
   executableName: "pistisai",
   windowTitle: "Pistisai",
   aboutText: "Pistisai brings trust back to artificial intelligence — a modern Stoa (portico) where Pistis (Πίστις), the ancient spirit of trust and good faith, can dwell among us again.",
+  closingLine: "Pistisai exists to build a space worthy of Pistis — a Stoa where trust can finally return to the world of intelligent machines.",
   legalLine: "© 2026 Pistisai — Trust is what remains",
   copyright: "Copyright © 2026 Pistisai. All rights reserved.",
   windowsCopyright: "Copyright (C) 2026 Pistisai. All rights reserved.",

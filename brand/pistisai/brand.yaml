@@ -28,6 +28,7 @@ linux_application_id: app.pistisai.pistisai
 executable_name: pistisai
 window_title: Pistisai
 about_text: "Pistisai brings trust back to artificial intelligence — a modern Stoa (portico) where Pistis (Πίστις), the ancient spirit of trust and good faith, can dwell among us again."
+closing_line: "Pistisai exists to build a space worthy of Pistis — a Stoa where trust can finally return to the world of intelligent machines."
 legal_line: "© 2026 Pistisai — Trust is what remains"
 copyright: "Copyright © 2026 Pistisai. All rights reserved."
 windows_copyright: "Copyright (C) 2026 Pistisai. All rights reserved."

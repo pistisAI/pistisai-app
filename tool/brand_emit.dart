@@ -85,6 +85,7 @@ const BrandConfig activeBrand = BrandConfig(
   executableName: ${s(brand.executableName)},
   windowTitle: ${s(brand.windowTitle)},
   aboutText: ${s(brand.aboutText)},
+  closingLine: ${s(brand.closingLine)},
   legalLine: ${s(brand.legalLine)},
   copyright: ${s(brand.copyright)},
   windowsCopyright: ${s(brand.windowsCopyright)},

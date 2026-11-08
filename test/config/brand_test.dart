@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/brand/brand_config.dart';
 import 'package:pistisai/brand/brand_copy.dart';
+import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/brand/brand_yaml.dart';
 import 'package:pistisai/components/welcome_screen.dart';
 import 'package:pistisai/config/theme.dart';
@@ -113,6 +114,43 @@ void main() {
     final theme = ThemeConfig.loadThemeConfiguration(ThemeMode.dark, null);
     expect(theme.colorScheme.primary, const Color(0xFFFFD700));
     expect(ThemeConfig.primaryColor, const Color(0xFFFFD700));
+  });
+
+  testWidgets('locked French example brand renders a Material screen', (
+    tester,
+  ) async {
+    expect(example.lockLocale, isTrue);
+    expect(example.materialLocale, const Locale('fr'));
+    Brand.debugOverride(example);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: example.materialLocale,
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: lockedBrandLocales(example),
+        home: Scaffold(
+          appBar: AppBar(title: Text(example.productName)),
+          body: Builder(
+            builder: (context) {
+              MaterialLocalizations.of(context);
+              return const Text('ready');
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Example'), findsOneWidget);
+    expect(find.text('ready'), findsOneWidget);
+    expect(lockedBrandLocales(example), contains(const Locale('fr')));
+    expect(lockedBrandLocales(example), contains(const Locale('en')));
+  });
+
+  test('unlocked default brand does not force a locale', () {
+    expect(pistisai.lockLocale, isFalse);
+    expect(pistisai.materialLocale, isNull);
   });
 
   test(

@@ -17,6 +17,8 @@ dependencies:
   sentry_flutter: ^10.2.0
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # UI and Navigation
   cupertino_icons: ^2.0.0

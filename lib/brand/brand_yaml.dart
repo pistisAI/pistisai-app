@@ -105,6 +105,7 @@ BrandConfig parseBrandYaml(String source) {
     executableName: req('executable_name'),
     windowTitle: req('window_title'),
     aboutText: req('about_text'),
+    closingLine: req('closing_line'),
     legalLine: req('legal_line'),
     copyright: req('copyright'),
     windowsCopyright: req('windows_copyright'),

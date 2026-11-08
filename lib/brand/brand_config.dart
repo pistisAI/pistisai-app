@@ -32,6 +32,7 @@ class BrandConfig {
     required this.executableName,
     required this.windowTitle,
     required this.aboutText,
+    required this.closingLine,
     required this.legalLine,
     required this.copyright,
     required this.windowsCopyright,
@@ -85,6 +86,7 @@ class BrandConfig {
   final String executableName;
   final String windowTitle;
   final String aboutText;
+  final String closingLine;
   final String legalLine;
   final String copyright;
   final String windowsCopyright;

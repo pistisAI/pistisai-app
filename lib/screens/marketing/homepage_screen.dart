@@ -176,16 +176,14 @@ class HomepageScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildGoldButton(context, 'Get Started Free', () async {
-                    final uri = Uri.parse(
-                        'https://github.com/pistisAI/pistisai-app/releases');
+                    final uri = Uri.parse(Brand.current.releasesUrl);
                     if (await canLaunchUrl(uri)) await launchUrl(uri);
                   }, isMobile),
                   if (!isMobile) const SizedBox(width: 16),
                   if (!isMobile)
                     OutlinedButton(
                       onPressed: () async {
-                        final uri = Uri.parse(
-                            'https://github.com/pistisAI/pistisai-app');
+                        final uri = Uri.parse(Brand.current.repositoryUrl);
                         if (await canLaunchUrl(uri)) await launchUrl(uri);
                       },
                       style: OutlinedButton.styleFrom(
@@ -628,8 +626,7 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           _buildGoldButton(context, 'Get Started Free', () async {
-            final uri =
-                Uri.parse('https://github.com/pistisAI/pistisai-app/releases');
+            final uri = Uri.parse(Brand.current.releasesUrl);
             if (await canLaunchUrl(uri)) await launchUrl(uri);
           }, isMobile),
         ],

@@ -28,6 +28,7 @@ linux_application_id: app.example.sample
 executable_name: example
 window_title: Example
 about_text: "Example is a placeholder brand used to prove the white-label switch. It ships the same stack with its own name, colors, and links."
+closing_line: "Example is a placeholder companion used to prove a brand switch."
 legal_line: "© 2026 Example Labs"
 copyright: "Copyright © 2026 Example Labs. All rights reserved."
 windows_copyright: "Copyright (C) 2026 Example Labs. All rights reserved."
