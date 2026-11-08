@@ -1,6 +1,6 @@
 # PistisAI — marketing plan
 
-Positioning source: [docs/PRODUCT.md](../../PRODUCT.md). Web app: https://app.pistisai.app. Do not link pistisai.app.
+Product page: [docs/PRODUCT.md](../../PRODUCT.md). Web app: https://app.pistisai.app.
 
 > Drafted by CMO to establish first-mover positioning ahead of public launch.
 > Final gate: CEO/UX/Legal approval before channel execution.
@@ -23,7 +23,7 @@ Value pillars from product truth:
 3. Desktop control — hands and eyes on selected devices, with explicit consent
 4. Voice/avatar companion — separate sidecar surface with memory and conversation state
 5. Multi-device private mesh — Tailscale-first sync across your authorized machines
-6. Runtime-agnostic — Hermes is the first test path; OpenClaw and compatible gateways also work
+6. Hermes is the agent runtime. OpenClaw and compatible gateways also work.
 
 ---
 

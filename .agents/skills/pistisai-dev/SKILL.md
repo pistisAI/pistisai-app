@@ -24,7 +24,7 @@ This skill contains the comprehensive developer guidelines, commands, architectu
   - [services/streaming-proxy/](../../../services/streaming-proxy/) — Streaming proxy (Node `>=22 <27`)
   - [services/tailscale-relay/](../../../services/tailscale-relay/) — Tailscale relay (Express 4)
   - [services/sdk/](../../../services/sdk/) — TypeScript SDK (Node `>=18`)
-- [backend/auth/](../../../backend/auth/) — older Express 5 CommonJS JWT service (Node `>=22 <27`). Not the product sign-in. Tunnel sign-in is Cloudflare Access: `docs/development/TUNNEL_SIGN_IN.md`. Do not extend Supabase. Pull request #550 owns that code change.
+- [backend/auth/](../../../backend/auth/) — Express 5 CommonJS service (Node `>=22 <27`). Tunnel sign-in is Cloudflare Access: `docs/development/TUNNEL_SIGN_IN.md`.
 
 ---
 

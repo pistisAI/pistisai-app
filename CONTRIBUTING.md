@@ -1,10 +1,8 @@
 # Contributing to Pistisai
 
-Thanks for showing up. PistisAI is the desktop hub and skills that run on the client's own computer. IAClé is the Quebec company that delivers that same stack. Read [docs/PRODUCT.md](docs/PRODUCT.md) before describing the product. This guide gets you from "I cloned the repo" to "my change is in `main`".
+Thanks for showing up. PistisAI is the desktop hub and skills that run on the client's own computer. IAClé is the Quebec company that delivers that same stack. Product page: [docs/PRODUCT.md](docs/PRODUCT.md). This guide gets you from "I cloned the repo" to "my change is in `main`".
 
-> Launch anchor issue: [#39 — Pistisai — public launch](https://github.com/pistisAI/pistisai-app/issues/39).
-> Read it first if you're here from a launch channel. Open an issue or discussion with your
-> real use case — that counts as a contribution.
+Open an issue or discussion with your real use case. That counts as a contribution.
 
 ---
 
@@ -100,7 +98,7 @@ We keep it low-ceremony.
 - Use **conventional commits**: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`.
 - Prefix agent-authored commits with the agent name, e.g. `ai(<agent>): ...`.
 - Keep PRs focused. One logical change per PR is easier to review and merge.
-- Reference the relevant issue: `fix: correct wizard clone dir (issue #39)`.
+- Reference the relevant issue in the commit message when there is one.
 
 ---
 
@@ -123,7 +121,7 @@ We keep it low-ceremony.
 | Architecture docs | `docs/architecture/` |
 | Dev / testing guides | `docs/development/` |
 | Deployment | `docs/deployment/DEPLOYMENT_OVERVIEW.md` (current), `docs/deployment/SELF_HOSTING.md` |
-| Launch content (issue #39 assets) | `docs/LAUNCH.md`, `docs/marketing/publish-ready/`, `cmo-deliverables/` |
+| Launch content | `docs/LAUNCH.md`, `docs/marketing/publish-ready/`, `cmo-deliverables/` |
 
 Full map: [AGENTS.md](AGENTS.md) and [docs/LAUNCH.md](docs/LAUNCH.md).
 
@@ -131,5 +129,4 @@ Full map: [AGENTS.md](AGENTS.md) and [docs/LAUNCH.md](docs/LAUNCH.md).
 
 ## Questions?
 
-Open a [Discussion](https://github.com/pistisAI/pistisai-app/discussions) or comment on
-[issue #39](https://github.com/pistisAI/pistisai-app/issues/39). Welcome aboard.
+Open a [Discussion](https://github.com/pistisAI/pistisai-app/discussions) or a [GitHub issue](https://github.com/pistisAI/pistisai-app/issues). Welcome aboard.

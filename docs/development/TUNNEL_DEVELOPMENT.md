@@ -152,7 +152,7 @@ Create `.env` file in project root:
 API_BASE_URL=http://localhost:3001
 WS_URL=ws://localhost:3001
 
-# Tunnel sign-in is Cloudflare Access. Do not configure Auth0 here.
+# Tunnel sign-in is Cloudflare Access.
 # See docs/development/TUNNEL_SIGN_IN.md.
 
 # SSH Configuration

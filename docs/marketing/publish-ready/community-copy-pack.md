@@ -15,7 +15,7 @@ The runtime does the reasoning; Pistisai adds voice, vision, desktop control, an
 channel.
 
 **Which runtimes are supported?**
-Hermes (primary test path) and OpenClaw are first-class. Any agent exposing the runtime
+Hermes is the agent runtime. OpenClaw is also supported. Any agent exposing the runtime
 contract works. Ollama / LM Studio are support providers for app-owned features
 (memory, embeddings, OCR, speech) — not the main runtime.
 

@@ -16,7 +16,7 @@ Pistisai is agent-first. The main application channel connects to an agent runti
 
 ## Non-Negotiable Rules
 
-- The main secure channel connects to an agent runtime **from the primary Pistisai desktop hub**. Web, mobile, and secondary desktop clients reach the runtime through that hub (discovered via `GET /api/pistisai/hub`), not directly. Direct client-to-Hermes paths are transitional and to be removed (issue #492).
+- The main secure channel connects to an agent runtime **from the primary Pistisai desktop hub**. Web, mobile, and secondary desktop clients reach the runtime through that hub (discovered via `GET /api/pistisai/hub`).
 - The hub is for Pistisai clients only. Hermes keeps owning its messaging-platform adapters (Telegram, Slack, etc.) directly; they do not route through Pistisai.
 - Hermes is the first agent runtime path for current testing.
 - OpenClaw remains a supported agent runtime and original integration.
@@ -152,7 +152,7 @@ The wizard must not list Ollama or LM Studio as primary agent runtime options.
 
 ## Verification Gates
 
-- Hermes local agent runtime connects as the first test path.
+- Hermes connects as the local agent runtime.
 - Hermes over Tailscale connects through the agent channel.
 - OpenClaw remains available as an agent runtime.
 - Raw Ollama/LM Studio endpoints never satisfy agent runtime setup.

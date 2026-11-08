@@ -20,11 +20,9 @@ Install the **desktop app** first. That install is the hub. Web, mobile, and oth
 
 Sign-in is only for tunnel and sync. Local desktop use does not require an account. The free tier uses the pistisai.app tunnel, protected by Cloudflare Access. Business and Enterprise use the customer's own Tailscale network or VPN. See [Tunnel and sync sign-in](docs/development/TUNNEL_SIGN_IN.md).
 
-You need an agent runtime. Hermes is the primary test path. OpenClaw and compatible gateways also work. Messaging apps such as Telegram and Slack stay on Hermes. They do not route through this app.
+You need an agent runtime. Hermes is the main one. OpenClaw and compatible gateways also work. Messaging apps such as Telegram and Slack stay on Hermes. They do not route through this app.
 
-> Launch steps: [docs/LAUNCH.md](docs/LAUNCH.md). Track the launch: [issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
->
-> Why the name exists: [docs/governance/manifesto.md](docs/governance/manifesto.md).
+Launch steps: [docs/LAUNCH.md](docs/LAUNCH.md). Why the name exists: [docs/governance/manifesto.md](docs/governance/manifesto.md).
 
 ---
 

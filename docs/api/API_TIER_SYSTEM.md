@@ -10,32 +10,29 @@ Sign-in and sync follow [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.
 | Business | Customer Tailscale or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
 | Enterprise | Customer Tailscale or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
 
-Premium is an older name still present in the app. It uses the customer network, the same as Business and Enterprise. It is not a separate product. The agent runs on the client's own computer. There is no PistisAI-hosted agent.
+The agent runs on the client's own computer.
 
-> **Status**: The endpoint notes below are older proxy and rate-limit examples. Do not treat them as the product offer, and do not design new flows around a hosted agent or a direct Ollama proxy.
+## Endpoint notes
 
-## Older endpoint notes
-
-### Free tier (historical notes)
+### Free tier
 
 - Local agent runtime on the client's computer
 - No special hardware
 - Tunnel sync through Cloudflare Access when sync is enabled
 
-### Premium (historical name)
+### Premium
 
-- Same customer-network path as Business and Enterprise
-- Not a separate product
+- Customer Tailscale network or VPN, same as Business and Enterprise
 
-### Enterprise (historical notes)
+### Enterprise
 
-These bullets are old API notes, not the current offer. Enterprise uses the customer's Tailscale network or VPN.
+- Customer Tailscale network or VPN
 
-## Authentication and tier detection (historical)
+## Authentication and tier detection
 
-The notes below describe an Auth0 token shape. Current free-tier sign-in is a Cloudflare Access JWT. See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
+Free-tier tunnel sign-in uses a Cloudflare Access token. See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
-Historical claim, do not implement: all API endpoints require Auth0 JWT tokens, and tier was read from token metadata:
+Earlier token metadata used this shape:
 
 ```javascript
 // Tier information locations (in priority order)

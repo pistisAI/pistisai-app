@@ -164,13 +164,12 @@ In addition to MCP servers, I will leverage powerful command-line interface (CLI
   * Always specify `--release` flag for production builds.
 
 * **Authentication**:
-  * Tunnel and sync sign-in is Cloudflare Access. See `docs/development/TUNNEL_SIGN_IN.md`. Do not add Supabase or Auth0 sign-in. Open pull request #550 owns the auth code change.
+  * Tunnel and sync sign-in is Cloudflare Access. See `docs/development/TUNNEL_SIGN_IN.md`.
   * Use `dart:js_interop` for JavaScript interop (replaces deprecated `js` package).
   * Local desktop use does not require an account.
 
 * **Web-Specific**:
   * Use `package:web/web.dart` for web platform detection and DOM manipulation.
-  * `web/auth0-bridge.js` is not in the tree. Do not recreate it.
 
 ### E. Version Management
 

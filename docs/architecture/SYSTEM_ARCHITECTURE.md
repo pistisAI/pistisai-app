@@ -4,9 +4,9 @@ PistisAI is the tool stack: a Flutter desktop hub built around Hermes, plus skil
 
 The agent runs on the client's own computer. No special hardware is required. Ollama, LM Studio, and similar local model servers are support providers for memory, embeddings, summarization, OCR cleanup, speech helpers, and other app-owned background work. They are not the agent. Online language models may be used for heavy work when the client agrees and, for Quebec clients, the provider fits Law 25.
 
-Single-computer use does not require an account. Sign-in is for tunnel and sync: Cloudflare Access on `api.pistisai.app` for the free tier, and the customer's Tailscale network or VPN for Business and Enterprise (`PISTISAI_TUNNEL_AUTH=customer`). See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md). Open pull request [#550](https://github.com/pistisAI/pistisai-app/pull/550) removes the Supabase client still present on `main`.
+Single-computer use does not require an account. Sign-in is for tunnel and sync: Cloudflare Access on `api.pistisai.app` for the free tier, and the customer's Tailscale network or VPN for Business and Enterprise (`PISTISAI_TUNNEL_AUTH=customer`). See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
-The setup wizard chooses the agent runtime. Hermes is the current first test path. OpenClaw remains a supported runtime. Do not assume one universal default.
+The setup wizard chooses the agent runtime. Hermes is the agent runtime. OpenClaw is also supported.
 
 ## Desktop-as-Hub Topology
 
@@ -39,7 +39,6 @@ The **primary Pistisai desktop install** (normally the first app installed) is t
 | Device/client hub | Primary Pistisai desktop | Web app, mobile app, secondary desktops. Owns the agent-channel connection, desktop control, vision, and channel sync for Pistisai clients. |
 
 - Discovery: the hub's embedded router (`lib/services/router_server.dart`) serves `GET /api/pistisai/hub` (`AppConfig.hubPath`); mobile clients use it over Tailscale to locate the primary desktop hub.
-- Transitional: any current code path where web, mobile, or a secondary desktop connects straight to Hermes (or another runtime) is transitional and slated for removal (issue #492). New client work should target the hub.
 - Single-device local use is unchanged: the desktop is both hub and client.
 
 ## Technology Stack

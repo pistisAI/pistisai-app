@@ -21,7 +21,7 @@ Pistisai can be installed on multiple user devices. The secure agent channel can
 
 ### Desktop-as-Hub
 
-The primary Pistisai desktop install (the first installed app) is the **device/client hub**. Web, mobile, and secondary desktop clients connect through it; the hub owns the connection to the agent runtime. Mobile discovers the hub over Tailscale via `GET /api/pistisai/hub` on the hub's embedded router. Hermes remains the **messaging-platform hub** and keeps its Telegram/Slack/etc. adapters directly — those do not pass through the Pistisai hub. Current direct client-to-Hermes paths are transitional and will be removed (issue #492).
+The primary Pistisai desktop install (the first installed app) is the **device/client hub**. Web, mobile, and secondary desktop clients connect through it; the hub owns the connection to the agent runtime. Mobile discovers the hub over Tailscale via `GET /api/pistisai/hub` on the hub's embedded router. Hermes remains the **messaging-platform hub** and keeps its Telegram, Slack, and other adapters directly. Those adapters do not pass through the Pistisai hub.
 
 ## Preferred Transport
 
@@ -129,7 +129,7 @@ Device-scoped:
 
 ## Relationship To Legacy Tunnels
 
-Free-tier sync uses the pistisai.app tunnel at `api.pistisai.app`, protected by Cloudflare Access. Business and Enterprise set `PISTISAI_TUNNEL_AUTH=customer` and use the customer's Tailscale network or VPN. Direct client-to-Hermes paths are transitional ([#492](https://github.com/pistisAI/pistisai-app/issues/492)).
+Free-tier sync uses the tunnel at `api.pistisai.app`, protected by Cloudflare Access. Business and Enterprise set `PISTISAI_TUNNEL_AUTH=customer` and use the customer's Tailscale network or VPN.
 
 Reasons:
 

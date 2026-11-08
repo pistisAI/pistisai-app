@@ -18,7 +18,7 @@ This directory documents supported deployment paths for Pistisai.
 - [Windows Installation](installation/WINDOWS.md)
 - [macOS Installation](installation/MACOS.md)
 
-Public hosts are `app.pistisai.app` and `api.pistisai.app`. Do not document `adminmatrix.pistisai.app`, `docs.pistisai.app`, or `pistisai.app` as live sites.
+Public hosts are `app.pistisai.app` and `api.pistisai.app`.
 
 ## Kubernetes And GitOps
 

@@ -2,15 +2,14 @@
 
 PistisAI is the tool stack: a Hermes-based desktop hub plus skills. It runs on the client's own computer. IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company. IAClé is not a separate product. Product page: `docs/PRODUCT.md`.
 
-Flutter desktop/web app + Node.js backend services. Hermes is the primary agent runtime under test. OpenClaw Gateway and compatible gateways also work. Ollama and LM Studio are support model providers for app-owned features (for example embeddings). They are not the agent. Online language models may be used for heavy work only when that is secure, consented, and compliant with Quebec Law 25.
+Flutter desktop/web app + Node.js backend services. Hermes is the agent runtime. OpenClaw Gateway and compatible gateways also work. Ollama and LM Studio support app-owned features such as embeddings. Online language models may be used for heavy work when that is secure, consented, and compliant with Quebec Law 25.
 
-Tunnel and sync sign-in is Cloudflare Access on `api.pistisai.app` for the free tier. Business and Enterprise use the customer's Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`). See `docs/development/TUNNEL_SIGN_IN.md`. Open pull request #550 replaces the Supabase client still present on `main`. Do not extend Supabase, and do not edit that auth work from a docs change. Public hosts are `app.pistisai.app` and `api.pistisai.app`. `adminmatrix.pistisai.app` was removed on 7 November 2026.
+Tunnel and sync sign-in is Cloudflare Access on `api.pistisai.app` for the free tier. Business and Enterprise use the customer's Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`). See `docs/development/TUNNEL_SIGN_IN.md`. Public hosts are `app.pistisai.app` and `api.pistisai.app`.
 
 ## Hub topology (rules for agents)
 
 - The primary Pistisai desktop install is the **device/client hub** (main node). Web, mobile, and secondary desktop clients must connect through it, not directly to Hermes or another runtime.
 - Hermes is the **messaging-platform hub**: it owns Telegram/Slack/etc. adapters directly. Never claim or build those routing through the Flutter app.
-- Existing direct client-to-Hermes paths are transitional / to-be-removed (#492); don't extend them.
 - Mobile discovers the hub over Tailscale via `GET /api/pistisai/hub` (`AppConfig.hubPath`, served by `lib/services/router_server.dart`); keep that contract intact.
 - Details: `docs/architecture/SYSTEM_ARCHITECTURE.md#desktop-as-hub-topology`.
 
@@ -73,7 +72,7 @@ The `build_number` in `assets/version.json` should match the `+<build_number>` s
 - Platform splits via conditional imports (`dart.library.io` / `dart.library.html`); never import `dart:io` directly in shared code
 - Register services via `setupCoreServices()` / `setupAuthenticatedServices()` in `lib/di/locator.dart`; consume via `serviceLocator.get<T>()` — don't instantiate registered services directly
 - Desktop auto-bootstraps authenticated services (30s timeout); web requires explicit auth/session bootstrap first
-- GitHub issues (`github.com/pistisAI/pistisai-app/issues`, launch tracker #39) are the work-tracking source of truth — check before substantive work
+- GitHub issues (`github.com/pistisAI/pistisai-app/issues`) are the work-tracking source of truth — check before substantive work
 
 ## MCP (OpenCode)
 

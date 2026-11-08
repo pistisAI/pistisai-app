@@ -2,7 +2,7 @@
 
 PistisAI is a desktop hub for a Hermes-based agent, plus skills. It runs on your own computer. No special hardware is required. IAClé is the Quebec company that delivers this same stack. See [Product](../PRODUCT.md).
 
-The setup wizard chooses the agent runtime. Hermes is the first path under test. OpenClaw remains supported. There is no universal default.
+The setup wizard chooses the agent runtime. Hermes is the agent runtime. OpenClaw is also supported.
 
 Ollama and LM Studio are optional support providers for memory, embeddings, summarization, classification, OCR cleanup, and speech. They are not the agent. Online language models can do heavy work when you agree, and for Quebec clients that path has to fit Law 25.
 

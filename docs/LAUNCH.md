@@ -1,6 +1,5 @@
 # PistisAI — Public launch guide
 
-> Canonical launch issue: [#39 — PistisAI — public launch](https://github.com/pistisAI/pistisai-app/issues/39)
 > Repo: [github.com/pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app)
 > Web app: [app.pistisai.app](https://app.pistisai.app)
 > Product page: [PRODUCT.md](PRODUCT.md)
@@ -31,7 +30,7 @@ It is not a model. Hermes, OpenClaw, or a compatible gateway is the agent. Ollam
 
 | Runtime | Status | Notes |
 |---------|--------|-------|
-| **Hermes** | Primary test path | Sessions, channels, and tools wired in. |
+| **Hermes** | Main runtime | Sessions, channels, and tools wired in. |
 | **OpenClaw** | Supported | Gateway control and skill management. |
 | Compatible agent gateways | Supported | Any agent exposing the runtime contract (see [Agent Runtime Contract](architecture/AGENT_RUNTIME_CONTRACT.md)). |
 | Ollama / LM Studio / model servers | Support only | App-owned memory, embeddings, OCR, and speech. Not the agent. |
@@ -189,4 +188,3 @@ this launch.
 
 - Web: https://app.pistisai.app
 - GitHub: https://github.com/pistisAI/pistisai-app
-- Launch thread (issues): [#39](https://github.com/pistisAI/pistisai-app/issues/39)

@@ -12,6 +12,4 @@ Use this archive for:
 
 Do not use archived files as a source of truth without checking current code and canonical docs first.
 
-`auth/` holds the old Auth0 write-ups. Current sign-in is [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
-
-Two recovery plans that named a client server and a client SSH key were removed from this archive. Do not put client names, addresses, or infrastructure back into the repository.
+Sign-in is described in [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md). The Auth0 notes in `auth/` are kept with the rest of this archive.

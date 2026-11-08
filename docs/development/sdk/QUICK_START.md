@@ -1,4 +1,4 @@
-> **Not current for sign-in.** Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../TUNNEL_SIGN_IN.md). Do not follow Auth0 or Supabase instructions on this page.
+Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../TUNNEL_SIGN_IN.md).
 
 # Pistisai SDK - Quick Start Guide
 

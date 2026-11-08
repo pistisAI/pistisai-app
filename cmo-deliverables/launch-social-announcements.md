@@ -1,6 +1,6 @@
 # Launch Social Announcements — CMO Deliverables
 
-Curated announcement set for the public launch (issue #39). Mirrors the publish-ready copy in
+Announcement set for the public launch. Mirrors the publish-ready copy in
 `docs/marketing/publish-ready/social-thread-pack.md` and the brief in
 `docs/marketing/LAUNCH_CONTENT_BRIEF.md`.
 

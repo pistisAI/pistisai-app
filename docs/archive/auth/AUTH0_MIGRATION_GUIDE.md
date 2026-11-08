@@ -1,4 +1,4 @@
-> **Historical.** This page describes an Auth0 setup that is not the current sign-in. Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../../development/TUNNEL_SIGN_IN.md).
+Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../../development/TUNNEL_SIGN_IN.md).
 
 # Auth0 Migration Guide
 

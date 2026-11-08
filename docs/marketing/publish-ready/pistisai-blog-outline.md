@@ -3,7 +3,7 @@
 > Working title: **The agent runs on the computer you already have.**
 > Estimated length: 900–1200 words
 > Primary CTA: open https://app.pistisai.app or a GitHub issue with a real use case
-> Positioning: [docs/PRODUCT.md](../../PRODUCT.md). Do not claim that data never leaves, and do not send readers to pistisai.app.
+> Product page: [docs/PRODUCT.md](../../PRODUCT.md). Web app: https://app.pistisai.app.
 
 ---
 

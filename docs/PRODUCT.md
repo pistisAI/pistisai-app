@@ -10,7 +10,7 @@ French client page: [Produit (français)](PRODUCT.fr.md).
 
 The agent runs on the client's own computer. No special hardware is required.
 
-The desktop app is the hub. Web, mobile, and other desktops connect through that hub. Hermes keeps its own messaging adapters (Telegram, Slack, and the rest). Those adapters do not route through the Flutter app. Direct client-to-Hermes paths that still exist are transitional ([#492](https://github.com/pistisAI/pistisai-app/issues/492)).
+The desktop app is the hub. Web, mobile, and other desktops connect through that hub. Hermes keeps its own messaging adapters (Telegram, Slack, and the rest). Those adapters do not route through the Flutter app.
 
 The stack can use cloud services the client already uses, and online language models for heavy work, only when that path is secure, the client has agreed, and it complies with Quebec Law 25. Outbound flows stay limited to what the client authorized.
 
@@ -26,16 +26,14 @@ Sign-in exists for the tunnel and sync system. Local use of the desktop app does
 | Business | The customer's own Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
 | Enterprise | The customer's own Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
 
-An older Premium name still exists in the app. On the Cloudflare Access change it follows the same customer-network path as Business and Enterprise. It is not a separate product.
-
-Supabase sign-in is removed by open pull request [#550](https://github.com/pistisAI/pistisai-app/pull/550). Describe Cloudflare Access, not Supabase. Details: [Tunnel and sync sign-in](development/TUNNEL_SIGN_IN.md).
+Details: [Tunnel and sync sign-in](development/TUNNEL_SIGN_IN.md).
 
 ## Public hosts
 
 - Web app: [https://app.pistisai.app](https://app.pistisai.app)
 - API and tunnel: [https://api.pistisai.app](https://api.pistisai.app)
 
-`adminmatrix.pistisai.app` was removed on 7 November 2026. `pistisai.app` and `docs.pistisai.app` are not current hosts. Documentation lives in this repository.
+Documentation for this product lives in this repository.
 
 ## Who it is for
 
@@ -43,6 +41,6 @@ IAClé serves Quebec small and medium businesses, in French, including regulated
 
 ## What this repository is
 
-A Flutter desktop and web app, with optional Node.js services for the tunnel and API. Hermes is the primary agent runtime under test. OpenClaw and compatible gateways also work. Ollama and LM Studio are support model providers for app-owned features such as embeddings. They are not the agent.
+A Flutter desktop and web app, with optional Node.js services for the tunnel and API. Hermes is the agent runtime. OpenClaw and compatible gateways also work. Ollama and LM Studio support app-owned features such as embeddings.
 
 Technical map: [System architecture](architecture/SYSTEM_ARCHITECTURE.md). Launch steps: [Launch guide](LAUNCH.md).

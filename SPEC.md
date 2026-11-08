@@ -10,7 +10,7 @@ The hub gives the agent a secure channel and permissioned hands and eyes on that
 
 The main app does not connect directly to raw local model providers as its primary experience. Ollama, LM Studio, and similar endpoints are support model providers for app-owned features such as memory, embeddings, summarization, classification, OCR cleanup, and speech helpers. Online language models may be used for heavy work when the client agrees and, for Quebec clients, the provider fits Law 25.
 
-Hermes is the current first test path. OpenClaw remains a supported agent runtime, and it is not the universal default.
+Hermes is the agent runtime. OpenClaw is also supported.
 
 ## Product model
 
@@ -18,7 +18,7 @@ Hermes is the current first test path. OpenClaw remains a supported agent runtim
 2. **Support model provider**: optional local model infrastructure such as Ollama or LM Studio for memory and other app-owned background features.
 3. **Tunnel and sync**: sign-in exists only for this. Free tier uses Cloudflare Access on `api.pistisai.app`. Business and Enterprise use the customer's Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`).
 
-Local desktop use does not require an account. A `pistisai_hosted` runtime-location value still exists in code. It is not the product offer. Do not document a PistisAI-hosted agent as the way the product runs.
+Local desktop use does not require an account. The agent runs on a computer the client already has.
 
 ## Core Pillars
 
@@ -120,7 +120,7 @@ The wizard must not present Ollama or LM Studio as primary agent runtime choices
 | Streaming Proxy | Legacy/fallback streaming path and web transport support |
 | Tailscale relay | Customer-network path for Business and Enterprise. |
 | Tunnel sign-in | Cloudflare Access for the free tier. Customer Tailscale or VPN for Business and Enterprise. See [Tunnel and sync sign-in](docs/development/TUNNEL_SIGN_IN.md). |
-| Older auth service | `backend/auth/`, CommonJS. Not the product sign-in. |
+| Auth service | `backend/auth/`, CommonJS, port 3000. |
 | SDK | TypeScript SDK |
 | OpenClaw Skills | Avatar personality/evolution skill package |
 

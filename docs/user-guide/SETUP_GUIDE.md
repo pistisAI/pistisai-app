@@ -2,7 +2,7 @@
 
 PistisAI runs on the computer you already have. No special hardware is required. The desktop app is the hub. See [Product](../PRODUCT.md).
 
-It connects to Hermes, OpenClaw, or another compatible agent gateway on this computer or another computer you already have. There is no hosted PistisAI agent and no universal default runtime. Hermes is the first path under test.
+It connects to Hermes, OpenClaw, or another compatible agent gateway on this computer or another computer you already have. Hermes is the agent runtime.
 
 Ollama and LM Studio are optional support model providers. They are not the agent. Online models are for heavy work, and only with your agreement.
 
@@ -16,7 +16,7 @@ Ollama and LM Studio are optional support model providers. They are not the agen
 | RAM | 8 GB | 16 GB+ |
 | GPU | None required | A GPU helps only if you choose to run a local model |
 | Storage | 500 MB app space | 2 GB+ plus model/agent runtime storage |
-| Agent runtime | Hermes, OpenClaw, or compatible agent gateway | Hermes for current test path |
+| Agent runtime | Hermes, OpenClaw, or compatible agent gateway | Hermes |
 | Support model provider | Optional | Ollama or LM Studio for memory/background features |
 | Secure mesh | Optional | Tailscale for multi-device and remote agent runtime paths |
 

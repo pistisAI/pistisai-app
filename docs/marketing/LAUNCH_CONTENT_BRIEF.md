@@ -1,6 +1,5 @@
 # Launch Content Brief — Pistisai Public Launch
 
-> Canonical launch issue: [#39 — Pistisai — public launch](https://github.com/pistisAI/pistisai-app/issues/39)
 > Companion guide: docs/LAUNCH.md
 
 This brief governs all outward-facing launch copy. Keep every channel consistent with the
@@ -8,7 +7,7 @@ positioning, supported runtimes, and tone defined here.
 
 ## Product at a glance
 
-Follow [docs/PRODUCT.md](../PRODUCT.md). Do not publish a different product story.
+Product page: [docs/PRODUCT.md](../PRODUCT.md).
 
 - **What it is:** PistisAI, a desktop hub for a Hermes-based agent, plus skills. It runs on the client's own computer. No special hardware.
 - **Who delivers it in Quebec:** IAClé, Christopher Maltais's company. Same stack, not a second product.
@@ -35,14 +34,13 @@ Clone the repo, run a workflow, and open an issue or discussion with your real u
 - Plain, confident, technical but not jargon-heavy.
 - Lead with the user's control and privacy, not features for their own sake.
 - No hype superlatives ("revolutionary", "world's first"). Show, don't claim.
-- Windows, macOS, Linux, and Android builds come from CI. The web app is https://app.pistisai.app.
-- Do not link `pistisai.app`, `docs.pistisai.app`, or `adminmatrix.pistisai.app`. Those hosts are not current.
+- Windows, macOS, Linux, and Android builds come from CI. The web app is https://app.pistisai.app. The API is https://api.pistisai.app.
 
 ## Channels and owners
 
 | Channel | Asset | Owner |
 |---------|-------|-------|
-| GitHub issue thread | issue #39 (this post) | Founder |
+| GitHub | [pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app) | Founder |
 | Twitter/X thread | `publish-ready/social-thread-pack.md` | CMO |
 | LinkedIn operator post | `publish-ready/social-thread-pack.md` | CMO |
 | Discord announcement | `publish-ready/social-thread-pack.md` | DevRel |

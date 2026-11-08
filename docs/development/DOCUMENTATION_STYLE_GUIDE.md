@@ -101,7 +101,7 @@ Deployed on AWS EKS (when actually using Azure AKS)
 
 ### Authentication References
 
-- Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](TUNNEL_SIGN_IN.md). Do not describe Auth0 or Supabase as the current provider.
+- Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](TUNNEL_SIGN_IN.md).
 - Indicate provider-agnostic design
 - Document alternative authentication options
 

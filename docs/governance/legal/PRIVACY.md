@@ -28,7 +28,7 @@ their handling of your data is governed by their own policies.
 
 Local use of the desktop app does not require an account.
 
-Free-tier tunnel and sync sign-in uses Cloudflare Access. Access sends a one-time email PIN. The Access token includes the email address so the tunnel can identify the session. Sign-in does not use Google, and it does not use Supabase.
+Free-tier tunnel and sync sign-in uses Cloudflare Access. Access sends a one-time email PIN. The Access token includes the email address so the tunnel can identify the session.
 
 Business and Enterprise use the customer's own Tailscale network or VPN. That path does not contact Cloudflare Access.
 
@@ -64,7 +64,7 @@ We do not sell your personal information and we do not use it for advertising.
 
 ## 4. Sign-in data
 
-Free-tier sign-in receives the email address in the Cloudflare Access token. We use that address to authorize the tunnel session. We do not request Google account data for sign-in. If you later connect a Google service yourself, that service's own policy applies to the data you send it.
+Free-tier sign-in receives the email address in the Cloudflare Access token. We use that address to authorize the tunnel session.
 
 ## 5. How we store and protect your information
 
