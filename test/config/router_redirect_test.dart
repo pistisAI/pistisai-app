@@ -43,13 +43,13 @@ void main() {
       );
     });
 
-    test('first-run desktop root still reaches chat, wizard is later', () {
+    test('first-run desktop root goes to the setup wizard', () {
       expect(
         resolveAppRedirect(_input(
           location: '/',
           shouldShowDesktopWizard: true,
         )),
-        AppRoutePaths.chat,
+        AppRoutePaths.setup,
       );
     });
 
