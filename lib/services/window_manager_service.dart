@@ -2,6 +2,7 @@ import 'dart:io' show exit;
 import 'dart:ui' show Size;
 import 'package:flutter/foundation.dart';
 import 'package:window_manager/window_manager.dart';
+import '../brand/brand.dart';
 import '../utils/logger.dart';
 
 /// Service for managing window state and visibility using window_manager_plus
@@ -23,6 +24,7 @@ class WindowManagerService {
       // Initialize window_manager if not on web
       if (!kIsWeb) {
         await windowManager.ensureInitialized();
+        await windowManager.setTitle(Brand.current.windowTitle);
 
         // Set minimum window size (800 height fits setup wizard welcome step).
         await windowManager.setMinimumSize(const Size(1200, 800));

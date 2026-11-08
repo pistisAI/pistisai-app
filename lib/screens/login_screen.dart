@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../brand/brand_copy.dart';
 import '../config/theme.dart';
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
@@ -240,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           // App name with theme-aware colors (Requirement 7.1, 7.5)
                           Text(
-                            'I\'m Pistisai, your AI assistant.',
+                            BrandCopy.loginSubtitle,
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color:
                                   colorScheme.onSurface.withValues(alpha: 0.8),
@@ -285,14 +286,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                             MainAxisAlignment.center,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(
-                                              Icons.cloud_queue, size: 20),
+                                          const Icon(Icons.cloud_queue,
+                                              size: 20),
                                           const SizedBox(width: 8),
                                           Text(
                                             'Connect to Cloud Relay',
                                             style: TextStyle(
-                                              fontSize:
-                                                  isMobile ? 16.0 : 18.0,
+                                              fontSize: isMobile ? 16.0 : 18.0,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
@@ -311,26 +311,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           const SizedBox(height: 8.0),
 
-                           TextButton(
-                             onPressed: _isLoading
-                                 ? null
-                                 : () async {
-                                     final authService = context.read<AuthService>();
-                                     setState(() => _isLoading = true);
-                                     try {
-                                       await authService.loginMockDeveloper();
-                                       if (!context.mounted) return;
-                                       context.go('/');
-                                     } catch (e) {
-                                       debugPrint('Bypass failed: $e');
-                                     } finally {
-                                       if (mounted) {
-                                         setState(() => _isLoading = false);
-                                       }
-                                     }
-                                   },
+                          TextButton(
+                            onPressed: _isLoading
+                                ? null
+                                : () async {
+                                    final authService =
+                                        context.read<AuthService>();
+                                    setState(() => _isLoading = true);
+                                    try {
+                                      await authService.loginMockDeveloper();
+                                      if (!context.mounted) return;
+                                      context.go('/');
+                                    } catch (e) {
+                                      debugPrint('Bypass failed: $e');
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() => _isLoading = false);
+                                      }
+                                    }
+                                  },
                             style: TextButton.styleFrom(
-                              foregroundColor: AppTheme.colorsOf(context).warning,
+                              foregroundColor:
+                                  AppTheme.colorsOf(context).warning,
                             ),
                             child: const Text('Bypass to Test User (Debug)'),
                           ),

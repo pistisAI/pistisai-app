@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../brand/brand.dart';
 import '../../services/avatar/avatar_state_service.dart';
 import '../../services/settings_preference_service.dart';
 import '../../models/avatar/personality_models.dart';
@@ -30,7 +31,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
   // Form state
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController =
-      TextEditingController(text: 'Pistisai');
+      TextEditingController(text: Brand.current.productName);
   late double _formality;
   late double _humor;
   late double _enthusiasm;
@@ -124,7 +125,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       _selectedEvolutionStage = profile.evolutionStage;
     } else {
       // Default values
-      _nameController.text = 'Pistisai';
+      _nameController.text = Brand.current.productName;
       _formality = PersonalityTraits.defaultTraits.formality;
       _humor = PersonalityTraits.defaultTraits.humor;
       _enthusiasm = PersonalityTraits.defaultTraits.enthusiasm;
@@ -1161,10 +1162,9 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
             // Evolution request form
             DropdownButtonFormField<String>(
-              initialValue:
-                  _isValidStage(_selectedEvolutionStage)
-                      ? _selectedEvolutionStage
-                      : 'curious_explorer',
+              initialValue: _isValidStage(_selectedEvolutionStage)
+                  ? _selectedEvolutionStage
+                  : 'curious_explorer',
               decoration: const InputDecoration(
                 labelText: 'Evolve to Stage',
                 border: OutlineInputBorder(),

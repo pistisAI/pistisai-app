@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pistisai/brand/brand.dart';
+import 'package:pistisai/brand/brand_copy.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
@@ -85,7 +87,8 @@ class _HermesBotStepState extends State<HermesBotStep> {
     try {
       wizard?.recordBotInstall(report);
     } catch (error, stackTrace) {
-      debugPrint('[HermesBotStep] recordBotInstall skipped: $error\n$stackTrace');
+      debugPrint(
+          '[HermesBotStep] recordBotInstall skipped: $error\n$stackTrace');
     }
 
     if (!mounted) return;
@@ -113,18 +116,14 @@ class _HermesBotStepState extends State<HermesBotStep> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'PistisAI package',
+              Brand.current.packageTitle,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 12),
             Text(
-              'Finishing this first-time setup installs the pistisai package '
-              'into the Hermes you just connected. That home comes from that '
-              'Hermes, including when it is not the usual Windows location. '
-              'The package adds the aigent-watch bot, the drift-scan skill, '
-              'and a routine that runs every 6 hours.',
+              Brand.current.packageBlurb,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 24),
@@ -158,7 +157,7 @@ class _HermesBotStepState extends State<HermesBotStep> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Installing PistisAI package...',
+          BrandCopy.packageInstalling,
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ],

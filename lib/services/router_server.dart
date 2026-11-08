@@ -12,6 +12,7 @@ import 'avatar/personality_engine.dart';
 import 'avatar/evolution_tracker.dart';
 import 'conscience_storage_service.dart';
 import 'voice/cloud_tts_service.dart';
+import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
 import 'package:pistisai/utils/http_constants.dart';
@@ -155,7 +156,7 @@ class RouterServer {
     return Response.ok(
       jsonEncode(<String, Object>{
         'role': 'primary_hub',
-        'product': 'Pistisai',
+        'product': Brand.current.productName,
         'hermesPort': AppConfig.defaultHermesPort,
         'routerPort': _server?.port ?? port,
       }),

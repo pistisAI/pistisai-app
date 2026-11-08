@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:tray_manager/legacy.dart';
+import '../brand/brand.dart';
 import 'connection_manager_service.dart';
 import '../utils/logger.dart';
 
@@ -158,7 +159,7 @@ class NativeTrayService with TrayListener {
         items: [
           MenuItem(
             key: 'show',
-            label: 'Show Pistisai',
+            label: 'Show ${Brand.current.productName}',
           ),
           MenuItem(
             key: 'hide',
@@ -186,8 +187,8 @@ class NativeTrayService with TrayListener {
       await trayManager.setContextMenu(menu);
 
       try {
-        await trayManager
-            .setToolTip('Pistisai - ${_getStatusLabel(status)}');
+        await trayManager.setToolTip(
+            '${Brand.current.productName} - ${_getStatusLabel(status)}');
       } catch (_) {
         // setToolTip is not implemented on Linux — ignore silently.
       }

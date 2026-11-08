@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
@@ -172,7 +173,8 @@ class _CompletionStepState extends State<CompletionStep> {
     );
   }
 
-  Widget _buildBotInstallReport(BuildContext context, SetupWizardService wizard) {
+  Widget _buildBotInstallReport(
+      BuildContext context, SetupWizardService wizard) {
     final report = wizard.state.lastBotInstall;
     if (report == null) {
       return const SizedBox.shrink();
@@ -193,18 +195,18 @@ class _CompletionStepState extends State<CompletionStep> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'PistisAI package',
+              Brand.current.packageTitle,
               style: Theme.of(context).textTheme.labelMedium,
             ),
             const SizedBox(height: 12),
             for (final step in report.steps)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    '${step.name}: ${_installStatusLabel(step.status)} — ${step.detail}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  '${step.name}: ${_installStatusLabel(step.status)} — ${step.detail}',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
+              ),
           ],
         ),
       ),

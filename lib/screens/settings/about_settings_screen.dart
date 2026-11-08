@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../brand/brand.dart';
+import '../../brand/brand_copy.dart';
 import '../../config/app_config.dart';
 import '../../config/theme.dart';
 import '../../services/agent_display_name.dart';
@@ -16,7 +18,7 @@ class AboutSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Pistisai'),
+        title: Text(BrandCopy.aboutTitle),
         elevation: 0,
         leading: BackButton(
           onPressed: () => context.go('/config'),
@@ -37,9 +39,7 @@ class AboutSettingsScreen extends StatelessWidget {
                   icon: Icons.auto_awesome,
                   title: 'The Vision',
                   child: Text(
-                    'Pistisai brings trust back to artificial intelligence — '
-                    'a modern Stoa (portico) where Pistis (Πίστις), the ancient '
-                    'spirit of trust and good faith, can dwell among us again.',
+                    Brand.current.aboutText,
                     style: theme.textTheme.bodyLarge,
                   ),
                 ),
@@ -50,8 +50,7 @@ class AboutSettingsScreen extends StatelessWidget {
                   icon: Icons.flaky,
                   title: 'The Four Pillars',
                   subtitle:
-                      'Four Titans held the cosmos aloft at the four corners of the world. '
-                      'Four pillars hold Pistisai together.',
+                      'Four Titans held the cosmos aloft at the four corners of the world. ${BrandCopy.pillarsLine}',
                   child: Column(
                     children: [
                       _buildPillarCard(
@@ -138,8 +137,7 @@ class AboutSettingsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Like the Stoa Poikile, Pistisai is a space held up by four pillars, '
-                        'each telling its own story: the face (Aiman), the engine (Aigent), '
+                        '${BrandCopy.stoaLine}each telling its own story: the face (Aiman), the engine (Aigent), '
                         'the heart (Aimotions), and the flow (Aidration). Together they '
                         'create a place where trust can return.',
                         style: theme.textTheme.bodyLarge,
@@ -174,8 +172,7 @@ class AboutSettingsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Pistisai exists to build a space worthy of Pistis — a Stoa where '
-                        'trust can finally return to the world of intelligent machines.',
+                        '${BrandCopy.existsLine}trust can finally return to the world of intelligent machines.',
                         style: theme.textTheme.bodyLarge,
                       ),
                     ],
@@ -201,7 +198,8 @@ class AboutSettingsScreen extends StatelessWidget {
                             style: theme.textTheme.titleMedium),
                         const SizedBox(height: 12),
                         _buildInfoRow(context, 'Version', AppConfig.appVersion),
-                        _buildInfoRow(context, 'Repository', 'pistisAI/pistisai-app'),
+                        _buildInfoRow(context, 'Repository',
+                            Brand.current.repositoryLabel),
                       ],
                     ),
                   ),
@@ -227,11 +225,15 @@ class AboutSettingsScreen extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [AppTheme.colorsOf(context).secondary, AppTheme.colorsOf(context).primary],
+                colors: [
+                  AppTheme.colorsOf(context).secondary,
+                  AppTheme.colorsOf(context).primary
+                ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
+                  color:
+                      AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),
@@ -239,26 +241,30 @@ class AboutSettingsScreen extends StatelessWidget {
             ),
             child: ClipOval(
               child: Image.asset(
-                'assets/images/app_icon.png',
+                Brand.current.iconAsset,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Center(
                   child: Text('P',
-                      style: TextStyle(fontSize: 48, color: AppTheme.colorsOf(context).textColor)),
+                      style: TextStyle(
+                          fontSize: 48,
+                          color: AppTheme.colorsOf(context).textColor)),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'ΠΙΣΤΙΣΑΙ',
-            style: theme.textTheme.headlineLarge?.copyWith(
-              letterSpacing: 6,
-              color: AppTheme.colorsOf(context).primary,
+          if (Brand.current.greekWordmark.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(
+              Brand.current.greekWordmark,
+              style: theme.textTheme.headlineLarge?.copyWith(
+                letterSpacing: 6,
+                color: AppTheme.colorsOf(context).primary,
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 4),
           Text(
-            'PISTISAI',
+            Brand.current.wordmark,
             style: theme.textTheme.bodyMedium?.copyWith(
               letterSpacing: 4,
               color: AppTheme.colorsOf(context).textColorLight,
@@ -405,8 +411,11 @@ class AboutSettingsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
-          Text(value, style: TextStyle(color: AppTheme.colorsOf(context).textColor)),
+          Text(label,
+              style:
+                  TextStyle(color: AppTheme.colorsOf(context).textColorLight)),
+          Text(value,
+              style: TextStyle(color: AppTheme.colorsOf(context).textColor)),
         ],
       ),
     );

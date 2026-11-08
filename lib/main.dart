@@ -11,6 +11,7 @@ import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
 import 'package:pistisai/bootstrap/bootstrapper.dart';
+import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/config/router.dart';
 import 'package:pistisai/config/theme.dart';
@@ -70,6 +71,7 @@ String? resolveCallbackUrl(List<String> args) {
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+  Brand.assertCompileDefineMatches();
 
   // Ensure only one instance runs at a time (desktop hub only).
   // Android/iOS must not bind the desktop lock port or they will exit.
@@ -245,8 +247,8 @@ class _PistisaiAppState extends State<PistisaiApp> {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        home: const Scaffold(
-          body: Center(child: Text('Pistisai')),
+        home: Scaffold(
+          body: Center(child: Text(Brand.current.productName)),
         ),
       );
     }
@@ -582,9 +584,14 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       // ThemeProvider may not be registered yet; handled by fallback below
     }
 
+    final brandLocale = Brand.current.materialLocale;
     return WindowListenerWidget(
       child: MaterialApp.router(
         title: AppConfig.appName,
+        locale: brandLocale,
+        supportedLocales: brandLocale == null
+            ? const <Locale>[Locale('en', 'US')]
+            : <Locale>[brandLocale],
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

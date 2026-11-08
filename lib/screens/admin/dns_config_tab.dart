@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../brand/brand.dart';
 import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
@@ -217,7 +218,8 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                 'Manage DNS records (MX, SPF, DKIM, DMARC) for email authentication',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+                ).textTheme.bodyLarge?.copyWith(
+                    color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ),
@@ -237,18 +239,25 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
+                            color: AppTheme.colorsOf(context)
+                                .info
+                                .withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3)),
+                            border: Border.all(
+                                color: AppTheme.colorsOf(context)
+                                    .info
+                                    .withValues(alpha: 0.3)),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info, color: AppTheme.colorsOf(context).info),
+                              Icon(Icons.info,
+                                  color: AppTheme.colorsOf(context).info),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'DNS records are managed via Cloudflare API. Your domain (pistisai.app) is configured with Cloudflare.',
-                                  style: TextStyle(color: AppTheme.colorsOf(context).info),
+                                  'DNS records are managed via Cloudflare API. Your domain (${Brand.current.websiteDomain}) is configured with Cloudflare.',
+                                  style: TextStyle(
+                                      color: AppTheme.colorsOf(context).info),
                                 ),
                               ),
                             ],
@@ -380,24 +389,31 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                     Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
+                                        color: AppTheme.colorsOf(context)
+                                            .danger
+                                            .withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
-                                          color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3),
+                                          color: AppTheme.colorsOf(context)
+                                              .danger
+                                              .withValues(alpha: 0.3),
                                         ),
                                       ),
                                       child: Row(
                                         children: [
                                           Icon(
                                             Icons.error_outline,
-                                            color: AppTheme.colorsOf(context).danger,
+                                            color: AppTheme.colorsOf(context)
+                                                .danger,
                                           ),
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
                                               _error!,
                                               style: TextStyle(
-                                                color: AppTheme.colorsOf(context).danger,
+                                                color:
+                                                    AppTheme.colorsOf(context)
+                                                        .danger,
                                               ),
                                             ),
                                           ),
@@ -410,24 +426,31 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                     Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.colorsOf(context).success.withValues(alpha: 0.1),
+                                        color: AppTheme.colorsOf(context)
+                                            .success
+                                            .withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
-                                          color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3),
+                                          color: AppTheme.colorsOf(context)
+                                              .success
+                                              .withValues(alpha: 0.3),
                                         ),
                                       ),
                                       child: Row(
                                         children: [
                                           Icon(
                                             Icons.check_circle,
-                                            color: AppTheme.colorsOf(context).success,
+                                            color: AppTheme.colorsOf(context)
+                                                .success,
                                           ),
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
                                               _successMessage!,
                                               style: TextStyle(
-                                                color: AppTheme.colorsOf(context).success,
+                                                color:
+                                                    AppTheme.colorsOf(context)
+                                                        .success,
                                               ),
                                             ),
                                           ),
@@ -502,13 +525,17 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                   Icon(
                                     Icons.dns,
                                     size: 48,
-                                    color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.3),
+                                    color: AppTheme.colorsOf(context)
+                                        .textColorLight
+                                        .withValues(alpha: 0.3),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
                                     'No DNS records configured',
                                     style: TextStyle(
-                                      color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
+                                      color: AppTheme.colorsOf(context)
+                                          .textColorLight
+                                          .withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ],
@@ -546,17 +573,22 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                         DataCell(
                                           Chip(
                                             label: Text(record.status),
-                                            backgroundColor:
-                                                record.status == 'valid'
-                                                    ? AppTheme.colorsOf(context).success.withValues(alpha: 0.15)
-                                                    : AppTheme.colorsOf(context).warning.withValues(alpha: 0.15),
+                                            backgroundColor: record.status ==
+                                                    'valid'
+                                                ? AppTheme.colorsOf(context)
+                                                    .success
+                                                    .withValues(alpha: 0.15)
+                                                : AppTheme.colorsOf(context)
+                                                    .warning
+                                                    .withValues(alpha: 0.15),
                                           ),
                                         ),
                                         DataCell(
                                           IconButton(
                                             icon: Icon(
                                               Icons.delete,
-                                              color: AppTheme.colorsOf(context).danger,
+                                              color: AppTheme.colorsOf(context)
+                                                  .danger,
                                             ),
                                             onPressed: () =>
                                                 _deleteDnsRecord(record.id),
