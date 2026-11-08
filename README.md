@@ -1,10 +1,10 @@
 # PistisAI — ΠΙΣΤΙΣΑΙ
 
-**A desktop hub for a Hermes-based agent, plus skills. It runs on the client's own computer.**
+**A desktop hub for a Hermes-based agent, plus skills. The agent runs on a local machine at the client's site.**
 
 PistisAI is the tool stack. IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company. IAClé is not a separate product.
 
-The agent runs on the computer the client already has. No special hardware is required. It can use cloud services the client already uses, and online language models for heavy work, only when that is secure, the client agrees, and it complies with Quebec Law 25.
+A free readiness audit checks whether the client's current PC can host the agent. If it can, the agent runs there. Otherwise IAClé provides a dedicated local mini PC, the Beelink GTi15, for purchase or rental. Custom hardware is sized case by case. The stack can use cloud services the client already uses, and online language models for heavy work, only when that is secure, the client agrees, and it complies with Quebec Law 25.
 
 Full positioning: [docs/PRODUCT.md](docs/PRODUCT.md). French: [docs/PRODUCT.fr.md](docs/PRODUCT.fr.md).
 

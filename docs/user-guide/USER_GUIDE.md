@@ -1,6 +1,6 @@
 # PistisAI user guide
 
-PistisAI is a desktop hub for a Hermes-based agent, plus skills. It runs on your own computer. No special hardware is required. IAClé is the Quebec company that delivers this same stack. See [Product](../PRODUCT.md).
+PistisAI is a desktop hub for a Hermes-based agent, plus skills. The agent runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host it. If not, IAClé provides a dedicated Beelink GTi15 mini PC. IAClé is the Quebec company that delivers this same stack. See [Product](../PRODUCT.md).
 
 The setup wizard chooses the agent runtime. Hermes is the agent runtime. OpenClaw is also supported.
 
@@ -33,13 +33,13 @@ Agent management is still available, but it is not the first thing in the interf
 When you first launch Pistisai, the setup wizard guides you through the decisions that matter:
 
 1. **Choose an agent runtime**
-   - Hermes on this computer or another computer you already have
+   - Hermes on the local machine at the site (current PC, or the dedicated mini PC)
    - OpenClaw Gateway
    - Compatible custom agent gateway
 
 2. **Choose where the agent runtime lives**
    - This computer
-   - Another computer you already have
+   - The dedicated mini PC at the site, when the current PC cannot host the agent
    - A machine on your own Tailscale network (Business and Enterprise)
 
 3. **Test the agent connection**
@@ -172,7 +172,7 @@ The desktop app is the hub. Free-tier sync uses the tunnel at `api.pistisai.app`
 ### Typical layouts
 
 - The desktop app connects to Hermes on the same computer.
-- Another computer you already have runs Hermes or OpenClaw, and the hub reaches it on your network.
+- The dedicated mini PC at the site runs Hermes or OpenClaw, and the hub reaches it on the local network.
 - Phone or web connects through the desktop hub.
 - Ollama or LM Studio, if you use them, stay support providers for memory and background features.
 
@@ -200,7 +200,7 @@ The desktop app is the hub. Free-tier sync uses the tunnel at `api.pistisai.app`
 ### Agent Runtime Settings
 
 - Add, remove, and test agent runtime endpoints
-- Configure Hermes, OpenClaw, or a custom agent gateway on a computer you already have
+- Configure Hermes, OpenClaw, or a custom agent gateway on the local machine at the site
 - Set preferred agent runtime per device
 - Review detected capabilities
 

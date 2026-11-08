@@ -8,7 +8,7 @@ English page: [Product](PRODUCT.md).
 
 ## Où ça tourne
 
-L'agent tourne sur l'ordinateur du client. Aucun matériel spécial n'est requis.
+L'agent tourne sur une machine locale chez le client. Un audit de préparation gratuit vérifie si l'ordinateur actuel peut l'héberger. Si oui, l'agent y tourne. Sinon, IAClé fournit un mini PC local dédié, le Beelink GTi15, à l'achat ou en location. Le matériel sur mesure se décide au cas par cas.
 
 L'application de bureau est le hub. Le web, le mobile et les autres ordinateurs passent par ce hub. Hermes garde ses propres adaptateurs de messagerie (Telegram, Slack, et les autres). Ils ne passent pas par l'application.
 

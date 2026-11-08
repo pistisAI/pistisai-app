@@ -2,7 +2,7 @@
 
 PistisAI is the tool stack: a Flutter desktop hub built around Hermes, plus skills. IAClé is the Quebec company that delivers this same stack. Product page: [PistisAI and IAClé](../PRODUCT.md).
 
-The agent runs on the client's own computer. No special hardware is required. Ollama, LM Studio, and similar local model servers are support providers for memory, embeddings, summarization, OCR cleanup, speech helpers, and other app-owned background work. They are not the agent. Online language models may be used for heavy work when the client agrees and, for Quebec clients, the provider fits Law 25.
+The agent runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host it. If not, IAClé provides a dedicated Beelink GTi15 mini PC. Custom hardware is sized case by case. Ollama, LM Studio, and similar local model servers are support providers for memory, embeddings, summarization, OCR cleanup, speech helpers, and other app-owned background work. They are not the agent. Online language models may be used for heavy work when the client agrees and, for Quebec clients, the provider fits Law 25.
 
 Single-computer use does not require an account. Sign-in is for tunnel and sync: Cloudflare Access on `api.pistisai.app` for the free tier, and the customer's Tailscale network or VPN for Business and Enterprise (`PISTISAI_TUNNEL_AUTH=customer`). See [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 

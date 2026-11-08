@@ -8,7 +8,7 @@ French client page: [Produit (français)](PRODUCT.fr.md).
 
 ## What runs where
 
-The agent runs on the client's own computer. No special hardware is required.
+The agent runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host it. If it can, the agent runs there. Otherwise IAClé provides a dedicated local mini PC, the Beelink GTi15, for purchase or rental. Custom hardware is sized case by case.
 
 The desktop app is the hub. Web, mobile, and other desktops connect through that hub. Hermes keeps its own messaging adapters (Telegram, Slack, and the rest). Those adapters do not route through the Flutter app.
 

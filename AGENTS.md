@@ -1,6 +1,6 @@
 # Pistisai — Agent Guide
 
-PistisAI is the tool stack: a Hermes-based desktop hub plus skills. It runs on the client's own computer. IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company. IAClé is not a separate product. Product page: `docs/PRODUCT.md`.
+PistisAI is the tool stack: a Hermes-based desktop hub plus skills. The agent runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host it. If it can, the agent runs there. Otherwise IAClé provides a dedicated Beelink GTi15 mini PC, for purchase or rental. Custom hardware is sized case by case. IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company. IAClé is not a separate product. Product page: `docs/PRODUCT.md`.
 
 Flutter desktop/web app + Node.js backend services. Hermes is the agent runtime. OpenClaw Gateway and compatible gateways also work. Ollama and LM Studio support app-owned features such as embeddings. Online language models may be used for heavy work when that is secure, consented, and compliant with Quebec Law 25.
 

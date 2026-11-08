@@ -5,7 +5,7 @@ consistent with [LAUNCH_CONTENT_BRIEF.md](../LAUNCH_CONTENT_BRIEF.md).
 
 ## Elevator pitch (short)
 
-PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.
+PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on a local machine at the client's site. A free readiness audit checks the current PC. If it cannot host the agent, IAClé provides a Beelink GTi15 mini PC. IAClé delivers that same stack to Quebec businesses.
 
 ## FAQ-ready answers
 

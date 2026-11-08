@@ -10,8 +10,8 @@ Give Hermes, OpenClaw, and other compatible agent runtimes secure, permissioned 
 
 The agent runtime location is chosen by setup. It can be:
 
-- on this computer
-- on another computer the client already has
+- on the current PC, when the readiness audit says it can host the agent
+- on the dedicated mini PC at the site, when the current PC cannot
 - on the customer's Tailscale network (Business and Enterprise)
 - behind a manual/private URL
 
@@ -82,7 +82,7 @@ Examples:
 - Hermes on the same workstation
 - Hermes on another workstation/server
 - OpenClaw Gateway on a lab machine
-- compatible custom agent gateway on a computer the client already has
+- compatible custom agent gateway on the local machine at the client's site
 
 The app should present runtime location as setup state, not product destiny.
 
@@ -123,7 +123,7 @@ Device-scoped:
 - Use Tailscale ACLs/tags to narrow cloud connector access.
 - Treat the cloud connector as a service device, not a user desktop.
 - Use local app permissions as the final authorization layer for desktop actions.
-- The agent stays on a computer the client already has.
+- The agent stays on the local machine at the client's site.
 - Prefer explicit device targeting for every action that changes local state.
 - Make active vision/desktop-control state visible to the user.
 

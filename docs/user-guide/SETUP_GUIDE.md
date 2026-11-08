@@ -1,8 +1,8 @@
 # PistisAI setup guide
 
-PistisAI runs on the computer you already have. No special hardware is required. The desktop app is the hub. See [Product](../PRODUCT.md).
+PistisAI runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host the agent. If not, IAClé provides a dedicated Beelink GTi15 mini PC. The desktop app is the hub. See [Product](../PRODUCT.md).
 
-It connects to Hermes, OpenClaw, or another compatible agent gateway on this computer or another computer you already have. Hermes is the agent runtime.
+It connects to Hermes, OpenClaw, or another compatible agent gateway on the local machine at the site. Hermes is the agent runtime.
 
 Ollama and LM Studio are optional support model providers. They are not the agent. Online models are for heavy work, and only with your agreement.
 
@@ -154,7 +154,7 @@ Select the agent runtime this device should use:
 Choose where that runtime lives:
 
 - This computer
-- Another computer you already have
+- The dedicated mini PC at the site, when the current PC cannot host the agent
 - A machine on your own Tailscale network (Business and Enterprise)
 
 ### Connection Test
@@ -219,7 +219,7 @@ tailscale ping <runtime-device-name>
 
 ### Tunnel and sync
 
-The desktop app is the hub. Other devices connect through it. Free-tier sync uses Cloudflare Access on `api.pistisai.app`. Business and Enterprise use your own Tailscale network or VPN. Sync does not grant desktop permissions by itself. The agent stays on a computer you already have.
+The desktop app is the hub. Other devices connect through it. Free-tier sync uses Cloudflare Access on `api.pistisai.app`. Business and Enterprise use your own Tailscale network or VPN. Sync does not grant desktop permissions by itself. The agent stays on the local machine at the site.
 
 ---
 

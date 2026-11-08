@@ -4,7 +4,7 @@ Positioning: [docs/PRODUCT.md](docs/PRODUCT.md). This file is the technical spec
 
 ## Project vision
 
-**PistisAI** is a desktop hub for a Hermes-based agent, plus skills. The agent runs on the client's own computer. No special hardware is required. IAClé is the Quebec company that delivers this same stack. One stack, one company.
+**PistisAI** is a desktop hub for a Hermes-based agent, plus skills. The agent runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host it. If it can, the agent runs there. Otherwise IAClé provides a dedicated Beelink GTi15 mini PC, for purchase or rental. Custom hardware is sized case by case. IAClé is the Quebec company that delivers this same stack. One stack, one company.
 
 The hub gives the agent a secure channel and permissioned hands and eyes on that computer. Web, mobile, and other desktops connect through the hub.
 
@@ -14,11 +14,11 @@ Hermes is the agent runtime. OpenClaw is also supported.
 
 ## Product model
 
-1. **Agent on the client's computer**: the normal path. Hermes, OpenClaw, or a compatible gateway runs on a computer the client already has.
+1. **Agent on the local machine**: the normal path. Hermes, OpenClaw, or a compatible gateway runs on the machine at the client's site.
 2. **Support model provider**: optional local model infrastructure such as Ollama or LM Studio for memory and other app-owned background features.
 3. **Tunnel and sync**: sign-in exists only for this. Free tier uses Cloudflare Access on `api.pistisai.app`. Business and Enterprise use the customer's Tailscale network or VPN (`PISTISAI_TUNNEL_AUTH=customer`).
 
-Local desktop use does not require an account. The agent runs on a computer the client already has.
+Local desktop use does not require an account. The agent runs on the local machine at the client's site.
 
 ## Core Pillars
 
@@ -81,7 +81,7 @@ Agent runtime setup paths:
 2. **Another private device**: agent runtime running on another desktop, workstation, or server.
 3. **Tailscale device**: agent runtime discovered through the user's tailnet.
 4. **Manual/private URL**: custom LAN, VPN, tailnet DNS, or private compatible agent gateway.
-5. **No runtime yet**: guide the user through installing or configuring Hermes, OpenClaw, or another compatible agent gateway on a computer the client already has.
+5. **No runtime yet**: guide the user through installing or configuring Hermes, OpenClaw, or another compatible agent gateway on the local machine at the site.
 
 Optional support model setup paths:
 
@@ -167,7 +167,7 @@ Rules:
 ## Privacy And Security Model
 
 - Core single-computer use works without an account.
-- The active agent runtime location is chosen by setup, and it is a computer the client already has.
+- The active agent runtime location is chosen by setup, on the local machine at the client's site.
 - Desktop control and vision are always device-scoped and permissioned.
 - Cloud services and online models are used when the client agrees. For Quebec clients, that path has to fit Law 25.
 - Free-tier sync uses Cloudflare Access. Business and Enterprise stay on the customer's network.

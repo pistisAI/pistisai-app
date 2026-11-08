@@ -10,14 +10,14 @@ Sign-in and sync follow [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.
 | Business | Customer Tailscale or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
 | Enterprise | Customer Tailscale or VPN (`PISTISAI_TUNNEL_AUTH=customer`) |
 
-The agent runs on the client's own computer.
+The agent runs on a local machine at the client's site.
 
 ## Endpoint notes
 
 ### Free tier
 
 - Local agent runtime on the client's computer
-- No special hardware
+- Local machine at the site: the current PC, or a dedicated Beelink GTi15 mini PC
 - Tunnel sync through Cloudflare Access when sync is enabled
 
 ### Premium

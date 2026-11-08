@@ -38,7 +38,7 @@ class AboutSettingsScreen extends StatelessWidget {
                   title: 'What PistisAI is',
                   child: Text(
                     'PistisAI is a desktop hub for a Hermes-based agent, plus skills. '
-                    'It runs on this computer. No special hardware is required. '
+                    'The agent runs on a local machine at the site. A free readiness audit checks whether this PC can host it. If not, IAClé provides a Beelink GTi15 mini PC. '
                     'Sign-in is only for tunnel and sync. '
                     'IAClé is the Quebec company that delivers this same stack to Quebec businesses.',
                     style: theme.textTheme.bodyLarge,

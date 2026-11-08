@@ -1,6 +1,6 @@
 # PistisAI
 
-**Desktop hub for a Hermes-based agent, plus skills. It runs on the client's own computer.**
+**Desktop hub for a Hermes-based agent, plus skills. The agent runs on a local machine at the client's site.**
 
 PistisAI is the tool stack. IAClé is the Quebec company that delivers it. See [Product](PRODUCT.md) and [Produit (français)](PRODUCT.fr.md).
 

@@ -11,7 +11,7 @@ the mythology gives it a face. Athens and Jerusalem answering the same question:
 
 ## Why we exist
 
-Most AI hides where data goes. PistisAI keeps its word: the agent runs on the client's own computer, actions are permissioned, and cloud services or online models are used when the client agrees. For Quebec clients, that path has to fit Law 25. IAClé is the company that delivers this same stack. The product page is [docs/PRODUCT.md](../PRODUCT.md).
+Most AI hides where data goes. PistisAI keeps its word: the agent runs on a local machine at the client's site, actions are permissioned, and cloud services or online models are used when the client agrees. For Quebec clients, that path has to fit Law 25. IAClé is the company that delivers this same stack. The product page is [docs/PRODUCT.md](../PRODUCT.md).
 
 ## The Four Pillars
 

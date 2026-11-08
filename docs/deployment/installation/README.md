@@ -26,9 +26,9 @@ Install or prepare at least one agent runtime before completing setup:
 | --- | --- | --- |
 | Hermes | Configured in wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `http://localhost:18789` | Supported original integration |
-| Custom agent gateway | User supplied | Private compatible agent runtime on a computer the client already has |
+| Custom agent gateway | User supplied | Private compatible agent runtime on the local machine at the client's site |
 
-The agent runs on a computer the client already has. No special hardware is required.
+The agent runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host it. If not, IAClé provides a dedicated Beelink GTi15 mini PC.
 
 ### Optional Support Model Provider
 

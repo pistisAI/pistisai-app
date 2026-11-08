@@ -218,7 +218,7 @@ Cloud features are optional. Local runtime use should remain possible without au
 - Check agent runtime health and latency.
 - Use a smaller or faster model inside the agent runtime if it exposes model choice.
 - Reduce conversation context length.
-- Move the agent runtime to another computer you already have, if this one is too small. Online models can take heavy work when you agree.
+- If this PC cannot host the agent, use the dedicated mini PC from the readiness audit. Online models can take heavy work when you agree.
 - Confirm Tailscale latency for remote runtimes.
 - If only memory/summaries are slow, check the configured local model provider.
 

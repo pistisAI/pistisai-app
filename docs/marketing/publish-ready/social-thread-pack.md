@@ -5,14 +5,14 @@ Publish-ready copy for the launch channels. All copy is consistent with
 
 Canonical one-liner, from [LAUNCH_CONTENT_BRIEF.md](../LAUNCH_CONTENT_BRIEF.md):
 
-> PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.
+> PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on a local machine at the client's site. IAClé delivers that same stack to Quebec businesses.
 
 ---
 
 ## Twitter / X thread
 
 **1/**
-PistisAI is public: a desktop hub and skills for a Hermes-based agent, on the computer you already have.
+PistisAI is public: a desktop hub and skills for a Hermes-based agent, on a local machine at the client's site.
 IAClé delivers that same stack to Quebec businesses.
 🌐 https://app.pistisai.app
 🐙 https://github.com/pistisAI/pistisai-app
@@ -38,7 +38,7 @@ Clone it, run it, and open an issue with your real use case.
 
 ## LinkedIn operator post
 
-PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the computer you already have. IAClé delivers that same stack to Quebec businesses.
+PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on a local machine at the client's site. IAClé delivers that same stack to Quebec businesses.
 
 The hub adds voice, an avatar, screen awareness, and permissioned desktop control. Cloud services you already use, and online models for heavy work, are used when you agree and, in Quebec, when that fits Law 25.
 

@@ -9,13 +9,13 @@ Product page: [docs/PRODUCT.md](../../PRODUCT.md). Web app: https://app.pistisai
 
 ## 1. Positioning
 
-PistisAI is the desktop hub and skills. IAClé is the Quebec company that delivers that same stack. The agent runs on the client's own computer.
+PistisAI is the desktop hub and skills. IAClé is the Quebec company that delivers that same stack. The agent runs on a local machine at the client's site.
 
 Elevator pitch:
-> The agent runs on the computer the client already has. PistisAI gives it a hub, voice, vision, and permissioned desktop control. IAClé delivers that stack in Quebec.
+> The agent runs on a local machine at the client's site. A free readiness audit checks the current PC. If it cannot host the agent, IAClé provides a Beelink GTi15 mini PC. PistisAI gives it a hub, voice, vision, and permissioned desktop control.
 
 One-liner for bios/launch:
-> PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.
+> PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on a local machine at the client's site. IAClé delivers that same stack to Quebec businesses.
 
 Value pillars from product truth:
 1. Privacy/local-first — core experience stays on your machine
@@ -31,11 +31,11 @@ Value pillars from product truth:
 
 Primary:
 - Quebec small and medium businesses, including regulated practices, served by IAClé in French
-- People who want the agent on a computer they already have
+- Quebec businesses that want the agent on a local machine at their site
 
 Secondary:
 - Open-source contributors working on the same stack
-- Operators who connect Hermes or OpenClaw on their own computer
+- Operators who connect Hermes or OpenClaw on the local machine at the site
 
 Anti-persona:
 - Casual users expecting hosted SaaS signup

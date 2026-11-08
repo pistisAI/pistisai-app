@@ -34,7 +34,7 @@ class HermesLocationStep extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.',
+                'Hermes runs on the local machine at the site: this PC when it can host the agent, or the dedicated mini PC.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppTheme.colorsOf(context).textColorLight,
                     ),
@@ -67,12 +67,16 @@ class HermesLocationStep extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color: AppTheme.colorsOf(context)
+                          .info
+                          .withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline, color: AppTheme.colorsOf(context).info, size: 20),
+                    Icon(Icons.info_outline,
+                        color: AppTheme.colorsOf(context).info, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(

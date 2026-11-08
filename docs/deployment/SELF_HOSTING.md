@@ -4,7 +4,7 @@ This guide explains how to deploy Pistisai for self-hosted, privacy-first operat
 
 ## Overview
 
-The agent runs on the client's own computer. Self-hosting here means running the optional API and tunnel services yourself. See [PistisAI and IAClé](../PRODUCT.md) and [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
+The agent runs on a local machine at the client's site. Self-hosting here means running the optional API and tunnel services yourself. See [PistisAI and IAClé](../PRODUCT.md) and [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
 Hermes is the agent runtime. OpenClaw is also supported. Ollama and LM Studio support memory and other app-owned features. A customer-operated relay sets `PISTISAI_TUNNEL_AUTH=customer`.
 

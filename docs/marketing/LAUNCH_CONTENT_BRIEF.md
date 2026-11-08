@@ -9,7 +9,7 @@ positioning, supported runtimes, and tone defined here.
 
 Product page: [docs/PRODUCT.md](../PRODUCT.md).
 
-- **What it is:** PistisAI, a desktop hub for a Hermes-based agent, plus skills. It runs on the client's own computer. No special hardware.
+- **What it is:** PistisAI, a desktop hub for a Hermes-based agent, plus skills. The agent runs on a local machine at the client's site. A free readiness audit checks the current PC. If it cannot host the agent, IAClé provides a Beelink GTi15 mini PC, for purchase or rental. Custom hardware is sized case by case.
 - **Who delivers it in Quebec:** IAClé, Christopher Maltais's company. Same stack, not a second product.
 - **What it is not:** A model, a hosted agent, or a separate IAClé application.
 - **Cloud:** Services the client already uses, and online models for heavy work, only when that is secure, the client agrees, and it fits Quebec Law 25.
@@ -17,7 +17,7 @@ Product page: [docs/PRODUCT.md](../PRODUCT.md).
 
 ## One-liner (canonical)
 
-> **PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.**
+> **PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on a local machine at the client's site. IAClé delivers that same stack to Quebec businesses.**
 
 Use this verbatim across channels. Short variants live in `publish-ready/social-thread-pack.md`.
 

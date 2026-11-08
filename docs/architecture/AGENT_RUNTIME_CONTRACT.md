@@ -48,7 +48,7 @@ Valid primary targets (configured on the primary desktop hub; other Pistisai cli
 - Hermes on another private or Tailscale device
 - OpenClaw on this device
 - OpenClaw on another private or Tailscale device
-- compatible custom agent gateway on a computer the client already has
+- compatible custom agent gateway on the local machine at the client's site
 
 ### Support Model Channel
 
@@ -127,7 +127,7 @@ Agent runtime setup choices:
 2. Hermes on another private or Tailscale device.
 3. OpenClaw on this device.
 4. OpenClaw on another private or Tailscale device.
-5. Compatible custom agent gateway on a computer the client already has.
+5. Compatible custom agent gateway on the local machine at the client's site.
 6. No agent runtime yet; guide the user to install or configure Hermes, OpenClaw, or a compatible agent gateway on that computer.
 
 Optional support model setup choices:

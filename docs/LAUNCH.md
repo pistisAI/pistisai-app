@@ -10,7 +10,7 @@ This document is the entry point for anyone arriving from a launch channel. It c
 
 ## What PistisAI is
 
-PistisAI (ΠΙΣΤΙΣΑΙ — "trust") is the tool stack: a desktop hub built around the Hermes agent, plus skills. The agent runs on the client's own computer. No special hardware is required.
+PistisAI (ΠΙΣΤΙΣΑΙ — "trust") is the tool stack: a desktop hub built around the Hermes agent, plus skills. The agent runs on a local machine at the client's site. A free readiness audit checks whether the current PC can host it. If it can, the agent runs there. Otherwise IAClé provides a dedicated Beelink GTi15 mini PC, for purchase or rental. Custom hardware is sized case by case.
 
 IAClé is Christopher Maltais's Quebec company and the brand that delivers this same stack to Quebec clients. One stack, one company.
 
@@ -22,7 +22,7 @@ It is not a model. Hermes, OpenClaw, or a compatible gateway is the agent. Ollam
 
 ## Positioning (one-liner)
 
-> **PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on the client's own computer. IAClé delivers that same stack to Quebec businesses.**
+> **PistisAI is a desktop hub and skills for a Hermes-based agent. It runs on a local machine at the client's site. IAClé delivers that same stack to Quebec businesses.**
 
 ---
 
@@ -36,7 +36,7 @@ It is not a model. Hermes, OpenClaw, or a compatible gateway is the agent. Ollam
 | Ollama / LM Studio / model servers | Support only | App-owned memory, embeddings, OCR, and speech. Not the agent. |
 | Online language models | With consent | Heavy work, when the client agrees and the provider fits Law 25 for Quebec clients. |
 
-The setup wizard chooses where the agent runtime lives: this computer, another computer the client already has, a Tailscale device, or a private URL. There is no universal hardcoded default. The agent is not a hosted PistisAI service.
+The setup wizard chooses where the agent runtime lives on the local machine at the site: the current PC, when the readiness audit says it can host the agent, or the dedicated mini PC. A Tailscale device or a private URL on that site also works. The agent is not a hosted PistisAI service.
 
 ---
 
@@ -58,7 +58,7 @@ The setup wizard chooses where the agent runtime lives: this computer, another c
 
 1. Open [app.pistisai.app](https://app.pistisai.app).
 2. Sign in only if you are using tunnel or sync. Cloudflare Access protects that host.
-3. Run the in-app setup wizard and point it at the agent runtime on the client's computer (Hermes on this computer, another computer the client already has, or a private URL).
+3. Run the in-app setup wizard and point it at Hermes on the local machine at the site.
 
 The desktop app is the hub for real multi-device use. The web app connects through that hub.
 
@@ -115,7 +115,7 @@ Pistisai does **not** assume a default agent. The connection is made by the
 setup wizard, which supports:
 
 - **This computer** — Hermes or OpenClaw running locally. This is the normal path.
-- **Another computer the client already has** — a machine on the LAN.
+- **The dedicated mini PC** — the Beelink GTi15 at the site, when the current PC cannot host the agent.
 - **Tailscale device** — Business and Enterprise path, on the customer's own network (see [Secure Device Mesh](architecture/SECURE_DEVICE_MESH.md)).
 - **Manual / private URL** — a private compatible agent gateway.
 

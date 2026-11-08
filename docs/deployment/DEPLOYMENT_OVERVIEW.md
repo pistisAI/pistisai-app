@@ -2,7 +2,7 @@
 
 This document provides a comprehensive overview of deployment options and strategies for Pistisai.
 
-> **Current orientation**: The product runs on the client's own computer. The desktop app is the hub. See [PistisAI and IAClé](../PRODUCT.md). Kubernetes and Docker notes below are for the optional API and tunnel services (`api.pistisai.app`), not for hosting the agent. Free-tier tunnel sign-in is Cloudflare Access. Business and Enterprise use the customer's Tailscale network or VPN. There is no PistisAI-hosted agent. Public hosts are `app.pistisai.app` and `api.pistisai.app` only.
+> **Current orientation**: The agent runs on a local machine at the client's site. The desktop app is the hub. See [PistisAI and IAClé](../PRODUCT.md). Kubernetes and Docker notes below are for the optional API and tunnel services (`api.pistisai.app`). Free-tier tunnel sign-in is Cloudflare Access. Business and Enterprise use the customer's Tailscale network or VPN. Public hosts are `app.pistisai.app` and `api.pistisai.app`.
 
 ## 📋 Table of Contents
 

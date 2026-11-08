@@ -90,9 +90,9 @@ class ConstructionScreen extends StatelessWidget {
 
             _buildFeatureCard(
               context,
-              title: 'Agent on this computer',
+              title: 'Local machine',
               description:
-                  'Hermes-based agent and skills. No special hardware. Online models only when you allow them.',
+                  'The agent runs at the site. A free readiness audit checks this PC. If it cannot host the agent, IAClé provides a Beelink GTi15.',
               progress: 100,
               icon: Icons.memory,
               color: AppTheme.colorsOf(context).success,
@@ -103,7 +103,7 @@ class ConstructionScreen extends StatelessWidget {
               context,
               title: 'Your data',
               description:
-                  'Stays on this computer unless you agree to a cloud service. Quebec delivery follows Law 25.',
+                  'Stays on the local machine at the site unless you agree to a cloud service. Quebec delivery follows Law 25.',
               progress: 100,
               icon: Icons.shield,
               color: AppTheme.colorsOf(context).accent,
@@ -134,13 +134,13 @@ class ConstructionScreen extends StatelessWidget {
               context,
               title: 'Desktop hub',
               description:
-                  'The app on this computer connects to the agent. Other devices use that hub.',
+                  'The app on the local machine connects to the agent. Other devices use that hub.',
               date: 'Now',
               isCompleted: true,
               items: const [
                 'Hermes-based agent and skills',
                 'Voice, vision, and permissioned desktop actions',
-                'No special hardware',
+                'Current PC, or a dedicated Beelink GTi15',
               ],
             ),
             const SizedBox(height: 12),

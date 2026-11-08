@@ -4,7 +4,7 @@ Tunnel and sync sign-in is Cloudflare Access. See [Tunnel and sync sign-in](../d
 
 **⚠️ DEVELOPMENT/TESTING ONLY**: This Docker Compose deployment is suitable for development, testing, and small-scale deployments. For production use, **Kubernetes deployment is strongly recommended**.
 
-> **Current orientation**: The agent runs on the client's own computer. This compose file is for the optional API and tunnel services. See [Deployment overview](DEPLOYMENT_OVERVIEW.md) and [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
+> **Current orientation**: The agent runs on a local machine at the client's site. This compose file is for the optional API and tunnel services. See [Deployment overview](DEPLOYMENT_OVERVIEW.md) and [Tunnel and sync sign-in](../development/TUNNEL_SIGN_IN.md).
 
 See [Deployment Overview](DEPLOYMENT_OVERVIEW.md) for all deployment options.
 

@@ -1,6 +1,6 @@
 # PistisAI features guide
 
-PistisAI is a desktop hub for a Hermes-based agent, plus skills, on the computer you already have. It gives that agent a secure channel, permissioned desktop control, voice, vision, and sync. Free-tier sync uses Cloudflare Access. Business and Enterprise use your own Tailscale network or VPN. See [Product](../PRODUCT.md).
+PistisAI is a desktop hub for a Hermes-based agent, plus skills, on a local machine at the client's site. It gives that agent a secure channel, permissioned desktop control, voice, vision, and sync. Free-tier sync uses Cloudflare Access. Business and Enterprise use your own Tailscale network or VPN. See [Product](../PRODUCT.md).
 
 ---
 

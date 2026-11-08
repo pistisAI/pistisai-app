@@ -6,7 +6,7 @@ _Last updated: 8 November 2026 · Effective: 8 November 2026_
 > [https://app.pistisai.app/privacy](https://app.pistisai.app/privacy) (served from
 > `web/privacy.html`). Keep the two in sync when editing.
 
-PistisAI ("PistisAI," "we," "us," or "our") is a desktop hub for a Hermes-based agent, plus skills. It runs on your own computer. IAClé is the Quebec company that delivers this same stack. This policy explains what information the stack collects. Cloud services and online models are used when you agree. For clients in Quebec, that path has to fit Law 25.
+PistisAI ("PistisAI," "we," "us," or "our") is a desktop hub for a Hermes-based agent, plus skills. The agent runs on a local machine at the client's site. IAClé is the Quebec company that delivers this same stack. This policy explains what information the stack collects. Cloud services and online models are used when you agree. For clients in Quebec, that path has to fit Law 25.
 
 **Local-first summary.** Your conversations, memory ("local brain"), and settings
 are stored in an encrypted database on your own machine. We do not sell your data,
@@ -97,7 +97,7 @@ data unless we are required to retain it by law.
 
 - access, correct, or delete your account information;
 - export or delete your local data from within the app;
-- use the desktop app on your own computer without an account;
+- use the desktop app without an account;
 - choose whether to enable tunnel sync or keep the app local.
 
 ## 9. Children's privacy

@@ -1,6 +1,6 @@
 # Contributing to Pistisai
 
-Thanks for showing up. PistisAI is the desktop hub and skills that run on the client's own computer. IAClé is the Quebec company that delivers that same stack. Product page: [docs/PRODUCT.md](docs/PRODUCT.md). This guide gets you from "I cloned the repo" to "my change is in `main`".
+Thanks for showing up. PistisAI is the desktop hub and skills. The agent runs on a local machine at the client's site. IAClé is the Quebec company that delivers that same stack. Product page: [docs/PRODUCT.md](docs/PRODUCT.md). This guide gets you from "I cloned the repo" to "my change is in `main`".
 
 Open an issue or discussion with your real use case. That counts as a contribution.
 

@@ -1,6 +1,6 @@
 # Tunnel and sync sign-in
 
-Sign-in is for the tunnel and sync system. A desktop session on the client's own computer starts without an account.
+Sign-in is for the tunnel and sync system. A desktop session starts without an account.
 
 Product page: [PistisAI and IAClé](../PRODUCT.md).
 
