@@ -14,6 +14,7 @@ import 'streaming_content_update.dart';
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
 import 'auth_service.dart';
+import '../brand/brand_copy.dart';
 import 'agent_display_name.dart';
 import 'avatar/avatar_state_service.dart';
 import '../di/locator.dart' as di;
@@ -284,8 +285,7 @@ class StreamingChatService extends ChangeNotifier {
     );
 
     final welcomeMessage = Message.system(
-      content:
-          'Welcome to Pistisai! I\'m ready to help you with any questions or tasks. What would you like to talk about?',
+      content: BrandCopy.chatWelcome,
     );
 
     _mainChannel = _mainChannel!.addMessage(welcomeMessage);

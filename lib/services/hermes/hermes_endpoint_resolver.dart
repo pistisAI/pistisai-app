@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:pistisai/brand/brand_copy.dart';
 import 'package:pistisai/config/app_config.dart';
 
 /// What a local Hermes URL turned out to be.
@@ -171,10 +172,8 @@ class HermesEndpointResolver {
 }
 
 /// Shown when the desktop dashboard is up and the agent API is not.
-String hermesDesktopDashboardMessage(String url) {
-  return 'Hermes desktop is running at $url, but its agent API is not available there. '
-      'Pistisai needs /health on port ${AppConfig.defaultHermesPort}.';
-}
+String hermesDesktopDashboardMessage(String url) =>
+    BrandCopy.hermesDesktopDashboard(url);
 
 /// Shown when no Hermes endpoint answered.
 const String hermesUnreachableMessage =

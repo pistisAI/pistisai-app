@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../brand/brand_copy.dart';
 import '../../../config/theme.dart';
 
 /// Welcome step - First screen of the setup wizard
@@ -68,7 +69,7 @@ class _TitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Welcome to Pistisai',
+      BrandCopy.welcomeTitle,
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -149,20 +150,23 @@ class _InfoBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3)),
+        border: Border.all(
+            color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(Icons.info_outline, color: AppTheme.colorsOf(context).info, size: 20),
+            child: Icon(Icons.info_outline,
+                color: AppTheme.colorsOf(context).info, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.',
-              style: TextStyle(color: AppTheme.colorsOf(context).info, height: 1.35),
+              style: TextStyle(
+                  color: AppTheme.colorsOf(context).info, height: 1.35),
             ),
           ),
         ],

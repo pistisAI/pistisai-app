@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import '../brand/brand_copy.dart';
 
 /// Service for registering custom URL schemes on Windows desktop
 /// This is required for OAuth callbacks to work properly
@@ -27,7 +28,7 @@ class UrlSchemeRegistrationService {
         'HKEY_CURRENT_USER\\Software\\Classes\\$_customScheme',
         '/ve',
         '/d',
-        'URL:Pistisai Protocol',
+        BrandCopy.urlProtocolLabel,
         '/f'
       ]);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../brand/brand.dart';
 import '../config/theme.dart';
 
 /// Custom app logo widget that matches the Pistisai branding
@@ -60,18 +61,25 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBackgroundColor = backgroundColor ?? AppTheme.colorsOf(context).secondary;
-    final effectiveBorderColor = borderColor ?? AppTheme.colorsOf(context).primary;
+    final effectiveBackgroundColor =
+        backgroundColor ?? AppTheme.colorsOf(context).secondary;
+    final effectiveBorderColor =
+        borderColor ?? AppTheme.colorsOf(context).primary;
     final borderWidth = size * 0.04;
 
-    // Pistisai logos (4-column stoa portico)
-    String assetPath = 'assets/images/lobster_avatar_64.png';
-    if (size >= 128) {
-      assetPath = 'assets/images/lobster_avatar_128.png';
-    } else if (size >= 64) {
-      assetPath = 'assets/images/lobster_avatar_64.png';
+    // Default brand keeps the size-specific portico assets. Other brands
+    // use the single logo path from the brand file.
+    final String assetPath;
+    if (Brand.current.id == 'pistisai') {
+      if (size >= 128) {
+        assetPath = 'assets/images/lobster_avatar_128.png';
+      } else if (size >= 64) {
+        assetPath = 'assets/images/lobster_avatar_64.png';
+      } else {
+        assetPath = 'assets/images/lobster_avatar.png';
+      }
     } else {
-      assetPath = 'assets/images/lobster_avatar.png';
+      assetPath = Brand.current.logoAsset;
     }
 
     return Container(
@@ -101,7 +109,9 @@ class AppLogo extends StatelessWidget {
             // Fallback to gold P monogram if image fails
             return Center(
               child: Text(
-                'P',
+                Brand.current.shortName.isEmpty
+                    ? '?'
+                    : Brand.current.shortName[0],
                 style: TextStyle(fontSize: size * 0.6),
               ),
             );

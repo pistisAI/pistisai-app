@@ -11,6 +11,8 @@ import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 
 import 'package:pistisai/bootstrap/bootstrapper.dart';
+import 'package:pistisai/brand/brand.dart';
+import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/config/router.dart';
 import 'package:pistisai/config/theme.dart';
@@ -70,6 +72,7 @@ String? resolveCallbackUrl(List<String> args) {
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+  Brand.assertCompileDefineMatches();
 
   // Ensure only one instance runs at a time (desktop hub only).
   // Android/iOS must not bind the desktop lock port or they will exit.
@@ -245,8 +248,8 @@ class _PistisaiAppState extends State<PistisaiApp> {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        home: const Scaffold(
-          body: Center(child: Text('Pistisai')),
+        home: Scaffold(
+          body: Center(child: Text(Brand.current.productName)),
         ),
       );
     }
@@ -582,36 +585,53 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       // ThemeProvider may not be registered yet; handled by fallback below
     }
 
-    return WindowListenerWidget(
-      child: MaterialApp.router(
-        title: AppConfig.appName,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: themeProvider?.themeMode ?? ThemeMode.system,
-        routerConfig: router,
-        builder: (context, child) {
-          // Error fallback
-          if (child == null) {
-            return const Scaffold(
-              body: Center(
-                child: Text('Loading...', style: TextStyle(fontSize: 18)),
-              ),
-            );
-          }
+    final brandLocale = Brand.current.materialLocale;
+    Widget routerBuilder(BuildContext context, Widget? child) {
+      if (child == null) {
+        return const Scaffold(
+          body: Center(
+            child: Text('Loading...', style: TextStyle(fontSize: 18)),
+          ),
+        );
+      }
+      final mediaQuery = MediaQuery.of(context);
+      return MediaQuery(
+        data: mediaQuery.copyWith(
+          textScaler: TextScaler.linear(
+            mediaQuery.textScaler.scale(1.0).clamp(0.8, 1.2),
+          ),
+        ),
+        child: child,
+      );
+    }
 
-          final mediaQuery = MediaQuery.of(context);
-          return MediaQuery(
-            data: mediaQuery.copyWith(
-              textScaler: TextScaler.linear(
-                mediaQuery.textScaler.scale(1.0).clamp(0.8, 1.2),
-              ),
-            ),
-            child: child,
+    // Unlocked brands do not set locale or supportedLocales. That is the
+    // MaterialApp this app used before branding, so device resolution is
+    // unchanged. A locked brand sets its locale and includes French and
+    // English so Material localizations can load.
+    final MaterialApp app = brandLocale == null
+        ? MaterialApp.router(
+            title: AppConfig.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider?.themeMode ?? ThemeMode.system,
+            routerConfig: router,
+            builder: routerBuilder,
+          )
+        : MaterialApp.router(
+            title: AppConfig.appName,
+            locale: brandLocale,
+            localizationsDelegates: brandLocalizationsDelegates,
+            supportedLocales: lockedBrandLocales(Brand.current),
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider?.themeMode ?? ThemeMode.system,
+            routerConfig: router,
+            builder: routerBuilder,
           );
-        },
-      ),
-    );
+    return WindowListenerWidget(child: app);
   }
 
   void _initializeRouter(AuthService authService) {

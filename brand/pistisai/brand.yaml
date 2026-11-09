@@ -1,0 +1,52 @@
+# Upstream product. tool/brand.sh pistisai restores this bake.
+id: pistisai
+product_name: Pistisai
+short_name: Pistisai
+company_name: Pistisai
+tagline: Where Trust Returns
+support_email: support@pistisai.app
+support_url: https://pistisai.app
+privacy_email: privacy@pistisai.app
+website_domain: pistisai.app
+website_url: https://pistisai.app
+app_url: https://app.pistisai.app
+default_locale: en
+lock_locale: false
+logo_asset: assets/images/lobster_avatar.png
+icon_asset: assets/images/app_icon.png
+wordmark: PISTISAI
+greek_wordmark: "ΠΙΣΤΙΣΑΙ"
+colors:
+  primary: "#FFD700"
+  secondary: "#FFE44D"
+  accent: "#D4A017"
+  background: "#181A20"
+  text: "#F5E6C8"
+app_id: app.pistisai.app
+bundle_id: app.pistisai.pistisai
+linux_application_id: app.pistisai.pistisai
+executable_name: pistisai
+window_title: Pistisai
+about_text: "Pistisai brings trust back to artificial intelligence — a modern Stoa (portico) where Pistis (Πίστις), the ancient spirit of trust and good faith, can dwell among us again."
+closing_line: "Pistisai exists to build a space worthy of Pistis — a Stoa where trust can finally return to the world of intelligent machines."
+legal_line: "© 2026 Pistisai — Trust is what remains"
+copyright: "Copyright © 2026 Pistisai. All rights reserved."
+windows_copyright: "Copyright (C) 2026 Pistisai. All rights reserved."
+file_description: "Pistisai Desktop Client"
+repository_url: https://github.com/pistisAI/pistisai-app
+repository_label: pistisAI/pistisai-app
+docs_url: https://docs.pistisai.app
+releases_url: https://github.com/pistisAI/pistisai-app/releases/latest
+artifact_prefix: Pistisai
+accent_label: Pistisai gold
+package_title: "PistisAI package"
+package_blurb: |
+  Finishing this first-time setup installs the pistisai package into the Hermes you just connected. That home comes from that Hermes, including when it is not the usual Windows location. The package adds the aigent-watch bot, the drift-scan skill, and a routine that runs every 6 hours.
+footer_motto: "PISTISAI — πίστις ἐστὶν ἡ τῶν ἀνθρώπων σωτηρία"
+web_title: "Pistisai — Your Private AI Companion"
+web_description: "Pistisai — Private AI companion. Local-first, four-pillar architecture. A portico for trustworthy AI."
+social_description: "A portico for private AI — four pillars that know you, run on your machine, and grow with you."
+manifest_description: "A portico for private AI — four pillars that know you, run on your machine, and grow with you. Local-first AI companion with avatar, desktop control, and vision."
+appstream_summary: Bridge cloud-based AI services with local AI models
+appstream_description: "Pistisai is a cross-platform application that bridges cloud-based AI services with local AI models, providing a hybrid AI architecture with privacy-first design."
+developer_name: Pistisai Contributors

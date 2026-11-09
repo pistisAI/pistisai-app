@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
 import '../../components/modern_card.dart';
 import '../../components/gradient_button.dart';
@@ -185,10 +186,8 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                     'Configure the system tray daemon behavior and appearance',
                     style: Theme.of(
                       context,
-                    )
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+                    ).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.colorsOf(context).textColorLight),
                   ),
                   SizedBox(height: AppTheme.spacingXL),
 
@@ -282,7 +281,8 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                 'Last updated: ${_formatDateTime(_lastStatusUpdate!)}',
                 style: Theme.of(
                   context,
-                ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+                ).textTheme.bodySmall?.copyWith(
+                    color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ] else ...[
@@ -302,7 +302,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
           SizedBox(height: AppTheme.spacingM),
           _buildSwitchTile(
             'Enable System Tray',
-            'Show Pistisai icon in system tray',
+            BrandCopy.traySettingsHint,
             _enableSystemTray,
             (value) => setState(() => _enableSystemTray = value),
           ),
@@ -488,7 +488,10 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             subtitle,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+            )
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           SizedBox(height: AppTheme.spacingS),
           DropdownButtonFormField<String>(
@@ -552,7 +555,10 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             subtitle,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+            )
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           SizedBox(height: AppTheme.spacingS),
           Slider(
@@ -577,7 +583,10 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             label,
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColor),
+            )
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppTheme.colorsOf(context).textColor),
           ),
           Flexible(
             child: Text(

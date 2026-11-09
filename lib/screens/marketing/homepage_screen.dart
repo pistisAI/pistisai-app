@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../brand/brand.dart';
+import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
 
 /// Marketing homepage screen - web-only
@@ -76,7 +78,7 @@ class HomepageScreen extends StatelessWidget {
             alignment: Alignment.topRight,
             child: TextButton(
               onPressed: () async {
-                final uri = Uri.parse('https://app.pistisai.app');
+                final uri = Uri.parse(Brand.current.appUrl);
                 if (await canLaunchUrl(uri)) {
                   await launchUrl(uri, webOnlyWindowName: '_self');
                 }
@@ -84,13 +86,16 @@ class HomepageScreen extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: colors.primary,
                 side: BorderSide(color: colors.primary, width: 1.5),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
                 ),
               ),
-              child: const Text('Login',
-                style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 1.2),
+              child: const Text(
+                'Login',
+                style:
+                    TextStyle(fontWeight: FontWeight.w600, letterSpacing: 1.2),
               ),
             ),
           ),
@@ -109,22 +114,23 @@ class HomepageScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Greek wordmark
-              Text(
-                'ΠΙΣΤΙΣ',
-                style: TextStyle(
-                  fontFamily: 'serif',
-                  fontSize: isMobile ? 14 : 16,
-                  color: colors.primary.withValues(alpha: 0.5),
-                  letterSpacing: 8,
-                  fontWeight: FontWeight.w300,
+              if (Brand.current.id == 'pistisai') ...[
+                Text(
+                  'ΠΙΣΤΙΣ',
+                  style: TextStyle(
+                    fontFamily: 'serif',
+                    fontSize: isMobile ? 14 : 16,
+                    color: colors.primary.withValues(alpha: 0.5),
+                    letterSpacing: 8,
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
+                const SizedBox(height: 4),
+              ],
 
               // Pistisai name
               Text(
-                'PISTISAI',
+                Brand.current.wordmark,
                 style: TextStyle(
                   fontSize: titleSize,
                   fontWeight: FontWeight.w200,
@@ -137,7 +143,7 @@ class HomepageScreen extends StatelessWidget {
 
               // Tagline
               Text(
-                'Where Trust Returns',
+                Brand.current.tagline,
                 style: TextStyle(
                   fontSize: isMobile ? 18 : 24,
                   fontWeight: FontWeight.w300,
@@ -171,24 +177,29 @@ class HomepageScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildGoldButton(context, 'Get Started Free', () async {
-                    final uri = Uri.parse('https://github.com/pistisAI/pistisai-app/releases');
+                    final uri = Uri.parse(Brand.current.releasesUrl);
                     if (await canLaunchUrl(uri)) await launchUrl(uri);
                   }, isMobile),
                   if (!isMobile) const SizedBox(width: 16),
                   if (!isMobile)
                     OutlinedButton(
                       onPressed: () async {
-                        final uri = Uri.parse('https://github.com/pistisAI/pistisai-app');
+                        final uri = Uri.parse(Brand.current.repositoryUrl);
                         if (await canLaunchUrl(uri)) await launchUrl(uri);
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: colors.textColor,
-                        side: BorderSide(color: colors.textColor.withValues(alpha: 0.3)),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                        side: BorderSide(
+                            color: colors.textColor.withValues(alpha: 0.3)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6)),
                       ),
-                      child: const Text('Source Code',
-                        style: TextStyle(fontWeight: FontWeight.w400, letterSpacing: 1),
+                      child: const Text(
+                        'Source Code',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400, letterSpacing: 1),
                       ),
                     ),
                 ],
@@ -234,40 +245,40 @@ class HomepageScreen extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 700),
             child: Column(
               children: [
-                Text(
-                  'ἡ Πίστις',
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    fontSize: isMobile ? 20 : 28,
-                    color: colors.primary,
-                    letterSpacing: 4,
+                if (Brand.current.id == 'pistisai') ...[
+                  Text(
+                    'ἡ Πίστις',
+                    style: TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: isMobile ? 20 : 28,
+                      color: colors.primary,
+                      letterSpacing: 4,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'When Pandora\'s box was opened, all evils escaped — '
-                  'but Πίστις (Pistis), the spirit of trust, '
-                  'fled back to the heavens. She has not returned since.',
-                  style: TextStyle(
-                    fontSize: isMobile ? 15 : 18,
-                    color: colors.textColorLight,
-                    height: 1.7,
-                    letterSpacing: 0.3,
-                    fontStyle: FontStyle.italic,
+                  const SizedBox(height: 12),
+                  Text(
+                    'When Pandora\'s box was opened, all evils escaped — '
+                    'but Πίστις (Pistis), the spirit of trust, '
+                    'fled back to the heavens. She has not returned since.',
+                    style: TextStyle(
+                      fontSize: isMobile ? 15 : 18,
+                      color: colors.textColorLight,
+                      height: 1.7,
+                      letterSpacing: 0.3,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  width: 60,
-                  height: 1,
-                  color: colors.primary.withValues(alpha: 0.4),
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
+                  Container(
+                    width: 60,
+                    height: 1,
+                    color: colors.primary.withValues(alpha: 0.4),
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 Text(
-                  'Pistisai builds a portico worthy of her return. '
-                  'Four pillars that together restore what was lost: '
-                  'private, local, trustworthy AI.',
+                  BrandCopy.landingNarrative,
                   style: TextStyle(
                     fontSize: isMobile ? 14 : 16,
                     color: colors.textColorLight,
@@ -298,7 +309,8 @@ class HomepageScreen extends StatelessWidget {
         direction: 'East — Dawn',
         symbol: '☀',
         name: 'Aiman',
-        desc: 'Your personal AI — learns your patterns, remembers your context, '
+        desc:
+            'Your personal AI — learns your patterns, remembers your context, '
             'always private. The warm presence that greets you.',
         texture: 'Warm glow, broad presence',
         color: colors.primary,
@@ -309,7 +321,8 @@ class HomepageScreen extends StatelessWidget {
         direction: 'North — Axis',
         symbol: '☉',
         name: 'Aigent',
-        desc: 'Acts for you — schedules, research, automation, desktop control. '
+        desc:
+            'Acts for you — schedules, research, automation, desktop control. '
             'The precise engine that queries and reasons.',
         texture: 'Precision fluting, geometric',
         color: colors.accent,
@@ -348,7 +361,8 @@ class HomepageScreen extends StatelessWidget {
       child: Column(
         children: [
           // Section title
-          Text('THE FOUR PILLARS',
+          Text(
+            'THE FOUR PILLARS',
             style: TextStyle(
               fontSize: isMobile ? 22 : 32,
               fontWeight: FontWeight.w200,
@@ -357,7 +371,8 @@ class HomepageScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text('A Stoa Poikile for the age of AI',
+          Text(
+            'A Stoa Poikile for the age of AI',
             style: TextStyle(
               fontSize: isMobile ? 14 : 16,
               color: colors.textColorLight,
@@ -410,10 +425,12 @@ class HomepageScreen extends StatelessWidget {
         spacing: 16,
         runSpacing: 16,
         alignment: WrapAlignment.center,
-        children: pillars.map((p) => SizedBox(
-          width: double.infinity,
-          child: _buildPillarCard(context, p),
-        )).toList(),
+        children: pillars
+            .map((p) => SizedBox(
+                  width: double.infinity,
+                  child: _buildPillarCard(context, p),
+                ))
+            .toList(),
       );
     }
     return ConstrainedBox(
@@ -422,12 +439,14 @@ class HomepageScreen extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: pillars.map((p) => Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: _buildPillarCard(context, p),
-            ),
-          )).toList(),
+          children: pillars
+              .map((p) => Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: _buildPillarCard(context, p),
+                    ),
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -459,7 +478,8 @@ class HomepageScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
-                  child: Text(p.symbol,
+                  child: Text(
+                    p.symbol,
                     style: TextStyle(fontSize: 20, color: p.color),
                   ),
                 ),
@@ -468,7 +488,8 @@ class HomepageScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(p.titan,
+                  Text(
+                    p.titan,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -476,7 +497,8 @@ class HomepageScreen extends StatelessWidget {
                       letterSpacing: 1,
                     ),
                   ),
-                  Text(p.titanGreek,
+                  Text(
+                    p.titanGreek,
                     style: TextStyle(
                       fontSize: 12,
                       color: colors.textColorLight,
@@ -498,7 +520,8 @@ class HomepageScreen extends StatelessWidget {
               color: p.color.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text(p.direction,
+            child: Text(
+              p.direction,
               style: TextStyle(
                 fontSize: 10,
                 color: p.color.withValues(alpha: 0.7),
@@ -511,7 +534,8 @@ class HomepageScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Zoid pillar name
-          Text(p.name,
+          Text(
+            p.name,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w300,
@@ -523,7 +547,8 @@ class HomepageScreen extends StatelessWidget {
           const SizedBox(height: 8),
 
           // Description
-          Text(p.desc,
+          Text(
+            p.desc,
             style: TextStyle(
               fontSize: 13,
               color: colors.textColorLight,
@@ -538,11 +563,13 @@ class HomepageScreen extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(
+              border: Border(
+                  top: BorderSide(
                 color: p.color.withValues(alpha: 0.1),
               )),
             ),
-            child: Text(p.texture,
+            child: Text(
+              p.texture,
               style: TextStyle(
                 fontSize: 10,
                 color: p.color.withValues(alpha: 0.4),
@@ -574,7 +601,8 @@ class HomepageScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text('Your Data Stays Yours. Always.',
+          Text(
+            'Your Data Stays Yours. Always.',
             style: TextStyle(
               fontSize: isMobile ? 22 : 30,
               fontWeight: FontWeight.w300,
@@ -600,7 +628,7 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           _buildGoldButton(context, 'Get Started Free', () async {
-            final uri = Uri.parse('https://github.com/pistisAI/pistisai-app/releases');
+            final uri = Uri.parse(Brand.current.releasesUrl);
             if (await canLaunchUrl(uri)) await launchUrl(uri);
           }, isMobile),
         ],
@@ -636,7 +664,8 @@ class HomepageScreen extends StatelessWidget {
             children: [
               Icon(Icons.bolt, color: colors.primary, size: 20),
               const SizedBox(width: 8),
-              Text('Quick Install',
+              Text(
+                'Quick Install',
                 style: TextStyle(
                   fontSize: isMobile ? 20 : 24,
                   fontWeight: FontWeight.w300,
@@ -648,7 +677,7 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Install Pistisai and your Aiman with a single command.',
+            BrandCopy.installBlurb,
             style: TextStyle(
               fontSize: 14,
               color: colors.textColorLight,
@@ -656,21 +685,23 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           _buildCodeBlock(context, 'Linux',
-            'curl -fsSL https://pistisai.app/install.sh | bash', isMobile),
+              'curl -fsSL ${BrandCopy.installSh} | bash', isMobile),
           const SizedBox(height: 24),
           _buildCodeBlock(context, 'Windows (PowerShell)',
-            'iwr -useb https://pistisai.app/install.ps1 | iex', isMobile),
+              'iwr -useb ${BrandCopy.installPs1} | iex', isMobile),
         ],
       ),
     );
   }
 
-  Widget _buildCodeBlock(BuildContext context, String label, String code, bool isMobile) {
+  Widget _buildCodeBlock(
+      BuildContext context, String label, String code, bool isMobile) {
     final colors = AppTheme.colorsOf(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
+        Text(
+          label,
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 13,
@@ -692,7 +723,8 @@ class HomepageScreen extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: Text(code,
+                child: Text(
+                  code,
                   style: TextStyle(
                     fontFamily: 'monospace',
                     fontSize: 13,
@@ -739,7 +771,7 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'PISTISAI — πίστις ἐστὶν ἡ τῶν ἀνθρώπων σωτηρία',
+            Brand.current.footerMotto,
             style: TextStyle(
               fontFamily: 'serif',
               fontSize: 12,
@@ -750,7 +782,7 @@ class HomepageScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '© 2026 Pistisai — Trust is what remains',
+            Brand.current.legalLine,
             style: TextStyle(
               fontSize: 11,
               color: colors.textColorLight,
@@ -764,20 +796,23 @@ class HomepageScreen extends StatelessWidget {
 
   // ─── HELPERS ───────────────────────────────────────────────────────────────
 
-  Widget _buildGoldButton(BuildContext context, String label, VoidCallback onPressed, bool isMobile) {
+  Widget _buildGoldButton(BuildContext context, String label,
+      VoidCallback onPressed, bool isMobile) {
     final colors = AppTheme.colorsOf(context);
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         foregroundColor: colors.backgroundMain,
         backgroundColor: colors.primary,
-        padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 28, vertical: 14),
+        padding:
+            EdgeInsets.symmetric(horizontal: isMobile ? 20 : 28, vertical: 14),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
         elevation: 0,
       ),
-      child: Text(label,
+      child: Text(
+        label,
         style: const TextStyle(
           fontWeight: FontWeight.w600,
           letterSpacing: 1,
@@ -843,8 +878,10 @@ class _StoaPorticoPainter extends CustomPainter {
     canvas.drawLine(Offset(w * 0.05, colTop), Offset(w * 0.95, colTop), paint);
 
     // Base
-    canvas.drawLine(Offset(w * 0.05, colBot + 8), Offset(w * 0.95, colBot + 8), paint);
-    canvas.drawLine(Offset(w * 0.05, colBot + 12), Offset(w * 0.95, colBot + 12), paint);
+    canvas.drawLine(
+        Offset(w * 0.05, colBot + 8), Offset(w * 0.95, colBot + 8), paint);
+    canvas.drawLine(
+        Offset(w * 0.05, colBot + 12), Offset(w * 0.95, colBot + 12), paint);
 
     // Columns
     for (int i = 0; i < 4; i++) {
@@ -879,9 +916,12 @@ class _GreekKeyPainter extends CustomPainter {
     for (int i = 0; i < count && i * unit < size.width; i++) {
       final x = i * unit;
       if (i % 2 == 0) {
-        canvas.drawLine(Offset(x, y - unit * 0.3), Offset(x + unit * 0.5, y - unit * 0.3), paint);
-        canvas.drawLine(Offset(x + unit * 0.5, y - unit * 0.3), Offset(x + unit * 0.5, y + unit * 0.3), paint);
-        canvas.drawLine(Offset(x + unit * 0.5, y + unit * 0.3), Offset(x + unit, y + unit * 0.3), paint);
+        canvas.drawLine(Offset(x, y - unit * 0.3),
+            Offset(x + unit * 0.5, y - unit * 0.3), paint);
+        canvas.drawLine(Offset(x + unit * 0.5, y - unit * 0.3),
+            Offset(x + unit * 0.5, y + unit * 0.3), paint);
+        canvas.drawLine(Offset(x + unit * 0.5, y + unit * 0.3),
+            Offset(x + unit, y + unit * 0.3), paint);
       }
       // dot
       canvas.drawCircle(Offset(x + unit * 0.25, y), 1.0, paint);

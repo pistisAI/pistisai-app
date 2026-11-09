@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import '../../brand/brand_copy.dart';
 import '../../widgets/common/card_section.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -86,7 +87,7 @@ const _settingsPages = <_SettingsPageLink>[
   ),
   _SettingsPageLink(
     'About',
-    'Pistisai and this build',
+    '',
     '/settings/about',
     Icons.info_outline,
   ),
@@ -860,7 +861,11 @@ class _ConfigScreenState extends State<ConfigScreen>
               ListTile(
                 leading: Icon(page.icon),
                 title: Text(page.label),
-                subtitle: Text(page.subtitle),
+                subtitle: Text(
+                  page.route == '/settings/about'
+                      ? BrandCopy.settingsAboutSubtitle
+                      : page.subtitle,
+                ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.go(page.route),
               ),

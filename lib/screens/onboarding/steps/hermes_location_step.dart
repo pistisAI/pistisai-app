@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../brand/brand_copy.dart';
 import '../../../config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
@@ -67,16 +68,20 @@ class HermesLocationStep extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color: AppTheme.colorsOf(context)
+                          .info
+                          .withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline, color: AppTheme.colorsOf(context).info, size: 20),
+                    Icon(Icons.info_outline,
+                        color: AppTheme.colorsOf(context).info, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'For a remote VPS, install Tailscale on the server and this device, then pick the server from your tailnet. Pistisai connects over the private Tailscale IP.',
+                        BrandCopy.hermesLocationHint,
                         style: TextStyle(
                           color: AppTheme.colorsOf(context).info,
                           height: 1.35,

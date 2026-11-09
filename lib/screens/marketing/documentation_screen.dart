@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../brand/brand.dart';
 import '../../services/platform_detection_service.dart';
 import '../../services/platform_adapter.dart';
 import '../../config/theme.dart';
@@ -270,7 +271,7 @@ class DocumentationScreen extends StatelessWidget {
             icon: Icons.code,
             title: 'GitHub Repository',
             description: 'View source code, issues, and contribute',
-            url: 'https://github.com/pistisAI/pistisai-app',
+            url: Brand.current.repositoryUrl,
             textColor: textColor,
             bodyFontSize: bodyFontSize,
             verticalSpacing: verticalSpacing,
@@ -285,7 +286,7 @@ class DocumentationScreen extends StatelessWidget {
             icon: Icons.new_releases,
             title: 'Release Notes',
             description: 'Latest updates and changelog',
-            url: 'https://github.com/pistisAI/pistisai-app/releases',
+            url: Brand.current.releasesUrl,
             textColor: textColor,
             bodyFontSize: bodyFontSize,
             verticalSpacing: verticalSpacing,

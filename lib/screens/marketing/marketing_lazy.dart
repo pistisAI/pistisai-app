@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'download_screen.dart';
 import 'documentation_screen.dart';
 import 'homepage_screen.dart';
+import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
 
 // Re-export HomepageScreen for use in router.dart's home route
@@ -32,13 +33,13 @@ final marketingRoutes = [
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
+                Icon(Icons.desktop_windows,
+                    size: 64, color: AppTheme.colorsOf(context).textColorLight),
                 SizedBox(height: 16),
                 Text('Desktop App Required',
                     style: Theme.of(context).textTheme.headlineSmall),
                 SizedBox(height: 8),
-                Text(
-                    'Please use the Pistisai desktop application for the best experience.',
+                Text(BrandCopy.desktopRequiredBody,
                     textAlign: TextAlign.center),
               ],
             ),
@@ -65,13 +66,13 @@ final marketingRoutes = [
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
+                Icon(Icons.desktop_windows,
+                    size: 64, color: AppTheme.colorsOf(context).textColorLight),
                 SizedBox(height: 16),
                 Text('Desktop App Required',
                     style: Theme.of(context).textTheme.headlineSmall),
                 SizedBox(height: 8),
-                Text(
-                    'Please use the Pistisai desktop application for the best experience.',
+                Text(BrandCopy.desktopRequiredBody,
                     textAlign: TextAlign.center),
               ],
             ),
@@ -99,13 +100,14 @@ final marketingRoutes = [
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
+                  Icon(Icons.desktop_windows,
+                      size: 64,
+                      color: AppTheme.colorsOf(context).textColorLight),
                   SizedBox(height: 16),
                   Text('Desktop App Required',
                       style: Theme.of(context).textTheme.headlineSmall),
                   SizedBox(height: 8),
-                  Text(
-                      'Please use the Pistisai desktop application for the best experience.',
+                  Text(BrandCopy.desktopRequiredBody,
                       textAlign: TextAlign.center),
                 ],
               ),
@@ -134,13 +136,14 @@ final marketingRoutes = [
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.desktop_windows, size: 64, color: AppTheme.colorsOf(context).textColorLight),
+                  Icon(Icons.desktop_windows,
+                      size: 64,
+                      color: AppTheme.colorsOf(context).textColorLight),
                   SizedBox(height: 16),
                   Text('Desktop App Required',
                       style: Theme.of(context).textTheme.headlineSmall),
                   SizedBox(height: 8),
-                  Text(
-                      'Please use the Pistisai desktop application for the best experience.',
+                  Text(BrandCopy.desktopRequiredBody,
                       textAlign: TextAlign.center),
                 ],
               ),

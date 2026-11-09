@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import '../../brand/brand.dart';
 import '../../models/agent_event.dart';
 import '../../models/conversation.dart';
 import '../../models/message.dart';
@@ -263,7 +264,7 @@ class HermesStreamingService extends StreamingService {
           id: messageId,
           conversationId: conversationId,
           error:
-              'Pistisai channel failed (${response.statusCode}): $errorBody',
+              '${Brand.current.productName} channel failed (${response.statusCode}): $errorBody',
           sequence: sequence++,
         );
         _messageController.add(errorMsg);
@@ -279,7 +280,7 @@ class HermesStreamingService extends StreamingService {
       final errorMsg = StreamingMessage.error(
         id: messageId,
         conversationId: conversationId,
-        error: 'Pistisai channel timed out posting message',
+        error: '${Brand.current.productName} channel timed out posting message',
         sequence: sequence++,
       );
       _messageController.add(errorMsg);
@@ -289,7 +290,7 @@ class HermesStreamingService extends StreamingService {
       final errorMsg = StreamingMessage.error(
         id: messageId,
         conversationId: conversationId,
-        error: 'Pistisai channel post failed: $e',
+        error: '${Brand.current.productName} channel post failed: $e',
         sequence: sequence++,
       );
       _messageController.add(errorMsg);
@@ -323,7 +324,8 @@ class HermesStreamingService extends StreamingService {
       if (content != lastEmitted) {
         final extended = content.startsWith(lastEmitted);
         final replaces = !extended && lastEmitted.isNotEmpty;
-        final delta = extended ? content.substring(lastEmitted.length) : content;
+        final delta =
+            extended ? content.substring(lastEmitted.length) : content;
         lastEmitted = content;
         if (delta.isNotEmpty) {
           final chunk = StreamingMessage.chunk(
@@ -386,7 +388,8 @@ class HermesStreamingService extends StreamingService {
       final errorMsg = StreamingMessage.error(
         id: messageId,
         conversationId: conversationId,
-        error: 'Pistisai channel produced no assistant reply',
+        error:
+            '${Brand.current.productName} channel produced no assistant reply',
         sequence: sequence++,
       );
       _messageController.add(errorMsg);
@@ -446,18 +449,16 @@ class HermesStreamingService extends StreamingService {
       final runtimeId = _sessionForConversation(sessionId);
 
       Future<http.Response> getMessages(String id) {
-        return client
-            .get(
-              Uri.parse(
-                '$_baseUrl/api/sessions/${Uri.encodeComponent(id)}/messages'
-                '?order=oldest&limit=500',
-              ),
-              headers: {
-                ..._headers(),
-                'Accept': 'application/json',
-              },
-            )
-            .timeout(const Duration(seconds: 8));
+        return client.get(
+          Uri.parse(
+            '$_baseUrl/api/sessions/${Uri.encodeComponent(id)}/messages'
+            '?order=oldest&limit=500',
+          ),
+          headers: {
+            ..._headers(),
+            'Accept': 'application/json',
+          },
+        ).timeout(const Duration(seconds: 8));
       }
 
       // The pistisai DM key (`agent:main:pistisai:dm:<chat_id>`) is not
@@ -508,12 +509,10 @@ class HermesStreamingService extends StreamingService {
   Future<String?> _resolvePistisaiSessionId() async {
     try {
       final client = _client ?? http.Client();
-      final response = await client
-          .get(
-            Uri.parse('$_baseUrl/api/sessions?source=pistisai&limit=20'),
-            headers: {..._headers(), 'Accept': 'application/json'},
-          )
-          .timeout(const Duration(seconds: 8));
+      final response = await client.get(
+        Uri.parse('$_baseUrl/api/sessions?source=pistisai&limit=20'),
+        headers: {..._headers(), 'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 8));
       if (response.statusCode != 200) return null;
       final decoded = jsonDecode(response.body);
       final data = decoded is Map ? decoded['data'] : null;
@@ -529,9 +528,8 @@ class HermesStreamingService extends StreamingService {
         final id = row['id'];
         if (id is! String || id.isEmpty) continue;
         final active = row['last_active'] ?? row['started_at'];
-        final ts = active is num
-            ? active.toDouble()
-            : double.tryParse('$active') ?? 0;
+        final ts =
+            active is num ? active.toDouble() : double.tryParse('$active') ?? 0;
         if (ts > bestActive) {
           bestActive = ts;
           bestId = id;

@@ -13,6 +13,7 @@ library;
 
 import 'dart:math' as dart_math;
 import 'package:flutter/material.dart';
+import '../brand/brand.dart';
 import 'theme_extensions.dart';
 
 /// Unified theme configuration for the application
@@ -24,23 +25,23 @@ class ThemeConfig {
   // Color Definitions
   // ============================================================================
 
-  /// Primary brand color (Pistis Gold) — Πίστις
-  static const Color primaryColor = Color(0xFFFFD700);
+  /// Primary color from the active brand. The default brand is Pistis gold.
+  static Color get primaryColor => Brand.current.primary;
 
-  /// Secondary brand color (Warm Gold)
-  static const Color secondaryColor = Color(0xFFFFE44D);
+  /// Secondary color from the active brand.
+  static Color get secondaryColor => Brand.current.secondary;
 
-  /// Accent color (Deep Gold)
-  static const Color accentColor = Color(0xFFD4A017);
+  /// Accent color from the active brand.
+  static Color get accentColor => Brand.current.accent;
 
-  // Dark Mode Colors — Pistisai warm dark (refined 2026-07)
-  static const Color darkBackgroundMain = Color(0xFF181A20);
+  // Dark surfaces follow the active brand background and text.
+  static Color get darkBackgroundMain => Brand.current.background;
   static const Color darkBackgroundCard = Color(0xFF1E2230);
-  static const Color darkTextColor = Color(0xFFF5E6C8);
+  static Color get darkTextColor => Brand.current.textColor;
   static const Color darkTextColorLight = Color(0xFFB8A88A);
   static const Color darkBorderColor = Color(0xFF2A2A3E);
-  static const Color darkGlassBackground = Color(0x33FFD700);
-  static const Color darkGlassBorder = Color(0x26FFD700);
+  static Color get darkGlassBackground => Brand.current.primary.withAlpha(0x33);
+  static Color get darkGlassBorder => Brand.current.primary.withAlpha(0x26);
 
   // Light Mode Colors
   static const Color lightBackgroundMain = Colors.white;
@@ -332,7 +333,7 @@ class ThemeConfig {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      extensions: const [
+      extensions: [
         AppSpacingTheme.standard,
         AppColorsTheme(
           primary: primaryColor,
@@ -387,7 +388,7 @@ class ThemeConfig {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      extensions: const [
+      extensions: [
         AppSpacingTheme.standard,
         AppColorsTheme(
           primary: primaryColor,
@@ -512,7 +513,7 @@ class ThemeConfig {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadiusS),
-        borderSide: const BorderSide(color: primaryColor, width: 2),
+        borderSide: BorderSide(color: primaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadiusS),
@@ -549,7 +550,7 @@ class ThemeConfig {
         fontWeight: FontWeight.w600,
         color: Colors.white,
       ),
-      contentTextStyle: const TextStyle(
+      contentTextStyle: TextStyle(
         fontSize: 16,
         color: darkTextColor,
         height: 1.5,
@@ -560,7 +561,7 @@ class ThemeConfig {
   static SnackBarThemeData _buildDarkSnackBarTheme() {
     return SnackBarThemeData(
       backgroundColor: darkBackgroundCard,
-      contentTextStyle: const TextStyle(color: darkTextColor),
+      contentTextStyle: TextStyle(color: darkTextColor),
       actionTextColor: primaryColor,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
@@ -619,7 +620,7 @@ class ThemeConfig {
   }
 
   static ProgressIndicatorThemeData _buildDarkProgressIndicatorTheme() {
-    return const ProgressIndicatorThemeData(
+    return ProgressIndicatorThemeData(
       color: primaryColor,
       linearTrackColor: darkBackgroundCard,
       circularTrackColor: darkBackgroundCard,
@@ -639,7 +640,7 @@ class ThemeConfig {
           width: 1,
         ),
       ),
-      textStyle: const TextStyle(color: darkTextColor),
+      textStyle: TextStyle(color: darkTextColor),
     );
   }
 
@@ -744,7 +745,7 @@ class ThemeConfig {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadiusS),
-        borderSide: const BorderSide(color: primaryColor, width: 2),
+        borderSide: BorderSide(color: primaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadiusS),

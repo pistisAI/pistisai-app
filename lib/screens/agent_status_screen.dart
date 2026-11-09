@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../brand/brand_copy.dart';
 import '../../services/agent_status_service.dart';
 import '../../components/agent_status_widget.dart';
 import '../../components/app_logo.dart';
@@ -89,7 +90,7 @@ class _AgentStatusScreenState extends State<AgentStatusScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Pistisai Agent Monitor',
+                    BrandCopy.agentMonitorTitle,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),

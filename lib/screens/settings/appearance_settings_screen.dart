@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../brand/brand.dart';
 import '../../config/theme.dart';
 import '../../../services/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -78,7 +79,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                   child: ListTile(
                     leading: const Icon(Icons.color_lens),
                     title: const Text('Accent Color'),
-                    subtitle: const Text('Pistisai gold'),
+                    subtitle: Text(Brand.current.accentLabel),
                     trailing: Container(
                       width: 24,
                       height: 24,
