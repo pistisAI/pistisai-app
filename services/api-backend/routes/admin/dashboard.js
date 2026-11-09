@@ -22,6 +22,30 @@ import logger from '../../logger.js';
 import { getPool, closePool } from '../../database/db-pool.js';
 import { adminReadOnlyLimiter } from '../../middleware/admin-rate-limiter.js';
 
+
+function readTierPricing() {
+  const premiumRaw = process.env.PISTISAI_PRICE_PREMIUM;
+  const enterpriseRaw = process.env.PISTISAI_PRICE_ENTERPRISE;
+  if (premiumRaw === undefined || premiumRaw === '' ||
+      enterpriseRaw === undefined || enterpriseRaw === '') {
+    const err = new Error(
+      'PISTISAI_PRICE_PREMIUM and PISTISAI_PRICE_ENTERPRISE must be set'
+    );
+    err.code = 'TIER_PRICES_UNCONFIGURED';
+    throw err;
+  }
+  const premium = Number(premiumRaw);
+  const enterprise = Number(enterpriseRaw);
+  if (!Number.isFinite(premium) || !Number.isFinite(enterprise) ||
+      premium < 0 || enterprise < 0) {
+    const err = new Error('PISTISAI_PRICE_PREMIUM/ENTERPRISE must be non-negative numbers');
+    err.code = 'TIER_PRICES_INVALID';
+    throw err;
+  }
+  return { free: 0, premium, enterprise };
+}
+
+
 const router = express.Router();
 
 /**
@@ -119,11 +143,7 @@ router.get('/metrics', adminReadOnlyLimiter, adminAuth(), async (req, res) => {
     });
 
     // 5. Calculate monthly recurring revenue (MRR)
-    const tierPricing = {
-      free: 0,
-      premium: Number(process.env.PISTISAI_PRICE_PREMIUM) || 0,
-      enterprise: Number(process.env.PISTISAI_PRICE_ENTERPRISE) || 0,
-    };
+    const tierPricing = readTierPricing();
 
     const mrr =
       tierDistribution.premium * tierPricing.premium +

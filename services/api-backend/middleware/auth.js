@@ -53,7 +53,7 @@ export const authenticateJWT = async (req, res, next) => {
             ? `https://${CF_ACCESS_TEAM_DOMAIN}`
             : 'cloudflare-access',
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: process.env.CF_ACCESS_AUD || 'pistisai-dev-bypass',
           email: 'dev@pistisai.app',
           name: 'Dev User',
           nickname: 'dev-user',
@@ -245,7 +245,7 @@ export const optionalAuth = async (req, res, next) => {
             ? `https://${CF_ACCESS_TEAM_DOMAIN}`
             : 'cloudflare-access',
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: process.env.CF_ACCESS_AUD || 'pistisai-dev-bypass',
           email: 'dev@pistisai.app',
           name: 'Dev User',
           nickname: 'dev-user',

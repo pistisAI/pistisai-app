@@ -20,6 +20,30 @@ import { logAdminAction } from '../../utils/audit-logger.js';
 import logger from '../../logger.js';
 import { getPool, closePool } from '../../database/db-pool.js';
 import {
+
+
+function readTierPricing() {
+  const premiumRaw = process.env.PISTISAI_PRICE_PREMIUM;
+  const enterpriseRaw = process.env.PISTISAI_PRICE_ENTERPRISE;
+  if (premiumRaw === undefined || premiumRaw === '' ||
+      enterpriseRaw === undefined || enterpriseRaw === '') {
+    const err = new Error(
+      'PISTISAI_PRICE_PREMIUM and PISTISAI_PRICE_ENTERPRISE must be set'
+    );
+    err.code = 'TIER_PRICES_UNCONFIGURED';
+    throw err;
+  }
+  const premium = Number(premiumRaw);
+  const enterprise = Number(enterpriseRaw);
+  if (!Number.isFinite(premium) || !Number.isFinite(enterprise) ||
+      premium < 0 || enterprise < 0) {
+    const err = new Error('PISTISAI_PRICE_PREMIUM/ENTERPRISE must be non-negative numbers');
+    err.code = 'TIER_PRICES_INVALID';
+    throw err;
+  }
+  return { free: 0, premium, enterprise };
+}
+
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
@@ -509,11 +533,7 @@ router.patch(
 
       // Calculate prorated charge for upgrades
       let proratedCharge = 0;
-      const tierPricing = {
-        free: 0,
-        premium: Number(process.env.PISTISAI_PRICE_PREMIUM) || 0,
-        enterprise: Number(process.env.PISTISAI_PRICE_ENTERPRISE) || 0,
-      };
+      const tierPricing = readTierPricing();
 
       if (tierPricing[newTier] > tierPricing[previousTier]) {
         // Upgrade - calculate prorated charge
