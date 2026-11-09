@@ -29,10 +29,10 @@ CI pins Flutter via exact `environment.flutter` in root `pubspec.yaml` (currentl
 
 ```bash
 # Flutter — CI scopes analysis to lib/ only; gate suite is the script, not bare flutter test
-bash tool/brand.sh iacle
+bash tool/brand.sh pistisai
 flutter analyze lib/
 bash scripts/ci/flutter_security_basic_tests.sh   # CI gate: smoke/config/models/utils/helpers + selected services/widgets/integration
-flutter build web --release --no-web-resources-cdn --dart-define=BRAND=iacle  # --no-web-resources-cdn matches CI
+flutter build web --release --no-web-resources-cdn --dart-define=BRAND=pistisai  # --no-web-resources-cdn matches CI
 dart run build_runner build --delete-conflicting-outputs  # after Drift schema/query changes only
 
 # Backend — root npm test is api-backend security suite only, not a full suite

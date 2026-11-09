@@ -183,8 +183,6 @@ flutter:
     - brand/pistisai/
     - brand/example/
     - brand/example/assets/
-    - brand/iacle/
-    - brand/iacle/assets/
     - assets/pistisai/hermes/plugins/pistisai/
     - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/
