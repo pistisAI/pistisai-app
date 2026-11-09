@@ -164,14 +164,15 @@ class MobileConnectionService extends ChangeNotifier {
       );
     }
 
-    final hermesUrl = 'http://$host:$hermesPort';
-    final hubUri = Uri.parse('http://$host:$hubPort${AppConfig.hubPath}');
+    // Non-primary clients talk to the desktop hub (router), never Hermes :8642.
+    final hubBaseUrl = 'http://$host:$hubPort';
+    final hubUri = Uri.parse('$hubBaseUrl${AppConfig.hubPath}');
     try {
       final hubResponse = await _get(hubUri);
       if (hubResponse.statusCode == 200 && _isPrimaryHub(hubResponse.body)) {
         return MobileHubProbeResult(
           success: true,
-          hermesUrl: hermesUrl,
+          hermesUrl: hubBaseUrl,
           foundPrimaryHub: true,
           message: 'Connected to the primary desktop hub.',
         );
@@ -180,23 +181,9 @@ class MobileConnectionService extends ChangeNotifier {
       debugPrint('[MobileConnection] Hub probe failed: $e');
     }
 
-    final healthUri = Uri.parse('$hermesUrl/health');
-    try {
-      final health = await _get(healthUri);
-      if (health.statusCode == 200) {
-        return MobileHubProbeResult(
-          success: true,
-          hermesUrl: hermesUrl,
-          message: 'Reached Hermes on the desktop through Tailscale.',
-        );
-      }
-    } catch (e) {
-      debugPrint('[MobileConnection] Hermes probe failed: $e');
-    }
-
     return MobileHubProbeResult(
       success: false,
-      hermesUrl: hermesUrl,
+      hermesUrl: hubBaseUrl,
       message: BrandCopy.hubUnreachable(host),
     );
   }

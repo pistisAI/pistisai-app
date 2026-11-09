@@ -199,6 +199,8 @@ void main() {
       expect(body, containsPair('role', 'primary_hub'));
       expect(body, containsPair('product', 'Pistisai'));
       expect(body, containsPair('hermesPort', 8642));
+      expect(body, containsPair('clientsMustUseHub', true));
+      expect(body, containsPair('routerPort', baseUrl.port));
     });
   });
 }

@@ -117,15 +117,15 @@ void main() {
 
       expect(result.success, isTrue);
       expect(result.foundPrimaryHub, isTrue);
-      expect(result.hermesUrl, 'http://100.64.1.20:8642');
-      expect(hermes.baseUrl, 'http://100.64.1.20:8642');
-      expect(await settings.getHermesUrl(), 'http://100.64.1.20:8642');
+      expect(result.hermesUrl, 'http://100.64.1.20:1337');
+      expect(hermes.baseUrl, 'http://100.64.1.20:1337');
+      expect(await settings.getHermesUrl(), 'http://100.64.1.20:1337');
       expect(service.mode, MobileConnectionMode.tailscaleHub);
       expect(await service.shouldShowConnectionScreen(), isFalse);
       hermes.dispose();
     });
 
-    test('falls back to Hermes /health when the hub path is absent', () async {
+    test('refuses direct Hermes when the desktop hub path is absent', () async {
       final service = MobileConnectionService(
         httpGet: (uri) async {
           if (uri.path == '/health') {
@@ -136,9 +136,9 @@ void main() {
       );
 
       final result = await service.probeHub('pc.tailnet.ts.net');
-      expect(result.success, isTrue);
+      expect(result.success, isFalse);
       expect(result.foundPrimaryHub, isFalse);
-      expect(result.hermesUrl, 'http://pc.tailnet.ts.net:8642');
+      expect(result.hermesUrl, 'http://pc.tailnet.ts.net:1337');
     });
 
     test('does not probe a non-tailnet host even if it answers /health',
