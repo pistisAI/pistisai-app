@@ -29,10 +29,10 @@ This document outlines the comprehensive implementation plan for integrating Clo
 ```bash
 # Create Kubernetes secret for Cloudflare API credentials
 kubectl create secret generic cloudflare-api-credentials \
-  --namespace=IAClé \
+  --namespace=pistisai \
   --from-literal=email=ops@example.com \
-  --from-literal=api-key=abc12d491e2bc24a60e9e276be8d5b1af62bf \
-  --from-literal=origin-ca=v1.0-480cad9ef0df63ec95db4bef-cdaf75ed44dcc34cab97d21f9609c8616e1343c60fbec022bd0d5d4bd33b6c872b79db387f6833c667f1c1399ef50afbc6f01fccbdfcfd68e11298d8fa15965037a99d8be8791e7aba
+  --from-literal=api-key="${CLOUDFLARE_API_KEY}" \
+  --from-literal=origin-ca="${CLOUDFLARE_ORIGIN_CA_KEY}"
 ```
 
 #### 1.2 DNS Automation Token Creation
