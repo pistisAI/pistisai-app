@@ -87,4 +87,15 @@ void main() {
     expect(find.text('Ouvrir la configuration'), findsOneWidget);
     expect(find.text('LLM Provider Settings'), findsNothing);
   });
+
+  test('model counts use each language plural rules', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.daemonModelCount(1), '1 model');
+    expect(en.daemonModelCount(0), '0 models');
+    expect(en.daemonModelCount(3), '3 models');
+    expect(fr.daemonModelCount(0), '0 modèle');
+    expect(fr.daemonModelCount(1), '1 modèle');
+    expect(fr.daemonModelCount(3), '3 modèles');
+  });
 }

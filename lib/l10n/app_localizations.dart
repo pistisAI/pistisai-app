@@ -499,6 +499,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'runtime available'**
   String get meshRuntimeAvailable;
+
+  /// No description provided for @commonConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get commonConnected;
+
+  /// No description provided for @commonDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get commonDisconnected;
+
+  /// No description provided for @connectionSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Settings'**
+  String get connectionSettingsTitle;
+
+  /// No description provided for @connectionHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection'**
+  String get connectionHeading;
+
+  /// No description provided for @connectionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage tunnel and daemon connections.'**
+  String get connectionDescription;
+
+  /// No description provided for @connectionDaemonSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Daemon Settings'**
+  String get connectionDaemonSettings;
+
+  /// No description provided for @connectionDaemonSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure system tray daemon'**
+  String get connectionDaemonSubtitle;
+
+  /// No description provided for @connectionDeviceMeshSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered devices and cloud presence'**
+  String get connectionDeviceMeshSubtitle;
+
+  /// No description provided for @connectionStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Status'**
+  String get connectionStatusTitle;
+
+  /// No description provided for @connectionStatusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View current connection status'**
+  String get connectionStatusSubtitle;
+
+  /// No description provided for @connectionRerunWizard.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-run Setup Wizard'**
+  String get connectionRerunWizard;
+
+  /// No description provided for @connectionRerunWizardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure gateway connection again'**
+  String get connectionRerunWizardSubtitle;
+
+  /// No description provided for @connectionRerunWizardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will clear your saved setup configuration and restart the setup wizard. You will need to reconfigure your gateway connection.\n\nContinue?'**
+  String get connectionRerunWizardBody;
+
+  /// No description provided for @connectionClearAndRerun.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear & Re-run'**
+  String get connectionClearAndRerun;
+
+  /// No description provided for @connectionClearFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to clear setup data: {error}'**
+  String connectionClearFailed(String error);
+
+  /// No description provided for @daemonSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System Tray Daemon Settings'**
+  String get daemonSettingsTitle;
+
+  /// No description provided for @daemonHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'System Tray Configuration'**
+  String get daemonHeading;
+
+  /// No description provided for @daemonDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure the system tray daemon behavior and appearance'**
+  String get daemonDescription;
+
+  /// No description provided for @daemonSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Daemon settings saved successfully'**
+  String get daemonSaved;
+
+  /// No description provided for @daemonSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save settings: {error}'**
+  String daemonSaveFailed(String error);
+
+  /// No description provided for @daemonRestarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Restarting system tray daemon...'**
+  String get daemonRestarting;
+
+  /// No description provided for @daemonRestarted.
+  ///
+  /// In en, this message translates to:
+  /// **'System tray daemon restarted successfully'**
+  String get daemonRestarted;
+
+  /// No description provided for @daemonRestartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to restart daemon: {error}'**
+  String daemonRestartFailed(String error);
+
+  /// No description provided for @daemonRealtimeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time Connection Status'**
+  String get daemonRealtimeStatus;
+
+  /// No description provided for @daemonConnectionType.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Type'**
+  String get daemonConnectionType;
+
+  /// No description provided for @daemonVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get daemonVersion;
+
+  /// No description provided for @daemonAvailableModels.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Models'**
+  String get daemonAvailableModels;
+
+  /// No description provided for @daemonModelCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 model} other{{count} models}}'**
+  String daemonModelCount(int count);
+
+  /// No description provided for @daemonError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get daemonError;
+
+  /// No description provided for @daemonLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: {time}'**
+  String daemonLastUpdated(String time);
+
+  /// No description provided for @daemonLoadingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading connection status...'**
+  String get daemonLoadingStatus;
+
+  /// No description provided for @daemonEnableTray.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable System Tray'**
+  String get daemonEnableTray;
+
+  /// No description provided for @daemonStartMinimized.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Minimized'**
+  String get daemonStartMinimized;
+
+  /// No description provided for @daemonStartMinimizedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start application minimized to system tray'**
+  String get daemonStartMinimizedSubtitle;
+
+  /// No description provided for @daemonEnableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notifications'**
+  String get daemonEnableNotifications;
+
+  /// No description provided for @daemonEnableNotificationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show system notifications for important events'**
+  String get daemonEnableNotificationsSubtitle;
+
+  /// No description provided for @daemonAutoStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-start Daemon'**
+  String get daemonAutoStart;
+
+  /// No description provided for @daemonAutoStartSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically start tray daemon with system'**
+  String get daemonAutoStartSubtitle;
+
+  /// No description provided for @daemonTrayIconTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Tray Icon Theme'**
+  String get daemonTrayIconTheme;
+
+  /// No description provided for @daemonTrayIconThemeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose icon style for system tray'**
+  String get daemonTrayIconThemeSubtitle;
+
+  /// No description provided for @themeMonochrome.
+  ///
+  /// In en, this message translates to:
+  /// **'Monochrome'**
+  String get themeMonochrome;
+
+  /// No description provided for @daemonConnectionTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Timeout'**
+  String get daemonConnectionTimeout;
+
+  /// No description provided for @daemonConnectionTimeoutSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeout for daemon connections (seconds)'**
+  String get daemonConnectionTimeoutSubtitle;
+
+  /// No description provided for @daemonHealthCheckInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Check Interval'**
+  String get daemonHealthCheckInterval;
+
+  /// No description provided for @daemonHealthCheckIntervalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Interval for daemon health checks (seconds)'**
+  String get daemonHealthCheckIntervalSubtitle;
+
+  /// No description provided for @daemonActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get daemonActions;
+
+  /// No description provided for @daemonSaveSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Settings'**
+  String get daemonSaveSettings;
+
+  /// No description provided for @daemonRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart Daemon'**
+  String get daemonRestart;
 }
 
 class _AppLocalizationsDelegate

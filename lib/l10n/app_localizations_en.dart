@@ -231,4 +231,173 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get meshRuntimeAvailable => 'runtime available';
+
+  @override
+  String get commonConnected => 'Connected';
+
+  @override
+  String get commonDisconnected => 'Disconnected';
+
+  @override
+  String get connectionSettingsTitle => 'Connection Settings';
+
+  @override
+  String get connectionHeading => 'Connection';
+
+  @override
+  String get connectionDescription => 'Manage tunnel and daemon connections.';
+
+  @override
+  String get connectionDaemonSettings => 'Daemon Settings';
+
+  @override
+  String get connectionDaemonSubtitle => 'Configure system tray daemon';
+
+  @override
+  String get connectionDeviceMeshSubtitle =>
+      'Registered devices and cloud presence';
+
+  @override
+  String get connectionStatusTitle => 'Connection Status';
+
+  @override
+  String get connectionStatusSubtitle => 'View current connection status';
+
+  @override
+  String get connectionRerunWizard => 'Re-run Setup Wizard';
+
+  @override
+  String get connectionRerunWizardSubtitle =>
+      'Configure gateway connection again';
+
+  @override
+  String get connectionRerunWizardBody =>
+      'This will clear your saved setup configuration and restart the setup wizard. You will need to reconfigure your gateway connection.\n\nContinue?';
+
+  @override
+  String get connectionClearAndRerun => 'Clear & Re-run';
+
+  @override
+  String connectionClearFailed(String error) {
+    return 'Failed to clear setup data: $error';
+  }
+
+  @override
+  String get daemonSettingsTitle => 'System Tray Daemon Settings';
+
+  @override
+  String get daemonHeading => 'System Tray Configuration';
+
+  @override
+  String get daemonDescription =>
+      'Configure the system tray daemon behavior and appearance';
+
+  @override
+  String get daemonSaved => 'Daemon settings saved successfully';
+
+  @override
+  String daemonSaveFailed(String error) {
+    return 'Failed to save settings: $error';
+  }
+
+  @override
+  String get daemonRestarting => 'Restarting system tray daemon...';
+
+  @override
+  String get daemonRestarted => 'System tray daemon restarted successfully';
+
+  @override
+  String daemonRestartFailed(String error) {
+    return 'Failed to restart daemon: $error';
+  }
+
+  @override
+  String get daemonRealtimeStatus => 'Real-time Connection Status';
+
+  @override
+  String get daemonConnectionType => 'Connection Type';
+
+  @override
+  String get daemonVersion => 'Version';
+
+  @override
+  String get daemonAvailableModels => 'Available Models';
+
+  @override
+  String daemonModelCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count models',
+      one: '1 model',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get daemonError => 'Error';
+
+  @override
+  String daemonLastUpdated(String time) {
+    return 'Last updated: $time';
+  }
+
+  @override
+  String get daemonLoadingStatus => 'Loading connection status...';
+
+  @override
+  String get daemonEnableTray => 'Enable System Tray';
+
+  @override
+  String get daemonStartMinimized => 'Start Minimized';
+
+  @override
+  String get daemonStartMinimizedSubtitle =>
+      'Start application minimized to system tray';
+
+  @override
+  String get daemonEnableNotifications => 'Enable Notifications';
+
+  @override
+  String get daemonEnableNotificationsSubtitle =>
+      'Show system notifications for important events';
+
+  @override
+  String get daemonAutoStart => 'Auto-start Daemon';
+
+  @override
+  String get daemonAutoStartSubtitle =>
+      'Automatically start tray daemon with system';
+
+  @override
+  String get daemonTrayIconTheme => 'Tray Icon Theme';
+
+  @override
+  String get daemonTrayIconThemeSubtitle => 'Choose icon style for system tray';
+
+  @override
+  String get themeMonochrome => 'Monochrome';
+
+  @override
+  String get daemonConnectionTimeout => 'Connection Timeout';
+
+  @override
+  String get daemonConnectionTimeoutSubtitle =>
+      'Timeout for daemon connections (seconds)';
+
+  @override
+  String get daemonHealthCheckInterval => 'Health Check Interval';
+
+  @override
+  String get daemonHealthCheckIntervalSubtitle =>
+      'Interval for daemon health checks (seconds)';
+
+  @override
+  String get daemonActions => 'Actions';
+
+  @override
+  String get daemonSaveSettings => 'Save Settings';
+
+  @override
+  String get daemonRestart => 'Restart Daemon';
 }

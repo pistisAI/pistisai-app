@@ -233,4 +233,178 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get meshRuntimeAvailable => 'environnement d\'exécution disponible';
+
+  @override
+  String get commonConnected => 'Connecté';
+
+  @override
+  String get commonDisconnected => 'Déconnecté';
+
+  @override
+  String get connectionSettingsTitle => 'Paramètres de connexion';
+
+  @override
+  String get connectionHeading => 'Connexion';
+
+  @override
+  String get connectionDescription =>
+      'Gérer les connexions du tunnel et du service d\'arrière-plan.';
+
+  @override
+  String get connectionDaemonSettings => 'Service d\'arrière-plan';
+
+  @override
+  String get connectionDaemonSubtitle =>
+      'Configurer le service de la zone de notification';
+
+  @override
+  String get connectionDeviceMeshSubtitle =>
+      'Appareils inscrits et présence infonuagique';
+
+  @override
+  String get connectionStatusTitle => 'État de la connexion';
+
+  @override
+  String get connectionStatusSubtitle => 'Voir l\'état actuel de la connexion';
+
+  @override
+  String get connectionRerunWizard => 'Relancer l\'assistant de configuration';
+
+  @override
+  String get connectionRerunWizardSubtitle =>
+      'Reconfigurer la connexion à la passerelle';
+
+  @override
+  String get connectionRerunWizardBody =>
+      'Cela effacera votre configuration enregistrée et relancera l\'assistant de configuration. Vous devrez reconfigurer la connexion à votre passerelle.\n\nContinuer?';
+
+  @override
+  String get connectionClearAndRerun => 'Effacer et relancer';
+
+  @override
+  String connectionClearFailed(String error) {
+    return 'Impossible d\'effacer les données de configuration : $error';
+  }
+
+  @override
+  String get daemonSettingsTitle => 'Service de la zone de notification';
+
+  @override
+  String get daemonHeading => 'Configuration de la zone de notification';
+
+  @override
+  String get daemonDescription =>
+      'Configurer le comportement et l\'apparence du service de la zone de notification';
+
+  @override
+  String get daemonSaved => 'Paramètres du service enregistrés avec succès';
+
+  @override
+  String daemonSaveFailed(String error) {
+    return 'Impossible d\'enregistrer les paramètres : $error';
+  }
+
+  @override
+  String get daemonRestarting =>
+      'Redémarrage du service de la zone de notification…';
+
+  @override
+  String get daemonRestarted =>
+      'Service de la zone de notification redémarré avec succès';
+
+  @override
+  String daemonRestartFailed(String error) {
+    return 'Impossible de redémarrer le service : $error';
+  }
+
+  @override
+  String get daemonRealtimeStatus => 'État de la connexion en temps réel';
+
+  @override
+  String get daemonConnectionType => 'Type de connexion';
+
+  @override
+  String get daemonVersion => 'Version';
+
+  @override
+  String get daemonAvailableModels => 'Modèles disponibles';
+
+  @override
+  String daemonModelCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modèles',
+      one: '$count modèle',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get daemonError => 'Erreur';
+
+  @override
+  String daemonLastUpdated(String time) {
+    return 'Dernière mise à jour : $time';
+  }
+
+  @override
+  String get daemonLoadingStatus => 'Chargement de l\'état de la connexion…';
+
+  @override
+  String get daemonEnableTray => 'Activer la zone de notification';
+
+  @override
+  String get daemonStartMinimized => 'Démarrer réduit';
+
+  @override
+  String get daemonStartMinimizedSubtitle =>
+      'Démarrer l\'application réduite dans la zone de notification';
+
+  @override
+  String get daemonEnableNotifications => 'Activer les notifications';
+
+  @override
+  String get daemonEnableNotificationsSubtitle =>
+      'Afficher des notifications système pour les événements importants';
+
+  @override
+  String get daemonAutoStart => 'Démarrage automatique du service';
+
+  @override
+  String get daemonAutoStartSubtitle =>
+      'Démarrer automatiquement le service avec l\'ordinateur';
+
+  @override
+  String get daemonTrayIconTheme => 'Style de l\'icône';
+
+  @override
+  String get daemonTrayIconThemeSubtitle =>
+      'Choisir le style de l\'icône dans la zone de notification';
+
+  @override
+  String get themeMonochrome => 'Monochrome';
+
+  @override
+  String get daemonConnectionTimeout => 'Délai de connexion';
+
+  @override
+  String get daemonConnectionTimeoutSubtitle =>
+      'Délai d\'attente des connexions au service (secondes)';
+
+  @override
+  String get daemonHealthCheckInterval => 'Intervalle de vérification';
+
+  @override
+  String get daemonHealthCheckIntervalSubtitle =>
+      'Intervalle entre les vérifications de l\'état du service (secondes)';
+
+  @override
+  String get daemonActions => 'Actions';
+
+  @override
+  String get daemonSaveSettings => 'Enregistrer les paramètres';
+
+  @override
+  String get daemonRestart => 'Redémarrer le service';
 }

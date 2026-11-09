@@ -158,5 +158,88 @@
       }
     }
   },
-  "meshRuntimeAvailable": "runtime available"
+  "meshRuntimeAvailable": "runtime available",
+  "commonConnected": "Connected",
+  "commonDisconnected": "Disconnected",
+  "connectionSettingsTitle": "Connection Settings",
+  "connectionHeading": "Connection",
+  "connectionDescription": "Manage tunnel and daemon connections.",
+  "connectionDaemonSettings": "Daemon Settings",
+  "connectionDaemonSubtitle": "Configure system tray daemon",
+  "connectionDeviceMeshSubtitle": "Registered devices and cloud presence",
+  "connectionStatusTitle": "Connection Status",
+  "connectionStatusSubtitle": "View current connection status",
+  "connectionRerunWizard": "Re-run Setup Wizard",
+  "connectionRerunWizardSubtitle": "Configure gateway connection again",
+  "connectionRerunWizardBody": "This will clear your saved setup configuration and restart the setup wizard. You will need to reconfigure your gateway connection.\n\nContinue?",
+  "connectionClearAndRerun": "Clear & Re-run",
+  "connectionClearFailed": "Failed to clear setup data: {error}",
+  "@connectionClearFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonSettingsTitle": "System Tray Daemon Settings",
+  "daemonHeading": "System Tray Configuration",
+  "daemonDescription": "Configure the system tray daemon behavior and appearance",
+  "daemonSaved": "Daemon settings saved successfully",
+  "daemonSaveFailed": "Failed to save settings: {error}",
+  "@daemonSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonRestarting": "Restarting system tray daemon...",
+  "daemonRestarted": "System tray daemon restarted successfully",
+  "daemonRestartFailed": "Failed to restart daemon: {error}",
+  "@daemonRestartFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonRealtimeStatus": "Real-time Connection Status",
+  "daemonConnectionType": "Connection Type",
+  "daemonVersion": "Version",
+  "daemonAvailableModels": "Available Models",
+  "daemonModelCount": "{count, plural, =1{1 model} other{{count} models}}",
+  "@daemonModelCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daemonError": "Error",
+  "daemonLastUpdated": "Last updated: {time}",
+  "@daemonLastUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonLoadingStatus": "Loading connection status...",
+  "daemonEnableTray": "Enable System Tray",
+  "daemonStartMinimized": "Start Minimized",
+  "daemonStartMinimizedSubtitle": "Start application minimized to system tray",
+  "daemonEnableNotifications": "Enable Notifications",
+  "daemonEnableNotificationsSubtitle": "Show system notifications for important events",
+  "daemonAutoStart": "Auto-start Daemon",
+  "daemonAutoStartSubtitle": "Automatically start tray daemon with system",
+  "daemonTrayIconTheme": "Tray Icon Theme",
+  "daemonTrayIconThemeSubtitle": "Choose icon style for system tray",
+  "themeMonochrome": "Monochrome",
+  "daemonConnectionTimeout": "Connection Timeout",
+  "daemonConnectionTimeoutSubtitle": "Timeout for daemon connections (seconds)",
+  "daemonHealthCheckInterval": "Health Check Interval",
+  "daemonHealthCheckIntervalSubtitle": "Interval for daemon health checks (seconds)",
+  "daemonActions": "Actions",
+  "daemonSaveSettings": "Save Settings",
+  "daemonRestart": "Restart Daemon"
 }
