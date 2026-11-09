@@ -8,6 +8,7 @@ import 'package:provider/single_child_widget.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 
 import 'package:pistisai/bootstrap/bootstrapper.dart';
 import 'package:pistisai/brand/brand.dart';
@@ -134,6 +135,17 @@ Future<void> _registerWindowsUrlScheme() async {
 }
 
 /// Run the app with Sentry error tracking enabled.
+/// Whether the user allowed crash reports. Read on each event (cheap, cached
+/// by SharedPreferences) so turning the setting off takes effect at once.
+Future<bool> _crashReportingAllowed() async {
+  try {
+    return await SettingsPreferenceService().isCrashReportingEnabled();
+  } catch (_) {
+    // If the setting cannot be read, send nothing.
+    return false;
+  }
+}
+
 /// Sentry DSN is configured via --dart-define=SENTRY_DSN=... at build time.
 Future<void> _runAppWithSentry() async {
   debugPrint('[Main] Running app with Sentry');
@@ -144,8 +156,16 @@ Future<void> _runAppWithSentry() async {
       options.environment = AppConfig.sentryEnvironment;
       // Capture full stack traces for all errors, not just catch-block exceptions.
       options.attachStacktrace = true;
-      // Balanced sampling: real errors always reported, traces sampled at 10%.
-      options.tracesSampleRate = 0.1;
+      // No performance traces: they carry request URLs and timings off the
+      // user's network and are not needed for crash diagnosis.
+      options.tracesSampleRate = 0.0;
+      // Never attach IP address, user or request bodies.
+      options.sendDefaultPii = false;
+      // Breadcrumbs can hold chat text, file paths and URLs.
+      options.maxBreadcrumbs = 0;
+      // Honour the user's crash-reporting choice (opt-in, off by default).
+      options.beforeSend = (event, hint) async =>
+          await _crashReportingAllowed() ? event : null;
     },
     // Start the app inside Sentry's error-tracking zone once the SDK is live.
     appRunner: _runAppCommon,
