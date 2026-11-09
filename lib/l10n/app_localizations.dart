@@ -787,6 +787,492 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Restart Daemon'**
   String get daemonRestart;
+
+  /// No description provided for @commonRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get commonRefresh;
+
+  /// No description provided for @commonClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get commonClose;
+
+  /// No description provided for @commonClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get commonClear;
+
+  /// No description provided for @commonErrorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String commonErrorDetails(String error);
+
+  /// No description provided for @nodesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nodes'**
+  String get nodesTitle;
+
+  /// No description provided for @nodesAgentRuntimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Runtimes'**
+  String get nodesAgentRuntimes;
+
+  /// No description provided for @nodesNoAgentRuntimes.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent runtimes discovered'**
+  String get nodesNoAgentRuntimes;
+
+  /// No description provided for @nodesSupportProviders.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Providers'**
+  String get nodesSupportProviders;
+
+  /// No description provided for @nodesNoSupportProviders.
+  ///
+  /// In en, this message translates to:
+  /// **'No support providers discovered'**
+  String get nodesNoSupportProviders;
+
+  /// No description provided for @nodesTailscaleDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Tailscale Devices'**
+  String get nodesTailscaleDevices;
+
+  /// No description provided for @nodesNoTailscaleDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No Tailscale devices discovered'**
+  String get nodesNoTailscaleDevices;
+
+  /// No description provided for @nodesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load discovery data: {error}'**
+  String nodesLoadError(String error);
+
+  /// No description provided for @nodesSelectedRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent runtime: {name} ({version})'**
+  String nodesSelectedRuntime(String name, String version);
+
+  /// No description provided for @nodesVersionUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown'**
+  String get nodesVersionUnknown;
+
+  /// No description provided for @nodesNoRuntimeSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent runtime selected'**
+  String get nodesNoRuntimeSelected;
+
+  /// No description provided for @channelDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel Details'**
+  String get channelDetailsTitle;
+
+  /// No description provided for @channelNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel not found'**
+  String get channelNotFound;
+
+  /// No description provided for @channelBadgeNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get channelBadgeNew;
+
+  /// No description provided for @channelBadgeRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get channelBadgeRead;
+
+  /// No description provided for @channelStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get channelStatistics;
+
+  /// No description provided for @channelMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get channelMessages;
+
+  /// No description provided for @channelPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get channelPlatform;
+
+  /// No description provided for @channelPlatformUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get channelPlatformUnknown;
+
+  /// No description provided for @channelLastActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Activity'**
+  String get channelLastActivity;
+
+  /// No description provided for @channelNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get channelNever;
+
+  /// No description provided for @channelControls.
+  ///
+  /// In en, this message translates to:
+  /// **'Controls'**
+  String get channelControls;
+
+  /// No description provided for @channelStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Channel'**
+  String get channelStart;
+
+  /// No description provided for @channelStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Channel'**
+  String get channelStop;
+
+  /// No description provided for @channelReconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect'**
+  String get channelReconnect;
+
+  /// No description provided for @channelViewLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'View Logs'**
+  String get channelViewLogs;
+
+  /// No description provided for @channelActionPerformed.
+  ///
+  /// In en, this message translates to:
+  /// **'Action {action} performed for channel {channelId}'**
+  String channelActionPerformed(String action, String channelId);
+
+  /// No description provided for @channelJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get channelJustNow;
+
+  /// No description provided for @channelMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String channelMinutesAgo(int minutes);
+
+  /// No description provided for @channelHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String channelHoursAgo(int hours);
+
+  /// No description provided for @channelDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String channelDaysAgo(int days);
+
+  /// No description provided for @usageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage'**
+  String get usageTitle;
+
+  /// No description provided for @usageToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get usageToday;
+
+  /// No description provided for @usageWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get usageWeek;
+
+  /// No description provided for @usageMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get usageMonth;
+
+  /// No description provided for @usageActiveConcurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Concurrency'**
+  String get usageActiveConcurrency;
+
+  /// No description provided for @usageOfLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'of {limit}'**
+  String usageOfLimit(int limit);
+
+  /// No description provided for @usageConcurrencySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Concurrent requests in flight'**
+  String get usageConcurrencySubtitle;
+
+  /// No description provided for @usageConcurrencyUtilization.
+  ///
+  /// In en, this message translates to:
+  /// **'Concurrency utilization'**
+  String get usageConcurrencyUtilization;
+
+  /// No description provided for @usageRequestRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Rate'**
+  String get usageRequestRate;
+
+  /// No description provided for @usageRequestsPerMinuteUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'req/min'**
+  String get usageRequestsPerMinuteUnit;
+
+  /// No description provided for @usageRequestRateSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests per minute across models'**
+  String get usageRequestRateSubtitle;
+
+  /// No description provided for @usageRpmUtilization.
+  ///
+  /// In en, this message translates to:
+  /// **'RPM utilization'**
+  String get usageRpmUtilization;
+
+  /// No description provided for @usageTokenRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Token Rate'**
+  String get usageTokenRate;
+
+  /// No description provided for @usageTokensPerMinuteUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'tok/min'**
+  String get usageTokensPerMinuteUnit;
+
+  /// No description provided for @usageTokenRateSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokens per minute across models'**
+  String get usageTokenRateSubtitle;
+
+  /// No description provided for @usageTpmUtilization.
+  ///
+  /// In en, this message translates to:
+  /// **'TPM utilization'**
+  String get usageTpmUtilization;
+
+  /// No description provided for @usageChartTokenUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Token Usage Over Time'**
+  String get usageChartTokenUsage;
+
+  /// No description provided for @usageChartRequestVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Volume'**
+  String get usageChartRequestVolume;
+
+  /// No description provided for @usageChartResourceTrends.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Trends'**
+  String get usageChartResourceTrends;
+
+  /// No description provided for @usageChartPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Chart placeholder'**
+  String get usageChartPlaceholder;
+
+  /// No description provided for @usageNoActiveModels.
+  ///
+  /// In en, this message translates to:
+  /// **'No active models'**
+  String get usageNoActiveModels;
+
+  /// No description provided for @usagePerModelConcurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Per-model concurrency'**
+  String get usagePerModelConcurrency;
+
+  /// No description provided for @usageNoRateData.
+  ///
+  /// In en, this message translates to:
+  /// **'No rate data'**
+  String get usageNoRateData;
+
+  /// No description provided for @usageTopModelsByRpm.
+  ///
+  /// In en, this message translates to:
+  /// **'Top models by RPM'**
+  String get usageTopModelsByRpm;
+
+  /// No description provided for @usageNoTokenData.
+  ///
+  /// In en, this message translates to:
+  /// **'No token data'**
+  String get usageNoTokenData;
+
+  /// No description provided for @usageTopModelsByTpm.
+  ///
+  /// In en, this message translates to:
+  /// **'Top models by TPM'**
+  String get usageTopModelsByTpm;
+
+  /// No description provided for @logsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs'**
+  String get logsTitle;
+
+  /// No description provided for @logsExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Logs'**
+  String get logsExport;
+
+  /// No description provided for @logsServiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Log service unavailable'**
+  String get logsServiceUnavailable;
+
+  /// No description provided for @logsExportedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs exported to {path}'**
+  String logsExportedTo(String path);
+
+  /// No description provided for @logsCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs copied to clipboard'**
+  String get logsCopied;
+
+  /// No description provided for @logsNoneFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No logs found'**
+  String get logsNoneFound;
+
+  /// No description provided for @logsAdjustFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your filters'**
+  String get logsAdjustFilters;
+
+  /// No description provided for @logsNoneAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No logs available'**
+  String get logsNoneAvailable;
+
+  /// No description provided for @logsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search logs...'**
+  String get logsSearchHint;
+
+  /// No description provided for @logsSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get logsSeverity;
+
+  /// No description provided for @logsSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get logsSource;
+
+  /// No description provided for @logsClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get logsClearAll;
+
+  /// No description provided for @logsViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get logsViewDetails;
+
+  /// No description provided for @logsDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Details'**
+  String get logsDetailsTitle;
+
+  /// No description provided for @logsTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp'**
+  String get logsTimestamp;
+
+  /// No description provided for @logsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get logsMessage;
+
+  /// No description provided for @logsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get logsError;
+
+  /// No description provided for @logsStackTrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Stack Trace'**
+  String get logsStackTrace;
+
+  /// No description provided for @logsFilterBySource.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Source'**
+  String get logsFilterBySource;
+
+  /// No description provided for @logsDetailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}:'**
+  String logsDetailLabel(String label);
 }
 
 class _AppLocalizationsDelegate

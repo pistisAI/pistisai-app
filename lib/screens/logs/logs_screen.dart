@@ -12,6 +12,7 @@ import '../../widgets/navigation/popout_button.dart';
 import '../../models/log_entry.dart';
 import '../../services/logging_service.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 
 /// Screen displaying system logs with filtering and search.
@@ -115,13 +116,14 @@ class _LogsScreenState extends State<LogsScreen> {
   }
 
   Future<void> _exportLogs() async {
+    final l10n = AppLocalizations.of(context);
     final service = _logService;
     if (service == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Log service unavailable'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(l10n.logsServiceUnavailable),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -136,7 +138,7 @@ class _LogsScreenState extends State<LogsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Logs exported to $path'),
+            content: Text(l10n.logsExportedTo(path)),
             duration: const Duration(seconds: 3),
           ),
         );
@@ -149,9 +151,9 @@ class _LogsScreenState extends State<LogsScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Logs copied to clipboard'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(l10n.logsCopied),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -163,22 +165,23 @@ class _LogsScreenState extends State<LogsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return RefreshableScreen(
       onRefresh: _onRefresh,
       errorMessage: _errorMessage,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Logs'),
+          title: Text(l10n.logsTitle),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _isLoading ? null : _onRefresh,
-              tooltip: 'Refresh',
+              tooltip: l10n.commonRefresh,
             ),
             IconButton(
               icon: const Icon(Icons.download),
               onPressed: _exportLogs,
-              tooltip: 'Export Logs',
+              tooltip: l10n.logsExport,
             ),
             const PopOutButton(sectionName: 'logs', branchIndex: 12),
           ],
@@ -189,17 +192,17 @@ class _LogsScreenState extends State<LogsScreen> {
                 ? ErrorState(message: _errorMessage!, onRetry: _onRefresh)
                 : Column(
                     children: [
-                      _buildFilters(),
+                      _buildFilters(l10n),
                       Expanded(
                         child: _filteredLogs.isEmpty
                             ? EmptyState(
                                 icon: Icons.search_off,
-                                title: 'No logs found',
+                                title: l10n.logsNoneFound,
                                 message: _searchQuery.isNotEmpty ||
                                         _selectedSeverity != null ||
                                         _selectedSource != null
-                                    ? 'Try adjusting your filters'
-                                    : 'No logs available',
+                                    ? l10n.logsAdjustFilters
+                                    : l10n.logsNoneAvailable,
                               )
                             : _buildLogsList(),
                       ),
@@ -209,7 +212,7 @@ class _LogsScreenState extends State<LogsScreen> {
     );
   }
 
-  Widget _buildFilters() {
+  Widget _buildFilters(AppLocalizations l10n) {
     final theme = Theme.of(context);
 
     return Container(
@@ -229,7 +232,7 @@ class _LogsScreenState extends State<LogsScreen> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Search logs...',
+              hintText: l10n.logsSearchHint,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
@@ -261,7 +264,7 @@ class _LogsScreenState extends State<LogsScreen> {
             children: [
               // Severity filter
               FilterChip(
-                label: const Text('Severity'),
+                label: Text(l10n.logsSeverity),
                 selected: _selectedSeverity != null,
                 onSelected: (selected) {
                   setState(() {
@@ -278,7 +281,7 @@ class _LogsScreenState extends State<LogsScreen> {
               ),
               // Source filter
               FilterChip(
-                label: const Text('Source'),
+                label: Text(l10n.logsSource),
                 selected: _selectedSource != null,
                 onSelected: (selected) {
                   _showSourceFilter();
@@ -292,7 +295,7 @@ class _LogsScreenState extends State<LogsScreen> {
                   _selectedSource != null ||
                   _searchQuery.isNotEmpty)
                 ActionChip(
-                  label: const Text('Clear All'),
+                  label: Text(l10n.logsClearAll),
                   onPressed: () {
                     _searchController.clear();
                     setState(() {
@@ -328,8 +331,8 @@ class _LogsScreenState extends State<LogsScreen> {
                         _applyFilters();
                       });
                     },
-                    selectedColor:
-                        _getSeverityColor(context, severity).withValues(alpha: 0.3),
+                    selectedColor: _getSeverityColor(context, severity)
+                        .withValues(alpha: 0.3),
                     checkmarkColor: _getSeverityColor(context, severity),
                   );
                 }).toList(),
@@ -436,7 +439,7 @@ class _LogsScreenState extends State<LogsScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'View details',
+                            AppLocalizations.of(context).logsViewDetails,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.primary,
                             ),
@@ -455,6 +458,7 @@ class _LogsScreenState extends State<LogsScreen> {
   }
 
   void _showLogDetails(LogEntry log) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -462,7 +466,7 @@ class _LogsScreenState extends State<LogsScreen> {
           children: [
             Icon(log.severityIcon, color: log.getSeverityColor(context)),
             const SizedBox(width: 8),
-            Text('Log Details'),
+            Text(l10n.logsDetailsTitle),
           ],
         ),
         content: SingleChildScrollView(
@@ -470,19 +474,19 @@ class _LogsScreenState extends State<LogsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _detailRow(
-                  'Timestamp', '${log.formatDate()} ${log.formatTimestamp()}'),
-              _detailRow('Severity', log.severityLabel),
-              _detailRow('Source', log.source),
+              _detailRow(l10n, l10n.logsTimestamp,
+                  '${log.formatDate()} ${log.formatTimestamp()}'),
+              _detailRow(l10n, l10n.logsSeverity, log.severityLabel),
+              _detailRow(l10n, l10n.logsSource, log.source),
               const Divider(),
-              const Text('Message',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(l10n.logsMessage,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(log.message),
               if (log.errorDetails != null) ...[
                 const Divider(),
-                const Text('Error',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(l10n.logsError,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text(
                   log.errorDetails!,
@@ -491,8 +495,8 @@ class _LogsScreenState extends State<LogsScreen> {
               ],
               if (log.stackTrace != null) ...[
                 const Divider(),
-                const Text('Stack Trace',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(l10n.logsStackTrace,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text(
                   log.stackTrace!,
@@ -512,14 +516,14 @@ class _LogsScreenState extends State<LogsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.commonClose),
           ),
         ],
       ),
     );
   }
 
-  Widget _detailRow(String label, String value) {
+  Widget _detailRow(AppLocalizations l10n, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -528,7 +532,7 @@ class _LogsScreenState extends State<LogsScreen> {
           SizedBox(
             width: 80,
             child: Text(
-              '$label:',
+              l10n.logsDetailLabel(label),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -539,10 +543,11 @@ class _LogsScreenState extends State<LogsScreen> {
   }
 
   void _showSourceFilter() {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Filter by Source'),
+        title: Text(l10n.logsFilterBySource),
         content: RadioGroup<String>(
           groupValue: _selectedSource,
           onChanged: (value) {
@@ -571,7 +576,7 @@ class _LogsScreenState extends State<LogsScreen> {
               });
               Navigator.pop(context);
             },
-            child: const Text('Clear'),
+            child: Text(l10n.commonClear),
           ),
         ],
       ),

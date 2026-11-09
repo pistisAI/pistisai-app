@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../models/channel.dart';
 import '../../services/channel_service.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
 import '../../config/theme.dart';
@@ -33,10 +34,11 @@ class ChannelDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Channel Details'),
+        title: Text(l10n.channelDetailsTitle),
       ),
       body: FutureBuilder<GatewayChannel?>(
         future: _loadChannel(),
@@ -50,9 +52,10 @@ class ChannelDetailScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger),
+                  Icon(Icons.error_outline,
+                      size: 64, color: AppTheme.colorsOf(context).danger),
                   const SizedBox(height: 16),
-                  const Text('Channel not found'),
+                  Text(l10n.channelNotFound),
                   const SizedBox(height: 8),
                   Text('${snapshot.error}', style: theme.textTheme.bodySmall),
                 ],
@@ -83,7 +86,8 @@ class ChannelDetailScreen extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 radius: 24,
-                                backgroundColor: theme.colorScheme.primaryContainer,
+                                backgroundColor:
+                                    theme.colorScheme.primaryContainer,
                                 child: Icon(
                                   _getChannelIcon(channel.name),
                                   color: theme.colorScheme.onPrimaryContainer,
@@ -96,15 +100,18 @@ class ChannelDetailScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       channel.name,
-                                      style: theme.textTheme.titleLarge?.copyWith(
+                                      style:
+                                          theme.textTheme.titleLarge?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     if (channel.description != null)
                                       Text(
                                         channel.description!,
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: theme.colorScheme.onSurface
+                                              .withValues(alpha: 0.6),
                                         ),
                                       ),
                                   ],
@@ -114,7 +121,9 @@ class ChannelDetailScreen extends StatelessWidget {
                                 status: channel.unreadCount > 0
                                     ? StatusType.active
                                     : StatusType.idle,
-                                label: channel.unreadCount > 0 ? 'New' : 'Read',
+                                label: channel.unreadCount > 0
+                                    ? l10n.channelBadgeNew
+                                    : l10n.channelBadgeRead,
                               ),
                             ],
                           ),
@@ -125,8 +134,9 @@ class ChannelDetailScreen extends StatelessWidget {
 
                   // Channel Statistics Section
                   Text(
-                    'Statistics',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                    l10n.channelStatistics,
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
                   Wrap(
@@ -134,22 +144,22 @@ class ChannelDetailScreen extends StatelessWidget {
                     runSpacing: 12,
                     children: [
                       _StatCard(
-                        label: 'Messages',
+                        label: l10n.channelMessages,
                         value: '${channel.messageCount}',
                         icon: Icons.message,
                         theme: theme,
                       ),
                       _StatCard(
-                        label: 'Platform',
-                        value: channel.platform ?? 'Unknown',
+                        label: l10n.channelPlatform,
+                        value: channel.platform ?? l10n.channelPlatformUnknown,
                         icon: Icons.language,
                         theme: theme,
                       ),
                       _StatCard(
-                        label: 'Last Activity',
+                        label: l10n.channelLastActivity,
                         value: channel.lastActivity != null
-                            ? _formatLastActivity(channel.lastActivity!)
-                            : 'Never',
+                            ? _formatLastActivity(l10n, channel.lastActivity!)
+                            : l10n.channelNever,
                         icon: Icons.access_time,
                         theme: theme,
                       ),
@@ -159,8 +169,9 @@ class ChannelDetailScreen extends StatelessWidget {
 
                   // Channel Controls Section
                   Text(
-                    'Controls',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                    l10n.channelControls,
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
                   Card(
@@ -168,28 +179,28 @@ class ChannelDetailScreen extends StatelessWidget {
                       children: [
                         ListTile(
                           leading: const Icon(Icons.play_arrow),
-                          title: const Text('Start Channel'),
+                          title: Text(l10n.channelStart),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () => _handleAction(context, 'start'),
                         ),
                         const Divider(),
                         ListTile(
                           leading: const Icon(Icons.stop),
-                          title: const Text('Stop Channel'),
+                          title: Text(l10n.channelStop),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () => _handleAction(context, 'stop'),
                         ),
                         const Divider(),
                         ListTile(
                           leading: const Icon(Icons.refresh),
-                          title: const Text('Reconnect'),
+                          title: Text(l10n.channelReconnect),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () => _handleAction(context, 'reconnect'),
                         ),
                         const Divider(),
                         ListTile(
                           leading: const Icon(Icons.description),
-                          title: const Text('View Logs'),
+                          title: Text(l10n.channelViewLogs),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () => _handleAction(context, 'logs'),
                         ),
@@ -207,7 +218,10 @@ class ChannelDetailScreen extends StatelessWidget {
 
   void _handleAction(BuildContext context, String action) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Action $action performed for channel $channelId')),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)
+            .channelActionPerformed(action, channelId)),
+      ),
     );
   }
 
@@ -228,17 +242,17 @@ class ChannelDetailScreen extends StatelessWidget {
     }
   }
 
-  String _formatLastActivity(DateTime timestamp) {
+  String _formatLastActivity(AppLocalizations l10n, DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.channelJustNow;
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return l10n.channelMinutesAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
+      return l10n.channelHoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n.channelDaysAgo(difference.inDays);
     } else {
       return DateFormat('MMM d, y').format(timestamp);
     }
@@ -275,7 +289,8 @@ class _StatCard extends StatelessWidget {
           Text(label, style: theme.textTheme.labelSmall),
           Text(
             value,
-            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
       ),
