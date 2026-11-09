@@ -19,8 +19,6 @@ import {
 } from "@jest/globals";
 
 // Set environment variables BEFORE any other imports
-process.env.AUTH0_DOMAIN = "test.jwt.com";
-process.env.AUTH0_AUDIENCE = "test-audience";
 process.env.NODE_ENV = "test";
 
 // Mock express-oauth2-jwt-bearer BEFORE imports

@@ -112,8 +112,8 @@ describe("Developer Mock Bypass Authentication", () => {
     expect(response.body.auth).toBeDefined();
     expect(response.body.auth.token).toBe(DEV_TOKEN);
     expect(response.body.auth.payload.email).toBe("dev@pistisai.app");
-    expect(response.body.auth.payload.name).toBe("Christopher (Dev)");
-    expect(response.body.auth.payload.nickname).toBe("rightguy");
+    expect(response.body.auth.payload.name).toBe("Dev User");
+    expect(response.body.auth.payload.nickname).toBe("dev-user");
   });
 
   it("should successfully populate auth credentials under optionalAuth for DEV_BYPASS_TOKEN", async () => {

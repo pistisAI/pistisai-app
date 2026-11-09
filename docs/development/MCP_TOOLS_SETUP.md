@@ -49,7 +49,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 - **Purpose**: Structured file system operations for reading, writing, and searching files
 - **Package**: `@modelcontextprotocol/server-filesystem`
-- **Scope**: `/mnt/data/projects/IAClé`
+- **Scope**: `/path/to/pistisai-app`
 - **Use Cases**:
   - Reading project files
   - Writing new files
@@ -71,7 +71,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 - **Purpose**: Git operations for version control, commits, branches, and history
 - **Package**: `@modelcontextprotocol/server-git`
-- **Scope**: `/mnt/data/projects/IAClé`
+- **Scope**: `/path/to/pistisai-app`
 - **Use Cases**:
   - Creating commits
   - Managing branches

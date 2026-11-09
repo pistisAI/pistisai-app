@@ -198,6 +198,6 @@ kubectl get ingress -n IAClé
 - **Image Pull Errors:** Verify image registry credentials and image tags
 - **Database Connection Issues:** Check PostgreSQL pod logs and verify secrets
 - **Ingress Issues:** Check ingress controller and DNS configuration
-- **Authentication Errors:** Verify Auth0 environment variables in ConfigMap and Secrets
+- **Authentication Errors:** Verify identity-provider settings in ConfigMap and Secrets
 
 For more detailed troubleshooting, see Kubernetes README.

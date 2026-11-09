@@ -33,20 +33,18 @@ Use `apk`, `web`, `windows`, or `macos` the same way. `tool/brand.sh` with no ar
 
 The script writes the brand into the Flutter app and into the window title, Android display name, macOS product name, Linux desktop `Name`, Windows version info, installer display name, web title, and the privacy and terms pages. `--dart-define=BRAND=<id>` must match the id you just baked. A define on its own does not change copy.
 
-### Paid whitelabel brands
+### Brands live in the target fork
 
-The upstream brand (`pistisai`) bakes freely. **Every other brand is a paid whitelabel and requires a licence.** `tool/brand.sh` refuses to bake a non-upstream brand without one:
+This repository ships `brand/pistisai` and the placeholder `brand/example` only. A real brand is created in that product's fork, not committed here.
+
+In the fork, copy `brand/example/` to `brand/<id>/`, replace the name, domain, logo, and the other fields, then bake and build:
 
 ```bash
-python3 tool/issue_licence.py \
-  --key /path/to/private.key \
-  --brand iacle --licensee "IAClé" \
-  --expires 2027-12-31 --seats 5 \
-  --out iacle.licence
-
-tool/brand.sh iacle --license iacle.licence
-flutter build linux --dart-define=BRAND=iacle
+tool/brand.sh <id> --license /path/to/<id>.licence
+flutter build linux --dart-define=BRAND=<id>
 ```
+
+`pistisai` bakes without a licence. Every other id needs a licence issued for that fork. `tool/brand.sh` refuses to bake a non-upstream brand without one.
 
 The licence is an Ed25519-signed JSON document. The public key is embedded in `lib/brand/brand_licence.dart`; the private key stays with the licensor and never enters the repository. Verification is offline — no server call. A licence that is missing, tampered with, for another brand, or expired makes the bake exit non-zero (`65` invalid, `66` missing).
 

@@ -11,7 +11,7 @@ IAClé is designed to be **provider-agnostic**, supporting deployment on multipl
 - **Current Provider**: Microsoft Azure
 - **Service**: Azure Kubernetes Service (AKS)
 - **Status**: ✅ **ACTIVE PRODUCTION DEPLOYMENT**
-- **Authentication**: Auth0 (provider-agnostic)
+- **Authentication**: configured per deployment
 - **Container Registry**: Docker Hub
 - **DNS/SSL**: Cloudflare
 
@@ -34,9 +34,8 @@ IAClé is built with provider independence in mind:
 
 ### Authentication Flexibility
 
-- **Current**: Auth0 (cloud-agnostic)
+- **Current**: configured per deployment
 - **Supported**: Any OIDC-compatible provider
-- **Future Options**: Auth0, Firebase Auth, custom solutions
 
 ### Container Strategy
 

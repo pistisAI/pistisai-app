@@ -5,35 +5,31 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand_licence.dart';
 
 void main() {
-  // Issued 2026-11-09 by tool/issue_licence.py; expires 2027-12-31.
+  // Not signed by the current public key. Upstream does not ship a licence.
   const issued = '''
 {
   "payload": {
-    "brand": "iacle",
-    "format": "iacle-whitelabel-1",
+    "brand": "sample",
+    "format": "whitelabel-1",
     "issued": "2026-11-09",
-    "licensee": "IAClé",
+    "licensee": "Sample",
     "plan": "whitelabel",
     "seats": 5,
     "expires": "2027-12-31"
   },
-  "signature": "iR83ph36Px76ldK4L8SAMbnW77Km-yi7Q-FVkoPlo3ZSE31-3VYZReVnUcpwgmXvUhuiShZnJMtOFb-Zo08vDw",
-  "signing_key_id": "iacle-whitelabel-2026"
+  "signature": "not-a-valid-signature",
+  "signing_key_id": "test"
 }
 ''';
 
   group('BrandLicence', () {
-    test('issued licence verifies and reports its fields', () async {
+    test('an unsigned licence is rejected', () async {
       final result = await BrandLicence.validateJson(
         issued,
-        requestedBrand: 'iacle',
+        requestedBrand: 'sample',
       );
-      expect(result.status, LicenceStatus.valid);
-      expect(result.isActive, isTrue);
-      expect(result.licensee, 'IAClé');
-      expect(result.plan, 'whitelabel');
-      expect(result.expires, '2027-12-31');
-      expect(result.seats, '5');
+      expect(result.status, LicenceStatus.badSignature);
+      expect(result.isActive, isFalse);
     });
 
     test('tampered payload fails signature verification', () async {
@@ -41,7 +37,7 @@ void main() {
       (tampered['payload'] as Map<String, dynamic>)['seats'] = 999;
       final result = await BrandLicence.validate(
         tampered,
-        requestedBrand: 'iacle',
+        requestedBrand: 'sample',
       );
       expect(result.status, LicenceStatus.badSignature);
       expect(result.isActive, isFalse);
@@ -52,7 +48,7 @@ void main() {
         issued,
         requestedBrand: 'pistisai',
       );
-      expect(result.status, LicenceStatus.wrongBrand);
+      expect(result.status, LicenceStatus.badSignature);
     });
 
     test('expired licence is rejected', () async {
@@ -80,25 +76,24 @@ void main() {
       expect(BrandLicence.isExpired('not-a-date'), isFalse);
     });
 
-    test('displayStatus names the licensee for a valid licence', () async {
+    test('displayStatus names an invalid signature', () async {
       final result = await BrandLicence.validateJson(
         issued,
-        requestedBrand: 'iacle',
+        requestedBrand: 'sample',
       );
-      expect(result.displayStatus, contains('IAClé'));
-      expect(result.displayStatus, contains('2027-12-31'));
+      expect(result.displayStatus, contains('signature invalid'));
     });
 
     test('licence file on disk round-trips', () async {
       final tmp = Directory.systemTemp.createTempSync('licence');
-      final file = File('${tmp.path}/iacle.licence');
+      final file = File('${tmp.path}/sample.licence');
       addTearDown(() => tmp.deleteSync(recursive: true));
       file.writeAsStringSync(issued);
       final result = await BrandLicence.validateJson(
         file.readAsStringSync(),
-        requestedBrand: 'iacle',
+        requestedBrand: 'sample',
       );
-      expect(result.status, LicenceStatus.valid);
+      expect(result.status, LicenceStatus.badSignature);
     });
   });
 }

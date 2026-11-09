@@ -79,4 +79,4 @@ Restart OpenCode after editing `opencode.json` so it refetches server tools.
 - Jest `testPathIgnorePatterns` intentionally skips tunnel-*, `*-properties`, `*-integration`, `test/archive/`, and live-Auth0 tests; check `jest.config.js` before assuming a test runs or "passes" by being skipped
 - api-backend Jest needs `node --experimental-vm-modules ... --forceExit`; sdk uses plain `jest`
 - Don't edit `lib/**/*.g.dart` / `lib/**/*.freezed.dart` — regenerate via build_runner
-- Preserve branding exactly: `IAClé`, `OpenClaw`, `Zoidbot`
+- Preserve branding exactly: `Pistisai`, `OpenClaw`, `Zoidbot`

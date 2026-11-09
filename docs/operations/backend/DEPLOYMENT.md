@@ -103,15 +103,13 @@ Required environment variables:
 - `DB_NAME=IAClé`
 - `DB_USER=appuser`
 - `DB_PASSWORD=<your-password>`
-- `DB_HOST=/cloudsql/IAClé-468303:us-central1:IAClé-db`
-- `SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com`
-- `SUPABASE_AUTH_AUDIENCE=https://api.example.com`
+- `DB_HOST=/cloudsql/your-project:region:instance`
 
 ### Step 3: Build and Deploy
 
 ```bash
 # Build container image
-gcloud builds submit --tag gcr.io/IAClé-468303/IAClé-api
+gcloud builds submit --tag gcr.io/your-project/api
 
 # Deploy to Cloud Run
 gcloud run deploy IAClé-api \
@@ -120,8 +118,8 @@ gcloud run deploy IAClé-api \
     --region us-central1 \
     --allow-unauthenticated \
     --memory 1Gi \
-    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com,SUPABASE_AUTH_AUDIENCE=https://api.example.com" \
-    --add-cloudsql-instances IAClé-468303:us-central1:IAClé-db
+    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql" \
+    --add-cloudsql-instances your-project:region:instance
 ```
 
 ## Testing
@@ -218,15 +216,14 @@ gcloud logging read "resource.type=cloudsql_database"
    Error: Authentication service not available
    ```
 
-   - Verify `SUPABASE_AUTH_DOMAIN` and `SUPABASE_AUTH_AUDIENCE` environment variables
-   - Check Auth0 JWT validation configuration
+   - Verify the identity-provider settings for this deployment
 
 ### Service Account Permissions
 
 Ensure your Cloud Run service account has:
 
 - `roles/cloudsql.client` - For Cloud SQL access
-- Auth0 JWT validation (configured via environment variables)
+- JWT validation for the configured identity provider
 
 ### Performance Tuning
 

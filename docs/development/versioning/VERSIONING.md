@@ -140,7 +140,7 @@ To rollback to a previous version:
 
 ```bash
 # List available versions
-az acr repository show-tags --name imrightguyIAClé --repository web --orderby time_desc
+az acr repository show-tags --name your-registry --repository web --orderby time_desc
 
 # Update deployment to use specific version
 kubectl set image deployment/web web=ghcr.io/IAClé/IAClé/web:latest -n IAClé

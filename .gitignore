@@ -154,3 +154,24 @@ scripts/run_init.sh
 
 # Archived tests
 test/archive/
+
+# Keystores and private keys
+*.jks
+*.keystore
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.ppk
+
+# Service account credentials
+*service-account*.json
+*serviceAccount*.json
+
+# SQLite dumps
+*.sqlite
+*.sqlite3
+*.dump
+
+# Local agent config
+.agents/skills.json

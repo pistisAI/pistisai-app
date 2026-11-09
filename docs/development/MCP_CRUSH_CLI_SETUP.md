@@ -55,7 +55,7 @@ MCP servers for Crush CLI need to be configured in the appropriate configuration
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/mnt/data/projects/IAClé"],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/pistisai-app"],
       "description": "File system operations for the project directory"
     },
     "github": {
@@ -184,7 +184,7 @@ npx -y @modelcontextprotocol/server-sequential-thinking
 npx -y @modelcontextprotocol/server-memory
 
 # Test filesystem
-npx -y @modelcontextprotocol/server-filesystem /mnt/data/projects/IAClé
+npx -y @modelcontextprotocol/server-filesystem /path/to/pistisai-app
 
 # Test GitHub (requires token)
 npx -y @modelcontextprotocol/server-github
@@ -229,7 +229,7 @@ If an MCP server shows as "not available":
 
 For the IAClé project:
 
-- The Filesystem server should point to `/mnt/data/projects/IAClé`
+- The Filesystem server should point to `/path/to/pistisai-app`
 - The PostgreSQL server should use the project database connection string
 - GitHub tokens can be generated at https://github.com/settings/tokens
 

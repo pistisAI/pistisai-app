@@ -8,7 +8,7 @@ param (
 )
 
 # GitHub repository information
-$repoOwner = "imrightguy"
+$repoOwner = "pistisAI"
 $repoName = "Zoidbot"
 $apiUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/latest"
 

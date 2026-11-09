@@ -56,7 +56,7 @@ l'humanité.
 
 - **Primaire (Stoa):** App icon, splash, site web, branding principal
 - **Secondaire (Rose des Titans):** Favicon, avatar, watermark, petit format
-- Les logos SVG sont dans `C:\Users\rightguy\Documents\IAClé-assets\`
+- Les logos SVG sont dans le dossier d'assets de la marque.
 
 ## Notes Architecturales
 

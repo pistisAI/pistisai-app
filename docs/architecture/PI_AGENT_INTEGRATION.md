@@ -60,7 +60,7 @@ Pi integrates into the IAClé ecosystem in **three distinct roles**:
 - **Server:** `127.0.0.1:8080` (router mode for multi-model)
 
 ### Agent
-- **Base:** `@earendil-works/pi-coding-agent` (installed at `/home/zoid/.local/bin/pi`)
+- **Base:** `@earendil-works/pi-coding-agent` (installed at `/var/lib/pistisai/.local/bin/pi`)
 - **Harness fork:** `oh-my-pi` (can1357) — installed on-demand when Pi selected
 - **A2A mesh:** `@bacnh85/pi-a2a` extension
 - **Desktop control:** `@agent-sh/computer-use-linux` (MCP server)
@@ -385,7 +385,7 @@ ssh right-pc
 sudo pacman -S --needed cmake gcc cuda
 
 # Clone and build
-cd /run/media/rightguy/data/dev/tools
+cd /var/lib/pistisai/dev/tools
 git clone https://github.com/ggml-org/llama.cpp
 cd llama.cpp
 cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89
@@ -406,12 +406,12 @@ llama-server -hf bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M \
 # Or download manually:
 huggingface-cli download bartowski/google_gemma-4-E4B-it-GGUF \
   google_gemma-4-E4B-it-Q4_K_M.gguf \
-  --local-dir /run/media/rightguy/data/ai/models/
+  --local-dir /var/lib/pistisai/ai/models/
 
 # Also download mmproj for vision:
 huggingface-cli download bartowski/google_gemma-4-E4B-it-GGUF \
   mmproj-BF16.gguf \
-  --local-dir /run/media/rightguy/data/ai/models/
+  --local-dir /var/lib/pistisai/ai/models/
 ```
 
 #### systemd Unit (llama-server)
@@ -424,12 +424,12 @@ After=network.target
 
 [Service]
 Type=exec
-User=rightguy
-Group=rightguy
-WorkingDirectory=/run/media/rightguy/data/ai/models
+User=pistisai
+Group=pistisai
+WorkingDirectory=/var/lib/pistisai/ai/models
 ExecStart=/usr/local/bin/llama-server \
-  -m /run/media/rightguy/data/ai/models/google_gemma-4-E4B-it-Q4_K_M.gguf \
-  --mmproj /run/media/rightguy/data/ai/models/mmproj-BF16.gguf \
+  -m /var/lib/pistisai/ai/models/google_gemma-4-E4B-it-Q4_K_M.gguf \
+  --mmproj /var/lib/pistisai/ai/models/mmproj-BF16.gguf \
   -ngl 99 \
   -c 32768 \
   -fa on \
@@ -559,7 +559,7 @@ Type=simple
 User=zoid
 Group=zoid
 WorkingDirectory=/dev/IAClé
-ExecStart=/home/zoid/.local/bin/pi \
+ExecStart=/var/lib/pistisai/.local/bin/pi \
   --provider llamacpp \
   --model google_gemma-4-E4B-it \
   --extension /dev/IAClé/watcher/observer-extension.ts
@@ -572,7 +572,7 @@ CPUQuota=50%
 
 # Security
 ProtectSystem=strict
-ReadWritePaths=/dev/IAClé /home/zoid/.pi /tmp
+ReadWritePaths=/dev/IAClé /var/lib/pistisai/.pi /tmp
 PrivateTmp=true
 NoNewPrivileges=true
 ProtectHome=read-only

@@ -3,12 +3,12 @@
   <id>com.Pistisai.Pistisai</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
-  <name>IAClé</name>
-  <summary>Assistant local pour les entreprises du Québec</summary>
+  <name>Pistisai</name>
+  <summary>Bridge cloud-based AI services with local AI models</summary>
   
   <description>
     <p>
-      IAClé est un assistant local d'abord. L'agent tourne sur un ordinateur chez le client. L'audit vérifie si cet ordinateur peut l'héberger.
+      Pistisai is a cross-platform application that bridges cloud-based AI services with local AI models, providing a hybrid AI architecture with privacy-first design.
     </p>
     <p>
       Features:
@@ -27,7 +27,7 @@
   <url type="bugtracker">https://github.com/iacle-solutions/iacle-app/issues</url>
   <url type="help">https://github.com/iacle-solutions/iacle-app/blob/main/README.md</url>
   
-  <developer_name>IAClé</developer_name>
+  <developer_name>Pistisai Contributors</developer_name>
   
   <provides>
     <binary>Pistisai</binary>

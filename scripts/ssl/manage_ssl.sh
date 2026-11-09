@@ -16,7 +16,11 @@
 set -euo pipefail # Exit on error, unset variable, or pipe failure
 
 # --- Configuration ---
-EMAIL="christopher.maltais@gmail.com" # Email for Let's Encrypt account
+EMAIL="${LETSENCRYPT_EMAIL:-}" # Email for Let's Encrypt account
+if [ -z "$EMAIL" ]; then
+    echo "LETSENCRYPT_EMAIL is not set" >&2
+    exit 1
+fi
 DOMAIN_NAME="pistisai.app"    # The domain to issue the certificate for
 PROJECT_DIR="/opt/Pistisai"    # Absolute path to your project's root on the host machine
 

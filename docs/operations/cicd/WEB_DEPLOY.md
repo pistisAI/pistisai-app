@@ -47,7 +47,7 @@ Desktop, mobile, and backend workflows start from a completed Web Deploy run. Th
 
 ### Coolify trigger
 
-Required secrets: `COOLIFY_API_TOKEN`, `COOLIFY_SSH_KEY`. The host, Coolify base URL, and app UUID live in `deploy-web.yml` (`COOLIFY_URL`, `COOLIFY_APP_UUID`).
+Required secrets: `COOLIFY_API_TOKEN`, `COOLIFY_SSH_KEY`, `COOLIFY_APP_UUID`, and `COOLIFY_HOST`. The deploy URL is `COOLIFY_URL` in `deploy-web.yml`. The job stops if the app UUID or host secret is empty.
 
 Before the deploy call, the job SSHes to the Coolify host and runs `docker login ghcr.io` with the Actions `GITHUB_TOKEN`. The image is private, so the host cannot pull it without that login. The step must set `GITHUB_TOKEN` in its own `env`. Actions does not put the token in the environment otherwise, and `set -u` fails the step.
 
@@ -63,7 +63,7 @@ The job then polls `GET /api/v1/deployments/{uuid}` up to 60 times, 15 seconds a
 
 ### Public check and cache purge
 
-The job requests `https://example.com/` and `https://www.example.com/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `IAClé`, and must not contain `404 page not found` (the Traefik placeholder while the container is unhealthy or unrouted).
+The job requests `https://pistisai.app/` and `https://www.pistisai.app/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `Pistisai`, and must not contain `404 page not found` (the Traefik placeholder while the container is unhealthy or unrouted).
 
 Cloudflare purge runs with `if: always()`. It no-ops when `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset, and a failed purge does not fail the job. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
 

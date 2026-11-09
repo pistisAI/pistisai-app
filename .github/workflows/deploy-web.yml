@@ -21,8 +21,6 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: https://deploy.pistisai.app
-  COOLIFY_APP_UUID: umnmzbzlgcnjssqphnrgiejt
-  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST || '68.168.30.4' }}
 
 jobs:
   analyze:
@@ -91,6 +89,11 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
+          build-args: |
+            BRAND=pistisai
+            PISTISAI_ADMIN_EMAIL=${{ secrets.PISTISAI_ADMIN_EMAIL }}
+            SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+            SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Verify image pushed
         run: |
@@ -108,7 +111,21 @@ jobs:
     timeout-minutes: 20
     env:
       COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+      COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+      COOLIFY_HOST: ${{ secrets.COOLIFY_HOST }}
     steps:
+      - name: Require Coolify settings
+        run: |
+          set -euo pipefail
+          if [ -z "${COOLIFY_APP_UUID:-}" ]; then
+            echo "COOLIFY_APP_UUID is not set"
+            exit 1
+          fi
+          if [ -z "${COOLIFY_HOST:-}" ]; then
+            echo "COOLIFY_HOST is not set"
+            exit 1
+          fi
+
       - name: Log the VPS into GHCR
         env:
           SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
@@ -193,14 +210,14 @@ jobs:
             for _ in $(seq 1 24); do
               code=$(curl -sS -o "/tmp/${host}.html" -w "%{http_code}" --max-time 30 "https://${host}/" || true)
               echo "${host} -> ${code}"
-              if [ "$code" = "200" ] && ! grep -q "404 page not found" "/tmp/${host}.html" && grep -q "IAClé" "/tmp/${host}.html"; then
+              if [ "$code" = "200" ] && ! grep -q "404 page not found" "/tmp/${host}.html" && grep -q "Pistisai" "/tmp/${host}.html"; then
                 ok=1
                 break
               fi
               sleep 5
             done
             if [ "$ok" != "1" ]; then
-              echo "https://${host}/ did not return the IAClé app"
+              echo "https://${host}/ did not return the PistisAI app"
               head -c 300 "/tmp/${host}.html" || true
               exit 1
             fi

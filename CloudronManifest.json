@@ -1,8 +1,8 @@
 {
     "id": "app.pistisai.app",
-    "title": "IAClé",
-    "author": "IAClé",
-    "description": "IAClé is a local-first assistant for Quebec businesses.",
+    "title": "Pistisai",
+    "author": "Pistisai",
+    "description": "Pistisai is a local-first private AI companion.",
     "version": "1.0.0",
     "healthCheckPath": "/",
     "httpPort": 3000,
@@ -11,9 +11,9 @@
         "redis": {}
     },
     "manifestVersion": 2,
-    "website": "https://iacle.app",
-    "contactEmail": "support@iacle.app",
-    "icon": "https://raw.githubusercontent.com/iacle-solutions/iacle-app/main/brand/iacle/assets/icon.png",
+    "website": "https://pistisai.app",
+    "contactEmail": "support@pistisai.app",
+    "icon": "https://raw.githubusercontent.com/pistisAI/pistisai-app/main/assets/images/app_icon.png",
     "tags": [
         "ai",
         "agent",

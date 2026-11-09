@@ -162,7 +162,7 @@ Keep track of the costs and resource utilization on your device.
 
 ## 🛡️ 9. Admin Center
 
-A centralized workspace for project owners and system administrators. Access is strictly authorized (restricted to `christopher.maltais@gmail.com` on Web, or open under local Guest Mode on desktop).
+A centralized workspace for project owners and system administrators. On the web, access is limited to the administrator address configured for that build. Desktop guest mode stays local.
 
 *   **Dashboard Overview:** Displays high-level platform stats.
 *   **User Management:** Edit, search, and assign user roles or admin permissions (`viewUsers`, `viewPayments`, `viewConfiguration`, etc.).

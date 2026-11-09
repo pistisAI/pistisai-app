@@ -291,7 +291,7 @@ All notable changes to this project will be documented in this file.
 * ai(OpenCode): fix permissions in get-logs.yml (87a370cb)
 * ai(OpenCode): add workflow to fetch tunnel logs (f7299f30)
 * chore: automated version bump to 10.1.60 [skip ci] (316a189a)
-* ai(OpenCode): revert Tunnel ID to 62da6c19-947b-4bf6-acad-100a73de4e0d and update token (e10cff96)
+* ai(OpenCode): revert tunnel id to the configured tunnel and update token (e10cff96)
 * chore: automated version bump to 10.1.59 [skip ci] (bf148ce4)
 * ai(OpenCode): update fix-tunnel-credentials.sh to apply ConfigMap (a5c1448c)
 * chore: automated version bump to 10.1.58 [skip ci] (48d24b02)

@@ -81,9 +81,9 @@ function Send-AssetToGitHub {
             }
 
             # GitHub CLI approach (requires gh CLI to be installed and authenticated)
-            Write-LogInfo "Executing: gh release upload v$Version `"$FilePath`" --repo imrightguy/Zoidbot --clobber"
+            Write-LogInfo "Executing: gh release upload v$Version `"$FilePath`" --repo pistisAI/pistisai-app --clobber"
 
-            $result = & gh release upload "v$Version" $FilePath --repo imrightguy/Zoidbot --clobber 2>&1
+            $result = & gh release upload "v$Version" $FilePath --repo pistisAI/pistisai-app --clobber 2>&1
 
             if ($LASTEXITCODE -eq 0) {
                 Write-LogSuccess "Successfully uploaded $fileName (attempt $attempt)"
@@ -121,7 +121,7 @@ function Test-AssetUpload {
 
     try {
         Write-LogInfo "Verifying upload of $FileName..."
-        $assets = gh api "repos/imrightguy/Zoidbot/releases/$ReleaseId/assets" | ConvertFrom-Json
+        $assets = gh api "repos/pistisAI/pistisai-app/releases/$ReleaseId/assets" | ConvertFrom-Json
 
         $asset = $assets | Where-Object { $_.name -eq $FileName }
 

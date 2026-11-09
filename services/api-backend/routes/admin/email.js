@@ -169,7 +169,7 @@ router.post(
       }
 
       const tokens = await googleWorkspaceService.exchangeCodeForTokens(code);
-      const userEmail = tokens.email || 'unknown@gmail.com';
+      const userEmail = tokens.email || 'unknown@example.com';
 
       const config = await googleWorkspaceService.storeOAuthConfiguration({
         userId: req.adminUser.id,

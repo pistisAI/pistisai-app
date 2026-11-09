@@ -45,7 +45,7 @@ check_command() {
     fi
 }
 
-REPO_ROOT="/home/rightguy/Pistisai"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 log_info "Starting Pistisai development environment setup..."
 log_info "Target directory: $REPO_ROOT"
 
@@ -260,10 +260,7 @@ check_command "Antigravity MCP tools configured"
 
 
 # Phase 19: Configure Git
-log_info "Phase 19: Configuring Git (Christopher Maltais)..."
-git config --global user.name "Christopher Maltais"
-git config --global user.email "christopher.maltais@gmail.com"
-check_command "Git configured"
+log_info "Phase 19: Git identity is left to the developer."
 
 # Phase 20: Install project dependencies
 log_info "Phase 20: Installing repository dependencies..."
