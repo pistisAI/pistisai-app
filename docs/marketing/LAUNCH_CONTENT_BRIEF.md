@@ -2,7 +2,7 @@
 
 Product description: [README](../../README.md) ([English](../../README.en.md)).
 Run the hub from [source](../LAUNCH.md).
-Repository: [iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle-app).
+Repository: [pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app).
 
 ## Product at a glance
 
@@ -15,7 +15,7 @@ Repository: [iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle
 
 ## One-liner (canonical)
 
-> **IAClé turns your AI agent into a private desktop companion: voice, vision, and audited
+> **Pistisai turns your AI agent into a private desktop companion: voice, vision, and audited
 > desktop control, connected over your own Tailscale mesh — local-first, no data leaves your
 > network unless you say so.**
 
@@ -24,7 +24,7 @@ bio) live in `publish-ready/social-thread-pack.md`.
 
 ## Primary CTA
 
-Clone [iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle-app) and run it from source. The product description is the [README](../../README.md).
+Clone [pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app) and run it from source. The product description is the [README](../../README.md).
 
 ## Voice and tone
 
@@ -37,7 +37,7 @@ Clone [iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle-app) 
 
 | Channel | Asset | Owner |
 |---------|-------|-------|
-| GitHub issues | [iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle-app/issues) | Founder |
+| GitHub issues | [pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app/issues) | Founder |
 | Twitter/X thread | `publish-ready/social-thread-pack.md` | CMO |
 | LinkedIn operator post | `publish-ready/social-thread-pack.md` | CMO |
 | Discord announcement | `publish-ready/social-thread-pack.md` | DevRel |
@@ -54,7 +54,7 @@ Clone [iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle-app) 
 
 ## Guardrails
 
-- Link the [README](../../README.md) and [iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle-app).
+- Link the [README](../../README.md) and [pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app).
 - Never claim a platform status that contradicts `docs/LAUNCH.md` or the README.
 - Report security issues to `ops@example.com`, never in public threads.
 - Keep copy in the repo so it is reviewable and version-controlled.

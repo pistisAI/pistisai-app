@@ -9,10 +9,10 @@ Product description: [README](../../../README.md).
 
 ## 1. Positioning
 
-IAClé is not another AI wrapper. It is a **local-first companion and desktop capability layer for your AI agent runtime: private, secure, yours.**
+Pistisai is not another AI wrapper. It is a **local-first companion and desktop capability layer for your AI agent runtime: private, secure, yours.**
 
 Elevator pitch:
-> Your AI runs on your hardware. IAClé gives it a secure channel, voice, vision, desktop control, and a Tailscale-first device mesh.
+> Your AI runs on your hardware. Pistisai gives it a secure channel, voice, vision, desktop control, and a Tailscale-first device mesh.
 
 One-liner for bios/launch:
 > Local-first companion for Hermes, OpenClaw, and compatible agent runtimes: secure channel, voice, vision, desktop control, and private device mesh.

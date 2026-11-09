@@ -40,7 +40,7 @@ The exact `flutter_bootstrap.js` location exists because the long-cache regex wo
 `deploy-web.yml` runs when [Auto Version Bump](../../../.github/workflows/auto-version-bump.yml) completes on `main`, or on `workflow_dispatch`.
 
 1. **analyze** — Flutter pin from `pubspec.yaml` on `ubuntu-24.04`, `flutter pub get`, `flutter analyze lib/`. Skipped when the triggering bump workflow failed.
-2. **build_and_push** — Build `Dockerfile.web` and push `ghcr.io/IAClé/iacle-app-web:{version}` and `:latest`. `{version}` is the `version` field in `assets/version.json`. The job fails if the build action returns no digest.
+2. **build_and_push** — Build `Dockerfile.web` and push `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`. `{version}` is the `version` field in `assets/version.json`. The job fails if the build action returns no digest.
 3. **deploy_coolify** — Log the Coolify host into GHCR, trigger the deploy, wait, then check the public sites.
 
 Desktop, mobile, and backend workflows start from a completed Web Deploy run. They do not start from the version bump directly. See [CI/CD Quick Reference](CI_CD_QUICK_REFERENCE.md).
@@ -63,7 +63,7 @@ The job then polls `GET /api/v1/deployments/{uuid}` up to 60 times, 15 seconds a
 
 ### Public check and cache purge
 
-The job requests `https://example.com/` and `https://www.example.com/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `IAClé`, and must not contain `404 page not found` (the Traefik placeholder while the container is unhealthy or unrouted).
+The job requests `https://example.com/` and `https://www.example.com/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `Pistisai`, and must not contain `404 page not found` (the Traefik placeholder while the container is unhealthy or unrouted).
 
 Cloudflare purge runs with `if: always()`. It no-ops when `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset, and a failed purge does not fail the job. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
 
@@ -71,17 +71,17 @@ Cloudflare purge runs with `if: always()`. It no-ops when `CLOUDFLARE_CACHE_PURG
 
 ```bash
 # Production image (compiles Flutter web)
-docker build -f Dockerfile.web -t IAClé-web .
+docker build -f Dockerfile.web -t Pistisai-web .
 
 # Compose image (requires build/web first)
 flutter build web --release --no-web-resources-cdn
-docker build -f config/docker/Dockerfile.web -t IAClé-web-prebuilt .
+docker build -f config/docker/Dockerfile.web -t Pistisai-web-prebuilt .
 ```
 
 Confirm the production image substituted the bootstrap version and answers on IPv4:
 
 ```bash
-docker run --rm IAClé-web \
+docker run --rm Pistisai-web \
   grep -o 'flutter_bootstrap.js?v=[^"]*' /usr/share/nginx/html/index.html
 ```
 

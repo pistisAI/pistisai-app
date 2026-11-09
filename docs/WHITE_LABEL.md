@@ -35,17 +35,19 @@ The script writes the brand into the Flutter app and into the window title, Andr
 
 ### Paid whitelabel brands
 
-The upstream brand (`pistisai`) bakes freely. **Every other brand is a paid whitelabel and requires a licence.** `tool/brand.sh` refuses to bake a non-upstream brand without one:
+The upstream brand (`pistisai`) bakes freely. **Every other brand is a paid whitelabel and requires a licence.** `tool/brand.sh` refuses to bake a non-upstream brand without one.
+
+Downstream forks ship their own brands. Acme, Northwind, and IAClé are examples; this repository does not contain their configuration.
 
 ```bash
 python3 tool/issue_licence.py \
   --key /path/to/private.key \
-  --brand iacle --licensee "IAClé" \
+  --brand acme --licensee "Acme Labs" \
   --expires 2027-12-31 --seats 5 \
-  --out iacle.licence
+  --out acme.licence
 
-tool/brand.sh iacle --license iacle.licence
-flutter build linux --dart-define=BRAND=iacle
+tool/brand.sh acme --license acme.licence
+flutter build linux --dart-define=BRAND=acme
 ```
 
 The licence is an Ed25519-signed JSON document. The public key is embedded in `lib/brand/brand_licence.dart`; the private key stays with the licensor and never enters the repository. Verification is offline — no server call. A licence that is missing, tampered with, for another brand, or expired makes the bake exit non-zero (`65` invalid, `66` missing).

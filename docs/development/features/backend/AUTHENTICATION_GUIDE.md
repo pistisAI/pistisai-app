@@ -1,8 +1,8 @@
-# IAClé Authentication Guide
+# Pistisai Authentication Guide
 
 ## Overview
 
-This guide provides comprehensive documentation for authenticating with the IAClé API. The API uses OAuth2 with Auth0 for user authentication and JWT tokens for API access.
+This guide provides comprehensive documentation for authenticating with the Pistisai API. The API uses OAuth2 with Auth0 for user authentication and JWT tokens for API access.
 
 **Validates: Requirements 12.8**
 
@@ -21,7 +21,7 @@ This guide provides comprehensive documentation for authenticating with the IACl
 
 ## Authentication Methods
 
-The IAClé API supports two authentication methods:
+The Pistisai API supports two authentication methods:
 
 ### 1. JWT Bearer Token (User Authentication)
 
@@ -43,7 +43,7 @@ X-API-Key: <API_KEY>
 
 ### Overview
 
-IAClé uses Auth0 for OAuth2 authentication. The flow follows the standard OAuth2 Authorization Code flow with PKCE (Proof Key for Code Exchange) for enhanced security.
+Pistisai uses Auth0 for OAuth2 authentication. The flow follows the standard OAuth2 Authorization Code flow with PKCE (Proof Key for Code Exchange) for enhanced security.
 
 ### OAuth2 Configuration
 

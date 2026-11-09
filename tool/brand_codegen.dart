@@ -11,7 +11,7 @@ import 'brand_emit.dart';
 /// whitelabel and requires a valid licence, supplied either as a path or as
 /// the licence JSON itself via `--license <path|json>`:
 ///
-///   tool/brand.sh iacle --license /path/to/iacle.licence
+///   tool/brand.sh acme --license /path/to/acme.licence
 ///
 /// Without a valid, unexpired licence for that brand the bake refuses to run.
 Future<void> main(List<String> args) async {

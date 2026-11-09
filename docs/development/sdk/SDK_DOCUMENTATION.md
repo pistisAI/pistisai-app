@@ -1,8 +1,8 @@
-# IAClé SDK Documentation
+# Pistisai SDK Documentation
 
 ## Overview
 
-The IAClé SDK is an official JavaScript/TypeScript client library for the IAClé API. It provides a simple, type-safe interface for interacting with all API endpoints.
+The Pistisai SDK is an official JavaScript/TypeScript client library for the Pistisai API. It provides a simple, type-safe interface for interacting with all API endpoints.
 
 **Requirements: 12.6**
 
@@ -24,19 +24,19 @@ The IAClé SDK is an official JavaScript/TypeScript client library for the IACl�
 ### npm
 
 ```bash
-npm install @IAClé/sdk
+npm install @Pistisai/sdk
 ```
 
 ### yarn
 
 ```bash
-yarn add @IAClé/sdk
+yarn add @Pistisai/sdk
 ```
 
 ### pnpm
 
 ```bash
-pnpm add @IAClé/sdk
+pnpm add @Pistisai/sdk
 ```
 
 ## Quick Start
@@ -44,9 +44,9 @@ pnpm add @IAClé/sdk
 ### Basic Setup
 
 ```typescript
-import { IACléClient } from '@IAClé/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
   apiVersion: 'v2',
 });
@@ -393,7 +393,7 @@ interface SDKConfig {
 ### Example Configuration
 
 ```typescript
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
   apiVersion: 'v2',
   timeout: 60000,
@@ -460,13 +460,13 @@ Full TypeScript support with comprehensive types:
 
 ```typescript
 import {
-  IACléClient,
+  PistisaiClient,
   Tunnel,
   User,
   Webhook,
-} from '@IAClé/sdk';
+} from '@Pistisai/sdk';
 
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
 });
 
@@ -481,9 +481,9 @@ const webhook: Webhook = await client.getWebhook('webhook-id');
 ### Complete Authentication Flow
 
 ```typescript
-import { IACléClient } from '@IAClé/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
 });
 
@@ -567,7 +567,7 @@ console.log(`Total deliveries: ${deliveries.pagination.total}`);
 
 For issues, questions, or contributions:
 
-- GitHub: https://github.com/iacle-solutions/iacle-app
+- GitHub: https://github.com/pistisAI/pistisai-app
 - Documentation: https://example.com/docs
 - API Docs: https://api.example.com/api/docs
 
