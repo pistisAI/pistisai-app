@@ -31,7 +31,9 @@ void main() {
     expect(find.text('Self-Hosted via Tailscale'), findsOneWidget);
     expect(find.text('Connected via $domain'), findsOneWidget);
     expect(find.textContaining('OpenClaw'), findsNothing);
-    expect(find.textContaining('pistisai'), findsNothing);
+    if (!domain.toLowerCase().contains('pistisai')) {
+      expect(find.textContaining('pistisai'), findsNothing);
+    }
 
     await tester.tap(find.text('Self-Hosted via Tailscale'));
     await tester.pump();
