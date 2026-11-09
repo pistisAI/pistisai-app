@@ -114,7 +114,7 @@ This document describes the implementation of the admin user search and listing 
     "paymentHistory": [
       {
         "id": "payment-1",
-        "amount": 9.99,
+        "amount": <amount>,
         "status": "succeeded",
         "created_at": "2024-01-01T00:00:00Z"
       }
@@ -124,7 +124,7 @@ This document describes the implementation of the admin user search and listing 
     "activityTimeline": [],
     "statistics": {
       "totalPayments": 1,
-      "totalSpent": 9.99,
+      "totalSpent": <amount>,
       "activeSessions": 0,
       "accountAge": 19
     }

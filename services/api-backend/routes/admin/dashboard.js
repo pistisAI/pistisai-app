@@ -17,6 +17,7 @@
  */
 
 import express from 'express';
+import { tierAmounts } from '../../config/tier-amounts.js';
 import { adminAuth } from '../../middleware/admin-auth.js';
 import logger from '../../logger.js';
 import { getPool, closePool } from '../../database/db-pool.js';
@@ -119,11 +120,7 @@ router.get('/metrics', adminReadOnlyLimiter, adminAuth(), async (req, res) => {
     });
 
     // 5. Calculate monthly recurring revenue (MRR)
-    const tierPricing = {
-      free: 0,
-      premium: 9.99,
-      enterprise: 29.99,
-    };
+    const tierPricing = tierAmounts();
 
     const mrr =
       tierDistribution.premium * tierPricing.premium +

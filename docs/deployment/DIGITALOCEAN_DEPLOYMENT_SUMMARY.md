@@ -244,36 +244,9 @@ All documentation is organized and ready:
 
 ---
 
-## 💰 Cost Estimate
+## Cost
 
-### Your Setup
-
-**DigitalOcean Kubernetes:**
-
-- Cluster Control Plane: **$0** (free)
-- 3 Worker Nodes (s-2vcpu-4gb): **~$72/month**
-- Load Balancer: **~$12/month**
-- Container Registry: **$0** (free up to 500MB)
-- Block Storage (30GB): **~$3/month**
-
-**Total: ~$87/month**
-
-### Cost Optimization Options
-
-**Budget Setup** (~$36/month):
-
-- 2 smaller nodes (s-1vcpu-2gb)
-- Perfect for development/testing
-
-**Standard Setup** (~$60/month):
-
-- 2 standard nodes (s-2vcpu-4gb)
-- Good for small production deployments
-
-**Recommended Setup** (~$87/month):
-
-- 3 standard nodes (s-2vcpu-4gb)
-- High availability, auto-scaling ready
+Size the cluster from the provider's current Kubernetes rates. Do not commit an account-specific estimate.
 
 ---
 

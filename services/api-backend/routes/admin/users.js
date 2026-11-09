@@ -15,6 +15,7 @@
  */
 
 import express from 'express';
+import { tierAmounts } from '../../config/tier-amounts.js';
 import { adminAuth } from '../../middleware/admin-auth.js';
 import { logAdminAction } from '../../utils/audit-logger.js';
 import logger from '../../logger.js';
@@ -509,11 +510,7 @@ router.patch(
 
       // Calculate prorated charge for upgrades
       let proratedCharge = 0;
-      const tierPricing = {
-        free: 0,
-        premium: 9.99,
-        enterprise: 29.99,
-      };
+      const tierPricing = tierAmounts();
 
       if (tierPricing[newTier] > tierPricing[previousTier]) {
         // Upgrade - calculate prorated charge

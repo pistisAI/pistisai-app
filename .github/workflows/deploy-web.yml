@@ -21,8 +21,8 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: https://deploy.pistisai.app
-  COOLIFY_APP_UUID: umnmzbzlgcnjssqphnrgiejt
-  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST || '68.168.30.4' }}
+  COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST }}
 
 jobs:
   analyze:
@@ -91,6 +91,9 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
+          build-args: |
+            SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+            SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Verify image pushed
         run: |

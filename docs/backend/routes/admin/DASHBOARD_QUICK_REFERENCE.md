@@ -49,7 +49,7 @@ Authorization: Bearer <JWT_TOKEN>
 | Total Users           | Registered users (excluding deleted) | `COUNT(users WHERE deleted_at IS NULL)`                                |
 | Active Users          | Users active in last 30 days         | `COUNT(DISTINCT user_sessions WHERE last_activity >= NOW() - 30 days)` |
 | New Users             | Registrations this month             | `COUNT(users WHERE created_at >= current_month_start)`                 |
-| MRR                   | Monthly Recurring Revenue            | `(Premium × $9.99) + (Enterprise × $29.99)`                            |
+| MRR                   | Monthly Recurring Revenue            | `(Premium × <amount>) + (Enterprise × <amount>)`                            |
 | Current Month Revenue | Total revenue this month             | `SUM(successful_transactions WHERE created_at >= current_month_start)` |
 | Conversion Rate       | Paid subscription percentage         | `(Paid Subscribers / Total Users) × 100`                               |
 

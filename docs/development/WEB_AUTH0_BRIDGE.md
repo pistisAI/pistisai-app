@@ -50,9 +50,9 @@ The recent refactoring from direct function references to function wrappers prov
 The bridge is configured with Auth0 tenant-specific settings:
 
 ```javascript
-const AUTH0_DOMAIN = 'dev-vivn1fcgzi0c2czy.us.auth0.com';
-const AUTH0_CLIENT_ID = 'FuXPnevXpp311CdYHGsbNZe9t3D8Ts7A';
-const AUTH0_AUDIENCE = 'https://dev-vivn1fcgzi0c2czy.us.auth0.com/api/v2/';
+const AUTH0_DOMAIN = 'your-tenant.us.auth0.com';
+const AUTH0_CLIENT_ID = 'your-auth0-client-id';
+const AUTH0_AUDIENCE = 'https://your-tenant.us.auth0.com/api/v2/';
 ```
 
 ### Auth0 Client Initialization

@@ -81,12 +81,17 @@ void main([List<String> args = const []]) async {
     }
   }
 
-  // Initialize Supabase before any other async operations
-  await Supabase.initialize(
-    url: AppConfig.supabaseUrl,
-    publishableKey: AppConfig.supabaseAnonKey,
-    debug: kDebugMode,
-  );
+  // Cloud auth is optional. Builds without both defines stay local-only.
+  if (AppConfig.supabaseUrl.isNotEmpty &&
+      AppConfig.supabaseAnonKey.isNotEmpty) {
+    await Supabase.initialize(
+      url: AppConfig.supabaseUrl,
+      publishableKey: AppConfig.supabaseAnonKey,
+      debug: kDebugMode,
+    );
+  } else {
+    debugPrint('[Main] Supabase is not configured for this build.');
+  }
 
   // Register the desktop camera backend (Linux/macOS/Windows) for the
   // `camera` plugin. The official plugin has no Linux impl; camera_desktop

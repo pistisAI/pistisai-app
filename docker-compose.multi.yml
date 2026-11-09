@@ -80,7 +80,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - SUPABASE_URL=https://bpqwsjshoqxvtdttzvbr.supabase.co
+      - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
       - SUPABASE_AUDIENCE=authenticated
     volumes:

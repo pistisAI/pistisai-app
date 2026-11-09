@@ -323,7 +323,7 @@ curl https://api.yourdomain.com/health
 curl -i -N \
   -H "Connection: Upgrade" \
   -H "Upgrade: websocket" \
-  -H "Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==" \
+  -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" \
   -H "Sec-WebSocket-Version: 13" \
   https://api.yourdomain.com/ws/tunnel?token=YOUR_JWT_TOKEN
 ```

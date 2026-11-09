@@ -111,7 +111,7 @@ psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/seeds
 
 | Email                           | Role          | Purpose                        |
 | ------------------------------- | ------------- | ------------------------------ |
-| cmaltais@pistisai.app | Super Admin   | Full admin access              |
+| admin@example.com | Super Admin   | Full admin access              |
 | test.support@example.com        | Support Admin | Test support admin permissions |
 | test.finance@example.com        | Finance Admin | Test finance admin permissions |
 

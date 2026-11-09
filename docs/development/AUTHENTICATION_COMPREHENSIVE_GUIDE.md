@@ -22,7 +22,7 @@
 
 After successful Auth0 login, all API calls failed with 401 errors because:
 
-- **Frontend** requested tokens with audience: `https://dev-vivn1fcgzi0c2czy.us.auth0.com/api/v2/` (Auth0 Management API)
+- **Frontend** requested tokens with audience: `https://your-tenant.us.auth0.com/api/v2/` (Auth0 Management API)
 - **Backend** expected tokens with audience: `https://api.pistisai.app` (Application API)
 - **Result**: Audience mismatch → Backend rejected tokens → 401 Unauthorized
 
@@ -34,7 +34,7 @@ After successful Auth0 login, all API calls failed with 401 errors because:
 
 ```javascript
 // BEFORE (WRONG)
-const AUTH0_AUDIENCE = 'https://dev-vivn1fcgzi0c2czy.us.auth0.com/api/v2/';
+const AUTH0_AUDIENCE = 'https://your-tenant.us.auth0.com/api/v2/';
 
 // AFTER (CORRECT)  
 const AUTH0_AUDIENCE = 'https://api.pistisai.app';
@@ -76,7 +76,7 @@ Backend Validates Token
 
 #### Frontend (web/auth0-bridge.js)
 
-- **Auth0 Domain**: `dev-vivn1fcgzi0c2czy.us.auth0.com`
+- **Auth0 Domain**: `your-tenant.us.auth0.com`
 - **Client ID**: `FuXPnevXpp311CdYHGsbNZe9t3D8Ts7A`
 - **Audience**: `https://api.pistisai.app` ✅
 - **Scope**: `openid profile email offline_access`
@@ -84,7 +84,7 @@ Backend Validates Token
 #### Backend (services/api-backend/middleware/auth.js)
 
 - **Expected Audience**: `https://api.pistisai.app`
-- **JWKS URI**: `https://dev-vivn1fcgzi0c2czy.us.auth0.com/.well-known/jwks.json`
+- **JWKS URI**: `https://your-tenant.us.auth0.com/.well-known/jwks.json`
 - **Validation**: RS256 signature + audience verification
 
 ---
@@ -96,7 +96,7 @@ Backend Validates Token
 ```bash
 # Required (or uses default)
 AUTH0_AUDIENCE=https://api.pistisai.app
-AUTH0_JWKS_URI=https://dev-vivn1fcgzi0c2czy.us.auth0.com/.well-known/jwks.json
+AUTH0_JWKS_URI=https://your-tenant.us.auth0.com/.well-known/jwks.json
 
 # For HS256 fallback (internal tokens)
 SUPABASE_JWT_SECRET=(configured)
@@ -159,7 +159,7 @@ Look for: `Token verification successful (Audience verified)`
 1. **Test JWKS endpoint**
 
    ```bash
-   curl https://dev-vivn1fcgzi0c2czy.us.auth0.com/.well-known/jwks.json
+   curl https://your-tenant.us.auth0.com/.well-known/jwks.json
    ```
 
 2. **Check token expiration**

@@ -58,7 +58,7 @@ If `KILOCODE_TOKEN` is not set:
 - **Kilocode API**: Free tier includes generous limits for `grok-code-fast-1`
 - **Each version bump**: 1 API call
 - **Typical usage**: ~10-50 calls/month
-- **Cost**: $0 (within free tier)
+- **Cost**: within the provider free tier
 
 ## Privacy
 

@@ -60,7 +60,7 @@ curl -X GET "https://api.pistisai.app/api/admin/payments/transactions?page=1&lim
         "subscription_id": "770e8400-e29b-41d4-a716-446655440002",
         "stripe_payment_intent_id": "pi_1234567890",
         "stripe_charge_id": "ch_1234567890",
-        "amount": 29.99,
+        "amount": <amount>,
         "currency": "USD",
         "status": "succeeded",
         "payment_method_type": "card",
@@ -148,7 +148,7 @@ curl -X GET "https://api.pistisai.app/api/admin/payments/transactions/550e8400-e
       "subscription_id": "770e8400-e29b-41d4-a716-446655440002",
       "stripe_payment_intent_id": "pi_1234567890",
       "stripe_charge_id": "ch_1234567890",
-      "amount": 29.99,
+      "amount": <amount>,
       "currency": "USD",
       "status": "succeeded",
       "payment_method_type": "card",
@@ -195,9 +195,9 @@ curl -X GET "https://api.pistisai.app/api/admin/payments/transactions/550e8400-e
       "created_at": "2025-01-15T10:30:00Z"
     },
     "summary": {
-      "originalAmount": 29.99,
+      "originalAmount": <amount>,
       "totalRefunded": 0,
-      "netAmount": 29.99,
+      "netAmount": <amount>,
       "refundCount": 0,
       "isFullyRefunded": false
     }
@@ -229,7 +229,7 @@ curl -X GET "https://api.pistisai.app/api/admin/payments/transactions/550e8400-e
 ```json
 {
   "transactionId": "550e8400-e29b-41d4-a716-446655440000",
-  "amount": 29.99,
+  "amount": <amount>,
   "reason": "customer_request",
   "reasonDetails": "Customer requested refund due to service not meeting expectations"
 }
@@ -261,7 +261,7 @@ curl -X POST "https://api.pistisai.app/api/admin/payments/refunds" \
   -H "Content-Type: application/json" \
   -d '{
     "transactionId": "550e8400-e29b-41d4-a716-446655440000",
-    "amount": 29.99,
+    "amount": <amount>,
     "reason": "customer_request",
     "reasonDetails": "Customer requested refund"
   }'
@@ -278,7 +278,7 @@ curl -X POST "https://api.pistisai.app/api/admin/payments/refunds" \
       "id": "990e8400-e29b-41d4-a716-446655440004",
       "transaction_id": "550e8400-e29b-41d4-a716-446655440000",
       "stripe_refund_id": "re_1234567890",
-      "amount": 29.99,
+      "amount": <amount>,
       "currency": "USD",
       "reason": "customer_request",
       "reason_details": "Customer requested refund",
@@ -290,8 +290,8 @@ curl -X POST "https://api.pistisai.app/api/admin/payments/refunds" \
     },
     "transaction": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
-      "originalAmount": 29.99,
-      "totalRefunded": 29.99,
+      "originalAmount": <amount>,
+      "totalRefunded": <amount>,
       "remainingAmount": 0
     },
     "stripeRefund": {

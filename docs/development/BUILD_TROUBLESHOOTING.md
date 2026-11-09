@@ -496,10 +496,10 @@ Build times significantly longer than expected may indicate:
 
 | Solution | Monthly Cost | Setup Time | Maintenance |
 |----------|-------------|------------|-------------|
-| GitHub-hosted (public) | **$0** | 0 minutes | None |
-| GitHub-hosted (private) | ~$0-8/month | 0 minutes | None |
-| Self-hosted runner | $0-50+/month | 2-4 hours | Ongoing |
-| Cloud VM (Azure/AWS) | $50-200/month | 4-8 hours | Ongoing |
+| GitHub-hosted (public) | provider free tier | 0 minutes | None |
+| GitHub-hosted (private) | see GitHub | 0 minutes | None |
+| Self-hosted runner | see the host | 2-4 hours | Ongoing |
+| Cloud VM (Azure/AWS) | see the provider | 4-8 hours | Ongoing |
 
 **Savings with GitHub-Hosted Runners:**
 

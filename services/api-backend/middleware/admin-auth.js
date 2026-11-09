@@ -14,8 +14,8 @@ let adminAuthService = null;
 function getAdminAuthService() {
   if (!adminAuthService) {
     adminAuthService = new AuthService({
-      SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
-      SUPABASE_JWKS_URI: process.env.SUPABASE_JWKS_URI || `${process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co'}/auth/v1/.well-known/jwks.json`,
+      SUPABASE_URL: process.env.SUPABASE_URL || '',
+      SUPABASE_JWKS_URI: process.env.SUPABASE_JWKS_URI || `${process.env.SUPABASE_URL || ''}/auth/v1/.well-known/jwks.json`,
     });
   }
   return adminAuthService;

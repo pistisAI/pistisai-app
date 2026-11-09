@@ -32,7 +32,7 @@ cd C:\actions-runner  # or wherever your runner is installed
 
 **Note:** Replace:
 
-- `YOUR_USERNAME` with your Windows username (e.g., `rightguy` or `DOMAIN\username`)
+- `YOUR_USERNAME` with your Windows username (for example, `YOUR_USERNAME` or `DOMAIN\username`)
 - `YOUR_PASSWORD` with your Windows password
 
 **Alternative:** If you don't want to provide password in command line:

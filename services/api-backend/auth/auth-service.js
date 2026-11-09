@@ -17,10 +17,10 @@ import { DatabaseMigratorPG } from '../database/migrate-pg.js';
 export class AuthService {
   constructor(config) {
     this.config = {
-      SUPABASE_URL: process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co',
+      SUPABASE_URL: process.env.SUPABASE_URL || '',
       SUPABASE_JWKS_URI:
         process.env.SUPABASE_JWKS_URI ||
-        `${process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co'}/auth/v1/.well-known/jwks.json`,
+        `${process.env.SUPABASE_URL || ''}/auth/v1/.well-known/jwks.json`,
       SESSION_TIMEOUT: parseInt(process.env.SESSION_TIMEOUT) || 3600000, // 1 hour
       MAX_SESSIONS_PER_USER: parseInt(process.env.MAX_SESSIONS_PER_USER) || 5,
       ...config,
@@ -226,13 +226,13 @@ export class AuthService {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: 'authenticated',
           email: '<EMAIL>',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev' },
           scope: 'openid profile email admin',
         };
       } else {
@@ -305,13 +305,13 @@ export class AuthService {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: 'authenticated',
           email: '<EMAIL>',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev' },
           scope: 'openid profile email admin',
         };
       }

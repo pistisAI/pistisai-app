@@ -104,7 +104,7 @@ Required environment variables:
 - `DB_USER=appuser`
 - `DB_PASSWORD=<your-password>`
 - `DB_HOST=/cloudsql/pistisai-468303:us-central1:Pistisai-db`
-- `SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com`
+- `SUPABASE_AUTH_DOMAIN=your-tenant.us.auth0.com`
 - `SUPABASE_AUTH_AUDIENCE=https://api.pistisai.app`
 
 ### Step 3: Build and Deploy
@@ -120,7 +120,7 @@ gcloud run deploy pistisai-api \
     --region us-central1 \
     --allow-unauthenticated \
     --memory 1Gi \
-    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com,SUPABASE_AUTH_AUDIENCE=https://api.pistisai.app" \
+    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,SUPABASE_AUTH_DOMAIN=your-tenant.us.auth0.com,SUPABASE_AUTH_AUDIENCE=https://api.pistisai.app" \
     --add-cloudsql-instances Pistisai-468303:us-central1:Pistisai-db
 ```
 

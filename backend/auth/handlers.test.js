@@ -45,7 +45,7 @@ describe('Auth Backend', () => {
         .set('Authorization', `Bearer ${DEV_TOKEN}`);
       expect(res.status).toBe(200);
       expect(res.body.message).toBe('Protected endpoint');
-      expect(res.body.user_id).toBe('google-oauth2|102509433531341542550');
+      expect(res.body.user_id).toBe('dev-user');
       expect(res.body.email).toBe('dev@pistisai.app');
     });
 

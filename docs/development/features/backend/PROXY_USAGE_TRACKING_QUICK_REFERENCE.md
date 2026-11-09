@@ -412,15 +412,12 @@ Get billing summary for a user.
 
 ### Free Tier
 
-- Base charge: $0
-- Data transfer charge: $0
-- Total: $0
+- Base charge: none
+- Data transfer charge: none
 
 ### Premium Tier
 
-- Base charge: $10/month
-- Data transfer charge: $0.01 per GB
-- Total: $10 + (total_data_gb * $0.01)
+- Base charge and data transfer come from the environment. Do not hardcode them.
 
 ### Enterprise Tier
 

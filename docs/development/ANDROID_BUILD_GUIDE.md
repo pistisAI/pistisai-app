@@ -519,7 +519,7 @@ If you need to rotate the keystore:
 ### GitHub Actions Minutes
 
 - **Public repositories**: FREE unlimited minutes
-- **Private repositories**: 2,000 free minutes/month, then $0.008/minute
+- **Private repositories**: a free monthly minute allowance, then the provider's per-minute rate
 
 ### Build Time Estimates
 

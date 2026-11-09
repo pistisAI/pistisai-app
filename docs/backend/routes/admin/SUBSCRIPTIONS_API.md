@@ -166,7 +166,7 @@ curl -X GET "https://api.pistisai.app/api/admin/subscriptions/550e8400-e29b-41d4
     "paymentHistory": [
       {
         "id": "990e8400-e29b-41d4-a716-446655440004",
-        "amount": 29.99,
+        "amount": <amount>,
         "currency": "USD",
         "status": "succeeded",
         "paymentMethodType": "card",

@@ -182,7 +182,7 @@ SELECT
   s.id,
   'pi_test_success_' || substring(u.id::text, 1, 8),
   'ch_test_success_' || substring(u.id::text, 1, 8),
-  29.99,
+  1.00,
   'USD',
   'succeeded',
   'card',
@@ -215,7 +215,7 @@ SELECT
   s.id,
   'pi_test_enterprise_' || substring(u.id::text, 1, 8),
   'ch_test_enterprise_' || substring(u.id::text, 1, 8),
-  99.99,
+  1.00,
   'USD',
   'succeeded',
   'card',
@@ -247,7 +247,7 @@ SELECT
   u.id,
   s.id,
   'pi_test_failed_' || substring(u.id::text, 1, 8),
-  29.99,
+  1.00,
   'USD',
   'failed',
   'card',
@@ -278,7 +278,7 @@ SELECT
   u.id,
   s.id,
   'pi_test_pending_' || substring(u.id::text, 1, 8),
-  29.99,
+  1.00,
   'USD',
   'pending',
   'card',
@@ -310,7 +310,7 @@ SELECT
   s.id,
   'pi_test_refunded_' || substring(u.id::text, 1, 8),
   'ch_test_refunded_' || substring(u.id::text, 1, 8),
-  29.99,
+  1.00,
   'USD',
   'refunded',
   'card',
@@ -447,7 +447,7 @@ INSERT INTO refunds (
 SELECT 
   pt.id,
   're_test_refund_' || substring(pt.id::text, 1, 8),
-  29.99,
+  1.00,
   'USD',
   'customer_request',
   'Customer requested refund due to service not meeting expectations',
@@ -457,7 +457,7 @@ SELECT
   NOW() - INTERVAL '30 days'
 FROM payment_transactions pt
 JOIN users u ON pt.user_id = u.id
-LEFT JOIN users admin_u ON admin_u.email = 'cmaltais@pistisai.app'
+LEFT JOIN users admin_u ON admin_u.email = 'admin@example.com'
 WHERE u.email = 'test.canceled@example.com'
   AND pt.stripe_payment_intent_id LIKE 'pi_test_refunded_%'
 ON CONFLICT (stripe_refund_id) DO NOTHING;
@@ -465,13 +465,13 @@ ON CONFLICT (stripe_refund_id) DO NOTHING;
 -- ============================================================================
 -- ADMIN ROLES
 -- ============================================================================
--- Insert admin role for cmaltais@pistisai.app (Super Admin)
+-- Insert admin role for admin@example.com (Super Admin)
 -- This is also done in the migration, but we ensure it here as well
 
 INSERT INTO admin_roles (user_id, role, is_active, granted_at)
 SELECT id, 'super_admin', true, NOW() - INTERVAL '180 days'
 FROM users
-WHERE email = 'cmaltais@pistisai.app'
+WHERE email = 'admin@example.com'
 ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
 
 -- Insert test support admin
@@ -490,7 +490,7 @@ SELECT
 FROM users u
 CROSS JOIN users admin_u
 WHERE u.email = 'test.support@example.com'
-  AND admin_u.email = 'cmaltais@pistisai.app'
+  AND admin_u.email = 'admin@example.com'
 ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
 
 -- Insert test finance admin
@@ -509,7 +509,7 @@ SELECT
 FROM users u
 CROSS JOIN users admin_u
 WHERE u.email = 'test.finance@example.com'
-  AND admin_u.email = 'cmaltais@pistisai.app'
+  AND admin_u.email = 'admin@example.com'
 ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
 
 -- ============================================================================
@@ -549,7 +549,7 @@ FROM users u
 JOIN subscriptions s ON s.user_id = u.id
 CROSS JOIN users admin_u
 WHERE u.email = 'test.premium@example.com'
-  AND admin_u.email = 'cmaltais@pistisai.app';
+  AND admin_u.email = 'admin@example.com';
 
 -- Refund processed log
 INSERT INTO admin_audit_logs (
@@ -572,7 +572,7 @@ SELECT
   pt.id::text,
   u.id,
   jsonb_build_object(
-    'amount', 29.99,
+    'amount', 1.00,
     'currency', 'USD',
     'reason', 'customer_request',
     'reason_details', 'Customer requested refund due to service not meeting expectations'
@@ -585,7 +585,7 @@ JOIN payment_transactions pt ON pt.user_id = u.id
 CROSS JOIN users admin_u
 WHERE u.email = 'test.canceled@example.com'
   AND pt.stripe_payment_intent_id LIKE 'pi_test_refunded_%'
-  AND admin_u.email = 'cmaltais@pistisai.app';
+  AND admin_u.email = 'admin@example.com';
 
 -- Admin role granted log
 INSERT INTO admin_audit_logs (
@@ -617,7 +617,7 @@ SELECT
 FROM users support_u
 CROSS JOIN users admin_u
 WHERE support_u.email = 'test.support@example.com'
-  AND admin_u.email = 'cmaltais@pistisai.app';
+  AND admin_u.email = 'admin@example.com';
 
 -- ============================================================================
 -- SEED DATA COMPLETE

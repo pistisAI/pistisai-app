@@ -56,7 +56,7 @@ const paymentService = new PaymentService(db);
 // Process a payment
 const result = await paymentService.processPayment({
   userId: 'user-uuid',
-  amount: 29.99,
+  amount: <amount>,
   currency: 'USD',
   paymentMethodId: 'pm_xxx',
   subscriptionId: 'sub-uuid', // optional
@@ -149,7 +149,7 @@ const refundService = new RefundService(db);
 // Process a refund
 const result = await refundService.processRefund({
   transactionId: 'transaction-uuid',
-  amount: 29.99, // null for full refund
+  amount: <amount>, // null for full refund
   reason: 'customer_request',
   reasonDetails: 'Customer requested refund due to...',
   adminUserId: 'admin-uuid',

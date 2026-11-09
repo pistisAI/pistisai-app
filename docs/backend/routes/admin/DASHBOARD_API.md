@@ -59,7 +59,7 @@ Get comprehensive dashboard metrics for the Admin Center.
         "id": "uuid",
         "userId": "uuid",
         "userEmail": "user@example.com",
-        "amount": "29.99",
+        "amount": "<amount>",
         "currency": "USD",
         "status": "succeeded",
         "paymentMethod": "card",
@@ -138,7 +138,7 @@ Count of users by their active subscription tier. Users without active subscript
 Calculated as:
 
 ```
-MRR = (Premium Users × $9.99) + (Enterprise Users × $29.99)
+MRR = (Premium Users × <amount>) + (Enterprise Users × <amount>)
 ```
 
 ### Current Month Revenue

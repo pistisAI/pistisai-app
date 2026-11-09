@@ -80,8 +80,28 @@ certbot/
 chan_pjsip.so
 chan_sip.so
 
-# SQLite databases
+# SQLite databases and dumps
 *.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+
+# Keystores, private keys, and service-account files
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+service-account*.json
+*-service-account.json
+credentials.json
+
+# Local agent machine config
+.agents/skills.json
 
 # Temporary files
 tmp/

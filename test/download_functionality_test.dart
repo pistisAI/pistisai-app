@@ -12,7 +12,7 @@ import 'package:dio/dio.dart';
 /// and perform real assertions when explicitly enabled.
 void main() {
   group('Download Functionality Tests', () {
-    const String repoOwner = 'imrightguy';
+    const String repoOwner = 'pistisAI';
     const String repoName = 'Pistisai';
     const String baseApiUrl = 'https://api.github.com/repos';
     final bool networkEnabled =
@@ -28,8 +28,7 @@ void main() {
       final data = response.data;
       expect(data['tag_name'], isNotNull,
           reason: 'Release should have a tag name');
-      expect(data['assets'], isNotEmpty,
-          reason: 'Release should have assets');
+      expect(data['assets'], isNotEmpty, reason: 'Release should have assets');
     }, skip: !networkEnabled);
 
     test('GitHub API - Release Assets Have Valid URLs', () async {
@@ -61,14 +60,18 @@ void main() {
 
       final data = response.data;
       final List<dynamic> assets = data['assets'];
-      final assetNames = assets.map((asset) => asset['name'] as String).toList();
+      final assetNames =
+          assets.map((asset) => asset['name'] as String).toList();
 
       // Check for expected files
-      final hasPortableZip = assetNames.any((name) => name.contains('portable.zip'));
-      final hasWindowsInstaller = assetNames.any((name) => name.contains('Setup.exe'));
+      final hasPortableZip =
+          assetNames.any((name) => name.contains('portable.zip'));
+      final hasWindowsInstaller =
+          assetNames.any((name) => name.contains('Setup.exe'));
 
       expect(hasPortableZip, true, reason: 'Should have portable ZIP file');
-      expect(hasWindowsInstaller, true, reason: 'Should have Windows installer');
+      expect(hasWindowsInstaller, true,
+          reason: 'Should have Windows installer');
     }, skip: !networkEnabled);
 
     test('Asset Sizes Are Reasonable', () async {
@@ -118,7 +121,7 @@ void main() {
   group('Download URL Construction Tests', () {
     test('Construct Valid Download URLs', () {
       const version = 'v3.14.45';
-      const repoOwner = 'imrightguy';
+      const repoOwner = 'pistisAI';
       const repoName = 'Pistisai';
 
       final portableUrl =

@@ -47,7 +47,7 @@ ctll_<64-character-hex-string>
 Example:
 
 ```
-ctll_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2
+ctll_example_not_a_real_key
 ```
 
 ### Key Components
@@ -125,7 +125,7 @@ Response (201):
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "apiKey": "ctll_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
+  "apiKey": "ctll_example_not_a_real_key",
   "keyPrefix": "ctll_a1b2",
   "name": "Production API Key",
   "description": "For production service-to-service communication",
@@ -193,7 +193,7 @@ Response (200):
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440001",
-  "apiKey": "ctll_b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2g3",
+  "apiKey": "ctll_example_not_a_real_key",
   "keyPrefix": "ctll_b2c3",
   "name": "Production API Key",
   "description": "For production service-to-service communication",
@@ -255,14 +255,14 @@ API keys can be provided in two ways:
 #### 1. Authorization Header (Recommended)
 
 ```bash
-curl -H "Authorization: Bearer ctll_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2" \
+curl -H "Authorization: Bearer ctll_example_not_a_real_key" \
   https://api.pistisai.app/api/tunnels
 ```
 
 #### 2. X-API-Key Header
 
 ```bash
-curl -H "X-API-Key: ctll_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2" \
+curl -H "X-API-Key: ctll_example_not_a_real_key" \
   https://api.pistisai.app/api/tunnels
 ```
 

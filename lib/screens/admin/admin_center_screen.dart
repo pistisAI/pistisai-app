@@ -161,10 +161,11 @@ class _AdminCenterScreenState extends State<AdminCenterScreen> {
       debugPrint(
           '[AdminCenterScreen] Checking admin authorization for: $userEmail');
 
-      // Check if user email matches the authorized admin email.
-      // The Admin Center is only available on Web (Cloud).
+      // The admin allow-list is a build-time define, not a committed address.
+      const adminEmail = String.fromEnvironment('PISTISAI_ADMIN_EMAIL');
       final isAuthorized = _platformAdapter.platformService.isWeb &&
-          userEmail == 'christopher.maltais@gmail.com';
+          adminEmail.isNotEmpty &&
+          userEmail == adminEmail;
 
       if (isAuthorized) {
         // Initialize admin service to load roles

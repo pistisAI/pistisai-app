@@ -60,7 +60,7 @@ const refundService = new RefundService(db);
 ```javascript
 const result = await paymentService.processPayment({
   userId: 'user-uuid',
-  amount: 29.99,
+  amount: <amount>,
   currency: 'USD',
   paymentMethodId: 'pm_1234567890',
   metadata: {
@@ -100,7 +100,7 @@ if (result.success) {
 ```javascript
 const result = await refundService.processRefund({
   transactionId: 'transaction-uuid',
-  amount: 29.99, // or null for full refund
+  amount: <amount>, // or null for full refund
   reason: 'customer_request',
   reasonDetails: 'Customer was not satisfied',
   adminUserId: 'admin-uuid',

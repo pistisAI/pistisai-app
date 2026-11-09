@@ -222,8 +222,8 @@ Export report data in CSV or PDF format for offline analysis.
 
 ```csv
 id,created_at,user_email,username,amount,currency,status,subscription_tier,payment_method_type,payment_method_last4
-uuid-1,2025-01-15T10:30:00Z,user@example.com,john_doe,50.00,USD,succeeded,premium,card,4242
-uuid-2,2025-01-16T14:20:00Z,user2@example.com,jane_smith,100.00,USD,succeeded,enterprise,card,1234
+uuid-1,2025-01-15T10:30:00Z,user@example.com,john_doe,<amount>,USD,succeeded,premium,card,4242
+uuid-2,2025-01-16T14:20:00Z,user2@example.com,jane_smith,<amount>,USD,succeeded,enterprise,card,1234
 ```
 
 **Subscriptions Report:**
@@ -238,8 +238,8 @@ uuid-2,2025-01-05T00:00:00Z,user2@example.com,jane_smith,enterprise,active,2025-
 
 ```csv
 id,created_at,user_email,username,amount,currency,status,payment_method_type,payment_method_last4,stripe_payment_intent_id,subscription_tier
-uuid-1,2025-01-15T10:30:00Z,user@example.com,john_doe,50.00,USD,succeeded,card,4242,pi_xxx,premium
-uuid-2,2025-01-16T14:20:00Z,user2@example.com,jane_smith,100.00,USD,succeeded,card,1234,pi_yyy,enterprise
+uuid-1,2025-01-15T10:30:00Z,user@example.com,john_doe,<amount>,USD,succeeded,card,4242,pi_xxx,premium
+uuid-2,2025-01-16T14:20:00Z,user2@example.com,jane_smith,<amount>,USD,succeeded,card,1234,pi_yyy,enterprise
 ```
 
 **Example Request:**

@@ -48,7 +48,7 @@ Pistisai uses Auth0 for OAuth2 authentication. The flow follows the standard OAu
 ### OAuth2 Configuration
 
 ```
-Auth0 Domain: dev-v2f2p008x3dr74ww.us.auth0.com
+Auth0 Domain: your-tenant.us.auth0.com
 Client ID: <YOUR_CLIENT_ID>
 Audience: https://api.pistisai.app
 Redirect URI: https://app.pistisai.app/callback
@@ -63,7 +63,7 @@ The Authorization Code flow is the most secure method for user authentication.
 Redirect the user to Auth0's authorization endpoint:
 
 ```
-https://dev-v2f2p008x3dr74ww.us.auth0.com/authorize?
+https://your-tenant.us.auth0.com/authorize?
   client_id=YOUR_CLIENT_ID&
   response_type=code&
   redirect_uri=https://app.pistisai.app/callback&
@@ -100,7 +100,7 @@ https://app.pistisai.app/callback?
 Exchange the authorization code for access and refresh tokens:
 
 ```bash
-curl -X POST https://dev-v2f2p008x3dr74ww.us.auth0.com/oauth/token \
+curl -X POST https://your-tenant.us.auth0.com/oauth/token \
   -H "Content-Type: application/json" \
   -d '{
     "client_id": "YOUR_CLIENT_ID",
@@ -175,11 +175,11 @@ SIGNATURE_HERE
 
 ```json
 {
-  "iss": "https://dev-v2f2p008x3dr74ww.us.auth0.com/",
+  "iss": "https://your-tenant.us.auth0.com/",
   "sub": "auth0|6345a2ff123456789abcdef",
   "aud": [
     "https://api.pistisai.app",
-    "https://dev-v2f2p008x3dr74ww.us.auth0.com/userinfo"
+    "https://your-tenant.us.auth0.com/userinfo"
   ],
   "iat": 1673804000,
   "exp": 1673890400,
@@ -312,7 +312,7 @@ npm install @auth0/auth0-spa-js
 import { Auth0Client } from '@auth0/auth0-spa-js';
 
 const auth0 = new Auth0Client({
-  domain: 'dev-v2f2p008x3dr74ww.us.auth0.com',
+  domain: 'your-tenant.us.auth0.com',
   clientId: 'YOUR_CLIENT_ID',
   authorizationParams: {
     redirect_uri: window.location.origin + '/callback',
@@ -391,7 +391,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 const FlutterAppAuth _appAuth = FlutterAppAuth();
 const _secureStorage = FlutterSecureStorage();
 
-const _auth0Domain = 'dev-v2f2p008x3dr74ww.us.auth0.com';
+const _auth0Domain = 'your-tenant.us.auth0.com';
 const _clientId = 'YOUR_CLIENT_ID';
 const _redirectUrl = 'com.Pistisai://callback';
 const _audience = 'https://api.pistisai.app';
@@ -532,7 +532,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as AppAuth from 'expo-app-auth';
 
 const config = {
-  issuer: 'https://dev-v2f2p008x3dr74ww.us.auth0.com',
+  issuer: 'https://your-tenant.us.auth0.com',
   clientId: 'YOUR_CLIENT_ID',
   redirectUrl: 'com.Pistisai://callback',
   scopes: ['openid', 'profile', 'email'],
@@ -597,7 +597,7 @@ npm install jsonwebtoken axios
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 
-const SUPABASE_AUTH_DOMAIN = 'dev-v2f2p008x3dr74ww.us.auth0.com';
+const SUPABASE_AUTH_DOMAIN = 'your-tenant.us.auth0.com';
 const SUPABASE_AUTH_CLIENT_ID = process.env.SUPABASE_AUTH_CLIENT_ID;
 const SUPABASE_AUTH_CLIENT_SECRET = process.env.SUPABASE_AUTH_CLIENT_SECRET;
 const API_AUDIENCE = 'https://api.pistisai.app';

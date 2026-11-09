@@ -8,7 +8,7 @@ The OpenClaw logo (`openclaw_logo.png`) is not currently included in this reposi
 
 The `OpenClawNavigationShell` widget has been implemented with a graceful fallback mechanism. When the logo file is missing, it automatically displays `Icons.smart_toy` instead.
 
-See: `/run/media/rightguy/data_storage/dev/Pistisai/lib/widgets/navigation/openclaw_navigation_shell.dart` line 94
+See `lib/widgets/navigation/openclaw_navigation_shell.dart`.
 
 ```dart
 Image.asset(

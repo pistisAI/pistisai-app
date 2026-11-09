@@ -77,15 +77,14 @@ class _PricingScreenState extends State<PricingScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Price: ${plan['price']}'),
-            SizedBox(height: 16),
             ...List.generate(
               (plan['benefits'] as List).length,
               (index) => Padding(
                 padding: EdgeInsets.only(bottom: 4),
                 child: Row(
                   children: [
-                    Icon(Icons.check, size: 16, color: AppTheme.colorsOf(context).success),
+                    Icon(Icons.check,
+                        size: 16, color: AppTheme.colorsOf(context).success),
                     const SizedBox(width: 8),
                     Text(plan['benefits'][index]),
                   ],
@@ -143,7 +142,6 @@ class _PricingScreenState extends State<PricingScreen> {
       {
         'id': 'free',
         'name': 'Free',
-        'price': '\$0/month',
         'description': 'For users who want basic functionality',
         'color': AppTheme.colorsOf(context).textColorLight,
         'icon': Icons.info,
@@ -159,7 +157,6 @@ class _PricingScreenState extends State<PricingScreen> {
       {
         'id': 'premium',
         'name': 'Premium',
-        'price': '\$9.99/month',
         'description': 'For power users who need more features',
         'color': AppTheme.colorsOf(context).info,
         'icon': Icons.star,
@@ -177,7 +174,6 @@ class _PricingScreenState extends State<PricingScreen> {
       {
         'id': 'enterprise',
         'name': 'Enterprise',
-        'price': '\$29.99/month',
         'description': 'For teams and organizations',
         'color': AppTheme.colorsOf(context).accent,
         'icon': Icons.diamond,
@@ -233,10 +229,13 @@ class _PricingScreenState extends State<PricingScreen> {
                         SizedBox(height: 8),
                         Text(
                           'Select the plan that best fits your needs',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: AppTheme.colorsOf(context).textColorLight,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(
+                                color:
+                                    AppTheme.colorsOf(context).textColorLight,
+                              ),
                         ),
                       ],
                     ),
@@ -248,17 +247,24 @@ class _PricingScreenState extends State<PricingScreen> {
                     Container(
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.colorsOf(context).success.withValues(alpha: 0.05),
-                        border: Border.all(color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3)),
+                        color: AppTheme.colorsOf(context)
+                            .success
+                            .withValues(alpha: 0.05),
+                        border: Border.all(
+                            color: AppTheme.colorsOf(context)
+                                .success
+                                .withValues(alpha: 0.3)),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success),
+                          Icon(Icons.check_circle,
+                              color: AppTheme.colorsOf(context).success),
                           SizedBox(width: 12),
                           Text(
                             'You are currently on the ${_getCurrentTier().capitalize()} plan',
-                            style: TextStyle(color: AppTheme.colorsOf(context).success),
+                            style: TextStyle(
+                                color: AppTheme.colorsOf(context).success),
                           ),
                         ],
                       ),
@@ -275,18 +281,25 @@ class _PricingScreenState extends State<PricingScreen> {
                       child: Container(
                         padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.05),
-                          border: Border.all(color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.3)),
+                          color: AppTheme.colorsOf(context)
+                              .danger
+                              .withValues(alpha: 0.05),
+                          border: Border.all(
+                              color: AppTheme.colorsOf(context)
+                                  .danger
+                                  .withValues(alpha: 0.3)),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.error, color: AppTheme.colorsOf(context).danger),
+                            Icon(Icons.error,
+                                color: AppTheme.colorsOf(context).danger),
                             SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 _error!,
-                                style: TextStyle(color: AppTheme.colorsOf(context).danger),
+                                style: TextStyle(
+                                    color: AppTheme.colorsOf(context).danger),
                               ),
                             ),
                           ],
@@ -311,11 +324,15 @@ class _PricingScreenState extends State<PricingScreen> {
       margin: EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
         border: Border.all(
-          color: isCurrent ? AppTheme.colorsOf(context).success : color.withValues(alpha: 0.5),
+          color: isCurrent
+              ? AppTheme.colorsOf(context).success
+              : color.withValues(alpha: 0.5),
           width: isCurrent ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(16),
-        color: isCurrent ? AppTheme.colorsOf(context).success.withValues(alpha: 0.05) : AppTheme.colorsOf(context).textColor,
+        color: isCurrent
+            ? AppTheme.colorsOf(context).success.withValues(alpha: 0.05)
+            : AppTheme.colorsOf(context).textColor,
       ),
       child: Column(
         children: [
@@ -364,14 +381,6 @@ class _PricingScreenState extends State<PricingScreen> {
                         ],
                       ),
                     ),
-                    Text(
-                      plan['price'] as String,
-                      style:
-                          Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: color,
-                              ),
-                    ),
                   ],
                 ),
                 SizedBox(height: 8),
@@ -388,7 +397,9 @@ class _PricingScreenState extends State<PricingScreen> {
           // Divider
           Container(
             height: 1,
-            color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.2),
+            color: AppTheme.colorsOf(context)
+                .textColorLight
+                .withValues(alpha: 0.2),
             margin: const EdgeInsets.symmetric(horizontal: 24),
           ),
 

@@ -202,7 +202,7 @@ describe("Admin User Search and Listing - Implementation Validation", () => {
       const paymentHistory = [
         {
           id: "payment-1",
-          amount: 9.99,
+          amount: 1,
           status: "succeeded",
           created_at: new Date("2024-01-01"),
         },
@@ -263,17 +263,16 @@ describe("Admin User Search and Listing - Implementation Validation", () => {
 
     it("should calculate prorated charges for upgrades", () => {
       // Validates prorated charge calculation
-      const tierPricing = {
+      const tierRank = {
         free: 0,
-        premium: 9.99,
-        enterprise: 29.99,
+        premium: 1,
+        enterprise: 2,
       };
 
       const previousTier = "free";
       const newTier = "premium";
-      const priceDifference = tierPricing[newTier] - tierPricing[previousTier];
 
-      expect(priceDifference).toBe(9.99);
+      expect(tierRank[newTier]).toBeGreaterThan(tierRank[previousTier]);
     });
 
     it("should prevent tier changes to same tier", () => {

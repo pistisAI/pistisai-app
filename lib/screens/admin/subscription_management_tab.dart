@@ -191,7 +191,8 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
                 'View and manage user subscriptions, upgrades, downgrades, and cancellations',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+                ).textTheme.bodyLarge?.copyWith(
+                    color: AppTheme.colorsOf(context).textColorLight),
               ),
             ],
           ),
@@ -334,9 +335,11 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
+            Icon(Icons.error_outline,
+                size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
+            Text(_error!,
+                style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadSubscriptions,
@@ -352,7 +355,8 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.subscriptions_outlined, size: 48, color: AppTheme.colorsOf(context).textColorLight),
+            Icon(Icons.subscriptions_outlined,
+                size: 48, color: AppTheme.colorsOf(context).textColorLight),
             SizedBox(height: 16),
             Text('No subscriptions found'),
           ],
@@ -422,13 +426,15 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
               ),
               if (canModify)
                 IconButton(
-                  icon: Icon(Icons.upgrade, size: 20, color: AppTheme.colorsOf(context).info),
+                  icon: Icon(Icons.upgrade,
+                      size: 20, color: AppTheme.colorsOf(context).info),
                   onPressed: () => _showUpgradeDowngradeDialog(subscription),
                   tooltip: 'Upgrade/Downgrade',
                 ),
               if (canModify && !subscription.cancelAtPeriodEnd)
                 IconButton(
-                  icon: Icon(Icons.cancel, size: 20, color: AppTheme.colorsOf(context).danger),
+                  icon: Icon(Icons.cancel,
+                      size: 20, color: AppTheme.colorsOf(context).danger),
                   onPressed: () => _showCancelDialog(subscription),
                   tooltip: 'Cancel Subscription',
                 ),
@@ -456,7 +462,8 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
     return Chip(
       label: Text(
         tier.displayName.toUpperCase(),
-        style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColor),
+        style: TextStyle(
+            fontSize: 12, color: AppTheme.colorsOf(context).textColor),
       ),
       backgroundColor: color,
       padding: EdgeInsets.zero,
@@ -487,7 +494,8 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
     return Chip(
       label: Text(
         status.displayName.toUpperCase(),
-        style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColor),
+        style: TextStyle(
+            fontSize: 12, color: AppTheme.colorsOf(context).textColor),
       ),
       backgroundColor: color,
       padding: EdgeInsets.zero,
@@ -500,7 +508,8 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.colorsOf(context).textColorLight,
-        border: Border(top: BorderSide(color: AppTheme.colorsOf(context).textColorLight)),
+        border: Border(
+            top: BorderSide(color: AppTheme.colorsOf(context).textColorLight)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -647,9 +656,11 @@ class _SubscriptionDetailDialogState extends State<_SubscriptionDetailDialog> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
+            Icon(Icons.error_outline,
+                size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
+            Text(_error!,
+                style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadSubscriptionDetails,
@@ -904,45 +915,11 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
   late SubscriptionTier _selectedTier;
   bool _isLoading = false;
   String? _error;
-  double? _proratedCharge;
 
   @override
   void initState() {
     super.initState();
     _selectedTier = widget.subscription.tier;
-  }
-
-  /// Calculate prorated charges for tier change
-  void _calculateProratedCharge() {
-    if (_selectedTier == widget.subscription.tier) {
-      setState(() {
-        _proratedCharge = null;
-      });
-      return;
-    }
-
-    // Simple proration calculation (this would be more complex in production)
-    final tierPrices = {
-      SubscriptionTier.free: 0.0,
-      SubscriptionTier.premium: 9.99,
-      SubscriptionTier.enterprise: 29.99,
-    };
-
-    final currentPrice = tierPrices[widget.subscription.tier] ?? 0.0;
-    final newPrice = tierPrices[_selectedTier] ?? 0.0;
-    final priceDiff = newPrice - currentPrice;
-
-    // Calculate days remaining in current period
-    final daysRemaining = widget.subscription.daysRemaining;
-    final daysInPeriod = 30; // Assuming monthly billing
-
-    // Prorated charge = (price difference) * (days remaining / days in period)
-    final prorated =
-        priceDiff * ((daysRemaining ?? 30) / daysInPeriod.toDouble());
-
-    setState(() {
-      _proratedCharge = prorated;
-    });
   }
 
   Future<void> _updateSubscription() async {
@@ -977,7 +954,8 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
       if (SubscriptionTierConfig.requiresStripePriceId(_selectedTier.name) &&
           SubscriptionTierConfig.isUnconfigured(newPriceId)) {
         setState(() {
-          _error = 'Stripe price ID not configured. Please set the STRIPE_PRICE_${_selectedTier.name.toUpperCase()} environment variable.';
+          _error =
+              'Stripe price ID not configured. Please set the STRIPE_PRICE_${_selectedTier.name.toUpperCase()} environment variable.';
         });
         return;
       }
@@ -1037,64 +1015,13 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
                         setState(() {
                           _selectedTier = value;
                         });
-                        _calculateProratedCharge();
                       }
                     },
             ),
-            const SizedBox(height: 16),
-            if (_proratedCharge != null) ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _proratedCharge! >= 0
-                      ? AppTheme.colorsOf(context).info
-                      : AppTheme.colorsOf(context).success,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _proratedCharge! >= 0
-                        ? AppTheme.colorsOf(context).info
-                        : AppTheme.colorsOf(context).success,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Prorated Charge',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: _proratedCharge! >= 0
-                            ? AppTheme.colorsOf(context).info
-                            : AppTheme.colorsOf(context).success,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _proratedCharge! >= 0
-                          ? 'User will be charged \$${_proratedCharge!.abs().toStringAsFixed(2)} for the upgrade'
-                          : 'User will receive a credit of \$${_proratedCharge!.abs().toStringAsFixed(2)} for the downgrade',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _proratedCharge! >= 0
-                            ? AppTheme.colorsOf(context).info
-                            : AppTheme.colorsOf(context).success,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Based on ${widget.subscription.daysRemaining} days remaining in current period',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppTheme.colorsOf(context).textColorLight,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
+              Text(_error!,
+                  style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             ],
           ],
         ),
@@ -1245,7 +1172,8 @@ class _CancelSubscriptionDialogState extends State<_CancelSubscriptionDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),
-              Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
+              Text(_error!,
+                  style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             ],
           ],
         ),
@@ -1257,7 +1185,8 @@ class _CancelSubscriptionDialogState extends State<_CancelSubscriptionDialog> {
         ),
         FilledButton(
           onPressed: _isLoading ? null : _cancelSubscription,
-          style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).danger),
+          style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.colorsOf(context).danger),
           child: _isLoading
               ? const SizedBox(
                   width: 16,

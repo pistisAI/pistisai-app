@@ -33,7 +33,7 @@ describe("audit-logger helpers", () => {
     it("returns payment details with amount, currency, reason, and transactionId", () => {
       const req = { body: {} };
       const paymentInfo = {
-        amount: 29.99,
+        amount: 1,
         currency: "USD",
         reason: "monthly_charge",
         transactionId: "txn_123",
@@ -42,7 +42,7 @@ describe("audit-logger helpers", () => {
       const result = createPaymentDetails(req, paymentInfo);
 
       expect(result).toMatchObject({
-        amount: 29.99,
+        amount: 1,
         currency: "USD",
         reason: "monthly_charge",
         transactionId: "txn_123",

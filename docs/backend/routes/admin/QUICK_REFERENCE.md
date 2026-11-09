@@ -170,7 +170,7 @@ Content-Type: application/json
 
 {
   "transactionId": "550e8400-e29b-41d4-a716-446655440000",
-  "amount": 29.99,
+  "amount": <amount>,
   "reason": "customer_request",
   "reasonDetails": "Customer requested refund"
 }
@@ -291,7 +291,7 @@ curl -X POST "http://localhost:3001/api/admin/payments/refunds" \
   -H "Content-Type: application/json" \
   -d '{
     "transactionId": "550e8400-e29b-41d4-a716-446655440000",
-    "amount": 29.99,
+    "amount": <amount>,
     "reason": "customer_request",
     "reasonDetails": "Test refund"
   }'

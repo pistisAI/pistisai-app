@@ -250,7 +250,7 @@ Expected cache hit rate: >80% for subsequent builds
 - Private repositories: 2,000 free minutes/month
 
 **Pistisai Status**: Public repository
-**Monthly Cost**: **$0** (completely free)
+**Monthly Cost**: the provider free tier
 
 ## Next Steps
 

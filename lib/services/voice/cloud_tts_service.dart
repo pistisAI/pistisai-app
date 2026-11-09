@@ -207,8 +207,12 @@ class CloudTtsService {
 
   Map<String, String> _mergedPathEnvironment() {
     final env = Map<String, String>.from(Platform.environment);
+    final home = Platform.environment['HOME'];
+    if (home == null || home.isEmpty) {
+      return env;
+    }
     final hermesVenvBin = p.join(
-      Platform.environment['HOME'] ?? '/home/rightguy',
+      home,
       '.hermes',
       'hermes-agent',
       'venv',
