@@ -1,0 +1,234 @@
+name: "🌐 Web Deploy"
+
+on:
+  workflow_run:
+    workflows: ["🔢 Auto Version Bump"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: web-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+  # write is required to export the Buildx cache with type=gha
+  actions: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: pistisai/pistisai-app-web
+  COOLIFY_URL: https://deploy.pistisai.app
+  COOLIFY_APP_UUID: umnmzbzlgcnjssqphnrgiejt
+  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST || '68.168.30.4' }}
+
+jobs:
+  analyze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          channel: "stable"
+          cache: true
+      - name: flutter analyze
+        run: |
+          set -euo pipefail
+          flutter pub get
+          flutter analyze lib/
+          echo "✅ Analysis passed"
+
+  build_and_push:
+    needs: analyze
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      image_tag: ${{ steps.version.outputs.tag }}
+      image_digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(jq -r '.version' assets/version.json)
+          echo "tag=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.web
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
+
+      - name: Verify image pushed
+        run: |
+          set -euo pipefail
+          DIGEST="${{ steps.build.outputs.digest }}"
+          if [ -z "$DIGEST" ]; then
+            echo "❌ No image digest returned — push may have failed"
+            exit 1
+          fi
+          echo "✅ Image pushed: $DIGEST"
+
+  deploy_coolify:
+    needs: build_and_push
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+    steps:
+      - name: Log the VPS into GHCR
+        env:
+          SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COOLIFY_HOST: ${{ env.COOLIFY_HOST }}
+        run: |
+          set -euo pipefail
+          if [ -z "${COOLIFY_API_TOKEN:-}" ]; then
+            echo "COOLIFY_API_TOKEN is not set"
+            exit 1
+          fi
+          if [ -z "${SSH_KEY:-}" ]; then
+            echo "COOLIFY_SSH_KEY is not set"
+            exit 1
+          fi
+          if [ -z "${COOLIFY_HOST:-}" ]; then
+            echo "COOLIFY_HOST is not set"
+            exit 1
+          fi
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/coolify_ci
+          chmod 600 ~/.ssh/coolify_ci
+          ssh-keyscan -H "$COOLIFY_HOST" >> ~/.ssh/known_hosts
+          printf '%s' "$GITHUB_TOKEN" | ssh -i ~/.ssh/coolify_ci -o StrictHostKeyChecking=yes -o ConnectTimeout=30 root@"$COOLIFY_HOST" "docker login ghcr.io -u ${{ github.actor }} --password-stdin"
+
+      - name: Trigger Coolify deployment
+        id: trigger
+        run: |
+          set -euo pipefail
+          echo "Triggering Coolify deployment for ${{ env.COOLIFY_APP_UUID }}"
+          WEBHOOK_URL="${{ env.COOLIFY_URL }}/api/v1/deploy?uuid=${{ env.COOLIFY_APP_UUID }}&force=true"
+          HTTP_CODE=$(curl -sS -o /tmp/coolify-deploy.json -w "%{http_code}" -X POST "$WEBHOOK_URL" \
+            --retry 5 --retry-all-errors --retry-delay 2 --max-time 60 \
+            -H "Authorization: Bearer ${{ env.COOLIFY_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Event: push" \
+            -d '{"ref":"refs/heads/main","head_commit":{"id":"${{ github.sha }}"}}')
+          echo "Response: $HTTP_CODE"
+          cat /tmp/coolify-deploy.json
+          echo
+          if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ] && [ "$HTTP_CODE" != "202" ]; then
+            echo "Deployment trigger failed"
+            exit 1
+          fi
+          DEPLOYMENT_UUID=$(jq -r '.deployments[0].deployment_uuid // .deployment_uuid // empty' /tmp/coolify-deploy.json)
+          if [ -z "$DEPLOYMENT_UUID" ]; then
+            echo "Coolify did not return a deployment uuid"
+            exit 1
+          fi
+          echo "deployment_uuid=$DEPLOYMENT_UUID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for Coolify to finish
+        run: |
+          set -euo pipefail
+          DEPLOYMENT_UUID="${{ steps.trigger.outputs.deployment_uuid }}"
+          for _ in $(seq 1 60); do
+            if ! HTTP_CODE=$(curl -sS -o /tmp/coolify-status.json -w "%{http_code}" \
+              --retry 5 --retry-all-errors --retry-delay 2 --max-time 30 \
+              -H "Authorization: Bearer ${{ env.COOLIFY_API_TOKEN }}" \
+              -H "Accept: application/json" \
+              "${{ env.COOLIFY_URL }}/api/v1/deployments/${DEPLOYMENT_UUID}"); then
+              echo "Coolify status poll failed (transient); retrying in 15s"
+              sleep 15
+              continue
+            fi
+            STATUS=$(jq -r '.status // empty' /tmp/coolify-status.json)
+            echo "deployment ${DEPLOYMENT_UUID}: http ${HTTP_CODE} status ${STATUS}"
+            case "$STATUS" in
+              finished|success) exit 0 ;;
+              failed|cancelled|canceled) cat /tmp/coolify-status.json; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for Coolify"
+          exit 1
+
+      - name: Confirm pistisai.app serves the app
+        run: |
+          set -euo pipefail
+          for host in pistisai.app www.pistisai.app; do
+            ok=0
+            for _ in $(seq 1 24); do
+              code=$(curl -sS -o "/tmp/${host}.html" -w "%{http_code}" --max-time 30 "https://${host}/" || true)
+              echo "${host} -> ${code}"
+              if [ "$code" = "200" ] && ! grep -q "404 page not found" "/tmp/${host}.html" && grep -q "IAClé" "/tmp/${host}.html"; then
+                ok=1
+                break
+              fi
+              sleep 5
+            done
+            if [ "$ok" != "1" ]; then
+              echo "https://${host}/ did not return the IAClé app"
+              head -c 300 "/tmp/${host}.html" || true
+              exit 1
+            fi
+          done
+
+      - name: Purge Cloudflare cache
+        if: always()
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_TOKEN:-}" ]; then
+            echo "⚠️ CLOUDFLARE_CACHE_PURGE_TOKEN not set — skipping cache purge"
+            exit 0
+          fi
+          if [ -z "${CF_ZONE_ID:-}" ]; then
+            echo "⚠️ CF_ZONE_ID not set — skipping cache purge"
+            exit 0
+          fi
+          echo "🧹 Purging Cloudflare cache for zone $CF_ZONE_ID..."
+          PURGE_RESP=$(curl -sS --max-time 30 -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' 2>&1)
+          SUCCESS=$(echo "$PURGE_RESP" | jq -r '.success // false')
+          if [ "$SUCCESS" = "true" ]; then
+            echo "✅ Cloudflare cache purged"
+          else
+            echo "⚠️ Cache purge response: $PURGE_RESP"
+          fi

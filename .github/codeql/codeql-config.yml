@@ -1,0 +1,18 @@
+name: "Pistisai CodeQL"
+
+# Generated and vendored trees are not first-party source. Leaving them in
+# makes JavaScript analysis slower and noisier.
+paths-ignore:
+  - "**/node_modules"
+  - "**/build"
+  - "**/.dart_tool"
+  - "**/dist"
+  - "**/*.g.dart"
+  - "**/*.freezed.dart"
+  - "linux/flutter"
+  - "windows/flutter"
+  - "macos/Flutter"
+  - "ios/Flutter"
+  - "web/flutter_service_worker.js"
+  - "web/drift_worker.js"
+  - "**/GeneratedPluginRegistrant.*"

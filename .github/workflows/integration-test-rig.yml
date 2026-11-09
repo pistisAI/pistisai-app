@@ -1,0 +1,214 @@
+name: "🧪 Integration Test Rig (Linux + Android)"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "android/**"
+      - "integration_test/**"
+      - "pubspec.yaml"
+      - "docker-compose.test.yml"
+      - "Dockerfile.test-desktop"
+      - "scripts/start_test_desktop.sh"
+      - "scripts/cleanup_virtual.sh"
+      - "scripts/run_integration_test_rig.sh"
+      - "scripts/test_rig_lib.sh"
+      - "test/smoke/**"
+      - "test/integration/**"
+      - "test/services/hermes_gateway_only_transport_test.dart"
+      - ".github/workflows/integration-test-rig.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "linux/**"
+      - "android/**"
+      - "integration_test/**"
+      - "pubspec.yaml"
+      - "docker-compose.test.yml"
+      - "Dockerfile.test-desktop"
+      - "scripts/start_test_desktop.sh"
+      - "scripts/cleanup_virtual.sh"
+      - "scripts/run_integration_test_rig.sh"
+      - "scripts/test_rig_lib.sh"
+      - "test/smoke/**"
+      - "test/integration/**"
+      - "test/services/hermes_gateway_only_transport_test.dart"
+      - ".github/workflows/integration-test-rig.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: integration-test-rig-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  checks: write
+  actions: write
+
+jobs:
+  integration_test_rig:
+    name: "🧪 Hub + Linux + Emulator"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v7
+
+      - name: "☕ Setup Java 21"
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: "🔧 Setup Flutter"
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          channel: stable
+          cache: true
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: "🐳 Docker Compose"
+        run: docker compose version
+
+      - name: "🐳 Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+
+      # ubuntu-24.04 images ship large unused SDKs. The test-desktop build
+      # (Flutter SDK plus a Linux release build) fills the runner disk.
+      - name: "🧹 Free disk space"
+        run: |
+          set -eux
+          df -h
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/share/boost \
+            /usr/local/lib/android \
+            /opt/ghc \
+            /opt/hostedtoolcache/CodeQL \
+            /usr/share/swift \
+            /usr/local/share/powershell \
+            /usr/share/miniconda || true
+          sudo apt-get clean
+          df -h
+
+      - name: "🐳 Build test-desktop image"
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.test-desktop
+          load: true
+          push: false
+          tags: pistisai-test-desktop:ci
+          provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: "🚀 Start test-desktop hub"
+        run: |
+          docker compose -f docker-compose.test.yml up -d --no-build test-desktop
+
+      - name: "⏳ Wait for hub"
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:1337/health >/dev/null && \
+               curl -sf http://127.0.0.1:1337/api/pistisai/hub | grep -q primary_hub; then
+              echo "✅ Hub healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.test.yml logs test-desktop
+          exit 1
+
+      - name: "🐧 Run Linux integration tests"
+        id: linux_tests
+        run: |
+          bash tool/brand.sh iacle
+          flutter test test/integration/ --reporter expanded --dart-define=BRAND=iacle
+
+      - name: "📸 Capture desktop failure screenshot"
+        if: failure() && steps.linux_tests.outcome == 'failure'
+        run: |
+          docker compose -f docker-compose.test.yml exec -T test-desktop \
+            bash -c "DISPLAY=:99 import -window root /recordings/failure_screenshot.png" 2>/dev/null || true
+          docker compose -f docker-compose.test.yml cp \
+            test-desktop:/recordings/failure_screenshot.png ./failure_screenshot.png 2>/dev/null || true
+
+      - name: "Enable KVM"
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Disk cleanup removes the image SDK at /usr/local/lib/android. That
+      # directory is root-owned, so the emulator action cannot mkdir it
+      # (EACCES). Install cmdline-tools, the system image, and the emulator
+      # into a runner-writable SDK instead.
+      - name: "📱 Use a writable Android SDK"
+        run: |
+          set -eux
+          SDK="${RUNNER_TEMP}/android-sdk"
+          mkdir -p "$SDK"
+          echo "ANDROID_SDK_ROOT=${SDK}" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=${SDK}" >> "$GITHUB_ENV"
+
+      - name: "📱 Run Android integration tests on emulator"
+        id: android_tests
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
+          ANDROID_HOME: ${{ runner.temp }}/android-sdk
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash scripts/run_integration_test_rig.sh --android-only --emulator-android --no-hub --no-docker-build --no-flutter-build --no-cleanup --hub-host 10.0.2.2
+
+      - name: "📹 Download test recording"
+        if: always()
+        run: |
+          docker compose -f docker-compose.test.yml cp \
+            test-desktop:/recordings/test_run.mp4 ./test_run.mp4 2>/dev/null || true
+
+      - name: "📤 Upload test recording"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-test-rig-recording
+          path: test_run.mp4
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: "📤 Upload failure screenshot"
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-test-rig-failure-screenshot
+          path: failure_screenshot.png
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: "📋 Collect hub logs"
+        if: always()
+        run: |
+          docker compose -f docker-compose.test.yml logs test-desktop > test_desktop_logs.txt 2>&1 || true
+
+      - name: "📤 Upload hub logs"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-test-rig-hub-logs
+          path: test_desktop_logs.txt
+          retention-days: 7
+
+      - name: "🧹 Cleanup"
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v --remove-orphans || true

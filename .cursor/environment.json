@@ -1,0 +1,10 @@
+{
+  "name": "pistisai-app",
+  "start": "bash scripts/cloud/sync-github-mcp.sh",
+  "mcpServerAllowlist": [
+    {
+      "name": "github",
+      "serverUrl": "https://api.githubcopilot.com/mcp/"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+    "id": "app.pistisai.app",
+    "title": "IAClé",
+    "author": "IAClé",
+    "description": "IAClé is a local-first assistant for Quebec businesses.",
+    "version": "1.0.0",
+    "healthCheckPath": "/",
+    "httpPort": 3000,
+    "addons": {
+        "postgresql": {},
+        "redis": {}
+    },
+    "manifestVersion": 2,
+    "website": "https://iacle.app",
+    "contactEmail": "support@iacle.app",
+    "icon": "https://raw.githubusercontent.com/iacle-solutions/iacle-app/main/brand/iacle/assets/icon.png",
+    "tags": [
+        "ai",
+        "agent",
+        "desktop-control",
+        "webrtc"
+    ],
+    "tcpPorts": {
+        "streaming": {
+            "port": 3001
+        }
+    },
+    "minBoxVersion": "8.0.0"
+}

@@ -1,0 +1,138 @@
+name: "🔢 Auto Version Bump"
+
+# SINGLE ENTRY POINT for all releases.
+# On every code push to main that changes a file other than assets/version.json,
+# auto-bump the patch version and commit it back.
+# Markdown, docs/, and images/ pushes do not bump.
+# An empty commit does not match this path filter.
+#
+# All platform workflows chain: bump → web → (desktop, mobile, backend)
+# Web deploys first (fastest), then desktop/mobile/backend in parallel.
+#
+# Bump type override via commit message:
+#   [major] → major bump
+#   [minor] → minor bump
+#   (nothing) → patch bump
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "assets/version.json"
+      - "**.md"
+      - "docs/**"
+      - "images/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-version-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: "Bump version"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.compute.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - name: Determine bump type
+        id: bump_type
+        run: |
+          set -euo pipefail
+          MSG=$(git log -1 --pretty=%B)
+          if echo "$MSG" | grep -qi '\[major\]'; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          elif echo "$MSG" | grep -qi '\[minor\]'; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+          fi
+          echo "Commit: $MSG"
+          echo "Bump: $(grep type $GITHUB_OUTPUT | cut -d= -f2)"
+
+      - name: Compute new version
+        id: compute
+        run: |
+          set -euo pipefail
+          CURRENT=$(jq -r '.version' assets/version.json | cut -d+ -f1)
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          BUMP="${{ steps.bump_type.outputs.type }}"
+          case "$BUMP" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH + 1)) ;;
+          esac
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Current: $CURRENT → New: $NEW_VERSION"
+
+      - name: Update version.json
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.compute.outputs.version }}"
+          BUILD_NUMBER="${{ github.run_number }}"
+          jq -n \
+            --arg version "$VERSION" \
+            --arg build_number "$BUILD_NUMBER" \
+            --arg build_date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg git_commit "${GITHUB_SHA:0:7}" \
+            --arg buildTimestamp "$(date +'%Y-%m-%d %H:%M:%S')" \
+            '{version: $version, build_number: $build_number, build_date: $build_date, git_commit: $git_commit, buildTimestamp: $buildTimestamp}' \
+            > assets/version.json
+          cat assets/version.json
+
+      - name: Update pubspec.yaml version
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.compute.outputs.version }}"
+          BUILD_NUMBER="${{ github.run_number }}"
+          sed -i "s/^version: .*/version: ${VERSION}+${BUILD_NUMBER}/" pubspec.yaml
+          grep '^version:' pubspec.yaml
+
+      - name: Commit and push
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_KEY:-}" ]; then
+            echo "❌ DEPLOY_KEY secret is not set. This workflow requires a deploy key to push version bumps to main (bypassing branch protection)."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/version.json pubspec.yaml
+          git commit -m "ci: bump version to ${{ steps.compute.outputs.version }}+${{ github.run_number }} [skip ci]"
+          # Use SSH to push (bypasses branch protection that blocks GITHUB_TOKEN)
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          cat >> ~/.ssh/config << 'EOF'
+            Host github.com
+              HostName github.com
+              User git
+              IdentityFile ~/.ssh/deploy_key
+              IdentitiesOnly yes
+              StrictHostKeyChecking no
+          EOF
+          git remote set-url origin git@github.com:${{ github.repository }}.git
+          git push origin main
+          echo "✅ Version bumped and committed — workflow_run will trigger all platforms"
+
+      - name: Verify push succeeded
+        run: |
+          set -euo pipefail
+          REMOTE_SHA=$(git rev-parse origin/main)
+          LOCAL_SHA=$(git rev-parse main)
+          if [ "$REMOTE_SHA" != "$LOCAL_SHA" ]; then
+            echo "❌ Push verification failed: local=$LOCAL_SHA remote=$REMOTE_SHA"
+            exit 1
+          fi
+          echo "✅ Push verified: $REMOTE_SHA"

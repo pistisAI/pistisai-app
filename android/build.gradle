@@ -1,0 +1,87 @@
+buildscript {
+    ext.kotlin_version = '2.4.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.11.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    // Pin AndroidX modules the plugins in this repo are built against.
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.browser:browser:1.5.0'
+            force 'androidx.core:core-ktx:1.12.0'
+            force 'androidx.core:core:1.12.0'
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+// tesseract_ocr 0.5.0 still targets older Kotlin; limit the downgrade to that plugin.
+subprojects { subproject ->
+    if (subproject.name == 'tesseract_ocr') {
+        subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                languageVersion = "2.0"
+                apiVersion = "2.0"
+            }
+        }
+    }
+}
+
+// AGP 8.6+ Kotlin K2 generates duplicate .class in bundle jars (tesseract_ocr 0.5.0)
+// Exclude the duplicate TesseractOcrPlugin.java file from compilation under tesseract_ocr subproject.
+// useLegacyPackaging falls back to zip-based packaging that allows overwrite on older AGP versions.
+subprojects { subproject ->
+    subproject.pluginManager.withPlugin('com.android.library') {
+        if (subproject.name == 'tesseract_ocr') {
+            // Plugin ships duplicate Java + Kotlin plugin classes; keep Java only.
+            subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                enabled = false
+            }
+        }
+    }
+
+    afterEvaluate {
+        try {
+            def bundleTaskClass = Class.forName("com.android.build.gradle.tasks.BundleLibraryClasses")
+            subproject.tasks.withType(bundleTaskClass).configureEach { task ->
+                task.useLegacyPackaging = true
+            }
+        } catch (ClassNotFoundException e) {
+            // Ignore if the class does not exist in this Gradle version
+        }
+    }
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+    
+    project.pluginManager.withPlugin('com.android.library') {
+        android {
+            testOptions {
+                unitTests.all {
+                    enabled = false
+                }
+            }
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

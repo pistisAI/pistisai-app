@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: streaming-proxy-ingress
+  namespace: Pistisai
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "Pistisai-static-ip"
+    networking.gke.io/managed-certificates: "Pistisai-certificate"
+spec:
+  rules:
+  - host: streaming.pistisai.app
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: streaming-proxy
+            port:
+              number: 8080

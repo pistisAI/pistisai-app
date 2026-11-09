@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.Pistisai.Pistisai</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>IAClé</name>
+  <summary>Assistant local pour les entreprises du Québec</summary>
+  
+  <description>
+    <p>
+      IAClé est un assistant local d'abord. L'agent tourne sur un ordinateur chez le client. L'audit vérifie si cet ordinateur peut l'héberger.
+    </p>
+    <p>
+      Features:
+    </p>
+    <ul>
+      <li>Seamlessly switch between cloud AI (OpenAI, Anthropic) and local models (Ollama)</li>
+      <li>Privacy-first: sensitive data stays local while leveraging cloud AI when needed</li>
+      <li>Secure tunneling for real-time communication</li>
+      <li>Cross-platform support for Windows, Linux, and Web</li>
+    </ul>
+  </description>
+  
+  <launchable type="desktop-id">com.Pistisai.Pistisai.desktop</launchable>
+  
+  <url type="homepage">https://github.com/iacle-solutions/iacle-app</url>
+  <url type="bugtracker">https://github.com/iacle-solutions/iacle-app/issues</url>
+  <url type="help">https://github.com/iacle-solutions/iacle-app/blob/main/README.md</url>
+  
+  <developer_name>IAClé</developer_name>
+  
+  <provides>
+    <binary>Pistisai</binary>
+  </provides>
+  
+  <releases>
+    <release version="4.4.0" date="2024-11-15">
+      <description>
+        <p>Latest release with bug fixes and improvements</p>
+      </description>
+    </release>
+  </releases>
+  
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-info">moderate</content_attribute>
+  </content_rating>
+</component>

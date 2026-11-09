@@ -1,0 +1,21 @@
+# ---- Build stage: Flutter web ----
+FROM gmeligio/flutter-android:3.47.9 AS builder
+
+WORKDIR /app
+COPY pubspec.* ./
+COPY tool/cnativeapi/ tool/cnativeapi/
+COPY tool/linux_native_deps/ tool/linux_native_deps/
+RUN flutter pub get
+RUN flutter config --enable-web
+COPY . .
+RUN flutter build web --release --no-web-resources-cdn --dart-define=BRAND=iacle \
+ && python3 -c 'import json,pathlib; m=json.loads(pathlib.Path("assets/version.json").read_text()); p=pathlib.Path("build/web/index.html"); p.write_text(p.read_text().replace("$FLUTTER_BUILD_NUMBER", m["version"]+"."+str(m["build_number"])))'
+
+# ---- Serve stage: Nginx ----
+FROM nginx:alpine
+
+COPY --from=builder /app/build/web /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=5 CMD wget --quiet --tries=1 --spider http://127.0.0.1/ || exit 1

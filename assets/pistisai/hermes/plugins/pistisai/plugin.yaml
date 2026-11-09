@@ -1,0 +1,7 @@
+name: pistisai
+version: 1.3.0
+description: "Deterministic drift critic on durable writes + device/location/time awareness. Warn-mode only: flags findings-record and memory writes that assert facts without a resolvable source, and appends an ⚠️ Aigent critic nudge to the tool result so the agent self-corrects next turn. The pre_llm_call hook injects an awareness block (host PC name, desktop session, device/location/connection from HERMES_HOME/device-context.json or AIGENT_DEVICE/LOCATION/CONNECTION env) so the agent adapts response length and urgency; the desktop app reports its session via POST /api/pistisai/device-context on the Hermes API server. Same shape as security-guidance. Every trigger logs to the drift log (AIGENT_DRIFT_LOG, else <HERMES_HOME>/logs/drift-log.md). Kill switches: AIGENT_WATCH_DISABLE=1, AIGENT_AWARENESS_DISABLE=1. Person-name list for the C2 check: AIGENT_WATCH_PERSONS."
+author: "Zoid Maltek (built for Christopher Maltais, 2026-10-14)"
+provides_hooks:
+  - transform_tool_result
+  - pre_llm_call

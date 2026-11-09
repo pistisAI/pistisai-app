@@ -1,0 +1,154 @@
+name: "🖥️ Backend Deploy"
+
+on:
+  workflow_run:
+    workflows: ["🌐 Web Deploy"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: "Force build of all backend containers"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: backend-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+  # write is required to export the Buildx cache with type=gha
+  actions: write
+
+jobs:
+  build_images:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' assets/version.json | cut -d+ -f1)
+          REPO_LOWER=${GITHUB_REPOSITORY,,}
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "repo_lower=$REPO_LOWER" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+          echo "Deploying backend version: $VERSION"
+
+      - name: Detect images to build
+        id: changes
+        run: |
+          set -euo pipefail
+          echo "Event: ${{ github.event_name }}"
+
+          build_api=false
+          build_proxy=false
+          build_postgres=false
+
+          # On workflow_run from the release chain (e.g. Web Deploy), build all backend images
+          # because version bumps only change assets/version.json/pubspec.yaml and we need
+          # to deploy updated backend images with the new version tag.
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            echo "Triggered by workflow_run from ${{ github.event.workflow_run.name }} (conclusion: ${{ github.event.workflow_run.conclusion }})"
+            echo "Building all backend images for release chain"
+            build_api=true
+            build_proxy=true
+            build_postgres=true
+          elif [ "${{ inputs.force_build }}" == "true" ]; then
+            echo "Force build requested via workflow_dispatch"
+            build_api=true
+            build_proxy=true
+            build_postgres=true
+          else
+            echo "Unknown trigger, falling back to diff against HEAD^ HEAD"
+            DIFF_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null || echo "")
+            if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend"; then
+              build_api=true
+            fi
+            if echo "$DIFF_FILES" | grep -qE "services/streaming-proxy/|config/docker/Dockerfile.streaming-proxy"; then
+              build_proxy=true
+            fi
+            if echo "$DIFF_FILES" | grep -qE "config/docker/Dockerfile.postgres|config/docker/postgres-"; then
+              build_postgres=true
+            fi
+          fi
+
+          echo "api_backend=$build_api" >> "$GITHUB_OUTPUT"
+          echo "streaming_proxy=$build_proxy" >> "$GITHUB_OUTPUT"
+          echo "postgres=$build_postgres" >> "$GITHUB_OUTPUT"
+          echo "api-backend=$build_api streaming-proxy=$build_proxy postgres=$build_postgres"
+
+      - name: Build api-backend
+        if: steps.changes.outputs.api_backend == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: config/docker/Dockerfile.api-backend
+          push: ${{ github.ref_name == 'main' }}
+          load: ${{ github.ref_name != 'main' }}
+          provenance: ${{ github.ref_name == 'main' }}
+          sbom: ${{ github.ref_name == 'main' }}
+          tags: |
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:latest
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:v${{ steps.version.outputs.version }}
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:build-${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
+          cache-from: type=gha,scope=api-backend
+          cache-to: type=gha,mode=min,scope=api-backend
+
+      - name: Build streaming-proxy
+        if: steps.changes.outputs.streaming_proxy == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: config/docker/Dockerfile.streaming-proxy
+          push: ${{ github.ref_name == 'main' }}
+          load: ${{ github.ref_name != 'main' }}
+          provenance: ${{ github.ref_name == 'main' }}
+          sbom: ${{ github.ref_name == 'main' }}
+          tags: |
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/streaming-proxy:latest
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/streaming-proxy:v${{ steps.version.outputs.version }}
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/streaming-proxy:build-${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
+          cache-from: type=gha,scope=streaming-proxy
+          cache-to: type=gha,mode=min,scope=streaming-proxy
+
+      - name: Build postgres
+        if: steps.changes.outputs.postgres == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: config/docker/Dockerfile.postgres
+          push: ${{ github.ref_name == 'main' }}
+          load: ${{ github.ref_name != 'main' }}
+          provenance: ${{ github.ref_name == 'main' }}
+          sbom: ${{ github.ref_name == 'main' }}
+          tags: |
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/postgres:latest
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/postgres:v${{ steps.version.outputs.version }}
+            ghcr.io/${{ steps.version.outputs.repo_lower }}/postgres:build-${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
+          cache-from: type=gha,scope=postgres
+          cache-to: type=gha,mode=min,scope=postgres
+
+      - name: Backend images built
+        run: echo "✅ Backend images built"

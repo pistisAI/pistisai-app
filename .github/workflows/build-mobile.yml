@@ -1,0 +1,300 @@
+name: "📱 Mobile Build & Release"
+
+on:
+  workflow_run:
+    workflows: ["🌐 Web Deploy"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "Platforms to build (comma-separated)"
+        required: false
+        default: "android"
+        type: string
+  pull_request:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/build-mobile.yml"
+
+concurrency:
+  group: mobile-build-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    outputs:
+      version: ${{ steps.read.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          channel: "stable"
+          cache: true
+      - name: flutter analyze
+        run: |
+          flutter pub get
+          flutter analyze lib/
+          echo "✅ Analysis passed"
+      - name: Read version
+        id: read
+        run: |
+          VERSION=$(jq -r '.version' assets/version.json | cut -d+ -f1)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+  build_android:
+    name: Android Build
+    needs: analyze
+    if: contains(inputs.platforms || 'android', 'android')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set Version
+        run: |
+          VERSION=${{ needs.analyze.outputs.version }}
+          sed -i "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
+          jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          channel: "stable"
+          cache: true
+
+      - name: Setup Android SDK platform 37
+        run: |
+          set -euo pipefail
+          SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$(find "${ANDROID_HOME}" -name sdkmanager -type f 2>/dev/null | head -1)"
+          fi
+          if [ -z "$SDKMANAGER" ] || [ ! -x "$SDKMANAGER" ]; then
+            echo "sdkmanager not found under ANDROID_HOME=${ANDROID_HOME:-unset}" >&2
+            ls -R "${ANDROID_HOME:-/nonexistent}" | head -50 >&2
+            exit 1
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          # API 37 is published only as platforms;android-37.0. AGP 8.11.1+
+          # resolves that id from compileSdk 37 + compileSdkMinor 0.
+          # sdkmanager sometimes unpacks that package into platforms/android-37.
+          if ! "$SDKMANAGER" --install "platforms;android-37.0" > /tmp/sdk.log 2>&1; then
+            echo "sdkmanager install failed — output:" >&2
+            tail -60 /tmp/sdk.log >&2
+            exit 1
+          fi
+          P37="${ANDROID_HOME}/platforms/android-37"
+          P370="${ANDROID_HOME}/platforms/android-37.0"
+          if [ -d "$P37" ] && [ ! -d "$P370" ]; then
+            mv "$P37" "$P370"
+          fi
+          # A second tree that still declares platforms;android-37.0 makes the
+          # SDK lookup report an inconsistent location and miss the real path.
+          if [ -d "$P37" ] && [ -f "$P37/package.xml" ] && grep -q 'path="platforms;android-37.0"' "$P37/package.xml"; then
+            rm -rf "$P37"
+          fi
+          if [ ! -f "$P370/package.xml" ] || ! grep -q 'path="platforms;android-37.0"' "$P370/package.xml"; then
+            echo "platforms;android-37.0 is not installed at $P370" >&2
+            ls -la "${ANDROID_HOME}/platforms/" >&2
+            if [ -f "$P370/package.xml" ]; then
+              head -40 "$P370/package.xml" >&2
+            fi
+            exit 1
+          fi
+
+          FLUTTER_ROOT="${FLUTTER_ROOT:-$(dirname "$(dirname "$(command -v flutter)")")}"
+          NDK_EXT="$FLUTTER_ROOT/packages/flutter_tools/gradle/src/main/kotlin/FlutterExtension.kt"
+          NDK_VERSION=$(grep -E 'ndkVersion: String = ' "$NDK_EXT" | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ -z "$NDK_VERSION" ]; then
+            echo "Could not read ndkVersion from $NDK_EXT" >&2
+            exit 1
+          fi
+          NDK_PKG="ndk;${NDK_VERSION}"
+          NDK_DIR="${ANDROID_HOME}/ndk/${NDK_VERSION}"
+          install_with_retry() {
+            local pkg="$1"
+            local cleanup_dir="$2"
+            local attempt=1
+            local max_attempts=3
+            while [ "$attempt" -le "$max_attempts" ]; do
+              if "$SDKMANAGER" --install "$pkg" > /tmp/sdk-extra.log 2>&1; then
+                return 0
+              fi
+              echo "sdkmanager install failed for $pkg (attempt $attempt/$max_attempts):" >&2
+              tail -40 /tmp/sdk-extra.log >&2
+              rm -rf "${ANDROID_HOME}/.temp" "$cleanup_dir" 2>/dev/null || true
+              attempt=$((attempt + 1))
+              sleep $((attempt * 15))
+            done
+            return 1
+          }
+          if [ ! -d "$NDK_DIR" ]; then
+            install_with_retry "$NDK_PKG" "$NDK_DIR"
+          fi
+
+      - name: Configure release signing
+        id: signing
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KEYSTORE_B64_ALT: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          STORE_PASSWORD_ALT: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          b64="${KEYSTORE_B64:-${KEYSTORE_B64_ALT:-}}"
+          store="${STORE_PASSWORD:-${STORE_PASSWORD_ALT:-}}"
+          if [ -n "$b64" ] && [ -n "$store" ] && [ -n "${KEY_PASSWORD:-}" ] && [ -n "${KEY_ALIAS:-}" ]; then
+            echo "$b64" | base64 -d > android/release-keystore.jks
+            cat > android/key.properties << EOF
+          storePassword=$store
+          keyPassword=${KEY_PASSWORD}
+          keyAlias=${KEY_ALIAS}
+          storeFile=../release-keystore.jks
+          EOF
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Pull request has no Android signing secrets."
+            echo "Building a release APK with the debug key."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Android signing secrets are missing."
+            echo "Signed builds are required on main and tags."
+            echo "Set ANDROID_KEYSTORE_B64 or ANDROID_KEYSTORE_BASE64,"
+            echo "ANDROID_STORE_PASSWORD or ANDROID_KEYSTORE_PASSWORD,"
+            echo "plus ANDROID_KEY_PASSWORD and ANDROID_KEY_ALIAS."
+            exit 1
+          fi
+
+      - name: Flutter Build APK
+        run: |
+          flutter pub get
+          bash tool/brand.sh iacle
+          flutter build apk --release --split-per-abi --dart-define=BRAND=iacle --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-apks
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 30
+
+  build_ios:
+    name: iOS Build
+    needs: analyze
+    if: contains(inputs.platforms || 'android', 'ios')
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify iOS platform is configured
+        run: |
+          if [ ! -f ios/Runner.xcodeproj/project.pbxproj ]; then
+            echo "iOS platform is not configured in this repository."
+            echo "Add it locally with: flutter create --platforms=ios ."
+            exit 1
+          fi
+
+      - name: Set Version
+        run: |
+          VERSION=${{ needs.analyze.outputs.version }}
+          sed -i "" "s/^version: .*/version: $VERSION+${{ github.run_number }}/" pubspec.yaml
+          jq ".version = \"$VERSION\" | .build_number = \"${{ github.run_number }}\"" assets/version.json > assets/version.json.tmp && mv assets/version.json.tmp assets/version.json
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          channel: "stable"
+          cache: true
+
+      - name: Flutter Build iOS
+        run: |
+          flutter pub get
+          bash tool/brand.sh iacle
+          flutter build ios --release --no-codesign --dart-define=BRAND=iacle --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+
+      - name: Upload iOS build
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-build
+          path: build/ios/iphoneos/Runner.app
+          retention-days: 30
+
+  create_release:
+    needs: [analyze, build_android, build_ios]
+    if: >-
+      always() &&
+      github.event_name != 'pull_request' &&
+      needs.analyze.result == 'success' &&
+      (needs.build_android.result == 'success' || needs.build_android.result == 'skipped') &&
+      (needs.build_ios.result == 'success' || needs.build_ios.result == 'skipped')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+
+      - name: Organize artifacts
+        run: |
+          set -euo pipefail
+          shopt -s nullglob globstar
+          mkdir -p release-assets
+          # download-artifact@v5 may place a single artifact at the workspace
+          # root, or under a directory named after the artifact.
+          apks=(android-apks/**/*.apk ./*.apk)
+          if [ "${#apks[@]}" -eq 0 ]; then
+            echo "No APK files after artifact download" >&2
+            find . -maxdepth 2 -print >&2
+            exit 1
+          fi
+          printf 'Copying APK: %s\n' "${apks[@]}"
+          cp -f "${apks[@]}" release-assets/
+          if [ -d "ios-build/Runner.app" ]; then
+            (cd ios-build && zip -r ../release-assets/Pistisai-iOS.app.zip Runner.app)
+          fi
+          ls -lh release-assets/
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "release-assets/*"
+          tag: "mobile-v${{ needs.analyze.outputs.version }}"
+          name: "IAClé Mobile v${{ needs.analyze.outputs.version }}"
+          artifactErrorsFailBuild: true
+          allowUpdates: true
+          makeLatest: false
+          body: |
+            ## IAClé Mobile v${{ needs.analyze.outputs.version }}
+
+            ### Android
+            - APK(s) attached
+
+            ### iOS
+            - Runner.app zip attached (no codesign — dev build)
+          token: ${{ secrets.GITHUB_TOKEN }}

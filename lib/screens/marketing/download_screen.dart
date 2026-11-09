@@ -1,0 +1,721 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../brand/brand.dart';
+import '../../brand/brand_copy.dart';
+import '../../config/theme.dart';
+
+import '../../config/app_config.dart';
+import '../../services/github_release_service.dart';
+
+/// Download screen - web-only marketing page
+/// Comprehensive installation guide for Linux distributions
+class DownloadScreen extends StatelessWidget {
+  const DownloadScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Only show on web platform
+    if (!kIsWeb) {
+      return const Scaffold(
+        body: Center(child: Text('This page is only available on web')),
+      );
+    }
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildHeader(context),
+            _buildMainContent(context),
+            _buildFooter(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.colorsOf(context).primary,
+            AppTheme.colorsOf(context).accent
+          ],
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
+      child: Column(
+        children: [
+          // Logo
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: AppTheme.colorsOf(context).primary,
+              borderRadius: BorderRadius.circular(35),
+              border: Border.all(
+                  color: AppTheme.colorsOf(context).accent, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.colorsOf(context)
+                      .textColor
+                      .withValues(alpha: 0.2),
+                  blurRadius: 12,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                'LLM',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.colorsOf(context).accent,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Title
+          Text(
+            BrandCopy.downloadTitle,
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  color: AppTheme.colorsOf(context).textColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 40,
+                  letterSpacing: 1,
+                ),
+          ),
+          const SizedBox(height: 8),
+
+          // Subtitle
+          Text(
+            'Complete installation guide for Linux distributions',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppTheme.colorsOf(context)
+                      .textColorLight
+                      .withValues(alpha: 0.5),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+
+          // Back link
+          TextButton(
+            onPressed: () => context.go('/'),
+            child: Text(
+              '← Back to Home',
+              style: TextStyle(
+                color: AppTheme.colorsOf(context).accent,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainContent(BuildContext context) {
+    return Container(
+      color: const Color(0xFF181a20),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+      child: Column(
+        children: [
+          _buildDownloadButtons(context),
+          const SizedBox(height: 40),
+          _buildSystemRequirements(context),
+          const SizedBox(height: 40),
+          _buildSnapPackage(context),
+          const SizedBox(height: 40),
+          _buildDebianPackage(context),
+          const SizedBox(height: 40),
+          _buildAppImage(context),
+          const SizedBox(height: 40),
+          _buildUniversalInstaller(context),
+          const SizedBox(height: 40),
+          _buildAURPackage(context),
+          const SizedBox(height: 40),
+          _buildPrebuiltBinary(context),
+          const SizedBox(height: 40),
+          _buildGettingStarted(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDownloadButtons(BuildContext context) {
+    return _buildCard(
+      context,
+      title: '� Quick Downloads',
+      description: BrandCopy.downloadDescription,
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+
+          // Primary GitHub Releases button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _launchUrl(AppConfig.githubReleasesUrl, context),
+              icon: const Icon(Icons.download),
+              label: const Text('View All Downloads on GitHub'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.colorsOf(context).primary,
+                foregroundColor: AppTheme.colorsOf(context).textColor,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 24,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Platform-specific download buttons
+          Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage',
+                  '${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage',
+                  context,
+                ),
+                icon: const Icon(Icons.apps),
+                label: const Text('Linux (AppImage)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colorsOf(context).success,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb',
+                  '${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb',
+                  context,
+                ),
+                icon: const Icon(Icons.desktop_windows),
+                label: const Text('Linux (.deb)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colorsOf(context).success,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-x64.tar.gz',
+                  '${Brand.current.artifactPrefix}-Linux-x64.tar.gz',
+                  context,
+                ),
+                icon: const Icon(Icons.archive),
+                label: const Text('Linux (.tar.gz)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colorsOf(context).accent,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-macOS-x64.zip',
+                  '${Brand.current.artifactPrefix}-macOS-x64.zip',
+                  context,
+                ),
+                icon: const Icon(Icons.apple),
+                label: const Text('macOS (.zip)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colorsOf(context).primary,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Info text
+          Text(
+            'Prefer a manual install? See the platform sections below for '
+            'Debian, universal installer, and prebuilt binary instructions.',
+            style: TextStyle(
+                color: AppTheme.colorsOf(context).textColorLight, fontSize: 14),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSystemRequirements(BuildContext context) {
+    return _buildCard(
+      context,
+      title: 'System Requirements',
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.colorsOf(context).success.withValues(alpha: 0.1),
+          border: Border.all(
+            color: AppTheme.colorsOf(context).success.withValues(alpha: 0.3),
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Minimum Requirements:',
+              style: TextStyle(
+                color: AppTheme.colorsOf(context).textColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...[
+              'OS: Any modern Linux distribution (kernel 4.15+)',
+              'Architecture: x86_64 (64-bit)',
+              'Memory: 512MB RAM minimum, 1GB recommended',
+              'Storage: 200MB available space',
+              'Desktop: GNOME, KDE Plasma, XFCE, or compatible',
+            ].map(
+              (req) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  '• $req',
+                  style: TextStyle(color: AppTheme.colorsOf(context).textColor),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'For System Tray Support:',
+              style: TextStyle(
+                color: AppTheme.colorsOf(context).textColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...[
+              'Required: libayatana-appindicator',
+              'GNOME Users: AppIndicator extension recommended',
+              'Tiling WMs: Status bar with system tray support',
+            ].map(
+              (req) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  '• $req',
+                  style: TextStyle(color: AppTheme.colorsOf(context).textColor),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSnapPackage(BuildContext context) {
+    return _buildCard(
+      context,
+      title: 'Snap Package',
+      description:
+          'A Snap Store listing is not published. Use the Debian or archive packages from GitHub Releases.',
+      child: _buildInstallationSection(
+        context,
+        'Not listed on Snap Store',
+        '''# Use GitHub Releases instead of Snap
+# ${Brand.current.releasesUrl}''',
+      ),
+    );
+  }
+
+  Widget _buildDebianPackage(BuildContext context) {
+    return _buildCard(
+      context,
+      title: '� Debian Package (.deb)',
+      description:
+          'Native package for Ubuntu, Debian, and derivatives with proper dependency management.',
+      child: _buildInstallationSection(
+        context,
+        'Installation',
+        '''# Download from GitHub releases
+wget ${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb
+
+# Install with dpkg
+sudo dpkg -i ${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb
+
+# Install dependencies if needed
+sudo apt-get install -f''',
+      ),
+    );
+  }
+
+  Widget _buildAppImage(BuildContext context) {
+    return _buildCard(
+      context,
+      title: '📦 AppImage (Universal Linux)',
+      description:
+          'Portable application that runs on any Linux distribution. No installation required — just download, make executable, and run.',
+      child: _buildInstallationSection(
+        context,
+        'Download and run',
+        '''# Download from GitHub releases
+wget ${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage
+
+# Make executable
+chmod +x ${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage
+
+# Run
+./${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage''',
+      ),
+    );
+  }
+
+  Widget _buildUniversalInstaller(BuildContext context) {
+    return _buildCard(
+      context,
+      title: '🚀 Universal Installer (install.sh)',
+      description:
+          'One-line installer script that detects your platform and fetches the correct release asset. Works on most Linux distributions.',
+      child: _buildInstallationSection(
+        context,
+        'Run the installer',
+        '''# Download and run the official installer
+curl -fsSL ${BrandCopy.installSh} | bash''',
+      ),
+    );
+  }
+
+  Widget _buildAURPackage(BuildContext context) {
+    return _buildCard(
+      context,
+      title: '� Arch User Repository (AUR)',
+      description:
+          'Pre-built binary package for Arch Linux and derivatives. No Flutter dependency required!',
+      child: _buildInstallationSection(
+        context,
+        'Installation with AUR Helper (Recommended)',
+        '''# Install with yay (no build dependencies needed)
+yay -S ${Brand.current.artifactPrefix}
+
+# Or using paru
+paru -S ${Brand.current.artifactPrefix}
+
+# Or using pamac
+pamac install ${Brand.current.artifactPrefix}''',
+      ),
+    );
+  }
+
+  Widget _buildPrebuiltBinary(BuildContext context) {
+    return _buildCard(
+      context,
+      title: '⚡ Pre-built Binary (Universal)',
+      description:
+          'Direct download of the compiled application for manual installation on any Linux distribution.',
+      child: _buildInstallationSection(
+        context,
+        'Download and Install',
+        '''# Download pre-built binary from GitHub releases
+wget ${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-x64.tar.gz
+
+# Extract to local directory
+tar -xzf ${Brand.current.artifactPrefix}-Linux-x64.tar.gz
+cd ${Brand.current.artifactPrefix}-Linux-x64
+
+# Run directly
+./${BrandCopy.shippedLinuxBinary}''',
+      ),
+    );
+  }
+
+  Widget _buildGettingStarted(BuildContext context) {
+    return _buildCard(
+      context,
+      title: ' Getting Started',
+      description: 'Quick setup guide after installation.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          Text(
+            '1. Launch the Application',
+            style: TextStyle(
+              color: AppTheme.colorsOf(context).accent,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${Brand.current.artifactPrefix} will minimize to the system tray by default. Look for the LLM icon in your system tray.',
+            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '2. Configure LLM Provider',
+            style: TextStyle(
+              color: AppTheme.colorsOf(context).accent,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Go to Settings → LLM Provider Settings to configure your connection:',
+            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+          ),
+          const SizedBox(height: 8),
+          ...[
+            'Desktop: Configure direct localhost:11434 connection to Ollama',
+            'Web: Uses ${Brand.current.artifactPrefix} streaming proxy automatically',
+          ].map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                '• $item',
+                style:
+                    TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCard(
+    BuildContext context, {
+    required String title,
+    String? description,
+    required Widget child,
+  }) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 800),
+      decoration: BoxDecoration(
+        color: AppTheme.colorsOf(context).backgroundCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.27),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.4),
+            blurRadius: 24,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppTheme.colorsOf(context).accent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+          ),
+          if (description != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              description,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppTheme.colorsOf(context).textColorLight,
+                    fontSize: 16,
+                  ),
+            ),
+          ],
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstallationSection(
+      BuildContext context, String title, String code) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          title,
+          style: TextStyle(
+            color: AppTheme.colorsOf(context).accent,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            code,
+            style: TextStyle(
+              fontFamily: 'monospace',
+              color: AppTheme.colorsOf(context).success,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    return Container(
+      color: const Color(0xFF181a20),
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
+      child: Center(
+        child: TextButton(
+          onPressed: () => context.go('/'),
+          child: Text(
+            '← Back to Home',
+            style: TextStyle(
+              color: AppTheme.colorsOf(context).accent,
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Launch URL in external browser with improved error handling
+  Future<void> _launchUrl(String url, [BuildContext? context]) async {
+    // Show loading indicator for download attempts before async operations
+    if (url.contains('/download/') && context != null) {
+      _showDownloadStartedMessage(context);
+    }
+
+    try {
+      final uri = Uri.parse(url);
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        debugPrint('Successfully launched URL: $url');
+      } else {
+        debugPrint('Could not launch URL: $url');
+        // Use a post-frame callback to avoid async context issues
+        if (context != null && context.mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              _showErrorMessage(
+                context,
+                'Unable to open download link. Please try again or visit GitHub releases page directly.',
+              );
+            }
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error launching URL: $e');
+      // Use a post-frame callback to avoid async context issues
+      if (context != null && context.mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            _showErrorMessage(
+              context,
+              'Download failed. Please check your internet connection and try again.',
+            );
+          }
+        });
+      }
+    }
+  }
+
+  /// Download file using appropriate method for the platform
+  Future<void> _downloadFile(
+    String downloadUrl,
+    String fileName,
+    BuildContext context,
+  ) async {
+    try {
+      final releaseService = GitHubReleaseService();
+      await releaseService.downloadFile(downloadUrl, fileName);
+      if (context.mounted) {
+        _showDownloadStartedMessage(context);
+      }
+    } catch (e) {
+      debugPrint('Download failed: $e');
+      if (context.mounted) {
+        _showErrorMessage(
+          context,
+          'Download failed. Please try again or visit GitHub releases page directly.',
+        );
+      }
+    }
+  }
+
+  /// Show download started message
+  void _showDownloadStartedMessage(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.download, color: AppTheme.colorsOf(context).textColor),
+            SizedBox(width: 8),
+            Text('Download started...'),
+          ],
+        ),
+        backgroundColor: AppTheme.colorsOf(context).success,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  /// Show error message
+  void _showErrorMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.error, color: AppTheme.colorsOf(context).textColor),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: AppTheme.colorsOf(context).danger,
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'GitHub Releases',
+          textColor: AppTheme.colorsOf(context).textColor,
+          onPressed: () => _launchUrl(AppConfig.githubReleasesUrl),
+        ),
+      ),
+    );
+  }
+}

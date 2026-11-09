@@ -1,0 +1,29 @@
+# ============================================================================
+# Single-stage Dockerfile for Pistisai Web Application
+# Expects pre-compiled Flutter web assets in build/web/
+# ============================================================================
+
+FROM nginx:1.27-alpine
+
+USER root
+
+# Create pistisai user with UID 1001
+RUN addgroup -g 1001 -S pistisai && \
+    adduser -S -D -H -u 1001 -h /usr/share/nginx/html -s /bin/sh -G pistisai -g pistisai pistisai
+
+# Copy main config
+COPY config/docker/nginx.conf /etc/nginx/nginx.conf
+# Copy site config
+COPY config/docker/nginx-web.conf /etc/nginx/conf.d/default.conf
+
+# Copy assets
+COPY build/web /usr/share/nginx/html
+
+# Fix permissions for non-root execution (using pistisai:1001)
+RUN chown -R pistisai:pistisai /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
+
+USER pistisai
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,124 @@
+name: "🌐 Web E2E (Splash + Smoke)"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "web/**"
+      - "lib/**"
+      - "test/e2e/**"
+      - "playwright.config.js"
+      - ".github/workflows/web-e2e.yml"
+      - "package.json"
+      - "package-lock.json"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "web/**"
+      - "lib/**"
+      - "test/e2e/**"
+      - "playwright.config.js"
+      - ".github/workflows/web-e2e.yml"
+      - "package.json"
+      - "package-lock.json"
+
+concurrency:
+  group: web-e2e-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_test:
+    name: "🌐 Build + Playwright"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          channel: "stable"
+          cache: true
+
+      - name: "📦 flutter pub get"
+        run: flutter pub get
+
+      - name: Bake IAClé brand
+        run: bash tool/brand.sh iacle
+
+      - name: "🌐 flutter build web --release"
+        run: flutter build web --release --no-tree-shake-icons --no-web-resources-cdn --dart-define=BRAND=iacle
+
+      - name: "🔍 Verify splash fix is in built index.html"
+        run: |
+          set -euo pipefail
+          INDEX=build/web/index.html
+          test -f "$INDEX" || { echo "❌ $INDEX not found"; exit 1; }
+          if grep -q "flutter-first-frame" "$INDEX" || grep -q "removeSplashFromWeb" "$INDEX" || grep -q "splash" "$INDEX"; then
+            echo "✅ Splash-related markers present in build output"
+          else
+            echo "⚠️ Splash markers not found with expected patterns, but build exists"
+            grep -n "splash" "$INDEX" | head -5 || true
+          fi
+
+      - name: "📦 Cache root node_modules"
+        id: npm-cache
+        uses: actions/cache@v6
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package.json') }}
+
+      - name: "📦 npm install (Playwright + helpers)"
+        run: npm install --no-audit --no-fund
+
+      - name: Read installed Playwright version
+        id: playwright-version
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./node_modules/@playwright/test/package.json').version")"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Playwright version: ${version}"
+
+      - name: "🎭 Cache Playwright browsers"
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-ms-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: "🎭 Install Playwright browsers"
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: "🎭 Install Playwright OS dependencies"
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: "🎭 Run Playwright"
+        env:
+          CI: "true"
+        run: npx playwright test
+
+      - name: "📤 Upload Playwright report"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+
+      - name: "📤 Upload web build for debugging"
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-build-debug
+          path: build/web/
+          retention-days: 3

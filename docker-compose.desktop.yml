@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  test-desktop:
+    build:
+      context: .
+      dockerfile: Dockerfile.test-desktop
+    environment:
+      - DISPLAY=:99
+    ports:
+      - "5900:5900"
+    command: sh -c "Xvfb :99 -screen 0 1920x1080x24 & openbox & x11vnc -display :99 -nopw -listen localhost -xkb -forever"

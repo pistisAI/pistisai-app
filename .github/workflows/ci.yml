@@ -1,0 +1,53 @@
+name: "⚡ CI Quick Gate"
+
+on:
+  push:
+    branches-ignore: [main]
+
+concurrency:
+  group: ci-quick-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Skip when an open pull request already covers this branch
+        id: open-pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          count="$(gh pr list --head "$GITHUB_REF_NAME" --json number --jq length)"
+          echo "Open pull requests for ${GITHUB_REF_NAME}: ${count}"
+          if [ "$count" != "0" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Open pull request exists; flutter analyze runs in the required check."
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        if: steps.open-pr.outputs.skip != 'true'
+        with:
+          flutter-version-file: pubspec.yaml
+          channel: "stable"
+          cache: true
+      - name: flutter pub get
+        if: steps.open-pr.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          flutter pub get
+      - name: flutter analyze
+        if: steps.open-pr.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          flutter analyze lib/
+          echo "✅ Analysis passed"

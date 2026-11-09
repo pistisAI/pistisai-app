@@ -1,0 +1,52 @@
+# IAClé brand. Bake with tool/brand.sh iacle before a build.
+id: iacle
+product_name: IAClé
+short_name: IAClé
+company_name: IAClé
+tagline: "L'assistant local des entreprises du Québec"
+support_email: support@iacle.app
+support_url: https://iacle.app
+privacy_email: privacy@iacle.app
+website_domain: iacle.app
+website_url: https://iacle.app
+app_url: https://app.iacle.app
+default_locale: fr
+lock_locale: true
+logo_asset: brand/iacle/assets/logo.png
+icon_asset: brand/iacle/assets/icon.png
+wordmark: IACLÉ
+greek_wordmark: ""
+colors:
+  primary: "#FFD700"
+  secondary: "#FFE44D"
+  accent: "#D4A017"
+  background: "#181A20"
+  text: "#F5E6C8"
+app_id: app.iacle.app
+bundle_id: app.iacle.iacle
+linux_application_id: app.iacle.iacle
+executable_name: iacle
+window_title: IAClé
+about_text: "IAClé est un assistant local d'abord pour les entreprises du Québec. L'agent tourne sur un ordinateur chez le client. L'audit vérifie si cet ordinateur peut l'héberger. Sinon, IAClé fournit un mini-PC dédié."
+closing_line: "IAClé garde le travail sur l'ordinateur du client, avec une permission à la fois."
+legal_line: "© 2026 IAClé"
+copyright: "Copyright © 2026 IAClé. Tous droits réservés."
+windows_copyright: "Copyright (C) 2026 IAClé. Tous droits réservés."
+file_description: "Client IAClé"
+repository_url: https://github.com/iacle-solutions/iacle-app
+repository_label: iacle-solutions/iacle-app
+docs_url: https://github.com/iacle-solutions/iacle-app/blob/main/README.md
+releases_url: https://github.com/iacle-solutions/iacle-app/releases/latest
+artifact_prefix: IAClé
+accent_label: "Or IAClé"
+package_title: "Trousse IAClé"
+package_blurb: |
+  Terminer cette première configuration installe la trousse IAClé dans le Hermes que vous venez de joindre. Cet emplacement vient de ce Hermes, même lorsqu'il n'est pas l'emplacement Windows habituel. La trousse ajoute le robot fourni, la compétence de lecture, et une routine toutes les 6 heures.
+footer_motto: IAClé
+web_title: "IAClé — Assistant local"
+web_description: "IAClé — assistant local d'abord pour les entreprises du Québec. Clavardage, voix, avatar, et actions sur le poste avec permission."
+social_description: "Un assistant local pour les entreprises du Québec, sur l'ordinateur du client."
+manifest_description: "Assistant local pour les entreprises du Québec. Clavardage, voix, avatar, et actions sur le poste avec permission."
+appstream_summary: "Assistant local pour les entreprises du Québec"
+appstream_description: "IAClé est un assistant local d'abord. L'agent tourne sur un ordinateur chez le client. L'audit vérifie si cet ordinateur peut l'héberger."
+developer_name: IAClé

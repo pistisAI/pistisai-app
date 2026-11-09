@@ -1,0 +1,12 @@
+[Unit]
+Description=Pistisai Update Checker
+Documentation=https://pistisai.app
+Requires=pistisai-updated.service
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=6h
+AccuracySec=1h
+
+[Install]
+WantedBy=timers.target

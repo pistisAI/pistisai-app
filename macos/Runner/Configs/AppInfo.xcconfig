@@ -1,0 +1,10 @@
+// Application-level settings for the Runner target.
+//
+// This may be replaced with something auto-generated from metadata (e.g., pubspec.yaml) in the
+// future. If not, the values below would default to using the project name when this becomes a
+// 'flutter create' template.
+
+#include "Brand.xcconfig"
+
+// The application's bundle identifier. Not switched by the brand script yet.
+PRODUCT_BUNDLE_IDENTIFIER = app.pistisai.pistisai
