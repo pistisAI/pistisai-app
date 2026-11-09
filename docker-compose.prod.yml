@@ -19,6 +19,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
+      - SUPABASE_URL=${SUPABASE_URL}
       - SENTRY_DSN=${SENTRY_DSN}
       - SENTRY_ENVIRONMENT=production
       - OTLP_ENDPOINT=http://jaeger:4318

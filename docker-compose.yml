@@ -129,6 +129,7 @@ services:
       - PGDATABASE=pistisai
       - PGUSER=postgres
       - PGPASSWORD=postgres
+      - SUPABASE_URL=${SUPABASE_URL}
     restart: unless-stopped
     depends_on:
       database:

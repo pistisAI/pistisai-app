@@ -77,6 +77,16 @@ jobs:
           echo "tag=$VERSION" >> $GITHUB_OUTPUT
           echo "Building version: $VERSION"
 
+      - name: Require web admin email
+        env:
+          PISTISAI_ADMIN_EMAIL: ${{ secrets.PISTISAI_ADMIN_EMAIL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PISTISAI_ADMIN_EMAIL:-}" ]; then
+            echo "PISTISAI_ADMIN_EMAIL is not set"
+            exit 1
+          fi
+
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v6
@@ -91,6 +101,10 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
+          build-args: |
+            PISTISAI_ADMIN_EMAIL=${{ secrets.PISTISAI_ADMIN_EMAIL }}
+            SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+            SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Verify image pushed
         run: |
@@ -114,6 +128,7 @@ jobs:
           SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COOLIFY_HOST: ${{ env.COOLIFY_HOST }}
+          COOLIFY_APP_UUID: ${{ env.COOLIFY_APP_UUID }}
         run: |
           set -euo pipefail
           if [ -z "${COOLIFY_API_TOKEN:-}" ]; then
@@ -126,6 +141,10 @@ jobs:
           fi
           if [ -z "${COOLIFY_HOST:-}" ]; then
             echo "COOLIFY_HOST is not set"
+            exit 1
+          fi
+          if [ -z "${COOLIFY_APP_UUID:-}" ]; then
+            echo "COOLIFY_APP_UUID is not set"
             exit 1
           fi
           install -d -m 700 ~/.ssh
