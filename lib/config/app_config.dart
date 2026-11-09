@@ -20,16 +20,10 @@ class AppConfig {
   // Configured Authentication Provider
   static const AuthProviderType authProvider = AuthProviderType.supabase;
 
-  // Supabase configuration is injected at build time.
-  //   flutter run --dart-define=SUPABASE_URL=https://your-project.supabase.co --dart-define=SUPABASE_ANON_KEY=your_key
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: '',
-  );
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: '',
-  );
+  // Supabase is not part of the product identity path. No project URL or
+  // anon key is configured in this tree.
+  static const String supabaseUrl = '';
+  static const String supabaseAnonKey = '';
 
   // Sentry Configuration
   // Override at compile time: flutter build --dart-define=SENTRY_DSN=your_dsn

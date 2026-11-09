@@ -14,7 +14,7 @@ This guide is the current entry point for working on Pistisai.
 | `services/streaming-proxy/` | Streaming proxy service |
 | `services/sdk/` | TypeScript SDK |
 | `services/tailscale-relay/` | Tailscale relay |
-| `backend/auth/` | Lightweight CommonJS Auth0 backend |
+| `backend/auth/` | Lightweight CommonJS JWT service |
 | `test/` | Flutter tests and root API backend Jest tests |
 | `docs/` | Documentation |
 | `scripts/` | Build, deployment, maintenance, and release helpers |

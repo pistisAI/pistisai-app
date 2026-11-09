@@ -218,15 +218,13 @@ gcloud logging read "resource.type=cloudsql_database"
    Error: Authentication service not available
    ```
 
-   - Verify `SUPABASE_AUTH_DOMAIN` and `SUPABASE_AUTH_AUDIENCE` environment variables
-   - Check Auth0 JWT validation configuration
+   - Verify the identity provider configuration for this environment
 
 ### Service Account Permissions
 
 Ensure your Cloud Run service account has:
 
 - `roles/cloudsql.client` - For Cloud SQL access
-- Auth0 JWT validation (configured via environment variables)
 
 ### Performance Tuning
 

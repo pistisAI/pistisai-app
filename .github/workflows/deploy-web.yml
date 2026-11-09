@@ -91,9 +91,6 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
-          build-args: |
-            SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-            SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Verify image pushed
         run: |

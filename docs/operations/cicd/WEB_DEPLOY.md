@@ -47,7 +47,7 @@ Desktop, mobile, and backend workflows start from a completed Web Deploy run. Th
 
 ### Coolify trigger
 
-Required secrets: `COOLIFY_API_TOKEN`, `COOLIFY_SSH_KEY`, `COOLIFY_HOST`, `COOLIFY_APP_UUID`, `SUPABASE_URL`, and `SUPABASE_ANON_KEY`. `COOLIFY_URL` in `deploy-web.yml` is the public deploy host. The Coolify app id and origin host stay in repository secrets.
+Required secrets: `COOLIFY_API_TOKEN`, `COOLIFY_SSH_KEY`, `COOLIFY_HOST`, and `COOLIFY_APP_UUID`. `COOLIFY_URL` in `deploy-web.yml` is the public deploy host. The Coolify app id and origin host stay in repository secrets.
 
 Before the deploy call, the job SSHes to the Coolify host and runs `docker login ghcr.io` with the Actions `GITHUB_TOKEN`. The image is private, so the host cannot pull it without that login. The step must set `GITHUB_TOKEN` in its own `env`. Actions does not put the token in the environment otherwise, and `set -u` fails the step.
 

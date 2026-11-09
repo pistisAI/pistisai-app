@@ -80,9 +80,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
-      - SUPABASE_AUDIENCE=authenticated
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket for proxy management
     networks:

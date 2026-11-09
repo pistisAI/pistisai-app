@@ -2,7 +2,7 @@
 # Deploy with: docker stack deploy -c docker-compose.prod.yml pistisai
 #
 # Services:
-# - api-backend: Express.js REST API with Auth0 JWT (port 8080)
+# - api-backend: Express.js REST API (port 8080)
 # - streaming-proxy: WebSocket proxy for LLM streaming (port 3001)
 # - redis: Rate limiting cache (optional, can use in-memory)
 # - traefik: Reverse proxy with SSL and routing
@@ -19,9 +19,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
-      - SUPABASE_AUDIENCE=authenticated
       - SENTRY_DSN=${SENTRY_DSN}
       - SENTRY_ENVIRONMENT=production
       - OTLP_ENDPOINT=http://jaeger:4318
