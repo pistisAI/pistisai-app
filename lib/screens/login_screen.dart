@@ -101,6 +101,24 @@ class _LoginScreenState extends State<LoginScreen> {
       debugPrint(' [Login] Calling authService.login()');
       await authService.login();
 
+      final loginError = authService.lastLoginError;
+      if (loginError != null) {
+        debugPrint(' [Login] Login failed: $loginError');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(loginError),
+              backgroundColor: AppTheme.colorsOf(context).danger,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppTheme.borderRadiusS),
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
       debugPrint(
         ' [Login] Login call completed',
       );

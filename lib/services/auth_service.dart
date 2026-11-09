@@ -22,6 +22,7 @@ class AuthService extends ChangeNotifier {
   bool _isInitializing = false;
   Completer<void>? _initCompleter;
   bool _isRestoringSession = false;
+  String? _lastLoginError;
   late final SessionBootstrapService _sessionBootstrapService;
 
   AuthService(this._authProvider) {
@@ -152,14 +153,21 @@ class AuthService extends ChangeNotifier {
   // Platform detection
   bool get isWeb => kIsWeb;
 
-  /// Login
+  /// Set when the last login attempt failed. Cleared at the start of the next attempt.
+  String? get lastLoginError => _lastLoginError;
+
+  /// Login. Failures stay on [lastLoginError] so callers that do not await still fail closed.
   Future<void> login() async {
     debugPrint(
         '[AuthService] login() called with provider: ${_authProvider.runtimeType}');
+    _lastLoginError = null;
     _isLoading.value = true;
     notifyListeners();
     try {
       await _authProvider.login();
+    } catch (e) {
+      _lastLoginError = e.toString().replaceFirst('Bad state: ', '');
+      debugPrint('[AuthService] login failed: $e');
     } finally {
       _isLoading.value = false;
       notifyListeners();

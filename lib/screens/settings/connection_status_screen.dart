@@ -193,10 +193,21 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                     'Provider', 'Supabase', AppTheme.colorsOf(context).info),
               ],
               SizedBox(height: AppTheme.spacingM),
+              if (authService.lastLoginError != null) ...[
+                Text(
+                  authService.lastLoginError!,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.colorsOf(context).danger,
+                  ),
+                ),
+                SizedBox(height: AppTheme.spacingM),
+              ],
               if (!isAuthenticated)
                 GradientButton(
                   text: 'Login',
-                  onPressed: () => authService.login(),
+                  onPressed: () {
+                    authService.login();
+                  },
                 )
               else
                 ElevatedButton.icon(
