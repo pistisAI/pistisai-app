@@ -44,6 +44,20 @@ void main() {
     expect(Brand.current.lockLocale, isFalse);
   });
 
+  test('example brand copy does not name the upstream product', () {
+    Brand.debugOverride(example);
+    for (final sample in BrandCopy.routedSamples()) {
+      expect(
+        sample.toLowerCase().contains('pistisai'),
+        isFalse,
+        reason: sample,
+      );
+    }
+    expect(example.defaultLocale, 'fr');
+    expect(example.lockLocale, isTrue);
+    expect(example.materialLocale, const Locale('fr'));
+  });
+
   testWidgets('baked brand renders Pistisai', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -111,7 +125,7 @@ void main() {
     expect(theme.colorScheme.primary, isNot(const Color(0xFFFFD700)));
   });
 
-  test('baked theme primary comes from the pistisai brand file', () {
+  test('baked theme primary comes from the Pistisai brand file', () {
     final theme = ThemeConfig.loadThemeConfiguration(ThemeMode.dark, null);
     expect(theme.colorScheme.primary, pistisai.primary);
     expect(ThemeConfig.primaryColor, pistisai.primary);

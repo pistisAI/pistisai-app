@@ -78,8 +78,8 @@ jobs:
       - name: Require web image secrets
         env:
           PISTISAI_ADMIN_EMAIL: ${{ secrets.PISTISAI_ADMIN_EMAIL }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CF_ACCESS_TEAM_DOMAIN: ${{ secrets.CF_ACCESS_TEAM_DOMAIN }}
+          CF_ACCESS_AUD: ${{ secrets.CF_ACCESS_AUD }}
           PISTISAI_PRICE_PREMIUM: ${{ secrets.PISTISAI_PRICE_PREMIUM }}
           PISTISAI_PRICE_ENTERPRISE: ${{ secrets.PISTISAI_PRICE_ENTERPRISE }}
         run: |
@@ -89,12 +89,12 @@ jobs:
             echo "PISTISAI_ADMIN_EMAIL is not set"
             missing=1
           fi
-          if [ -z "${SUPABASE_URL:-}" ]; then
-            echo "SUPABASE_URL is not set"
+          if [ -z "${CF_ACCESS_TEAM_DOMAIN:-}" ]; then
+            echo "CF_ACCESS_TEAM_DOMAIN is not set"
             missing=1
           fi
-          if [ -z "${SUPABASE_ANON_KEY:-}" ]; then
-            echo "SUPABASE_ANON_KEY is not set"
+          if [ -z "${CF_ACCESS_AUD:-}" ]; then
+            echo "CF_ACCESS_AUD is not set"
             missing=1
           fi
           if [ -z "${PISTISAI_PRICE_PREMIUM:-}" ]; then
@@ -128,8 +128,8 @@ jobs:
             BRAND=pistisai
           secrets: |
             "PISTISAI_ADMIN_EMAIL=${{ secrets.PISTISAI_ADMIN_EMAIL }}"
-            "SUPABASE_URL=${{ secrets.SUPABASE_URL }}"
-            "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}"
+            "CF_ACCESS_TEAM_DOMAIN=${{ secrets.CF_ACCESS_TEAM_DOMAIN }}"
+            "CF_ACCESS_AUD=${{ secrets.CF_ACCESS_AUD }}"
             "PISTISAI_PRICE_PREMIUM=${{ secrets.PISTISAI_PRICE_PREMIUM }}"
             "PISTISAI_PRICE_ENTERPRISE=${{ secrets.PISTISAI_PRICE_ENTERPRISE }}"
 

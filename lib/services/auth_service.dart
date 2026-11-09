@@ -164,7 +164,8 @@ class AuthService extends ChangeNotifier {
     _lastLoginError = null;
     _isLoading.value = true;
     notifyListeners();
-    if (AppConfig.supabaseUrl.isEmpty || AppConfig.supabaseAnonKey.isEmpty) {
+    if (AppConfig.cloudflareAccessTeamDomain.isEmpty ||
+        AppConfig.cloudflareAccessAud.isEmpty) {
       _lastLoginError = 'Sign-in is not configured.';
       _isLoading.value = false;
       notifyListeners();

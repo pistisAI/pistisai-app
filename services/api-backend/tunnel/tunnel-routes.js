@@ -31,9 +31,7 @@ export function createTunnelRoutes(
 
   // Use provided auth service or create a new one (fallback)
   if (!authService) {
-    authService = new AuthService({
-      SUPABASE_URL: process.env.SUPABASE_URL || '',
-    });
+    authService = new AuthService({});
   }
 
   async function authenticateToken(req, res, next) {

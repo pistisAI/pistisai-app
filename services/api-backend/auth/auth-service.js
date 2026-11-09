@@ -1,7 +1,7 @@
 /**
  * @fileoverview Authentication Service for Pistisai Tunnel
  * Handles JWT validation, session management, and role-based access control
- * Migrated from Auth0 to Supabase Auth.
+ * Identity is Cloudflare Access. Tokens are RS256 JWTs from the team certs.
  */
 
 import jwt from 'jsonwebtoken';
@@ -10,22 +10,28 @@ import jwksClient from 'jwks-rsa';
 import { TunnelLogger } from '../utils/logger.js';
 import { DatabaseMigratorPG } from '../database/migrate-pg.js';
 
+function accessTeamDomain() {
+  return (process.env.CF_ACCESS_TEAM_DOMAIN || '')
+    .replace(/^https?:\/\//, '')
+    .replace(/\/$/, '');
+}
+
 /**
- * Authentication service with JWT integration
- * Uses Supabase Auth for JWT validation (ES256)
+ * Authentication service with JWT integration.
+ * Uses Cloudflare Access certs for JWT validation (RS256).
  */
 export class AuthService {
   constructor(config) {
+    const teamDomain = accessTeamDomain();
     this.config = {
-      SUPABASE_URL: process.env.SUPABASE_URL || '',
-      SUPABASE_JWKS_URI:
-        process.env.SUPABASE_JWKS_URI ||
-        (process.env.SUPABASE_URL
-          ? `${process.env.SUPABASE_URL}/auth/v1/.well-known/jwks.json`
-          : ''),
+      ...config,
+      CF_ACCESS_TEAM_DOMAIN: teamDomain,
+      CF_ACCESS_AUD: process.env.CF_ACCESS_AUD || '',
+      JWKS_URI: teamDomain
+        ? `https://${teamDomain}/cdn-cgi/access/certs`
+        : '',
       SESSION_TIMEOUT: parseInt(process.env.SESSION_TIMEOUT) || 3600000, // 1 hour
       MAX_SESSIONS_PER_USER: parseInt(process.env.MAX_SESSIONS_PER_USER) || 5,
-      ...config,
     };
 
     this.logger = new TunnelLogger('auth-service');
@@ -55,13 +61,14 @@ export class AuthService {
 
     this.initialized = false;
 
-    // Initialize JWKS client for Supabase
-    this.jwksClient = jwksClient({
-      jwksUri: this.config.SUPABASE_JWKS_URI,
-      cache: true,
-      rateLimit: true,
-      jwksRequestsPerMinute: 5,
-    });
+    this.jwksClient = this.config.JWKS_URI
+      ? jwksClient({
+          jwksUri: this.config.JWKS_URI,
+          cache: true,
+          rateLimit: true,
+          jwksRequestsPerMinute: 5,
+        })
+      : null;
   }
 
   /**
@@ -90,7 +97,7 @@ export class AuthService {
       this.initialized = true;
 
       this.logger.info(
-        'Authentication service initialized (Supabase ES256)',
+        'Authentication service initialized (Cloudflare Access RS256)',
       );
 
       this.startSessionCleanup();
@@ -163,10 +170,28 @@ export class AuthService {
     }
   }
 
+  assertAccessAudience(payload) {
+    const expected = this.config.CF_ACCESS_AUD;
+    if (!expected) {
+      return;
+    }
+    const aud = payload?.aud;
+    const matches = Array.isArray(aud)
+      ? aud.includes(expected)
+      : aud === expected;
+    if (!matches) {
+      throw new Error('Cloudflare Access audience mismatch');
+    }
+  }
+
   /**
    * Get signing key from JWKS
    */
   getKey(header, callback) {
+    if (!this.jwksClient) {
+      callback(new Error('Cloudflare Access is not configured'));
+      return;
+    }
     this.jwksClient.getSigningKey(header.kid, (err, key) => {
       if (err) {
         callback(err);
@@ -211,8 +236,8 @@ export class AuthService {
   }
 
   /**
-   * Validate Supabase JWT token
-   * Supabase JWTs: iss = {supabase_url}/auth/v1, aud = "authenticated", sub = user UUID
+   * Validate a Cloudflare Access JWT.
+   * Access JWTs: iss is the team host, aud is the application audience.
    */
   async validateToken(token, req = {}, preValidatedPayload = null) {
     try {
@@ -224,9 +249,11 @@ export class AuthService {
       } else if (this.isDevBypassToken(token)) {
         this.logger.info('Using dev bypass token');
         payload = {
-          iss: `${this.config.SUPABASE_URL}/auth/v1`,
+          iss: this.config.CF_ACCESS_TEAM_DOMAIN
+            ? `https://${this.config.CF_ACCESS_TEAM_DOMAIN}`
+            : 'cloudflare-access',
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
           name: 'Dev User',
           nickname: 'dev-user',
@@ -250,7 +277,7 @@ export class AuthService {
           jwt.verify(
             token,
             this.getKey.bind(this),
-            { algorithms: ['ES256'] },
+            { algorithms: ['RS256'] },
             (err, decodedToken) => {
               if (err) {
                 reject(err);
@@ -261,6 +288,7 @@ export class AuthService {
           );
         });
 
+        this.assertAccessAudience(payload);
         this.logger.info('Token verification successful');
       }
 
@@ -303,9 +331,11 @@ export class AuthService {
       if (this.isDevBypassToken(token)) {
         this.logger.info('Bypassing WebSocket token verification for dev token');
         return {
-          iss: `${this.config.SUPABASE_URL}/auth/v1`,
+          iss: this.config.CF_ACCESS_TEAM_DOMAIN
+            ? `https://${this.config.CF_ACCESS_TEAM_DOMAIN}`
+            : 'cloudflare-access',
           sub: '00000000-0000-0000-0000-000000000000',
-          aud: 'authenticated',
+          aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
           name: 'Dev User',
           nickname: 'dev-user',
@@ -327,7 +357,7 @@ export class AuthService {
         jwt.verify(
           token,
           this.getKey.bind(this),
-          { algorithms: ['ES256'] },
+          { algorithms: ['RS256'] },
           (err, decodedToken) => {
             if (err) {
               reject(err);
@@ -338,6 +368,7 @@ export class AuthService {
         );
       });
 
+      this.assertAccessAudience(verified);
       this.logger.info('WebSocket token verification successful', {
         userId: verified.sub,
         exp: verified.exp,

@@ -12,16 +12,16 @@ COPY . .
 ARG BRAND=pistisai
 # Values are BuildKit secrets, not build-args, so image provenance does not record them.
 RUN --mount=type=secret,id=PISTISAI_ADMIN_EMAIL,required=false \
-    --mount=type=secret,id=SUPABASE_URL,required=false \
-    --mount=type=secret,id=SUPABASE_ANON_KEY,required=false \
+    --mount=type=secret,id=CF_ACCESS_TEAM_DOMAIN,required=false \
+    --mount=type=secret,id=CF_ACCESS_AUD,required=false \
     --mount=type=secret,id=PISTISAI_PRICE_PREMIUM,required=false \
     --mount=type=secret,id=PISTISAI_PRICE_ENTERPRISE,required=false \
     secret() { if [ -f "/run/secrets/$1" ]; then tr -d '\r\n' < "/run/secrets/$1"; fi; } && \
     flutter build web --release --no-web-resources-cdn \
     --dart-define=BRAND="$BRAND" \
     --dart-define=PISTISAI_ADMIN_EMAIL="$(secret PISTISAI_ADMIN_EMAIL)" \
-    --dart-define=SUPABASE_URL="$(secret SUPABASE_URL)" \
-    --dart-define=SUPABASE_ANON_KEY="$(secret SUPABASE_ANON_KEY)" \
+    --dart-define=CF_ACCESS_TEAM_DOMAIN="$(secret CF_ACCESS_TEAM_DOMAIN)" \
+    --dart-define=CF_ACCESS_AUD="$(secret CF_ACCESS_AUD)" \
     --dart-define=PISTISAI_PRICE_PREMIUM="$(secret PISTISAI_PRICE_PREMIUM)" \
     --dart-define=PISTISAI_PRICE_ENTERPRISE="$(secret PISTISAI_PRICE_ENTERPRISE)" \
  && python3 -c 'import json,pathlib; m=json.loads(pathlib.Path("assets/version.json").read_text()); p=pathlib.Path("build/web/index.html"); p.write_text(p.read_text().replace("$FLUTTER_BUILD_NUMBER", m["version"]+"."+str(m["build_number"])))'
