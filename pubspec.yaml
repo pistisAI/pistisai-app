@@ -27,7 +27,6 @@ dependencies:
   # Authentication
   provider: ^6.1.2
   jwt_decoder: ^2.0.1
-  supabase_flutter: ^2.0.0
   shared_preferences: ^2.5.4
 
   # Database - Local Brain

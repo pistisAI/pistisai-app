@@ -18,15 +18,20 @@ class AppConfig {
   static String get githubReleasesUrl => Brand.current.releasesUrl;
 
   // Configured Authentication Provider
-  static const AuthProviderType authProvider = AuthProviderType.supabase;
+  static const AuthProviderType authProvider =
+      AuthProviderType.cloudflareAccess;
 
-  // Supabase Configuration
-  static const String supabaseUrl = 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
-  // SECURITY: key removed from source — must be provided at build time:
-  //   flutter run --dart-define=SUPABASE_ANON_KEY=your_key
-  //   flutter build --dart-define=SUPABASE_ANON_KEY=your_key
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
+  /// Cloudflare Access team host, without a scheme. Empty unless the build
+  /// passes `--dart-define=CF_ACCESS_TEAM_DOMAIN=...`.
+  static const String cloudflareAccessTeamDomain = String.fromEnvironment(
+    'CF_ACCESS_TEAM_DOMAIN',
+    defaultValue: '',
+  );
+
+  /// Cloudflare Access application audience. Empty unless the build passes
+  /// `--dart-define=CF_ACCESS_AUD=...`.
+  static const String cloudflareAccessAud = String.fromEnvironment(
+    'CF_ACCESS_AUD',
     defaultValue: '',
   );
 
@@ -271,7 +276,7 @@ class AppConfig {
 }
 
 enum AuthProviderType {
-  supabase,
+  cloudflareAccess,
   none,
 }
 

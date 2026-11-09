@@ -12,7 +12,7 @@ import '../services/platform_detection_service.dart';
 import '../widgets/auth_debug_panel.dart'
     if (dart.library.io) '../widgets/auth_debug_panel_stub.dart';
 
-/// Modern login screen with Supabase integration and unified theming
+/// Login screen with Cloudflare Access and unified theming
 ///
 /// Requirements:
 /// - 7.1: Apply unified theme system to all UI elements
