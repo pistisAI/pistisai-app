@@ -400,4 +400,267 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get daemonRestart => 'Restart Daemon';
+
+  @override
+  String get commonRefresh => 'Refresh';
+
+  @override
+  String get commonClose => 'Close';
+
+  @override
+  String get commonClear => 'Clear';
+
+  @override
+  String commonErrorDetails(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get nodesTitle => 'Nodes';
+
+  @override
+  String get nodesAgentRuntimes => 'Agent Runtimes';
+
+  @override
+  String get nodesNoAgentRuntimes => 'No agent runtimes discovered';
+
+  @override
+  String get nodesSupportProviders => 'Support Providers';
+
+  @override
+  String get nodesNoSupportProviders => 'No support providers discovered';
+
+  @override
+  String get nodesTailscaleDevices => 'Tailscale Devices';
+
+  @override
+  String get nodesNoTailscaleDevices => 'No Tailscale devices discovered';
+
+  @override
+  String nodesLoadError(String error) {
+    return 'Failed to load discovery data: $error';
+  }
+
+  @override
+  String nodesSelectedRuntime(String name, String version) {
+    return 'Agent runtime: $name ($version)';
+  }
+
+  @override
+  String get nodesVersionUnknown => 'unknown';
+
+  @override
+  String get nodesNoRuntimeSelected => 'No agent runtime selected';
+
+  @override
+  String get channelDetailsTitle => 'Channel Details';
+
+  @override
+  String get channelNotFound => 'Channel not found';
+
+  @override
+  String get channelBadgeNew => 'New';
+
+  @override
+  String get channelBadgeRead => 'Read';
+
+  @override
+  String get channelStatistics => 'Statistics';
+
+  @override
+  String get channelMessages => 'Messages';
+
+  @override
+  String get channelPlatform => 'Platform';
+
+  @override
+  String get channelPlatformUnknown => 'Unknown';
+
+  @override
+  String get channelLastActivity => 'Last Activity';
+
+  @override
+  String get channelNever => 'Never';
+
+  @override
+  String get channelControls => 'Controls';
+
+  @override
+  String get channelStart => 'Start Channel';
+
+  @override
+  String get channelStop => 'Stop Channel';
+
+  @override
+  String get channelReconnect => 'Reconnect';
+
+  @override
+  String get channelViewLogs => 'View Logs';
+
+  @override
+  String channelActionPerformed(String action, String channelId) {
+    return 'Action $action performed for channel $channelId';
+  }
+
+  @override
+  String get channelJustNow => 'Just now';
+
+  @override
+  String channelMinutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String channelHoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String channelDaysAgo(int days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get usageTitle => 'Usage';
+
+  @override
+  String get usageToday => 'Today';
+
+  @override
+  String get usageWeek => 'Week';
+
+  @override
+  String get usageMonth => 'Month';
+
+  @override
+  String get usageActiveConcurrency => 'Active Concurrency';
+
+  @override
+  String usageOfLimit(int limit) {
+    return 'of $limit';
+  }
+
+  @override
+  String get usageConcurrencySubtitle => 'Concurrent requests in flight';
+
+  @override
+  String get usageConcurrencyUtilization => 'Concurrency utilization';
+
+  @override
+  String get usageRequestRate => 'Request Rate';
+
+  @override
+  String get usageRequestsPerMinuteUnit => 'req/min';
+
+  @override
+  String get usageRequestRateSubtitle => 'Requests per minute across models';
+
+  @override
+  String get usageRpmUtilization => 'RPM utilization';
+
+  @override
+  String get usageTokenRate => 'Token Rate';
+
+  @override
+  String get usageTokensPerMinuteUnit => 'tok/min';
+
+  @override
+  String get usageTokenRateSubtitle => 'Tokens per minute across models';
+
+  @override
+  String get usageTpmUtilization => 'TPM utilization';
+
+  @override
+  String get usageChartTokenUsage => 'Token Usage Over Time';
+
+  @override
+  String get usageChartRequestVolume => 'Request Volume';
+
+  @override
+  String get usageChartResourceTrends => 'Resource Trends';
+
+  @override
+  String get usageChartPlaceholder => 'Chart placeholder';
+
+  @override
+  String get usageNoActiveModels => 'No active models';
+
+  @override
+  String get usagePerModelConcurrency => 'Per-model concurrency';
+
+  @override
+  String get usageNoRateData => 'No rate data';
+
+  @override
+  String get usageTopModelsByRpm => 'Top models by RPM';
+
+  @override
+  String get usageNoTokenData => 'No token data';
+
+  @override
+  String get usageTopModelsByTpm => 'Top models by TPM';
+
+  @override
+  String get logsTitle => 'Logs';
+
+  @override
+  String get logsExport => 'Export Logs';
+
+  @override
+  String get logsServiceUnavailable => 'Log service unavailable';
+
+  @override
+  String logsExportedTo(String path) {
+    return 'Logs exported to $path';
+  }
+
+  @override
+  String get logsCopied => 'Logs copied to clipboard';
+
+  @override
+  String get logsNoneFound => 'No logs found';
+
+  @override
+  String get logsAdjustFilters => 'Try adjusting your filters';
+
+  @override
+  String get logsNoneAvailable => 'No logs available';
+
+  @override
+  String get logsSearchHint => 'Search logs...';
+
+  @override
+  String get logsSeverity => 'Severity';
+
+  @override
+  String get logsSource => 'Source';
+
+  @override
+  String get logsClearAll => 'Clear All';
+
+  @override
+  String get logsViewDetails => 'View details';
+
+  @override
+  String get logsDetailsTitle => 'Log Details';
+
+  @override
+  String get logsTimestamp => 'Timestamp';
+
+  @override
+  String get logsMessage => 'Message';
+
+  @override
+  String get logsError => 'Error';
+
+  @override
+  String get logsStackTrace => 'Stack Trace';
+
+  @override
+  String get logsFilterBySource => 'Filter by Source';
+
+  @override
+  String logsDetailLabel(String label) {
+    return '$label:';
+  }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/l10n/app_localizations.dart';
+import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
 Set<String> _arbKeys(String path) {
@@ -97,5 +98,33 @@ void main() {
     expect(fr.daemonModelCount(0), '0 modèle');
     expect(fr.daemonModelCount(1), '1 modèle');
     expect(fr.daemonModelCount(3), '3 modèles');
+  });
+
+  test('batch 4 messages with values read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.nodesSelectedRuntime('Hermes', '1.2.3'),
+        'Environnement d\'agent : Hermes (1.2.3)');
+    expect(fr.logsDetailLabel(fr.logsSource), 'Source :');
+    expect(fr.commonErrorDetails('boom'), 'Erreur : boom');
+    expect(fr.channelMinutesAgo(5), 'il y a 5 min');
+    expect(fr.usageOfLimit(8), 'sur 8');
+  });
+
+  testWidgets('the nodes screen renders in French for a locked brand',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: NodesScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Nœuds'), findsOneWidget);
+    expect(
+        find.text('Aucun environnement d\'agent sélectionné'), findsOneWidget);
+    expect(find.text('Appareils Tailscale'), findsOneWidget);
+    expect(find.text('Nodes'), findsNothing);
   });
 }

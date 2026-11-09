@@ -407,4 +407,272 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get daemonRestart => 'Redémarrer le service';
+
+  @override
+  String get commonRefresh => 'Actualiser';
+
+  @override
+  String get commonClose => 'Fermer';
+
+  @override
+  String get commonClear => 'Effacer';
+
+  @override
+  String commonErrorDetails(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get nodesTitle => 'Nœuds';
+
+  @override
+  String get nodesAgentRuntimes => 'Environnements d\'agents';
+
+  @override
+  String get nodesNoAgentRuntimes => 'Aucun environnement d\'agent détecté';
+
+  @override
+  String get nodesSupportProviders => 'Fournisseurs de modèles d\'appoint';
+
+  @override
+  String get nodesNoSupportProviders =>
+      'Aucun fournisseur de modèles d\'appoint détecté';
+
+  @override
+  String get nodesTailscaleDevices => 'Appareils Tailscale';
+
+  @override
+  String get nodesNoTailscaleDevices => 'Aucun appareil Tailscale détecté';
+
+  @override
+  String nodesLoadError(String error) {
+    return 'Impossible de charger les données de découverte : $error';
+  }
+
+  @override
+  String nodesSelectedRuntime(String name, String version) {
+    return 'Environnement d\'agent : $name ($version)';
+  }
+
+  @override
+  String get nodesVersionUnknown => 'version inconnue';
+
+  @override
+  String get nodesNoRuntimeSelected =>
+      'Aucun environnement d\'agent sélectionné';
+
+  @override
+  String get channelDetailsTitle => 'Détails du canal';
+
+  @override
+  String get channelNotFound => 'Canal introuvable';
+
+  @override
+  String get channelBadgeNew => 'Nouveau';
+
+  @override
+  String get channelBadgeRead => 'Lu';
+
+  @override
+  String get channelStatistics => 'Statistiques';
+
+  @override
+  String get channelMessages => 'Messages';
+
+  @override
+  String get channelPlatform => 'Plateforme';
+
+  @override
+  String get channelPlatformUnknown => 'Inconnue';
+
+  @override
+  String get channelLastActivity => 'Dernière activité';
+
+  @override
+  String get channelNever => 'Jamais';
+
+  @override
+  String get channelControls => 'Commandes';
+
+  @override
+  String get channelStart => 'Démarrer le canal';
+
+  @override
+  String get channelStop => 'Arrêter le canal';
+
+  @override
+  String get channelReconnect => 'Reconnecter';
+
+  @override
+  String get channelViewLogs => 'Voir les journaux';
+
+  @override
+  String channelActionPerformed(String action, String channelId) {
+    return 'Action $action effectuée pour le canal $channelId';
+  }
+
+  @override
+  String get channelJustNow => 'À l\'instant';
+
+  @override
+  String channelMinutesAgo(int minutes) {
+    return 'il y a $minutes min';
+  }
+
+  @override
+  String channelHoursAgo(int hours) {
+    return 'il y a $hours h';
+  }
+
+  @override
+  String channelDaysAgo(int days) {
+    return 'il y a $days j';
+  }
+
+  @override
+  String get usageTitle => 'Utilisation';
+
+  @override
+  String get usageToday => 'Aujourd\'hui';
+
+  @override
+  String get usageWeek => 'Semaine';
+
+  @override
+  String get usageMonth => 'Mois';
+
+  @override
+  String get usageActiveConcurrency => 'Requêtes simultanées actives';
+
+  @override
+  String usageOfLimit(int limit) {
+    return 'sur $limit';
+  }
+
+  @override
+  String get usageConcurrencySubtitle => 'Requêtes en cours de traitement';
+
+  @override
+  String get usageConcurrencyUtilization => 'Utilisation de la simultanéité';
+
+  @override
+  String get usageRequestRate => 'Débit de requêtes';
+
+  @override
+  String get usageRequestsPerMinuteUnit => 'req./min';
+
+  @override
+  String get usageRequestRateSubtitle =>
+      'Requêtes par minute, tous modèles confondus';
+
+  @override
+  String get usageRpmUtilization => 'Utilisation des requêtes par minute';
+
+  @override
+  String get usageTokenRate => 'Débit de jetons';
+
+  @override
+  String get usageTokensPerMinuteUnit => 'jetons/min';
+
+  @override
+  String get usageTokenRateSubtitle =>
+      'Jetons par minute, tous modèles confondus';
+
+  @override
+  String get usageTpmUtilization => 'Utilisation des jetons par minute';
+
+  @override
+  String get usageChartTokenUsage => 'Utilisation des jetons dans le temps';
+
+  @override
+  String get usageChartRequestVolume => 'Volume de requêtes';
+
+  @override
+  String get usageChartResourceTrends => 'Tendances des ressources';
+
+  @override
+  String get usageChartPlaceholder => 'Graphique à venir';
+
+  @override
+  String get usageNoActiveModels => 'Aucun modèle actif';
+
+  @override
+  String get usagePerModelConcurrency => 'Simultanéité par modèle';
+
+  @override
+  String get usageNoRateData => 'Aucune donnée de débit';
+
+  @override
+  String get usageTopModelsByRpm =>
+      'Modèles les plus sollicités (requêtes/min)';
+
+  @override
+  String get usageNoTokenData => 'Aucune donnée de jetons';
+
+  @override
+  String get usageTopModelsByTpm => 'Modèles les plus sollicités (jetons/min)';
+
+  @override
+  String get logsTitle => 'Journaux';
+
+  @override
+  String get logsExport => 'Exporter les journaux';
+
+  @override
+  String get logsServiceUnavailable => 'Service de journalisation indisponible';
+
+  @override
+  String logsExportedTo(String path) {
+    return 'Journaux exportés vers $path';
+  }
+
+  @override
+  String get logsCopied => 'Journaux copiés dans le presse-papiers';
+
+  @override
+  String get logsNoneFound => 'Aucune entrée de journal trouvée';
+
+  @override
+  String get logsAdjustFilters => 'Essayez de modifier vos filtres';
+
+  @override
+  String get logsNoneAvailable => 'Aucune entrée de journal disponible';
+
+  @override
+  String get logsSearchHint => 'Rechercher dans les journaux…';
+
+  @override
+  String get logsSeverity => 'Gravité';
+
+  @override
+  String get logsSource => 'Source';
+
+  @override
+  String get logsClearAll => 'Tout effacer';
+
+  @override
+  String get logsViewDetails => 'Voir les détails';
+
+  @override
+  String get logsDetailsTitle => 'Détails de l\'entrée';
+
+  @override
+  String get logsTimestamp => 'Horodatage';
+
+  @override
+  String get logsMessage => 'Message';
+
+  @override
+  String get logsError => 'Erreur';
+
+  @override
+  String get logsStackTrace => 'Pile d\'appels';
+
+  @override
+  String get logsFilterBySource => 'Filtrer par source';
+
+  @override
+  String logsDetailLabel(String label) {
+    return '$label :';
+  }
 }

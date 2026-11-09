@@ -241,5 +241,162 @@
   "daemonHealthCheckIntervalSubtitle": "Interval for daemon health checks (seconds)",
   "daemonActions": "Actions",
   "daemonSaveSettings": "Save Settings",
-  "daemonRestart": "Restart Daemon"
+  "daemonRestart": "Restart Daemon",
+  "commonRefresh": "Refresh",
+  "commonClose": "Close",
+  "commonClear": "Clear",
+  "commonErrorDetails": "Error: {error}",
+  "@commonErrorDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "nodesTitle": "Nodes",
+  "nodesAgentRuntimes": "Agent Runtimes",
+  "nodesNoAgentRuntimes": "No agent runtimes discovered",
+  "nodesSupportProviders": "Support Providers",
+  "nodesNoSupportProviders": "No support providers discovered",
+  "nodesTailscaleDevices": "Tailscale Devices",
+  "nodesNoTailscaleDevices": "No Tailscale devices discovered",
+  "nodesLoadError": "Failed to load discovery data: {error}",
+  "@nodesLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "nodesSelectedRuntime": "Agent runtime: {name} ({version})",
+  "@nodesSelectedRuntime": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "nodesVersionUnknown": "unknown",
+  "nodesNoRuntimeSelected": "No agent runtime selected",
+  "channelDetailsTitle": "Channel Details",
+  "channelNotFound": "Channel not found",
+  "channelBadgeNew": "New",
+  "channelBadgeRead": "Read",
+  "channelStatistics": "Statistics",
+  "channelMessages": "Messages",
+  "channelPlatform": "Platform",
+  "channelPlatformUnknown": "Unknown",
+  "channelLastActivity": "Last Activity",
+  "channelNever": "Never",
+  "channelControls": "Controls",
+  "channelStart": "Start Channel",
+  "channelStop": "Stop Channel",
+  "channelReconnect": "Reconnect",
+  "channelViewLogs": "View Logs",
+  "channelActionPerformed": "Action {action} performed for channel {channelId}",
+  "@channelActionPerformed": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "channelId": {
+        "type": "String"
+      }
+    }
+  },
+  "channelJustNow": "Just now",
+  "channelMinutesAgo": "{minutes}m ago",
+  "@channelMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "channelHoursAgo": "{hours}h ago",
+  "@channelHoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "channelDaysAgo": "{days}d ago",
+  "@channelDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "usageTitle": "Usage",
+  "usageToday": "Today",
+  "usageWeek": "Week",
+  "usageMonth": "Month",
+  "usageActiveConcurrency": "Active Concurrency",
+  "usageOfLimit": "of {limit}",
+  "@usageOfLimit": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "usageConcurrencySubtitle": "Concurrent requests in flight",
+  "usageConcurrencyUtilization": "Concurrency utilization",
+  "usageRequestRate": "Request Rate",
+  "usageRequestsPerMinuteUnit": "req/min",
+  "usageRequestRateSubtitle": "Requests per minute across models",
+  "usageRpmUtilization": "RPM utilization",
+  "usageTokenRate": "Token Rate",
+  "usageTokensPerMinuteUnit": "tok/min",
+  "usageTokenRateSubtitle": "Tokens per minute across models",
+  "usageTpmUtilization": "TPM utilization",
+  "usageChartTokenUsage": "Token Usage Over Time",
+  "usageChartRequestVolume": "Request Volume",
+  "usageChartResourceTrends": "Resource Trends",
+  "usageChartPlaceholder": "Chart placeholder",
+  "usageNoActiveModels": "No active models",
+  "usagePerModelConcurrency": "Per-model concurrency",
+  "usageNoRateData": "No rate data",
+  "usageTopModelsByRpm": "Top models by RPM",
+  "usageNoTokenData": "No token data",
+  "usageTopModelsByTpm": "Top models by TPM",
+  "logsTitle": "Logs",
+  "logsExport": "Export Logs",
+  "logsServiceUnavailable": "Log service unavailable",
+  "logsExportedTo": "Logs exported to {path}",
+  "@logsExportedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "logsCopied": "Logs copied to clipboard",
+  "logsNoneFound": "No logs found",
+  "logsAdjustFilters": "Try adjusting your filters",
+  "logsNoneAvailable": "No logs available",
+  "logsSearchHint": "Search logs...",
+  "logsSeverity": "Severity",
+  "logsSource": "Source",
+  "logsClearAll": "Clear All",
+  "logsViewDetails": "View details",
+  "logsDetailsTitle": "Log Details",
+  "logsTimestamp": "Timestamp",
+  "logsMessage": "Message",
+  "logsError": "Error",
+  "logsStackTrace": "Stack Trace",
+  "logsFilterBySource": "Filter by Source",
+  "logsDetailLabel": "{label}:",
+  "@logsDetailLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  }
 }

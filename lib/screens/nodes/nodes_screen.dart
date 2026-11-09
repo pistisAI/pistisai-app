@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../models/provider_configuration.dart';
 import '../../services/provider_discovery_service.dart';
 import '../../widgets/common/card_section.dart';
@@ -65,8 +66,7 @@ class _NodesScreenState extends State<NodesScreen> {
       final tailnet = await discovery.discoverTailscaleDevices();
       if (!mounted) return;
       setState(() {
-        _runtimes =
-            providers.where((p) => p.canServeAsAgentRuntime).toList();
+        _runtimes = providers.where((p) => p.canServeAsAgentRuntime).toList();
         _supportProviders =
             providers.where((p) => p.canServeAsSupportModelProvider).toList();
         _tailnetDevices = tailnet;
@@ -93,56 +93,63 @@ class _NodesScreenState extends State<NodesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return RefreshableScreen(
       onRefresh: _onRefresh,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Nodes'),
+          title: Text(l10n.nodesTitle),
           actions: [
-            IconButton(icon: const Icon(Icons.refresh), onPressed: _onRefresh),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _onRefresh,
+              tooltip: l10n.commonRefresh,
+            ),
             const PopOutButton(sectionName: 'nodes', branchIndex: 9),
           ],
         ),
         body: _isLoading
             ? const LoadingSkeleton(itemCount: 3, height: 120)
             : _loadError != null
-                ? ErrorState(message: _formatError(_loadError), onRetry: _onRefresh)
+                ? ErrorState(
+                    message: _formatError(l10n, _loadError),
+                    onRetry: _onRefresh)
                 : SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _buildRuntimeStatus(context),
+                        _buildRuntimeStatus(context, l10n),
                         CardSection(
-                          title: 'Agent Runtimes',
+                          title: l10n.nodesAgentRuntimes,
                           children: _runtimes.isEmpty
-                              ? const [
+                              ? [
                                   Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Text('No agent runtimes discovered'),
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(l10n.nodesNoAgentRuntimes),
                                   ),
                                 ]
                               : _buildProviderList(_runtimes, selectable: true),
                         ),
                         CardSection(
-                          title: 'Support Providers',
+                          title: l10n.nodesSupportProviders,
                           children: _supportProviders.isEmpty
-                              ? const [
+                              ? [
                                   Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Text('No support providers discovered'),
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(l10n.nodesNoSupportProviders),
                                   ),
                                 ]
                               : _buildProviderList(_supportProviders,
                                   selectable: false),
                         ),
                         CardSection(
-                          title: 'Tailscale Devices',
+                          title: l10n.nodesTailscaleDevices,
                           children: _tailnetDevices.isEmpty
-                              ? const [
+                              ? [
                                   Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Text('No Tailscale devices discovered'),
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(l10n.nodesNoTailscaleDevices),
                                   ),
                                 ]
                               : _buildTailnetList(),
@@ -154,14 +161,14 @@ class _NodesScreenState extends State<NodesScreen> {
     );
   }
 
-  String _formatError(Object? error) {
+  String _formatError(AppLocalizations l10n, Object? error) {
     final raw = error.toString();
     if (raw.contains('Failed to load discovery data')) return raw;
-    return 'Failed to load discovery data: $raw';
+    return l10n.nodesLoadError(raw);
   }
 
   /// Status banner showing the currently selected agent runtime (if any).
-  Widget _buildRuntimeStatus(BuildContext context) {
+  Widget _buildRuntimeStatus(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
     ProviderInfo? selected;
     for (final p in _runtimes) {
@@ -172,9 +179,10 @@ class _NodesScreenState extends State<NodesScreen> {
     }
     final String text;
     if (selected != null) {
-      text = 'Agent runtime: ${selected.name} (${selected.version ?? 'unknown'})';
+      text = l10n.nodesSelectedRuntime(
+          selected.name, selected.version ?? l10n.nodesVersionUnknown);
     } else {
-      text = 'No agent runtime selected';
+      text = l10n.nodesNoRuntimeSelected;
     }
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -272,7 +280,10 @@ class _ProviderCard extends StatelessWidget {
             children: [
               Row(children: [
                 Icon(isOnline ? Icons.check_circle : Icons.error,
-                    color: isOnline ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger, size: 16),
+                    color: isOnline
+                        ? AppTheme.colorsOf(context).success
+                        : AppTheme.colorsOf(context).danger,
+                    size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(provider.name,
@@ -292,8 +303,7 @@ class _ProviderCard extends StatelessWidget {
                 children: provider.availableModels
                     .take(3)
                     .map((m) => Chip(
-                          label: Text(m,
-                              style: theme.textTheme.labelSmall),
+                          label: Text(m, style: theme.textTheme.labelSmall),
                           visualDensity: VisualDensity.compact,
                         ))
                     .toList(),
@@ -323,7 +333,9 @@ class _TailscaleDeviceCard extends StatelessWidget {
           children: [
             Row(children: [
               Icon(device.isOnline ? Icons.wifi : Icons.wifi_off,
-                  color: device.isOnline ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
+                  color: device.isOnline
+                      ? AppTheme.colorsOf(context).success
+                      : AppTheme.colorsOf(context).textColorLight,
                   size: 16),
               const SizedBox(width: 8),
               Expanded(
