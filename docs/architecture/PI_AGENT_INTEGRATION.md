@@ -1,7 +1,7 @@
 # Pi Agent Integration — Implementation Plan
 
 > **Status:** ✅ Research complete — ready for implementation
-> **Author:** Zoid (with Christopher)
+> **Author:** Zoid
 > **Created:** 2026-09-06
 > **Revised:** 2026-09-07 (v8 — implementation-ready: exact files, code patterns, commands)
 > **Location:** `docs/architecture/PI_AGENT_INTEGRATION.md`
@@ -77,7 +77,7 @@ Pi integrates into the IAClé ecosystem in **three distinct roles**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     right-pc (Desktop, CachyOS)                  │
+│                     workstation (Desktop, CachyOS)                  │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │              Flutter App (IAClé)                        │   │
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────┐ │   │
@@ -372,14 +372,14 @@ cd /dev/IAClé/iacle-app && flutter test test/services/pi_manager/
 
 ### Phase 2: llama.cpp Infrastructure
 
-**Goal:** Local inference running on right-pc
+**Goal:** Local inference running on workstation
 **Estimated:** 1 day (mostly automated)
 
-#### Build llama.cpp (right-pc, CachyOS)
+#### Build llama.cpp (workstation, CachyOS)
 
 ```bash
-# SSH to right-pc
-ssh right-pc
+# SSH to workstation
+ssh workstation
 
 # Install dependencies (if not present)
 sudo pacman -S --needed cmake gcc cuda
@@ -498,9 +498,9 @@ export default function observerExtension(pi: ExtensionAPI) {
 
   // Register notification tool
   pi.registerTool({
-    name: "notify_christopher",
-    label: "Notify Christopher",
-    description: "Send a notification to Christopher",
+    name: "notify_operator",
+    label: "Notify the operator",
+    description: "Send a notification to the operator",
     parameters: z.object({
       message: z.string(),
       urgency: z.enum(["low", "medium", "high"]).default("medium"),
@@ -687,7 +687,7 @@ pi install npm:@bacnh85/pi-a2a
 |-------|---------|--------|
 | **L1: Passive** | Tool call/result events | Log + self-correct via extension |
 | **L2: Active** | Cron heartbeat (every 30 min) | A2A message to peer for second opinion |
-| **L3: Intervention** | Anomaly + peer confirms | Surface question to Christopher |
+| **L3: Intervention** | Anomaly + peer confirms | Surface a question to the operator |
 
 #### Accountability Question Format
 
@@ -708,7 +708,7 @@ Not a report. A question. Forces engagement without noise.
 #### Install computer-use-linux
 
 ```bash
-# On right-pc
+# On workstation
 pi install npm:@agent-sh/computer-use-linux
 ```
 
@@ -755,7 +755,7 @@ User: "Click the Firefox icon"
 - Read files, explore, organize, learn
 - Run health checks on services
 - Restart paused/crashed agent instances
-- Send notifications to Christopher
+- Send notifications to the operator
 - Communicate with peer agents via A2A
 - Control desktop (when user explicitly directs)
 
@@ -771,7 +771,7 @@ User: "Click the Firefox icon"
 
 ## Hardware Compatibility
 
-### Christopher's PC (right-pc)
+### Example workstation
 
 | Component | Spec | Verdict |
 |-----------|------|---------|

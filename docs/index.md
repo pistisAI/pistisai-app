@@ -2,7 +2,7 @@
 
 **The desktop hub IAClé delivers to Quebec SMBs.**
 
-IAClé is Christopher Maltais's Quebec sole proprietorship and the brand on this stack. The software in this repository is that stack: a Flutter desktop/web hub for Hermes, OpenClaw, and compatible gateways, plus skills. One stack, one company. The public description is the French [README](../README.md) ([English](../README.en.md)).
+This repository is the upstream desktop hub: a Flutter desktop/web app for Hermes, OpenClaw, and compatible gateways, plus skills. The public description is the French [README](../README.md) ([English](../README.en.md)).
 
 IAClé is a local-first companion and desktop capability layer for agent runtimes. It provides a secure agent channel, avatar/voice companion, desktop control, vision, agent runtime management, and multi-device sync. Sign-in is for the tunnel and for sync. The network is a tunnel behind Cloudflare Access, Tailscale, or the customer's VPN. Sign-in does not use Supabase.
 

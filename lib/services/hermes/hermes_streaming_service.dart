@@ -29,6 +29,9 @@ class HermesStreamingService extends StreamingService {
   String _baseUrl;
   final String? _apiKey;
 
+  /// Signed-in display name, read at send time. Empty falls back to operator.
+  final String Function()? userDisplayName;
+
   /// HTTP client — kept alive for connection pooling.
   http.Client? _client;
 
@@ -67,9 +70,15 @@ class HermesStreamingService extends StreamingService {
     String? baseUrl,
     String? apiKey,
     http.Client? client,
+    this.userDisplayName,
   })  : _baseUrl = baseUrl ?? 'http://127.0.0.1:8642',
         _apiKey = apiKey,
         _client = client;
+
+  String _outboundUserName() {
+    final name = userDisplayName?.call().trim() ?? '';
+    return name.isEmpty ? 'operator' : name;
+  }
 
   String get baseUrl => _baseUrl;
 
@@ -249,7 +258,7 @@ class HermesStreamingService extends StreamingService {
               'message': prompt,
               'conversation_id': chatId,
               'user_id': 'operator',
-              'user_name': 'Christopher',
+              'user_name': _outboundUserName(),
               'message_id': messageId,
             }),
           )

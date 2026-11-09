@@ -2,7 +2,7 @@
 
 ## Delivery
 
-IAClé is Christopher Maltais's Quebec sole proprietorship. It is the brand that delivers this stack to Quebec SMBs. The software is one desktop hub, plus skills. Public wording: [README](README.md) ([English](README.en.md)).
+This repository is the upstream desktop hub: one Flutter app for Hermes, OpenClaw, and compatible gateways, plus skills. Public wording: [README](README.md) ([English](README.en.md)).
 
 Sign-in is for the tunnel and for sync. The network is a tunnel behind Cloudflare Access, Tailscale, or the customer's VPN. Sign-in does not use Supabase.
 

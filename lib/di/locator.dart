@@ -262,6 +262,10 @@ Future<void> setupCoreServices() async {
             ? AppConfig.normalizeHermesUrl(hermesUrl)
             : AppConfig.defaultHermesUrl,
         apiKey: hermesApiKey,
+        userDisplayName: () {
+          if (!serviceLocator.isRegistered<AuthService>()) return '';
+          return serviceLocator<AuthService>().currentUser?.name ?? '';
+        },
       );
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);

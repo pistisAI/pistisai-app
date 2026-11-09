@@ -37,7 +37,7 @@ terminology, dates, roles) before flagging. Elsewhere C2 stays strict.
 ## C4 — the misattribution check
 
 Signature: a self-authored filename **plus a line-number citation** (`IDENTITY_DOC L25`,
-`zoid-read-on-christopher.md:8`). That is the shape of handing the agent's own writing
+`agent-authored-notes.md:8`). That is the shape of handing the agent's own writing
 back as the person's rule.
 
 In-scope filenames: `vault/Identity/*`, identity and family documents,

@@ -228,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           // Welcome text with theme-aware colors (Requirement 7.1, 7.5)
                           Text(
-                            'Hey Christopher!',
+                            'Welcome',
                             style: theme.textTheme.headlineMedium?.copyWith(
                               color: colorScheme.onSurface,
                               fontSize: titleFontSize,

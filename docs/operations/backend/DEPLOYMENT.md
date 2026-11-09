@@ -7,7 +7,7 @@ This guide covers the complete deployment process for migrating from SQLite to P
 ## Prerequisites
 
 - Google Cloud SDK installed and authenticated
-- Project ID: `IAClé-468303`
+- Project ID: the `GCP_PROJECT_ID` for this deployment
 - Required APIs enabled:
   - Cloud SQL Admin API
   - Cloud Run API
@@ -68,7 +68,7 @@ curl https://your-service-url/api/db/health
 
 ```bash
 # Set project
-gcloud config set project IAClé-468303
+gcloud config set project "$GCP_PROJECT_ID"
 
 # Create PostgreSQL instance
 gcloud sql instances create IAClé-db \
@@ -113,7 +113,7 @@ gcloud builds submit --tag gcr.io/your-project/api
 
 # Deploy to Cloud Run
 gcloud run deploy IAClé-api \
-    --image gcr.io/IAClé-468303/IAClé-api \
+    --image gcr.io/your-gcp-project/api \
     --platform managed \
     --region us-central1 \
     --allow-unauthenticated \
