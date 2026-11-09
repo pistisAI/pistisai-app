@@ -138,9 +138,8 @@ Future<void> _registerWindowsUrlScheme() async {
   }
 }
 
-/// Run the app with Sentry error tracking enabled.
-/// Whether the user allowed crash reports. Read on each event (cheap, cached
-/// by SharedPreferences) so turning the setting off takes effect at once.
+/// Whether the user allowed crash reports. Read at startup and on each event
+/// (cached by SharedPreferences) so turning the setting off takes effect at once.
 Future<bool> _crashReportingAllowed() async {
   try {
     return await SettingsPreferenceService().isCrashReportingEnabled();
@@ -150,6 +149,7 @@ Future<bool> _crashReportingAllowed() async {
   }
 }
 
+/// Run the app with Sentry error tracking enabled.
 /// Sentry DSN is configured via --dart-define=SENTRY_DSN=... at build time.
 Future<void> _runAppWithSentry() async {
   debugPrint('[Main] Running app with Sentry');
