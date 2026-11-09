@@ -1,6 +1,6 @@
-# IAClé Setup Guide
+# Pistisai Setup Guide
 
-IAClé is a privacy-first companion shell for an agent runtime you choose during setup. It can connect to Hermes, OpenClaw, or another compatible agent gateway running on this device, another device in your tailnet, or an optional hosted agent runtime.
+Pistisai is a privacy-first companion shell for an agent runtime you choose during setup. It can connect to Hermes, OpenClaw, or another compatible agent gateway running on this device, another device in your tailnet, or an optional hosted agent runtime.
 
 There is no universal default runtime. Hermes is the first agent runtime path used for current testing. OpenClaw remains supported as the original agent integration target.
 
@@ -20,7 +20,7 @@ Ollama, LM Studio, and similar local model servers are optional support model pr
 | Support model provider | Optional | Ollama or LM Studio for memory/background features |
 | Secure mesh | Optional | Tailscale for multi-device and remote agent runtime paths |
 
-Cloud features are optional. Local agent runtime use should work without a IAClé-hosted agent runtime.
+Cloud features are optional. Local agent runtime use should work without a Pistisai-hosted agent runtime.
 
 ---
 
@@ -30,7 +30,7 @@ Choose where your agent runtime will run before or during the setup wizard.
 
 ### Hermes
 
-Use Hermes first when validating the current IAClé direction. Install and start Hermes according to the Hermes project instructions, then provide its endpoint in the setup wizard.
+Use Hermes first when validating the current Pistisai direction. Install and start Hermes according to the Hermes project instructions, then provide its endpoint in the setup wizard.
 
 ### OpenClaw Gateway
 
@@ -58,7 +58,7 @@ Do not use raw Ollama or LM Studio endpoints here. They are support model provid
 
 ## Step 2: Optional Local Model Support
 
-Configure a local model provider only if you want IAClé app features to use it for memory or background intelligence.
+Configure a local model provider only if you want Pistisai app features to use it for memory or background intelligence.
 
 ### LM Studio
 
@@ -105,34 +105,34 @@ Not allowed:
 
 ---
 
-## Step 3: Install IAClé
+## Step 3: Install Pistisai
 
 ### Download
 
 Get the latest release for your platform:
 
-- [IAClé releases](https://github.com/iacle-solutions/iacle-app/releases)
+- [Pistisai releases](https://github.com/pistisAI/pistisai-app/releases)
 
 ### Windows
 
 1. Download the Windows installer.
 2. Run the installer.
-3. Launch IAClé from the Start Menu.
+3. Launch Pistisai from the Start Menu.
 
-If you only need a temporary or portable setup, download the Windows ZIP bundle instead and run `IAClé.exe` directly.
+If you only need a temporary or portable setup, download the Windows ZIP bundle instead and run `Pistisai.exe` directly.
 
 ### Linux AppImage
 
 ```bash
-chmod +x IAClé-linux.AppImage
-./IAClé-linux.AppImage
+chmod +x Pistisai-linux.AppImage
+./Pistisai-linux.AppImage
 ```
 
 ### Linux Deb Package
 
 ```bash
 sudo dpkg -i <downloaded-package>.deb
-IAClé
+Pistisai
 ```
 
 ---
@@ -157,7 +157,7 @@ Choose where that runtime lives:
 - This computer
 - Another device in your Tailscale tailnet
 - A private server or VPS in your tailnet
-- Optional IAClé-hosted agent runtime container
+- Optional Pistisai-hosted agent runtime container
 
 ### Connection Test
 
@@ -217,21 +217,21 @@ tailscale status
 tailscale ping <runtime-device-name>
 ```
 
-4. In IAClé, choose the agent runtime device or enter its tailnet endpoint.
+4. In Pistisai, choose the agent runtime device or enter its tailnet endpoint.
 
 ### Cloud Connector
 
-For web/mobile access or cloud coordination, IAClé should add an isolated per-user connector container to the user's tailnet. That connector coordinates sync and reachability. It does not grant desktop permissions by itself.
+For web/mobile access or cloud coordination, Pistisai should add an isolated per-user connector container to the user's tailnet. That connector coordinates sync and reachability. It does not grant desktop permissions by itself.
 
 ### Hosted Agent Runtime
 
-Running the agent runtime in IAClé-hosted infrastructure is an optional hosted path. It should use a per-user isolated container and join the user's tailnet only after setup approval.
+Running the agent runtime in Pistisai-hosted infrastructure is an optional hosted path. It should use a per-user isolated container and join the user's tailnet only after setup approval.
 
 ---
 
 ## Step 6: Verify The Setup
 
-1. Open IAClé.
+1. Open Pistisai.
 2. Confirm the main channel shows a connected agent runtime.
 3. Send a short test message.
 4. Open the avatar/voice companion sidecar.

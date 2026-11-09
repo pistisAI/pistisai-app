@@ -1,4 +1,4 @@
-# IAClé — Copilot / AI Agent Instructions (concise)
+# Pistisai — Copilot / AI Agent Instructions (concise)
 
 This file gives AI coding agents the actionable, repo-specific knowledge needed to be productive quickly. It focuses on architecture, key files, developer workflows, and integration points discovered in the workspace.
 
@@ -25,7 +25,7 @@ Project-specific conventions
 - Commit messages: conventional form with agent prefix for automated commits (example: `ai(Cursor): update provider DI`). Keep small, focused commits.
 - Formatting & lint: run `flutter format .`, `flutter analyze` before pushing; Node code: `eslint`, `npm audit`.
 - DI pattern: `lib/di/locator.dart` registers services in `setupCoreServices()` and `setupAuthenticatedServices()` — prefer adding services via these functions.
-- GitHub issues are the work-tracking source of truth: `https://github.com/iacle-solutions/iacle-app/issues`. Treat issue bodies, comments, labels, milestones, and linked PRs as canonical for active work state and priority. Do not let local notes, chat context, or stale plans override a live issue without updating the issue.
+- GitHub issues are the work-tracking source of truth: `https://github.com/pistisAI/pistisai-app/issues`. Treat issue bodies, comments, labels, milestones, and linked PRs as canonical for active work state and priority. Do not let local notes, chat context, or stale plans override a live issue without updating the issue.
 
 Integration & cross-component notes
 - Auth: Supabase is used (web + desktop when CLOUD_ENABLED); local mode (default desktop) uses `LocalAuthProvider`. See `lib/auth/auth_provider.dart`, `lib/auth/auth_provider_factory.dart`, and the providers under `lib/auth/providers/`.

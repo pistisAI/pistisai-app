@@ -1,7 +1,7 @@
-# VPS Setup Plan for IAClé (Coolify-based)
+# VPS Setup Plan for Pistisai (Coolify-based)
 
 ## Overview
-Deploy IAClé Flutter web app to VPS (68.168.30.4) using Coolify for container management and GitHub Actions for CI/CD.
+Deploy Pistisai Flutter web app to VPS (68.168.30.4) using Coolify for container management and GitHub Actions for CI/CD.
 
 **VPS:** 68.168.30.4 (Ubuntu 24.04 LTS)
 **Tailscale IP:** 100.101.206.45
@@ -13,7 +13,7 @@ Deploy IAClé Flutter web app to VPS (68.168.30.4) using Coolify for container m
 
 1. **SSH keys ready:** Your ed25519 pubkey (`ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPu4TAbuWRj4eSM8+dzwsS3t6NROuvFV4Ml4IwV3jFUg`)
 2. **Local `zoidbot` user** with passwordless sudo created
-3. **GitHub repo access** for IAClé/iacle-app
+3. **GitHub repo access** for Pistisai/pistisai-app
 
 ---
 
@@ -125,7 +125,7 @@ ss -tlnp | grep :22
 3. **Create API token** (Root permissions, never expires)
 4. **Save token** to `~/.hermes/vault/coolify_api_token` (chmod 600)
 5. **Add server:** Use Tailscale IP `100.101.206.45`, key-based auth
-6. **Create IAClé team** and add both users
+6. **Create Pistisai team** and add both users
 
 ---
 
@@ -145,7 +145,7 @@ Using Global API Key: `[REDACTED - stored in GitHub Secrets]`
 
 ---
 
-## Phase 9: Deploy iacle-app
+## Phase 9: Deploy pistisai-app
 
 1. Fix Flutter web build (dependency_overrides in pubspec.yaml):
    ```yaml

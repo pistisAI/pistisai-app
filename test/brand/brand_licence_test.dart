@@ -1,36 +1,35 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cryptography/cryptography.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand_licence.dart';
 
 void main() {
-  // Issued 2026-11-09 by tool/issue_licence.py; expires 2027-12-31.
-  const issued = '''
-{
-  "payload": {
-    "brand": "iacle",
-    "format": "iacle-whitelabel-1",
-    "issued": "2026-11-09",
-    "licensee": "IAClé",
-    "plan": "whitelabel",
-    "seats": 5,
-    "expires": "2027-12-31"
-  },
-  "signature": "iR83ph36Px76ldK4L8SAMbnW77Km-yi7Q-FVkoPlo3ZSE31-3VYZReVnUcpwgmXvUhuiShZnJMtOFb-Zo08vDw",
-  "signing_key_id": "iacle-whitelabel-2026"
-}
-''';
-
   group('BrandLicence', () {
+    late String issued;
+    late String publicKey;
+
+    setUp(() async {
+      final signed = await _issue(
+        brand: 'acme',
+        licensee: 'Acme Labs',
+        expires: '2027-12-31',
+        seats: 5,
+      );
+      issued = signed.licence;
+      publicKey = signed.publicKey;
+    });
+
     test('issued licence verifies and reports its fields', () async {
       final result = await BrandLicence.validateJson(
         issued,
-        requestedBrand: 'iacle',
+        requestedBrand: 'acme',
+        publicKeyB64Url: publicKey,
       );
       expect(result.status, LicenceStatus.valid);
       expect(result.isActive, isTrue);
-      expect(result.licensee, 'IAClé');
+      expect(result.licensee, 'Acme Labs');
       expect(result.plan, 'whitelabel');
       expect(result.expires, '2027-12-31');
       expect(result.seats, '5');
@@ -41,7 +40,8 @@ void main() {
       (tampered['payload'] as Map<String, dynamic>)['seats'] = 999;
       final result = await BrandLicence.validate(
         tampered,
-        requestedBrand: 'iacle',
+        requestedBrand: 'acme',
+        publicKeyB64Url: publicKey,
       );
       expect(result.status, LicenceStatus.badSignature);
       expect(result.isActive, isFalse);
@@ -51,6 +51,7 @@ void main() {
       final result = await BrandLicence.validateJson(
         issued,
         requestedBrand: 'pistisai',
+        publicKeyB64Url: publicKey,
       );
       expect(result.status, LicenceStatus.wrongBrand);
     });
@@ -60,7 +61,10 @@ void main() {
       // expiry fails on signature first — which is the tamper evidence.
       final expired = jsonDecode(issued) as Map<String, dynamic>;
       (expired['payload'] as Map<String, dynamic>)['expires'] = '2020-01-01';
-      final result = await BrandLicence.validate(expired);
+      final result = await BrandLicence.validate(
+        expired,
+        publicKeyB64Url: publicKey,
+      );
       expect(result.status, LicenceStatus.badSignature);
     });
 
@@ -83,22 +87,70 @@ void main() {
     test('displayStatus names the licensee for a valid licence', () async {
       final result = await BrandLicence.validateJson(
         issued,
-        requestedBrand: 'iacle',
+        requestedBrand: 'acme',
+        publicKeyB64Url: publicKey,
       );
-      expect(result.displayStatus, contains('IAClé'));
+      expect(result.displayStatus, contains('Acme Labs'));
       expect(result.displayStatus, contains('2027-12-31'));
     });
 
     test('licence file on disk round-trips', () async {
       final tmp = Directory.systemTemp.createTempSync('licence');
-      final file = File('${tmp.path}/iacle.licence');
+      final file = File('${tmp.path}/acme.licence');
       addTearDown(() => tmp.deleteSync(recursive: true));
       file.writeAsStringSync(issued);
       final result = await BrandLicence.validateJson(
         file.readAsStringSync(),
-        requestedBrand: 'iacle',
+        requestedBrand: 'acme',
+        publicKeyB64Url: publicKey,
       );
       expect(result.status, LicenceStatus.valid);
     });
+
+    test('a signature from another key fails against the licensor key', () async {
+      final result = await BrandLicence.validateJson(
+        issued,
+        requestedBrand: 'acme',
+      );
+      expect(result.status, LicenceStatus.badSignature);
+    });
   });
+}
+
+class _SignedLicence {
+  const _SignedLicence({required this.licence, required this.publicKey});
+
+  final String licence;
+  final String publicKey;
+}
+
+Future<_SignedLicence> _issue({
+  required String brand,
+  required String licensee,
+  required String expires,
+  required int seats,
+}) async {
+  final algorithm = Ed25519();
+  final keyPair = await algorithm.newKeyPair();
+  final publicKey = await keyPair.extractPublicKey();
+  final payload = <String, dynamic>{
+    'brand': brand,
+    'expires': expires,
+    'format': 'pistisai-whitelabel-1',
+    'issued': '2026-11-09',
+    'licensee': licensee,
+    'plan': 'whitelabel',
+    'seats': seats,
+  };
+  final message = utf8.encode(jsonEncode(payload));
+  final signature = await algorithm.sign(message, keyPair: keyPair);
+  final licence = jsonEncode(<String, dynamic>{
+    'payload': payload,
+    'signature': base64Url.encode(signature.bytes).replaceAll('=', ''),
+    'signing_key_id': 'pistisai-whitelabel-2026',
+  });
+  return _SignedLicence(
+    licence: licence,
+    publicKey: base64Url.encode(publicKey.bytes).replaceAll('=', ''),
+  );
 }

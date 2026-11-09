@@ -1,8 +1,8 @@
-# IAClé Docker Compose Deployment Guide
+# Pistisai Docker Compose Deployment Guide
 
 **⚠️ DEVELOPMENT/TESTING ONLY**: This Docker Compose deployment is suitable for development, testing, and small-scale deployments. For production use, **Kubernetes deployment is strongly recommended**.
 
-> **Current orientation**: IAClé is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers, not primary app runtimes. Docker Compose deployment documents may still describe older WebSocket tunnel flows; use those as fallback/migration references unless the deployment explicitly depends on them.
+> **Current orientation**: Pistisai is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers, not primary app runtimes. Docker Compose deployment documents may still describe older WebSocket tunnel flows; use those as fallback/migration references unless the deployment explicitly depends on them.
 
 See [Deployment Overview](DEPLOYMENT_OVERVIEW.md) for all deployment options.
 
@@ -44,8 +44,8 @@ Before deployment, configure your DNS with A records for:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/iacle-solutions/iacle-app.git
-cd iacle-app
+git clone https://github.com/pistisAI/pistisai-app.git
+cd pistisai-app
 ```
 
 ### 2. Deploy with Docker Compose
@@ -88,7 +88,7 @@ DOMAIN=yourdomain.com
 SSL_EMAIL=admin@yourdomain.com
 
 # Database Configuration
-POSTGRES_DB=IAClé
+POSTGRES_DB=Pistisai
 POSTGRES_USER=appuser
 POSTGRES_PASSWORD=your_secure_password_here
 
@@ -177,14 +177,14 @@ Nginx (Port 80/443)
 
 ### Web Application
 
-- **Container**: `IAClé-web`
+- **Container**: `Pistisai-web`
 - **Technology**: Flutter (built to static files) + Nginx
 - **Port**: 8080 (internal)
 - **Health Check**: HTTP GET /health
 
 ### API Backend
 
-- **Container**: `IAClé-api-backend`
+- **Container**: `Pistisai-api-backend`
 - **Technology**: Node.js Express
 - **Port**: 8080 (internal; matches `PORT || 8080` and compose `8080:8080`)
 - **Features**:
@@ -197,15 +197,15 @@ Nginx (Port 80/443)
 
 ### PostgreSQL Database
 
-- **Container**: `IAClé-postgres`
+- **Container**: `Pistisai-postgres`
 - **Version**: PostgreSQL 16 Alpine
 - **Port**: 5432 (internal only)
-- **Data**: Persisted in Docker volume `IAClé_postgres_data`
+- **Data**: Persisted in Docker volume `Pistisai_postgres_data`
 - **Schema**: Auto-initialized from `services/api-backend/database/schema.pg.sql`
 
 ### Nginx Reverse Proxy
 
-- **Container**: `IAClé-nginx`
+- **Container**: `Pistisai-nginx`
 - **Ports**: 80 (HTTP), 443 (HTTPS)
 - **Features**:
   - SSL/TLS termination
@@ -217,7 +217,7 @@ Nginx (Port 80/443)
 
 ### Certbot
 
-- **Container**: `IAClé-certbot`
+- **Container**: `Pistisai-certbot`
 - **Function**: Automatic SSL certificate renewal
 - **Schedule**: Checks for renewal every 12 hours
 
@@ -232,7 +232,7 @@ Nginx (Port 80/443)
 ### Connection Steps
 
 1. Start Hermes, OpenClaw, or another compatible agent gateway.
-2. Launch the IAClé desktop app
+2. Launch the Pistisai desktop app
 3. Sign in with your Auth0 credentials
 4. Use the setup wizard to select and validate the agent runtime.
 5. Use Tailscale for remote devices where possible.
@@ -292,11 +292,11 @@ docker compose -f docker-compose.production.yml up -d
 ```bash
 # Backup PostgreSQL database
 docker compose -f docker-compose.production.yml exec postgres \
-  pg_dump -U appuser IAClé > backup_$(date +%Y%m%d).sql
+  pg_dump -U appuser Pistisai > backup_$(date +%Y%m%d).sql
 
 # Restore from backup
 docker compose -f docker-compose.production.yml exec -T postgres \
-  psql -U appuser IAClé < backup_20240101.sql
+  psql -U appuser Pistisai < backup_20240101.sql
 ```
 
 ### SSL Certificate Renewal
@@ -357,7 +357,7 @@ docker compose -f docker-compose.production.yml run --rm certbot renew --dry-run
 ```bash
 # Access PostgreSQL shell
 docker compose -f docker-compose.production.yml exec postgres \
-  psql -U appuser -d IAClé
+  psql -U appuser -d Pistisai
 
 # Check database tables
 \dt
@@ -445,6 +445,6 @@ Kubernetes manifests live in `k8s/`. For private deployments, start with [Self-H
 
 For issues or questions:
 
-- GitHub Issues: https://github.com/iacle-solutions/iacle-app/issues
+- GitHub Issues: https://github.com/pistisAI/pistisai-app/issues
 - Documentation: https://docs.example.com
 - Email: ops@example.com

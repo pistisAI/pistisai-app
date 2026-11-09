@@ -1,6 +1,6 @@
 # Developer Onboarding
 
-This guide is the entry point for working on the IAClé stack. IAClé is the Quebec brand that delivers it. Product description: [README](../../README.md).
+This guide is the entry point for working on the Pistisai stack. Product description: [README](../../README.md).
 
 ## Repository Shape
 
@@ -86,19 +86,19 @@ dart run build_runner build --delete-conflicting-outputs
 ## Common Commands
 
 ```bash
-bash tool/brand.sh iacle
+bash tool/brand.sh pistisai
 flutter analyze lib/
 bash scripts/ci/flutter_security_basic_tests.sh
-flutter test --dart-define=BRAND=iacle test/services/some_test.dart
+flutter test --dart-define=BRAND=pistisai test/services/some_test.dart
 dart format .
-flutter run -d linux --dart-define=BRAND=iacle
-flutter run -d windows --dart-define=BRAND=iacle
-flutter run -d chrome --dart-define=BRAND=iacle
-flutter build linux --release --dart-define=BRAND=iacle
-flutter build web --release --no-web-resources-cdn --dart-define=BRAND=iacle
-flutter build apk --release --split-per-abi --dart-define=BRAND=iacle
-flutter build windows --release --dart-define=BRAND=iacle
-flutter build macos --release --dart-define=BRAND=iacle
+flutter run -d linux --dart-define=BRAND=pistisai
+flutter run -d windows --dart-define=BRAND=pistisai
+flutter run -d chrome --dart-define=BRAND=pistisai
+flutter build linux --release --dart-define=BRAND=pistisai
+flutter build web --release --no-web-resources-cdn --dart-define=BRAND=pistisai
+flutter build apk --release --split-per-abi --dart-define=BRAND=pistisai
+flutter build windows --release --dart-define=BRAND=pistisai
+flutter build macos --release --dart-define=BRAND=pistisai
 ```
 
 ```bash

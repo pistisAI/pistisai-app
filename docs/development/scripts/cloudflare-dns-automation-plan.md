@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines the comprehensive implementation plan for integrating Cloudflare API capabilities into the IAClé infrastructure, enabling automated tunnel diagnostics, DNS management, and dynamic subdomain updates for enhanced DevOps operations.
+This document outlines the comprehensive implementation plan for integrating Cloudflare API capabilities into the PistisAI infrastructure, enabling automated tunnel diagnostics, DNS management, and dynamic subdomain updates for enhanced DevOps operations.
 
 ## Current State Analysis
 
@@ -78,7 +78,7 @@ cf_api_call() {
 
 1. Access Cloudflare Dashboard: https://dash.cloudflare.com/
 2. Navigate: Zero Trust → Networks → Tunnels
-3. Locate tunnel: `IAClé-aks` (ID: 62da6c19-947b-4bf6-acad-100a73de4e0d)
+3. Locate tunnel: `pistisai-aks` (ID: <tunnel-id>)
 4. Edit configuration to change ArgoCD service from:
    - `https://argocd-server.argocd.svc.cluster.local:443`
    - To: `http://argocd-server.argocd.svc.cluster.local:80`
@@ -92,7 +92,7 @@ validate_tunnel_config() {
     log_info "Validating tunnel configuration..."
 
     # Check ArgoCD service configuration
-    if kubectl logs -n IAClé deploy/cloudflared | grep -q "443"; then
+    if kubectl logs -n pistisai deploy/cloudflared | grep -q "443"; then
         log_error "ArgoCD still configured for HTTPS/443"
         return 1
     fi
@@ -212,7 +212,7 @@ test_internal_connectivity() {
 
     # Test ArgoCD server directly
     kubectl run curl-test --image=curlimages/curl \
-        -n IAClé --rm -it -- \
+        -n pistisai --rm -it -- \
         curl -v http://argocd-server.argocd.svc.cluster.local:80/healthz
 }
 ```
@@ -290,13 +290,13 @@ remediate_tunnel_issues() {
     log_info "Attempting automated remediation..."
 
     # Check tunnel pod status
-    local running_pods=$(kubectl get pods -n IAClé \
+    local running_pods=$(kubectl get pods -n pistisai \
         -l app=cloudflared --field-selector=status.phase=Running \
         --no-headers | wc -l)
 
     if [ "$running_pods" -eq 0 ]; then
         log_warning "No tunnel pods running, restarting deployment..."
-        kubectl rollout restart deployment/cloudflared -n IAClé
+        kubectl rollout restart deployment/cloudflared -n pistisai
         sleep 30
     fi
 
@@ -365,7 +365,7 @@ remediate_tunnel_issues() {
 
 ## Conclusion
 
-This implementation plan provides a comprehensive roadmap for integrating Cloudflare API capabilities into the IAClé infrastructure. By addressing the current tunnel configuration issues and implementing automated DNS management, we can achieve:
+This implementation plan provides a comprehensive roadmap for integrating Cloudflare API capabilities into the PistisAI infrastructure. By addressing the current tunnel configuration issues and implementing automated DNS management, we can achieve:
 
 1. **100% Domain Accessibility**: All subdomains fully functional
 2. **Automated Operations**: Reduced manual intervention and faster MTTR

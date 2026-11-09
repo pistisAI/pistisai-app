@@ -29,7 +29,7 @@
 
 ## Executive Summary
 
-Pi integrates into the IAClé ecosystem in **three distinct roles**:
+Pi integrates into the Pistisai ecosystem in **three distinct roles**:
 
 1. **Harness** — User-selectable chat engine in the Flutter app (like Hermes/OpenClaw)
 2. **Watcher** — Always-on background observer on the VPS (systemd service)
@@ -79,7 +79,7 @@ Pi integrates into the IAClé ecosystem in **three distinct roles**:
 ┌─────────────────────────────────────────────────────────────────┐
 │                     right-pc (Desktop, CachyOS)                  │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │              Flutter App (IAClé)                        │   │
+│  │              Flutter App (Pistisai)                        │   │
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────┐ │   │
 │  │  │  Hermes   │  │ OpenClaw  │  │    Pi     │  │  Ollama  │ │   │
 │  │  │  Adapter  │  │  Adapter  │  │  Adapter  │  │  (ref)   │ │   │
@@ -102,7 +102,7 @@ Pi integrates into the IAClé ecosystem in **three distinct roles**:
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                     server-IAClé (VPS)                        │
+│                     server-Pistisai (VPS)                        │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │          Pi Watcher (systemd service)                      │   │
 │  │  - Always-on background observer                           │   │
@@ -365,7 +365,7 @@ case ProviderType.pi:
 echo '{"id":"1","type":"prompt","message":"hello"}' | pi --mode rpc --provider llamacpp --model google_gemma-4-E4B-it
 
 # Run Flutter tests
-cd /dev/IAClé/iacle-app && flutter test test/services/pi_manager/
+cd /dev/Pistisai/pistisai-app && flutter test test/services/pi_manager/
 ```
 
 ---
@@ -558,11 +558,11 @@ After=network.target
 Type=simple
 User=zoid
 Group=zoid
-WorkingDirectory=/dev/IAClé
+WorkingDirectory=/dev/Pistisai
 ExecStart=/home/zoid/.local/bin/pi \
   --provider llamacpp \
   --model google_gemma-4-E4B-it \
-  --extension /dev/IAClé/watcher/observer-extension.ts
+  --extension /dev/Pistisai/watcher/observer-extension.ts
 Restart=always
 RestartSec=10
 
@@ -572,7 +572,7 @@ CPUQuota=50%
 
 # Security
 ProtectSystem=strict
-ReadWritePaths=/dev/IAClé /home/zoid/.pi /tmp
+ReadWritePaths=/dev/Pistisai /home/zoid/.pi /tmp
 PrivateTmp=true
 NoNewPrivileges=true
 ProtectHome=read-only
@@ -589,8 +589,8 @@ WantedBy=multi-user.target
 set -euo pipefail
 
 # Copy extension
-mkdir -p /dev/IAClé/watcher
-cp observer-extension.ts /dev/IAClé/watcher/
+mkdir -p /dev/Pistisai/watcher
+cp observer-extension.ts /dev/Pistisai/watcher/
 
 # Install systemd unit
 sudo cp systemd/pi-watcher.service /etc/systemd/system/
@@ -626,7 +626,7 @@ class PiSubagent {
     final result = await Process.run(
       'pi',
       ['--print', '--provider', 'llamacpp', '--model', 'google_gemma-4-E4B-it', task],
-      workingDirectory: cwd ?? '/dev/IAClé',
+      workingDirectory: cwd ?? '/dev/Pistisai',
     );
 
     return SubagentResult(

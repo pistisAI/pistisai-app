@@ -335,7 +335,7 @@ jobs:
         run: |
           PREV_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name // "none"')
           {
-            echo "## IAClé Desktop v${VERSION}"
+            echo "## Pistisai Desktop v${VERSION}"
             echo ""
             echo "### Linux"
             echo "- **AppImage**: \`Pistisai-Linux-${VERSION}-x86_64.AppImage\`"
@@ -370,7 +370,7 @@ jobs:
         with:
           artifacts: "release-assets/*"
           tag: "v${{ env.VERSION }}"
-          name: "IAClé v${{ env.VERSION }}"
+          name: "Pistisai v${{ env.VERSION }}"
           artifactErrorsFailBuild: true
           allowUpdates: true
           removeArtifacts: true
