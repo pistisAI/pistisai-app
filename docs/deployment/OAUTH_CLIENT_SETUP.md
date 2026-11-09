@@ -1,4 +1,4 @@
-# Google OAuth Client Setup for IAClé
+# Google OAuth Client Setup for Pistisai
 
 This guide helps you set up Google OAuth Client IDs to fix the "401: invalid_client" error.
 
@@ -30,7 +30,7 @@ You need to create separate client IDs for different platforms:
 1. Click **+ CREATE CREDENTIALS** > **OAuth client ID**
 2. Select **Web application**
 3. Configure:
-   - **Name**: `IAClé Web Client`
+   - **Name**: `Pistisai Web Client`
    - **Authorized JavaScript origins**:
      - `https://app.example.com`
      - `https://example.com`
@@ -45,7 +45,7 @@ You need to create separate client IDs for different platforms:
 1. Click **+ CREATE CREDENTIALS** > **OAuth client ID**
 2. Select **Desktop application**
 3. Configure:
-   - **Name**: `IAClé Desktop Client`
+   - **Name**: `Pistisai Desktop Client`
    - No additional configuration needed for desktop apps
 
 #### For Mobile Application (if needed)

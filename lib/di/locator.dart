@@ -234,17 +234,19 @@ Future<void> setupCoreServices() async {
         conscienceStorageService,
       );
 
+      // Cloud model providers are registered only when a build supplies their
+      // key. Without a key the router would still forward the user's prompt
+      // to the provider (in China for Zhipu and Moonshot) before the request
+      // is refused, so an unconfigured provider must not exist at all.
+      const glmKey = String.fromEnvironment('GLM_API_KEY');
+      const geminiKey = String.fromEnvironment('GEMINI_API_KEY');
+      const kimiKey = String.fromEnvironment('KIMI_API_KEY');
       final routerServer = RouterServer(
         rateLimitManager: rateLimitManager,
         providers: {
-          'zhipu':
-              ZhipuAdapter(apiKey: const String.fromEnvironment('GLM_API_KEY')),
-          'google': GoogleAdapter(
-            apiKey: const String.fromEnvironment('GEMINI_API_KEY'),
-          ),
-          'moonshot': MoonshotAdapter(
-            apiKey: const String.fromEnvironment('KIMI_API_KEY'),
-          ),
+          if (glmKey.isNotEmpty) 'zhipu': ZhipuAdapter(apiKey: glmKey),
+          if (geminiKey.isNotEmpty) 'google': GoogleAdapter(apiKey: geminiKey),
+          if (kimiKey.isNotEmpty) 'moonshot': MoonshotAdapter(apiKey: kimiKey),
         },
         personalityEngine: personalityEngine,
         evolutionTracker: evolutionTracker,

@@ -1,6 +1,6 @@
 # Developer Onboarding
 
-This guide is the entry point for working on the IAClé stack. IAClé is the Quebec brand that delivers it. Product description: [README](../../README.md).
+This guide is the entry point for working on the Pistisai stack. Product description: [README](../../README.md).
 
 ## Repository Shape
 

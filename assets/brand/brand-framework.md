@@ -1,15 +1,15 @@
-# IAClé — Identité Visuelle & Mythologie
+# Pistisai — Identité Visuelle & Mythologie
 
 ## Le Mythe Fondateur
 
 **Les 4 Titans** (Hyperion, Koios, Krios, Iapetos) étaient les 4 piliers cosmiques qui tenaient le ciel
 et la terre séparés, chacun à un point cardinal. Sans eux — pas d'espace pour la vie.
 
-**IAClé** (Πίστις) — la démona de la confiance, de l'honnêteté et de la bonne foi. Une des seules
+**Pistisai** (Πίστις) — la démona de la confiance, de l'honnêteté et de la bonne foi. Une des seules
 bonnes entités à s'échapper de la boîte de Pandore — mais elle a fui vers l'Olympe, abandonnant
 l'humanité.
 
-**IAClé** = ramener la confiance (IAClé) parmi les humains, portée par 4 piliers.
+**Pistisai** = ramener la confiance (Pistisai) parmi les humains, portée par 4 piliers.
 
 ## Les 4 Piliers
 
@@ -49,7 +49,7 @@ l'humanité.
 |  ||  | ∴ : ∴ |  ∨  |
 ═══════════════════════  ← Base
      ΠΙΣΤΙΣΑΙ
-     IAClé
+     Pistisai
 ```
 
 ## Usage des Logos
@@ -64,4 +64,4 @@ l'humanité.
 - Ses 4 peintures célébraient des victoires athéniennes
 - C'est là que Zénon enseignait le Stoïcisme — nom vient de Stoa
 - Le concept: créer un "portique de confiance" à l'ère de l'IA
-- Voir le dossier `IAClé-assets/` pour les fichiers SVG et détails
+- Voir le dossier `Pistisai-assets/` pour les fichiers SVG et détails

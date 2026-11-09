@@ -1,6 +1,6 @@
 # Linux Installation Guide
 
-This guide covers installing IAClé on Linux. Agent runtime selection happens in the setup wizard after installation. IAClé can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
+This guide covers installing Pistisai on Linux. Agent runtime selection happens in the setup wizard after installation. Pistisai can connect to Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
 
 Ollama and LM Studio are optional support model providers for memory/background features, not primary app runtimes.
 
@@ -24,7 +24,7 @@ Prepare one agent runtime before or during first launch:
 | Hermes | Configured in wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `http://localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private server, VPS, or compatible agent runtime API |
-| Hosted agent runtime | IAClé managed | Optional hosted compute |
+| Hosted agent runtime | Pistisai managed | Optional hosted compute |
 
 For a runtime on another machine, install Tailscale on both devices and confirm they can reach each other.
 
@@ -63,7 +63,7 @@ sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
 
 ## DEB Package
 
-Download the Debian package from the [releases page](https://github.com/iacle-solutions/iacle-app/releases), then install it:
+Download the Debian package from the [releases page](https://github.com/pistisAI/pistisai-app/releases), then install it:
 
 ```bash
 sudo dpkg -i <downloaded-package>.deb
@@ -73,27 +73,27 @@ sudo apt-get install -f
 Launch:
 
 ```bash
-IAClé
+Pistisai
 ```
 
 Update:
 
 ```bash
 sudo apt-get update
-sudo apt-get upgrade IAClé
+sudo apt-get upgrade Pistisai
 ```
 
 Uninstall:
 
 ```bash
-sudo apt-get remove IAClé
+sudo apt-get remove Pistisai
 ```
 
 ---
 
 ## AppImage
 
-Download the AppImage from the [releases page](https://github.com/iacle-solutions/iacle-app/releases), then run it:
+Download the AppImage from the [releases page](https://github.com/pistisAI/pistisai-app/releases), then run it:
 
 ```bash
 chmod +x <downloaded-app>.AppImage
@@ -104,16 +104,16 @@ Optional desktop integration:
 
 ```bash
 mkdir -p ~/.local/bin ~/.local/share/applications
-mv <downloaded-app>.AppImage ~/.local/bin/iacle.AppImage
+mv <downloaded-app>.AppImage ~/.local/bin/pistisai.appImage
 ```
 
-Create `~/.local/share/applications/IAClé.desktop`:
+Create `~/.local/share/applications/Pistisai.desktop`:
 
 ```ini
 [Desktop Entry]
-Name=IAClé
+Name=Pistisai
 Comment=Secure agent companion
-Exec=/home/YOUR_USER/.local/bin/iacle.AppImage
+Exec=/home/YOUR_USER/.local/bin/pistisai.appImage
 Terminal=false
 Type=Application
 Categories=Development;Network;
@@ -125,8 +125,8 @@ Categories=Development;Network;
 
 ```bash
 sudo snap install flutter --classic
-git clone https://github.com/iacle-solutions/iacle-app.git
-cd iacle-app
+git clone https://github.com/pistisAI/pistisai-app.git
+cd pistisai-app
 flutter pub get
 flutter config --enable-linux-desktop
 flutter build linux --release
@@ -141,7 +141,7 @@ Run the executable in `build/linux/x64/release/bundle/`.
 ## First Launch
 
 1. Start your selected agent runtime or confirm the remote runtime is reachable.
-2. Launch IAClé.
+2. Launch Pistisai.
 3. Complete the setup wizard.
 4. Select the agent runtime and endpoint.
 5. Optionally configure a support model provider for memory/background features.
@@ -168,9 +168,9 @@ Web and mobile access should use the Tailscale-first cloud connector design. The
 ### Application Will Not Start
 
 ```bash
-ldd /opt/iacle-app
+ldd /opt/pistisai-app
 sudo apt-get install -y libgtk-3-0 libglib2.0-0
-chmod +x /opt/iacle-app
+chmod +x /opt/pistisai-app
 ```
 
 ### Agent Runtime Not Found

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to implement accessibility features in IAClé screens using the provided accessibility components and services.
+This guide explains how to implement accessibility features in Pistisai screens using the provided accessibility components and services.
 
 ## Quick Start
 

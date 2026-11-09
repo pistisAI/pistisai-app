@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the implementation of the Prometheus metrics endpoint for the IAClé API Backend. The implementation provides comprehensive metrics collection for monitoring API performance, throughput, errors, and custom application metrics.
+This document describes the implementation of the Prometheus metrics endpoint for the Pistisai API Backend. The implementation provides comprehensive metrics collection for monitoring API performance, throughput, errors, and custom application metrics.
 
 ## Implementation Summary
 
@@ -140,7 +140,7 @@ Example Prometheus scrape config:
 
 ```yaml
 scrape_configs:
-  - job_name: 'IAClé-api'
+  - job_name: 'Pistisai-api'
     static_configs:
       - targets: ['localhost:8080']
     metrics_path: '/metrics'
@@ -268,7 +268,7 @@ Add to Prometheus scrape_configs:
 
 ```yaml
 scrape_configs:
-  - job_name: 'IAClé-api'
+  - job_name: 'Pistisai-api'
     static_configs:
       - targets: ['api.example.com:8080']
     metrics_path: '/metrics'

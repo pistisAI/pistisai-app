@@ -4,7 +4,7 @@
 
 ## Overview
 
-This guide provides comprehensive information for developers working on the first-time setup wizard feature. The wizard is a critical component that guides new users through downloading, installing, and configuring the IAClé desktop client.
+This guide provides comprehensive information for developers working on the first-time setup wizard feature. The wizard is a critical component that guides new users through downloading, installing, and configuring the Pistisai desktop client.
 
 ## Architecture Overview
 
@@ -302,7 +302,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Step 1: Welcome
-      expect(find.text('Welcome to IAClé'), findsOneWidget);
+      expect(find.text('Welcome to Pistisai'), findsOneWidget);
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
@@ -332,7 +332,7 @@ void main() {
       try {
         // Navigate through complete setup flow
         await driver.tap(find.text('Get Started'));
-        await driver.waitFor(find.text('Welcome to IAClé'));
+        await driver.waitFor(find.text('Welcome to Pistisai'));
         
         // Test each step with real API calls
         await _testContainerCreation(driver);
@@ -506,7 +506,7 @@ class SetupConfig {
   
   static const String downloadBaseUrl = String.fromEnvironment(
     'DOWNLOAD_BASE_URL',
-    defaultValue: 'https://github.com/iacle-solutions/iacle-app/releases',
+    defaultValue: 'https://github.com/pistisAI/pistisai-app/releases',
   );
   
   static const int containerCreationTimeoutSeconds = int.fromEnvironment(
@@ -643,7 +643,7 @@ VALIDATION_TESTS_ENABLED=true
 
 # API Configuration
 CONTAINER_API_URL=https://example.com/api
-DOWNLOAD_BASE_URL=https://github.com/iacle-solutions/iacle-app/releases
+DOWNLOAD_BASE_URL=https://github.com/pistisAI/pistisai-app/releases
 SETUP_API_TIMEOUT=120
 
 # Feature Flags

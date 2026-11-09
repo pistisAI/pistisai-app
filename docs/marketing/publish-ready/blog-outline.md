@@ -13,7 +13,7 @@ Product description: [README](../../../README.md).
 - Frame the question: why does “AI assistant” still mean “hosted service” for so many users?
 - Thesis: the better default is local-first with optional private connectivity.
 
-## 2. What IAClé actually is
+## 2. What Pistisai actually is
 - Describe the product plainly: desktop companion layer for an agent runtime, not an LLM provider.
 - Clarify runtime flexibility: Hermes, OpenClaw, and compatible agent runtimes supported.
 - Mention the components that matter to users: secure agent channel, avatar/voice, desktop control, private device mesh.

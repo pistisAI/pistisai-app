@@ -1,4 +1,4 @@
-# IAClé — Agent Guide
+# Pistisai — Agent Guide
 
 Flutter desktop/web app + Node.js backend services: local-first companion layer for agent runtimes (Hermes primary test path, OpenClaw Gateway, compatible gateways). Ollama/LM Studio are support model providers for app-owned features (e.g. embeddings) — not primary runtimes unless wrapped by an agent runtime.
 
@@ -64,7 +64,7 @@ The `build_number` in `assets/version.json` should match the `+<build_number>` s
 - Platform splits via conditional imports (`dart.library.io` / `dart.library.html`); never import `dart:io` directly in shared code
 - Register services via `setupCoreServices()` / `setupAuthenticatedServices()` in `lib/di/locator.dart`; consume via `serviceLocator.get<T>()` — don't instantiate registered services directly
 - Desktop auto-bootstraps authenticated services (30s timeout); web requires explicit auth/session bootstrap first
-- GitHub issues (`github.com/iacle-solutions/iacle-app/issues`, launch tracker #39) are the work-tracking source of truth — check before substantive work
+- GitHub issues (`github.com/pistisAI/pistisai-app/issues`, launch tracker #39) are the work-tracking source of truth — check before substantive work
 
 ## MCP (OpenCode)
 

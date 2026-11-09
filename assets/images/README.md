@@ -32,7 +32,7 @@ To add the official OpenClaw logo:
 
 This directory contains various application assets:
 - `app_icon.png` - Main application icon
-- `lobster_avatar.png` - Avatar images for IAClé character
+- `lobster_avatar.png` - Avatar images for Pistisai character
 - `tray_icon_*.png` - System tray icons (connected, disconnected, connecting, etc.)
 - Various themed tray icons (dark, contrast, mono)
 

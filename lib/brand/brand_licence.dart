@@ -104,12 +104,16 @@ class BrandLicence {
     }
   }
 
-  /// Verify an Ed25519 signature over [message] with the embedded public key.
+  /// Verify an Ed25519 signature over [message].
+  ///
+  /// [publicKeyB64Url] overrides the embedded licensor key. Tests pass a key
+  /// they control. Production calls leave it null.
   static Future<bool> _verifyEd25519(
     List<int> message,
-    List<int> signature,
-  ) async {
-    final pubBytes = _b64UrlDecode(_publicKeyB64Url);
+    List<int> signature, {
+    String? publicKeyB64Url,
+  }) async {
+    final pubBytes = _b64UrlDecode(publicKeyB64Url ?? _publicKeyB64Url);
     if (pubBytes == null) return false;
     try {
       return await _ed25519.verify(
@@ -128,6 +132,7 @@ class BrandLicence {
   static Future<LicenceResult> validate(
     Map<String, dynamic> licence, {
     String? requestedBrand,
+    String? publicKeyB64Url,
   }) async {
     final payload = licence['payload'];
     final signature = licence['signature'];
@@ -141,7 +146,12 @@ class BrandLicence {
 
     final message = _canonicalPayload(payload);
     final sigBytes = _b64UrlDecode(signature);
-    final ok = sigBytes != null && await _verifyEd25519(message, sigBytes);
+    final ok = sigBytes != null &&
+        await _verifyEd25519(
+          message,
+          sigBytes,
+          publicKeyB64Url: publicKeyB64Url,
+        );
     if (!ok) {
       return const LicenceResult(
         status: LicenceStatus.badSignature,
@@ -182,13 +192,18 @@ class BrandLicence {
   static Future<LicenceResult> validateJson(
     String source, {
     String? requestedBrand,
+    String? publicKeyB64Url,
   }) async {
     try {
       final decoded = jsonDecode(source);
       if (decoded is! Map<String, dynamic>) {
         return const LicenceResult(status: LicenceStatus.malformed);
       }
-      return await validate(decoded, requestedBrand: requestedBrand);
+      return await validate(
+        decoded,
+        requestedBrand: requestedBrand,
+        publicKeyB64Url: publicKeyB64Url,
+      );
     } catch (e) {
       return LicenceResult(
         status: LicenceStatus.malformed,

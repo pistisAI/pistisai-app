@@ -1,25 +1,25 @@
-# IAClé SDK
+# Pistisai SDK
 
-Official JavaScript/TypeScript SDK for the IAClé API.
+Official JavaScript/TypeScript SDK for the Pistisai API.
 
 ## Installation
 
 ### npm
 
 ```bash
-npm install @IAClé/sdk
+npm install @Pistisai/sdk
 ```
 
 ### yarn
 
 ```bash
-yarn add @IAClé/sdk
+yarn add @Pistisai/sdk
 ```
 
 ### pnpm
 
 ```bash
-pnpm add @IAClé/sdk
+pnpm add @Pistisai/sdk
 ```
 
 ## Quick Start
@@ -27,10 +27,10 @@ pnpm add @IAClé/sdk
 ### Basic Usage
 
 ```typescript
-import { IACléClient } from '@IAClé/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
 // Initialize the client
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
   apiVersion: 'v2',
 });
@@ -396,7 +396,7 @@ interface SDKConfig {
 ### Example Configuration
 
 ```typescript
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
   apiVersion: 'v2',
   timeout: 60000,
@@ -463,9 +463,9 @@ console.log(response.pagination.pages);  // Total pages
 The SDK is fully typed with TypeScript:
 
 ```typescript
-import { IACléClient, Tunnel, User } from '@IAClé/sdk';
+import { PistisaiClient, Tunnel, User } from '@Pistisai/sdk';
 
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
 });
 
@@ -479,9 +479,9 @@ const tunnel: Tunnel = await client.getTunnel('tunnel-id');
 ### Complete Authentication Flow
 
 ```typescript
-import { IACléClient } from '@IAClé/sdk';
+import { PistisaiClient } from '@Pistisai/sdk';
 
-const client = new IACléClient({
+const client = new PistisaiClient({
   baseURL: 'https://api.example.com',
 });
 
@@ -565,7 +565,7 @@ console.log(`Total deliveries: ${deliveries.pagination.total}`);
 
 For issues, questions, or contributions, visit:
 
-- GitHub: https://github.com/iacle-solutions/iacle-app
+- GitHub: https://github.com/pistisAI/pistisai-app
 - Documentation: https://example.com/docs
 - API Docs: https://api.example.com/api/docs
 

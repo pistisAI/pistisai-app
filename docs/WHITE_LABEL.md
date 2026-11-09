@@ -35,13 +35,19 @@ The script writes the brand into the Flutter app and into the window title, Andr
 
 ### Brands live in the target fork
 
-This repository ships `brand/pistisai` and the placeholder `brand/example` only. A real brand is created in that product's fork, not committed here.
+The upstream brand (`pistisai`) bakes freely. **Every other brand is a paid whitelabel and requires a licence.** `tool/brand.sh` refuses to bake a non-upstream brand without one.
 
-In the fork, copy `brand/example/` to `brand/<id>/`, replace the name, domain, logo, and the other fields, then bake and build:
+Downstream forks ship their own brands. Acme, Northwind, and IAClé are examples; this repository does not contain their configuration.
 
 ```bash
-tool/brand.sh <id> --license /path/to/<id>.licence
-flutter build linux --dart-define=BRAND=<id>
+python3 tool/issue_licence.py \
+  --key /path/to/private.key \
+  --brand acme --licensee "Acme Labs" \
+  --expires 2027-12-31 --seats 5 \
+  --out acme.licence
+
+tool/brand.sh acme --license acme.licence
+flutter build linux --dart-define=BRAND=acme
 ```
 
 `pistisai` bakes without a licence. Every other id needs a licence issued for that fork. `tool/brand.sh` refuses to bake a non-upstream brand without one.

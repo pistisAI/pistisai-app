@@ -1,6 +1,6 @@
-# IAClé - Secrets Management Guide
+# Pistisai - Secrets Management Guide
 
-This document provides a comprehensive overview of all the required secrets for the IAClé CI/CD pipeline and local development.
+This document provides a comprehensive overview of all the required secrets for the Pistisai CI/CD pipeline and local development.
 
 ## Table of Contents
 
@@ -12,7 +12,7 @@ This document provides a comprehensive overview of all the required secrets for 
 
 ## Overview
 
-Secrets are sensitive pieces of information, such as API keys, passwords, and certificates, that are required for the application to function correctly. This guide provides a single source of truth for all the secrets used in the IAClé project.
+Secrets are sensitive pieces of information, such as API keys, passwords, and certificates, that are required for the application to function correctly. This guide provides a single source of truth for all the secrets used in the Pistisai project.
 
 ## Required Secrets
 

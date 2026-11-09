@@ -2,7 +2,7 @@
 
 ## Overview
 
-IAClé API implements structured deprecation with migration guides. This quick reference shows how to use deprecation features.
+Pistisai API implements structured deprecation with migration guides. This quick reference shows how to use deprecation features.
 
 **Requirements: 12.5**
 
@@ -240,6 +240,6 @@ curl "https://api.example.com/api/deprecation/endpoint-info?path=/v1/users" | \
 - **Documentation**: https://docs.example.com/api/deprecation
 - **API Docs**: https://api.example.com/api/docs
 - **Support**: ops@example.com
-- **Issues**: https://github.com/ghcr.io/IAClé/IAClé/api/issues
+- **Issues**: https://github.com/pistisAI/pistisai-app/issues
 
 </content>

@@ -68,12 +68,12 @@ MCP servers for Crush CLI need to be configured in the appropriate configuration
     },
     "postgres": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://appuser:changeme@localhost:5432/IAClé"],
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://appuser:changeme@localhost:5432/Pistisai"],
       "description": "PostgreSQL database operations",
       "env": {
         "POSTGRES_HOST": "localhost",
         "POSTGRES_PORT": "5432",
-        "POSTGRES_DB": "IAClé",
+        "POSTGRES_DB": "Pistisai",
         "POSTGRES_USER": "${POSTGRES_USER:-appuser}",
         "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:-changeme}"
       }
@@ -108,7 +108,7 @@ export GITHUB_TOKEN="ghp_xxxxxxxxxxxxxxxxxxxx"
 # PostgreSQL (required for PostgreSQL MCP server)
 export POSTGRES_HOST="localhost"
 export POSTGRES_PORT="5432"
-export POSTGRES_DB="IAClé"
+export POSTGRES_DB="Pistisai"
 export POSTGRES_USER="appuser"
 export POSTGRES_PASSWORD="changeme"
 ```
@@ -227,7 +227,7 @@ If an MCP server shows as "not available":
 
 ## Project-Specific Notes
 
-For the IAClé project:
+For the Pistisai project:
 
 - The Filesystem server should point to `/path/to/pistisai-app`
 - The PostgreSQL server should use the project database connection string

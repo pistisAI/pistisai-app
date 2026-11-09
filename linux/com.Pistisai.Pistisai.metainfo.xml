@@ -23,9 +23,9 @@
   
   <launchable type="desktop-id">com.Pistisai.Pistisai.desktop</launchable>
   
-  <url type="homepage">https://github.com/iacle-solutions/iacle-app</url>
-  <url type="bugtracker">https://github.com/iacle-solutions/iacle-app/issues</url>
-  <url type="help">https://github.com/iacle-solutions/iacle-app/blob/main/README.md</url>
+  <url type="homepage">https://github.com/pistisAI/pistisai-app</url>
+  <url type="bugtracker">https://github.com/pistisAI/pistisai-app/issues</url>
+  <url type="help">https://github.com/pistisAI/pistisai-app/blob/main/README.md</url>
   
   <developer_name>Pistisai Contributors</developer_name>
   

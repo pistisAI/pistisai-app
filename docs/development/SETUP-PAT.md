@@ -15,9 +15,9 @@ To enable automatic cloud deployment when version tags are created, we need a Pe
 2. **Click "Generate new token"**
 
 3. **Configure Token**:
-   - **Name**: `IAClé Deployment Automation`
+   - **Name**: `Pistisai Deployment Automation`
    - **Expiration**: 90 days (or longer)
-   - **Repository access**: Only select repositories → `IAClé`
+   - **Repository access**: Only select repositories → `Pistisai`
    - **Permissions**:
      - Repository permissions:
        - Contents: Read and write

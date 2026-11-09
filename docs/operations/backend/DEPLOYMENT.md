@@ -1,4 +1,4 @@
-# IAClé API Backend Deployment Guide
+# Pistisai API Backend Deployment Guide
 
 ## PostgreSQL Migration & Cloud Run Deployment
 
@@ -30,8 +30,8 @@ npm run db:setup-cloud-sql
 
 This will:
 
-- Create a PostgreSQL 15 instance named `IAClé-db`
-- Create the `IAClé` database
+- Create a PostgreSQL 15 instance named `Pistisai-db`
+- Create the `Pistisai` database
 - Create an `appuser` with a secure password
 - Generate `cloud-sql-config.env` with connection details
 
@@ -71,7 +71,7 @@ curl https://your-service-url/api/db/health
 gcloud config set project "$GCP_PROJECT_ID"
 
 # Create PostgreSQL instance
-gcloud sql instances create IAClé-db \
+gcloud sql instances create Pistisai-db \
     --database-version=POSTGRES_15 \
     --tier=db-f1-micro \
     --region=us-central1 \
@@ -80,11 +80,11 @@ gcloud sql instances create IAClé-db \
     --backup-start-time=03:00
 
 # Create database
-gcloud sql databases create IAClé --instance=IAClé-db
+gcloud sql databases create Pistisai --instance=Pistisai-db
 
 # Create user
 gcloud sql users create appuser \
-    --instance=IAClé-db \
+    --instance=Pistisai-db \
     --password=<SECURE_PASSWORD>
 ```
 
@@ -100,7 +100,7 @@ cp .env.production.template .env.production
 Required environment variables:
 
 - `DB_TYPE=postgresql`
-- `DB_NAME=IAClé`
+- `DB_NAME=Pistisai`
 - `DB_USER=appuser`
 - `DB_PASSWORD=<your-password>`
 - `DB_HOST=/cloudsql/your-project:region:instance`
@@ -112,7 +112,7 @@ Required environment variables:
 gcloud builds submit --tag gcr.io/your-project/api
 
 # Deploy to Cloud Run
-gcloud run deploy IAClé-api \
+gcloud run deploy pistisai-api \
     --image gcr.io/your-gcp-project/api \
     --platform managed \
     --region us-central1 \
@@ -168,20 +168,20 @@ curl https://your-service-url/api/db/health
 
 ```bash
 # View logs
-gcloud logs tail --service=IAClé-api
+gcloud logs tail --service=Pistisai-api
 
 # Filter for database logs
-gcloud logs tail --service=IAClé-api --filter="database"
+gcloud logs tail --service=Pistisai-api --filter="database"
 
 # Filter for authentication logs
-gcloud logs tail --service=IAClé-api --filter="auth"
+gcloud logs tail --service=Pistisai-api --filter="auth"
 ```
 
 ### Cloud SQL Monitoring
 
 ```bash
 # Check Cloud SQL instance status
-gcloud sql instances describe IAClé-db
+gcloud sql instances describe Pistisai-db
 
 # View Cloud SQL logs
 gcloud logging read "resource.type=cloudsql_database"

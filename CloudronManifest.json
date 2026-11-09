@@ -2,7 +2,7 @@
     "id": "app.pistisai.app",
     "title": "Pistisai",
     "author": "Pistisai",
-    "description": "Pistisai is a local-first private AI companion.",
+    "description": "PistisAI is a local-first private AI companion.",
     "version": "1.0.0",
     "healthCheckPath": "/",
     "httpPort": 3000,
