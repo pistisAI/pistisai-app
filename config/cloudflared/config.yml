@@ -1,4 +1,4 @@
-tunnel: ${CLOUDFLARE_TUNNEL_TOKEN}
+tunnel: ${CLOUDFLARE_TUNNEL_ID}
 ingress:
   # WebSocket connections for streaming
   - hostname: app.pistisai.online
