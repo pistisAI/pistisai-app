@@ -22,7 +22,7 @@ env:
   IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: https://deploy.pistisai.app
   COOLIFY_APP_UUID: umnmzbzlgcnjssqphnrgiejt
-  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST || '68.168.30.4' }}
+  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST }}
 
 jobs:
   analyze:

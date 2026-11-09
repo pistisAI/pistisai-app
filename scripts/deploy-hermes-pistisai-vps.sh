@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deploy the hosted test Hermes agent to the production Pistisai VPS.
 # Target: cloudllm@pistisai.app:/opt/Pistisai
-# This is NOT Simon's VPS (31.97.140.7).
+# Do not point this at any other server.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,15 +14,22 @@ REMOTE_DIR="${REMOTE_DIR:-${PISTISAI_REMOTE_DIR:-/opt/Pistisai}}"
 HERMES_API_SERVER_KEY="${HERMES_API_SERVER_KEY:-}"
 PISTISAI_VPS_SSH_HOST="${PISTISAI_VPS_SSH_HOST:-}"
 
+# Hosts this script must never deploy to (comma separated). Keep the list in
+# a CI secret or local env, not in the public repository.
+PISTISAI_BLOCKED_DEPLOY_HOSTS="${PISTISAI_BLOCKED_DEPLOY_HOSTS:-}"
+
 is_simon_host() {
-  case "${1:-}" in
-    31.97.140.7) return 0 ;;
-    *) return 1 ;;
-  esac
+  local host="${1:-}" blocked
+  [ -n "$host" ] || return 1
+  IFS=',' read -ra blocked <<< "$PISTISAI_BLOCKED_DEPLOY_HOSTS"
+  for b in "${blocked[@]}"; do
+    [ "${b// /}" = "$host" ] && return 0
+  done
+  return 1
 }
 
 if is_simon_host "$VPS_HOST"; then
-  echo "[deploy-hermes] ignoring Simon VPS host $VPS_HOST; using pistisai.app" >&2
+  echo "[deploy-hermes] ignoring blocked host $VPS_HOST; using pistisai.app" >&2
   VPS_HOST="pistisai.app"
   VPS_USER="cloudllm"
   REMOTE_DIR="/opt/Pistisai"
@@ -74,7 +81,7 @@ ssh_target="${VPS_USER}@${SSH_HOST}"
 case "$SSH_HOST" in
   pistisai.app|www.pistisai.app|app.pistisai.app|api.pistisai.app|hermes.pistisai.app)
     echo "[deploy-hermes] $SSH_HOST is Cloudflare-proxied; GitHub/CI cannot SSH to :22" >&2
-    echo "[deploy-hermes] set PISTISAI_VPS_SSH_HOST to the origin VPS IP (not 31.97.140.7)" >&2
+    echo "[deploy-hermes] set PISTISAI_VPS_SSH_HOST to the origin VPS IP" >&2
     exit 1
     ;;
 esac
