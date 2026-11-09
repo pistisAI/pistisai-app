@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 class CloudTtsRequest {
@@ -207,10 +208,17 @@ class CloudTtsService {
 
   Map<String, String> _mergedPathEnvironment() {
     final env = Map<String, String>.from(Platform.environment);
+    final home = Platform.environment['HOME'] ??
+        Platform.environment['USERPROFILE'];
+    if (home == null || home.isEmpty) {
+      // No home directory: leave PATH as is rather than guessing a relative
+      // Hermes venv location.
+      debugPrint('[CloudTtsService] No HOME or USERPROFILE; '
+          'Hermes venv not added to PATH');
+      return env;
+    }
     final hermesVenvBin = p.join(
-      Platform.environment['HOME'] ??
-          Platform.environment['USERPROFILE'] ??
-          '.',
+      home,
       '.hermes',
       'hermes-agent',
       'venv',

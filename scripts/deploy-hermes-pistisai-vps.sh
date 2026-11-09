@@ -16,7 +16,11 @@ PISTISAI_VPS_SSH_HOST="${PISTISAI_VPS_SSH_HOST:-}"
 
 # Hosts this script must never deploy to (comma separated). Keep the list in
 # a CI secret or local env, not in the public repository.
+# Unset or empty means no host is blocked: set it wherever this script runs.
 PISTISAI_BLOCKED_DEPLOY_HOSTS="${PISTISAI_BLOCKED_DEPLOY_HOSTS:-}"
+if [ -z "$PISTISAI_BLOCKED_DEPLOY_HOSTS" ]; then
+  echo "[deploy-hermes] warning: PISTISAI_BLOCKED_DEPLOY_HOSTS is empty; no host is blocked" >&2
+fi
 
 is_simon_host() {
   local host="${1:-}" blocked
