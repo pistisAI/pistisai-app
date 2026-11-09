@@ -274,6 +274,10 @@ jobs:
           for result in "$CHANGES" "$ANALYZE" "$SMOKE" "$WEB" "$LINUX" "$BACKEND"; do
             case "$result" in
               success|skipped) ;;
+              abandoned)
+                echo "Needed job was abandoned before it finished: $result"
+                fail=1
+                ;;
               *)
                 echo "Needed job ended with: $result"
                 fail=1
