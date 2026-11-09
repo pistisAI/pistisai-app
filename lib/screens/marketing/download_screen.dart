@@ -448,7 +448,7 @@ tar -xzf ${Brand.current.artifactPrefix}-Linux-x64.tar.gz
 cd ${Brand.current.artifactPrefix}-Linux-x64
 
 # Run directly
-./${Brand.current.artifactPrefix}''',
+./${BrandCopy.shippedLinuxBinary}''',
       ),
     );
   }

@@ -68,10 +68,21 @@ class BrandCopy {
       'Sign in and sync through the ${brand.websiteDomain} gateway.';
   static String get installSh => 'https://${brand.websiteDomain}/install.sh';
   static String get installPs1 => 'https://${brand.websiteDomain}/install.ps1';
+
+  /// On-disk names the build still emits. Brand files do not rename these.
+  static const String shippedLinuxBinary = 'pistisai';
+  static const String shippedWindowsExe = 'Pistisai.exe';
+
   static String get exeDoubleClick =>
-      'Navigate to the extracted folder and double-click ${brand.artifactPrefix}.exe.';
+      'Navigate to the extracted folder and double-click $shippedWindowsExe.';
   static String get quarantineHint =>
-      'Remove quarantine attribute: xattr -d com.apple.quarantine /Applications/${brand.artifactPrefix}.app';
+      'Remove quarantine attribute: xattr -d com.apple.quarantine /Applications/${brand.productName}.app';
+
+  /// Homepage story. The default brand keeps the Pistis narrative.
+  static String get landingNarrative => brand.id == 'pistisai'
+      ? '${porticoLine}Four pillars that together restore what was lost: '
+          'private, local, trustworthy AI.'
+      : brand.aboutText;
 
   /// Strings a non-default brand must not fill with the upstream product name.
   static List<String> routedSamples() {
@@ -144,7 +155,6 @@ class BrandCopy {
       cloudConnectedBody,
       installSh,
       installPs1,
-      exeDoubleClick,
       quarantineHint,
       brand.releaseAsset(brand.artifact('-Linux-1.0.0-x86_64.AppImage')),
     ];

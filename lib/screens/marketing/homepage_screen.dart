@@ -114,18 +114,19 @@ class HomepageScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Greek wordmark
-              Text(
-                'ΠΙΣΤΙΣ',
-                style: TextStyle(
-                  fontFamily: 'serif',
-                  fontSize: isMobile ? 14 : 16,
-                  color: colors.primary.withValues(alpha: 0.5),
-                  letterSpacing: 8,
-                  fontWeight: FontWeight.w300,
+              if (Brand.current.id == 'pistisai') ...[
+                Text(
+                  'ΠΙΣΤΙΣ',
+                  style: TextStyle(
+                    fontFamily: 'serif',
+                    fontSize: isMobile ? 14 : 16,
+                    color: colors.primary.withValues(alpha: 0.5),
+                    letterSpacing: 8,
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
+                const SizedBox(height: 4),
+              ],
 
               // Pistisai name
               Text(
@@ -244,39 +245,40 @@ class HomepageScreen extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 700),
             child: Column(
               children: [
-                Text(
-                  'ἡ Πίστις',
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    fontSize: isMobile ? 20 : 28,
-                    color: colors.primary,
-                    letterSpacing: 4,
+                if (Brand.current.id == 'pistisai') ...[
+                  Text(
+                    'ἡ Πίστις',
+                    style: TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: isMobile ? 20 : 28,
+                      color: colors.primary,
+                      letterSpacing: 4,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'When Pandora\'s box was opened, all evils escaped — '
-                  'but Πίστις (Pistis), the spirit of trust, '
-                  'fled back to the heavens. She has not returned since.',
-                  style: TextStyle(
-                    fontSize: isMobile ? 15 : 18,
-                    color: colors.textColorLight,
-                    height: 1.7,
-                    letterSpacing: 0.3,
-                    fontStyle: FontStyle.italic,
+                  const SizedBox(height: 12),
+                  Text(
+                    'When Pandora\'s box was opened, all evils escaped — '
+                    'but Πίστις (Pistis), the spirit of trust, '
+                    'fled back to the heavens. She has not returned since.',
+                    style: TextStyle(
+                      fontSize: isMobile ? 15 : 18,
+                      color: colors.textColorLight,
+                      height: 1.7,
+                      letterSpacing: 0.3,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  width: 60,
-                  height: 1,
-                  color: colors.primary.withValues(alpha: 0.4),
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
+                  Container(
+                    width: 60,
+                    height: 1,
+                    color: colors.primary.withValues(alpha: 0.4),
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 Text(
-                  '${BrandCopy.porticoLine}Four pillars that together restore what was lost: '
-                  'private, local, trustworthy AI.',
+                  BrandCopy.landingNarrative,
                   style: TextStyle(
                     fontSize: isMobile ? 14 : 16,
                     color: colors.textColorLight,

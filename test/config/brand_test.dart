@@ -148,6 +148,15 @@ void main() {
     expect(lockedBrandLocales(example), contains(const Locale('en')));
   });
 
+  test('launch instructions name the binaries the build still emits', () {
+    Brand.debugOverride(example);
+    expect(BrandCopy.exeDoubleClick, contains(BrandCopy.shippedWindowsExe));
+    expect(
+        BrandCopy.exeDoubleClick.toLowerCase(), isNot(contains('example.exe')));
+    expect(BrandCopy.shippedLinuxBinary, 'pistisai');
+    expect(BrandCopy.landingNarrative.toLowerCase(), isNot(contains('pistis')));
+  });
+
   test('unlocked default brand does not force a locale', () {
     expect(pistisai.lockLocale, isFalse);
     expect(pistisai.materialLocale, isNull);

@@ -256,7 +256,10 @@ class AboutSettingsScreen extends StatelessWidget {
                 Brand.current.iconAsset,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Center(
-                  child: Text('P',
+                  child: Text(
+                      Brand.current.shortName.isEmpty
+                          ? '?'
+                          : Brand.current.shortName[0],
                       style: TextStyle(
                           fontSize: 48,
                           color: AppTheme.colorsOf(context).textColor)),
