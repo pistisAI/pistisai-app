@@ -93,17 +93,26 @@ router.post('/', verifyWebhookSignature, validateSchema({ body: agentEventBodySc
     // 4. Update metrics (placeholder)
     // updateAgentMetrics(agent.id, event_type, event_data);
 
-    // 5. Broadcast to WebSocket clients
-    dashboardWSManager.broadcast({
-      type: 'agent_update',
-      agent: {
-        id: agent.id,
-        agent_id: agent.agent_id,
-        name: agent.name,
-        status: newStatus,
-        event: { event_type, event_data },
-      },
-    });
+    // 5. Broadcast only to the owning user. Never fan out unowned agents.
+    if (agent.user_id) {
+      dashboardWSManager.broadcast(
+        {
+          type: 'agent_update',
+          agent: {
+            id: agent.id,
+            agent_id: agent.agent_id,
+            name: agent.name,
+            status: newStatus,
+            event: { event_type, event_data },
+          },
+        },
+        agent.user_id,
+      );
+    } else {
+      logger.warn('Skipping agent_update broadcast for unowned agent', {
+        agentId: agent.agent_id,
+      });
+    }
 
     res.json({ success: true, agent_id: agent.id });
   } catch (error) {
