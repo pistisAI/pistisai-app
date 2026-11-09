@@ -191,8 +191,8 @@ jobs:
       - name: Flutter Build APK
         run: |
           flutter pub get
-          bash tool/brand.sh iacle
-          flutter build apk --release --split-per-abi --dart-define=BRAND=iacle --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+          bash tool/brand.sh pistisai
+          flutter build apk --release --split-per-abi --dart-define=BRAND=pistisai --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
 
       - name: Upload APKs
         uses: actions/upload-artifact@v7
@@ -233,8 +233,8 @@ jobs:
       - name: Flutter Build iOS
         run: |
           flutter pub get
-          bash tool/brand.sh iacle
-          flutter build ios --release --no-codesign --dart-define=BRAND=iacle --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+          bash tool/brand.sh pistisai
+          flutter build ios --release --no-codesign --dart-define=BRAND=pistisai --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
 
       - name: Upload iOS build
         uses: actions/upload-artifact@v7
