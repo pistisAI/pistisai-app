@@ -921,11 +921,13 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
       return;
     }
 
-    // Simple proration calculation (this would be more complex in production)
+    // Prices come from the build defines. Empty means no published price.
+    const premiumPrice = String.fromEnvironment('PISTISAI_PRICE_PREMIUM');
+    const enterprisePrice = String.fromEnvironment('PISTISAI_PRICE_ENTERPRISE');
     final tierPrices = {
       SubscriptionTier.free: 0.0,
-      SubscriptionTier.premium: 9.99,
-      SubscriptionTier.enterprise: 29.99,
+      SubscriptionTier.premium: double.tryParse(premiumPrice) ?? 0,
+      SubscriptionTier.enterprise: double.tryParse(enterprisePrice) ?? 0,
     };
 
     final currentPrice = tierPrices[widget.subscription.tier] ?? 0.0;

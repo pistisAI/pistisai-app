@@ -29,10 +29,10 @@ router.get('/credentials', authenticateJWT, (req, res) => {
     const turnCredential =
       process.env.TURN_CREDENTIAL || process.env.TURN_PASSWORD || '';
     const turnUrls = process.env.TURN_URLS
-      ? process.env.TURN_URLS.split(',')
-      : ['turn:174.138.115.184:3478', 'turn:174.138.115.184:5349'];
+      ? process.env.TURN_URLS.split(',').filter((url) => url.trim().length > 0)
+      : [];
 
-    if (!turnCredential) {
+    if (!turnCredential || turnUrls.length === 0) {
       logger.warn('[TURN Credentials] TURN credential not configured');
       return res.status(503).json({
         status: 'error',

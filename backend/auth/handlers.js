@@ -34,8 +34,8 @@ app.use(
   }),
 );
 
-const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN || "your-domain.auth0.com";
-const AUDIENCE = process.env.AUTH0_AUDIENCE || "your-audience";
+const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN || "";
+const AUDIENCE = process.env.AUTH0_AUDIENCE || "";
 
 const checkJwtMiddleware = expressjwt({
   secret: jwksRsa.expressJwtSecret({
@@ -65,15 +65,19 @@ const checkJwt = (req, res, next) => {
     token === devBypassToken
   ) {
     req.auth = {
-      sub: 'google-oauth2|102509433531341542550',
+      sub: 'dev-user',
       email: 'dev@pistisai.app',
-      name: 'Christopher (Dev)',
-      nickname: 'rightguy',
+      name: 'Dev User',
+      nickname: 'dev-user',
       'https://pistisai.app/roles': ['admin'],
       'https://Pistisai.com/app_metadata': { role: 'admin' },
       scope: 'openid profile email admin',
     };
     return next();
+  }
+
+  if (!AUTH0_DOMAIN) {
+    return res.status(401).json({ error: "Invalid token" });
   }
 
   return checkJwtMiddleware(req, res, next);

@@ -11,8 +11,7 @@ import { AuthService } from '../auth/auth-service.js';
 import logger from '../logger.js';
 
 // JWT configuration - Supabase Auth
-const SUPABASE_URL =
-  process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_JWKS_URI =
   process.env.SUPABASE_JWKS_URI ||
   `${SUPABASE_URL}/auth/v1/.well-known/jwks.json`;
@@ -58,13 +57,13 @@ export const authenticateJWT = async (req, res, next) => {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: 'authenticated',
           email: 'dev@pistisai.app',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev-user',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev-user' },
           scope: 'openid profile email admin',
         },
       };
@@ -248,13 +247,13 @@ export const optionalAuth = async (req, res, next) => {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: 'authenticated',
           email: 'dev@pistisai.app',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev-user',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev-user' },
           scope: 'openid profile email admin',
         },
       };

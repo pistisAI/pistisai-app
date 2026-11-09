@@ -23,8 +23,15 @@ class SupabaseAuthProvider extends AuthProvider {
   @override
   UserModel? get currentUser => _currentUser;
 
+  bool get _supabaseReady =>
+      AppConfig.supabaseUrl.isNotEmpty && AppConfig.supabaseAnonKey.isNotEmpty;
+
   @override
   Future<void> initialize() async {
+    if (!_supabaseReady) {
+      _authStateController.add(false);
+      return;
+    }
     await _authSubscription?.cancel();
     _authSubscription =
         Supabase.instance.client.auth.onAuthStateChange.listen((data) {
@@ -51,6 +58,9 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   Future<void> login() async {
+    if (!_supabaseReady) {
+      return;
+    }
     await Supabase.instance.client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: _redirectUri,
@@ -95,8 +105,8 @@ class SupabaseAuthProvider extends AuthProvider {
     _currentUser = UserModel(
       id: '00000000-0000-0000-0000-000000000000',
       email: 'dev@pistisai.app',
-      name: 'Christopher (Dev)',
-      nickname: 'rightguy',
+      name: 'Dev User',
+      nickname: 'dev-user',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );

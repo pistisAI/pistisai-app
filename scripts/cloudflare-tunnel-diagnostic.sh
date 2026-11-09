@@ -7,9 +7,9 @@
 set -e
 
 # Secure Configuration (Inject via Env)
-CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-"cmaltais@pistisai.app"}
+CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-}
 DOMAIN=${CLOUDFLARE_DOMAIN:-"pistisai.app"}
-TUNNEL_ID=${CLOUDFLARE_TUNNEL_ID:-"62da6c19-947b-4bf6-acad-100a73de4e0d"}
+TUNNEL_ID=${CLOUDFLARE_TUNNEL_ID:-}
 
 # Colors for output
 RED='\033[0;31m'
@@ -27,6 +27,16 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 # Security Check
 if [ -z "$CLOUDFLARE_API_KEY" ]; then
     log_error "CLOUDFLARE_API_KEY environment variable is not set."
+    exit 1
+fi
+
+if [ -z "$CLOUDFLARE_EMAIL" ]; then
+    log_error "CLOUDFLARE_EMAIL environment variable is not set."
+    exit 1
+fi
+
+if [ -z "$TUNNEL_ID" ]; then
+    log_error "CLOUDFLARE_TUNNEL_ID environment variable is not set."
     exit 1
 fi
 

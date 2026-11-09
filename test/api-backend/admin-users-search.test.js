@@ -265,15 +265,15 @@ describe("Admin User Search and Listing - Implementation Validation", () => {
       // Validates prorated charge calculation
       const tierPricing = {
         free: 0,
-        premium: 9.99,
-        enterprise: 29.99,
+        premium: Number(process.env.PISTISAI_PRICE_PREMIUM) || 0,
+        enterprise: Number(process.env.PISTISAI_PRICE_ENTERPRISE) || 0,
       };
 
       const previousTier = "free";
       const newTier = "premium";
       const priceDifference = tierPricing[newTier] - tierPricing[previousTier];
 
-      expect(priceDifference).toBe(9.99);
+      expect(priceDifference).toBe(tierPricing.premium);
     });
 
     it("should prevent tier changes to same tier", () => {
