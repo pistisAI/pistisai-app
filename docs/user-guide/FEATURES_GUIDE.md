@@ -1,17 +1,17 @@
-# IAClé Features Guide
+# Pistisai Features Guide
 
-IAClé delivers this hub to Quebec clients. The offer is in the [README](../../README.md).
+Product description: [README](../../README.md).
 
-IAClé is a local-first companion shell and desktop capability layer for user-selected agent runtimes. It gives your chosen agent runtime (Hermes, OpenClaw, or custom compatible gateways) a secure connection channel to your desktop, combined with structured permissions for GUI automation, voice conversation, vision capabilities, and multi-device Tailscale mesh coordination.
+Pistisai is a local-first companion shell and desktop capability layer for user-selected agent runtimes. It gives your chosen agent runtime (Hermes, OpenClaw, or custom compatible gateways) a secure connection channel to your desktop, combined with structured permissions for GUI automation, voice conversation, vision capabilities, and multi-device Tailscale mesh coordination.
 
 ---
 
 ## 🗺️ Application Map
 
-The IAClé interface is divided into functional modules designed around a secure conversation model:
+The Pistisai interface is divided into functional modules designed around a secure conversation model:
 
 ```
-IAClé App Shell
+Pistisai App Shell
 ├── 💬 Chat Interface (Home)
 │   ├── Streaming Timeline & Thinking Previews
 │   ├── Model Selector (Exposed by Active Runtime)
@@ -90,7 +90,7 @@ Earn visual achievements based on conversation history and evolution:
 
 ## 🖥️ 3. Desktop Control (GUI Automation)
 
-IAClé provides a sandboxed native desktop bridge allowing your agent runtime to perform controlled desktop operations.
+Pistisai provides a sandboxed native desktop bridge allowing your agent runtime to perform controlled desktop operations.
 
 *   **Screenshot Capture:** Programmatic desktop captures triggered via a custom native MethodChannel.
 *   **Action Execution:** Supports a range of GUI interactions:
@@ -104,7 +104,7 @@ IAClé provides a sandboxed native desktop bridge allowing your agent runtime to
 
 ## 👁️ 4. Vision Capabilities
 
-IAClé allows the agent runtime to "see" and interpret the environment on your device.
+Pistisai allows the agent runtime to "see" and interpret the environment on your device.
 
 *   **Full Screen Capture:** Captures complete desktop viewports for multimodal analysis.
 *   **Region Selection:** Select and crop specific screen regions.

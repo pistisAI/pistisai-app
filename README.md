@@ -1,55 +1,114 @@
-# IAClé
+# Pistisai — ΠΙΣΤΙΣΑΙ
 
-IAClé est un assistant IA local d'abord pour les entreprises du Québec. [English](README.en.md)
+**A local-first companion and desktop capability layer for your AI agent. Private, secure, yours.**
 
-IAClé est basé sur PistisAI.
+> *Πίστις (Pistis) — the ancient spirit of trust, honesty, and good faith. After fleeing Pandora's box, she returned to Olympus. Pistisai builds a Stoa worthy of her return.*
 
-## Local d'abord
+Your AI runs on your hardware. The app gives it voice, vision, desktop control, and a secure channel across all your devices — no data leaves your network unless you decide otherwise.
 
-L'agent tourne sur un ordinateur chez le client. L'audit vérifie si son PC actuel peut l'héberger. Sinon, IAClé fournit un mini-PC dédié (standard : Beelink GTi15). Du matériel sur mesure, seulement quand l'audit le montre.
+---
 
-Il peut joindre un service infonuagique que le client utilise déjà, seulement si c'est sécuritaire, si le client consent, et si le fournisseur a été évalué selon la Loi 25 (évaluation des facteurs relatifs à la vie privée). On documente les flux qui sortent. On peut les retirer.
+## Try It Now
 
-Dans le service, l'employé approuve les envois et les décisions importantes.
+🖥️ **Start with the desktop app.** Your first Pistisai desktop install is the **hub** — your web, mobile, and other desktop devices connect through it. See [Your devices, one hub](#your-devices-one-hub).
 
-## Pour qui
+🌐 **[pistisai.app](https://pistisai.app)** — Web app, works in any browser. Handy for a quick look; for real multi-device use it connects through your desktop hub, not straight to your agent.
 
-Les PME du Québec. D'abord en Estrie, puis plus loin au Québec, surtout les PME réglementées : juridique, santé, finance.
+🐧 **Linux** — `curl -fsSL https://pistisai.app/install.sh | bash` (AppImage + auto-update daemon; rolling out).
 
-## Ce que l'assistant fait
+📱 **Android** — APK builds from CI. Grab the latest from [Releases](https://github.com/pistisAI/pistisai-app/releases/latest).
 
-- Clavardage, voix et avatar.
-- Lecture d'écran et OCR, avec la permission de la personne.
-- Actions sur le poste, avec une permission à la fois.
-- Compétences, sessions, tâches planifiées.
-- Maillage privé entre les appareils du client.
+**You need an agent runtime.** Hermes is the primary test path. OpenClaw and compatible agent gateways also work. Your desktop hub connects to the runtime; your other Pistisai devices connect to the hub.
 
-Hermes est le moteur principal. OpenClaw et les passerelles compatibles fonctionnent aussi. Ollama et LM Studio servent à la mémoire et aux embeddings.
+> 🚀 **Public launch is live.** Full quick-start, supported runtimes, and self-hosting steps → [docs/LAUNCH.md](docs/LAUNCH.md). Primary CTA: clone the repo, run a workflow, and open an issue or discussion with your real use case. Track the launch → [GitHub issue #39](https://github.com/pistisAI/pistisai-app/issues/39).
+>
+> 🏛️ **Why we exist** → [docs/governance/manifesto.md](docs/governance/manifesto.md) — the meaning of Πίστις and the Four Pillars behind the product.
 
-## Services
+---
 
-- **Audit de préparation.** Trois colonnes : ce que les outils font déjà, ce qui se fait encore à la main, ce qui reste à automatiser. On vérifie aussi si le PC actuel peut héberger l'agent.
-- **Implantation.** Un parcours opérationnel, puis l'installation et le soutien. Exemples : tri des courriels, factures, réceptionniste bilingue, rapports, comptabilité.
-- **Services gérés.** Suivi du système, aide pour la Loi 25, reprise des données.
+## What Sets It Apart
 
-## Connexion
+| Layer | What it gives you |
+|-------|-------------------|
+| **Secure Channel** | Direct line to your agent, synced across devices |
+| **Voice + Avatar** | Sidecar companion with personality, memory, natural conversation |
+| **Desktop Control** | Permissioned access to apps, windows, keyboard, files |
+| **Vision** | Screen awareness, OCR, camera — explicit per-action consent |
+| **Device Mesh** | Tailscale-first private network across all your machines |
+| **Runtime Manager** | Manage agents, skills, sessions, tools, diagnostics |
 
-La connexion sert au tunnel et à la synchro. Le réseau est un tunnel derrière Cloudflare Access, ou Tailscale, ou le VPN du client.
+---
+
+## Architecture
+
+```
+┌────────────────────────────────────────────────────────┐
+│                  Pistisai App                     │
+│  ┌──────────┐  ┌──────────┐  ┌────────────────────┐    │
+│  │  Agent   │  │  Avatar  │  │  Desktop Control   │    │
+│  │  Channel │  │  Voice   │  │  Vision            │    │
+│  └────┬─────┘  └────┬─────┘  └───────┬────────────┘    │
+│       └──────────────┼────────────────┘                  │
+│                      ▼                                   │
+│           ┌──────────────────────┐                       │
+│           │   Agent Adapter     │                        │
+│           │  Hermes / OpenClaw  │                        │
+│           └──────────┬──────────┘                        │
+└──────────────────────┼───────────────────────────────────┘
+                       │
+              ┌────────┴────────┐
+              │                 │
+         ┌────▼────┐     ┌─────▼──────┐
+         │  Local  │     │  Model     │
+         │  Agent  │     │  Providers │
+         │  Runtime│     │  (Ollama,  │
+         │         │     │  LM Studio)│
+         └─────────┘     └────────────┘
+```
+
+### Your devices, one hub
+
+```text
+  Your desktop app                ← install this first — it's the hub
+        │
+        │  (local or Tailscale)
+        ▼
+  Web app · Mobile app · Other desktops     ← connect through the hub
+```
+
+- Install the **desktop app** on the machine that stays on — it connects to your agent and becomes the **hub** for everything else.
+- Your **web, mobile, and other desktop devices** connect *through* that hub, not straight to your agent. Your data stays in your network.
+- Your agent still talks to messaging apps (Telegram, Slack, Discord) directly — the desktop hub is for your *devices*, not for messaging.
+
+---
+
+## Platforms
+
+| Platform | Status |
+|----------|--------|
+| 🐧 Linux | ✅ AppImage + auto-update daemon |
+| 🌐 Web | [pistisai.app](https://pistisai.app) |
+| 📱 Android | ✅ APK builds from CI |
+| 🪟 Windows | ✅ Installer (InnoSetup) + CI |
+| 🍎 macOS | ✅ Installer + CI |
+
+---
 
 ## Documentation
 
-| Document | Contenu |
-| --- | --- |
-| [English](README.en.md) | La même page en anglais |
-| [Vue d'ensemble](docs/index.md) | Définition du logiciel |
-| [Installation](docs/user-guide/SETUP_GUIDE.md) | Installer le poste |
-| [Utilisation](docs/user-guide/USER_GUIDE.md) | S'en servir |
-| [Sécurité](SECURITY.md) | Signaler une faille |
+📖 [docs.pistisai.app](https://docs.pistisai.app)
 
-Une faille se signale en privé : [avis de sécurité GitHub](https://github.com/iacle-solutions/iacle-app/security/advisories).
+| Guide | What's in it |
+|-------|-------------|
+| [User Guide](docs/user-guide/USER_GUIDE.md) | Features and usage |
+| [Setup Guide](docs/user-guide/SETUP_GUIDE.md) | Step-by-step installation |
+| [Troubleshooting](docs/user-guide/TROUBLESHOOTING.md) | Common issues |
+| [Security Guide](SECURITY.md) | Reporting policy + security posture |
 
-## Licence
+---
 
-Voir [LICENSE](LICENSE).
+## License
 
-Pour les développeurs : [CONTRIBUTING.md](CONTRIBUTING.md).
+Business Source License 1.1 — see [LICENSE](LICENSE).
+
+Developers: see [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -1,6 +1,6 @@
-# IAClé API Error Codes and HTTP Status Codes
+# Pistisai API Error Codes and HTTP Status Codes
 
-This document provides a comprehensive reference for all error codes and HTTP status codes used in the IAClé API Backend.
+This document provides a comprehensive reference for all error codes and HTTP status codes used in the Pistisai API Backend.
 
 ## HTTP Status Codes
 

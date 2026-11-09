@@ -2,7 +2,7 @@
 
 ## Overview
 
-IAClé is designed to be **provider-agnostic**, supporting deployment on multiple cloud platforms and Kubernetes providers. This document clarifies the current deployment status and available options.
+Pistisai is designed to be **provider-agnostic**, supporting deployment on multiple cloud platforms and Kubernetes providers. This document clarifies the current deployment status and available options.
 
 ## Current Deployment Status
 
@@ -24,7 +24,7 @@ IAClé is designed to be **provider-agnostic**, supporting deployment on multipl
 
 ## Provider-Agnostic Architecture
 
-IAClé is built with provider independence in mind:
+Pistisai is built with provider independence in mind:
 
 ### Kubernetes-Native Design
 
@@ -147,6 +147,6 @@ When choosing a provider, consider:
 
 ## Conclusion
 
-IAClé's provider-agnostic design ensures flexibility while maintaining production stability. The current Azure AKS deployment provides a solid foundation, while AWS EKS documentation offers a viable migration path when needed.
+Pistisai's provider-agnostic design ensures flexibility while maintaining production stability. The current Azure AKS deployment provides a solid foundation, while AWS EKS documentation offers a viable migration path when needed.
 
 **Key Takeaway**: Azure AKS is the current production reality, AWS EKS is a future option, and the architecture supports both seamlessly.

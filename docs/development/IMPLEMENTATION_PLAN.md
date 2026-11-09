@@ -1,6 +1,6 @@
 # Implementation Plan - Secure Agent Companion
 
-**IAClé** is a secure companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, compatible custom agent gateways, or optional hosted agent runtimes.
+**Pistisai** is a secure companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, compatible custom agent gateways, or optional hosted agent runtimes.
 
 > **Orientation note**: This file is a historical implementation plan and progress log. The current product direction is defined in [SPEC.md](../../SPEC.md) and [Agent Runtime Contract](../architecture/AGENT_RUNTIME_CONTRACT.md): there is no universal default runtime, Hermes is the first agent runtime path for current testing, OpenClaw remains supported as the original integration, desktop control is core, avatar and voice belong together as a sidecar companion, and Tailscale is the preferred secure device mesh. Ollama, LM Studio, and similar model servers are support model providers for app-owned memory/background features, not primary app runtimes.
 
@@ -105,7 +105,7 @@ A multi-agent system inspired by Grok 4.20 that cross-checks decisions before ac
 
 **Storage Strategy (OpenClaw = source of truth):**
 
-- **App available** → Drift/SQLite via IAClé API (fast, indexed queries)
+- **App available** → Drift/SQLite via Pistisai API (fast, indexed queries)
 - **App down** → Files (AGENT-THOUGHTS.md, CONSCIENCE.md) - always works
 - **Sync** → Files sync to DB when app comes back online
 
@@ -137,7 +137,7 @@ A multi-agent system inspired by Grok 4.20 that cross-checks decisions before ac
 
 **Philosophy:**
 - OpenClaw works standalone (always functional)
-- IAClé app expands capability (fast DB, UI, sync)
+- Pistisai app expands capability (fast DB, UI, sync)
 - Users understand the stack (learn OpenClaw first, then add app)
 
 ---
@@ -192,7 +192,7 @@ When you see a mistake:
 You have full context of Zoidbot's actions. Respond with feedback that helps it improve.
 ```
 
-**Note**: This is NOT a IAClé app feature - it's a prompt/config for Antigravity IDE. The Flutter app doesn't need to implement this.
+**Note**: This is NOT a Pistisai app feature - it's a prompt/config for Antigravity IDE. The Flutter app doesn't need to implement this.
 
 ---
 
@@ -251,7 +251,7 @@ Implemented device identity authentication for OpenClaw Gateway WebSocket connec
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    IAClé App                        │
+│                    Pistisai App                        │
 │                    (Flutter Desktop)                         │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -392,7 +392,7 @@ Guide new users through selected agent runtime configuration with support for:
 
 **Architecture**: Hybrid shared state with OpenClaw Gateway
 - **OpenClaw** owns avatar personality & evolution (traits, evolution stages)
-- **IAClé** provides expanded awareness (memory, context, visual data)
+- **Pistisai** provides expanded awareness (memory, context, visual data)
 - **Drift database** (on VPS via Tailscale) = primary shared storage
 - **Markdown files** (OpenClaw skills dir) = backup/portable storage
 
@@ -404,12 +404,12 @@ Guide new users through selected agent runtime configuration with support for:
 
 **Evolution System** (no XP - organic growth):
 - Triggers: Conversation depth, user interaction patterns, agent self-reflection
-- Collaborative: OpenClaw requests evolution, IAClé validates
+- Collaborative: OpenClaw requests evolution, Pistisai validates
 - Stages: base → stage1 → stage2 → final
 
 **Data Flow**:
 ```
-OpenClaw Gateway              Drift Database (VPS)           IAClé
+OpenClaw Gateway              Drift Database (VPS)           Pistisai
      │                              │                              │
      ├─── self-reflection ────> write evolution request         │
      │                              │                              │
@@ -437,7 +437,7 @@ OpenClaw Gateway              Drift Database (VPS)           IAClé
 | MarkdownSyncService | `lib/services/avatar/markdown_sync_service.dart` | 4h | P1 | ✅ Complete |
 | ConscienceStorageService | `lib/services/conscience_storage_service.dart` | 3h | P1 | ✅ Complete |
 | Evolution API endpoints | `lib/services/router_server.dart` | 3h | P1 | ✅ Complete |
-| OpenClaw personality skill | `~/.openclaw/skills/IAClé/` | 6h | P0 | 🔲 User Setup |
+| OpenClaw personality skill | `~/.openclaw/skills/Pistisai/` | 6h | P0 | 🔲 User Setup |
 | Rive avatar animations | `assets/animations/avatar.riv` | 8h | P2 | 🔲 Pending |
 | Emoji blending fallback | `lib/features/avatar/emoji_blending_avatar.dart` | 3h | P2 | 🔲 Pending |
 | Avatar settings UI | `lib/screens/avatar/avatar_settings_screen.dart` | 4h | P2 | 🔲 Pending |
@@ -522,7 +522,7 @@ OpenClaw Gateway              Drift Database (VPS)           IAClé
 - ✅ Personality engine with 4 traits (formality, humor, enthusiasm, empathy)
 - ✅ Evolution tracker (no XP - organic growth via conversation depth)
 - ✅ Conscience System storage layer (agentThoughts, conscienceDecisions tables)
-- 🔲 OpenClaw skill: ~/.openclaw/skills/IAClé/ (user setup)
+- 🔲 OpenClaw skill: ~/.openclaw/skills/Pistisai/ (user setup)
 - ✅ Markdown backup sync (personality.md, memory.md, context.md)
 - 🔲 Avatar visuals respond to personality (Rive + emoji blending) - pending assets
 - ✅ Clipboard service with history

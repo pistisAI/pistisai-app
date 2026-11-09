@@ -8,7 +8,7 @@ COPY tool/linux_native_deps/ tool/linux_native_deps/
 RUN flutter pub get
 RUN flutter config --enable-web
 COPY . .
-RUN flutter build web --release --no-web-resources-cdn --dart-define=BRAND=iacle \
+RUN flutter build web --release --no-web-resources-cdn --dart-define=BRAND=pistisai \
  && python3 -c 'import json,pathlib; m=json.loads(pathlib.Path("assets/version.json").read_text()); p=pathlib.Path("build/web/index.html"); p.write_text(p.read_text().replace("$FLUTTER_BUILD_NUMBER", m["version"]+"."+str(m["build_number"])))'
 
 # ---- Serve stage: Nginx ----

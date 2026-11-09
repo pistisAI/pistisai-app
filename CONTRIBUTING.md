@@ -1,6 +1,6 @@
-# Contributing to IAClé
+# Contributing to Pistisai
 
-Thanks for showing up. This repository is the IAClé app. The product description is the [README](README.md)
+Thanks for showing up. This repository is the Pistisai app. The product description is the [README](README.md)
 ([English](README.en.md)). This guide gets you from "I cloned the repo" to a pull request.
 
 ---
@@ -8,7 +8,7 @@ Thanks for showing up. This repository is the IAClé app. The product descriptio
 ## Ways to contribute (no code required)
 
 - **File an issue** with a real use case, a bug, or a failure report.
-  Use [GitHub Issues](https://github.com/iacle-solutions/iacle-app/issues).
+  Use [GitHub Issues](https://github.com/pistisAI/pistisai-app/issues).
 - **Report a security vulnerability privately** — see [SECURITY.md](SECURITY.md). **Do not**
   open a public issue for security problems.
 - **Improve the docs** — fix a typo, clarify a step, add a guide. Docs PRs are the fastest
@@ -19,7 +19,7 @@ Thanks for showing up. This repository is the IAClé app. The product descriptio
 
 ## Development setup
 
-IAClé is a Flutter desktop/web app plus Node.js backend services. You need both toolchains.
+Pistisai is a Flutter desktop/web app plus Node.js backend services. You need both toolchains.
 
 ### Flutter app
 
@@ -28,8 +28,8 @@ IAClé is a Flutter desktop/web app plus Node.js backend services. You need both
 - A shared package in `lib/shared` targets Dart `>=3.9.0 <4.0.0`
 
 ```bash
-git clone https://github.com/iacle-solutions/iacle-app.git
-cd iacle-app
+git clone https://github.com/pistisAI/pistisai-app.git
+cd pistisai-app
 
 flutter pub get
 cd lib/shared && flutter pub get && cd ../..   # shared package deps are separate
@@ -107,7 +107,7 @@ We keep it low-ceremony.
   classes. Strong mode is on (`implicit-casts`/`implicit-dynamic` are false).
 - **JS/TS**: match the surrounding `kebab-case` files; `PascalCase` classes.
 - Avoid code comments unless the code is genuinely not self-explanatory.
-- Preserve branding exactly: `IAClé`, `OpenClaw`, `Zoidbot`.
+- Preserve branding exactly: `Pistisai`, `OpenClaw`, `Zoidbot`.
 
 ---
 
@@ -128,5 +128,5 @@ Full map: [AGENTS.md](AGENTS.md) and [docs/LAUNCH.md](docs/LAUNCH.md).
 
 ## Questions?
 
-Open an [issue](https://github.com/iacle-solutions/iacle-app/issues) on this repository.
+Open an [issue](https://github.com/pistisAI/pistisai-app/issues) on this repository.
 Welcome aboard.

@@ -51,9 +51,9 @@ Each MCP server can be tested individually:
 ```bash
 npx -y @modelcontextprotocol/server-sequential-thinking
 npx -y @modelcontextprotocol/server-memory
-npx -y @modelcontextprotocol/server-filesystem /mnt/data/projects/IAClé
+npx -y @modelcontextprotocol/server-filesystem /mnt/data/projects/Pistisai
 npx -y @modelcontextprotocol/server-github
-npx -y @modelcontextprotocol/server-postgres postgresql://appuser:changeme@localhost:5432/IAClé
+npx -y @modelcontextprotocol/server-postgres postgresql://appuser:changeme@localhost:5432/Pistisai
 npx -y @upstash/context7-mcp
 npx -y @modelcontextprotocol/server-pdf
 npx -y @modelcontextprotocol/server-puppeteer

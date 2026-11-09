@@ -1,63 +1,26 @@
-# IAClé — Votre IA privée, chez vous.
+# Pistisai
 
-**Une AI qui tourne sur VOTRE ordinateur. Vos données restent chez vous.**
+**A local-first companion and desktop capability layer for your AI agent. Private, secure, yours.**
 
----
+Your AI runs on your hardware. The app gives it voice, vision, desktop control, and a secure channel across your devices. No data leaves your network unless you decide otherwise.
 
-## Le problème
+## What you get
 
-Les AI comme ChatGPT, Claude et Gemini sont pratiques, mais :
+| Layer | What it gives you |
+|-------|-------------------|
+| **Secure Channel** | Direct line to your agent, synced across devices |
+| **Voice + Avatar** | Sidecar companion with personality, memory, natural conversation |
+| **Desktop Control** | Permissioned access to apps, windows, keyboard, files |
+| **Vision** | Screen awareness, OCR, camera — explicit per-action consent |
+| **Device Mesh** | Tailscale-first private network across all your machines |
+| **Runtime Manager** | Manage agents, skills, sessions, tools, diagnostics |
 
-- **Vos données partent chez eux** — avocats, thérapeutes, comptables peuvent pas envoyer leurs dossiers à OpenAI
-- **Vous possédez rien** — changement de termes, vous avez pas le choix
-- **Pas de continuité** — l'AI vous connaît pas, chaque conversation repart à zéro
+## What you need
 
-## La solution
+An agent runtime. Hermes is the primary test path. OpenClaw and compatible gateways also work. Install the desktop app first — it is the hub. Web, mobile, and other desktops connect through that hub.
 
-**On installe une AI sur votre ordinateur.** Pas de cloud, pas de SaaS, pas de données qui sortent de chez vous.
+## Learn more
 
-| Ce que vous avez | Avec IAClé |
-|-----------------|---------------------|
-| 🤖 ChatGPT/Claude | 🖥️ Votre AI, sur votre machine |
-| 📤 Vos données partent au US | 🔒 Zéro donnée quitte votre réseau |
-| ❓ Changement de termes imprévisible | ✅ Vous contrôlez tout |
-| 🔄 Chaque session repart à zéro | 🧠 L'AI apprend et se souvient |
-
-## Combien de temps pour être prêt ?
-
-Entre l'arrivée du technicien et votre première question à votre AI : **30 à 60 minutes**.
-
-## Qu'est-ce qu'il me faut ?
-
-L'agent tourne sur un ordinateur chez vous. L'audit vérifie si votre PC actuel peut l'héberger. Sinon, IAClé fournit un mini-PC dédié (standard : Beelink GTi15). Du matériel sur mesure, seulement quand l'audit le montre.
-
-On vient, on installe, on repart. Vous avez votre AI qui tourne.
-
-## Qui sommes-nous ?
-
-**Simon** — 20+ ans en TI, partenaire d'affaires, réseau de professionnels
-
-**Christopher** — Architecte AI, infrastructure, CI/CD, développement
-
-On a déjà déployé sur PC, Mac, serveurs et VPS. On sait ce qu'on fait.
-
----
-
-## Questions fréquentes
-
-**"Est-ce que c'est aussi bon que ChatGPT ?"**
-Pour les tâches quotidiennes — analyse, rédaction, résumé, organisation — oui, et en privé. Pour la recherche de pointe, Internet reste votre ami.
-
-**"Mes données sont-elles vraiment en sécurité ?"**
-Rien ne quitte votre réseau. Pas de cloud, pas de serveur externe. C'est l'avantage #1.
-
-**"Et si j'ai un problème ?"**
-Le soutien couvre les mises à jour, le fine-tuning et l'assistance technique.
-
-**"Puis-je voir une démo ?"**
-Oui. On fait une démo chez vous.
-
----
-
-**Simon Gravel** — [email à venir @immogestion.app]
-**Christopher Maltais** — christopher@immogestion.app
+- Product page: [README](../README.md)
+- Try the web app: [pistisai.app](https://pistisai.app)
+- Source: [pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app)
