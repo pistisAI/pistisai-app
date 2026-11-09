@@ -17,6 +17,8 @@ dependencies:
   sentry_flutter: ^10.2.0
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # UI and Navigation
   cupertino_icons: ^2.0.0
@@ -178,6 +180,9 @@ flutter:
     - assets/images/lobster_avatar_64.png
     - assets/images/lobster_avatar_128.png
     - assets/version.json
+    - brand/pistisai/
+    - brand/example/
+    - brand/example/assets/
     - assets/pistisai/hermes/plugins/pistisai/
     - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/

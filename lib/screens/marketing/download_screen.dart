@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../brand/brand.dart';
+import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
 
 import '../../config/app_config.dart';
@@ -41,7 +43,10 @@ class DownloadScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppTheme.colorsOf(context).primary, AppTheme.colorsOf(context).accent],
+          colors: [
+            AppTheme.colorsOf(context).primary,
+            AppTheme.colorsOf(context).accent
+          ],
         ),
       ),
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
@@ -54,10 +59,13 @@ class DownloadScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppTheme.colorsOf(context).primary,
               borderRadius: BorderRadius.circular(35),
-              border: Border.all(color: AppTheme.colorsOf(context).accent, width: 3),
+              border: Border.all(
+                  color: AppTheme.colorsOf(context).accent, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.2),
+                  color: AppTheme.colorsOf(context)
+                      .textColor
+                      .withValues(alpha: 0.2),
                   blurRadius: 12,
                   offset: const Offset(0, 2),
                 ),
@@ -78,7 +86,7 @@ class DownloadScreen extends StatelessWidget {
 
           // Title
           Text(
-            'Download Pistisai',
+            BrandCopy.downloadTitle,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   color: AppTheme.colorsOf(context).textColor,
                   fontWeight: FontWeight.bold,
@@ -92,7 +100,9 @@ class DownloadScreen extends StatelessWidget {
           Text(
             'Complete installation guide for Linux distributions',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.5),
+                  color: AppTheme.colorsOf(context)
+                      .textColorLight
+                      .withValues(alpha: 0.5),
                   fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
@@ -149,7 +159,7 @@ class DownloadScreen extends StatelessWidget {
     return _buildCard(
       context,
       title: '� Quick Downloads',
-      description: 'Download the latest version of Pistisai for your platform',
+      description: BrandCopy.downloadDescription,
       child: Column(
         children: [
           const SizedBox(height: 24),
@@ -185,8 +195,8 @@ class DownloadScreen extends StatelessWidget {
             children: [
               ElevatedButton.icon(
                 onPressed: () => _downloadFile(
-                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage',
-                  'Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage',
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage',
+                  '${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage',
                   context,
                 ),
                 icon: const Icon(Icons.apps),
@@ -200,8 +210,8 @@ class DownloadScreen extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 onPressed: () => _downloadFile(
-                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai_${AppConfig.appVersion}_amd64.deb',
-                  'Pistisai_${AppConfig.appVersion}_amd64.deb',
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb',
+                  '${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb',
                   context,
                 ),
                 icon: const Icon(Icons.desktop_windows),
@@ -215,8 +225,8 @@ class DownloadScreen extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 onPressed: () => _downloadFile(
-                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-x64.tar.gz',
-                  'Pistisai-Linux-x64.tar.gz',
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-x64.tar.gz',
+                  '${Brand.current.artifactPrefix}-Linux-x64.tar.gz',
                   context,
                 ),
                 icon: const Icon(Icons.archive),
@@ -230,8 +240,8 @@ class DownloadScreen extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 onPressed: () => _downloadFile(
-                  'https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-macOS-x64.zip',
-                  'Pistisai-macOS-x64.zip',
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-macOS-x64.zip',
+                  '${Brand.current.artifactPrefix}-macOS-x64.zip',
                   context,
                 ),
                 icon: const Icon(Icons.apple),
@@ -252,7 +262,8 @@ class DownloadScreen extends StatelessWidget {
           Text(
             'Prefer a manual install? See the platform sections below for '
             'Debian, universal installer, and prebuilt binary instructions.',
-            style: TextStyle(color: AppTheme.colorsOf(context).textColorLight, fontSize: 14),
+            style: TextStyle(
+                color: AppTheme.colorsOf(context).textColorLight, fontSize: 14),
             textAlign: TextAlign.center,
           ),
         ],
@@ -333,10 +344,11 @@ class DownloadScreen extends StatelessWidget {
       title: 'Snap Package',
       description:
           'A Snap Store listing is not published. Use the Debian or archive packages from GitHub Releases.',
-      child: _buildInstallationSection(context,
+      child: _buildInstallationSection(
+        context,
         'Not listed on Snap Store',
         '''# Use GitHub Releases instead of Snap
-# https://github.com/pistisAI/pistisai-app/releases/latest''',
+# ${Brand.current.releasesUrl}''',
       ),
     );
   }
@@ -347,13 +359,14 @@ class DownloadScreen extends StatelessWidget {
       title: '� Debian Package (.deb)',
       description:
           'Native package for Ubuntu, Debian, and derivatives with proper dependency management.',
-      child: _buildInstallationSection(context,
+      child: _buildInstallationSection(
+        context,
         'Installation',
         '''# Download from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai_${AppConfig.appVersion}_amd64.deb
+wget ${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb
 
 # Install with dpkg
-sudo dpkg -i Pistisai_${AppConfig.appVersion}_amd64.deb
+sudo dpkg -i ${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb
 
 # Install dependencies if needed
 sudo apt-get install -f''',
@@ -367,16 +380,17 @@ sudo apt-get install -f''',
       title: '📦 AppImage (Universal Linux)',
       description:
           'Portable application that runs on any Linux distribution. No installation required — just download, make executable, and run.',
-      child: _buildInstallationSection(context,
+      child: _buildInstallationSection(
+        context,
         'Download and run',
         '''# Download from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
+wget ${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage
 
 # Make executable
-chmod +x Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
+chmod +x ${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage
 
 # Run
-./Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage''',
+./${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage''',
       ),
     );
   }
@@ -387,10 +401,11 @@ chmod +x Pistisai-Linux-${AppConfig.appVersion}-x86_64.AppImage
       title: '🚀 Universal Installer (install.sh)',
       description:
           'One-line installer script that detects your platform and fetches the correct release asset. Works on most Linux distributions.',
-      child: _buildInstallationSection(context,
+      child: _buildInstallationSection(
+        context,
         'Run the installer',
         '''# Download and run the official installer
-curl -fsSL https://pistisai.app/install.sh | bash''',
+curl -fsSL ${BrandCopy.installSh} | bash''',
       ),
     );
   }
@@ -401,16 +416,17 @@ curl -fsSL https://pistisai.app/install.sh | bash''',
       title: '� Arch User Repository (AUR)',
       description:
           'Pre-built binary package for Arch Linux and derivatives. No Flutter dependency required!',
-      child: _buildInstallationSection(context,
+      child: _buildInstallationSection(
+        context,
         'Installation with AUR Helper (Recommended)',
         '''# Install with yay (no build dependencies needed)
-yay -S Pistisai
+yay -S ${Brand.current.artifactPrefix}
 
 # Or using paru
-paru -S Pistisai
+paru -S ${Brand.current.artifactPrefix}
 
 # Or using pamac
-pamac install Pistisai''',
+pamac install ${Brand.current.artifactPrefix}''',
       ),
     );
   }
@@ -421,17 +437,18 @@ pamac install Pistisai''',
       title: '⚡ Pre-built Binary (Universal)',
       description:
           'Direct download of the compiled application for manual installation on any Linux distribution.',
-      child: _buildInstallationSection(context,
+      child: _buildInstallationSection(
+        context,
         'Download and Install',
         '''# Download pre-built binary from GitHub releases
-wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-Linux-x64.tar.gz
+wget ${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-x64.tar.gz
 
 # Extract to local directory
-tar -xzf Pistisai-Linux-x64.tar.gz
-cd Pistisai-Linux-x64
+tar -xzf ${Brand.current.artifactPrefix}-Linux-x64.tar.gz
+cd ${Brand.current.artifactPrefix}-Linux-x64
 
 # Run directly
-./Pistisai''',
+./${BrandCopy.shippedLinuxBinary}''',
       ),
     );
   }
@@ -455,7 +472,7 @@ cd Pistisai-Linux-x64
           ),
           const SizedBox(height: 8),
           Text(
-            'Pistisai will minimize to the system tray by default. Look for the LLM icon in your system tray.',
+            '${Brand.current.artifactPrefix} will minimize to the system tray by default. Look for the LLM icon in your system tray.',
             style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
           ),
           const SizedBox(height: 16),
@@ -475,13 +492,14 @@ cd Pistisai-Linux-x64
           const SizedBox(height: 8),
           ...[
             'Desktop: Configure direct localhost:11434 connection to Ollama',
-            'Web: Uses Pistisai streaming proxy automatically',
+            'Web: Uses ${Brand.current.artifactPrefix} streaming proxy automatically',
           ].map(
             (item) => Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 '• $item',
-                style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
+                style:
+                    TextStyle(color: AppTheme.colorsOf(context).textColorLight),
               ),
             ),
           ),
@@ -541,7 +559,8 @@ cd Pistisai-Linux-x64
     );
   }
 
-  Widget _buildInstallationSection(BuildContext context, String title, String code) {
+  Widget _buildInstallationSection(
+      BuildContext context, String title, String code) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

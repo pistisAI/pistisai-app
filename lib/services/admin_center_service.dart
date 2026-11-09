@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import '../brand/brand_copy.dart';
 import '../models/admin_role_model.dart';
 import 'auth_service.dart';
 import '../config/app_config.dart';
@@ -474,7 +475,7 @@ class AdminCenterService extends ChangeNotifier {
         '/admin/email/test',
         data: {
           'recipientEmail': recipientEmail,
-          'subject': 'Test Email from Pistisai',
+          'subject': BrandCopy.testEmailSubject,
         },
       );
       _setError(null);

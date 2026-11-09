@@ -1,0 +1,52 @@
+# Placeholder brand. Proves the build switch. Not a real product.
+id: example
+product_name: Example
+short_name: Example
+company_name: Example Labs
+tagline: A sample white-label companion
+support_email: support@example.com
+support_url: https://example.com/support
+privacy_email: privacy@example.com
+website_domain: example.com
+website_url: https://example.com
+app_url: https://app.example.com
+default_locale: fr
+lock_locale: true
+logo_asset: brand/example/assets/logo.png
+icon_asset: brand/example/assets/icon.png
+wordmark: EXAMPLE
+greek_wordmark: ""
+colors:
+  primary: "#1565C0"
+  secondary: "#42A5F5"
+  accent: "#0D47A1"
+  background: "#0D1B2A"
+  text: "#E3F2FD"
+app_id: app.example.sample
+bundle_id: app.example.sample
+linux_application_id: app.example.sample
+executable_name: example
+window_title: Example
+about_text: "Example is a placeholder brand used to prove the white-label switch. It ships the same stack with its own name, colors, and links."
+closing_line: "Example is a placeholder companion used to prove a brand switch."
+legal_line: "© 2026 Example Labs"
+copyright: "Copyright © 2026 Example Labs. All rights reserved."
+windows_copyright: "Copyright (C) 2026 Example Labs. All rights reserved."
+file_description: "Example Desktop Client"
+repository_url: https://example.com/repository
+repository_label: example/example-app
+docs_url: https://example.com/docs
+releases_url: https://example.com/releases/latest
+artifact_prefix: Example
+accent_label: Example blue
+package_title: "Example package"
+package_blurb: |
+  Finishing this first-time setup installs the companion package into the Hermes you just connected. That home comes from that Hermes, including when it is not the usual Windows location. The package adds the bundled bot, the scan skill, and a routine that runs every 6 hours.
+footer_motto: EXAMPLE
+web_title: "Example — Sample companion"
+web_description: "Example — a sample white-label companion used to prove the brand switch."
+social_description: "A sample companion with its own name, colors, and links."
+manifest_description: "Sample white-label companion. Placeholder copy only."
+appstream_summary: Sample white-label companion
+appstream_description: "Example is a placeholder desktop companion used to prove that a brand file can replace user-facing copy."
+developer_name: Example Labs

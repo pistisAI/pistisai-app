@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../brand/brand_copy.dart';
 import '../../config/app_config.dart';
 import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
@@ -65,7 +66,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
                           _buildSection(
                             context,
                             'Voice Companion',
-                            'Natural conversation state, backend switching, and agent control for the Pistisai voice shell layered around Hermes.',
+                            BrandCopy.voiceCompanionBody,
                             di.serviceLocator
                                     .isRegistered<VoiceConversationService>()
                                 ? Column(
@@ -138,7 +139,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildSection(BuildContext context, String title, String description, Widget child) {
+  Widget _buildSection(
+      BuildContext context, String title, String description, Widget child) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -200,22 +202,20 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildSnapshotCard(BuildContext context, Map<String, dynamic> gatewayStatus) {
+  Widget _buildSnapshotCard(
+      BuildContext context, Map<String, dynamic> gatewayStatus) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSnapshotRow(
-                context,
-                'Status',
+            _buildSnapshotRow(context, 'Status',
                 gatewayStatus['healthStatus']?.toString() ?? 'Unknown'),
             _buildSnapshotRow(
                 context, 'Uptime', gatewayStatus['uptime'] ?? 'n/a'),
-            _buildSnapshotRow(
-                context,
-                'Last Channels Refresh', gatewayStatus['lastRefresh'] ?? 'n/a'),
+            _buildSnapshotRow(context, 'Last Channels Refresh',
+                gatewayStatus['lastRefresh'] ?? 'n/a'),
           ],
         ),
       ),
@@ -281,8 +281,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildStatCard(BuildContext context,
-      String title, String value, String subtitle, IconData icon) {
+  Widget _buildStatCard(BuildContext context, String title, String value,
+      String subtitle, IconData icon) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),

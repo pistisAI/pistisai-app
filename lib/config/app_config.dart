@@ -1,21 +1,21 @@
 import 'package:flutter/foundation.dart';
+import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 
 /// Application configuration constants
 class AppConfig {
-  // App Information
-  static const String appName = 'Pistisai';
+  // App Information. The visible name comes from the baked brand.
+  static String get appName => Brand.current.productName;
   static const String appVersion = '1.1.100';
   static const String appDescription =
       'Local-first agent companion. Offline until you choose to connect.';
 
-  // URLs
-  static const String homepageUrl = 'https://pistisai.app';
-  static const String appUrl = 'https://app.pistisai.app';
+  // Public site and repository follow the brand. API hosts below stay fixed.
+  static String get homepageUrl => Brand.current.websiteUrl;
+  static String get appUrl => Brand.current.appUrl;
   static const String adminCenterUrl = 'https://admin.pistisai.app';
-  static const String githubUrl = 'https://github.com/pistisAI/pistisai-app';
-  static const String githubReleasesUrl =
-      'https://github.com/pistisAI/pistisai-app/releases/latest';
+  static String get githubUrl => Brand.current.repositoryUrl;
+  static String get githubReleasesUrl => Brand.current.releasesUrl;
 
   // Configured Authentication Provider
   static const AuthProviderType authProvider = AuthProviderType.supabase;

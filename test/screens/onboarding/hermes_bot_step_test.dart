@@ -45,7 +45,7 @@ void main() {
 
   testWidgets('install success shows all steps installed', (tester) async {
     final installer = _RecordingInstaller(
-      const HermesBotInstallReport(<HermesBotInstallStep>[
+      HermesBotInstallReport(<HermesBotInstallStep>[
         HermesBotInstallStep(
           name: HermesBotInstallService.agentStep,
           status: HermesBotInstallStatus.installed,
@@ -92,7 +92,7 @@ void main() {
   testWidgets('install failure shows the failed step and retry button',
       (tester) async {
     final installer = _RecordingInstaller(
-      const HermesBotInstallReport(<HermesBotInstallStep>[
+      HermesBotInstallReport(<HermesBotInstallStep>[
         HermesBotInstallStep(
           name: HermesBotInstallService.agentStep,
           status: HermesBotInstallStatus.installed,

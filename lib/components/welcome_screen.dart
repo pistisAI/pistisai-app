@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../brand/brand.dart';
 import '../config/theme_extensions.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -48,7 +49,7 @@ class WelcomeScreen extends StatelessWidget {
               const SizedBox(height: 28),
               // Title
               Text(
-                'Pistisai',
+                Brand.current.productName,
                 style: theme.textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colors.textColor,

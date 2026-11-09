@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pistisai/brand/brand_copy.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/di/locator.dart' as di;
@@ -79,9 +80,8 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
                         const SizedBox(height: 12),
                         ConnectionMethodCard(
                           icon: Icons.cloud_outlined,
-                          title: 'Connected via pistisai.app',
-                          description:
-                              'Sign in and sync through the pistisai.app gateway.',
+                          title: BrandCopy.cloudConnectedTitle,
+                          description: BrandCopy.cloudConnectedBody,
                           selected:
                               _selected == MobileConnectionMode.pistisaiApp,
                           onTap: () => setState(() {
@@ -155,7 +155,7 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
   ) {
     return FilledButton(
       onPressed: _connecting ? null : () => _connectCloud(connection),
-      child: const Text('Continue with pistisai.app'),
+      child: Text(BrandCopy.cloudContinue),
     );
   }
 

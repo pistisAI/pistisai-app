@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:pistisai/brand/brand_copy.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
@@ -196,8 +197,7 @@ class MobileConnectionService extends ChangeNotifier {
     return MobileHubProbeResult(
       success: false,
       hermesUrl: hermesUrl,
-      message:
-          'Could not reach a Pistisai desktop hub at $host. Open Tailscale on this phone, join the same tailnet as your PC, and use that PC\'s Tailscale name or 100.x address.',
+      message: BrandCopy.hubUnreachable(host),
     );
   }
 

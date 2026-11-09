@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../brand/brand.dart';
+import '../brand/brand_copy.dart';
 import '../config/theme.dart';
 
 /// Construction Page - Shows current features with progress and roadmap
@@ -186,7 +188,7 @@ class ConstructionScreen extends StatelessWidget {
               context,
               title: 'GitHub Repository',
               description: 'View code, report issues, contribute',
-              url: 'https://github.com/pistisAI/pistisai-app',
+              url: Brand.current.repositoryUrl,
               icon: Icons.code,
             ),
             const SizedBox(height: 12),
@@ -194,8 +196,8 @@ class ConstructionScreen extends StatelessWidget {
             _buildLinkCard(
               context,
               title: 'Documentation',
-              description: 'Learn how to use Pistisai',
-              url: 'https://docs.pistisai.app',
+              description: BrandCopy.docsLinkDescription,
+              url: Brand.current.docsUrl,
               icon: Icons.book,
             ),
             const SizedBox(height: 12),

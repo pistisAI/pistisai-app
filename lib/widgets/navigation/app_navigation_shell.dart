@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'sidebar_section.dart';
 import 'navigation_rail_item.dart';
+import '../../brand/brand.dart';
 import '../../config/app_config.dart';
 import '../../services/connection_manager_service.dart';
 import '../../services/theme_provider.dart';
@@ -18,8 +19,7 @@ class AppNavigationShell extends StatefulWidget {
   });
 
   @override
-  State<AppNavigationShell> createState() =>
-      _AppNavigationShellState();
+  State<AppNavigationShell> createState() => _AppNavigationShellState();
 }
 
 class _AppNavigationShellState extends State<AppNavigationShell> {
@@ -98,7 +98,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/images/app_icon.png',
+              Brand.current.iconAsset,
               width: 32,
               height: 32,
               errorBuilder: (ctx, _, __) => const Icon(Icons.hub, size: 32),
@@ -120,7 +120,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
       child: Row(
         children: [
           Image.asset(
-            'assets/images/app_icon.png',
+            Brand.current.iconAsset,
             width: 32,
             height: 32,
             errorBuilder: (ctx, _, __) => const Icon(Icons.hub, size: 32),
@@ -128,7 +128,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Pistisai',
+              Brand.current.productName,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -164,7 +164,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
             ),
           ],
         ),
-
         SidebarSection(
           collapsed: _sidebarCollapsed,
           title: 'Navigation',
@@ -212,7 +211,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
             ),
           ],
         ),
-
         SidebarSection(
           collapsed: _sidebarCollapsed,
           title: 'Management',
@@ -252,7 +250,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
             ),
           ],
         ),
-
         SidebarSection(
           collapsed: _sidebarCollapsed,
           title: 'Advanced',

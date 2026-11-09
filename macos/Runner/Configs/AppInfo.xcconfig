@@ -4,11 +4,7 @@
 // future. If not, the values below would default to using the project name when this becomes a
 // 'flutter create' template.
 
-// The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = Pistisai
+#include "Brand.xcconfig"
 
-// The application's bundle identifier
+// The application's bundle identifier. Not switched by the brand script yet.
 PRODUCT_BUNDLE_IDENTIFIER = app.pistisai.pistisai
-
-// The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 Pistisai. All rights reserved.

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../brand/brand.dart';
 import '../models/user_model.dart';
 import '../auth/auth_provider.dart';
 
@@ -145,7 +146,7 @@ class AuthService extends ChangeNotifier {
   String get assistantName {
     final user = currentUser;
     if (user == null) return 'Your AI Assistant';
-    return 'Pistisai';
+    return Brand.current.productName;
   }
 
   // Platform detection

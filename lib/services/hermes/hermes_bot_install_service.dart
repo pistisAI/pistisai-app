@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/services/hermes/hermes_local_agent_api.dart';
 
 enum HermesBotInstallStatus { installed, skipped, failed }
@@ -81,7 +82,7 @@ class HermesBotInstallService {
         _isWeb = isWeb ?? (() => kIsWeb),
         _processHome = processHome;
 
-  static const agentStep = 'PistisAI package';
+  static String get agentStep => Brand.current.packageTitle;
   static const desktopStep = 'Desktop embed';
   static const profileStep = 'aigent-watch profile';
   static const enableStep = 'Enable pistisai';
@@ -161,7 +162,8 @@ class HermesBotInstallService {
       return override();
     }
     if (agentPort != null && agentPort > 0) {
-      final fromProcess = await (_processHome ?? listeningHermesHome)(agentPort);
+      final fromProcess =
+          await (_processHome ?? listeningHermesHome)(agentPort);
       if (fromProcess != null && fromProcess.trim().isNotEmpty) {
         return fromProcess.trim();
       }
