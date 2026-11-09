@@ -101,6 +101,93 @@ void main() {
       expect(jsonDecode(models.body), containsPair('object', 'list'));
     });
 
+    group('accessDecision without a configured secret', () {
+      test('lets loopback callers reach private endpoints', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/api/conscience/thoughts',
+            fromLoopback: true,
+            authorizationHeader: null,
+            authSecret: null,
+          ),
+          isNull,
+        );
+      });
+
+      test('rejects other machines on private endpoints', () {
+        for (final path in [
+          '/v1/chat/completions',
+          '/v1/audio/speech',
+          '/api/conscience/thoughts',
+          '/avatar/traits',
+        ]) {
+          expect(
+            RouterServer.accessDecision(
+              path: path,
+              fromLoopback: false,
+              authorizationHeader: null,
+              authSecret: null,
+            ),
+            HttpStatus.forbidden,
+            reason: path,
+          );
+        }
+      });
+
+      test('keeps public discovery paths open to other machines', () {
+        for (final path in ['/health', '/v1/models', '/api/pistisai/hub']) {
+          expect(
+            RouterServer.accessDecision(
+              path: path,
+              fromLoopback: false,
+              authorizationHeader: null,
+              authSecret: null,
+            ),
+            isNull,
+            reason: path,
+          );
+        }
+      });
+    });
+
+    group('accessDecision with a configured secret', () {
+      test('requires the token even from loopback', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/v1/chat/completions',
+            fromLoopback: true,
+            authorizationHeader: null,
+            authSecret: 'router-secret',
+          ),
+          HttpStatus.forbidden,
+        );
+      });
+
+      test('accepts the right token from another machine', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/v1/chat/completions',
+            fromLoopback: false,
+            authorizationHeader: 'Bearer router-secret',
+            authSecret: 'router-secret',
+          ),
+          isNull,
+        );
+      });
+
+      test('rejects a wrong token', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/v1/chat/completions',
+            fromLoopback: false,
+            authorizationHeader: 'Bearer nope',
+            authSecret: 'router-secret',
+          ),
+          HttpStatus.unauthorized,
+        );
+      });
+    });
+
     test('advertises an unauthenticated primary hub discovery document',
         () async {
       final baseUrl = await _startRouter(serverRef: (value) => server = value);
