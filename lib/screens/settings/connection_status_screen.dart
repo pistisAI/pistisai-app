@@ -189,8 +189,8 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
                     : AppTheme.colorsOf(context).danger,
               ),
               if (isAuthenticated) ...[
-                _buildStatusRow(
-                    'Provider', 'Supabase', AppTheme.colorsOf(context).info),
+                _buildStatusRow('Provider', 'Cloudflare Access',
+                    AppTheme.colorsOf(context).info),
               ],
               SizedBox(height: AppTheme.spacingM),
               if (!isAuthenticated)
