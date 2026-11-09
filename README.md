@@ -18,7 +18,7 @@ Install the **desktop app** first. That install is the hub. Web, mobile, and oth
 - API and free-tier tunnel: [api.pistisai.app](https://api.pistisai.app)
 - Desktop and mobile builds: [Releases](https://github.com/pistisAI/pistisai-app/releases/latest) (Linux, Windows, macOS, and Android are built in CI)
 
-Sign-in is only for tunnel and sync. Local desktop use does not require an account. The free tier uses the pistisai.app tunnel, protected by Cloudflare Access. Business and Enterprise use the customer's own Tailscale network or VPN. See [Tunnel and sync sign-in](docs/development/TUNNEL_SIGN_IN.md).
+Sign-in is only for tunnel and sync. Local desktop use does not require an account. The free tier uses the pistisai.app tunnel, protected by Cloudflare Access. Business and Enterprise use the customer's own Tailscale network or VPN.
 
 You need an agent runtime. Hermes is the main one. OpenClaw and compatible gateways also work. Messaging apps such as Telegram and Slack stay on Hermes. They do not route through this app.
 
@@ -64,8 +64,6 @@ Launch steps: [docs/LAUNCH.md](docs/LAUNCH.md). Why the name exists: [docs/gover
 - Web, mobile, and other desktops connect through that hub.
 - The agent still talks to messaging apps directly.
 
-Technical map: [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md).
-
 ---
 
 ## Platforms
@@ -80,40 +78,6 @@ Technical map: [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md).
 
 ---
 
-## Development
-
-```bash
-git clone https://github.com/pistisAI/pistisai-app.git
-cd pistisai-app
-flutter pub get
-
-# The app depends on a separate shared package — get its deps too:
-cd lib/shared && flutter pub get && cd ../..
-
-flutter run -d linux   # Desktop
-flutter run -d chrome  # Web
-```
-
-```bash
-flutter build linux --release
-flutter build web --release --no-web-resources-cdn
-flutter build apk --release --split-per-abi
-flutter build windows --release
-flutter build macos --release
-```
-
-### Backend services
-
-```bash
-cd services/api-backend && npm install && npm run dev
-cd services/streaming-proxy && npm install && npm run dev
-```
-
-Developer onboarding: [docs/development/DEVELOPER_ONBOARDING.md](docs/development/DEVELOPER_ONBOARDING.md).
-Command reference: [AGENTS.md](AGENTS.md).
-
----
-
 ## Documentation
 
 | Guide | What's in it |
@@ -123,14 +87,12 @@ Command reference: [AGENTS.md](AGENTS.md).
 | [User guide](docs/user-guide/USER_GUIDE.md) | Features and usage |
 | [Setup guide](docs/user-guide/SETUP_GUIDE.md) | Installation |
 | [Troubleshooting](docs/user-guide/TROUBLESHOOTING.md) | Common issues |
-| [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical map |
-| [Tunnel sign-in](docs/development/TUNNEL_SIGN_IN.md) | Cloudflare Access and customer VPN |
 | [Security](SECURITY.md) | Reporting policy |
-| [Launch guide](docs/LAUNCH.md) | Quick start |
-| [Contributing](CONTRIBUTING.md) | Issues, setup, and pull requests |
 
 ---
 
 ## License
 
-Business Source License 1.1. See [LICENSE](LICENSE).
+Business Source License 1.1 — see [LICENSE](LICENSE).
+
+Developers: see [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -43,7 +43,7 @@ void main() {
       );
     });
 
-    test('first-run desktop root goes to setup before chat', () {
+    test('first-run desktop root goes to the setup wizard', () {
       expect(
         resolveAppRedirect(_input(
           location: '/',

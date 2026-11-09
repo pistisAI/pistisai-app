@@ -88,12 +88,19 @@ flutter run -d windows
 flutter run -d chrome
 flutter build linux --release
 flutter build web --release --no-web-resources-cdn
+flutter build apk --release --split-per-abi
+flutter build windows --release
+flutter build macos --release
 ```
 
 ```bash
 npm test                  # api-backend security CI suite only
 # npm run test:full       # broader Jest run; see jest.config.js ignore-list
 npm run docs:links
+
+# Service dev servers
+cd services/api-backend && npm install && npm run dev
+cd services/streaming-proxy && npm install && npm run dev
 ```
 
 `npm run docs:links` validates the canonical documentation set. `npm run docs:links:all` scans the full markdown tree and may fail until archived/historical docs are cleaned.
