@@ -513,6 +513,14 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
         await PlatformFileUtils.writeCallbackFile(callbackUrl);
         debugPrint('[Main] Wrote callback URL to temp file');
 
+        if (AppConfig.supabaseUrl.isEmpty ||
+            AppConfig.supabaseAnonKey.isEmpty) {
+          debugPrint(
+            '[Main] Supabase is not configured; skipping OAuth callback',
+          );
+          return;
+        }
+
         // Process the OAuth callback directly
         // This completes the authentication flow
         final session = await Supabase.instance.client.auth

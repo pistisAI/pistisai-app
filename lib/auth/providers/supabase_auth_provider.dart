@@ -59,7 +59,9 @@ class SupabaseAuthProvider extends AuthProvider {
   @override
   Future<void> login() async {
     if (!_supabaseReady) {
-      return;
+      throw StateError(
+        'Sign-in is not configured. Pass SUPABASE_URL and SUPABASE_ANON_KEY for this build.',
+      );
     }
     await Supabase.instance.client.auth.signInWithOAuth(
       OAuthProvider.google,
@@ -69,7 +71,9 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   Future<void> logout() async {
-    await Supabase.instance.client.auth.signOut();
+    if (_supabaseReady) {
+      await Supabase.instance.client.auth.signOut();
+    }
     _currentUser = null;
     _authStateController.add(false);
     await _clearPersistedSession();
@@ -77,6 +81,9 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   Future<bool> handleCallback({String? url}) async {
+    if (!_supabaseReady) {
+      return false;
+    }
     if (url == null || url.isEmpty) {
       return Supabase.instance.client.auth.currentSession != null;
     }
@@ -115,6 +122,9 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   Future<String?> getAccessToken() async {
+    if (!_supabaseReady) {
+      return null;
+    }
     return Supabase.instance.client.auth.currentSession?.accessToken;
   }
 

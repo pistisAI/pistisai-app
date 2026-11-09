@@ -94,6 +94,8 @@ jobs:
             PISTISAI_ADMIN_EMAIL=${{ secrets.PISTISAI_ADMIN_EMAIL }}
             SUPABASE_URL=${{ secrets.SUPABASE_URL }}
             SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+            PISTISAI_PRICE_PREMIUM=${{ secrets.PISTISAI_PRICE_PREMIUM }}
+            PISTISAI_PRICE_ENTERPRISE=${{ secrets.PISTISAI_PRICE_ENTERPRISE }}
 
       - name: Verify image pushed
         run: |

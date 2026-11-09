@@ -921,17 +921,15 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
       return;
     }
 
-    // Prices come from the build defines. Empty means no published price.
-    const premiumPrice = String.fromEnvironment('PISTISAI_PRICE_PREMIUM');
-    const enterprisePrice = String.fromEnvironment('PISTISAI_PRICE_ENTERPRISE');
-    final tierPrices = {
-      SubscriptionTier.free: 0.0,
-      SubscriptionTier.premium: double.tryParse(premiumPrice) ?? 0,
-      SubscriptionTier.enterprise: double.tryParse(enterprisePrice) ?? 0,
-    };
-
-    final currentPrice = tierPrices[widget.subscription.tier] ?? 0.0;
-    final newPrice = tierPrices[_selectedTier] ?? 0.0;
+    final currentPrice = _configuredTierPrice(widget.subscription.tier);
+    final newPrice = _configuredTierPrice(_selectedTier);
+    if (currentPrice == null || newPrice == null) {
+      setState(() {
+        _proratedCharge = null;
+        _error = 'Tier price is not configured for this build.';
+      });
+      return;
+    }
     final priceDiff = newPrice - currentPrice;
 
     // Calculate days remaining in current period
@@ -943,14 +941,39 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
         priceDiff * ((daysRemaining ?? 30) / daysInPeriod.toDouble());
 
     setState(() {
+      _error = null;
       _proratedCharge = prorated;
     });
+  }
+
+  /// Null when a paid tier has no `PISTISAI_PRICE_*` define. Free is zero.
+  double? _configuredTierPrice(SubscriptionTier tier) {
+    switch (tier) {
+      case SubscriptionTier.free:
+        return 0.0;
+      case SubscriptionTier.premium:
+        const raw = String.fromEnvironment('PISTISAI_PRICE_PREMIUM');
+        if (raw.isEmpty) return null;
+        return double.tryParse(raw);
+      case SubscriptionTier.enterprise:
+        const raw = String.fromEnvironment('PISTISAI_PRICE_ENTERPRISE');
+        if (raw.isEmpty) return null;
+        return double.tryParse(raw);
+    }
   }
 
   Future<void> _updateSubscription() async {
     if (_selectedTier == widget.subscription.tier) {
       setState(() {
         _error = 'Please select a different tier';
+      });
+      return;
+    }
+
+    if (_configuredTierPrice(widget.subscription.tier) == null ||
+        _configuredTierPrice(_selectedTier) == null) {
+      setState(() {
+        _error = 'Tier price is not configured for this build.';
       });
       return;
     }
