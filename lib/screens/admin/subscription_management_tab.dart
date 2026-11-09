@@ -926,7 +926,7 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
     if (currentPrice == null || newPrice == null) {
       setState(() {
         _proratedCharge = null;
-        _error = 'Tier price is not configured for this build.';
+        _error = 'not configured';
       });
       return;
     }
@@ -973,7 +973,7 @@ class _UpgradeDowngradeDialogState extends State<_UpgradeDowngradeDialog> {
     if (_configuredTierPrice(widget.subscription.tier) == null ||
         _configuredTierPrice(_selectedTier) == null) {
       setState(() {
-        _error = 'Tier price is not configured for this build.';
+        _error = 'not configured';
       });
       return;
     }

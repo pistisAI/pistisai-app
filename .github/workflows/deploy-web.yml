@@ -75,6 +75,41 @@ jobs:
           echo "tag=$VERSION" >> $GITHUB_OUTPUT
           echo "Building version: $VERSION"
 
+      - name: Require web image secrets
+        env:
+          PISTISAI_ADMIN_EMAIL: ${{ secrets.PISTISAI_ADMIN_EMAIL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          PISTISAI_PRICE_PREMIUM: ${{ secrets.PISTISAI_PRICE_PREMIUM }}
+          PISTISAI_PRICE_ENTERPRISE: ${{ secrets.PISTISAI_PRICE_ENTERPRISE }}
+        run: |
+          set -euo pipefail
+          missing=0
+          if [ -z "${PISTISAI_ADMIN_EMAIL:-}" ]; then
+            echo "PISTISAI_ADMIN_EMAIL is not set"
+            missing=1
+          fi
+          if [ -z "${SUPABASE_URL:-}" ]; then
+            echo "SUPABASE_URL is not set"
+            missing=1
+          fi
+          if [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "SUPABASE_ANON_KEY is not set"
+            missing=1
+          fi
+          if [ -z "${PISTISAI_PRICE_PREMIUM:-}" ]; then
+            echo "PISTISAI_PRICE_PREMIUM is not set"
+            missing=1
+          fi
+          if [ -z "${PISTISAI_PRICE_ENTERPRISE:-}" ]; then
+            echo "PISTISAI_PRICE_ENTERPRISE is not set"
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            echo "Refusing to build the web image without those secrets"
+            exit 1
+          fi
+
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v6

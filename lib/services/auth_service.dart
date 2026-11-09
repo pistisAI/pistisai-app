@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../brand/brand.dart';
+import '../config/app_config.dart';
 import '../models/user_model.dart';
 import '../auth/auth_provider.dart';
 
@@ -163,6 +164,12 @@ class AuthService extends ChangeNotifier {
     _lastLoginError = null;
     _isLoading.value = true;
     notifyListeners();
+    if (AppConfig.supabaseUrl.isEmpty || AppConfig.supabaseAnonKey.isEmpty) {
+      _lastLoginError = 'Sign-in is not configured.';
+      _isLoading.value = false;
+      notifyListeners();
+      return;
+    }
     try {
       await _authProvider.login();
     } catch (e) {

@@ -59,9 +59,7 @@ class SupabaseAuthProvider extends AuthProvider {
   @override
   Future<void> login() async {
     if (!_supabaseReady) {
-      throw StateError(
-        'Sign-in is not configured. Pass SUPABASE_URL and SUPABASE_ANON_KEY for this build.',
-      );
+      return;
     }
     await Supabase.instance.client.auth.signInWithOAuth(
       OAuthProvider.google,
