@@ -114,10 +114,15 @@ void main([List<String> args = const []]) async {
   debugPrint('[Main] Initializing Sentry...');
 
   // Sentry DSN is empty by default; set via --dart-define=SENTRY_DSN=...
-  if (AppConfig.sentryDsn.isNotEmpty) {
+  // Sentry starts only when the user has turned crash reporting on: its
+  // native collectors (sessions, native crashes, app hangs, watchdog
+  // terminations) do not go through beforeSend, so the only way to keep
+  // them silent is not to initialise the SDK. The binding is already
+  // initialised above, so the preference can be read here.
+  if (AppConfig.sentryDsn.isNotEmpty && await _crashReportingAllowed()) {
     await _runAppWithSentry();
   } else {
-    debugPrint('[Main] Sentry DSN not configured, running without Sentry');
+    debugPrint('[Main] Sentry not started (no DSN or crash reporting off)');
     unawaited(_registerWindowsUrlScheme());
     _initializeClientLogBuffer();
     _runAppCommon();
@@ -162,15 +167,16 @@ Future<void> _runAppWithSentry() async {
       options.sendDefaultPii = false;
       // Breadcrumbs can hold chat text, file paths and URLs.
       options.maxBreadcrumbs = 0;
-      // Telemetry that does not pass through beforeSend stays off, so
-      // nothing leaves the device while crash reporting is off: release
-      // health sessions, native (C/C++, Kotlin, Swift) crash uploads, SDK
-      // client reports and automatic performance tracing.
+      // Sentry only runs once the user has opted in (see main()). Usage
+      // telemetry beyond crash reports stays off even then: release-health
+      // sessions, SDK client reports and automatic performance tracing.
+      // Native crash, app-hang and watchdog reports stay on for users who
+      // opted in.
       options.enableAutoSessionTracking = false;
-      options.enableNativeCrashHandling = false;
       options.sendClientReports = false;
       options.enableAutoPerformanceTracing = false;
-      // Honour the user's crash-reporting choice (opt-in, off by default).
+      // If the user turns crash reporting off during a session, Dart events
+      // stop at once; native collectors stop at the next launch.
       options.beforeSend = (event, hint) async =>
           await _crashReportingAllowed() ? event : null;
     },
