@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # ---- Build stage: Flutter web ----
 FROM gmeligio/flutter-android:3.47.9 AS builder
 
@@ -9,18 +10,20 @@ RUN flutter pub get
 RUN flutter config --enable-web
 COPY . .
 ARG BRAND=pistisai
-ARG PISTISAI_ADMIN_EMAIL=
-ARG SUPABASE_URL=
-ARG SUPABASE_ANON_KEY=
-ARG PISTISAI_PRICE_PREMIUM=
-ARG PISTISAI_PRICE_ENTERPRISE=
-RUN flutter build web --release --no-web-resources-cdn \
-    --dart-define=BRAND=$BRAND \
-    --dart-define=PISTISAI_ADMIN_EMAIL=$PISTISAI_ADMIN_EMAIL \
-    --dart-define=SUPABASE_URL=$SUPABASE_URL \
-    --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
-    --dart-define=PISTISAI_PRICE_PREMIUM=$PISTISAI_PRICE_PREMIUM \
-    --dart-define=PISTISAI_PRICE_ENTERPRISE=$PISTISAI_PRICE_ENTERPRISE \
+# Values are BuildKit secrets, not build-args, so image provenance does not record them.
+RUN --mount=type=secret,id=PISTISAI_ADMIN_EMAIL,required=false \
+    --mount=type=secret,id=SUPABASE_URL,required=false \
+    --mount=type=secret,id=SUPABASE_ANON_KEY,required=false \
+    --mount=type=secret,id=PISTISAI_PRICE_PREMIUM,required=false \
+    --mount=type=secret,id=PISTISAI_PRICE_ENTERPRISE,required=false \
+    secret() { if [ -f "/run/secrets/$1" ]; then tr -d '\r\n' < "/run/secrets/$1"; fi; } && \
+    flutter build web --release --no-web-resources-cdn \
+    --dart-define=BRAND="$BRAND" \
+    --dart-define=PISTISAI_ADMIN_EMAIL="$(secret PISTISAI_ADMIN_EMAIL)" \
+    --dart-define=SUPABASE_URL="$(secret SUPABASE_URL)" \
+    --dart-define=SUPABASE_ANON_KEY="$(secret SUPABASE_ANON_KEY)" \
+    --dart-define=PISTISAI_PRICE_PREMIUM="$(secret PISTISAI_PRICE_PREMIUM)" \
+    --dart-define=PISTISAI_PRICE_ENTERPRISE="$(secret PISTISAI_PRICE_ENTERPRISE)" \
  && python3 -c 'import json,pathlib; m=json.loads(pathlib.Path("assets/version.json").read_text()); p=pathlib.Path("build/web/index.html"); p.write_text(p.read_text().replace("$FLUTTER_BUILD_NUMBER", m["version"]+"."+str(m["build_number"])))'
 
 # ---- Serve stage: Nginx ----
