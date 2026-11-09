@@ -20,7 +20,9 @@ import { logAdminAction } from '../../utils/audit-logger.js';
 import logger from '../../logger.js';
 import { getPool, closePool } from '../../database/db-pool.js';
 import {
-
+  adminReadOnlyLimiter,
+  adminRateLimiter,
+} from '../../middleware/admin-rate-limiter.js';
 
 function readTierPricing() {
   const premiumRaw = process.env.PISTISAI_PRICE_PREMIUM;
@@ -43,10 +45,6 @@ function readTierPricing() {
   }
   return { free: 0, premium, enterprise };
 }
-
-  adminReadOnlyLimiter,
-  adminRateLimiter,
-} from '../../middleware/admin-rate-limiter.js';
 
 const router = express.Router();
 
