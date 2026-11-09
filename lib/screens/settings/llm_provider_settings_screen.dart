@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../components/modern_card.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 
 /// LLM Provider Settings Screen — Hermes-focused.
 class LLMProviderSettingsScreen extends StatelessWidget {
@@ -10,17 +11,20 @@ class LLMProviderSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.colorsOf(context);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/config'),
-          tooltip: 'Back to Settings',
+          tooltip: l10n.commonBackToSettings,
         ),
-        title: const Text('LLM Provider Settings'),
+        title: Text(l10n.llmProviderSettingsTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Padding(
+      // Scrollable: the cards overflow an 800×600 window (by 50 px in
+      // English, more in French).
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,15 +49,12 @@ class LLMProviderSettingsScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'This application uses Hermes Agent as the primary runtime. '
-                      'Chat and related features go through your local Hermes install.',
-                    ),
+                    Text(l10n.llmProviderHermesDescription),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       onPressed: () => context.go('/config'),
                       icon: const Icon(Icons.settings),
-                      label: const Text('Open Config'),
+                      label: Text(l10n.llmProviderOpenConfig),
                     ),
                   ],
                 ),
@@ -67,21 +68,19 @@ class LLMProviderSettingsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'System Status',
+                      l10n.llmProviderSystemStatus,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     ListTile(
                       leading: Icon(Icons.check_circle, color: colors.success),
                       title: const Text('Hermes Agent'),
-                      subtitle: const Text('Primary agent runtime'),
+                      subtitle: Text(l10n.llmProviderPrimaryRuntime),
                     ),
                     ListTile(
                       leading: Icon(Icons.info_outline, color: colors.info),
-                      title: const Text('Support model providers'),
-                      subtitle: const Text(
-                        'Optional helpers such as Ollama or LM Studio',
-                      ),
+                      title: Text(l10n.llmProviderSupportProviders),
+                      subtitle: Text(l10n.llmProviderSupportProvidersSubtitle),
                     ),
                   ],
                 ),
