@@ -59,8 +59,9 @@ RUN curl -fSsL https://storage.googleapis.com/flutter_infra_release/releases/sta
     git config --global --add safe.directory /opt/flutter_${FLUTTER_VERSION} && \
     git config --global --add safe.directory /opt/flutter
 
-# Install Linux build dependencies for Flutter
-RUN apt-get update && apt-get install -y \
+# Install Linux build dependencies for Flutter.
+# Retry mirror fetches; archive.ubuntu.com connection timeouts fail this image.
+RUN apt-get -o Acquire::Retries=5 update && apt-get -o Acquire::Retries=5 install -y \
     clang cmake ninja-build pkg-config \
     libgtk-3-dev liblzma-dev libstdc++-12-dev \
     libsecret-1-dev libjsoncpp-dev \
