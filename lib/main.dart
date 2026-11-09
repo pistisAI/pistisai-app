@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
@@ -83,13 +82,6 @@ void main([List<String> args = const []]) async {
       exit(0);
     }
   }
-
-  // Initialize Supabase before any other async operations
-  await Supabase.initialize(
-    url: AppConfig.supabaseUrl,
-    publishableKey: AppConfig.supabaseAnonKey,
-    debug: kDebugMode,
-  );
 
   // Register the desktop camera backend (Linux/macOS/Windows) for the
   // `camera` plugin. The official plugin has no Linux impl; camera_desktop
@@ -509,15 +501,6 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
       try {
         await PlatformFileUtils.writeCallbackFile(callbackUrl);
         debugPrint('[Main] Wrote callback URL to temp file');
-
-        // Process the OAuth callback directly
-        // This completes the authentication flow
-        final session = await Supabase.instance.client.auth
-            .getSessionFromUrl(Uri.parse(callbackUrl));
-        debugPrint(
-            '[Main] OAuth callback processed, session: ${session.session}');
-
-        debugPrint('[Main] OAuth session user: ${session.session.user.email}');
       } catch (e) {
         debugPrint('[Main] Error processing OAuth callback: $e');
       }
