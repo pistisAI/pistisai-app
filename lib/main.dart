@@ -162,6 +162,14 @@ Future<void> _runAppWithSentry() async {
       options.sendDefaultPii = false;
       // Breadcrumbs can hold chat text, file paths and URLs.
       options.maxBreadcrumbs = 0;
+      // Telemetry that does not pass through beforeSend stays off, so
+      // nothing leaves the device while crash reporting is off: release
+      // health sessions, native (C/C++, Kotlin, Swift) crash uploads, SDK
+      // client reports and automatic performance tracing.
+      options.enableAutoSessionTracking = false;
+      options.enableNativeCrashHandling = false;
+      options.sendClientReports = false;
+      options.enableAutoPerformanceTracing = false;
       // Honour the user's crash-reporting choice (opt-in, off by default).
       options.beforeSend = (event, hint) async =>
           await _crashReportingAllowed() ? event : null;
