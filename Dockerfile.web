@@ -38,7 +38,8 @@ RUN --mount=type=secret,id=brand_licence,required=false \
       fi; \
     fi
 RUN flutter build web --release --no-web-resources-cdn --dart-define=BRAND=$BRAND \
- && python3 -c 'import json,pathlib; m=json.loads(pathlib.Path("assets/version.json").read_text()); p=pathlib.Path("build/web/index.html"); p.write_text(p.read_text().replace("$FLUTTER_BUILD_NUMBER", m["version"]+"."+str(m["build_number"])))'
+ && python3 -c 'import json,pathlib; m=json.loads(pathlib.Path("assets/version.json").read_text()); p=pathlib.Path("build/web/index.html"); p.write_text(p.read_text().replace("$FLUTTER_BUILD_NUMBER", m["version"]+"."+str(m["build_number"])))' \
+ && python3 tool/web_cache_bust.py build/web
 
 # ---- Serve stage: Nginx ----
 FROM nginx:alpine
