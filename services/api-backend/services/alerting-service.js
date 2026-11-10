@@ -19,6 +19,15 @@ import logger from '../logger.js';
 import nodemailer from 'nodemailer';
 import fetch from 'node-fetch';
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 let _fetch = fetch;
 let _nodemailer = nodemailer;
 
@@ -94,13 +103,13 @@ async function sendEmailAlert(subject, message, metadata = {}) {
 
   try {
     const htmlBody = `
-      <h2>${subject}</h2>
-      <p>${message}</p>
+      <h2>${escapeHtml(subject)}</h2>
+      <p>${escapeHtml(message)}</p>
       ${
         Object.keys(metadata).length > 0
           ? `
         <h3>Details:</h3>
-        <pre>${JSON.stringify(metadata, null, 2)}</pre>
+        <pre>${escapeHtml(JSON.stringify(metadata, null, 2))}</pre>
       `
           : ''
       }

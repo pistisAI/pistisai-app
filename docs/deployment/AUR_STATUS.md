@@ -1,4 +1,4 @@
-# IAClé AUR Status Documentation
+# Pistisai AUR Status Documentation
 
 **Status**: TEMPORARILY REMOVED - AUR REINTEGRATION PLANNED  
 **Version**: v3.10.3  
@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-AUR (Arch User Repository) support for IAClé has been temporarily removed from the v3.10.3 Unified Flutter-Native Architecture. This document outlines the removal decision, affected components, and planned reintegration timeline.
+AUR (Arch User Repository) support for Pistisai has been temporarily removed from the v3.10.3 Unified Flutter-Native Architecture. This document outlines the removal decision, affected components, and planned reintegration timeline.
 
 ## 🚫 Temporarily Removed Components
 
@@ -88,29 +88,29 @@ AUR (Arch User Repository) support for IAClé has been temporarily removed from 
 
 ```bash
 # Download latest AppImage
-wget https://github.com/iacle-solutions/iacle-app/releases/latest/download/IAClé-4.0.78-x86_64.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/latest/download/Pistisai-4.0.78-x86_64.AppImage
 
 # Make executable and run
-chmod +x IAClé-4.0.78-x86_64.AppImage
-./IAClé-4.0.78-x86_64.AppImage
+chmod +x Pistisai-4.0.78-x86_64.AppImage
+./Pistisai-4.0.78-x86_64.AppImage
 
 # Optional: Install to system (creates desktop entry)
-./IAClé-4.0.78-x86_64.AppImage --appimage-extract-and-run --install
+./Pistisai-4.0.78-x86_64.AppImage --appimage-extract-and-run --install
 ```
 
 ### Option 2: Source Compilation
 
 ```bash
 # Clone repository
-git clone https://github.com/iacle-solutions/iacle-app.git
-cd iacle-app
+git clone https://github.com/pistisAI/pistisai-app.git
+cd pistisai-app
 
 # Build using unified package script
 ./scripts/build_unified_package.sh
 
 # Install manually
-sudo cp -r dist/<built-package> /usr/share/iacle
-sudo ln -sf /usr/share/iacle/bin/* /usr/bin/
+sudo cp -r dist/<built-package> /usr/share/pistisai
+sudo ln -sf /usr/share/pistisai/bin/* /usr/bin/
 ```
 
 ### Option 3: PowerShell Build (Advanced)

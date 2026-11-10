@@ -1,6 +1,6 @@
-# IAClé Building Guide
+# Pistisai Building Guide
 
-This document provides comprehensive instructions for building IAClé client applications across different platforms.
+This document provides comprehensive instructions for building Pistisai client applications across different platforms.
 
 ## 📋 Table of Contents
 
@@ -99,8 +99,8 @@ sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
 
 ```bash
 # Make executable and run
-chmod +x IAClé-*.AppImage
-./IAClé-*.AppImage
+chmod +x Pistisai-*.AppImage
+./Pistisai-*.AppImage
 ```
 
 **Note**: Debian (.deb) packages have been discontinued in favor of AppImage for better cross-distribution compatibility.
@@ -345,11 +345,11 @@ The Coolify image is the repo-root `Dockerfile.web`. It compiles the web app. Th
 
 ```bash
 # Production image (what deploy-web.yml builds)
-docker build -f Dockerfile.web -t IAClé-web .
-docker run --rm -p 80:80 IAClé-web
+docker build -f Dockerfile.web -t Pistisai-web .
+docker run --rm -p 80:80 Pistisai-web
 
 # Compose image, after a local Flutter web build
-docker build -f config/docker/Dockerfile.web -t IAClé-web-prebuilt .
+docker build -f config/docker/Dockerfile.web -t Pistisai-web-prebuilt .
 ```
 
 ---
@@ -472,4 +472,4 @@ flutter doctor -v
 
 ---
 
-*For build issues or questions, please check our [troubleshooting guide](../user-guide/TROUBLESHOOTING.md) or [open an issue](https://github.com/iacle-solutions/iacle-app/issues).*
+*For build issues or questions, please check our [troubleshooting guide](../user-guide/TROUBLESHOOTING.md) or [open an issue](https://github.com/pistisAI/pistisai-app/issues).*

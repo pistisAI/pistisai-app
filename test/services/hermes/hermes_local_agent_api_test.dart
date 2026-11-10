@@ -24,12 +24,12 @@ void main() {
     test('writes a preferred key when none is stored', () {
       final updated = upsertApiServerEnv(
         '',
-        preferredKey: 'psk_0123456789abcdef',
+        preferredKey: 'test_hermes_api_key',
         generateKey: () => 'psk_generated_key_value',
       );
 
-      expect(updated.key, 'psk_0123456789abcdef');
-      expect(updated.content, contains('API_SERVER_KEY=psk_0123456789abcdef'));
+      expect(updated.key, 'test_hermes_api_key');
+      expect(updated.content, contains('API_SERVER_KEY=test_hermes_api_key'));
       expect(updated.content, contains('API_SERVER_ENABLED=true'));
     });
   });
@@ -72,7 +72,7 @@ void main() {
           started = true;
           return true;
         },
-        generateKey: () => 'psk_0123456789abcdef',
+        generateKey: () => 'test_hermes_api_key',
       );
       final resolver = HermesEndpointResolver(
         probe: (Uri uri) async {
@@ -92,9 +92,9 @@ void main() {
       expect(started, isTrue);
       expect(ready.resolution.isAgentApi, isTrue);
       expect(ready.resolution.url, AppConfig.defaultHermesUrl);
-      expect(ready.apiKey, 'psk_0123456789abcdef');
+      expect(ready.apiKey, 'test_hermes_api_key');
       final env = File('${home.path}${Platform.pathSeparator}.env').readAsStringSync();
-      expect(env, contains('API_SERVER_KEY=psk_0123456789abcdef'));
+      expect(env, contains('API_SERVER_KEY=test_hermes_api_key'));
       expect(env, contains('API_SERVER_ENABLED=true'));
     });
   });

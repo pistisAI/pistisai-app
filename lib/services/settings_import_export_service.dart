@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/services/settings_validator.dart';
 import 'package:pistisai/utils/settings_error_handler.dart';
+import 'package:pistisai/brand/brand.dart';
 
 /// Settings import/export service
 class SettingsImportExportService {
@@ -19,7 +20,7 @@ class SettingsImportExportService {
   static const String fileExtension = '.json';
 
   /// Export file prefix
-  static const String filePrefix = 'Pistisai-settings';
+  static String get filePrefix => '${Brand.current.artifactPrefix}-settings';
 
   SettingsImportExportService({
     required SettingsPreferenceService preferencesService,

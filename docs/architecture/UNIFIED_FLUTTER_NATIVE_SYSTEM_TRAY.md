@@ -1,8 +1,8 @@
-# IAClé Unified Flutter-Native Architecture - System Tray Implementation
+# Pistisai Unified Flutter-Native Architecture - System Tray Implementation
 
 ## 📋 Overview
 
-IAClé v3.10.3+ implements a Unified Flutter-Native Architecture with integrated system tray functionality that provides seamless cross-platform system tray integration with real-time connection status monitoring and native platform behavior.
+Pistisai v3.10.3+ implements a Unified Flutter-Native Architecture with integrated system tray functionality that provides seamless cross-platform system tray integration with real-time connection status monitoring and native platform behavior.
 
 **Key Features:**
 
@@ -69,7 +69,7 @@ class NativeTrayService with TrayListener {
 ```dart
 Menu(
   items: [
-    MenuItem(key: 'show', label: 'Show IAClé'),
+    MenuItem(key: 'show', label: 'Show Pistisai'),
     MenuItem(key: 'hide', label: 'Hide to Tray'),
     MenuItem.separator(),
     MenuItem(key: 'status', label: 'Connection Status'),

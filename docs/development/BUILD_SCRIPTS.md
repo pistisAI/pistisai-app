@@ -1,4 +1,4 @@
-# IAClé Build Scripts Guide
+# Pistisai Build Scripts Guide
 
 ## Overview
 
@@ -11,7 +11,7 @@ artifacts; use these scripts for local packaging experiments.
 ### Windows packaging
 
 ```powershell
-# Installer (Inno Setup; also see windows/installer/IAClé.iss)
+# Installer (Inno Setup; also see windows/installer/Pistisai.iss)
 .\scripts\packaging\build_windows_installer.ps1
 
 # Portable ZIP
@@ -41,7 +41,7 @@ Keep `assets/version.json` and `pubspec.yaml` in sync (see [AGENTS.md](../../AGE
 
 ```bash
 flutter build web --release --no-web-resources-cdn
-docker build -f config/docker/Dockerfile.web -t IAClé-web .
+docker build -f config/docker/Dockerfile.web -t Pistisai-web .
 ```
 
 ## Removed / missing names (do not document as live)
@@ -61,7 +61,7 @@ Use Flutter/`build-desktop` CI for macOS until dedicated packaging scripts land.
 | Format | Status | Notes |
 |--------|--------|-------|
 | Portable ZIP | Available | `scripts/packaging/build_windows_portable.ps1` |
-| Inno Setup installer | Available | `windows/installer/IAClé.iss` + packaging script / CI |
+| Inno Setup installer | Available | `windows/installer/Pistisai.iss` + packaging script / CI |
 | AppImage | Available | `scripts/packaging/build_appimage.sh` |
 | `.deb` | Script present | Confirm product support before documenting as primary |
 | MSI / NSIS | Not implemented | Historical placeholders only |

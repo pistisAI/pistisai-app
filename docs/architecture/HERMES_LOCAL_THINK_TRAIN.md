@@ -4,9 +4,9 @@ Status: proposed companion surface for Hermes durable background work
 
 ## Why this exists
 
-Telegram is Christopher's main text channel, but Telegram turns are request/response events. After a final reply, the foreground Hermes loop is not still running. Durable continuation needs explicit work sources: local systemd jobs, cron, webhooks, process completion callbacks, startup recovery, or kanban.
+Telegram is the operator's main text channel, but Telegram turns are request/response events. After a final reply, the foreground Hermes loop is not still running. Durable continuation needs explicit work sources: local systemd jobs, cron, webhooks, process completion callbacks, startup recovery, or kanban.
 
-RIGHT-PC now has a local detached background lane:
+The hub host now has a local detached background lane:
 
 - `~/.local/bin/hermes-local-think`
 - `~/.local/bin/hermes-local-think-status`
@@ -14,17 +14,17 @@ RIGHT-PC now has a local detached background lane:
 - SQLite ledger: `~/.hermes/local-think/jobs.db`
 - artifacts: `~/.hermes/local-think/<task-id>.*`
 
-IAClé can make that lane visible as a "thought train": a local companion panel showing what Hermes is doing in the background, what finished, what was skipped by wake gates, and which jobs are chained together.
+Pistisai can make that lane visible as a "thought train": a local companion panel showing what Hermes is doing in the background, what finished, what was skipped by wake gates, and which jobs are chained together.
 
-Christopher's stronger product direction: the main window should not hide this in a secondary diagnostics page. It should become the primary cockpit: a permanent direct chat channel synced across devices through the Tailscale/private mesh, with the Hermes thought-train/activity stream and verbose tool/event log mixed into the same timeline in a controlled way.
+the operator's stronger product direction: the main window should not hide this in a secondary diagnostics page. It should become the primary cockpit: a permanent direct chat channel synced across devices through the Tailscale/private mesh, with the Hermes thought-train/activity stream and verbose tool/event log mixed into the same timeline in a controlled way.
 
 ## Current split
 
-- Telegram: main text channel for Christopher-facing updates.
+- Telegram: main text channel for the operator-facing updates.
 - Hermes foreground turn: immediate request/response tool use.
 - `hermes-local-think`: bounded detached background reasoning or verification.
 - Cron/webhooks/startup recovery: recurring/event-driven wake sources.
-- IAClé: best candidate for a persistent visible desktop surface.
+- Pistisai: best candidate for a persistent visible desktop surface.
 
 ## What the thought train should show
 
@@ -51,7 +51,7 @@ Timeline layering:
 3. Tool/event log — visible as expandable rows, with verbose mode toggle.
 4. Raw tool output/logs — hidden until clicked.
 
-This gives Christopher the sense that Hermes is continuously operating without pretending to expose raw hidden model chain-of-thought.
+This gives the operator the sense that Hermes is continuously operating without pretending to expose raw hidden model chain-of-thought.
 Useful controls later:
 
 - open full final/log/artifacts
@@ -137,7 +137,7 @@ Service behavior:
 Safer MVP bridge:
 
 ```text
-IAClé -> hermes-local-think-ledger list --json -> LocalThinkJobService -> LocalThinkTrainCard
+Pistisai -> hermes-local-think-ledger list --json -> LocalThinkJobService -> LocalThinkTrainCard
 ```
 
 This avoids adding a second SQLite implementation path in Flutter before the UI is proven useful.
@@ -153,7 +153,7 @@ Good first placement:
 - compact card above the input can show current active job / gateway state
 - no demo controls by default
 
-Avoid burying it only in the dashboard overview; Christopher may not see it during normal chat.
+Avoid burying it only in the dashboard overview; the operator may not see it during normal chat.
 
 ## Permanent synced chat channel
 
@@ -164,7 +164,7 @@ Recommended sync model:
 - local append-only event log for chat messages, assistant replies, tool summaries, local-think job events, and delivery acknowledgements
 - device sync over Tailscale/private mesh first
 - each device keeps a local copy and reconciles by monotonic event ids / timestamps
-- Hermes gateway/Telegram remains the external text bridge; IAClé is the local desktop/mobile cockpit
+- Hermes gateway/Telegram remains the external text bridge; Pistisai is the local desktop/mobile cockpit
 - message/event payloads should be encrypted at rest and in transit when leaving localhost
 - if Tailscale is offline, queue locally and reconcile later
 
@@ -200,4 +200,4 @@ Do not make public cloud the required path for private chat continuity. Cloud ca
 
 ## Bottom line
 
-Yes: IAClé is probably the better place for the visible "train of thoughts" surface, as long as "thoughts" means durable job/status summaries, not raw hidden chain-of-thought. Hermes should keep doing background work through explicit durable lanes; IAClé should make that work visible, inspectable, and controllable on the desktop.
+Yes: Pistisai is probably the better place for the visible "train of thoughts" surface, as long as "thoughts" means durable job/status summaries, not raw hidden chain-of-thought. Hermes should keep doing background work through explicit durable lanes; Pistisai should make that work visible, inspectable, and controllable on the desktop.

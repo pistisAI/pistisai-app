@@ -475,7 +475,7 @@ tail -f /tmp/tunnel-deployment-validation-*.log
 docker-compose logs -f api-backend
 
 # Check system logs
-journalctl -u IAClé-api -f
+journalctl -u Pistisai-api -f
 ```
 
 ## Integration with CI/CD

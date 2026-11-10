@@ -158,8 +158,7 @@ class HomepageScreen extends StatelessWidget {
               Container(
                 constraints: const BoxConstraints(maxWidth: 600),
                 child: Text(
-                  'A portico for private AI — four pillars that know you, '
-                  'run on your machine, and grow with you.',
+                  Brand.current.socialDescription,
                   style: TextStyle(
                     fontSize: isMobile ? 14 : 16,
                     color: colors.textColorLight,
@@ -533,7 +532,7 @@ class HomepageScreen extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Zoid pillar name
+          // Pillar name
           Text(
             p.name,
             style: TextStyle(

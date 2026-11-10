@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the log aggregation support implementation for the IAClé API backend. The implementation provides comprehensive support for log aggregation systems like Loki and ELK (Elasticsearch, Logstash, Kibana).
+This document describes the log aggregation support implementation for the Pistisai API backend. The implementation provides comprehensive support for log aggregation systems like Loki and ELK (Elasticsearch, Logstash, Kibana).
 
 **Requirement:** 8.9 - THE API SHALL implement log aggregation support (Loki, ELK)
 
@@ -40,8 +40,8 @@ LOKI_BATCH_TIMEOUT=5000
 # ELK Configuration
 ELK_ENABLED=true
 ELK_HOSTS=localhost:9200
-ELK_INDEX=IAClé-api
-ELK_INDEX_PATTERN=IAClé-api-%DATE%
+ELK_INDEX=Pistisai-api
+ELK_INDEX_PATTERN=Pistisai-api-%DATE%
 ELK_BATCH_SIZE=100
 ELK_BATCH_TIMEOUT=5000
 
@@ -81,7 +81,7 @@ Logs are formatted for Loki with stream labels and values:
   timestamp: 1705318200000000000,  // Nanoseconds
   stream: {
     level: 'info',
-    service: 'IAClé-api',
+    service: 'Pistisai-api',
     environment: 'production',
     correlationId: 'corr-123',
     userId: 'user-456'
@@ -104,7 +104,7 @@ Logs are formatted for ELK with standard fields:
   '@timestamp': '2024-01-15T10:30:00.000Z',
   level: 'info',
   message: 'Test log',
-  service: 'IAClé-api',
+  service: 'Pistisai-api',
   environment: 'production',
   correlationId: 'corr-123',
   userId: 'user-456',
@@ -222,7 +222,7 @@ LOKI_URL=http://localhost:3100
 1. Query logs in Grafana:
 
 ```
-{service="IAClé-api", level="error"}
+{service="Pistisai-api", level="error"}
 ```
 
 ## Integration with ELK
@@ -245,7 +245,7 @@ ELK_HOSTS=localhost:9200
 1. Query logs in Kibana:
 
 ```
-service: "IAClé-api" AND level: "error"
+service: "Pistisai-api" AND level: "error"
 ```
 
 ## Testing

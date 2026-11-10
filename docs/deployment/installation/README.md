@@ -1,8 +1,8 @@
-# IAClé Installation Guide
+# Pistisai Installation Guide
 
-This directory contains platform-specific installation guides for IAClé.
+This directory contains platform-specific installation guides for Pistisai.
 
-IAClé does not require one default runtime. During first launch, the setup wizard connects the app to an agent runtime such as Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
+Pistisai does not require one default runtime. During first launch, the setup wizard connects the app to an agent runtime such as Hermes, OpenClaw, or a compatible custom agent gateway. Hermes is the first agent runtime path for current testing.
 
 Ollama, LM Studio, and similar model servers are optional support model providers for memory and background app features. They are not primary app runtimes.
 
@@ -27,7 +27,7 @@ Install or prepare at least one agent runtime before completing setup:
 | Hermes | Configured in wizard | First agent runtime path for current testing |
 | OpenClaw Gateway | `http://localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private server, VPS, or compatible agent runtime API |
-| Hosted agent runtime | IAClé managed | Optional hosted compute |
+| Hosted agent runtime | Pistisai managed | Optional hosted compute |
 
 Most users should run the agent runtime locally or on another machine they control. A hosted agent runtime is optional and should use an isolated per-user container.
 
@@ -75,7 +75,7 @@ Start Hermes, OpenClaw, or another compatible agent gateway on this device or a 
 
 Start Ollama, LM Studio, or a custom local model endpoint only if you want memory or background features to use it.
 
-### 3. Install IAClé
+### 3. Install Pistisai
 
 Choose the platform-specific installation method:
 
@@ -125,12 +125,12 @@ The main window opens as the secure channel to the selected agent runtime. Agent
 - [Troubleshooting](../../user-guide/TROUBLESHOOTING.md)
 - [Agent Runtime Contract](../../architecture/AGENT_RUNTIME_CONTRACT.md)
 - [Secure Device Mesh](../../architecture/SECURE_DEVICE_MESH.md)
-- [GitHub Issues](https://github.com/iacle-solutions/iacle-app/issues)
-- [GitHub Discussions](https://github.com/iacle-solutions/iacle-app/discussions)
+- [GitHub Issues](https://github.com/pistisAI/pistisai-app/issues)
+- [GitHub Discussions](https://github.com/pistisAI/pistisai-app/discussions)
 
 ---
 
-## Updating IAClé
+## Updating Pistisai
 
 ### Automatic Updates
 
@@ -148,7 +148,7 @@ Download the latest release and install it over the existing app. Settings, loca
 ### Linux Package
 
 ```bash
-sudo apt remove IAClé
+sudo apt remove Pistisai
 ```
 
 ### Windows

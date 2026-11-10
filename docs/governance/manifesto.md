@@ -1,18 +1,18 @@
-# The IAClé Manifesto — Technology That Keeps Its Word
+# The Pistisai Manifesto — Technology That Keeps Its Word
 
-Πίστις (IAClé) is the Greek word the New Testament uses for *faith* — not belief
+Πίστις (Pistisai) is the Greek word the New Testament uses for *faith* — not belief
 as opinion, but trust as weight-bearing conviction: "the assurance of things hoped
 for" (Hebrews 11:1). The word also carries the older Greek face — the spirit of
 trust and good faith who fled Pandora's box and returned to Olympus.
 
-IAClé sits on that seam deliberately. The Bible gives the word its meaning;
+Pistisai sits on that seam deliberately. The Bible gives the word its meaning;
 the mythology gives it a face. Athens and Jerusalem answering the same question:
 **what does it take to be trustworthy?**
 
 ## Why we exist
 
 Most AI today betrays trust by design — it extracts, manipulates, and hides where
-your data goes. IAClé is an agent layer that *keeps its word*: local-first,
+your data goes. Pistisai is an agent layer that *keeps its word*: local-first,
 consent-gated, auditable, honest about what it does. Privacy is a feature;
 faithfulness is a character. The mission is not a feature roadmap — it is to build
 technology people can actually trust, and in doing so, point at something higher

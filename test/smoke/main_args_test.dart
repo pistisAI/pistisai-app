@@ -31,15 +31,15 @@ void main() {
       expect(resolveCallbackUrl(args), 'pistisai://callback?code=abc');
     });
 
-    test('returns the com.pistisai.app:// callback url when present', () {
-      const args = ['com.pistisai.app://callback?code=xyz', '--verbose'];
-      expect(resolveCallbackUrl(args), 'com.pistisai.app://callback?code=xyz');
+    test('returns the <app_id>:// callback url when present', () {
+      const args = ['app.pistisai.app://callback?code=xyz', '--verbose'];
+      expect(resolveCallbackUrl(args), 'app.pistisai.app://callback?code=xyz');
     });
 
     test('prefers the first callback url when multiple match', () {
       const args = [
         'pistisai://first',
-        'com.pistisai.app://second',
+        'app.pistisai.app://second',
       ];
       expect(resolveCallbackUrl(args), 'pistisai://first');
     });

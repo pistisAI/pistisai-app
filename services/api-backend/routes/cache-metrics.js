@@ -8,6 +8,7 @@
  */
 
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { getCacheStats, clearCache } from '../database/cached-query-wrapper.js';
 import { getQueryCache } from '../database/query-cache.js';
@@ -16,6 +17,16 @@ import { validateSchema } from '../middleware/schema-validation.js';
 import logger from '../logger.js';
 
 const router = express.Router();
+// Same limit as the global pipeline limiter, applied here as well so every
+// route on this router is visibly rate limited.
+router.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
 
 const invalidateCacheBodySchema = z.object({
   pattern: z.string().regex(/.+/).optional(),
@@ -68,7 +79,7 @@ router.post('/clear', adminAuth(['manage_system']), (req, res) => {
 
 /**
  * POST /cache/invalidate
- * Invalidate cache by pattern
+ * Invalidate cache entries whose key contains `pattern` (literal text), or by table
  */
 router.post('/invalidate', adminAuth(['manage_system']), validateSchema({ body: invalidateCacheBodySchema }), async (req, res) => {
   try {
@@ -80,15 +91,10 @@ router.post('/invalidate', adminAuth(['manage_system']), validateSchema({ body: 
     if (table) {
       invalidatedCount = cache.invalidateByTable(table);
     } else if (pattern) {
-      try {
-        const regex = new RegExp(pattern);
-        invalidatedCount = cache.invalidate(regex);
-      } catch {
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid regex pattern',
-        });
-      }
+      // Match the pattern as literal text inside the key, so a request body
+      // cannot inject regular expression syntax.
+      const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      invalidatedCount = cache.invalidate(new RegExp(escaped));
     }
 
     res.json({

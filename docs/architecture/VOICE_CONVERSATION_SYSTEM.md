@@ -6,11 +6,11 @@ Voice is part of the avatar companion, not a standalone app feature. This docume
 
 ## Goal
 
-Make the IAClé avatar feel like a natural local voice companion instead of a push-to-talk tool or delayed assistant loop.
+Make the Pistisai avatar feel like a natural local voice companion instead of a push-to-talk tool or delayed assistant loop.
 
 The target experience is:
 - always listening locally
-- fast direct acknowledgement when Christopher addresses Zoidbot
+- fast direct acknowledgement when the operator addresses Pistisai
 - short conversational back-and-forth without re-entering a heavy analysis loop every turn
 - optional escalation to deeper Hermes reasoning, vision, or desktop-aware context when useful
 
@@ -152,7 +152,7 @@ This is intentionally dependency-light so it can be wired into the avatar compan
 
 ## Practical recommendation
 
-Yes: IAClé as the avatar/voice sidecar makes this easier.
+Yes: Pistisai as the avatar/voice sidecar makes this easier.
 
 Best split:
 - Avatar companion = natural voice shell and side presence

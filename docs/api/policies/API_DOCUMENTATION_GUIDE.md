@@ -1,8 +1,8 @@
-# IAClé API Documentation Guide
+# Pistisai API Documentation Guide
 
 ## Overview
 
-The IAClé API Backend provides comprehensive REST API endpoints for managing tunnels, users, authentication, and system operations. This guide explains how to access and use the API documentation.
+The Pistisai API Backend provides comprehensive REST API endpoints for managing tunnels, users, authentication, and system operations. This guide explains how to access and use the API documentation.
 
 ## Accessing API Documentation
 
@@ -380,9 +380,9 @@ X-Webhook-Signature: sha256=abcdef123456...
 
 Official SDKs are available for:
 
-- **JavaScript/TypeScript**: `@IAClé/iacle-app`
-- **Python**: `IAClé-api`
-- **Go**: `github.com/iacle-solutions/iacle-app`
+- **JavaScript/TypeScript**: `@Pistisai/sdk`
+- **Python**: `Pistisai-api`
+- **Go**: `github.com/pistisAI/pistisai-app`
 
 ## API Versioning
 
@@ -407,9 +407,9 @@ The API uses URL-based versioning:
 For API support:
 
 - **Documentation**: https://docs.example.com
-- **Issues**: https://github.com/iacle-solutions/iacle-app/issues
+- **Issues**: https://github.com/pistisAI/pistisai-app/issues
 - **Email**: ops@example.com
-- **Discord**: https://discord.gg/IAClé
+- **Discord**: https://discord.gg/Pistisai
 
 ## Changelog
 
@@ -417,4 +417,4 @@ See CHANGELOG.md for API changes and updates.
 
 ## License
 
-The IAClé API is licensed under the MIT License.
+The Pistisai API is licensed under the MIT License.
