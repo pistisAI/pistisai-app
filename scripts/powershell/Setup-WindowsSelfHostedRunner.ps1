@@ -1,11 +1,11 @@
-# Zoidbot Windows Self-Hosted GitHub Actions Runner Setup
+# Pistisai Windows Self-Hosted GitHub Actions Runner Setup
 # This script sets up a Windows machine as a self-hosted GitHub Actions runner
 # with all prerequisites needed to build the Windows app
 
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$false)]
-    [string]$GitHubRepo = "https://github.com/Zoidbot-online/Zoidbot",
+    [string]$GitHubRepo = "https://github.com/example-org/example-app",
     
     [Parameter(Mandatory=$false)]
     [string]$RunnerLabels = "windows,self-hosted",

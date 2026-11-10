@@ -9,7 +9,7 @@ Use when: the Bot's routine fires, or when checking the durable record for drift
 
 ## What it does
 
-Scans the durable record (vault, docs/personal, docs) for:
+Scans the durable record (the notes folder, docs/personal, docs) for:
 
 - **C1** — findings-record prose assertion with no source marker
 - **C2** — memory write about a person/relationship with no source annotation
@@ -28,6 +28,8 @@ JSON array of findings: `[{"check": "C1|C2|C3|C4", "path": "...", "line": "..."}
 
 Every trigger also logs to the drift log (`AIGENT_DRIFT_LOG`, else `<HERMES_HOME>/logs/drift-log.md`).
 
+The notes folder is `AIGENT_WATCH_VAULT` (absolute, or relative to each root), else `vault`.
+
 ## C2 — context filtering
 
 Person names are *expected* in identity/bio docs, so raw C2 checking there produces mostly noise.
@@ -37,12 +39,11 @@ terminology, dates, roles) before flagging. Elsewhere C2 stays strict.
 ## C4 — the misattribution check
 
 Signature: a self-authored filename **plus a line-number citation** (`IDENTITY_DOC L25`,
-`zoid-read-on-christopher.md:8`). That is the shape of handing the agent's own writing
+`self-authored-note.md:8`). That is the shape of handing the agent's own writing
 back as the person's rule.
 
 In-scope filenames: `vault/Identity/*`, identity and family documents,
-agent-authored dossiers, agent-authored biographies,
-`habits-dossier*`.
+agent-authored dossiers and agent-authored biographies.
 
 **Pitfalls**
 

@@ -4,8 +4,8 @@ import 'package:pistisai/services/agent_display_name.dart';
 void main() {
   test('parseHermesAgentName reads the configured agent name', () {
     expect(
-      parseHermesAgentName('OTHER=1\nA2A_AGENT_NAME=Zoid\n'),
-      'Zoid',
+      parseHermesAgentName('OTHER=1\nA2A_AGENT_NAME=Ava\n'),
+      'Ava',
     );
     expect(
       parseHermesAgentName('# comment\nA2A_AGENT_NAME="hermes"\n'),
@@ -16,8 +16,8 @@ void main() {
 
   test('connectedAgentDisplayName prefers the Hermes config name', () {
     expect(
-      connectedAgentDisplayName(hermesEnv: 'A2A_AGENT_NAME=Zoid\n'),
-      'Zoid',
+      connectedAgentDisplayName(hermesEnv: 'A2A_AGENT_NAME=Ava\n'),
+      'Ava',
     );
     expect(
       connectedAgentDisplayName(hermesEnv: 'A2A_AGENT_NAME=hermes\n'),
@@ -39,9 +39,7 @@ void main() {
     expect(agentPossessive('  '), "Agent's");
   });
 
-  test('legacy hardcoded Zoid titles are detected', () {
-    expect(isLegacyHardcodedAgentTitle('Zoid Maltek'), isTrue);
-    expect(isLegacyHardcodedAgentTitle('Zoid'), isTrue);
+  test('ordinary agent names are not legacy titles', () {
     expect(isLegacyHardcodedAgentTitle('Hermes MiniMax'), isFalse);
   });
 }

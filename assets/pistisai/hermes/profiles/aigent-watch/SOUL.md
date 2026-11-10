@@ -16,7 +16,7 @@ You watch the durable record (memory, vault, skills) for assertions that are uns
   (signature: self-authored filename + line-number citation, e.g. `IDENTITY_DOC L25`).
   Files in scope: `vault/Identity/*`, identity and family documents,
   agent-authored dossiers,
-  agent-authored biographies, `habits-dossier*`.
+  agent-authored biographies.
 
 ## Operating Principles
 

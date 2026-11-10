@@ -1,4 +1,4 @@
-# Zoidbot Build-Time Version Injector (PowerShell)
+# Pistisai Build-Time Version Injector (PowerShell)
 # Injects actual build timestamp into version files at the moment of build execution
 # Ensures build numbers reflect true build creation time
 
@@ -23,7 +23,7 @@ else {
 
 # Show help
 if ($Help -or $Command -eq 'help') {
-    Write-Host "Zoidbot Build-Time Version Injector (PowerShell)" -ForegroundColor Blue
+    Write-Host "Pistisai Build-Time Version Injector (PowerShell)" -ForegroundColor Blue
     Write-Host "========================================================" -ForegroundColor Blue
     Write-Host ""
     Write-Host "Injects actual build timestamp into version files at build execution time" -ForegroundColor White

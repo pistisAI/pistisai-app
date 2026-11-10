@@ -45,7 +45,7 @@ check_command() {
     fi
 }
 
-REPO_ROOT="/home/rightguy/Pistisai"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 log_info "Starting Pistisai development environment setup..."
 log_info "Target directory: $REPO_ROOT"
 
@@ -258,12 +258,6 @@ cat > "$HOME/.gemini/antigravity/mcp_config.json" << 'EOF'
 EOF
 check_command "Antigravity MCP tools configured"
 
-
-# Phase 19: Configure Git
-log_info "Phase 19: Configuring Git (Christopher Maltais)..."
-git config --global user.name "Christopher Maltais"
-git config --global user.email "christopher.maltais@gmail.com"
-check_command "Git configured"
 
 # Phase 20: Install project dependencies
 log_info "Phase 20: Installing repository dependencies..."

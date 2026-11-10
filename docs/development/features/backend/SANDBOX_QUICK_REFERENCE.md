@@ -249,4 +249,3 @@ Sandbox errors include detailed information:
 
 - [Full Sandbox Guide](./SANDBOX_ENVIRONMENT_GUIDE.md)
 - API Documentation
-- [Authentication Guide](./AUTHENTICATION_GUIDE.md)
