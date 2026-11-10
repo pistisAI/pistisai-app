@@ -9,6 +9,7 @@ import 'package:pistisai/brand/brand_copy.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/brand/brand_yaml.dart';
 import 'package:pistisai/components/welcome_screen.dart';
+import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/config/theme_config.dart';
 import 'package:pistisai/screens/onboarding/steps/welcome_step.dart';
@@ -31,6 +32,61 @@ void main() {
     expect(pistisai.backgroundArgb, 0xFF181A20);
     expect(pistisai.lockLocale, isFalse);
     expect(pistisai.websiteUrl, 'https://pistisai.app');
+  });
+
+  test('example brand endpoints never point at the upstream backend', () {
+    final endpoints = [
+      example.apiBaseUrl,
+      example.wsEndpoint,
+      example.tunnelSshUrl,
+      example.streamingBaseUrl,
+      example.adminCenterUrl,
+      example.appUrl,
+      example.websiteUrl,
+      example.releasesUrl,
+      example.repositoryUrl,
+      example.urlScheme,
+      example.accessTeamDomain,
+    ];
+    for (final value in endpoints) {
+      expect(value.toLowerCase(), isNot(contains('pistisai')),
+          reason: 'brand/example/brand.yaml endpoint fields must use the '
+              "brand's own hosts: $value");
+    }
+  });
+
+  test('AppConfig backend URLs follow the active brand', () {
+    Brand.debugOverride(example);
+    expect(AppConfig.apiBaseUrl, example.apiBaseUrl);
+    expect(AppConfig.cloudGatewayUrl, '${example.apiBaseUrl}/v1');
+    expect(AppConfig.tunnelSshUrl, example.tunnelSshUrl);
+    expect(AppConfig.adminCenterUrl, example.adminCenterUrl);
+    expect(AppConfig.bridgePollingUrl, startsWith(example.apiBaseUrl));
+    expect(AppConfig.devModeUser, endsWith('@${example.websiteDomain}'));
+    expect(example.apiHost, 'api.example.com');
+    expect(example.isCallbackUrl('example://callback'), isTrue);
+    expect(example.isCallbackUrl('pistisai://callback'), isFalse);
+  });
+
+  test('web CSP lists the brand hosts, not the upstream ones', () {
+    final index = File('web/index.html').readAsStringSync();
+    final baked = applyWebIndex(index, example);
+    expect(baked, contains('https://*.example.com'));
+    expect(baked, contains('wss://*.example.com'));
+    expect(baked, isNot(contains('pistisai.app')));
+    expect(applyWebIndex(baked, example), baked);
+  });
+
+  test('installer scripts render with the brand release source', () {
+    for (final name in ['install.sh', 'install.ps1']) {
+      final template = File('tool/brand/templates/$name').readAsStringSync();
+      final rendered = renderTemplate(template, example);
+      expect(rendered.toLowerCase(), isNot(contains('pistisai')),
+          reason: name);
+      expect(renderTemplate(template, pistisai),
+          File('web/$name').readAsStringSync(),
+          reason: 'web/$name must match the pistisai bake');
+    }
   });
 
   test('baked brand matches brand/pistisai/brand.yaml', () {

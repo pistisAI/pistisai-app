@@ -11,8 +11,8 @@ import 'package:pistisai/models/user_model.dart';
 
 /// Cloudflare Access is the only identity path.
 ///
-/// The team domain and application audience come from build defines and are
-/// empty in source. Login opens the app URL so Access can challenge. The
+/// The team domain and application audience come from the baked brand, and a
+/// build define can override them. Login opens the app URL so Access can challenge. The
 /// callback may carry the Access JWT as `token` or `cf_jwt`.
 class CloudflareAccessAuthProvider extends AuthProvider {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -97,7 +97,7 @@ class CloudflareAccessAuthProvider extends AuthProvider {
     }
     _currentUser = UserModel(
       id: '00000000-0000-0000-0000-000000000000',
-      email: 'dev@pistisai.app',
+      email: AppConfig.devModeUser,
       name: 'Dev User',
       nickname: 'dev',
       createdAt: DateTime.now(),

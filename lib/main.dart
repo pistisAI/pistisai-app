@@ -53,15 +53,15 @@ import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 
 /// Resolve the OAuth callback URL from process arguments, if present.
 ///
-/// Returns the first argument that looks like a Pistisai callback scheme
-/// (`pistisai://` or `com.pistisai.app://`). Returns `null` when none of the
+/// Returns the first argument that uses the brand's callback scheme
+/// (`<url_scheme>://` or `<app_id>://`). Returns `null` when none of the
 /// arguments are a callback URL — including when conventional engine/flutter
 /// flags such as `--enable-logging` or `--verbose` are passed. This prevents
 /// non-callback arguments from ever triggering the early `return` in [main]
 /// that would skip `runApp` and leave the window black.
 String? resolveCallbackUrl(List<String> args) {
   for (final a in args) {
-    if (a.startsWith('com.pistisai.app://') || a.startsWith('pistisai://')) {
+    if (Brand.current.isCallbackUrl(a)) {
       return a;
     }
   }
@@ -488,8 +488,7 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
   debugPrint('[Main] Handling command-line arguments: $args');
   String? callbackUrl;
   for (final arg in args) {
-    if (arg.startsWith('com.pistisai.app://') ||
-        arg.startsWith('pistisai://')) {
+    if (Brand.current.isCallbackUrl(arg)) {
       callbackUrl = arg;
       break;
     }
