@@ -13,16 +13,6 @@ import {
 import { adminAuth } from '../middleware/admin-auth.js';
 
 const router = express.Router();
-// Same limit as the global pipeline limiter, applied here as well so every
-// route on this router is visibly rate limited.
-router.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-  }),
-);
 
 /**
  * Create monitoring routes
@@ -31,6 +21,16 @@ router.use(
  * @returns {express.Router} Express router with monitoring endpoints
  */
 export function createMonitoringRoutes(tunnelProxy, logger) {
+  // Same limit as the global pipeline limiter, applied here as well so every
+  // route on this router is visibly rate limited.
+  router.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 100,
+      standardHeaders: true,
+      legacyHeaders: false,
+    }),
+  );
   const tunnelLogger =
     logger instanceof TunnelLogger ? logger : new TunnelLogger('monitoring');
 

@@ -79,7 +79,7 @@ router.post('/clear', adminAuth(['manage_system']), (req, res) => {
 
 /**
  * POST /cache/invalidate
- * Invalidate cache by pattern
+ * Invalidate cache entries whose key contains `pattern` (literal text), or by table
  */
 router.post('/invalidate', adminAuth(['manage_system']), validateSchema({ body: invalidateCacheBodySchema }), async (req, res) => {
   try {
@@ -91,15 +91,10 @@ router.post('/invalidate', adminAuth(['manage_system']), validateSchema({ body: 
     if (table) {
       invalidatedCount = cache.invalidateByTable(table);
     } else if (pattern) {
-      try {
-        const regex = new RegExp(pattern);
-        invalidatedCount = cache.invalidate(regex);
-      } catch {
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid regex pattern',
-        });
-      }
+      // Match the pattern as literal text inside the key, so a request body
+      // cannot inject regular expression syntax.
+      const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      invalidatedCount = cache.invalidate(new RegExp(escaped));
     }
 
     res.json({
