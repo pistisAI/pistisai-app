@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../widgets/settings/crash_reporting_tile.dart';
 
@@ -12,10 +13,11 @@ class GeneralSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = AppTheme.spacingOf(context);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('General Settings'),
+        title: Text(l10n.settingsGeneralTitle),
         elevation: 0,
         leading: BackButton(
           onPressed: () {
@@ -32,17 +34,18 @@ class GeneralSettingsScreen extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.all(spacing.l),
               children: [
-                Text('General Settings', style: theme.textTheme.headlineMedium),
+                Text(l10n.settingsGeneralTitle,
+                    style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 16),
-                const Text('Application preferences and configuration.'),
+                Text(l10n.settingsGeneralDescription),
                 const SizedBox(height: 32),
 
                 // Theme Setting
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.palette),
-                    title: const Text('Appearance Settings'),
-                    subtitle: const Text('Customize the look and feel'),
+                    title: Text(l10n.settingsAppearanceTitle),
+                    subtitle: Text(l10n.settingsAppearanceSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.go('/settings/appearance'),
                   ),

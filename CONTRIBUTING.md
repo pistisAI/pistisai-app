@@ -53,8 +53,7 @@ Do **not** hand-edit generated `*.g.dart` / `*.freezed.dart` files.
 
 Node services use ESM. Engines:
 
-- `services/api-backend` and `services/streaming-proxy`: Node `>=22.0.0 <27.0.0` (CI pins Node `26` via `.nvmrc`)
-- `services/sdk`: Node `>=18.0.0`
+- All services (`services/api-backend`, `services/streaming-proxy`, `services/sdk`, `services/tailscale-relay`, `backend/auth`): Node `>=26.0.0 <28.0.0` (CI pins Node `26` via `.nvmrc`)
 - `backend/auth`: CommonJS, no `npm run dev` (run with `node handlers.js`)
 
 ```bash

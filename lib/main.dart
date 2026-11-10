@@ -13,6 +13,7 @@ import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/bootstrap/bootstrapper.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/config/router.dart';
 import 'package:pistisai/config/theme.dart';
@@ -626,11 +627,13 @@ class _AppRouterHostState extends State<_AppRouterHost> {
 
     // Unlocked brands do not set locale or supportedLocales. That is the
     // MaterialApp this app used before branding, so device resolution is
-    // unchanged. A locked brand sets its locale and includes French and
-    // English so Material localizations can load.
+    // unchanged (English). Only the app-string delegate is added so screens
+    // can read AppLocalizations. A locked brand sets its locale and includes
+    // French and English so Material localizations can load.
     final MaterialApp app = brandLocale == null
         ? MaterialApp.router(
             title: AppConfig.appName,
+            localizationsDelegates: const [AppLocalizations.delegate],
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
