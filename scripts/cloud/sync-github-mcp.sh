@@ -96,8 +96,6 @@ WRAP
     if command -v /exec-daemon/gh >/dev/null 2>&1; then
       env -u GH_TOKEN -u GITHUB_TOKEN -u GH_ENTERPRISE_TOKEN \
         /exec-daemon/gh auth login --hostname github.com --with-token --insecure-storage <"$TOKEN_FILE" >/dev/null
-      env -u GH_TOKEN -u GITHUB_TOKEN \
-        /exec-daemon/gh auth switch --user imrightguy >/dev/null 2>&1 || true
     fi
   fi
 

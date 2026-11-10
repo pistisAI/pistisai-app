@@ -11,7 +11,6 @@ This directory contains security policies, procedures, and audit reports for Pis
 
 ### Security Audits & Reports
 
-- **[Security Audit Report](SECURITY_AUDIT_REPORT.md)** - Comprehensive security assessment
 
 ## 🔗 Related Documentation
 

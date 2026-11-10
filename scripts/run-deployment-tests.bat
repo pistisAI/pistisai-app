@@ -1,12 +1,12 @@
 @echo off
-REM Zoidbot Deployment Integration Tests Runner
+REM Pistisai Deployment Integration Tests Runner
 REM Batch file to easily run deployment tests from Windows
 REM
 REM Version: 1.0.0
-REM Author: Zoidbot Development Team
+REM Author: Pistisai Development Team
 REM Last Updated: 2025-07-18
 
-echo === Zoidbot Deployment Integration Tests ===
+echo === Pistisai Deployment Integration Tests ===
 echo.
 
 REM Check if PowerShell is available
@@ -53,7 +53,7 @@ shift
 goto parse_args
 
 :show_help
-echo Zoidbot Deployment Integration Tests Runner
+echo Pistisai Deployment Integration Tests Runner
 echo.
 echo USAGE:
 echo   run-deployment-tests.bat [options]

@@ -106,7 +106,7 @@ We keep it low-ceremony.
   classes. Strong mode is on (`implicit-casts`/`implicit-dynamic` are false).
 - **JS/TS**: match the surrounding `kebab-case` files; `PascalCase` classes.
 - Avoid code comments unless the code is genuinely not self-explanatory.
-- Preserve branding exactly: `Pistisai`, `OpenClaw`, `Zoidbot`.
+- Preserve branding exactly: `Pistisai`, `OpenClaw`, `Pistisai`.
 
 ---
 
