@@ -5857,6 +5857,438 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{days} days ago'**
   String adminDaysAgo(int days);
+
+  /// No description provided for @auditLoadDetailsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load log details: {error}'**
+  String auditLoadDetailsFailed(String error);
+
+  /// No description provided for @auditExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit logs exported successfully'**
+  String get auditExported;
+
+  /// No description provided for @auditExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export logs: {error}'**
+  String auditExportFailed(String error);
+
+  /// No description provided for @auditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Logs'**
+  String get auditTitle;
+
+  /// No description provided for @auditFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get auditFilters;
+
+  /// No description provided for @auditExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get auditExportCsv;
+
+  /// No description provided for @auditFilterAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin: {value}'**
+  String auditFilterAdmin(String value);
+
+  /// No description provided for @auditFilterAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action: {value}'**
+  String auditFilterAction(String value);
+
+  /// No description provided for @auditFilterResource.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource: {value}'**
+  String auditFilterResource(String value);
+
+  /// No description provided for @auditFilterAffectedUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected User: {value}'**
+  String auditFilterAffectedUser(String value);
+
+  /// No description provided for @auditFilterFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From: {date}'**
+  String auditFilterFrom(String date);
+
+  /// No description provided for @auditFilterTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To: {date}'**
+  String auditFilterTo(String date);
+
+  /// No description provided for @auditFilterSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity: {value}'**
+  String auditFilterSeverity(String value);
+
+  /// No description provided for @auditTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp'**
+  String get auditTimestamp;
+
+  /// No description provided for @auditAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get auditAction;
+
+  /// No description provided for @auditResource.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource'**
+  String get auditResource;
+
+  /// No description provided for @auditAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get auditAdmin;
+
+  /// No description provided for @auditAffectedUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected User'**
+  String get auditAffectedUser;
+
+  /// No description provided for @auditSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get auditSeverity;
+
+  /// No description provided for @auditShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {from}-{to} of {total} logs'**
+  String auditShowing(int from, int to, int total);
+
+  /// No description provided for @auditError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String auditError(String error);
+
+  /// No description provided for @auditNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No audit logs found'**
+  String get auditNone;
+
+  /// No description provided for @auditClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get auditClearFilters;
+
+  /// No description provided for @auditFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Audit Logs'**
+  String get auditFilterTitle;
+
+  /// No description provided for @auditAdminUserId.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin User ID'**
+  String get auditAdminUserId;
+
+  /// No description provided for @auditAdminUserIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by admin user ID'**
+  String get auditAdminUserIdHint;
+
+  /// No description provided for @auditActionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., user_suspended, refund_processed'**
+  String get auditActionHint;
+
+  /// No description provided for @auditResourceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Type'**
+  String get auditResourceType;
+
+  /// No description provided for @auditResourceTypeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., user, subscription, transaction'**
+  String get auditResourceTypeHint;
+
+  /// No description provided for @auditAffectedUserId.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected User ID'**
+  String get auditAffectedUserId;
+
+  /// No description provided for @auditAffectedUserIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by affected user ID'**
+  String get auditAffectedUserIdHint;
+
+  /// No description provided for @auditDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get auditDateRange;
+
+  /// No description provided for @auditStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get auditStartDate;
+
+  /// No description provided for @auditEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get auditEndDate;
+
+  /// No description provided for @auditAllSeverities.
+  ///
+  /// In en, this message translates to:
+  /// **'All severities'**
+  String get auditAllSeverities;
+
+  /// No description provided for @auditClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get auditClearAll;
+
+  /// No description provided for @auditDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Log Details'**
+  String get auditDetailsTitle;
+
+  /// No description provided for @auditLogId.
+  ///
+  /// In en, this message translates to:
+  /// **'Log ID'**
+  String get auditLogId;
+
+  /// No description provided for @auditResourceId.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource ID'**
+  String get auditResourceId;
+
+  /// No description provided for @auditAdminUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin User'**
+  String get auditAdminUser;
+
+  /// No description provided for @auditRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get auditRole;
+
+  /// No description provided for @auditActionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Details'**
+  String get auditActionDetails;
+
+  /// No description provided for @adminsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load administrators: {error}'**
+  String adminsLoadFailed(String error);
+
+  /// No description provided for @adminsRevokeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke Admin Role'**
+  String get adminsRevokeTitle;
+
+  /// No description provided for @adminsRevokeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to revoke the {role} role from {email}?'**
+  String adminsRevokeConfirm(String role, String email);
+
+  /// No description provided for @adminsRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get adminsRevoke;
+
+  /// No description provided for @adminsRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin role revoked successfully'**
+  String get adminsRevoked;
+
+  /// No description provided for @adminsRevokeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to revoke role: {error}'**
+  String adminsRevokeFailed(String error);
+
+  /// No description provided for @adminsRoleSuper.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin'**
+  String get adminsRoleSuper;
+
+  /// No description provided for @adminsRoleSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Admin'**
+  String get adminsRoleSupport;
+
+  /// No description provided for @adminsRoleFinance.
+  ///
+  /// In en, this message translates to:
+  /// **'Finance Admin'**
+  String get adminsRoleFinance;
+
+  /// No description provided for @adminsSuperRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin Access Required'**
+  String get adminsSuperRequired;
+
+  /// No description provided for @adminsSuperRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Super Admins can manage administrator accounts.'**
+  String get adminsSuperRequiredBody;
+
+  /// No description provided for @adminsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Management'**
+  String get adminsTitle;
+
+  /// No description provided for @adminsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage administrator accounts and roles'**
+  String get adminsSubtitle;
+
+  /// No description provided for @adminsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Admin'**
+  String get adminsAdd;
+
+  /// No description provided for @adminsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No administrators found'**
+  String get adminsNone;
+
+  /// No description provided for @adminsTotalActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Actions'**
+  String get adminsTotalActions;
+
+  /// No description provided for @adminsRecent30d.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent (30d)'**
+  String get adminsRecent30d;
+
+  /// No description provided for @adminsLastAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Action'**
+  String get adminsLastAction;
+
+  /// No description provided for @adminsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get adminsToday;
+
+  /// No description provided for @adminsWeeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{weeks}w ago'**
+  String adminsWeeksAgo(int weeks);
+
+  /// No description provided for @adminsMonthsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{months}mo ago'**
+  String adminsMonthsAgo(int months);
+
+  /// No description provided for @adminsUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get adminsUnknown;
+
+  /// No description provided for @adminsAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin role assigned successfully'**
+  String get adminsAssigned;
+
+  /// No description provided for @adminsAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Administrator'**
+  String get adminsAddTitle;
+
+  /// No description provided for @adminsEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address'**
+  String get adminsEmailAddress;
+
+  /// No description provided for @adminsEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get adminsEmailRequired;
+
+  /// No description provided for @adminsEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email address'**
+  String get adminsEmailInvalid;
+
+  /// No description provided for @adminsSelectRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Role'**
+  String get adminsSelectRole;
+
+  /// No description provided for @adminsSupportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'User management and support'**
+  String get adminsSupportDescription;
+
+  /// No description provided for @adminsFinanceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments, refunds, and reports'**
+  String get adminsFinanceDescription;
 }
 
 class _AppLocalizationsDelegate

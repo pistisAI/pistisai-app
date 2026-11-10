@@ -343,4 +343,13 @@ void main() {
     expect(fr.adminCountPercent(12, '34.0'), '12 (34.0 %)');
     expect(fr.adminUserLabel('a@example.com'), 'Utilisateur : a@example.com');
   });
+
+  test('batch 13 audit and admin messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.auditShowing(1, 25, 300), 'Entrées 1 à 25 sur 300');
+    expect(fr.auditFilterFrom('2026-11-01'), 'Du : 2026-11-01');
+    expect(fr.adminsRevokeConfirm(fr.adminsRoleFinance, 'a@example.com'),
+        'Voulez-vous vraiment retirer le rôle Administrateur des finances à a@example.com ?');
+    expect(fr.adminsWeeksAgo(2), 'il y a 2 sem.');
+  });
 }

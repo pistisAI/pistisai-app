@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
@@ -24,7 +25,9 @@ class AdminManagementTab extends StatefulWidget {
 class _AdminManagementTabState extends State<AdminManagementTab> {
   List<Map<String, dynamic>> _admins = [];
   bool _isLoading = false;
-  String? _errorMessage;
+
+  /// Error built at display time so it follows the current locale.
+  String Function(AppLocalizations)? _errorMessage;
 
   @override
   void initState() {
@@ -49,7 +52,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load administrators: $e';
+        _errorMessage = (l10n) => l10n.adminsLoadFailed('$e');
         _isLoading = false;
       });
     }
@@ -71,19 +74,20 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Revoke Admin Role'),
+        title: Text(AppLocalizations.of(context).adminsRevokeTitle),
         content: Text(
-          'Are you sure you want to revoke the ${_formatRole(role['role'])} role from ${admin['email']}?',
+          AppLocalizations.of(context).adminsRevokeConfirm(
+              _formatRole(role['role']), '${admin['email']}'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context).commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: FilledButton.styleFrom(backgroundColor: AppTheme.colorsOf(context).danger),
-            child: const Text('Revoke'),
+            child: Text(AppLocalizations.of(context).adminsRevoke),
           ),
         ],
       ),
@@ -96,13 +100,14 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
 
   /// Revoke admin role
   Future<void> _revokeRole(String userId, String role) async {
+    final l10n = AppLocalizations.of(context);
     try {
       final adminService = di.serviceLocator.get<AdminCenterService>();
       await adminService.revokeAdminRole(userId, role);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Admin role revoked successfully')),
+          SnackBar(content: Text(l10n.adminsRevoked)),
         );
         await _loadAdmins();
       }
@@ -110,7 +115,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to revoke role: $e')));
+        ).showSnackBar(SnackBar(content: Text(l10n.adminsRevokeFailed('$e'))));
       }
     }
   }
@@ -119,11 +124,11 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
   String _formatRole(String role) {
     switch (role) {
       case 'super_admin':
-        return 'Super Admin';
+        return AppLocalizations.of(context).adminsRoleSuper;
       case 'support_admin':
-        return 'Support Admin';
+        return AppLocalizations.of(context).adminsRoleSupport;
       case 'finance_admin':
-        return 'Finance Admin';
+        return AppLocalizations.of(context).adminsRoleFinance;
       default:
         return role;
     }
@@ -156,11 +161,11 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
             Icon(Icons.lock_outline, size: 64, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
             Text(
-              'Super Admin Access Required',
+              AppLocalizations.of(context).adminsSuperRequired,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
-            const Text('Only Super Admins can manage administrator accounts.'),
+            Text(AppLocalizations.of(context).adminsSuperRequiredBody),
           ],
         ),
       );
@@ -179,7 +184,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Admin Management',
+                      AppLocalizations.of(context).adminsTitle,
                       style: Theme.of(context)
                           .textTheme
                           .headlineSmall
@@ -187,7 +192,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Manage administrator accounts and roles',
+                      AppLocalizations.of(context).adminsSubtitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
                           ),
@@ -198,7 +203,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
               FilledButton.icon(
                 onPressed: _showAddAdminDialog,
                 icon: const Icon(Icons.person_add),
-                label: const Text('Add Admin'),
+                label: Text(AppLocalizations.of(context).adminsAdd),
               ),
             ],
           ),
@@ -217,7 +222,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    _errorMessage!,
+                    _errorMessage!(AppLocalizations.of(context)),
                     style: TextStyle(color: AppTheme.colorsOf(context).danger),
                   ),
                 ),
@@ -233,7 +238,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
         if (_isLoading)
           const Expanded(child: Center(child: CircularProgressIndicator()))
         else if (_admins.isEmpty)
-          const Expanded(child: Center(child: Text('No administrators found')))
+          Expanded(child: Center(child: Text(AppLocalizations.of(context).adminsNone)))
         else
           // Admin list
           Expanded(
@@ -282,7 +287,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        admin['email'] ?? 'Unknown',
+                        admin['email'] ?? AppLocalizations.of(context).adminsUnknown,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -342,22 +347,22 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
                   children: [
                     Expanded(
                       child: _buildActivityStat(
-                        'Total Actions',
+                        AppLocalizations.of(context).adminsTotalActions,
                         activitySummary['totalActions']?.toString() ?? '0',
                       ),
                     ),
                     Expanded(
                       child: _buildActivityStat(
-                        'Recent (30d)',
+                        AppLocalizations.of(context).adminsRecent30d,
                         activitySummary['recentActions']?.toString() ?? '0',
                       ),
                     ),
                     Expanded(
                       child: _buildActivityStat(
-                        'Last Action',
+                        AppLocalizations.of(context).adminsLastAction,
                         activitySummary['lastActionAt'] != null
                             ? _formatDate(activitySummary['lastActionAt'])
-                            : 'Never',
+                            : AppLocalizations.of(context).commonNever,
                       ),
                     ),
                   ],
@@ -389,7 +394,7 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
 
   /// Format date for display
   String _formatDate(dynamic date) {
-    if (date == null) return 'Never';
+    if (date == null) return AppLocalizations.of(context).commonNever;
     try {
       final dateTime =
           date is DateTime ? date : DateTime.parse(date.toString());
@@ -397,18 +402,18 @@ class _AdminManagementTabState extends State<AdminManagementTab> {
       final difference = now.difference(dateTime);
 
       if (difference.inDays == 0) {
-        return 'Today';
+        return AppLocalizations.of(context).adminsToday;
       } else if (difference.inDays == 1) {
-        return 'Yesterday';
+        return AppLocalizations.of(context).adminYesterday;
       } else if (difference.inDays < 7) {
-        return '${difference.inDays}d ago';
+        return AppLocalizations.of(context).timeDaysAgo(difference.inDays);
       } else if (difference.inDays < 30) {
-        return '${(difference.inDays / 7).floor()}w ago';
+        return AppLocalizations.of(context).adminsWeeksAgo((difference.inDays / 7).floor());
       } else {
-        return '${(difference.inDays / 30).floor()}mo ago';
+        return AppLocalizations.of(context).adminsMonthsAgo((difference.inDays / 30).floor());
       }
     } catch (e) {
-      return 'Unknown';
+      return AppLocalizations.of(context).adminsUnknown;
     }
   }
 }
@@ -438,6 +443,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
 
   /// Add admin
   Future<void> _addAdmin() async {
+    final l10n = AppLocalizations.of(context);
     if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
       return;
     }
@@ -457,7 +463,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Admin role assigned successfully')),
+          SnackBar(content: Text(l10n.adminsAssigned)),
         );
         widget.onAdminAdded();
       }
@@ -472,7 +478,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Administrator'),
+      title: Text(AppLocalizations.of(context).adminsAddTitle),
       content: Form(
         key: _formKey,
         child: Column(
@@ -482,18 +488,18 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
             // Email field
             TextFormField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email Address',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).adminsEmailAddress,
                 hintText: 'user@example.com',
                 prefixIcon: Icon(Icons.email),
               ),
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Email is required';
+                  return AppLocalizations.of(context).adminsEmailRequired;
                 }
                 if (!value.contains('@')) {
-                  return 'Invalid email address';
+                  return AppLocalizations.of(context).adminsEmailInvalid;
                 }
                 return null;
               },
@@ -502,7 +508,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
             const SizedBox(height: 16),
 
             // Role selection
-            Text('Select Role', style: Theme.of(context).textTheme.titleSmall),
+            Text(AppLocalizations.of(context).adminsSelectRole, style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 8),
             DropdownButtonFormField<AdminRole>(
               initialValue: _selectedRole,
@@ -515,9 +521,9 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Support Admin'),
+                      Text(AppLocalizations.of(context).adminsRoleSupport),
                       Text(
-                        'User management and support',
+                        AppLocalizations.of(context).adminsSupportDescription,
                         style: TextStyle(
                           fontSize: 12,
                           color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
@@ -531,9 +537,9 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Finance Admin'),
+                      Text(AppLocalizations.of(context).adminsRoleFinance),
                       Text(
-                        'Payments, refunds, and reports',
+                        AppLocalizations.of(context).adminsFinanceDescription,
                         style: TextStyle(
                           fontSize: 12,
                           color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.7),
@@ -583,7 +589,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).commonCancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _addAdmin,
@@ -593,7 +599,7 @@ class _AddAdminDialogState extends State<_AddAdminDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Add Admin'),
+              : Text(AppLocalizations.of(context).adminsAdd),
         ),
       ],
     );
