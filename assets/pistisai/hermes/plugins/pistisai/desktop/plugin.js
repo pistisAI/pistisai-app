@@ -1,5 +1,5 @@
 /**
- * PistisAI desktop plugin. Loaded uncompiled by Hermes Desktop —
+ * {{product_name}} desktop plugin. Loaded uncompiled by Hermes Desktop —
  * UI is jsx()/jsxs() calls, not JSX syntax.
  * Only these imports resolve: @hermes/plugin-sdk, react, react/jsx-runtime.
  */
@@ -9,13 +9,13 @@ import { jsx, jsxs } from 'react/jsx-runtime'
 
 const ID = 'pistisai'
 const LOCAL_UI = 'http://127.0.0.1:1338'
-const WEB_APP = 'https://app.pistisai.app'
+const WEB_APP = '{{app_url}}'
 
-function PistisaiPane({ ctx }) {
+function BrandPane({ ctx }) {
   return jsxs('div', {
     className: 'flex h-full flex-col gap-2 p-3 text-sm',
     children: [
-      jsx('div', { className: 'font-medium', children: 'PistisAI' }),
+      jsx('div', { className: 'font-medium', children: '{{product_name}}' }),
       jsx('div', {
         className: 'text-(--ui-text-tertiary)',
         children: `App UI: ${LOCAL_UI}`
@@ -46,37 +46,37 @@ function PistisaiPane({ ctx }) {
   })
 }
 
-function PistisaiChip() {
+function BrandChip() {
   return jsx(Tip, {
-    label: 'PistisAI',
+    label: '{{product_name}}',
     children: jsx('button', {
       className: cn(
         'inline-flex h-full items-center gap-1 px-1.5 text-[0.6875rem] transition-colors',
         'text-(--ui-text-tertiary) hover:bg-(--chrome-action-hover) hover:text-foreground'
       ),
       type: 'button',
-      children: 'PistisAI'
+      children: '{{product_name}}'
     })
   })
 }
 
 export default {
   id: ID,
-  name: 'PistisAI',
+  name: '{{product_name}}',
   register(ctx) {
     ctx.register({
       id: 'pane',
       area: 'panes',
-      title: 'PistisAI',
+      title: '{{product_name}}',
       data: { placement: 'right', width: '300px' },
-      render: () => jsx(PistisaiPane, { ctx })
+      render: () => jsx(BrandPane, { ctx })
     })
 
     ctx.register({
       id: 'chip',
       area: 'statusBar.right',
       order: 130,
-      render: () => jsx(PistisaiChip, {})
+      render: () => jsx(BrandChip, {})
     })
   }
 }

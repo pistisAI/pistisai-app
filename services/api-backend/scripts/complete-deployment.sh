@@ -6,7 +6,11 @@
 set -e
 
 # Configuration
-PROJECT_ID="Pistisai-468303"
+PROJECT_ID="${GCP_PROJECT_ID:-}"
+if [ -z "$PROJECT_ID" ]; then
+  echo "GCP_PROJECT_ID is required" >&2
+  exit 1
+fi
 INSTANCE_NAME="Pistisai-db"
 REGION="us-central1"
 SERVICE_NAME="pistisai-api"

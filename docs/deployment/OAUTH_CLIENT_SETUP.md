@@ -18,7 +18,7 @@ This indicates that the Google OAuth Client ID in your configuration is invalid 
 ### Step 1: Access Google Cloud Console
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Select your project: `Pistisai-468303`
+2. Select your project: `YOUR_GCP_PROJECT_ID`
 3. Navigate to **APIs & Services** > **Credentials**
 
 ### Step 2: Create OAuth 2.0 Client IDs

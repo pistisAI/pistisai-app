@@ -1,11 +1,11 @@
 -- Migration: 026_create_public_users_table.sql
--- Create public.users table linked to auth.users for application-level user data
--- This enables the api-backend to query users by supabase_id without touching auth schema directly
+-- Give public.users the supabase_id column the api-backend looks users up by
+-- (it holds the first Cloudflare Access subject). Works on plain PostgreSQL,
+-- where schema.pg.sql already created users, and on Supabase, where the
+-- auth schema also gets the sync trigger and row-level policies.
 
--- Create the public.users table if it doesn't exist
 CREATE TABLE IF NOT EXISTS public.users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  supabase_id UUID UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   email VARCHAR(255),
   name VARCHAR(255),
   nickname VARCHAR(255),
@@ -16,24 +16,51 @@ CREATE TABLE IF NOT EXISTS public.users (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS supabase_id UUID;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_supabase_id_unique
+  ON public.users(supabase_id);
+
 -- Index for fast lookup by supabase_id
 CREATE INDEX IF NOT EXISTS idx_users_supabase_id ON public.users(supabase_id);
 
 -- Index for email lookups
 CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
 
--- Enable RLS
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+-- Supabase only: link auth.users, policies, and the sync trigger.
+DO $migration$
+BEGIN
+  IF to_regclass('auth.users') IS NULL THEN
+    RETURN;
+  END IF;
 
--- Policy: users can read their own data
-CREATE POLICY "Users can read own data" ON public.users
-  FOR SELECT USING (auth.uid() = supabase_id);
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'users_supabase_id_fkey'
+  ) THEN
+    ALTER TABLE public.users
+      ADD CONSTRAINT users_supabase_id_fkey
+      FOREIGN KEY (supabase_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+  END IF;
 
--- Policy: users can update their own data
-CREATE POLICY "Users can update own data" ON public.users
-  FOR UPDATE USING (auth.uid() = supabase_id);
+  ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
--- Function to auto-create public.users row on auth.users insert
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'users' AND policyname = 'Users can read own data'
+  ) THEN
+    EXECUTE 'CREATE POLICY "Users can read own data" ON public.users
+      FOR SELECT USING (auth.uid() = supabase_id)';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'users' AND policyname = 'Users can update own data'
+  ) THEN
+    EXECUTE 'CREATE POLICY "Users can update own data" ON public.users
+      FOR UPDATE USING (auth.uid() = supabase_id)';
+  END IF;
+
+  EXECUTE $fn$
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
@@ -57,13 +84,15 @@ BEGIN
     updated_at = NOW();
   RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+$fn$;
 
--- Trigger to sync auth.users → public.users
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT OR UPDATE ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+  EXECUTE 'DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users';
+  EXECUTE 'CREATE TRIGGER on_auth_user_created
+    AFTER INSERT OR UPDATE ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user()';
+END
+$migration$;
 
 -- Create user_sessions table if not exists (referenced by auth-service.js)
 CREATE TABLE IF NOT EXISTS public.user_sessions (

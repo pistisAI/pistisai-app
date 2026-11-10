@@ -1,5 +1,7 @@
 # Pistisai — Copilot / AI Agent Instructions (concise)
 
+> Read [AGENTS.md](../AGENTS.md) first. Its standing rules (no personal data, deploys only through GitHub Actions, no force-push to main) override anything below.
+
 This file gives AI coding agents the actionable, repo-specific knowledge needed to be productive quickly. It focuses on architecture, key files, developer workflows, and integration points discovered in the workspace.
 
 Core architecture (big picture)
