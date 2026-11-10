@@ -3,6 +3,7 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { addTierInfo } from '../middleware/tier-check.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { z } from 'zod';
+import { ProxyScalingSchema } from '../schemas/validation-schemas.js';
 import winston from 'winston';
 
 const router = express.Router();
@@ -407,6 +408,7 @@ router.post(
   '/proxy/scaling/execute/:proxyId',
   authenticateJWT,
   addTierInfo,
+  validateSchema({ body: ProxyScalingSchema }),
   async (req, res) => {
     try {
       const { proxyId } = req.params;
@@ -417,14 +419,6 @@ router.post(
         return res.status(400).json({
           error: 'INVALID_REQUEST',
           message: 'proxyId is required',
-          code: 'PROXY_SCALING_001',
-        });
-      }
-
-      if (!newReplicaCount) {
-        return res.status(400).json({
-          error: 'INVALID_REQUEST',
-          message: 'newReplicaCount is required',
           code: 'PROXY_SCALING_001',
         });
       }
