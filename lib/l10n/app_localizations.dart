@@ -5323,6 +5323,540 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Screenshot saved: {path}'**
   String guiScreenshotSaved(String path);
+
+  /// No description provided for @adminUsersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get adminUsersTitle;
+
+  /// No description provided for @adminUsersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View and manage user accounts, subscriptions, and permissions'**
+  String get adminUsersSubtitle;
+
+  /// No description provided for @adminUsersSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by email, username, or user ID...'**
+  String get adminUsersSearchHint;
+
+  /// No description provided for @adminUsersTierFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Tier'**
+  String get adminUsersTierFilter;
+
+  /// No description provided for @adminUsersAllTiers.
+  ///
+  /// In en, this message translates to:
+  /// **'All Tiers'**
+  String get adminUsersAllTiers;
+
+  /// No description provided for @adminUsersStatusFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Status'**
+  String get adminUsersStatusFilter;
+
+  /// No description provided for @adminUsersAllStatuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get adminUsersAllStatuses;
+
+  /// No description provided for @adminStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminStatusActive;
+
+  /// No description provided for @adminStatusSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get adminStatusSuspended;
+
+  /// No description provided for @adminStatusDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get adminStatusDeleted;
+
+  /// No description provided for @adminUsersSortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get adminUsersSortBy;
+
+  /// No description provided for @adminUsersSortRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Date'**
+  String get adminUsersSortRegistration;
+
+  /// No description provided for @adminUsersLastLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Login'**
+  String get adminUsersLastLogin;
+
+  /// No description provided for @adminEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get adminEmail;
+
+  /// No description provided for @adminUsersAscending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get adminUsersAscending;
+
+  /// No description provided for @adminUsersDescending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get adminUsersDescending;
+
+  /// No description provided for @adminUsersNoPermissionView.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to view users'**
+  String get adminUsersNoPermissionView;
+
+  /// No description provided for @adminUsersLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load users: {error}'**
+  String adminUsersLoadFailed(String error);
+
+  /// No description provided for @adminUsersNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get adminUsersNone;
+
+  /// No description provided for @adminUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get adminUsername;
+
+  /// No description provided for @adminSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get adminSubscription;
+
+  /// No description provided for @adminRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered'**
+  String get adminRegistered;
+
+  /// No description provided for @adminNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get adminNotAvailable;
+
+  /// No description provided for @adminViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get adminViewDetails;
+
+  /// No description provided for @adminSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend'**
+  String get adminSuspend;
+
+  /// No description provided for @adminReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get adminReactivate;
+
+  /// No description provided for @adminUsersShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {from}-{to} of {total} users'**
+  String adminUsersShowing(int from, int to, int total);
+
+  /// No description provided for @adminPageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {total}'**
+  String adminPageOf(int page, int total);
+
+  /// No description provided for @adminUserDetailsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load user details: {error}'**
+  String adminUserDetailsLoadFailed(String error);
+
+  /// No description provided for @adminUserDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'User Details'**
+  String get adminUserDetails;
+
+  /// No description provided for @adminNoUserDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'No user details available'**
+  String get adminNoUserDetails;
+
+  /// No description provided for @adminProfileInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Information'**
+  String get adminProfileInfo;
+
+  /// No description provided for @adminUserId.
+  ///
+  /// In en, this message translates to:
+  /// **'User ID'**
+  String get adminUserId;
+
+  /// No description provided for @adminSubscriptionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Information'**
+  String get adminSubscriptionInfo;
+
+  /// No description provided for @adminTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Tier'**
+  String get adminTier;
+
+  /// No description provided for @adminPeriodStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Period Start'**
+  String get adminPeriodStart;
+
+  /// No description provided for @adminPeriodEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Period End'**
+  String get adminPeriodEnd;
+
+  /// No description provided for @adminCancellation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation'**
+  String get adminCancellation;
+
+  /// No description provided for @adminCancelAtPeriodEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled at period end'**
+  String get adminCancelAtPeriodEnd;
+
+  /// No description provided for @adminRecentPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Payment History'**
+  String get adminRecentPayments;
+
+  /// No description provided for @adminActiveSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Sessions'**
+  String get adminActiveSessions;
+
+  /// No description provided for @adminRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get adminRecentActivity;
+
+  /// No description provided for @adminDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get adminDate;
+
+  /// No description provided for @adminAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get adminAmount;
+
+  /// No description provided for @adminMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get adminMethod;
+
+  /// No description provided for @adminIpAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'IP Address'**
+  String get adminIpAddress;
+
+  /// No description provided for @adminUserAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'User Agent'**
+  String get adminUserAgent;
+
+  /// No description provided for @adminLastActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Active'**
+  String get adminLastActive;
+
+  /// No description provided for @adminUnknownAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown action'**
+  String get adminUnknownAction;
+
+  /// No description provided for @adminInvalidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date'**
+  String get adminInvalidDate;
+
+  /// No description provided for @adminNoPermissionEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to edit users'**
+  String get adminNoPermissionEdit;
+
+  /// No description provided for @adminSubscriptionUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'User subscription updated successfully'**
+  String get adminSubscriptionUpdated;
+
+  /// No description provided for @adminUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update user: {error}'**
+  String adminUpdateFailed(String error);
+
+  /// No description provided for @adminEditSubscriptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit User Subscription'**
+  String get adminEditSubscriptionTitle;
+
+  /// No description provided for @adminUserLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'User: {email}'**
+  String adminUserLabel(String email);
+
+  /// No description provided for @adminSuspendReasonMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason for suspension'**
+  String get adminSuspendReasonMissing;
+
+  /// No description provided for @adminNoPermissionSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to suspend users'**
+  String get adminNoPermissionSuspend;
+
+  /// No description provided for @adminSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'User suspended successfully'**
+  String get adminSuspended;
+
+  /// No description provided for @adminSuspendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to suspend user: {error}'**
+  String adminSuspendFailed(String error);
+
+  /// No description provided for @adminSuspendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend User Account'**
+  String get adminSuspendTitle;
+
+  /// No description provided for @adminSuspendWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This will suspend the user account and prevent them from accessing the application.'**
+  String get adminSuspendWarning;
+
+  /// No description provided for @adminSuspendReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for suspension *'**
+  String get adminSuspendReason;
+
+  /// No description provided for @adminSuspendReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the reason for suspending this account'**
+  String get adminSuspendReasonHint;
+
+  /// No description provided for @adminNoPermissionReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to reactivate users'**
+  String get adminNoPermissionReactivate;
+
+  /// No description provided for @adminReactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'User reactivated successfully'**
+  String get adminReactivated;
+
+  /// No description provided for @adminReactivateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reactivate user: {error}'**
+  String adminReactivateFailed(String error);
+
+  /// No description provided for @adminReactivateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate User Account'**
+  String get adminReactivateTitle;
+
+  /// No description provided for @adminReactivateInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This will reactivate the user account and restore their access to the application.'**
+  String get adminReactivateInfo;
+
+  /// No description provided for @adminDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get adminDashboardTitle;
+
+  /// No description provided for @adminRefreshMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh metrics'**
+  String get adminRefreshMetrics;
+
+  /// No description provided for @adminTotalUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Users'**
+  String get adminTotalUsers;
+
+  /// No description provided for @adminNewThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new this month'**
+  String adminNewThisMonth(String count);
+
+  /// No description provided for @adminActiveUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Users'**
+  String get adminActiveUsers;
+
+  /// No description provided for @adminPercentOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of total'**
+  String adminPercentOfTotal(String percent);
+
+  /// No description provided for @adminMrr.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Recurring Revenue'**
+  String get adminMrr;
+
+  /// No description provided for @adminFromSubscribers.
+  ///
+  /// In en, this message translates to:
+  /// **'From {count} subscribers'**
+  String adminFromSubscribers(String count);
+
+  /// No description provided for @adminCurrentMonthRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Month Revenue'**
+  String get adminCurrentMonthRevenue;
+
+  /// No description provided for @adminTransactionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} transactions'**
+  String adminTransactionsCount(String count);
+
+  /// No description provided for @adminSubscriptionDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Distribution'**
+  String get adminSubscriptionDistribution;
+
+  /// No description provided for @adminConversionRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion Rate: {rate}%'**
+  String adminConversionRate(String rate);
+
+  /// No description provided for @adminTierFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get adminTierFree;
+
+  /// No description provided for @adminTierPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get adminTierPremium;
+
+  /// No description provided for @adminTierEnterprise.
+  ///
+  /// In en, this message translates to:
+  /// **'Enterprise'**
+  String get adminTierEnterprise;
+
+  /// No description provided for @adminCountPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} ({percent}%)'**
+  String adminCountPercent(int count, String percent);
+
+  /// No description provided for @adminNoRecentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent transactions'**
+  String get adminNoRecentTransactions;
+
+  /// No description provided for @adminRecentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Transactions'**
+  String get adminRecentTransactions;
+
+  /// No description provided for @adminToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today {time}'**
+  String adminToday(String time);
+
+  /// No description provided for @adminYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get adminYesterday;
+
+  /// No description provided for @adminDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days ago'**
+  String adminDaysAgo(int days);
 }
 
 class _AppLocalizationsDelegate

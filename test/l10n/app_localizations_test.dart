@@ -334,4 +334,13 @@ void main() {
         findsOneWidget);
     expect(find.textContaining("We'll set up your local AI"), findsNothing);
   });
+
+  test('batch 12 admin messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.adminUsersShowing(1, 50, 120), 'Utilisateurs 1 à 50 sur 120');
+    expect(fr.adminPageOf(2, 3), 'Page 2 sur 3');
+    expect(fr.adminConversionRate('4.2'), 'Taux de conversion : 4.2 %');
+    expect(fr.adminCountPercent(12, '34.0'), '12 (34.0 %)');
+    expect(fr.adminUserLabel('a@example.com'), 'Utilisateur : a@example.com');
+  });
 }
