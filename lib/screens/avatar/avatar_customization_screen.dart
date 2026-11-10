@@ -537,7 +537,9 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
   /// Open color picker dialog
   Future<void> _pickColor() async {
     final colorScheme = Theme.of(context).colorScheme;
-    final pickerColor = _customColor ?? colorScheme.primary;
+    // Updated as the user moves the picker, so Select returns their choice
+    // and not the colour the dialog opened with.
+    var pickerColor = _customColor ?? colorScheme.primary;
     final pickedColor = await showDialog<Color>(
       context: context,
       builder: (context) => AlertDialog(
@@ -545,9 +547,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: pickerColor,
-            onColorChanged: (Color color) {
-              // Color changed
-            },
+            onColorChanged: (Color color) => pickerColor = color,
             pickerAreaHeightPercent: 0.8,
           ),
         ),
