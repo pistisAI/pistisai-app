@@ -60,7 +60,7 @@ Backend Verifies Audience Matches
 
 **Solution**:
 
-1. Test JWKS endpoint: `curl https://dev-vivn1fcgzi0c2czy.us.auth0.com/.well-known/jwks.json`
+1. Test JWKS endpoint: `curl https://example.us.auth0.com/.well-known/jwks.json`
 2. Verify Auth0 application identifier is set correctly
 3. Check backend logs for detailed error messages
 
@@ -88,7 +88,7 @@ Backend Verifies Audience Matches
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `AUTH0_AUDIENCE` | `https://api.example.com` | Expected token audience |
-| `AUTH0_JWKS_URI` | `https://dev-vivn1fcgzi0c2czy.us.auth0.com/.well-known/jwks.json` | JWKS endpoint for token validation |
+| `AUTH0_JWKS_URI` | `https://example.us.auth0.com/.well-known/jwks.json` | JWKS endpoint for token validation |
 | `SUPABASE_JWT_SECRET` | (required) | Secret for HS256 token validation |
 | `JWT_AUDIENCE` | `https://api.example.com` | Alias for AUTH0_AUDIENCE |
 
@@ -158,7 +158,6 @@ curl -H "Authorization: Bearer <token>" \
 - `AUTHENTICATION_FIX_SUMMARY.md` - What was fixed
 - `AUTHENTICATION_STATUS_REPORT.md` - Current status and verification
 - `docs/DEVELOPMENT/AUTH0_AUDIENCE_FIX.md` - Technical details
-- `docs/DEVELOPMENT/WEB_AUTH0_BRIDGE.md` - Auth0 bridge implementation
 
 ## Support
 

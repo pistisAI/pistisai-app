@@ -7,7 +7,7 @@ This guide covers the complete deployment process for migrating from SQLite to P
 ## Prerequisites
 
 - Google Cloud SDK installed and authenticated
-- Project ID: `Pistisai-468303`
+- Project ID: `YOUR_GCP_PROJECT_ID`
 - Required APIs enabled:
   - Cloud SQL Admin API
   - Cloud Run API
@@ -68,7 +68,7 @@ curl https://your-service-url/api/db/health
 
 ```bash
 # Set project
-gcloud config set project Pistisai-468303
+gcloud config set project YOUR_GCP_PROJECT_ID
 
 # Create PostgreSQL instance
 gcloud sql instances create Pistisai-db \
@@ -103,25 +103,25 @@ Required environment variables:
 - `DB_NAME=Pistisai`
 - `DB_USER=appuser`
 - `DB_PASSWORD=<your-password>`
-- `DB_HOST=/cloudsql/Pistisai-468303:us-central1:Pistisai-db`
-- `SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com`
+- `DB_HOST=/cloudsql/YOUR_GCP_PROJECT_ID:us-central1:Pistisai-db`
+- `SUPABASE_AUTH_DOMAIN=example.us.auth0.com`
 - `SUPABASE_AUTH_AUDIENCE=https://api.example.com`
 
 ### Step 3: Build and Deploy
 
 ```bash
 # Build container image
-gcloud builds submit --tag gcr.io/Pistisai-468303/Pistisai-api
+gcloud builds submit --tag gcr.io/YOUR_GCP_PROJECT_ID/Pistisai-api
 
 # Deploy to Cloud Run
 gcloud run deploy Pistisai-api \
-    --image gcr.io/Pistisai-468303/Pistisai-api \
+    --image gcr.io/YOUR_GCP_PROJECT_ID/Pistisai-api \
     --platform managed \
     --region us-central1 \
     --allow-unauthenticated \
     --memory 1Gi \
-    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,SUPABASE_AUTH_DOMAIN=dev-v2f2p008x3dr74ww.us.auth0.com,SUPABASE_AUTH_AUDIENCE=https://api.example.com" \
-    --add-cloudsql-instances Pistisai-468303:us-central1:Pistisai-db
+    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,SUPABASE_AUTH_DOMAIN=example.us.auth0.com,SUPABASE_AUTH_AUDIENCE=https://api.example.com" \
+    --add-cloudsql-instances YOUR_GCP_PROJECT_ID:us-central1:Pistisai-db
 ```
 
 ## Testing
