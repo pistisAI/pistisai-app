@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../brand/brand.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../../../services/theme_provider.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
@@ -15,10 +16,11 @@ class AppearanceSettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final spacing = AppTheme.spacingOf(context);
     final themeProvider = context.watch<ThemeProvider>();
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Appearance'),
+        title: Text(l10n.appearanceScreenTitle),
         elevation: 0,
         leading: BackButton(
           onPressed: () {
@@ -33,10 +35,10 @@ class AppearanceSettingsScreen extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.all(spacing.l),
               children: [
-                Text('Appearance Settings',
+                Text(l10n.settingsAppearanceTitle,
                     style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 16),
-                const Text('Customize the look and feel of the application.'),
+                Text(l10n.appearanceDescription),
                 const SizedBox(height: 32),
 
                 // Theme Mode
@@ -45,9 +47,11 @@ class AppearanceSettingsScreen extends StatelessWidget {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.light_mode),
-                        title: const Text('Theme Mode'),
+                        title: Text(l10n.appearanceThemeMode),
                         subtitle: Text(
-                          themeProvider.isDarkMode ? 'Dark' : 'Light',
+                          themeProvider.isDarkMode
+                              ? l10n.themeDark
+                              : l10n.themeLight,
                         ),
                       ),
                       OverflowBar(
@@ -55,17 +59,17 @@ class AppearanceSettingsScreen extends StatelessWidget {
                           TextButton(
                             onPressed: () =>
                                 themeProvider.setThemeMode(ThemeMode.light),
-                            child: const Text('Light'),
+                            child: Text(l10n.themeLight),
                           ),
                           TextButton(
                             onPressed: () =>
                                 themeProvider.setThemeMode(ThemeMode.dark),
-                            child: const Text('Dark'),
+                            child: Text(l10n.themeDark),
                           ),
                           TextButton(
                             onPressed: () =>
                                 themeProvider.setThemeMode(ThemeMode.system),
-                            child: const Text('System'),
+                            child: Text(l10n.themeSystem),
                           ),
                         ],
                       ),
@@ -78,7 +82,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.color_lens),
-                    title: const Text('Accent Color'),
+                    title: Text(l10n.appearanceAccentColor),
                     subtitle: Text(Brand.current.accentLabel),
                     trailing: Container(
                       width: 24,
