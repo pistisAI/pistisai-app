@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 # ---- Build stage: Flutter web ----
-# BRAND picks brand/<id>/. A paid white-label brand needs its licence as a
-# build secret:
+# BRAND picks brand/<id>/. A tree that already has that brand baked and
+# committed builds as is. Otherwise a paid white-label brand needs its licence
+# as a build secret:
 #   docker build -f Dockerfile.web --build-arg BRAND=acme \
 #     --secret id=brand_licence,src=acme.licence .
 FROM gmeligio/flutter-android:3.47.9 AS builder
@@ -15,7 +16,9 @@ RUN flutter config --enable-web
 ARG BRAND=pistisai
 COPY . .
 RUN --mount=type=secret,id=brand_licence,required=false \
-    if [ "$BRAND" != "pistisai" ]; then \
+    if grep -q "^  id: \"$BRAND\",$" lib/brand/active_brand.g.dart; then \
+      echo "Brand $BRAND is already baked in the source tree"; \
+    elif [ "$BRAND" != "pistisai" ]; then \
       if [ -f /run/secrets/brand_licence ]; then \
         dart run tool/brand_codegen.dart "$BRAND" --license /run/secrets/brand_licence; \
       else \
