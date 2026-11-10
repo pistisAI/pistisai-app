@@ -2,7 +2,7 @@
 
 ## Overview
 
-IAClé API implements a structured deprecation process to ensure smooth transitions between API versions. This guide explains how deprecation works, how to identify deprecated endpoints, and how to migrate to newer versions.
+Pistisai API implements a structured deprecation process to ensure smooth transitions between API versions. This guide explains how deprecation works, how to identify deprecated endpoints, and how to migrate to newer versions.
 
 **Requirements: 12.5**
 
@@ -155,7 +155,7 @@ Response:
 ```json
 {
   "title": "Migrating from API v1 to v2",
-  "description": "Complete guide for migrating from IAClé API v1 to v2",
+  "description": "Complete guide for migrating from Pistisai API v1 to v2",
   "steps": [
     {
       "step": 1,
@@ -350,7 +350,7 @@ For questions about API deprecation or migration help:
 - **Email**: ops@example.com
 - **Documentation**: https://docs.example.com
 - **API Docs**: https://api.example.com/api/docs
-- **GitHub Issues**: https://github.com/ghcr.io/IAClé/IAClé/api/issues
+- **GitHub Issues**: https://github.com/pistisAI/pistisai-app/issues
 
 ## Implementation Details
 

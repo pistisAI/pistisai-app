@@ -1,8 +1,8 @@
-# IAClé User Guide
+# Pistisai User Guide
 
-IAClé delivers this hub to Quebec SMBs. The offer and the sign-in tiers are in the [README](../../README.md) ([English](../../README.en.md)).
+Product description: [README](../../README.md).
 
-IAClé is a local-first companion shell for Hermes, OpenClaw, and compatible private agent runtimes. It gives the selected agent runtime a secure channel to you, plus controlled access to desktop, vision, voice, avatar, and multi-device sync features.
+Pistisai is a local-first companion shell for Hermes, OpenClaw, and compatible private agent runtimes. It gives the selected agent runtime a secure channel to you, plus controlled access to desktop, vision, voice, avatar, and multi-device sync features.
 
 The setup wizard decides which agent runtime and device path to use. There is no universal default runtime. Hermes is the first agent runtime path used for current testing, while OpenClaw remains a supported agent runtime and the original integration target.
 
@@ -12,7 +12,7 @@ Ollama, LM Studio, and similar local model servers are optional support model pr
 
 ## Overview
 
-IAClé is organized around core capabilities:
+Pistisai is organized around core capabilities:
 
 1. **Secure Agent Channel** - The main window is a direct, low-friction channel to the selected agent runtime.
 2. **Avatar And Voice Companion** - A sidecar companion window for avatar presence and voice interaction.
@@ -30,19 +30,19 @@ Agent management is still available, but it is not the first thing in the interf
 
 ### First Run
 
-When you first launch IAClé, the setup wizard guides you through the decisions that matter:
+When you first launch Pistisai, the setup wizard guides you through the decisions that matter:
 
 1. **Choose an agent runtime**
    - Hermes on this machine or another device
    - OpenClaw Gateway
    - Compatible custom agent gateway
-   - Optional IAClé-hosted agent runtime
+   - Optional Pistisai-hosted agent runtime
 
 2. **Choose where the agent runtime lives**
    - This computer
    - Another device on your Tailscale tailnet
    - A private server or VPS in your tailnet
-   - Optional IAClé-hosted agent runtime container
+   - Optional Pistisai-hosted agent runtime container
 
 3. **Test the agent connection**
    - The wizard checks health, sessions, tools, streaming, and exposed capabilities.
@@ -69,7 +69,7 @@ The app can discover or configure agent runtimes:
 | Hermes | `127.0.0.1:8642` (wizard-configured) | First agent runtime path for current testing |
 | OpenClaw Gateway | `localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private compatible agent runtime |
-| Hosted agent runtime | IAClé managed | Optional hosted compute |
+| Hosted agent runtime | Pistisai managed | Optional hosted compute |
 
 ### Support Model Discovery
 
@@ -118,7 +118,7 @@ The avatar and voice companion are one feature surface. The companion can appear
 - Avatar state: idle, listening, thinking, speaking, working, error
 - Voice conversation mode
 - Push-to-talk and planned wake/listening flows
-- Text-to-speech through the selected agent runtime or IAClé fallback services
+- Text-to-speech through the selected agent runtime or Pistisai fallback services
 - Personality, memory, and evolution features as they mature
 
 The companion should not replace the main secure channel. It provides presence, voice, and side conversation while the main window remains focused on the active agent runtime conversation.
@@ -168,9 +168,9 @@ Vision permissions are per device and should be visible while active.
 
 ## Secure Device Mesh
 
-IAClé is designed to be installed on all your devices and kept in sync.
+Pistisai is designed to be installed on all your devices and kept in sync.
 
-Tailscale is the preferred secure transport. Instead of maintaining a separate custom tunnel stack as the main path, IAClé should use the user's tailnet wherever possible.
+Tailscale is the preferred secure transport. Instead of maintaining a separate custom tunnel stack as the main path, Pistisai should use the user's tailnet wherever possible.
 
 ### Typical Layouts
 

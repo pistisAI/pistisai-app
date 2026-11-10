@@ -1,6 +1,6 @@
-# Contributing to IAClé SDK
+# Contributing to Pistisai SDK
 
-Thank you for your interest in contributing to the IAClé SDK! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to the Pistisai SDK! This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct
 
@@ -17,8 +17,8 @@ Please be respectful and constructive in all interactions.
 
 ```bash
 # Clone the repository
-git clone https://github.com/iacle-solutions/iacle-app.git
-cd iacle-app/services/sdk
+git clone https://github.com/pistisAI/pistisai-app.git
+cd pistisai-app/services/sdk
 
 # Install dependencies
 npm install

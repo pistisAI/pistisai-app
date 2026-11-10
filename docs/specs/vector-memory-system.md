@@ -1,7 +1,7 @@
 # Specification: Vector Memory System
 
 ## 1. Overview
-The Vector Memory System is designed to provide high-performance semantic search and long-term memory retrieval for the IAClé ecosystem. This system replaces the legacy SQLite FTS5 (Full-Text Search) implementation with a modern PostgreSQL-based solution utilizing the `pgvector` extension.
+The Vector Memory System is designed to provide high-performance semantic search and long-term memory retrieval for the Pistisai ecosystem. This system replaces the legacy SQLite FTS5 (Full-Text Search) implementation with a modern PostgreSQL-based solution utilizing the `pgvector` extension.
 
 ## 2. Goals
 - **Semantic Retrieval**: Enable search by meaning rather than just keyword matches.
@@ -28,12 +28,12 @@ services:
   # PostgreSQL with pgvector extension
   vector-db:
     image: ankane/pgvector:v0.5.1 # Specific pgvector-enabled image
-    container_name: IAClé-vector-db
+    container_name: Pistisai-vector-db
     restart: unless-stopped
     ports:
       - "5433:5432" # Host 5433 -> Container 5432
     environment:
-      POSTGRES_DB: IAClé_memory
+      POSTGRES_DB: Pistisai_memory
       POSTGRES_USER: memory_admin
       POSTGRES_PASSWORD: ${MEMORY_DB_PASSWORD:-memory_pass}
     volumes:
@@ -45,7 +45,7 @@ services:
   # pgAdmin for database management
   pgadmin:
     image: dpage/pgadmin4
-    container_name: IAClé-pgadmin
+    container_name: Pistisai-pgadmin
     restart: unless-stopped
     ports:
       - "5050:80"

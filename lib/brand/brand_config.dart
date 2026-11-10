@@ -1,7 +1,11 @@
 /// One reseller (or the upstream product) as the app should present it.
 ///
-/// Internal package names, hub paths, and API hostnames are not fields here.
-/// Those stay in code. See `docs/WHITE_LABEL.md`.
+/// Internal package names and hub paths are not fields here. Those stay in
+/// code. See `docs/WHITE_LABEL.md`.
+///
+/// API, WebSocket, tunnel, and streaming hosts *are* fields: a white-label
+/// build must not call the upstream backend. They are required in
+/// `brand/<id>/brand.yaml`.
 class BrandConfig {
   const BrandConfig({
     required this.id,
@@ -15,6 +19,14 @@ class BrandConfig {
     required this.websiteDomain,
     required this.websiteUrl,
     required this.appUrl,
+    required this.apiBaseUrl,
+    required this.wsEndpoint,
+    required this.tunnelSshUrl,
+    required this.streamingBaseUrl,
+    required this.adminCenterUrl,
+    required this.urlScheme,
+    required this.accessTeamDomain,
+    required this.accessAud,
     required this.defaultLocale,
     required this.lockLocale,
     required this.logoAsset,
@@ -66,6 +78,51 @@ class BrandConfig {
   final String websiteDomain;
   final String websiteUrl;
   final String appUrl;
+
+  /// REST API origin. A white-label build must point this at its own backend.
+  final String apiBaseUrl;
+
+  /// WebSocket endpoint for the gateway (`wss://…/ws`).
+  final String wsEndpoint;
+
+  /// WebSocket endpoint for the SSH tunnel (`wss://…/ssh`).
+  final String tunnelSshUrl;
+
+  /// Streaming proxy origin.
+  final String streamingBaseUrl;
+
+  /// Admin center origin.
+  final String adminCenterUrl;
+
+  /// Custom URL scheme for desktop callbacks, without `://` (e.g. `acme`).
+  final String urlScheme;
+
+  /// Cloudflare Access team host, without a scheme. Empty when the brand does
+  /// not sit behind Access. A `CF_ACCESS_TEAM_DOMAIN` build define overrides it.
+  final String accessTeamDomain;
+
+  /// Cloudflare Access application audience for [appUrl]. Public value.
+  /// A `CF_ACCESS_AUD` build define overrides it.
+  final String accessAud;
+
+  /// Host of [apiBaseUrl], e.g. `api.example.com`.
+  String get apiHost => Uri.parse(apiBaseUrl).host;
+
+  /// Host of [appUrl], e.g. `app.example.com`.
+  String get appHost => Uri.parse(appUrl).host;
+
+  /// `owner/repo` taken from [repositoryUrl] when it is a GitHub URL.
+  String get githubRepoSlug {
+    final uri = Uri.parse(repositoryUrl);
+    final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
+    if (segments.length < 2) return '';
+    return '${segments[0]}/${segments[1]}';
+  }
+
+  /// True when [url] starts with this brand's callback scheme.
+  bool isCallbackUrl(String url) =>
+      url.startsWith('$urlScheme://') || url.startsWith('$appId://');
+
   final String defaultLocale;
   final bool lockLocale;
   final String logoAsset;

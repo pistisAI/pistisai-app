@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Unified Deployment Workflow (`build-pipeline.yml`) represents a significant evolution in IAClé's CI/CD system. It consolidates AI analysis, version management, and multi-platform deployment into a single intelligent workflow, eliminating the complexity of previous orchestrator-based systems.
+The Unified Deployment Workflow (`build-pipeline.yml`) represents a significant evolution in Pistisai's CI/CD system. It consolidates AI analysis, version management, and multi-platform deployment into a single intelligent workflow, eliminating the complexity of previous orchestrator-based systems.
 
 ## Architecture
 
@@ -104,7 +104,7 @@ git push origin main
 - **Streaming Proxy**: WebSocket proxy service
 - **Postgres**: Customized database container
 
-**Docker Registry**: GitHub Container Registry (GHCR) - `ghcr.io/IAClé/IAClé`
+**Docker Registry**: GitHub Container Registry (GHCR) - `ghcr.io/pistisai/pistisai`
 
 ## Deployment Process
 
@@ -160,4 +160,4 @@ The Unified Deployment Workflow provides:
 - **Azure Centric**: Native integration with Azure CLI via Service Principal
 - **Better Visibility**: Complete status reporting in one view
 
-This system ensures that IAClé is deployed reliably and efficiently with every change to the main branch.
+This system ensures that Pistisai is deployed reliably and efficiently with every change to the main branch.

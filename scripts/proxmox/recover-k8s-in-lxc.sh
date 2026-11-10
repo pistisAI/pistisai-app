@@ -5,8 +5,12 @@ set -euo pipefail
 # This script configures /dev/kmsg passthrough required by kubelet in user namespaces,
 # reinstalls k3s with KubeletInUserNamespace feature gate, and verifies cluster health.
 
-CTID="${1:-201}"
-PVE_HOST="${2:-root@208.110.72.50}"
+if [[ $# -lt 2 || -z "${1:-}" || -z "${2:-}" ]]; then
+  echo "Usage: $0 <ctid> <user@host>" >&2
+  exit 1
+fi
+CTID="$1"
+PVE_HOST="$2"
 
 run_ssh() {
   ssh -o BatchMode=yes -o ConnectTimeout=15 "$PVE_HOST" "$@"

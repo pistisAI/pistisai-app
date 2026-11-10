@@ -29,6 +29,16 @@ void writeBrand(String root, BrandConfig brand) {
         renderTemplate(_read('$root/tool/brand/templates/terms.html'), brand),
   );
   _patch(
+    '$root/web/install.sh',
+    (_) =>
+        renderTemplate(_read('$root/tool/brand/templates/install.sh'), brand),
+  );
+  _patch(
+    '$root/web/install.ps1',
+    (_) =>
+        renderTemplate(_read('$root/tool/brand/templates/install.ps1'), brand),
+  );
+  _patch(
     '$root/linux/app.pistisai.desktop',
     (source) => applyDesktopName(source, brand),
   );
@@ -68,6 +78,14 @@ const BrandConfig activeBrand = BrandConfig(
   websiteDomain: ${s(brand.websiteDomain)},
   websiteUrl: ${s(brand.websiteUrl)},
   appUrl: ${s(brand.appUrl)},
+  apiBaseUrl: ${s(brand.apiBaseUrl)},
+  wsEndpoint: ${s(brand.wsEndpoint)},
+  tunnelSshUrl: ${s(brand.tunnelSshUrl)},
+  streamingBaseUrl: ${s(brand.streamingBaseUrl)},
+  adminCenterUrl: ${s(brand.adminCenterUrl)},
+  urlScheme: ${s(brand.urlScheme)},
+  accessTeamDomain: ${s(brand.accessTeamDomain)},
+  accessAud: ${s(brand.accessAud)},
   defaultLocale: ${s(brand.defaultLocale)},
   lockLocale: ${brand.lockLocale},
   logoAsset: ${s(brand.logoAsset)},
@@ -167,6 +185,9 @@ String renderTemplate(String template, BrandConfig brand) {
     'repository_label': brand.repositoryLabel,
     'repository_link': _repositoryLink(brand),
     'support_url': brand.supportUrl,
+    'releases_url': brand.releasesUrl,
+    'github_repo': brand.githubRepoSlug,
+    'artifact_prefix': brand.artifactPrefix,
     'background': brand.backgroundHex,
   };
   var rendered = template;
@@ -203,7 +224,29 @@ String applyWebIndex(String source, BrandConfig brand) {
     RegExp(r'background-color:\s*#[0-9A-Fa-f]{6}'),
     'background-color: ${brand.backgroundHex}',
   );
+  out = out.replaceFirst(
+    RegExp(r'^ *https://\*\.\S+.* ws://127\.0\.0\.1:\* wss://\*\.\S+.*$',
+        multiLine: true),
+    '      ${cspBrandHosts(brand)}',
+  );
   return out;
+}
+
+/// The brand's own origins for the web `connect-src` CSP line: every
+/// subdomain of the website domain, the API host when it sits elsewhere,
+/// and loopback for the local hub.
+String cspBrandHosts(BrandConfig brand) {
+  final domain = brand.websiteDomain;
+  final api = brand.apiHost;
+  final apiOutside = api != domain && !api.endsWith('.$domain');
+  return [
+    'https://*.$domain',
+    if (apiOutside) 'https://$api',
+    'http://127.0.0.1:*',
+    'ws://127.0.0.1:*',
+    'wss://*.$domain',
+    if (apiOutside) 'wss://$api',
+  ].join(' ');
 }
 
 String applyManifest(String source, BrandConfig brand) {
@@ -337,12 +380,23 @@ String _replaceJsonString(String source, String key, String value) {
 
 String _read(String path) => File(path).readAsStringSync();
 
+/// Writes [contents] to [path]. Skips a platform folder that is absent, as in
+/// a trimmed Docker build context that only builds web.
 void _write(String path, String contents) {
-  File(path).writeAsStringSync(contents);
+  final file = File(path);
+  if (!file.parent.existsSync()) {
+    stdout.writeln('Skipped $path (folder not present)');
+    return;
+  }
+  file.writeAsStringSync(contents);
 }
 
 void _patch(String path, String Function(String source) transform) {
   final file = File(path);
+  if (!file.existsSync()) {
+    stdout.writeln('Skipped $path (not present)');
+    return;
+  }
   final next = transform(file.readAsStringSync());
   if (next != file.readAsStringSync()) {
     file.writeAsStringSync(next);

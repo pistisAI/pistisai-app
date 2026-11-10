@@ -1,6 +1,6 @@
 # Linux Build Guide
 
-This guide explains the Linux build system for IAClé, which creates both Flatpak and .deb packages.
+This guide explains the Linux build system for Pistisai, which creates both Flatpak and .deb packages.
 
 ## Overview
 
@@ -15,7 +15,7 @@ Linux builds are **ENABLED** and fully integrated into the CI/CD pipeline. The b
 
 Linux builds produce two package formats:
 
-1. **Flatpak** (`IAClé-{version}.flatpak`)
+1. **Flatpak** (`Pistisai-{version}.flatpak`)
    - Universal package for all Linux distributions
    - Sandboxed environment with controlled permissions
    - Works on Ubuntu, Fedora, Arch, Debian, openSUSE, etc.
@@ -109,10 +109,10 @@ flatpak install -y flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//
 flatpak-builder --force-clean --repo=repo build-dir <flatpak-manifest>.yml
 
 # Create bundle
-flatpak build-bundle repo iacle.flatpak <flatpak-id>
+flatpak build-bundle repo pistisai.flatpak <flatpak-id>
 
 # Test installation
-flatpak install --user IAClé.flatpak
+flatpak install --user Pistisai.flatpak
 
 # Run the app
 flatpak run <flatpak-id>
@@ -155,7 +155,7 @@ The manifest copies the Flutter build output and installs:
 ### Option 1: GitHub Releases (Current)
 
 - Users download `.flatpak` file from GitHub releases
-- Manual installation: `flatpak install IAClé-*.flatpak`
+- Manual installation: `flatpak install Pistisai-*.flatpak`
 - Simple but requires manual updates
 
 ### Option 2: Flathub (Recommended for Future)
@@ -209,7 +209,7 @@ flatpak-builder --force-clean --repo=repo build-dir <flatpak-manifest>.yml
 ```bash
 # Check Flatpak logs
 flatpak run --command=sh <flatpak-id>
-journalctl --user -xe | grep IAClé
+journalctl --user -xe | grep Pistisai
 ```
 
 ### Missing Dependencies

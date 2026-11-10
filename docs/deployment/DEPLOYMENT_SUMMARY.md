@@ -86,8 +86,8 @@ kubectl get pods -n argocd
 ### Step 2: Check Ingress Configuration
 
 ```bash
-kubectl get ingress -n IAClé
-kubectl describe svc -n IAClé
+kubectl get ingress -n Pistisai
+kubectl describe svc -n Pistisai
 ```
 
 **Expected**: Ingress shows example.com with TLS annotations

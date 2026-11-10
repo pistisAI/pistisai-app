@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pistisai/brand/brand.dart';
 
 /// Semantic version components
 class VersionComponents {
@@ -159,7 +160,7 @@ class AutoUpdateService extends ChangeNotifier {
 
     try {
       final request = await client.getUrl(Uri.parse(
-          'https://api.github.com/repos/pistisAI/pistisai-app/releases/latest'));
+          'https://api.github.com/repos/${Brand.current.githubRepoSlug}/releases/latest'));
       final response = await request.close();
 
       if (response.statusCode != 200) {
