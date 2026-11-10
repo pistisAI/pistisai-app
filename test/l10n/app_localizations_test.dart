@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/l10n/app_localizations.dart';
+import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
 Set<String> _arbKeys(String path) {
   final json =
@@ -60,5 +61,30 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('General Settings'), findsOneWidget);
+  });
+
+  test('French messages with values keep French punctuation', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(
+      fr.visionResultError(fr.visionOcrService, 'timeout'),
+      '❌ Service de reconnaissance de texte (OCR) : timeout',
+    );
+    expect(fr.meshLastSeen('hier'), 'dernière connexion : hier');
+  });
+
+  testWidgets('a settings screen renders in French for a locked brand',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: LLMProviderSettingsScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Fournisseurs de modèles'), findsOneWidget);
+    expect(find.text('Ouvrir la configuration'), findsOneWidget);
+    expect(find.text('LLM Provider Settings'), findsNothing);
   });
 }
