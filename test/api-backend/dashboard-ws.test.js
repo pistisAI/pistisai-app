@@ -99,7 +99,7 @@ describe("DashboardWebSocketManager", () => {
 
       const data = {
         type: "agent_update",
-        agent: { id: 1, name: "Zoidbot", status: "active" },
+        agent: { id: 1, name: "Test Agent", status: "active" },
         timestamp: 1234567890,
       };
       dashboardWSManager.broadcast(data, "user1");

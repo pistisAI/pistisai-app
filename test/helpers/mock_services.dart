@@ -167,7 +167,7 @@ class MockAuthService extends ChangeNotifier implements AuthService {
     _accessToken = 'mock_access_token';
     _currentUser = UserModel(
       id: 'mock_user_id',
-      email: 'christopher.maltais@gmail.com',
+      email: 'dev@example.com',
       name: 'Test User',
       picture: 'https://example.com/avatar.png',
       createdAt: DateTime.now(),

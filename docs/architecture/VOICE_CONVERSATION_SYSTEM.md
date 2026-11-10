@@ -10,7 +10,7 @@ Make the Pistisai avatar feel like a natural local voice companion instead of a 
 
 The target experience is:
 - always listening locally
-- fast direct acknowledgement when Christopher addresses Zoidbot
+- fast direct acknowledgement when the operator addresses Pistisai
 - short conversational back-and-forth without re-entering a heavy analysis loop every turn
 - optional escalation to deeper Hermes reasoning, vision, or desktop-aware context when useful
 

@@ -6,9 +6,6 @@ import 'hermes_agent_name_reader_stub.dart'
 const String kDefaultAgentName = 'Agent';
 
 const Set<String> kLegacyHardcodedAgentTitles = {
-  'Zoid Maltek',
-  'Zoid',
-  'Zoidbot',
 };
 
 /// The companion name the user set in Avatar settings.

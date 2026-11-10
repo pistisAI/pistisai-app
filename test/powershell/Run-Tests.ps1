@@ -1,4 +1,4 @@
-# PowerShell Test Runner for Zoidbot Deployment Scripts
+# PowerShell Test Runner for Pistisai Deployment Scripts
 # Executes Pester tests with comprehensive reporting and coverage analysis
 
 [CmdletBinding()]
@@ -283,7 +283,7 @@ function Show-CoverageSummary {
 
 # Main execution
 function Main {
-    Write-Host "Zoidbot PowerShell Test Runner" -ForegroundColor Magenta
+    Write-Host "Pistisai PowerShell Test Runner" -ForegroundColor Magenta
     Write-Host "=====================================" -ForegroundColor Magenta
     Write-Host ""
     
