@@ -62,11 +62,11 @@ jobs:
           fi
           terms="$RUNNER_TEMP/deny.txt"
           printf '%s\n' "$DENYLIST" | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$terms"
-          found=0
-          check() { # $1 = label, stdin = text; prints only the label
+          hits="$RUNNER_TEMP/deny-hits.txt"
+          : > "$hits"
+          check() { # $1 = label, stdin = text; records only the label
             if grep -q -i -F -f "$terms"; then
-              echo "::error::Private term found in ${1}"
-              found=1
+              echo "$1" >> "$hits"
             fi
           }
           # Files that state the project rules name the people they exclude.
@@ -80,7 +80,8 @@ jobs:
           printf '%s\n' "$PR_BRANCH" | check "the branch name" || true
           printf '%s\n' "$PR_TITLE" | check "the pull request title" || true
           printf '%s\n' "$PR_BODY" | grep -v -i -E '^(co-authored-by|signed-off-by):' | check "the pull request body" || true
-          if [ "$found" -ne 0 ]; then
+          if [ -s "$hits" ]; then
+            while IFS= read -r where; do echo "::error::Private term found in ${where}"; done < "$hits"
             echo "Remove the personal data listed above. See the standing rules in AGENTS.md."
             exit 1
           fi
