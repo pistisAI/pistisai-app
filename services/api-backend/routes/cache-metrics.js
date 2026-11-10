@@ -8,6 +8,7 @@
  */
 
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { getCacheStats, clearCache } from '../database/cached-query-wrapper.js';
 import { getQueryCache } from '../database/query-cache.js';
@@ -16,6 +17,16 @@ import { validateSchema } from '../middleware/schema-validation.js';
 import logger from '../logger.js';
 
 const router = express.Router();
+// Same limit as the global pipeline limiter, applied here as well so every
+// route on this router is visibly rate limited.
+router.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
 
 const invalidateCacheBodySchema = z.object({
   pattern: z.string().regex(/.+/).optional(),
