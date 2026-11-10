@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import '../../services/skill_service.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -125,12 +126,13 @@ class _SkillsScreenState extends State<SkillsScreen>
   }
 
   Future<void> _showRegisterSkillDialog() async {
+    final l10n = AppLocalizations.of(context);
     final service = _skillService;
     if (service == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Skill service is unavailable on this platform'),
+        SnackBar(
+          content: Text(l10n.skillsServiceUnavailable),
         ),
       );
       return;
@@ -152,13 +154,13 @@ class _SkillsScreenState extends State<SkillsScreen>
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registered skill ${skill.name}')),
+        SnackBar(content: Text(l10n.skillsRegistered(skill.name))),
       );
       await _loadData();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to register skill: $e')),
+        SnackBar(content: Text(l10n.skillsRegisterFailed('$e'))),
       );
     }
   }
@@ -183,8 +185,9 @@ class _SkillsScreenState extends State<SkillsScreen>
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content:
-            Text('${skill.name} ${!skill.enabled ? 'enabled' : 'disabled'}'),
+        content: Text(!skill.enabled
+            ? AppLocalizations.of(context).skillsEnabled(skill.name)
+            : AppLocalizations.of(context).skillsDisabled(skill.name)),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -192,29 +195,35 @@ class _SkillsScreenState extends State<SkillsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return RefreshableScreen(
       onRefresh: _onRefresh,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Skills'),
+          title: Text(l10n.skillsTitle),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _onRefresh,
+              tooltip: l10n.commonRefresh,
             ),
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: _showRegisterSkillDialog,
-              tooltip: 'Register Skill',
+              tooltip: l10n.skillsRegisterTitle,
             ),
             PopOutButton(sectionName: 'skills', branchIndex: 8),
           ],
           bottom: TabBar(
             controller: _tabController,
-            tabs: const [
-              Tab(text: 'Registry', icon: Icon(Icons.extension_outlined)),
-              Tab(text: 'Usage', icon: Icon(Icons.bar_chart)),
-              Tab(text: 'Management', icon: Icon(Icons.settings)),
+            tabs: [
+              Tab(
+                  text: l10n.skillsTabRegistry,
+                  icon: const Icon(Icons.extension_outlined)),
+              Tab(text: l10n.skillsTabUsage, icon: const Icon(Icons.bar_chart)),
+              Tab(
+                  text: l10n.skillsTabManagement,
+                  icon: const Icon(Icons.settings)),
             ],
           ),
         ),
@@ -225,21 +234,21 @@ class _SkillsScreenState extends State<SkillsScreen>
                 : TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildRegistryTab(),
-                      _buildUsageTab(),
-                      _buildManagementTab(),
+                      _buildRegistryTab(l10n),
+                      _buildUsageTab(l10n),
+                      _buildManagementTab(l10n),
                     ],
                   ),
       ),
     );
   }
 
-  Widget _buildRegistryTab() {
+  Widget _buildRegistryTab(AppLocalizations l10n) {
     if (_skills.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.extension,
-        title: 'No Skills Registered',
-        message: 'Skills will appear here when registered',
+        title: l10n.skillsEmptyTitle,
+        message: l10n.skillsEmptyMessage,
       );
     }
 
@@ -322,14 +331,16 @@ class _SkillsScreenState extends State<SkillsScreen>
             const SizedBox(height: 12),
             Row(
               children: [
-                _buildStat(
-                    Icons.play_arrow, skill.usageCount.toString(), 'Uses'),
+                _buildStat(Icons.play_arrow, skill.usageCount.toString(),
+                    AppLocalizations.of(context).skillsStatUses),
                 const SizedBox(width: 16),
-                _buildStat(Icons.schedule,
-                    '${skill.avgResponseTime.toStringAsFixed(1)}s', 'Avg Time'),
+                _buildStat(
+                    Icons.schedule,
+                    '${skill.avgResponseTime.toStringAsFixed(1)}s',
+                    AppLocalizations.of(context).skillsStatAvgTime),
                 const SizedBox(width: 16),
                 _buildStat(Icons.access_time, _formatLastUsed(skill.lastUsed),
-                    'Last Used'),
+                    AppLocalizations.of(context).skillsStatLastUsed),
               ],
             ),
           ],
@@ -368,14 +379,14 @@ class _SkillsScreenState extends State<SkillsScreen>
     );
   }
 
-  Widget _buildUsageTab() {
+  Widget _buildUsageTab(AppLocalizations l10n) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Skill Usage by Category',
+            l10n.skillsUsageByCategory,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 24),
@@ -392,7 +403,7 @@ class _SkillsScreenState extends State<SkillsScreen>
                     children: [
                       Text(entry.key,
                           style: Theme.of(context).textTheme.bodyLarge),
-                      Text('${entry.value} uses',
+                      Text(l10n.skillsUsesCount(entry.value),
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -417,7 +428,7 @@ class _SkillsScreenState extends State<SkillsScreen>
           }),
           const SizedBox(height: 32),
           Text(
-            'Top Performing Skills',
+            l10n.skillsTopPerforming,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
@@ -429,14 +440,14 @@ class _SkillsScreenState extends State<SkillsScreen>
                     leading: Icon(_getCategoryIcon(skill.category)),
                     title: Text(skill.name),
                     subtitle: Text(
-                        '${skill.usageCount} uses • ${skill.avgResponseTime}s avg'),
+                        '${l10n.skillsUsesCount(skill.usageCount)} • ${l10n.skillsAvgSeconds('${skill.avgResponseTime}')}'),
                   )),
         ],
       ),
     );
   }
 
-  Widget _buildManagementTab() {
+  Widget _buildManagementTab(AppLocalizations l10n) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -452,28 +463,26 @@ class _SkillsScreenState extends State<SkillsScreen>
                     children: [
                       const Icon(Icons.settings, size: 20),
                       const SizedBox(width: 8),
-                      Text('Global Settings',
+                      Text(l10n.skillsGlobalSettings,
                           style: Theme.of(context).textTheme.titleMedium),
                     ],
                   ),
                   const SizedBox(height: 16),
                   SwitchListTile(
-                    title: const Text('Auto-disable slow skills'),
-                    subtitle: const Text(
-                        'Disable skills that take longer than 5 seconds'),
+                    title: Text(l10n.skillsAutoDisable),
+                    subtitle: Text(l10n.skillsAutoDisableSubtitle),
                     value: true,
                     onChanged: (value) {},
                   ),
                   SwitchListTile(
-                    title: const Text('Cache skill results'),
-                    subtitle:
-                        const Text('Store responses for identical requests'),
+                    title: Text(l10n.skillsCache),
+                    subtitle: Text(l10n.skillsCacheSubtitle),
                     value: true,
                     onChanged: (value) {},
                   ),
                   ListTile(
-                    title: const Text('Default timeout'),
-                    subtitle: const Text('30 seconds'),
+                    title: Text(l10n.skillsDefaultTimeout),
+                    subtitle: Text(l10n.skillsDefaultTimeoutValue),
                     trailing: const Text('30s'),
                     onTap: () {},
                   ),
@@ -492,21 +501,20 @@ class _SkillsScreenState extends State<SkillsScreen>
                     children: [
                       const Icon(Icons.storage, size: 20),
                       const SizedBox(width: 8),
-                      Text('Resource Limits',
+                      Text(l10n.skillsResourceLimits,
                           style: Theme.of(context).textTheme.titleMedium),
                     ],
                   ),
                   const SizedBox(height: 16),
                   ListTile(
-                    title: const Text('Max concurrent skills'),
-                    subtitle:
-                        const Text('Maximum skills running simultaneously'),
+                    title: Text(l10n.skillsMaxConcurrent),
+                    subtitle: Text(l10n.skillsMaxConcurrentSubtitle),
                     trailing: const Text('5'),
                     onTap: () {},
                   ),
                   ListTile(
-                    title: const Text('Memory per skill'),
-                    subtitle: const Text('Maximum RAM allocation per skill'),
+                    title: Text(l10n.skillsMemory),
+                    subtitle: Text(l10n.skillsMemorySubtitle),
                     trailing: const Text('512 MB'),
                     onTap: () {},
                   ),
@@ -537,15 +545,16 @@ class _SkillsScreenState extends State<SkillsScreen>
   }
 
   String _formatLastUsed(DateTime dt) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final diff = now.difference(dt);
 
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
+      return l10n.timeMinutesAgo(diff.inMinutes);
     } else if (diff.inHours < 24) {
-      return '${diff.inHours}h ago';
+      return l10n.timeHoursAgo(diff.inHours);
     } else if (diff.inDays < 7) {
-      return '${diff.inDays}d ago';
+      return l10n.timeDaysAgo(diff.inDays);
     } else {
       return '${dt.month}/${dt.day}';
     }
@@ -595,11 +604,12 @@ class _RegisterSkillDialogState extends State<_RegisterSkillDialog> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context);
     final name = _nameController.text.trim();
     final description = _descriptionController.text.trim();
     if (name.isEmpty || description.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name and description are required')),
+        SnackBar(content: Text(l10n.skillsNameDescriptionRequired)),
       );
       return;
     }
@@ -616,8 +626,9 @@ class _RegisterSkillDialogState extends State<_RegisterSkillDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('Register Skill'),
+      title: Text(l10n.skillsRegisterTitle),
       content: SizedBox(
         width: 420,
         child: Column(
@@ -625,30 +636,30 @@ class _RegisterSkillDialogState extends State<_RegisterSkillDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Creates SKILL.md under ${widget.skillsDirectory}',
+              l10n.skillsCreatesUnder(widget.skillsDirectory),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
+              decoration: InputDecoration(
+                labelText: l10n.commonName,
                 hintText: 'summarize-selection',
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _categoryController,
-              decoration: const InputDecoration(
-                labelText: 'Category',
+              decoration: InputDecoration(
+                labelText: l10n.commonCategory,
                 hintText: 'custom',
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description',
+              decoration: InputDecoration(
+                labelText: l10n.commonDescription,
               ),
               maxLines: 3,
             ),
@@ -658,11 +669,11 @@ class _RegisterSkillDialogState extends State<_RegisterSkillDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
         FilledButton(
           onPressed: _submit,
-          child: const Text('Register'),
+          child: Text(l10n.agentsRegister),
         ),
       ],
     );

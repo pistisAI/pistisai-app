@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../models/instance.dart';
 import '../../services/openclaw_manager/gateway_control_service.dart';
 import '../../services/provider_discovery_service.dart';
@@ -160,16 +161,20 @@ class _InstancesScreenState extends State<InstancesScreen> {
 
   /// Format duration for display
   String _formatUptime(Duration? duration) {
-    if (duration == null) return 'Not started';
+    final l10n = AppLocalizations.of(context);
+    if (duration == null) return l10n.instancesNotStarted;
 
     if (duration.inDays > 0) {
-      return '${duration.inDays}d ${duration.inHours % 24}h';
+      return l10n.instancesUptimeDaysHours(
+          duration.inDays, duration.inHours % 24);
     } else if (duration.inHours > 0) {
-      return '${duration.inHours}h ${duration.inMinutes % 60}m';
+      return l10n.sessionsDurationHoursMinutes(
+          duration.inHours, duration.inMinutes % 60);
     } else if (duration.inMinutes > 0) {
-      return '${duration.inMinutes}m ${duration.inSeconds % 60}s';
+      return l10n.sessionsDurationMinutesSeconds(
+          duration.inMinutes, duration.inSeconds % 60);
     } else {
-      return '${duration.inSeconds}s';
+      return l10n.sessionsDurationSeconds(duration.inSeconds);
     }
   }
 
@@ -210,43 +215,47 @@ class _InstancesScreenState extends State<InstancesScreen> {
 
   /// Handle gateway start action
   Future<void> _handleStartGateway() async {
+    final l10n = AppLocalizations.of(context);
     final success = await _gatewayService.start();
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to start gateway')),
+        SnackBar(content: Text(l10n.instancesStartFailed)),
       );
     }
   }
 
   /// Handle gateway stop action
   Future<void> _handleStopGateway() async {
+    final l10n = AppLocalizations.of(context);
     final success = await _gatewayService.stop();
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to stop gateway')),
+        SnackBar(content: Text(l10n.instancesStopFailed)),
       );
     }
   }
 
   /// Handle gateway restart action
   Future<void> _handleRestartGateway() async {
+    final l10n = AppLocalizations.of(context);
     final success = await _gatewayService.restart();
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to restart gateway')),
+        SnackBar(content: Text(l10n.instancesRestartFailed)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Instances'),
+        title: Text(l10n.instancesTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh instances',
+            tooltip: l10n.instancesRefresh,
             onPressed: _isLoading ? null : _loadData,
           ),
           const PopOutButton(
@@ -258,12 +267,12 @@ class _InstancesScreenState extends State<InstancesScreen> {
       body: RefreshableScreen(
         onRefresh: _loadData,
         errorMessage: _errorMessage,
-        child: _buildBody(),
+        child: _buildBody(l10n),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(AppLocalizations l10n) {
     if (_isLoading) {
       return const LoadingSkeleton(
         itemCount: 5,
@@ -279,8 +288,8 @@ class _InstancesScreenState extends State<InstancesScreen> {
     }
 
     if (_gatewayState == null) {
-      return const Center(
-        child: Text('No gateway state available'),
+      return Center(
+        child: Text(l10n.instancesNoGatewayState),
       );
     }
 
@@ -290,7 +299,7 @@ class _InstancesScreenState extends State<InstancesScreen> {
         children: [
           // Gateway Process Section
           CardSection(
-            title: 'Gateway Process',
+            title: l10n.instancesGatewayProcess,
             children: [
               _GatewayStateCard(
                 gatewayState: _gatewayState!,
@@ -308,7 +317,7 @@ class _InstancesScreenState extends State<InstancesScreen> {
 
           // Model Instances Section
           CardSection(
-            title: 'Model Instances',
+            title: l10n.instancesModelInstances,
             children: [
               ListView.separated(
                 shrinkWrap: true,
@@ -354,6 +363,7 @@ class _GatewayStateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final statusType = getStatusType(gatewayState.status);
     final isRunning = gatewayState.status.toLowerCase() == 'running';
     final isStarting = gatewayState.status.toLowerCase() == 'starting';
@@ -380,7 +390,7 @@ class _GatewayStateCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Port ${gatewayState.port}',
+                  l10n.instancesPort('${gatewayState.port}'),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
@@ -400,7 +410,7 @@ class _GatewayStateCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Uptime: ${formatUptime(gatewayState.uptime)}',
+                l10n.instancesUptime(formatUptime(gatewayState.uptime)),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                 ),
@@ -446,7 +456,7 @@ class _GatewayStateCard extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: onStart,
                   icon: const Icon(Icons.play_arrow),
-                  label: const Text('Start'),
+                  label: Text(l10n.commonStart),
                 ),
                 const SizedBox(width: 8),
               ],
@@ -454,7 +464,7 @@ class _GatewayStateCard extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: onStop,
                   icon: const Icon(Icons.stop),
-                  label: const Text('Stop'),
+                  label: Text(l10n.commonStop),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.errorContainer,
                     foregroundColor: theme.colorScheme.onErrorContainer,
@@ -464,7 +474,7 @@ class _GatewayStateCard extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: onRestart,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Restart'),
+                  label: Text(l10n.commonRestart),
                 ),
               ],
               if (isStarting || isStopping) ...[
@@ -475,7 +485,9 @@ class _GatewayStateCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  isStarting ? 'Starting...' : 'Stopping...',
+                  isStarting
+                      ? l10n.agentStateStarting
+                      : l10n.agentStateStopping,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
@@ -593,7 +605,7 @@ class _ModelInstanceCard extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.sync,
-                    label: 'Requests',
+                    label: AppLocalizations.of(context).instancesRequests,
                     value:
                         '${instance.activeRequests}/${instance.maxConcurrent}',
                   ),
@@ -649,7 +661,8 @@ class _ModelInstanceCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${(utilization * 100).toInt()}% utilized',
+              AppLocalizations.of(context)
+                  .instancesUtilized((utilization * 100).toInt()),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
@@ -685,7 +698,7 @@ class _StatItem extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         Text(
-          '$label: ',
+          '${AppLocalizations.of(context).commonFieldLabel(label)} ',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
@@ -769,6 +782,7 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
   }
 
   Future<void> _saveAndApply() async {
+    final l10n = AppLocalizations.of(context);
     await _settings.setHermesEnabled(_hermesEnabled);
     await _settings.setHermesUrl(_url);
     await _settings.setHermesApiKey(_apiKey);
@@ -793,8 +807,8 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_hermesEnabled
-              ? 'Hermes Agent enabled — chat will use Hermes'
-              : 'Switched back to default gateway'),
+              ? l10n.instancesHermesEnabledSnack
+              : l10n.instancesHermesDisabledSnack),
         ),
       );
     }
@@ -802,20 +816,21 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_isLoading) {
-      return const CardSection(
-        title: '🦞 Hermes Agent',
-        children: [
+      return CardSection(
+        title: l10n.instancesHermesTitle,
+        children: const [
           Center(child: CircularProgressIndicator()),
         ],
       );
     }
 
     return CardSection(
-      title: '🦞 Hermes Agent',
+      title: l10n.instancesHermesTitle,
       subtitle: _hermesEnabled
-          ? 'Active — routing chat through Hermes API server'
-          : 'Disabled — using the default Hermes gateway',
+          ? l10n.instancesHermesActive
+          : l10n.instancesHermesInactive,
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
@@ -824,10 +839,8 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
             children: [
               // Enable toggle
               SwitchListTile(
-                title: const Text('Enable Hermes Agent'),
-                subtitle: const Text(
-                  'Route chat through Hermes for tool use, file ops, web search, and code execution',
-                ),
+                title: Text(l10n.instancesHermesEnable),
+                subtitle: Text(l10n.instancesHermesEnableSubtitle),
                 value: _hermesEnabled,
                 onChanged: (v) => setState(() => _hermesEnabled = v),
                 contentPadding: EdgeInsets.zero,
@@ -838,14 +851,16 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
               // URL field
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Hermes API URL',
+                  labelText: l10n.instancesHermesUrl,
                   hintText: AppConfig.defaultHermesUrl,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.link),
                   suffixIcon: _connectionStatus == true
-                      ? Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success)
+                      ? Icon(Icons.check_circle,
+                          color: AppTheme.colorsOf(context).success)
                       : _connectionStatus == false
-                          ? Icon(Icons.error, color: AppTheme.colorsOf(context).danger)
+                          ? Icon(Icons.error,
+                              color: AppTheme.colorsOf(context).danger)
                           : null,
                 ),
                 controller: TextEditingController(text: _url),
@@ -857,11 +872,11 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
 
               // API key field
               TextField(
-                decoration: const InputDecoration(
-                  labelText: 'API Key (optional)',
-                  hintText: 'Leave empty for local-only use',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.key),
+                decoration: InputDecoration(
+                  labelText: l10n.instancesApiKeyOptional,
+                  hintText: l10n.instancesApiKeyHint,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.key),
                 ),
                 controller: TextEditingController(text: _apiKey),
                 onChanged: (v) => _apiKey = v,
@@ -884,13 +899,13 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.wifi_find),
-                    label: const Text('Test Connection'),
+                    label: Text(l10n.instancesTestConnection),
                   ),
                   const SizedBox(width: 12),
                   FilledButton.icon(
                     onPressed: _saveAndApply,
                     icon: const Icon(Icons.save),
-                    label: const Text('Apply'),
+                    label: Text(l10n.commonApply),
                   ),
                 ],
               ),

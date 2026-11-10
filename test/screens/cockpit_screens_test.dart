@@ -206,7 +206,10 @@ void main() {
 
     testWidgets('InstancesScreen renders without crashing', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: InstancesScreen()),
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: InstancesScreen(),
+        ),
       );
       // Allow async initState loading to complete
       await tester.pump(const Duration(seconds: 2));

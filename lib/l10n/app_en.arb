@@ -775,5 +775,209 @@
   "messageInputNewChat": "New Chat",
   "messageInputNoModels": "No models available",
   "messageInputSelectModel": "Select model",
-  "messageCopied": "Copied to clipboard"
+  "messageCopied": "Copied to clipboard",
+  "commonStart": "Start",
+  "commonStop": "Stop",
+  "commonRestart": "Restart",
+  "commonDelete": "Delete",
+  "commonEdit": "Edit",
+  "commonCreate": "Create",
+  "commonEnable": "Enable",
+  "commonDisable": "Disable",
+  "commonDescription": "Description",
+  "commonCategory": "Category",
+  "commonApply": "Apply",
+  "cronTitle": "Cron Jobs",
+  "cronAddJob": "Add Job",
+  "cronEmptyTitle": "No Cron Jobs",
+  "cronEmptyMessage": "Create scheduled tasks to automate maintenance",
+  "cronTriggered": "Triggered: {name}",
+  "@cronTriggered": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cronDeleteTitle": "Delete Scheduled Job",
+  "cronDeleteConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "@cronDeleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cronDeleted": "Job deleted successfully",
+  "cronDeleteFailed": "Failed to delete job",
+  "cronEditTitle": "Edit Scheduled Job",
+  "cronCreateTitle": "Create Scheduled Job",
+  "cronJobName": "Job Name",
+  "cronJobNameHint": "e.g. Daily Briefing",
+  "cronJobNameRequired": "Please enter a job name",
+  "cronSchedule": "Schedule Expression / Interval",
+  "cronScheduleHint": "e.g. 30m, every 2h, or 0 9 * * *",
+  "cronScheduleRequired": "Please enter a schedule",
+  "cronExecutionMode": "Execution Mode",
+  "cronModeAgent": "LLM Agent",
+  "cronModeScript": "Script Only (Watchdog)",
+  "cronPrompt": "Agent Instruction / Prompt",
+  "cronPromptHint": "Describe the task the agent should perform periodically...",
+  "cronPromptRequired": "Please enter instructions or attach a script",
+  "cronScriptRequiredLabel": "Script File (Required)",
+  "cronScriptOptionalLabel": "Script File (Optional)",
+  "cronScriptHint": "e.g. backup-vault.sh",
+  "cronScriptHelper": "Scripts must live under ~/.hermes/scripts/",
+  "cronScriptRequired": "Script file is required in Watchdog mode",
+  "cronWorkdir": "Workspace Directory (Optional)",
+  "cronWorkdirHint": "Absolute path to project directory",
+  "cronWorkdirHelper": "Injects project-level AGENTS.md/CLAUDE.md context",
+  "cronUpdated": "Job updated successfully",
+  "cronCreated": "Job created successfully",
+  "cronSaveFailed": "Failed to save scheduled job",
+  "cronScheduleLabel": "Schedule",
+  "cronNextRun": "Next run",
+  "cronLastRun": "Last run",
+  "cronMode": "Mode",
+  "cronModeWatchdog": "Watchdog (No Agent)",
+  "cronWorkdirLabel": "Workdir",
+  "cronRunNow": "Run Now",
+  "skillsTitle": "Skills",
+  "skillsRegisterTitle": "Register Skill",
+  "skillsTabRegistry": "Registry",
+  "skillsTabUsage": "Usage",
+  "skillsTabManagement": "Management",
+  "skillsEmptyTitle": "No Skills Registered",
+  "skillsEmptyMessage": "Skills will appear here when registered",
+  "skillsServiceUnavailable": "Skill service is unavailable on this platform",
+  "skillsRegistered": "Registered skill {name}",
+  "@skillsRegistered": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "skillsRegisterFailed": "Failed to register skill: {error}",
+  "@skillsRegisterFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "skillsEnabled": "{name} enabled",
+  "@skillsEnabled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "skillsDisabled": "{name} disabled",
+  "@skillsDisabled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "skillsStatUses": "Uses",
+  "skillsStatAvgTime": "Avg Time",
+  "skillsStatLastUsed": "Last Used",
+  "skillsUsageByCategory": "Skill Usage by Category",
+  "skillsUsesCount": "{count, plural, =1{1 use} other{{count} uses}}",
+  "@skillsUsesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skillsAvgSeconds": "{seconds}s avg",
+  "@skillsAvgSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "skillsTopPerforming": "Top Performing Skills",
+  "skillsGlobalSettings": "Global Settings",
+  "skillsAutoDisable": "Auto-disable slow skills",
+  "skillsAutoDisableSubtitle": "Disable skills that take longer than 5 seconds",
+  "skillsCache": "Cache skill results",
+  "skillsCacheSubtitle": "Store responses for identical requests",
+  "skillsDefaultTimeout": "Default timeout",
+  "skillsDefaultTimeoutValue": "30 seconds",
+  "skillsResourceLimits": "Resource Limits",
+  "skillsMaxConcurrent": "Max concurrent skills",
+  "skillsMaxConcurrentSubtitle": "Maximum skills running simultaneously",
+  "skillsMemory": "Memory per skill",
+  "skillsMemorySubtitle": "Maximum RAM allocation per skill",
+  "skillsNameDescriptionRequired": "Name and description are required",
+  "skillsCreatesUnder": "Creates SKILL.md under {directory}",
+  "@skillsCreatesUnder": {
+    "placeholders": {
+      "directory": {
+        "type": "String"
+      }
+    }
+  },
+  "instancesTitle": "Instances",
+  "instancesRefresh": "Refresh instances",
+  "instancesNotStarted": "Not started",
+  "instancesUptimeDaysHours": "{days}d {hours}h",
+  "@instancesUptimeDaysHours": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "instancesStartFailed": "Failed to start gateway",
+  "instancesStopFailed": "Failed to stop gateway",
+  "instancesRestartFailed": "Failed to restart gateway",
+  "instancesNoGatewayState": "No gateway state available",
+  "instancesGatewayProcess": "Gateway Process",
+  "instancesModelInstances": "Model Instances",
+  "instancesPort": "Port {port}",
+  "@instancesPort": {
+    "placeholders": {
+      "port": {
+        "type": "String"
+      }
+    }
+  },
+  "instancesUptime": "Uptime: {uptime}",
+  "@instancesUptime": {
+    "placeholders": {
+      "uptime": {
+        "type": "String"
+      }
+    }
+  },
+  "instancesRequests": "Requests",
+  "instancesUtilized": "{percent}% utilized",
+  "@instancesUtilized": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "instancesHermesEnabledSnack": "Hermes Agent enabled — chat will use Hermes",
+  "instancesHermesDisabledSnack": "Switched back to default gateway",
+  "instancesHermesTitle": "🦞 Hermes Agent",
+  "instancesHermesActive": "Active — routing chat through Hermes API server",
+  "instancesHermesInactive": "Disabled — using the default Hermes gateway",
+  "instancesHermesEnable": "Enable Hermes Agent",
+  "instancesHermesEnableSubtitle": "Route chat through Hermes for tool use, file ops, web search, and code execution",
+  "instancesHermesUrl": "Hermes API URL",
+  "instancesApiKeyOptional": "API Key (optional)",
+  "instancesApiKeyHint": "Leave empty for local-only use",
+  "instancesTestConnection": "Test Connection"
 }

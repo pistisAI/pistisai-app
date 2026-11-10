@@ -8,6 +8,7 @@ import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/components/welcome_screen.dart';
 import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/screens/agents/agents_screen.dart';
+import 'package:pistisai/screens/cron/cron_jobs_screen.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
@@ -185,5 +186,33 @@ void main() {
     expect(
         find.textContaining('Écrivez un message ci-dessous'), findsOneWidget);
     expect(find.textContaining('Type a message below'), findsNothing);
+  });
+
+  test('batch 7 messages follow each language rules', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.skillsUsesCount(1), '1 use');
+    expect(fr.skillsUsesCount(1), '1 utilisation');
+    expect(fr.skillsUsesCount(3), '3 utilisations');
+    expect(fr.cronDeleteConfirm('Sauvegarde'),
+        'Voulez-vous vraiment supprimer « Sauvegarde » ? Cette action est irréversible.');
+    expect(fr.instancesUtilized(80), '80 % utilisé');
+    expect(fr.instancesUptimeDaysHours(2, 3), '2 j 3 h');
+  });
+
+  testWidgets('the cron jobs screen renders in French for a locked brand',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: CronJobsScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Tâches planifiées'), findsOneWidget);
+    expect(find.text('Aucune tâche planifiée'), findsOneWidget);
+    expect(find.text('Cron Jobs'), findsNothing);
   });
 }
