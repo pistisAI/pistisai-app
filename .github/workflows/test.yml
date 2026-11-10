@@ -8,13 +8,14 @@ on:
       - "**.md"
       - "docs/**"
       - "images/**"
+  # No paths-ignore here: this workflow's last job is the status check a pull
+  # request needs before it can merge. If the workflow does not start for a
+  # docs-only pull request, that check never reports and the pull request
+  # stays blocked. The "Detect changes" job already skips the heavy jobs when
+  # no code changed, and the gate passes on skipped jobs.
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - "images/**"
 
 concurrency:
   group: ci-test-${{ github.event.pull_request.number || github.ref }}

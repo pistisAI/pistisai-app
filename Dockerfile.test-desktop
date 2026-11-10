@@ -83,7 +83,9 @@ RUN chown testuser:testuser /app && su -s /bin/bash testuser -c "flutter pub get
 
 # Build the Flutter Linux app inside the container (matches container's GLIBC)
 COPY --chown=testuser:testuser . .
-RUN su -s /bin/bash testuser -c "flutter build linux --release --dart-define=BRAND=pistisai" \
+# The rig tests the upstream brand. A white-label fork commits its own bake,
+# so re-bake pistisai (free, no licence) before building.
+RUN su -s /bin/bash testuser -c "bash tool/brand.sh pistisai && flutter build linux --release --dart-define=BRAND=pistisai" \
  && cp -r /app/build/linux/x64/release/bundle /app/bundle && chown -R testuser:testuser /app/bundle
 
 # Copy test scripts
