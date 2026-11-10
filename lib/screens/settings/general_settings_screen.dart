@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
+import '../../widgets/settings/crash_reporting_tile.dart';
 
 /// General Settings Screen - Application preferences and configuration
 class GeneralSettingsScreen extends StatelessWidget {
@@ -46,6 +47,10 @@ class GeneralSettingsScreen extends StatelessWidget {
                     onTap: () => context.go('/settings/appearance'),
                   ),
                 ),
+                const SizedBox(height: 8),
+
+                // Privacy: crash reports are opt-in
+                const CrashReportingTile(),
                 const SizedBox(height: 8),
               ],
             ),
