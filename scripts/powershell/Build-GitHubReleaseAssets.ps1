@@ -1,4 +1,4 @@
-# Zoidbot Complete Release Assets Builder
+# Pistisai Complete Release Assets Builder
 # Creates all release assets: Windows portable ZIP, Windows installer, and checksums
 
 [CmdletBinding()]
@@ -62,7 +62,7 @@ if (-not $Version) {
 }
 
 function Show-Help {
-    Write-Host "Zoidbot Complete Release Assets Builder" -ForegroundColor Cyan
+    Write-Host "Pistisai Complete Release Assets Builder" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Usage: .\Build-GitHubReleaseAssets.ps1 [options]" -ForegroundColor White
     Write-Host ""
@@ -156,7 +156,7 @@ function Build-FlutterWindows {
         $buildArgs = "build windows --release"
         Invoke-WindowsFlutterCommand -FlutterArgs $buildArgs -WorkingDirectory $ProjectRoot
 
-        $mainExecutable = Join-Path $WindowsBuildDir "zoidbot.exe"
+        $mainExecutable = Join-Path $WindowsBuildDir "pistisai.exe"
         if (-not (Test-Path $mainExecutable)) {
             throw "Flutter Windows executable not found after build at: $mainExecutable"
         }
@@ -172,7 +172,7 @@ function Build-FlutterWindows {
 function New-PortableZipPackage {
     Write-LogInfo "Creating portable ZIP package..."
     
-    $packageName = "zoidbot-$Version-portable.zip"
+    $packageName = "pistisai-$Version-portable.zip"
     New-DirectoryIfNotExists -Path $WindowsOutputDir
     
     if (-not (Test-Path $WindowsBuildDir)) {
@@ -236,7 +236,7 @@ function New-WindowsInstaller {
         }
         
         # Find the created installer
-        $installerName = "Zoidbot-Windows-$Version-Setup.exe"
+        $installerName = "Pistisai-Windows-$Version-Setup.exe"
         $installerPath = Join-Path $WindowsOutputDir $installerName
         
         if (Test-Path $installerPath) {
@@ -264,7 +264,7 @@ function New-WindowsInstaller {
 }
 
 function Main {
-    Write-LogInfo "Zoidbot Complete Release Assets Builder v$Version"
+    Write-LogInfo "Pistisai Complete Release Assets Builder v$Version"
     Write-LogInfo "============================================================"
     
     if ($Help) {

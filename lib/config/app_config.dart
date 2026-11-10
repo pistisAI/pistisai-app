@@ -103,7 +103,7 @@ class AppConfig {
   // 4. All code reads from getters, never from constants directly
   //
   // Environment Variables:
-  // - OPENCLAW_GATEWAY_HOST (e.g., "127.0.0.1", "100.78.133.50")
+  // - OPENCLAW_GATEWAY_HOST (e.g., "127.0.0.1", "100.64.0.10")
   // - OPENCLAW_GATEWAY_PORT (e.g., "18789")
   // - OPENCLAW_GATEWAY_URL (full URL, overrides host/port if set)
 

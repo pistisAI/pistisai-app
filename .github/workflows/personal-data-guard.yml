@@ -1,0 +1,87 @@
+name: "Personal data guard"
+
+# Fails a pull request that adds personal data or secrets.
+# 1. gitleaks scans the pull request's commits with .gitleaks.toml
+#    (default secret rules + personal email, phone and public IP patterns).
+# 2. A denylist of private terms is read from the PERSONAL_DATA_DENYLIST
+#    Actions secret (one term per line) and matched against the added lines,
+#    the commit messages, the branch name and the pull request title and body.
+#    The terms are never printed.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: personal-data-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: "8.30.1"
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install gitleaks
+        run: |
+          set -euo pipefail
+          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL "$url" -o "$RUNNER_TEMP/gitleaks.tgz"
+          tar -xzf "$RUNNER_TEMP/gitleaks.tgz" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" version
+
+      - name: gitleaks (pull request commits)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/gitleaks" git . \
+            --config .gitleaks.toml \
+            --log-opts="${BASE_SHA}..${HEAD_SHA}" \
+            --redact --no-banner --verbose
+
+      - name: Private-term denylist
+        env:
+          DENYLIST: ${{ secrets.PERSONAL_DATA_DENYLIST }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DENYLIST:-}" ]; then
+            echo "::warning::PERSONAL_DATA_DENYLIST secret is not set (or not available to this pull request); private-term check skipped."
+            exit 0
+          fi
+          terms="$RUNNER_TEMP/deny.txt"
+          printf '%s\n' "$DENYLIST" | tr -d '\r' | sed '/^[[:space:]]*$/d' > "$terms"
+          found=0
+          check() { # $1 = label, stdin = text; prints only the label
+            if grep -q -i -F -f "$terms"; then
+              echo "::error::Private term found in ${1}"
+              found=1
+            fi
+          }
+          # Files that state the project rules name the people they exclude.
+          while IFS= read -r f; do
+            git diff --unified=0 "${BASE_SHA}...${HEAD_SHA}" -- "$f" \
+              | grep -E '^[+]' | grep -v -E '^[+]{3}' | check "added lines of ${f}" || true
+          done < <(git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" -- . ':!AGENTS.md' ':!CLAUDE.md')
+          git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" | check "a file path" || true
+          git log --format=%B "${BASE_SHA}..${HEAD_SHA}" \
+            | grep -v -i -E '^(co-authored-by|signed-off-by):' | check "a commit message" || true
+          printf '%s\n' "$PR_BRANCH" | check "the branch name" || true
+          printf '%s\n' "$PR_TITLE" | check "the pull request title" || true
+          printf '%s\n' "$PR_BODY" | grep -v -i -E '^(co-authored-by|signed-off-by):' | check "the pull request body" || true
+          if [ "$found" -ne 0 ]; then
+            echo "Remove the personal data listed above. See the standing rules in AGENTS.md."
+            exit 1
+          fi
+          echo "No private terms found."

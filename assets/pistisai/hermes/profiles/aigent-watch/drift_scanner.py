@@ -32,7 +32,7 @@ _CITATION = re.compile(r"([\w./\\-]+\.(?:txt|json|md|py|html|jsonl))[: ](\d{1,6}
 # as their authority is circular.
 _SELF_AUTHORED = re.compile(
     r"(__NO_BAKED_IN_FILES__|"
-    r"The Long Birth|C2L Framework|zoid-read-on-christopher|habits-dossier|"
+    r"self-authored-note|dossier|"
     r"vault[/\\]Identity)", re.I)
 
 # Language that hands a claim to the person as THEIR rule/word.
@@ -167,7 +167,7 @@ def scan_file(path, content):
 
     # C4 — misattributed voice: a self-authored file cited as the person's authority.
     # Signature = self-authored filename + a line-number citation ("IDENTITY_DOC L25",
-    # "zoid-read-on-christopher.md:8").
+    # "self-authored-note.md:8").
     # A +-4 line window test was tried and over-flagged badly.
     # C4 stays narrow on purpose — precision first, widen only with telemetry.
     _AUTH_CITE = re.compile(r"(L\d{1,5}|:\d{1,5})")
@@ -263,7 +263,7 @@ def _default_targets():
     seen = set()
     scan_dirs = []
     for base in _roots():
-        scan_dirs.append((os.path.join(base, "ZoidBot", "vault"), ".md"))
+        scan_dirs.append((os.path.join(base, "Pistisai", "vault"), ".md"))
         scan_dirs.append((os.path.join(base, "docs", "personal"), ".md"))
         scan_dirs.append((os.path.join(base, "docs"), ".md"))
     for base, ext in scan_dirs:
