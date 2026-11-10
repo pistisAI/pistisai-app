@@ -1,0 +1,14 @@
+{
+  "@@locale": "fr",
+  "settingsGeneralTitle": "Paramètres généraux",
+  "settingsGeneralDescription": "Préférences et configuration de l'application.",
+  "settingsAppearanceTitle": "Paramètres d'apparence",
+  "settingsAppearanceSubtitle": "Personnaliser l'apparence",
+  "appearanceScreenTitle": "Apparence",
+  "appearanceDescription": "Personnalisez l'apparence de l'application.",
+  "appearanceThemeMode": "Thème",
+  "themeLight": "Clair",
+  "themeDark": "Sombre",
+  "themeSystem": "Système",
+  "appearanceAccentColor": "Couleur d'accent"
+}
