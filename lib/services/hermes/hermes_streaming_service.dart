@@ -249,7 +249,7 @@ class HermesStreamingService extends StreamingService {
               'message': prompt,
               'conversation_id': chatId,
               'user_id': 'operator',
-              'user_name': 'Christopher',
+              'user_name': 'operator',
               'message_id': messageId,
             }),
           )

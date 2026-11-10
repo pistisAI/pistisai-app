@@ -97,7 +97,7 @@ docker-compose stop streaming-proxy
 
 ```bash
 # Navigate to deployment directory
-cd /opt/IAClé
+cd /opt/Pistisai
 
 # Stop current services
 docker-compose down api-backend
@@ -119,10 +119,10 @@ docker-compose logs api-backend
 
 ```bash
 # Stop current service
-sudo systemctl stop IAClé-api
+sudo systemctl stop Pistisai-api
 
 # Revert code to previous version
-cd /opt/IAClé
+cd /opt/Pistisai
 git stash
 git checkout <previous_stable_commit>
 
@@ -131,16 +131,16 @@ cd api-backend
 npm ci  # Install exact versions from package-lock.json
 
 # Restart service
-sudo systemctl start IAClé-api
-sudo systemctl status IAClé-api
+sudo systemctl start Pistisai-api
+sudo systemctl status Pistisai-api
 ```
 
 #### 1.3 Revert Nginx Configuration
 
 ```bash
 # Restore previous nginx configuration
-sudo cp /etc/nginx/sites-available/IAClé.backup \
-       /etc/nginx/sites-available/IAClé
+sudo cp /etc/nginx/sites-available/Pistisai.backup \
+       /etc/nginx/sites-available/Pistisai
 
 # Test configuration
 sudo nginx -t
@@ -179,20 +179,20 @@ docker-compose logs -f api-backend
 
 ```bash
 # Create snapshot of current database state
-pg_dump IAClé > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
+pg_dump Pistisai > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
 
 # Or for other databases
-mysqldump IAClé > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
+mysqldump Pistisai > /backup/rollback-$(date +%Y%m%d-%H%M%S).sql
 ```
 
 **Restore Previous State:**
 
 ```bash
 # Restore from pre-deployment backup
-psql IAClé < /backup/pre-deployment-$(date +%Y%m%d).sql
+psql Pistisai < /backup/pre-deployment-$(date +%Y%m%d).sql
 
 # Verify database integrity
-psql -c "SELECT version();" IAClé
+psql -c "SELECT version();" Pistisai
 ```
 
 #### 2.2 Configuration Rollback
@@ -201,7 +201,7 @@ psql -c "SELECT version();" IAClé
 
 ```bash
 # Restore previous environment configuration
-sudo cp /opt/IAClé/.env.backup /opt/IAClé/.env
+sudo cp /opt/Pistisai/.env.backup /opt/Pistisai/.env
 
 # Restart services to pick up changes
 docker-compose restart api-backend
@@ -227,10 +227,10 @@ sudo systemctl reload nginx
 
 ```bash
 # List available images
-docker images | grep IAClé
+docker images | grep Pistisai
 
 # Tag previous stable image
-docker tag IAClé-api:previous IAClé-api:latest
+docker tag Pistisai-api:previous Pistisai-api:latest
 ```
 
 **Update Docker Compose:**
@@ -239,7 +239,7 @@ docker tag IAClé-api:previous IAClé-api:latest
 # Update docker-compose.yml to use previous image
 services:
   api-backend:
-    image: IAClé-api:previous
+    image: Pistisai-api:previous
     # ... rest of configuration
 ```
 
@@ -263,11 +263,11 @@ docker-compose up -d --force-recreate api-backend
 
 ```bash
 # Download from GitHub releases
-wget https://github.com/iacle-solutions/iacle-app/releases/download/v3.10.2/IAClé-linux.AppImage
-wget https://github.com/iacle-solutions/iacle-app/releases/download/v3.10.2/IAClé-windows.exe
+wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/Pistisai-linux.AppImage
+wget https://github.com/pistisAI/pistisai-app/releases/download/v3.10.2/Pistisai-windows.exe
 
 # Verify checksums
-sha256sum IAClé-linux.AppImage
+sha256sum Pistisai-linux.AppImage
 ```
 
 #### 3.2 Update Distribution Channels
@@ -291,11 +291,11 @@ EOF
 
 ```bash
 # Update DEB repository
-reprepro -b /var/www/apt remove stable IAClé
-reprepro -b /var/www/apt includedeb stable IAClé_3.10.2_amd64.deb
+reprepro -b /var/www/apt remove stable Pistisai
+reprepro -b /var/www/apt includedeb stable Pistisai_3.10.2_amd64.deb
 
 # Update AppImage repository
-cp <previous-app>.AppImage /var/www/releases/latest/iacle.AppImage
+cp <previous-app>.AppImage /var/www/releases/latest/pistisai.appImage
 ```
 
 #### 3.3 User Communication
@@ -343,7 +343,7 @@ timeout 10 wscat -c "wss://api.example.com/ws/bridge" || echo "WebSocket test fa
 
 # Test database connectivity
 echo "Testing database..."
-psql -c "SELECT 1;" IAClé || echo "Database test failed"
+psql -c "SELECT 1;" Pistisai || echo "Database test failed"
 
 # Check service status
 echo "Checking services..."
@@ -483,7 +483,7 @@ curl https://api.example.com/api/metrics | jq '.activeConnections'
 
 ```bash
 # Analyze logs from failed deployment
-grep -i error /var/log/IAClé/*.log
+grep -i error /var/log/Pistisai/*.log
 
 # Check system metrics during incident
 # Review performance data

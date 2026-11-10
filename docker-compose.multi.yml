@@ -37,7 +37,7 @@ services:
   #   build:
   #     context: .
   #     dockerfile: config/docker/Dockerfile.static-site
-  #   container_name: zoidbot-static-site
+  #   container_name: pistisai-static-site
   #   volumes:
   #     - ./static_homepage:/usr/share/nginx/html/static:ro
   #     - ./docs-site/dist:/usr/share/nginx/html/docs:ro
@@ -80,7 +80,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - SUPABASE_URL=https://bpqwsjshoqxvtdttzvbr.supabase.co
+      - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
       - SUPABASE_AUDIENCE=authenticated
     volumes:

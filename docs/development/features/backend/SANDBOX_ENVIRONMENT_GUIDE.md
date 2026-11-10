@@ -696,7 +696,7 @@ jobs:
     
     services:
       api:
-        image: ghcr.io/IAClé/IAClé/api:latest
+        image: ghcr.io/pistisai/pistisai/api:latest
         env:
           SANDBOX_MODE: true
           NODE_ENV: sandbox
@@ -725,6 +725,5 @@ jobs:
 ## Related Documentation
 
 - API Documentation Guide
-- [Authentication Guide](./AUTHENTICATION_GUIDE.md)
 - API Versioning Guide
 - [Rate Limit Documentation](./RATE_LIMIT_DOCUMENTATION.md)

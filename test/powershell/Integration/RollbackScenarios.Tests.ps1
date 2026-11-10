@@ -15,9 +15,9 @@ BeforeAll {
     # Set up rollback test configuration
     $Global:RollbackTestConfig = @{
         VPS = @{
-            Host = "staging.zoidbot.online"
+            Host = "staging.example.com"
             User = "staging-user"
-            ProjectPath = "/opt/zoidbot-staging"
+            ProjectPath = "/opt/pistisai-staging"
         }
         Git = @{
             CurrentCommit = "abc123def456"
@@ -119,8 +119,8 @@ Describe "Automatic Rollback Trigger Tests" {
                     $Global:LASTEXITCODE = 0
                     return @(
                         "CONTAINER ID   IMAGE                    STATUS",
-                        "abc123def456   zoidbot-nginx    Exited (1) 2 minutes ago",
-                        "def456ghi789   zoidbot-app      Restarting (1) 30 seconds ago"
+                        "abc123def456   pistisai-nginx    Exited (1) 2 minutes ago",
+                        "def456ghi789   pistisai-app      Restarting (1) 30 seconds ago"
                     ) -join "`n"
                 }
                 elseif ($args -like "*verify_deployment.sh*") {
@@ -364,9 +364,9 @@ Describe "Rollback Verification Tests" {
                     $Global:LASTEXITCODE = 0
                     return @(
                         "CONTAINER ID   IMAGE                    STATUS                    PORTS",
-                        "abc123def456   zoidbot-nginx    Up 2 minutes             0.0.0.0:80->80/tcp",
-                        "def456ghi789   zoidbot-app      Up 2 minutes             0.0.0.0:3000->3000/tcp",
-                        "ghi789abc123   zoidbot-api      Up 2 minutes             0.0.0.0:8080->8080/tcp"
+                        "abc123def456   pistisai-nginx    Up 2 minutes             0.0.0.0:80->80/tcp",
+                        "def456ghi789   pistisai-app      Up 2 minutes             0.0.0.0:3000->3000/tcp",
+                        "ghi789abc123   pistisai-api      Up 2 minutes             0.0.0.0:8080->8080/tcp"
                     ) -join "`n"
                 }
                 return "SSH command output"
@@ -429,7 +429,7 @@ Describe "Rollback Verification Tests" {
                 return "SSH command output"
             }
             
-            $sslCommand = "openssl x509 -in /etc/ssl/certs/zoidbot.crt -noout -dates"
+            $sslCommand = "openssl x509 -in /etc/ssl/certs/pistisai.crt -noout -dates"
             $result = ssh "$($vpsConfig.User)@$($vpsConfig.Host)" $sslCommand
             
             $result | Should -Match "notBefore"
@@ -479,8 +479,8 @@ Describe "Rollback Verification Tests" {
                 return "SSH command output"
             }
             
-            $versionCommand = "cat /opt/zoidbot-staging/assets/version.json"
-            $result = ssh "staging-user@staging.zoidbot.online" $versionCommand
+            $versionCommand = "cat /opt/pistisai-staging/assets/version.json"
+            $result = ssh "staging-user@staging.example.com" $versionCommand
             
             $result | Should -Match $deploymentConfig.PreviousVersion
             $result | Should -Match $Global:RollbackTestConfig.Git.PreviousCommit
@@ -568,11 +568,11 @@ Describe "Rollback Failure Recovery Tests" {
             $emergencyInfo = @{
                 VPSAccess = "ssh $($vpsConfig.User)@$($vpsConfig.Host)"
                 ProjectPath = $vpsConfig.ProjectPath
-                LogLocation = "/var/log/zoidbot/"
+                LogLocation = "/var/log/pistisai/"
                 BackupCommit = $Global:RollbackTestConfig.Git.PreviousCommit
                 EmergencyContacts = @(
-                    "System Administrator: admin@zoidbot.online",
-                    "Development Team: dev@zoidbot.online"
+                    "System Administrator: admin@example.com",
+                    "Development Team: dev@example.com"
                 )
             }
             

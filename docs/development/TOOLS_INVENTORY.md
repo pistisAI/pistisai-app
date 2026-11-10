@@ -1,6 +1,6 @@
 # Tools Inventory: MCP and CLI Comparison
 
-This document provides a comprehensive audit of all available tools within both the Model Context Protocol (MCP) framework and the command-line interface (CLI) environment for the IAClé project.
+This document provides a comprehensive audit of all available tools within both the Model Context Protocol (MCP) framework and the command-line interface (CLI) environment for the Pistisai project.
 
 ## 1. MCP Servers Configuration
 
@@ -170,7 +170,7 @@ The following MCP servers are currently configured and connected to this session
 
 | Tool | Location | Version | Primary Function |
 |------|----------|---------|------------------|
-| `flutter` | `/home/rightguy/dev/flutter/bin` | - | Flutter SDK |
+| `flutter` | `flutter` on `PATH` | - | Flutter SDK |
 | `zsh` | `/usr/bin/zsh` | - | Shell |
 
 ### 3.4 Shell Built-ins
@@ -301,7 +301,7 @@ Available through `compgen -b`:
 
 **Project-Specific Tools:**
 
-- Flutter SDK: `/home/rightguy/dev/flutter/bin`
+- Flutter SDK: `flutter` on `PATH`
 - Node.js packages: Global packages in `/usr/lib/node_modules`
 - Project dependencies: Listed in `package.json`
 

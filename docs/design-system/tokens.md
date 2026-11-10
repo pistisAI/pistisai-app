@@ -7,7 +7,7 @@ Use these tokens as the single source of truth for color, typography, spacing, s
 > Implementation source of truth: `lib/config/theme_config.dart` (gold palette, 2026-08).
 > Previous indigo/slate tokens were an alternative design that was never wired into the app.
 
-### Brand (IAClé Gold)
+### Brand (Pistisai Gold)
 - `brand-primary`: #FFD700
 - `brand-highlight`: #FFE44D
 - `brand-accent`: #D4A017

@@ -97,7 +97,7 @@ class DashboardWebSocketManager {
     const pool = getPool();
     try {
       const result = await pool.query(
-        'SELECT * FROM agents WHERE user_id = $1 OR user_id IS NULL',
+        'SELECT * FROM agents WHERE user_id = $1',
         [userId],
       );
       ws.send(

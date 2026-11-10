@@ -1,17 +1,15 @@
-# IAClé — run the hub from source
+# Pistisai — run the hub from source
 
-> Product description: [README](../README.md) ([English](../README.en.md))
-> Repo: [github.com/iacle-solutions/iacle-app](https://github.com/iacle-solutions/iacle-app)
+> Product description: [README](../README.md)
+> Repo: [github.com/pistisAI/pistisai-app](https://github.com/pistisAI/pistisai-app)
 
-This page is how to run the software. The offer is in the [README](../README.md) ([English](../README.en.md)).
+This page is how to run the software. The product description is in the [README](../README.md).
 
 ---
 
 ## What this repository is
 
-The IAClé desktop hub, delivered by IAClé. It is the layer in front of an agent runtime. Hermes is the primary path. OpenClaw and compatible gateways work too. Ollama and LM Studio support memory, embeddings, OCR, and speech. The main runtime stays the agent gateway.
-
-The agent runs on a computer at the client's site. The readiness audit checks whether their current PC can host it. If it can, it runs there. If not, IAClé provides a dedicated mini PC (standard: Beelink GTi15). Custom hardware only when the audit shows the need.
+The Pistisai desktop hub. It is the layer in front of an agent runtime. Hermes is the primary path. OpenClaw and compatible gateways work too. Ollama and LM Studio support memory, embeddings, OCR, and speech. The main runtime stays the agent gateway. Your AI runs on hardware you control.
 
 ---
 
@@ -37,7 +35,7 @@ CI builds these targets. To run a copy yourself, build from source.
 | Platform | CI |
 |----------|----|
 | Linux | `flutter build linux`, AppImage script in `scripts/packaging/build_appimage.sh` |
-| Windows | `flutter build windows`, Inno Setup script at `windows/installer/IAClé.iss` |
+| Windows | `flutter build windows`, Inno Setup script at `windows/installer/Pistisai.iss` |
 | macOS | `flutter build macos` |
 | Android | `flutter build apk` via `.github/workflows/build-mobile.yml` |
 | Web | `flutter build web --release --no-web-resources-cdn` |
@@ -47,8 +45,8 @@ CI builds these targets. To run a copy yourself, build from source.
 ## Quick start
 
 ```bash
-git clone https://github.com/iacle-solutions/iacle-app.git
-cd iacle-app
+git clone https://github.com/pistisAI/pistisai-app.git
+cd pistisai-app
 
 flutter pub get
 cd lib/shared && flutter pub get && cd ../..
@@ -57,7 +55,7 @@ flutter run -d linux
 flutter run -d chrome
 ```
 
-The app package is `IAClé` (Dart `>=3.5.0 <4.0.0`). `lib/shared` (`shared`) targets Dart `>=3.9.0 <4.0.0` and needs its own `flutter pub get`. Flutter is pinned to `3.47.7` in `pubspec.yaml`.
+The app package is `pistisai` (Dart `>=3.5.0 <4.0.0`). `lib/shared` (`shared`) targets Dart `>=3.9.0 <4.0.0` and needs its own `flutter pub get`. Flutter is pinned to `3.47.7` in `pubspec.yaml`.
 
 Release builds:
 
@@ -100,7 +98,7 @@ Desktop control, vision, and the channel are scoped to a device and permissioned
 
 - [deployment/DEPLOYMENT_OVERVIEW.md](deployment/DEPLOYMENT_OVERVIEW.md)
 - [deployment/SELF_HOSTING.md](deployment/SELF_HOSTING.md)
-- [SECURITY.md](../SECURITY.md) — report vulnerabilities privately to `ops@example.com` or [this repo's security advisories](https://github.com/iacle-solutions/iacle-app/security/advisories).
+- [SECURITY.md](../SECURITY.md) — report vulnerabilities privately to `ops@example.com` or [this repo's security advisories](https://github.com/pistisAI/pistisai-app/security/advisories).
 
 ---
 

@@ -340,4 +340,4 @@ class DiagnosticWidget extends StatelessWidget {
 - Full documentation: `ERROR_HANDLING_IMPLEMENTATION.md`
 - Usage examples: `examples/error_handling_example.dart`
 - Task summary: `TASK_5_SUMMARY.md`
-- Error codes: `https://docs.IAClé.com/errors/{code}`
+- Error codes: `https://docs.Pistisai.com/errors/{code}`

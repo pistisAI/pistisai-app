@@ -43,7 +43,7 @@ class Conversation {
   /// id, then loads the transcript from the harness.
   ///
   /// [agentName] is the companion the user set up — never a hardcoded
-  /// personal name like "Zoid Maltek".
+  /// personal name.
   factory Conversation.mainChannel({String? model, String? agentName}) {
     final now = DateTime.now();
     final name = (agentName ?? '').trim();

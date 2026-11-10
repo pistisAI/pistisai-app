@@ -111,9 +111,9 @@ describe("Developer Mock Bypass Authentication", () => {
     expect(response.body.message).toBe("success");
     expect(response.body.auth).toBeDefined();
     expect(response.body.auth.token).toBe(DEV_TOKEN);
-    expect(response.body.auth.payload.email).toBe("dev@pistisai.app");
-    expect(response.body.auth.payload.name).toBe("Christopher (Dev)");
-    expect(response.body.auth.payload.nickname).toBe("rightguy");
+    expect(response.body.auth.payload.email).toBe("dev@example.com");
+    expect(response.body.auth.payload.name).toBe("Dev User");
+    expect(response.body.auth.payload.nickname).toBe("dev-user");
   });
 
   it("should successfully populate auth credentials under optionalAuth for DEV_BYPASS_TOKEN", async () => {
@@ -124,7 +124,7 @@ describe("Developer Mock Bypass Authentication", () => {
 
     expect(response.body.message).toBe("success");
     expect(response.body.auth).toBeDefined();
-    expect(response.body.auth.payload.email).toBe("dev@pistisai.app");
+    expect(response.body.auth.payload.email).toBe("dev@example.com");
   });
 
   it("should reject unrecognized tokens (delegating to express-jwt/express-oauth2-jwt-bearer)", async () => {

@@ -1,4 +1,4 @@
-# IAClé PowerShell Build Scripts
+# Pistisai PowerShell Build Scripts
 
 This directory contains PowerShell scripts designed to work natively on Windows with limited WSL integration only for Linux application builds.
 
@@ -127,7 +127,7 @@ WSL is **NOT used** for:
 
 ```powershell
 # From Windows PowerShell, deploy to VPS via SSH
-ssh ops@example.com "cd /opt/IAClé && ./scripts/deploy/update_and_deploy.sh --force --verbose"
+ssh ops@example.com "cd /opt/Pistisai && ./scripts/deploy/update_and_deploy.sh --force --verbose"
 ```
 
 ### Environment Testing
