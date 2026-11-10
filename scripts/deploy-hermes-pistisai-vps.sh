@@ -4,6 +4,13 @@
 # This is NOT Simon's VPS (31.97.140.7).
 set -euo pipefail
 
+# Manual deploys are prohibited. Production deploys run only from GitHub Actions
+# (.github/workflows/deploy-web.yml). See docs/deployment/README.md.
+if [ "${GITHUB_ACTIONS:-}" != "true" ]; then
+  echo "Manual deploys are prohibited: deploy through GitHub Actions only." >&2
+  exit 1
+fi
+
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 

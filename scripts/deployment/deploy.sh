@@ -5,6 +5,13 @@
 
 set -e
 
+# Manual deploys are prohibited. Production deploys run only from GitHub Actions
+# (.github/workflows/deploy-web.yml). See docs/deployment/README.md.
+if [ "${GITHUB_ACTIONS:-}" != "true" ]; then
+  echo "Manual deploys are prohibited: deploy through GitHub Actions only." >&2
+  exit 1
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'

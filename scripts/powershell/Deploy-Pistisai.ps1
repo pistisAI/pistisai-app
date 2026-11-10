@@ -12,6 +12,13 @@ param(
 [switch]$DryRun
 )
 
+
+# Manual deploys are prohibited. Production deploys run only from GitHub Actions.
+if ($env:GITHUB_ACTIONS -ne "true") {
+    Write-Error "Manual deploys are prohibited: deploy through GitHub Actions only."
+    exit 1
+}
+
 # Configuration
 $ProjectRoot = Split-Path $PSScriptRoot -Parent | Split-Path -Parent
 

@@ -1,5 +1,14 @@
 # Deployment Documentation
 
+> **Manual deploys are prohibited.** pistisai.app (and every whitelabel fork such as
+> iacle.app) deploys only through GitHub Actions: `.github/workflows/deploy-web.yml`
+> runs on every push to `main`, builds `Dockerfile.web`, ships the image to the VPS
+> over a restricted SSH key (`deploy/vps/gha-web-deploy.sh`), purges the Cloudflare
+> zone (the job fails if the purge fails) and checks the live site. Nobody, human or
+> agent, builds or swaps containers on the VPS by hand. Older manual procedures in
+> this folder are historical only.
+
+
 This directory documents supported deployment paths for Pistisai.
 
 ## Start Here
