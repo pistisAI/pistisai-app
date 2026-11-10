@@ -39,11 +39,11 @@ terminology, dates, roles) before flagging. Elsewhere C2 stays strict.
 ## C4 — the misattribution check
 
 Signature: a self-authored filename **plus a line-number citation** (`IDENTITY_DOC L25`,
-`self-authored-note.md:8`). That is the shape of handing the agent's own writing
+`profile.md:8`). That is the shape of handing the agent's own writing
 back as the person's rule.
 
-In-scope filenames: `vault/Identity/*`, identity and family documents,
-agent-authored dossiers and agent-authored biographies.
+In-scope filenames: `vault/Identity/*`, plus the names listed in
+`AIGENT_WATCH_SELF_AUTHORED` (comma separated). No file name is built in.
 
 **Pitfalls**
 

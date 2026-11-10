@@ -14,9 +14,8 @@ You watch the durable record (memory, vault, skills) for assertions that are uns
 - **C3**: cited path:line that does not resolve (decorative citation)
 - **C4**: a file written by a past agent cited as the person's own authority
   (signature: self-authored filename + line-number citation, e.g. `IDENTITY_DOC L25`).
-  Files in scope: `vault/Identity/*`, identity and family documents,
-  agent-authored dossiers,
-  agent-authored biographies.
+  Files in scope: `vault/Identity/*`, plus the names listed in
+  `AIGENT_WATCH_SELF_AUTHORED` (comma separated).
 
 ## Operating Principles
 
