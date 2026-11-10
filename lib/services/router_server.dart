@@ -19,10 +19,17 @@ import 'package:pistisai/utils/http_constants.dart';
 
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
 ///
-/// When [authSecret] is non-null, all endpoints except `/health` and
-/// `/v1/models` require a valid `Bearer <authSecret>` header.
-/// Requests without a token receive 403; requests with the wrong token
-/// receive 401.
+/// The server listens on every interface so other devices can discover the
+/// desktop hub, but only the public paths (`/health`, `/v1/models`, the hub
+/// discovery document) are reachable from another machine without a token.
+///
+/// When [authSecret] is non-null, every non-public endpoint requires a valid
+/// `Bearer <authSecret>` header, from any address. Requests without a token
+/// receive 403; requests with the wrong token receive 401.
+///
+/// When [authSecret] is null, non-public endpoints answer only loopback
+/// callers (Hermes and the app on this machine). A request from another
+/// address receives 403.
 class RouterServer {
   final int port;
   final RateLimitManager rateLimitManager;
@@ -111,32 +118,59 @@ class RouterServer {
     _server = null;
   }
 
-  /// Auth middleware: when [authSecret] is set, rejects unauthenticated
-  /// requests to privileged endpoints. Public paths (/health, /v1/models)
-  /// always pass through.
+  /// Decides whether a request may reach a non-public endpoint.
+  ///
+  /// Pure function so the rule can be tested without opening a socket from
+  /// another machine. Returns null when the request may proceed, or the
+  /// HTTP status to answer with.
+  @visibleForTesting
+  static int? accessDecision({
+    required String path,
+    required bool fromLoopback,
+    required String? authorizationHeader,
+    required String? authSecret,
+  }) {
+    if (_publicPaths.contains(path)) return null;
+
+    if (authSecret == null) {
+      // No secret: only callers on this machine may use private endpoints.
+      return fromLoopback ? null : HttpStatus.forbidden;
+    }
+
+    if (authorizationHeader == null || authorizationHeader.isEmpty) {
+      return HttpStatus.forbidden;
+    }
+    if (authorizationHeader != 'Bearer $authSecret') {
+      return HttpStatus.unauthorized;
+    }
+    return null;
+  }
+
+  static bool _isLoopbackRequest(Request request) {
+    final info = request.context['shelf.io.connection_info'];
+    if (info is HttpConnectionInfo) {
+      return info.remoteAddress.isLoopback;
+    }
+    // Unknown origin (e.g. in-memory handler): treat as remote.
+    return false;
+  }
+
+  /// Auth middleware. Public paths always pass through. Private paths need
+  /// the bearer token when [authSecret] is set, and a loopback caller when
+  /// it is not.
   Middleware _authMiddleware() {
     return (Handler innerHandler) {
       return (Request request) {
-        // No secret configured — open access (backward compat).
-        if (authSecret == null) return innerHandler(request);
-
-        // Public endpoints are always accessible.
-        if (_publicPaths.contains(request.requestedUri.path)) {
-          return innerHandler(request);
-        }
-
-        // Check for Authorization header.
         final authHeader = request.headers['authorization'];
-        if (authHeader == null || authHeader.isEmpty) {
-          return Response.forbidden(
-            jsonEncode({'error': 'Missing Authorization header'}),
-            headers: {'Content-Type': 'application/json'},
-          );
-        }
+        final decision = accessDecision(
+          path: request.requestedUri.path,
+          fromLoopback: _isLoopbackRequest(request),
+          authorizationHeader: authHeader,
+          authSecret: authSecret,
+        );
+        if (decision == null) return innerHandler(request);
 
-        // Validate Bearer token.
-        final expected = 'Bearer $authSecret';
-        if (authHeader != expected) {
+        if (decision == HttpStatus.unauthorized) {
           return Response(
             HttpStatus.unauthorized,
             body: jsonEncode({'error': 'Invalid or missing token'}),
@@ -147,7 +181,13 @@ class RouterServer {
           );
         }
 
-        return innerHandler(request);
+        final message = authSecret == null
+            ? 'This endpoint is only available on this computer'
+            : 'Missing Authorization header';
+        return Response.forbidden(
+          jsonEncode({'error': message}),
+          headers: {'Content-Type': 'application/json'},
+        );
       };
     };
   }

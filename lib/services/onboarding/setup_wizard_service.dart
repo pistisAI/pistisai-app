@@ -862,7 +862,7 @@ class SetupWizardService extends ChangeNotifier {
               .install(agentPort: _localHermesPort());
         } catch (error, stackTrace) {
           appLogger.error(
-            '[SetupWizard] PistisAI package install failed',
+            '[SetupWizard] Brand package install failed',
             error: error,
             stackTrace: stackTrace,
           );

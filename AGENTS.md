@@ -1,6 +1,15 @@
-# IAClé — Agent Guide
+# Pistisai — Agent Guide
 
 Flutter desktop/web app + Node.js backend services: local-first companion layer for agent runtimes (Hermes primary test path, OpenClaw Gateway, compatible gateways). Ollama/LM Studio are support model providers for app-owned features (e.g. embeddings) — not primary runtimes unless wrapped by an agent runtime.
+
+## Standing rules (read first; these override anything else in this repo)
+
+- **This repository is public.** Never put personal data into code, comments, docs, tests, fixtures, configs, CI, commit messages, branch names, or PR/issue text. Personal data means: names of private people, personal phone numbers, personal email addresses, home or mailing addresses, family, legal or court matters, personal machine names, usernames, home-directory paths and device IDs, a developer's desktop setup, private server IPs, personal notes, chat or transcript fragments, model reasoning, business-plan or lender material, and any password, token or key. Use placeholders (`example.com`, `dev@example.com`, `YOUR_HOST`) and environment variables or GitHub Actions secrets instead. CI blocks pull requests that add such data.
+- **Zoid has no role in this project.** No content, data or instructions from Zoid enter this repository, and Zoid does not commit, push, open pull requests or deploy here. (The Hermes desktop hub is a product component and stays.)
+- **Deploys run only through GitHub Actions workflows.** Nobody deploys manually. Every deploy runs a full-zone Cloudflare cache purge, and the deploy fails if the purge fails.
+- **Never force-push or rewrite `main`** without the owner's explicit OK. **Never merge with failing or pending CI.**
+- **Local-first wording:** Pistisai runs on the client's computer if it has enough hardware; otherwise on a local machine we provide. Never write "no special hardware required".
+- Do not name any white-label fork or its company in this repository, except in `docs/WHITE_LABEL.md`. Refer to forks generically ("a white-label brand").
 
 ## Layout (service → port / contract)
 
@@ -60,11 +69,11 @@ The `build_number` in `assets/version.json` should match the `+<build_number>` s
 
 - Dart: `snake_case.dart`, `PascalCase` classes, single quotes; `implicit-casts:false`, `implicit-dynamic:false` enforced via `analysis_options.yaml`
 - JS/TS: `kebab-case` files, `PascalCase` classes; `backend/auth/` is CommonJS, everything else under `services/` is ESM — do not mix `require`/`import` styles across that boundary
-- Commits: conventional `feat:`/`fix:`/`docs:`/`chore:`/`test:`/`refactor:` with agent prefix `ai(<agent>): <subject>`; internal agents push to `main`, external contributors use fork → PR (`CONTRIBUTING.md`)
+- Commits: conventional `feat:`/`fix:`/`docs:`/`chore:`/`test:`/`refactor:` with agent prefix `ai(<agent>): <subject>`; every change goes through a pull request (`CONTRIBUTING.md`)
 - Platform splits via conditional imports (`dart.library.io` / `dart.library.html`); never import `dart:io` directly in shared code
 - Register services via `setupCoreServices()` / `setupAuthenticatedServices()` in `lib/di/locator.dart`; consume via `serviceLocator.get<T>()` — don't instantiate registered services directly
 - Desktop auto-bootstraps authenticated services (30s timeout); web requires explicit auth/session bootstrap first
-- GitHub issues (`github.com/iacle-solutions/iacle-app/issues`, launch tracker #39) are the work-tracking source of truth — check before substantive work
+- GitHub issues (`github.com/pistisAI/pistisai-app/issues`, launch tracker #39) are the work-tracking source of truth — check before substantive work
 
 ## MCP (OpenCode)
 
@@ -79,4 +88,4 @@ Restart OpenCode after editing `opencode.json` so it refetches server tools.
 - Jest `testPathIgnorePatterns` intentionally skips tunnel-*, `*-properties`, `*-integration`, `test/archive/`, and live-Auth0 tests; check `jest.config.js` before assuming a test runs or "passes" by being skipped
 - api-backend Jest needs `node --experimental-vm-modules ... --forceExit`; sdk uses plain `jest`
 - Don't edit `lib/**/*.g.dart` / `lib/**/*.freezed.dart` — regenerate via build_runner
-- Preserve branding exactly: `IAClé`, `OpenClaw`, `Zoidbot`
+- Preserve branding exactly: `Pistisai`, `OpenClaw`

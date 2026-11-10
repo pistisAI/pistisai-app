@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the API key authentication system for IAClé API Backend. API keys enable service-to-service communication with secure, scoped access control.
+This document describes the API key authentication system for Pistisai API Backend. API keys enable service-to-service communication with secure, scoped access control.
 
 **Requirements: 2.8**
 
@@ -52,7 +52,7 @@ ctll_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2
 
 ### Key Components
 
-- **Prefix**: `ctll_` (identifies IAClé API keys)
+- **Prefix**: `ctll_` (identifies Pistisai API keys)
 - **Random Bytes**: 32 bytes (256 bits) of cryptographically secure random data
 - **Encoding**: Hexadecimal (64 characters)
 
@@ -125,7 +125,7 @@ Response (201):
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "apiKey": "ctll_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
+  "apiKey": "ctll_example_key_do_not_use",
   "keyPrefix": "ctll_a1b2",
   "name": "Production API Key",
   "description": "For production service-to-service communication",
@@ -193,7 +193,7 @@ Response (200):
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440001",
-  "apiKey": "ctll_b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2g3",
+  "apiKey": "ctll_example_key_do_not_use",
   "keyPrefix": "ctll_b2c3",
   "name": "Production API Key",
   "description": "For production service-to-service communication",

@@ -161,10 +161,13 @@ class _AdminCenterScreenState extends State<AdminCenterScreen> {
       debugPrint(
           '[AdminCenterScreen] Checking admin authorization for: $userEmail');
 
-      // Check if user email matches the authorized admin email.
-      // The Admin Center is only available on Web (Cloud).
+      // The Admin Center is only available on Web, and only for the
+      // allow-list compiled in with --dart-define=PISTISAI_ADMIN_EMAIL.
+      const adminEmail = String.fromEnvironment('PISTISAI_ADMIN_EMAIL');
       final isAuthorized = _platformAdapter.platformService.isWeb &&
-          userEmail == 'christopher.maltais@gmail.com';
+          adminEmail.isNotEmpty &&
+          userEmail != null &&
+          userEmail.toLowerCase() == adminEmail.toLowerCase();
 
       if (isAuthorized) {
         // Initialize admin service to load roles

@@ -22,7 +22,7 @@ env:
   IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: https://deploy.pistisai.app
   COOLIFY_APP_UUID: umnmzbzlgcnjssqphnrgiejt
-  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST || '68.168.30.4' }}
+  COOLIFY_HOST: ${{ secrets.COOLIFY_HOST }}
 
 jobs:
   analyze:
@@ -193,14 +193,14 @@ jobs:
             for _ in $(seq 1 24); do
               code=$(curl -sS -o "/tmp/${host}.html" -w "%{http_code}" --max-time 30 "https://${host}/" || true)
               echo "${host} -> ${code}"
-              if [ "$code" = "200" ] && ! grep -q "404 page not found" "/tmp/${host}.html" && grep -q "IAClé" "/tmp/${host}.html"; then
+              if [ "$code" = "200" ] && ! grep -q "404 page not found" "/tmp/${host}.html" && grep -q "Pistisai" "/tmp/${host}.html"; then
                 ok=1
                 break
               fi
               sleep 5
             done
             if [ "$ok" != "1" ]; then
-              echo "https://${host}/ did not return the IAClé app"
+              echo "https://${host}/ did not return the Pistisai app"
               head -c 300 "/tmp/${host}.html" || true
               exit 1
             fi

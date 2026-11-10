@@ -8,9 +8,9 @@
   #define MyOutputDir "..\\..\\dist\\windows"
 #endif
 
-#define MyAppName "IAClé"
-#define MyAppPublisher "IAClé"
-#define MyAppURL "https://iacle.app"
+#define MyAppName "Pistisai"
+#define MyAppPublisher "Pistisai"
+#define MyAppURL "https://pistisai.app"
 #define MyAppExeName "Pistisai.exe"
 #define MyAppProtocol "app.pistisai"
 #define MyAppAssocName MyAppName + " Protocol"

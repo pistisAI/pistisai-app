@@ -3,7 +3,7 @@
 # Default id is the upstream product. Run this before a branded Flutter build.
 #
 # Paid whitelabel brands require a licence:
-#   tool/brand.sh iacle --license /path/to/iacle.licence
+#   tool/brand.sh acme --license /path/to/acme.licence
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

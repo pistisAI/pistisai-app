@@ -10,6 +10,14 @@ privacy_email: privacy@example.com
 website_domain: example.com
 website_url: https://example.com
 app_url: https://app.example.com
+api_base_url: https://api.example.com
+ws_endpoint: wss://api.example.com/ws
+tunnel_ssh_url: wss://api.example.com/ssh
+streaming_base_url: https://streaming.example.com
+admin_center_url: https://admin.example.com
+url_scheme: example
+access_team_domain: ""
+access_aud: ""
 default_locale: fr
 lock_locale: true
 logo_asset: brand/example/assets/logo.png

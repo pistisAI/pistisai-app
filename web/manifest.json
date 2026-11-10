@@ -1,11 +1,11 @@
 {
-    "name": "IAClé",
-    "short_name": "IAClé",
+    "name": "Pistisai",
+    "short_name": "Pistisai",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#181a20",
     "theme_color": "#181a20",
-    "description": "Assistant local pour les entreprises du Québec. Clavardage, voix, avatar, et actions sur le poste avec permission.",
+    "description": "A portico for private AI — four pillars that know you, run on your machine, and grow with you. Local-first AI companion with avatar, desktop control, and vision.",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [

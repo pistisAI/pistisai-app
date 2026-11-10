@@ -2,7 +2,7 @@
 
 ## Overview
 
-IAClé API implements URL-based versioning to support multiple API versions simultaneously while maintaining backward compatibility. This guide explains how versioning works and how to migrate between versions.
+Pistisai API implements URL-based versioning to support multiple API versions simultaneously while maintaining backward compatibility. This guide explains how versioning works and how to migrate between versions.
 
 **Requirements: 12.4**
 
@@ -265,7 +265,7 @@ For questions about API versioning or migration help, contact:
 
 - Email: ops@example.com
 - Documentation: https://docs.example.com
-- GitHub Issues: https://github.com/ghcr.io/IAClé/IAClé/api/issues
+- GitHub Issues: https://github.com/pistisAI/pistisai-app/issues
 
 ## Implementation Details
 

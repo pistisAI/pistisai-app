@@ -255,13 +255,13 @@ export class AuthService {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev-user',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev-user' },
           scope: 'openid profile email admin',
         };
       } else {
@@ -337,13 +337,13 @@ export class AuthService {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev-user',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev-user' },
           scope: 'openid profile email admin',
         };
       }
@@ -385,51 +385,76 @@ export class AuthService {
   }
 
   /**
-   * Resolve internal user ID from Supabase user ID
+   * Link an Access subject to an internal user without clobbering the primary id.
    */
-  async resolveUserId(supabaseId, userInfo = {}) {
+  async linkAuthSubject(userId, accessSub) {
+    await this.runQuery(
+      `INSERT INTO user_auth_subjects (subject, user_id)
+       VALUES ($1, $2)
+       ON CONFLICT (subject) DO UPDATE SET user_id = EXCLUDED.user_id`,
+      [accessSub, userId],
+      'run',
+    );
+  }
+
+  /**
+   * Resolve internal user ID from a Cloudflare Access subject (`sub`).
+   * Same email with a new Access sub (OTP then Google) maps to one user.
+   * Never overwrites users.supabase_id once set — that would orphan rows keyed
+   * by the previous subject. Additional subjects are stored in user_auth_subjects.
+   */
+  async resolveUserId(accessSub, userInfo = {}) {
     try {
-      // 1. Try to find existing user by supabase_id
+      // 1. Primary subject column
       const existingUser = await this.runQuery(
         'SELECT id FROM users WHERE supabase_id = $1',
-        [supabaseId],
+        [accessSub],
         'get',
       );
-
       if (existingUser) {
+        await this.linkAuthSubject(existingUser.id, accessSub);
         return existingUser.id;
       }
 
-      // 2. Try to find user by email
+      // 2. Previously linked alternate Access subject
+      const bySubject = await this.runQuery(
+        'SELECT user_id AS id FROM user_auth_subjects WHERE subject = $1',
+        [accessSub],
+        'get',
+      );
+      if (bySubject) {
+        return bySubject.id;
+      }
+
+      // 3. Same email, different Access sub (OTP / Google / GitHub)
       if (!userInfo.email) {
-        this.logger.error('Supabase userInfo missing email claim', { supabaseId });
+        this.logger.error('Access userInfo missing email claim', { accessSub });
         throw new Error('Invalid token: missing email claim in userInfo');
       }
       const userEmail = userInfo.email;
       const existingByEmail = await this.runQuery(
-        'SELECT id FROM users WHERE email = $1',
+        'SELECT id, supabase_id FROM users WHERE email = $1',
         [userEmail],
         'get',
       );
 
       if (existingByEmail) {
-        this.logger.info('Found existing user by email, linking supabase_id', {
+        this.logger.info('Found existing user by email; linking Access subject', {
           userId: existingByEmail.id,
           email: userEmail,
         });
 
+        // Keep the original supabase_id. Only refresh profile fields.
         await this.runQuery(
-          `UPDATE users SET 
-             supabase_id = $1, 
-             name = COALESCE($2, name),
-             nickname = COALESCE($3, nickname),
-             picture = COALESCE($4, picture),
-             email_verified = $5, 
-             locale = COALESCE($6, locale),
-             updated_at = NOW() 
-           WHERE id = $7`,
+          `UPDATE users SET
+             name = COALESCE($1, name),
+             nickname = COALESCE($2, nickname),
+             picture = COALESCE($3, picture),
+             email_verified = $4,
+             locale = COALESCE($5, locale),
+             updated_at = NOW()
+           WHERE id = $6`,
           [
-            supabaseId,
             userInfo.name,
             userInfo.nickname,
             userInfo.picture,
@@ -439,17 +464,18 @@ export class AuthService {
           ],
           'run',
         );
+        await this.linkAuthSubject(existingByEmail.id, accessSub);
         return existingByEmail.id;
       }
 
-      // 3. Create new user
-      this.logger.info('Creating new user record for Supabase ID', { supabaseId });
+      // 4. Create new user; first subject becomes supabase_id
+      this.logger.info('Creating new user record for Access subject', { accessSub });
 
       const newUser = await this.runQuery(
         `INSERT INTO users (supabase_id, email, name, nickname, picture, email_verified, locale, created_at, updated_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING id`,
         [
-          supabaseId,
+          accessSub,
           userEmail,
           userInfo.name,
           userInfo.nickname,
@@ -461,13 +487,15 @@ export class AuthService {
       );
 
       if (newUser && newUser.rows && newUser.rows.length > 0) {
-        return newUser.rows[0].id;
+        const userId = newUser.rows[0].id;
+        await this.linkAuthSubject(userId, accessSub);
+        return userId;
       }
 
       throw new Error('Failed to create user record');
     } catch (error) {
       this.logger.error('Failed to resolve user ID', {
-        supabaseId,
+        accessSub,
         error: error.message,
       });
       throw error;

@@ -28,7 +28,7 @@ export interface AuthConfig {
  */
 export function loadAuthConfig(): AuthConfig {
   const supabaseAudience = process.env.SUPABASE_AUDIENCE || 'authenticated';
-  const supabaseUrl = process.env.SUPABASE_URL || 'https://bpqwsjshoqxvtdttzvbr.supabase.co';
+  const supabaseUrl = process.env.SUPABASE_URL || '';
 
   // Derive JWKS URI with no hardcoded fallback
   const supabaseJwksUri =

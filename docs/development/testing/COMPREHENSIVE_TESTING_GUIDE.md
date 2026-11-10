@@ -1,6 +1,6 @@
 # Comprehensive Testing Guide
 
-This guide describes the current test entry points for IAClé.
+This guide describes the current test entry points for Pistisai.
 
 ## CI gates (fast path)
 
@@ -84,7 +84,7 @@ Use `dart test` (not `flutter test`) for HTTP probes — `flutter test` blocks r
 | --- | --- |
 | Streaming proxy | `cd services/streaming-proxy && npm test` |
 | SDK | `cd services/sdk && npm run build && npm test` |
-| OpenClaw skills | `cd services/openclaw-skills/IAClé && npm test` |
+| OpenClaw skills | `cd services/openclaw-skills/Pistisai && npm test` |
 
 ## Notes
 

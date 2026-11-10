@@ -2,7 +2,7 @@
 
 ## File: `avatar.riv`
 
-This directory should contain a Rive (`.riv`) animation file for the IAClé agent avatar.
+This directory should contain a Rive (`.riv`) animation file for the Pistisai agent avatar.
 
 ## Required Artboards & State Machines
 

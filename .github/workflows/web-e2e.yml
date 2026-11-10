@@ -49,7 +49,7 @@ jobs:
       - name: "📦 flutter pub get"
         run: flutter pub get
 
-      - name: Bake IAClé brand
+      - name: Bake Pistisai brand
         run: bash tool/brand.sh pistisai
 
       - name: "🌐 flutter build web --release"

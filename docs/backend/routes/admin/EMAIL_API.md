@@ -132,7 +132,7 @@ curl -X GET "https://api.example.com/api/admin/email/config" \
         "id": "config-uuid",
         "provider": "google_workspace",
         "from_address": "ops@example.com",
-        "from_name": "IAClé",
+        "from_name": "Pistisai",
         "reply_to_address": "ops@example.com",
         "is_active": true,
         "created_at": "2025-01-16T10:30:00.000Z",
@@ -200,7 +200,7 @@ curl -X DELETE "https://api.example.com/api/admin/email/config?provider=google_w
 ```json
 {
   "recipientEmail": "test@example.com",
-  "subject": "Test Email from IAClé"
+  "subject": "Test Email from Pistisai"
 }
 ```
 
@@ -224,7 +224,7 @@ curl -X POST "https://api.example.com/api/admin/email/test" \
   "data": {
     "messageId": "gmail-message-id",
     "recipientEmail": "test@example.com",
-    "subject": "Test Email from IAClé",
+    "subject": "Test Email from Pistisai",
     "sentAt": "2025-01-16T10:30:00.000Z"
   },
   "message": "Test email sent successfully",

@@ -1,6 +1,6 @@
 # Build Troubleshooting Guide
 
-This guide helps you diagnose and fix common issues with IAClé builds using GitHub Actions.
+This guide helps you diagnose and fix common issues with Pistisai builds using GitHub Actions.
 
 ## Table of Contents
 
@@ -129,7 +129,7 @@ This guide helps you diagnose and fix common issues with IAClé builds using Git
 **Solutions:**
 
 1. **Verify Inno Setup script exists**:
-   - Check `build-tools/installers/windows/IAClé_Simple.iss` exists
+   - Check `build-tools/installers/windows/Pistisai_Simple.iss` exists
    - Validate script syntax locally with Inno Setup
 
 2. **Check installation paths**:
@@ -601,7 +601,7 @@ Build times significantly longer than expected may indicate:
 
    ```bash
    # Check SHA256 checksum
-   sha256sum -c IAClé-*-arm64-v8a.apk.sha256
+   sha256sum -c Pistisai-*-arm64-v8a.apk.sha256
    ```
 
 5. **Check available storage**:
@@ -629,7 +629,7 @@ Build times significantly longer than expected may indicate:
 
    ```bash
    # View crash logs
-   adb logcat | grep -E "AndroidRuntime|IAClé"
+   adb logcat | grep -E "AndroidRuntime|Pistisai"
    ```
 
 2. **Verify permissions**:
@@ -753,7 +753,7 @@ When reporting build issues, include:
 
 **Where to report:**
 
-- GitHub Issues: https://github.com/iacle-solutions/iacle-app/issues
+- GitHub Issues: https://github.com/pistisAI/pistisai-app/issues
 - Include label: `ci/cd` or `build`
 
 ### Additional Resources
