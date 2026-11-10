@@ -52,7 +52,7 @@ services:
     container_name: pistisai-cloudflared
     command: tunnel --no-autoupdate --metrics 0.0.0.0:2000 run
     environment:
-       - TUNNEL_TOKEN=62da6c19-947b-4bf6-acad-100a73de4e0d
+       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     restart: unless-stopped
     deploy:
       resources:
@@ -129,7 +129,7 @@ services:
       - PGDATABASE=pistisai
       - PGUSER=postgres
       - PGPASSWORD=postgres
-      - SUPABASE_URL=${SUPABASE_URL:-https://bpqwsjshoqxvtdttzvbr.supabase.co}
+      - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET:-your-jwt-secret}
       - SUPABASE_AUDIENCE=authenticated
     restart: unless-stopped

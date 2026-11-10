@@ -1,6 +1,5 @@
 # Isolated Hermes overlay for the production Pistisai VPS.
 # Joins the existing Docker network used by nginx on pistisai.app.
-# Do not use this against Simon's VPS (31.97.140.7).
 name: pistisai-hermes
 
 services:

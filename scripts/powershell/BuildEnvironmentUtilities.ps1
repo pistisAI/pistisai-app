@@ -1,4 +1,4 @@
-# Zoidbot PowerShell Utilities
+# Pistisai PowerShell Utilities
 # Common functions for WSL integration, logging, and cross-platform operations
 
 [CmdletBinding()]
@@ -914,15 +914,15 @@ function Set-SSHKeyPermissions {
 function Update-SSHConfig {
     [CmdletBinding()]
     param(
-        [string]$VPSHost = "zoidbot.online",
+        [string]$VPSHost = "example.com",
         [string]$VPSUser = "cloudllm"
     )
 
     $sshConfigPath = Join-Path $env:USERPROFILE ".ssh\config"
     $configEntry = @"
 
-# Zoidbot VPS Configuration (Auto-generated)
-Host zoidbot
+# Pistisai VPS Configuration (Auto-generated)
+Host pistisai
     HostName $VPSHost
     User $VPSUser
     IdentitiesOnly yes
@@ -944,11 +944,11 @@ Host $VPSHost
 "@
 
     try {
-        # Check if config already contains Zoidbot entries
+        # Check if config already contains Pistisai entries
         if (Test-Path $sshConfigPath) {
             $existingConfig = Get-Content $sshConfigPath -Raw
-            if ($existingConfig -like "*Zoidbot VPS Configuration*") {
-                Write-LogInfo "SSH config already contains Zoidbot VPS configuration"
+            if ($existingConfig -like "*Pistisai VPS Configuration*") {
+                Write-LogInfo "SSH config already contains Pistisai VPS configuration"
                 return $true
             }
         }

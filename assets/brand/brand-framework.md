@@ -13,7 +13,7 @@ l'humanité.
 
 ## Les 4 Piliers
 
-| Titan | Direction | Domaine | Pilier Zoid | Rôle |
+| Titan | Direction | Domaine | Pilier | Rôle |
 |-------|-----------|---------|-------------|------|
 | Hyperion (Ὑπερίων) | Est (Aube) | "Celui qui veille" — Dieu de la lumière céleste | Aiman — La Face | Le visage, l'accueil |
 | Koios/Coeus (Κοῖος) | Nord (Axe) | "Questionnement" — Dieu de l'intellect | Aigent — Le Moteur | L'intelligence, la structure |
@@ -56,7 +56,7 @@ l'humanité.
 
 - **Primaire (Stoa):** App icon, splash, site web, branding principal
 - **Secondaire (Rose des Titans):** Favicon, avatar, watermark, petit format
-- Les logos SVG sont dans `C:\Users\rightguy\Documents\Pistisai-assets\`
+- Les logos sont dans `brand/iacle/assets/`.
 
 ## Notes Architecturales
 

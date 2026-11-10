@@ -29,11 +29,19 @@ _DEFAULT_PERSON_NAMES = ""
 _CITATION = re.compile(r"([\w./\\-]+\.(?:txt|json|md|py|html|jsonl))[: ](\d{1,6})")
 
 # C4 — files written by a past agent, not by the person. Citing one of these
-# as their authority is circular.
-_SELF_AUTHORED = re.compile(
-    r"(__NO_BAKED_IN_FILES__|"
-    r"The Long Birth|C2L Framework|zoid-read-on-christopher|habits-dossier|"
-    r"vault[/\\]Identity)", re.I)
+# as their authority is circular. No file names are baked in: a shipped list
+# would name personal documents in a public repository, and a generic word
+# such as "dossier" flags ordinary prose. The list is `vault/Identity` plus
+# AIGENT_WATCH_SELF_AUTHORED (comma separated), read at scan time.
+def _self_authored_names():
+    raw = os.environ.get("AIGENT_WATCH_SELF_AUTHORED", "")
+    return [p.strip() for p in raw.split(",") if p.strip()]
+
+
+def _self_authored_pattern():
+    parts = [re.escape(name) for name in _self_authored_names()]
+    parts.append(r"vault[/\\]Identity")
+    return re.compile("(" + "|".join(parts) + ")", re.I)
 
 # Language that hands a claim to the person as THEIR rule/word.
 _ATTRIBUTION = re.compile(
@@ -167,13 +175,14 @@ def scan_file(path, content):
 
     # C4 — misattributed voice: a self-authored file cited as the person's authority.
     # Signature = self-authored filename + a line-number citation ("IDENTITY_DOC L25",
-    # "zoid-read-on-christopher.md:8").
+    # "profile.md:8" when profile.md is listed in AIGENT_WATCH_SELF_AUTHORED).
     # A +-4 line window test was tried and over-flagged badly.
     # C4 stays narrow on purpose — precision first, widen only with telemetry.
     _AUTH_CITE = re.compile(r"(L\d{1,5}|:\d{1,5})")
     c4_lines = set()
+    self_authored = _self_authored_pattern()
     for i, line in enumerate(raw):
-        if _SELF_AUTHORED.search(line) and _AUTH_CITE.search(line):
+        if self_authored.search(line) and _AUTH_CITE.search(line):
             c4_lines.add(i)
 
     for i in sorted(c4_lines):
@@ -263,7 +272,10 @@ def _default_targets():
     seen = set()
     scan_dirs = []
     for base in _roots():
-        scan_dirs.append((os.path.join(base, "ZoidBot", "vault"), ".md"))
+        # No product or person name in the path: a white-label build ships
+        # this file too. AIGENT_WATCH_VAULT points at the notes folder
+        # (absolute, or relative to each root); the default is "vault".
+        scan_dirs.append((os.path.join(base, _env("AIGENT_WATCH_VAULT", "vault")), ".md"))
         scan_dirs.append((os.path.join(base, "docs", "personal"), ".md"))
         scan_dirs.append((os.path.join(base, "docs"), ".md"))
     for base, ext in scan_dirs:

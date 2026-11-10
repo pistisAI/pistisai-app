@@ -205,7 +205,10 @@ class RouterServer {
   }
 
   Response _handleListModels(Request request) {
+    // Only models whose provider is registered can be served. Listing the
+    // rest would advertise models that fail on the first call.
     final models = ModelRegistry.models.values
+        .where((m) => providers.containsKey(m.provider))
         .map((m) => {
               'id': m.id,
               'object': 'model',
@@ -234,8 +237,20 @@ class RouterServer {
       final provider = providers[config.provider];
 
       if (provider == null) {
-        return Response.internalServerError(
-            body: 'Provider not found for model: $actualModel');
+        // The caller asked for a model this router cannot serve: a client
+        // error in the OpenAI error shape, not a server failure.
+        return Response.notFound(
+          jsonEncode({
+            'error': {
+              'message': 'The model `$actualModel` is not available: '
+                  'its provider is not configured on this router.',
+              'type': 'invalid_request_error',
+              'param': 'model',
+              'code': 'model_not_found',
+            },
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
       }
 
       // 2. Start request tracking
