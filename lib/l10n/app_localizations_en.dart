@@ -2659,4 +2659,303 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get debugAuto => 'auto';
+
+  @override
+  String wizardStepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get wizardSetUpLater => 'Set up later';
+
+  @override
+  String get wizardComplete => 'Complete';
+
+  @override
+  String get wizardLoading => 'Loading...';
+
+  @override
+  String get wizardNext => 'Next';
+
+  @override
+  String get wizardCompletionFailed =>
+      'Setup could not be completed right now. Please try again.';
+
+  @override
+  String get welcomeStepSubtitle => 'Your privacy-first local AI companion';
+
+  @override
+  String get welcomeFeatureChat => 'Chat';
+
+  @override
+  String get welcomeFeatureChatDescription => 'Streaming AI responses';
+
+  @override
+  String get welcomeFeatureRuntimes => 'Agent Runtimes';
+
+  @override
+  String get welcomeFeatureRuntimesDescription =>
+      'Hermes Agent on this device or over Tailscale';
+
+  @override
+  String get welcomeFeatureAvatar => 'Evolving Avatar';
+
+  @override
+  String get welcomeFeatureAvatarDescription => 'Personalized AI companion';
+
+  @override
+  String get welcomeFeatureDesktopDescription => 'GUI automation';
+
+  @override
+  String get welcomeFeatureVisionDescription => 'Screen understanding';
+
+  @override
+  String get welcomeStepInfo =>
+      'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.';
+
+  @override
+  String get locationTitle => 'Where is Hermes running?';
+
+  @override
+  String get locationSubtitle =>
+      'Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.';
+
+  @override
+  String get locationThisDevice => 'This device';
+
+  @override
+  String get locationThisDeviceDescription =>
+      'Hermes is installed and running locally';
+
+  @override
+  String get locationTailscale => 'Tailscale device or VPS';
+
+  @override
+  String get locationTailscaleDescription =>
+      'Hermes on a home server, VPS, or other machine on your tailnet';
+
+  @override
+  String get tailscaleDiscovering => 'Discovering Tailscale devices...';
+
+  @override
+  String get tailscaleScanning => 'Scanning your tailnet';
+
+  @override
+  String get tailscaleNoDevices => 'No Tailscale Devices Found';
+
+  @override
+  String get tailscaleNoDevicesHelp =>
+      'Make sure Tailscale is installed and logged in.';
+
+  @override
+  String get tailscaleChooseOtherMethod => 'Choose different connection method';
+
+  @override
+  String get tailscaleSelectServer => 'Select your Hermes server';
+
+  @override
+  String tailscaleSelectServerHelp(String port) {
+    return 'Pick the VPS or machine running Hermes on your tailnet (port $port)';
+  }
+
+  @override
+  String get tailscaleNoIp => 'No IP';
+
+  @override
+  String get tailscaleOnline => 'Online';
+
+  @override
+  String get urlRemoteSubtitle =>
+      'Confirm the Tailscale URL, then paste the API key from your server.';
+
+  @override
+  String get urlLooking => 'Looking for Hermes on this device...';
+
+  @override
+  String get urlDetected =>
+      'Hermes is running on this device. We auto-detected the connection details below.';
+
+  @override
+  String urlEnterLocal(String port) {
+    return 'Enter the Hermes Agent URL for this device. The default port is $port.';
+  }
+
+  @override
+  String get urlConnectRemote => 'Connect to remote Hermes';
+
+  @override
+  String get urlConnectLocal => 'Connect to Hermes Agent';
+
+  @override
+  String get urlLabel => 'Hermes Agent URL';
+
+  @override
+  String get urlAutoDetectingKey => 'Auto-detecting API key...';
+
+  @override
+  String get urlApiKeyRequired => 'Hermes API Key (required)';
+
+  @override
+  String get urlApiKey => 'Hermes API Key';
+
+  @override
+  String get urlApiKeyRemoteHint => 'From API_SERVER_KEY on the remote server';
+
+  @override
+  String get urlApiKeyLocalHint => 'Auto-discovered from Hermes config';
+
+  @override
+  String get urlAutoDiscovered => 'Auto-discovered from Hermes configuration';
+
+  @override
+  String get urlSaveContinue => 'Save and Continue';
+
+  @override
+  String get urlCommandCopied => 'Command copied — run it on your VPS';
+
+  @override
+  String get urlRemoteHelp =>
+      'On your VPS, run this command and paste the output into the API key field above.';
+
+  @override
+  String get urlCopyCommand => 'Copy command';
+
+  @override
+  String get connTesting => 'Testing connection...';
+
+  @override
+  String get connDns => 'DNS resolution';
+
+  @override
+  String get connTcp => 'TCP connection';
+
+  @override
+  String get connRuntimeApi => 'Runtime API';
+
+  @override
+  String get connUnknown => 'Unknown';
+
+  @override
+  String get connFailed => 'Connection Failed';
+
+  @override
+  String get connRetry => 'Retry Test';
+
+  @override
+  String get connCheckSettings => 'Check connection settings';
+
+  @override
+  String connConnectingTo(String url) {
+    return 'Connecting to: $url';
+  }
+
+  @override
+  String get connSuccess => 'Connection Successful!';
+
+  @override
+  String get connConnectedTo => 'Connected to:';
+
+  @override
+  String get completionAllSet => 'You\'re All Set!';
+
+  @override
+  String get completionConfigured =>
+      'Your agent runtime is configured and ready to use.';
+
+  @override
+  String get completionSaving => 'Saving configuration...';
+
+  @override
+  String get completionConfiguration => 'Configuration:';
+
+  @override
+  String get completionRuntime => 'Runtime';
+
+  @override
+  String get completionLocation => 'Location';
+
+  @override
+  String get completionLocal => 'Local';
+
+  @override
+  String get completionRemote => 'Remote';
+
+  @override
+  String get completionReady => 'Ready to start chatting!';
+
+  @override
+  String get completionDone =>
+      'Your setup is complete. You can start chatting now!';
+
+  @override
+  String get installStatusInstalled => 'Installed';
+
+  @override
+  String get installStatusSkipped => 'Skipped';
+
+  @override
+  String get installStatusFailed => 'Failed';
+
+  @override
+  String get providerCustom => 'Custom';
+
+  @override
+  String get botInstallComplete =>
+      'Install complete. All steps succeeded or were skipped.';
+
+  @override
+  String botInstallFailed(String steps) {
+    return 'Install failed: $steps';
+  }
+
+  @override
+  String get eventsTitle => 'Event Stream';
+
+  @override
+  String get eventsRunFinished => 'Run finished';
+
+  @override
+  String get eventsNoRuntime => 'No agent runtime connected';
+
+  @override
+  String get eventsConnectHelp =>
+      'Connect to a Hermes runtime to see live events.';
+
+  @override
+  String get eventsResume => 'Resume';
+
+  @override
+  String get eventsPause => 'Pause';
+
+  @override
+  String get eventsWaiting => 'Waiting for agent events…';
+
+  @override
+  String get guiTitle => 'GUI Automation';
+
+  @override
+  String get guiScreenshot => 'Screenshot';
+
+  @override
+  String get guiAnalyze => 'Analyze';
+
+  @override
+  String get guiPrompt => 'What do you want to do?';
+
+  @override
+  String get guiHint => 'e.g., Click the search button, Type in the box';
+
+  @override
+  String get guiExecute => 'Execute';
+
+  @override
+  String get guiResult => 'Result';
+
+  @override
+  String get guiLocalRuntime => 'GUI Automation uses the local agent runtime.';
+
+  @override
+  String guiScreenshotSaved(String path) {
+    return 'Screenshot saved: $path';
+  }
 }

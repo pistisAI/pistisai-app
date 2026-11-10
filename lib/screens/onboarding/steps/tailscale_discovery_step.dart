@@ -1,5 +1,6 @@
 import 'package:pistisai/config/app_config.dart';
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
@@ -53,12 +54,12 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
                 ),
                 SizedBox(height: 24),
                 Text(
-                  'Discovering Tailscale devices...',
+                  AppLocalizations.of(context).tailscaleDiscovering,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Scanning your tailnet',
+                  AppLocalizations.of(context).tailscaleScanning,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppTheme.colorsOf(context).textColorLight,
                       ),
@@ -85,12 +86,12 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
         ),
         SizedBox(height: 24),
         Text(
-          'No Tailscale Devices Found',
+          AppLocalizations.of(context).tailscaleNoDevices,
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         SizedBox(height: 16),
         Text(
-          'Make sure Tailscale is installed and logged in.',
+          AppLocalizations.of(context).tailscaleNoDevicesHelp,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppTheme.colorsOf(context).textColorLight,
               ),
@@ -99,13 +100,13 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
         OutlinedButton.icon(
           onPressed: () => wizard.discoverTailscaleDevices(),
           icon: const Icon(Icons.refresh),
-          label: const Text('Retry'),
+          label: Text(AppLocalizations.of(context).commonRetry),
         ),
         const SizedBox(height: 16),
         TextButton.icon(
           onPressed: () => wizard.previousStep(),
           icon: const Icon(Icons.arrow_back),
-          label: const Text('Choose different connection method'),
+          label: Text(AppLocalizations.of(context).tailscaleChooseOtherMethod),
         ),
       ],
     );
@@ -121,12 +122,13 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
         ),
         const SizedBox(height: 24),
         Text(
-          'Select your Hermes server',
+          AppLocalizations.of(context).tailscaleSelectServer,
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         SizedBox(height: 8),
         Text(
-          'Pick the VPS or machine running Hermes on your tailnet (port ${AppConfig.defaultHermesPort})',
+          AppLocalizations.of(context)
+              .tailscaleSelectServerHelp('${AppConfig.defaultHermesPort}'),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppTheme.colorsOf(context).textColorLight,
               ),
@@ -182,7 +184,9 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
               decoration: BoxDecoration(
                 color: device.isOnline
                     ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
-                    : AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.2),
+                    : AppTheme.colorsOf(context)
+                        .textColorLight
+                        .withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -205,7 +209,8 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    device.primaryIP ?? 'No IP',
+                    device.primaryIP ??
+                        AppLocalizations.of(context).tailscaleNoIp,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontFamily: 'monospace',
                           color: AppTheme.colorsOf(context).textColorLight,
@@ -224,12 +229,18 @@ class _TailscaleDiscoveryStepState extends State<TailscaleDiscoveryStep> {
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: device.isOnline
-                      ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
-                      : AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.2),
+                      ? AppTheme.colorsOf(context)
+                          .success
+                          .withValues(alpha: 0.1)
+                      : AppTheme.colorsOf(context)
+                          .textColorLight
+                          .withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  device.isOnline ? 'Online' : 'Offline',
+                  device.isOnline
+                      ? AppLocalizations.of(context).tailscaleOnline
+                      : AppLocalizations.of(context).homeStatusOffline,
                   style: TextStyle(
                     fontSize: 12,
                     color: device.isOnline

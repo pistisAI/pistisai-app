@@ -2704,4 +2704,311 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get debugAuto => 'automatique';
+
+  @override
+  String wizardStepOf(int current, int total) {
+    return 'Étape $current sur $total';
+  }
+
+  @override
+  String get wizardSetUpLater => 'Configurer plus tard';
+
+  @override
+  String get wizardComplete => 'Terminer';
+
+  @override
+  String get wizardLoading => 'Chargement…';
+
+  @override
+  String get wizardNext => 'Suivant';
+
+  @override
+  String get wizardCompletionFailed =>
+      'La configuration n\'a pas pu être terminée. Réessayez.';
+
+  @override
+  String get welcomeStepSubtitle =>
+      'Votre compagnon IA local, qui respecte votre vie privée';
+
+  @override
+  String get welcomeFeatureChat => 'Discussion';
+
+  @override
+  String get welcomeFeatureChatDescription => 'Réponses de l\'IA en direct';
+
+  @override
+  String get welcomeFeatureRuntimes => 'Environnements d\'agents';
+
+  @override
+  String get welcomeFeatureRuntimesDescription =>
+      'Hermes Agent sur cet appareil ou par Tailscale';
+
+  @override
+  String get welcomeFeatureAvatar => 'Avatar évolutif';
+
+  @override
+  String get welcomeFeatureAvatarDescription => 'Compagnon IA personnalisé';
+
+  @override
+  String get welcomeFeatureDesktopDescription =>
+      'Automatisation de l\'interface';
+
+  @override
+  String get welcomeFeatureVisionDescription => 'Compréhension de l\'écran';
+
+  @override
+  String get welcomeStepInfo =>
+      'Nous allons configurer votre IA locale en 2 minutes environ. Tout le traitement se fait en privé sur votre ordinateur.';
+
+  @override
+  String get locationTitle => 'Où Hermes fonctionne-t-il ?';
+
+  @override
+  String get locationSubtitle =>
+      'Hermes peut fonctionner sur cet ordinateur ou sur une autre machine que vous joignez par Tailscale, y compris un serveur privé virtuel (VPS).';
+
+  @override
+  String get locationThisDevice => 'Cet appareil';
+
+  @override
+  String get locationThisDeviceDescription =>
+      'Hermes est installé et fonctionne localement';
+
+  @override
+  String get locationTailscale => 'Appareil Tailscale ou VPS';
+
+  @override
+  String get locationTailscaleDescription =>
+      'Hermes sur un serveur à la maison, un VPS ou une autre machine de votre réseau Tailscale';
+
+  @override
+  String get tailscaleDiscovering => 'Recherche des appareils Tailscale…';
+
+  @override
+  String get tailscaleScanning => 'Analyse de votre réseau Tailscale';
+
+  @override
+  String get tailscaleNoDevices => 'Aucun appareil Tailscale trouvé';
+
+  @override
+  String get tailscaleNoDevicesHelp =>
+      'Vérifiez que Tailscale est installé et connecté.';
+
+  @override
+  String get tailscaleChooseOtherMethod =>
+      'Choisir une autre méthode de connexion';
+
+  @override
+  String get tailscaleSelectServer => 'Choisissez votre serveur Hermes';
+
+  @override
+  String tailscaleSelectServerHelp(String port) {
+    return 'Choisissez le VPS ou la machine qui exécute Hermes sur votre réseau Tailscale (port $port)';
+  }
+
+  @override
+  String get tailscaleNoIp => 'Aucune IP';
+
+  @override
+  String get tailscaleOnline => 'En ligne';
+
+  @override
+  String get urlRemoteSubtitle =>
+      'Confirmez l\'URL Tailscale, puis collez la clé API de votre serveur.';
+
+  @override
+  String get urlLooking => 'Recherche de Hermes sur cet appareil…';
+
+  @override
+  String get urlDetected =>
+      'Hermes fonctionne sur cet appareil. Les informations de connexion ci-dessous ont été détectées automatiquement.';
+
+  @override
+  String urlEnterLocal(String port) {
+    return 'Entrez l\'URL de Hermes Agent pour cet appareil. Le port par défaut est $port.';
+  }
+
+  @override
+  String get urlConnectRemote => 'Se connecter à un Hermes distant';
+
+  @override
+  String get urlConnectLocal => 'Se connecter à Hermes Agent';
+
+  @override
+  String get urlLabel => 'URL de Hermes Agent';
+
+  @override
+  String get urlAutoDetectingKey => 'Détection automatique de la clé API…';
+
+  @override
+  String get urlApiKeyRequired => 'Clé API Hermes (obligatoire)';
+
+  @override
+  String get urlApiKey => 'Clé API Hermes';
+
+  @override
+  String get urlApiKeyRemoteHint =>
+      'Valeur de API_SERVER_KEY sur le serveur distant';
+
+  @override
+  String get urlApiKeyLocalHint =>
+      'Détectée automatiquement dans la configuration de Hermes';
+
+  @override
+  String get urlAutoDiscovered =>
+      'Détectée automatiquement dans la configuration de Hermes';
+
+  @override
+  String get urlSaveContinue => 'Enregistrer et continuer';
+
+  @override
+  String get urlCommandCopied => 'Commande copiée — exécutez-la sur votre VPS';
+
+  @override
+  String get urlRemoteHelp =>
+      'Sur votre VPS, exécutez cette commande et collez le résultat dans le champ de la clé API ci-dessus.';
+
+  @override
+  String get urlCopyCommand => 'Copier la commande';
+
+  @override
+  String get connTesting => 'Test de la connexion…';
+
+  @override
+  String get connDns => 'Résolution DNS';
+
+  @override
+  String get connTcp => 'Connexion TCP';
+
+  @override
+  String get connRuntimeApi => 'API de l\'environnement';
+
+  @override
+  String get connUnknown => 'Inconnue';
+
+  @override
+  String get connFailed => 'Échec de la connexion';
+
+  @override
+  String get connRetry => 'Relancer le test';
+
+  @override
+  String get connCheckSettings => 'Vérifier les réglages de connexion';
+
+  @override
+  String connConnectingTo(String url) {
+    return 'Connexion à : $url';
+  }
+
+  @override
+  String get connSuccess => 'Connexion réussie !';
+
+  @override
+  String get connConnectedTo => 'Connecté à :';
+
+  @override
+  String get completionAllSet => 'Tout est prêt !';
+
+  @override
+  String get completionConfigured =>
+      'Votre environnement d\'agent est configuré et prêt à l\'emploi.';
+
+  @override
+  String get completionSaving => 'Enregistrement de la configuration…';
+
+  @override
+  String get completionConfiguration => 'Configuration :';
+
+  @override
+  String get completionRuntime => 'Environnement';
+
+  @override
+  String get completionLocation => 'Emplacement';
+
+  @override
+  String get completionLocal => 'Local';
+
+  @override
+  String get completionRemote => 'Distant';
+
+  @override
+  String get completionReady => 'Prêt à discuter !';
+
+  @override
+  String get completionDone =>
+      'La configuration est terminée. Vous pouvez commencer à discuter !';
+
+  @override
+  String get installStatusInstalled => 'Installé';
+
+  @override
+  String get installStatusSkipped => 'Ignoré';
+
+  @override
+  String get installStatusFailed => 'Échec';
+
+  @override
+  String get providerCustom => 'Personnalisé';
+
+  @override
+  String get botInstallComplete =>
+      'Installation terminée. Toutes les étapes ont réussi ou ont été ignorées.';
+
+  @override
+  String botInstallFailed(String steps) {
+    return 'Échec de l\'installation : $steps';
+  }
+
+  @override
+  String get eventsTitle => 'Flux d\'événements';
+
+  @override
+  String get eventsRunFinished => 'Exécution terminée';
+
+  @override
+  String get eventsNoRuntime => 'Aucun environnement d\'agent connecté';
+
+  @override
+  String get eventsConnectHelp =>
+      'Connectez un environnement Hermes pour voir les événements en direct.';
+
+  @override
+  String get eventsResume => 'Reprendre';
+
+  @override
+  String get eventsPause => 'Pause';
+
+  @override
+  String get eventsWaiting => 'En attente d\'événements de l\'agent…';
+
+  @override
+  String get guiTitle => 'Automatisation de l\'interface';
+
+  @override
+  String get guiScreenshot => 'Capture d\'écran';
+
+  @override
+  String get guiAnalyze => 'Analyser';
+
+  @override
+  String get guiPrompt => 'Que voulez-vous faire ?';
+
+  @override
+  String get guiHint =>
+      'ex. : cliquer sur le bouton de recherche, écrire dans la zone';
+
+  @override
+  String get guiExecute => 'Exécuter';
+
+  @override
+  String get guiResult => 'Résultat';
+
+  @override
+  String get guiLocalRuntime =>
+      'L\'automatisation de l\'interface utilise l\'environnement d\'agent local.';
+
+  @override
+  String guiScreenshotSaved(String path) {
+    return 'Capture enregistrée : $path';
+  }
 }

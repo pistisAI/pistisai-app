@@ -18,6 +18,7 @@ import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
+import 'package:pistisai/screens/onboarding/steps/welcome_step.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
 Set<String> _arbKeys(String path) {
@@ -307,5 +308,30 @@ void main() {
     expect(find.text('Débogage'), findsOneWidget);
     expect(find.text('Diagnostic de connexion'), findsOneWidget);
     expect(find.text('Debug'), findsNothing);
+  });
+
+  test('batch 11 setup wizard messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.wizardStepOf(2, 6), 'Étape 2 sur 6');
+    expect(fr.locationTitle, 'Où Hermes fonctionne-t-il ?');
+    expect(fr.connConnectingTo('http://127.0.0.1:8642'),
+        'Connexion à : http://127.0.0.1:8642');
+    expect(fr.botInstallFailed('agent'), "Échec de l'installation : agent");
+  });
+
+  testWidgets('the setup wizard welcome step renders in French',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: Scaffold(body: WelcomeStep()),
+      ),
+    );
+    await tester.pump();
+    expect(find.textContaining('Nous allons configurer votre IA locale'),
+        findsOneWidget);
+    expect(find.textContaining("We'll set up your local AI"), findsNothing);
   });
 }

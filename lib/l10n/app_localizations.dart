@@ -4777,6 +4777,552 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'auto'**
   String get debugAuto;
+
+  /// No description provided for @wizardStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String wizardStepOf(int current, int total);
+
+  /// No description provided for @wizardSetUpLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up later'**
+  String get wizardSetUpLater;
+
+  /// No description provided for @wizardComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get wizardComplete;
+
+  /// No description provided for @wizardLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get wizardLoading;
+
+  /// No description provided for @wizardNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get wizardNext;
+
+  /// No description provided for @wizardCompletionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup could not be completed right now. Please try again.'**
+  String get wizardCompletionFailed;
+
+  /// No description provided for @welcomeStepSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your privacy-first local AI companion'**
+  String get welcomeStepSubtitle;
+
+  /// No description provided for @welcomeFeatureChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get welcomeFeatureChat;
+
+  /// No description provided for @welcomeFeatureChatDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Streaming AI responses'**
+  String get welcomeFeatureChatDescription;
+
+  /// No description provided for @welcomeFeatureRuntimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Runtimes'**
+  String get welcomeFeatureRuntimes;
+
+  /// No description provided for @welcomeFeatureRuntimesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes Agent on this device or over Tailscale'**
+  String get welcomeFeatureRuntimesDescription;
+
+  /// No description provided for @welcomeFeatureAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolving Avatar'**
+  String get welcomeFeatureAvatar;
+
+  /// No description provided for @welcomeFeatureAvatarDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized AI companion'**
+  String get welcomeFeatureAvatarDescription;
+
+  /// No description provided for @welcomeFeatureDesktopDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'GUI automation'**
+  String get welcomeFeatureDesktopDescription;
+
+  /// No description provided for @welcomeFeatureVisionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen understanding'**
+  String get welcomeFeatureVisionDescription;
+
+  /// No description provided for @welcomeStepInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.'**
+  String get welcomeStepInfo;
+
+  /// No description provided for @locationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where is Hermes running?'**
+  String get locationTitle;
+
+  /// No description provided for @locationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.'**
+  String get locationSubtitle;
+
+  /// No description provided for @locationThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device'**
+  String get locationThisDevice;
+
+  /// No description provided for @locationThisDeviceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes is installed and running locally'**
+  String get locationThisDeviceDescription;
+
+  /// No description provided for @locationTailscale.
+  ///
+  /// In en, this message translates to:
+  /// **'Tailscale device or VPS'**
+  String get locationTailscale;
+
+  /// No description provided for @locationTailscaleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes on a home server, VPS, or other machine on your tailnet'**
+  String get locationTailscaleDescription;
+
+  /// No description provided for @tailscaleDiscovering.
+  ///
+  /// In en, this message translates to:
+  /// **'Discovering Tailscale devices...'**
+  String get tailscaleDiscovering;
+
+  /// No description provided for @tailscaleScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning your tailnet'**
+  String get tailscaleScanning;
+
+  /// No description provided for @tailscaleNoDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No Tailscale Devices Found'**
+  String get tailscaleNoDevices;
+
+  /// No description provided for @tailscaleNoDevicesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure Tailscale is installed and logged in.'**
+  String get tailscaleNoDevicesHelp;
+
+  /// No description provided for @tailscaleChooseOtherMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose different connection method'**
+  String get tailscaleChooseOtherMethod;
+
+  /// No description provided for @tailscaleSelectServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your Hermes server'**
+  String get tailscaleSelectServer;
+
+  /// No description provided for @tailscaleSelectServerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the VPS or machine running Hermes on your tailnet (port {port})'**
+  String tailscaleSelectServerHelp(String port);
+
+  /// No description provided for @tailscaleNoIp.
+  ///
+  /// In en, this message translates to:
+  /// **'No IP'**
+  String get tailscaleNoIp;
+
+  /// No description provided for @tailscaleOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get tailscaleOnline;
+
+  /// No description provided for @urlRemoteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the Tailscale URL, then paste the API key from your server.'**
+  String get urlRemoteSubtitle;
+
+  /// No description provided for @urlLooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for Hermes on this device...'**
+  String get urlLooking;
+
+  /// No description provided for @urlDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes is running on this device. We auto-detected the connection details below.'**
+  String get urlDetected;
+
+  /// No description provided for @urlEnterLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the Hermes Agent URL for this device. The default port is {port}.'**
+  String urlEnterLocal(String port);
+
+  /// No description provided for @urlConnectRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to remote Hermes'**
+  String get urlConnectRemote;
+
+  /// No description provided for @urlConnectLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Hermes Agent'**
+  String get urlConnectLocal;
+
+  /// No description provided for @urlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes Agent URL'**
+  String get urlLabel;
+
+  /// No description provided for @urlAutoDetectingKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-detecting API key...'**
+  String get urlAutoDetectingKey;
+
+  /// No description provided for @urlApiKeyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes API Key (required)'**
+  String get urlApiKeyRequired;
+
+  /// No description provided for @urlApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes API Key'**
+  String get urlApiKey;
+
+  /// No description provided for @urlApiKeyRemoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'From API_SERVER_KEY on the remote server'**
+  String get urlApiKeyRemoteHint;
+
+  /// No description provided for @urlApiKeyLocalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-discovered from Hermes config'**
+  String get urlApiKeyLocalHint;
+
+  /// No description provided for @urlAutoDiscovered.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-discovered from Hermes configuration'**
+  String get urlAutoDiscovered;
+
+  /// No description provided for @urlSaveContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and Continue'**
+  String get urlSaveContinue;
+
+  /// No description provided for @urlCommandCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Command copied — run it on your VPS'**
+  String get urlCommandCopied;
+
+  /// No description provided for @urlRemoteHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'On your VPS, run this command and paste the output into the API key field above.'**
+  String get urlRemoteHelp;
+
+  /// No description provided for @urlCopyCommand.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy command'**
+  String get urlCopyCommand;
+
+  /// No description provided for @connTesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Testing connection...'**
+  String get connTesting;
+
+  /// No description provided for @connDns.
+  ///
+  /// In en, this message translates to:
+  /// **'DNS resolution'**
+  String get connDns;
+
+  /// No description provided for @connTcp.
+  ///
+  /// In en, this message translates to:
+  /// **'TCP connection'**
+  String get connTcp;
+
+  /// No description provided for @connRuntimeApi.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime API'**
+  String get connRuntimeApi;
+
+  /// No description provided for @connUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get connUnknown;
+
+  /// No description provided for @connFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Failed'**
+  String get connFailed;
+
+  /// No description provided for @connRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry Test'**
+  String get connRetry;
+
+  /// No description provided for @connCheckSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Check connection settings'**
+  String get connCheckSettings;
+
+  /// No description provided for @connConnectingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to: {url}'**
+  String connConnectingTo(String url);
+
+  /// No description provided for @connSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Successful!'**
+  String get connSuccess;
+
+  /// No description provided for @connConnectedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to:'**
+  String get connConnectedTo;
+
+  /// No description provided for @completionAllSet.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re All Set!'**
+  String get completionAllSet;
+
+  /// No description provided for @completionConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Your agent runtime is configured and ready to use.'**
+  String get completionConfigured;
+
+  /// No description provided for @completionSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving configuration...'**
+  String get completionSaving;
+
+  /// No description provided for @completionConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration:'**
+  String get completionConfiguration;
+
+  /// No description provided for @completionRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime'**
+  String get completionRuntime;
+
+  /// No description provided for @completionLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get completionLocation;
+
+  /// No description provided for @completionLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Local'**
+  String get completionLocal;
+
+  /// No description provided for @completionRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote'**
+  String get completionRemote;
+
+  /// No description provided for @completionReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to start chatting!'**
+  String get completionReady;
+
+  /// No description provided for @completionDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your setup is complete. You can start chatting now!'**
+  String get completionDone;
+
+  /// No description provided for @installStatusInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed'**
+  String get installStatusInstalled;
+
+  /// No description provided for @installStatusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get installStatusSkipped;
+
+  /// No description provided for @installStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get installStatusFailed;
+
+  /// No description provided for @providerCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get providerCustom;
+
+  /// No description provided for @botInstallComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Install complete. All steps succeeded or were skipped.'**
+  String get botInstallComplete;
+
+  /// No description provided for @botInstallFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Install failed: {steps}'**
+  String botInstallFailed(String steps);
+
+  /// No description provided for @eventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Stream'**
+  String get eventsTitle;
+
+  /// No description provided for @eventsRunFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Run finished'**
+  String get eventsRunFinished;
+
+  /// No description provided for @eventsNoRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent runtime connected'**
+  String get eventsNoRuntime;
+
+  /// No description provided for @eventsConnectHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to a Hermes runtime to see live events.'**
+  String get eventsConnectHelp;
+
+  /// No description provided for @eventsResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get eventsResume;
+
+  /// No description provided for @eventsPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get eventsPause;
+
+  /// No description provided for @eventsWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for agent events…'**
+  String get eventsWaiting;
+
+  /// No description provided for @guiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GUI Automation'**
+  String get guiTitle;
+
+  /// No description provided for @guiScreenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot'**
+  String get guiScreenshot;
+
+  /// No description provided for @guiAnalyze.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze'**
+  String get guiAnalyze;
+
+  /// No description provided for @guiPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to do?'**
+  String get guiPrompt;
+
+  /// No description provided for @guiHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Click the search button, Type in the box'**
+  String get guiHint;
+
+  /// No description provided for @guiExecute.
+  ///
+  /// In en, this message translates to:
+  /// **'Execute'**
+  String get guiExecute;
+
+  /// No description provided for @guiResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get guiResult;
+
+  /// No description provided for @guiLocalRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'GUI Automation uses the local agent runtime.'**
+  String get guiLocalRuntime;
+
+  /// No description provided for @guiScreenshotSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot saved: {path}'**
+  String guiScreenshotSaved(String path);
 }
 
 class _AppLocalizationsDelegate
