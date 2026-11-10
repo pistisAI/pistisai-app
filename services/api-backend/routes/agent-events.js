@@ -1,4 +1,5 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { getPool } from '../database/db-pool.js';
@@ -7,6 +8,16 @@ import logger from '../logger.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 
 const router = express.Router();
+// Same limit as the global pipeline limiter, applied here as well so every
+// route on this router is visibly rate limited.
+router.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
 
 const agentEventBodySchema = z.object({
   agent_id: z.string().min(1),
