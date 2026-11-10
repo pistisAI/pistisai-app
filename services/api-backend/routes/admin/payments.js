@@ -23,6 +23,8 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
+import { validateSchema } from '../../middleware/schema-validation.js';
+import { RefundSchema } from '../../schemas/validation-schemas.js';
 
 const router = express.Router();
 
@@ -537,63 +539,11 @@ router.post(
   '/refunds',
   adminRateLimiter,
   adminAuth(['process_refunds']),
+  validateSchema({ body: RefundSchema }),
   async (req, res) => {
     try {
       const pool = getPool();
       const { transactionId, amount, reason, reasonDetails } = req.body;
-
-      // Validate required fields
-      if (!transactionId) {
-        return res.status(400).json({
-          error: 'Transaction ID is required',
-          code: 'TRANSACTION_ID_REQUIRED',
-        });
-      }
-
-      if (!reason) {
-        return res.status(400).json({
-          error: 'Refund reason is required',
-          code: 'REASON_REQUIRED',
-        });
-      }
-
-      // Validate transactionId format (UUID)
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(transactionId)) {
-        return res.status(400).json({
-          error: 'Invalid transaction ID format',
-          code: 'INVALID_TRANSACTION_ID',
-        });
-      }
-
-      // Validate reason
-      const validReasons = [
-        'customer_request',
-        'billing_error',
-        'service_issue',
-        'duplicate',
-        'fraudulent',
-        'other',
-      ];
-      if (!validReasons.includes(reason)) {
-        return res.status(400).json({
-          error: 'Invalid refund reason',
-          code: 'INVALID_REASON',
-          validReasons,
-        });
-      }
-
-      // Validate amount if provided
-      if (amount !== undefined && amount !== null) {
-        const parsedAmount = parseFloat(amount);
-        if (isNaN(parsedAmount) || parsedAmount <= 0) {
-          return res.status(400).json({
-            error: 'Refund amount must be a positive number',
-            code: 'INVALID_AMOUNT',
-          });
-        }
-      }
 
       // Get transaction to verify it exists and can be refunded
       const transactionQuery = `
