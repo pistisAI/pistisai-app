@@ -12,6 +12,11 @@ import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/screens/agents/agents_screen.dart';
 import 'package:pistisai/screens/avatar/avatar_customization_screen.dart';
 import 'package:pistisai/screens/cron/cron_jobs_screen.dart';
+import 'package:pistisai/screens/debug/debug_screen.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
+import 'package:provider/provider.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
@@ -264,5 +269,43 @@ void main() {
         'Environnement actif : Hermes Agent');
     expect(fr.configUpdateAvailable('3.2.0'), 'Mise à jour disponible : 3.2.0');
     expect(fr.configWhatsNew('3.2.0'), 'Nouveautés de la version 3.2.0');
+  });
+
+  test('batch 10 file and debug messages follow each language rules', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.filesDeleteConfirm(1), 'Are you sure you want to delete 1 item?');
+    expect(fr.filesDeleteConfirm(3),
+        'Voulez-vous vraiment supprimer 3 éléments ?');
+    expect(fr.filesSelected(1), '1 sélectionné');
+    expect(fr.filesSizeKb('12.5'), '12.5 Ko');
+    expect(fr.debugModelsAvailable(2), '2 modèles disponibles');
+  });
+
+  testWidgets('the debug screen renders in French for a locked brand',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final connectionManager = ConnectionManagerService(
+      hermesStreamingService: HermesStreamingService(),
+      settingsPreferenceService: SettingsPreferenceService(),
+      autoDetectOnInitialize: false,
+    );
+    addTearDown(connectionManager.dispose);
+    await tester.pumpWidget(
+      ChangeNotifierProvider<ConnectionManagerService>.value(
+        value: connectionManager,
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          locale: const Locale('fr'),
+          localizationsDelegates: brandLocalizationsDelegates,
+          supportedLocales: const [Locale('fr'), Locale('en')],
+          home: const DebugScreen(),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Débogage'), findsOneWidget);
+    expect(find.text('Diagnostic de connexion'), findsOneWidget);
+    expect(find.text('Debug'), findsNothing);
   });
 }

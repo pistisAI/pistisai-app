@@ -4363,6 +4363,420 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No changelog available'**
   String get configNoChangelog;
+
+  /// No description provided for @filesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'File Operations'**
+  String get filesTitle;
+
+  /// No description provided for @filesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load directory: {error}'**
+  String filesLoadFailed(String error);
+
+  /// No description provided for @filesNewDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'New Directory'**
+  String get filesNewDirectory;
+
+  /// No description provided for @filesDirectoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory Name'**
+  String get filesDirectoryName;
+
+  /// No description provided for @filesDirectoryNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a directory name'**
+  String get filesDirectoryNameRequired;
+
+  /// No description provided for @filesCreateDirectoryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create directory: {error}'**
+  String filesCreateDirectoryFailed(String error);
+
+  /// No description provided for @filesNewFile.
+  ///
+  /// In en, this message translates to:
+  /// **'New File'**
+  String get filesNewFile;
+
+  /// No description provided for @filesFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'File Name'**
+  String get filesFileName;
+
+  /// No description provided for @filesFileNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a file name'**
+  String get filesFileNameRequired;
+
+  /// No description provided for @filesCreateFileFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create file: {error}'**
+  String filesCreateFileFailed(String error);
+
+  /// No description provided for @filesConfirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get filesConfirmDelete;
+
+  /// No description provided for @filesDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Are you sure you want to delete 1 item?} other{Are you sure you want to delete {count} items?}}'**
+  String filesDeleteConfirm(int count);
+
+  /// No description provided for @filesDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete items: {error}'**
+  String filesDeleteFailed(String error);
+
+  /// No description provided for @filesCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied: {name}'**
+  String filesCopied(String name);
+
+  /// No description provided for @filesCut.
+  ///
+  /// In en, this message translates to:
+  /// **'Cut: {name}'**
+  String filesCut(String name);
+
+  /// No description provided for @filesPasted.
+  ///
+  /// In en, this message translates to:
+  /// **'Pasted successfully'**
+  String get filesPasted;
+
+  /// No description provided for @filesMoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved successfully'**
+  String get filesMoved;
+
+  /// No description provided for @filesPasteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to paste: {error}'**
+  String filesPasteFailed(String error);
+
+  /// No description provided for @filesRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get filesRename;
+
+  /// No description provided for @filesNewName.
+  ///
+  /// In en, this message translates to:
+  /// **'New Name'**
+  String get filesNewName;
+
+  /// No description provided for @filesNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
+  String get filesNameRequired;
+
+  /// No description provided for @filesRenameFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to rename: {error}'**
+  String filesRenameFailed(String error);
+
+  /// No description provided for @filesOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get filesOk;
+
+  /// No description provided for @filesSizeBytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} B'**
+  String filesSizeBytes(String size);
+
+  /// No description provided for @filesSizeKb.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String filesSizeKb(String size);
+
+  /// No description provided for @filesSizeMb.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB'**
+  String filesSizeMb(String size);
+
+  /// No description provided for @filesDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory'**
+  String get filesDirectory;
+
+  /// No description provided for @filesFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get filesFile;
+
+  /// No description provided for @filesSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get filesSize;
+
+  /// No description provided for @filesModified.
+  ///
+  /// In en, this message translates to:
+  /// **'Modified'**
+  String get filesModified;
+
+  /// No description provided for @filesPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get filesPath;
+
+  /// No description provided for @filesPaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get filesPaste;
+
+  /// No description provided for @filesGoHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Home'**
+  String get filesGoHome;
+
+  /// No description provided for @filesSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String filesSelected(int count);
+
+  /// No description provided for @filesCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get filesCopy;
+
+  /// No description provided for @filesMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Move'**
+  String get filesMove;
+
+  /// No description provided for @filesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This folder is empty'**
+  String get filesEmpty;
+
+  /// No description provided for @filesDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get filesDetails;
+
+  /// No description provided for @debugTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug'**
+  String get debugTitle;
+
+  /// No description provided for @debugLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load debug data: {error}'**
+  String debugLoadFailed(String error);
+
+  /// No description provided for @debugConnectedToGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to Gateway'**
+  String get debugConnectedToGateway;
+
+  /// No description provided for @debugNoModel.
+  ///
+  /// In en, this message translates to:
+  /// **'no model'**
+  String get debugNoModel;
+
+  /// No description provided for @debugUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown'**
+  String get debugUnknown;
+
+  /// No description provided for @debugConnectionDebugger.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Debugger'**
+  String get debugConnectionDebugger;
+
+  /// No description provided for @debugConnectionDebuggerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Hermes gateway connectivity'**
+  String get debugConnectionDebuggerSubtitle;
+
+  /// No description provided for @debugTesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Testing...'**
+  String get debugTesting;
+
+  /// No description provided for @debugRunConnectionTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Connection Test'**
+  String get debugRunConnectionTest;
+
+  /// No description provided for @debugNoTestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No tests run yet. Click \"Run Connection Test\" to check Hermes gateway health.'**
+  String get debugNoTestsYet;
+
+  /// No description provided for @debugApiInspector.
+  ///
+  /// In en, this message translates to:
+  /// **'API Inspector'**
+  String get debugApiInspector;
+
+  /// No description provided for @debugApiInspectorSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send requests to any endpoint'**
+  String get debugApiInspectorSubtitle;
+
+  /// No description provided for @debugMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get debugMethod;
+
+  /// No description provided for @debugUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get debugUrl;
+
+  /// No description provided for @debugBodyJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Body (JSON)'**
+  String get debugBodyJson;
+
+  /// No description provided for @debugSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get debugSending;
+
+  /// No description provided for @debugSendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get debugSendRequest;
+
+  /// No description provided for @debugNoRequestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests sent yet.'**
+  String get debugNoRequestsYet;
+
+  /// No description provided for @debugUrlRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: URL is required'**
+  String get debugUrlRequired;
+
+  /// No description provided for @debugSendingMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending {method} request...'**
+  String debugSendingMethod(String method);
+
+  /// No description provided for @debugServiceStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Status'**
+  String get debugServiceStatus;
+
+  /// No description provided for @debugServiceStatusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Health checks and diagnostics'**
+  String get debugServiceStatusSubtitle;
+
+  /// No description provided for @debugConnectionManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Manager'**
+  String get debugConnectionManager;
+
+  /// No description provided for @debugHermesGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes Gateway'**
+  String get debugHermesGateway;
+
+  /// No description provided for @debugActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get debugActive;
+
+  /// No description provided for @debugUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unreachable'**
+  String get debugUnreachable;
+
+  /// No description provided for @debugActiveModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Model'**
+  String get debugActiveModel;
+
+  /// No description provided for @debugNoneSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'None selected'**
+  String get debugNoneSelected;
+
+  /// No description provided for @debugModelsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 model available} other{{count} models available}}'**
+  String debugModelsAvailable(int count);
+
+  /// No description provided for @debugLastError.
+  ///
+  /// In en, this message translates to:
+  /// **'Last error: {error}'**
+  String debugLastError(String error);
+
+  /// No description provided for @debugAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'auto'**
+  String get debugAuto;
 }
 
 class _AppLocalizationsDelegate

@@ -1413,5 +1413,193 @@
       }
     }
   },
-  "configNoChangelog": "No changelog available"
+  "configNoChangelog": "No changelog available",
+  "filesTitle": "File Operations",
+  "filesLoadFailed": "Failed to load directory: {error}",
+  "@filesLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesNewDirectory": "New Directory",
+  "filesDirectoryName": "Directory Name",
+  "filesDirectoryNameRequired": "Please enter a directory name",
+  "filesCreateDirectoryFailed": "Failed to create directory: {error}",
+  "@filesCreateDirectoryFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesNewFile": "New File",
+  "filesFileName": "File Name",
+  "filesFileNameRequired": "Please enter a file name",
+  "filesCreateFileFailed": "Failed to create file: {error}",
+  "@filesCreateFileFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesConfirmDelete": "Confirm Delete",
+  "filesDeleteConfirm": "{count, plural, =1{Are you sure you want to delete 1 item?} other{Are you sure you want to delete {count} items?}}",
+  "@filesDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filesDeleteFailed": "Failed to delete items: {error}",
+  "@filesDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesCopied": "Copied: {name}",
+  "@filesCopied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "filesCut": "Cut: {name}",
+  "@filesCut": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "filesPasted": "Pasted successfully",
+  "filesMoved": "Moved successfully",
+  "filesPasteFailed": "Failed to paste: {error}",
+  "@filesPasteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesRename": "Rename",
+  "filesNewName": "New Name",
+  "filesNameRequired": "Please enter a name",
+  "filesRenameFailed": "Failed to rename: {error}",
+  "@filesRenameFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesOk": "OK",
+  "filesSizeBytes": "{size} B",
+  "@filesSizeBytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "filesSizeKb": "{size} KB",
+  "@filesSizeKb": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "filesSizeMb": "{size} MB",
+  "@filesSizeMb": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "filesDirectory": "Directory",
+  "filesFile": "File",
+  "filesSize": "Size",
+  "filesModified": "Modified",
+  "filesPath": "Path",
+  "filesPaste": "Paste",
+  "filesGoHome": "Go Home",
+  "filesSelected": "{count} selected",
+  "@filesSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filesCopy": "Copy",
+  "filesMove": "Move",
+  "filesEmpty": "This folder is empty",
+  "filesDetails": "Details",
+  "debugTitle": "Debug",
+  "debugLoadFailed": "Failed to load debug data: {error}",
+  "@debugLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "debugConnectedToGateway": "Connected to Gateway",
+  "debugNoModel": "no model",
+  "debugUnknown": "unknown",
+  "debugConnectionDebugger": "Connection Debugger",
+  "debugConnectionDebuggerSubtitle": "Test Hermes gateway connectivity",
+  "debugTesting": "Testing...",
+  "debugRunConnectionTest": "Run Connection Test",
+  "debugNoTestsYet": "No tests run yet. Click \"Run Connection Test\" to check Hermes gateway health.",
+  "debugApiInspector": "API Inspector",
+  "debugApiInspectorSubtitle": "Send requests to any endpoint",
+  "debugMethod": "Method",
+  "debugUrl": "URL",
+  "debugBodyJson": "Body (JSON)",
+  "debugSending": "Sending...",
+  "debugSendRequest": "Send Request",
+  "debugNoRequestsYet": "No requests sent yet.",
+  "debugUrlRequired": "Error: URL is required",
+  "debugSendingMethod": "Sending {method} request...",
+  "@debugSendingMethod": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "debugServiceStatus": "Service Status",
+  "debugServiceStatusSubtitle": "Health checks and diagnostics",
+  "debugConnectionManager": "Connection Manager",
+  "debugHermesGateway": "Hermes Gateway",
+  "debugActive": "Active",
+  "debugUnreachable": "Unreachable",
+  "debugActiveModel": "Active Model",
+  "debugNoneSelected": "None selected",
+  "debugModelsAvailable": "{count, plural, =1{1 model available} other{{count} models available}}",
+  "@debugModelsAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "debugLastError": "Last error: {error}",
+  "@debugLastError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "debugAuto": "auto"
 }

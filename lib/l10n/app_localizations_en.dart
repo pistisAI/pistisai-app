@@ -2404,4 +2404,259 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get configNoChangelog => 'No changelog available';
+
+  @override
+  String get filesTitle => 'File Operations';
+
+  @override
+  String filesLoadFailed(String error) {
+    return 'Failed to load directory: $error';
+  }
+
+  @override
+  String get filesNewDirectory => 'New Directory';
+
+  @override
+  String get filesDirectoryName => 'Directory Name';
+
+  @override
+  String get filesDirectoryNameRequired => 'Please enter a directory name';
+
+  @override
+  String filesCreateDirectoryFailed(String error) {
+    return 'Failed to create directory: $error';
+  }
+
+  @override
+  String get filesNewFile => 'New File';
+
+  @override
+  String get filesFileName => 'File Name';
+
+  @override
+  String get filesFileNameRequired => 'Please enter a file name';
+
+  @override
+  String filesCreateFileFailed(String error) {
+    return 'Failed to create file: $error';
+  }
+
+  @override
+  String get filesConfirmDelete => 'Confirm Delete';
+
+  @override
+  String filesDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Are you sure you want to delete $count items?',
+      one: 'Are you sure you want to delete 1 item?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String filesDeleteFailed(String error) {
+    return 'Failed to delete items: $error';
+  }
+
+  @override
+  String filesCopied(String name) {
+    return 'Copied: $name';
+  }
+
+  @override
+  String filesCut(String name) {
+    return 'Cut: $name';
+  }
+
+  @override
+  String get filesPasted => 'Pasted successfully';
+
+  @override
+  String get filesMoved => 'Moved successfully';
+
+  @override
+  String filesPasteFailed(String error) {
+    return 'Failed to paste: $error';
+  }
+
+  @override
+  String get filesRename => 'Rename';
+
+  @override
+  String get filesNewName => 'New Name';
+
+  @override
+  String get filesNameRequired => 'Please enter a name';
+
+  @override
+  String filesRenameFailed(String error) {
+    return 'Failed to rename: $error';
+  }
+
+  @override
+  String get filesOk => 'OK';
+
+  @override
+  String filesSizeBytes(String size) {
+    return '$size B';
+  }
+
+  @override
+  String filesSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String filesSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String get filesDirectory => 'Directory';
+
+  @override
+  String get filesFile => 'File';
+
+  @override
+  String get filesSize => 'Size';
+
+  @override
+  String get filesModified => 'Modified';
+
+  @override
+  String get filesPath => 'Path';
+
+  @override
+  String get filesPaste => 'Paste';
+
+  @override
+  String get filesGoHome => 'Go Home';
+
+  @override
+  String filesSelected(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get filesCopy => 'Copy';
+
+  @override
+  String get filesMove => 'Move';
+
+  @override
+  String get filesEmpty => 'This folder is empty';
+
+  @override
+  String get filesDetails => 'Details';
+
+  @override
+  String get debugTitle => 'Debug';
+
+  @override
+  String debugLoadFailed(String error) {
+    return 'Failed to load debug data: $error';
+  }
+
+  @override
+  String get debugConnectedToGateway => 'Connected to Gateway';
+
+  @override
+  String get debugNoModel => 'no model';
+
+  @override
+  String get debugUnknown => 'unknown';
+
+  @override
+  String get debugConnectionDebugger => 'Connection Debugger';
+
+  @override
+  String get debugConnectionDebuggerSubtitle =>
+      'Test Hermes gateway connectivity';
+
+  @override
+  String get debugTesting => 'Testing...';
+
+  @override
+  String get debugRunConnectionTest => 'Run Connection Test';
+
+  @override
+  String get debugNoTestsYet =>
+      'No tests run yet. Click \"Run Connection Test\" to check Hermes gateway health.';
+
+  @override
+  String get debugApiInspector => 'API Inspector';
+
+  @override
+  String get debugApiInspectorSubtitle => 'Send requests to any endpoint';
+
+  @override
+  String get debugMethod => 'Method';
+
+  @override
+  String get debugUrl => 'URL';
+
+  @override
+  String get debugBodyJson => 'Body (JSON)';
+
+  @override
+  String get debugSending => 'Sending...';
+
+  @override
+  String get debugSendRequest => 'Send Request';
+
+  @override
+  String get debugNoRequestsYet => 'No requests sent yet.';
+
+  @override
+  String get debugUrlRequired => 'Error: URL is required';
+
+  @override
+  String debugSendingMethod(String method) {
+    return 'Sending $method request...';
+  }
+
+  @override
+  String get debugServiceStatus => 'Service Status';
+
+  @override
+  String get debugServiceStatusSubtitle => 'Health checks and diagnostics';
+
+  @override
+  String get debugConnectionManager => 'Connection Manager';
+
+  @override
+  String get debugHermesGateway => 'Hermes Gateway';
+
+  @override
+  String get debugActive => 'Active';
+
+  @override
+  String get debugUnreachable => 'Unreachable';
+
+  @override
+  String get debugActiveModel => 'Active Model';
+
+  @override
+  String get debugNoneSelected => 'None selected';
+
+  @override
+  String debugModelsAvailable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count models available',
+      one: '1 model available',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String debugLastError(String error) {
+    return 'Last error: $error';
+  }
+
+  @override
+  String get debugAuto => 'auto';
 }

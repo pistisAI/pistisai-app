@@ -2442,4 +2442,266 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get configNoChangelog => 'Aucune liste des nouveautés disponible';
+
+  @override
+  String get filesTitle => 'Opérations sur les fichiers';
+
+  @override
+  String filesLoadFailed(String error) {
+    return 'Impossible de charger le dossier : $error';
+  }
+
+  @override
+  String get filesNewDirectory => 'Nouveau dossier';
+
+  @override
+  String get filesDirectoryName => 'Nom du dossier';
+
+  @override
+  String get filesDirectoryNameRequired => 'Entrez un nom de dossier';
+
+  @override
+  String filesCreateDirectoryFailed(String error) {
+    return 'Impossible de créer le dossier : $error';
+  }
+
+  @override
+  String get filesNewFile => 'Nouveau fichier';
+
+  @override
+  String get filesFileName => 'Nom du fichier';
+
+  @override
+  String get filesFileNameRequired => 'Entrez un nom de fichier';
+
+  @override
+  String filesCreateFileFailed(String error) {
+    return 'Impossible de créer le fichier : $error';
+  }
+
+  @override
+  String get filesConfirmDelete => 'Confirmer la suppression';
+
+  @override
+  String filesDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Voulez-vous vraiment supprimer $count éléments ?',
+      one: 'Voulez-vous vraiment supprimer $count élément ?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String filesDeleteFailed(String error) {
+    return 'Impossible de supprimer les éléments : $error';
+  }
+
+  @override
+  String filesCopied(String name) {
+    return 'Copié : $name';
+  }
+
+  @override
+  String filesCut(String name) {
+    return 'Coupé : $name';
+  }
+
+  @override
+  String get filesPasted => 'Collé';
+
+  @override
+  String get filesMoved => 'Déplacé';
+
+  @override
+  String filesPasteFailed(String error) {
+    return 'Impossible de coller : $error';
+  }
+
+  @override
+  String get filesRename => 'Renommer';
+
+  @override
+  String get filesNewName => 'Nouveau nom';
+
+  @override
+  String get filesNameRequired => 'Entrez un nom';
+
+  @override
+  String filesRenameFailed(String error) {
+    return 'Impossible de renommer : $error';
+  }
+
+  @override
+  String get filesOk => 'OK';
+
+  @override
+  String filesSizeBytes(String size) {
+    return '$size o';
+  }
+
+  @override
+  String filesSizeKb(String size) {
+    return '$size Ko';
+  }
+
+  @override
+  String filesSizeMb(String size) {
+    return '$size Mo';
+  }
+
+  @override
+  String get filesDirectory => 'Dossier';
+
+  @override
+  String get filesFile => 'Fichier';
+
+  @override
+  String get filesSize => 'Taille';
+
+  @override
+  String get filesModified => 'Modifié le';
+
+  @override
+  String get filesPath => 'Chemin';
+
+  @override
+  String get filesPaste => 'Coller';
+
+  @override
+  String get filesGoHome => 'Dossier de départ';
+
+  @override
+  String filesSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sélectionnés',
+      one: '$count sélectionné',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filesCopy => 'Copier';
+
+  @override
+  String get filesMove => 'Déplacer';
+
+  @override
+  String get filesEmpty => 'Ce dossier est vide';
+
+  @override
+  String get filesDetails => 'Détails';
+
+  @override
+  String get debugTitle => 'Débogage';
+
+  @override
+  String debugLoadFailed(String error) {
+    return 'Impossible de charger les données de débogage : $error';
+  }
+
+  @override
+  String get debugConnectedToGateway => 'Connecté à la passerelle';
+
+  @override
+  String get debugNoModel => 'aucun modèle';
+
+  @override
+  String get debugUnknown => 'inconnu';
+
+  @override
+  String get debugConnectionDebugger => 'Diagnostic de connexion';
+
+  @override
+  String get debugConnectionDebuggerSubtitle =>
+      'Tester la connexion à la passerelle Hermes';
+
+  @override
+  String get debugTesting => 'Test en cours…';
+
+  @override
+  String get debugRunConnectionTest => 'Lancer le test de connexion';
+
+  @override
+  String get debugNoTestsYet =>
+      'Aucun test lancé. Cliquez sur « Lancer le test de connexion » pour vérifier l\'état de la passerelle Hermes.';
+
+  @override
+  String get debugApiInspector => 'Inspecteur d\'API';
+
+  @override
+  String get debugApiInspectorSubtitle =>
+      'Envoyer des requêtes à n\'importe quel point d\'accès';
+
+  @override
+  String get debugMethod => 'Méthode';
+
+  @override
+  String get debugUrl => 'URL';
+
+  @override
+  String get debugBodyJson => 'Corps (JSON)';
+
+  @override
+  String get debugSending => 'Envoi en cours…';
+
+  @override
+  String get debugSendRequest => 'Envoyer la requête';
+
+  @override
+  String get debugNoRequestsYet => 'Aucune requête envoyée.';
+
+  @override
+  String get debugUrlRequired => 'Erreur : l\'URL est obligatoire';
+
+  @override
+  String debugSendingMethod(String method) {
+    return 'Envoi de la requête $method…';
+  }
+
+  @override
+  String get debugServiceStatus => 'État des services';
+
+  @override
+  String get debugServiceStatusSubtitle => 'Vérifications et diagnostics';
+
+  @override
+  String get debugConnectionManager => 'Gestionnaire de connexion';
+
+  @override
+  String get debugHermesGateway => 'Passerelle Hermes';
+
+  @override
+  String get debugActive => 'Active';
+
+  @override
+  String get debugUnreachable => 'Injoignable';
+
+  @override
+  String get debugActiveModel => 'Modèle actif';
+
+  @override
+  String get debugNoneSelected => 'Aucun';
+
+  @override
+  String debugModelsAvailable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modèles disponibles',
+      one: '$count modèle disponible',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String debugLastError(String error) {
+    return 'Dernière erreur : $error';
+  }
+
+  @override
+  String get debugAuto => 'automatique';
 }
