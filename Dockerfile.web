@@ -7,14 +7,26 @@
 #     --secret id=brand_licence,src=acme.licence .
 FROM gmeligio/flutter-android:3.47.9 AS builder
 
+# The image runs as flutter (uid 1001). /app and every COPY must belong to it,
+# or pub get and the brand bake cannot write .dart_tool and generated files.
+USER root
+# cnativeapi's build hook runs on every build, web included, and asks
+# pkg-config for GTK 3, X11 and Xi (see tool/linux_native_deps).
+RUN apt-get update -qq \
+ && apt-get install -y -qq --no-install-recommends \
+      clang cmake ninja-build pkg-config \
+      libgtk-3-dev libx11-dev libxi-dev liblzma-dev \
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /app && chown flutter:flutter /app
+USER flutter
 WORKDIR /app
-COPY pubspec.* ./
-COPY tool/cnativeapi/ tool/cnativeapi/
-COPY tool/linux_native_deps/ tool/linux_native_deps/
+COPY --chown=flutter:flutter pubspec.* ./
+COPY --chown=flutter:flutter tool/cnativeapi/ tool/cnativeapi/
+COPY --chown=flutter:flutter tool/linux_native_deps/ tool/linux_native_deps/
 RUN flutter pub get
 RUN flutter config --enable-web
 ARG BRAND=pistisai
-COPY . .
+COPY --chown=flutter:flutter . .
 RUN --mount=type=secret,id=brand_licence,required=false \
     if grep -q "^  id: \"$BRAND\",$" lib/brand/active_brand.g.dart; then \
       echo "Brand $BRAND is already baked in the source tree"; \
