@@ -1623,4 +1623,391 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get instancesTestConnection => 'Tester la connexion';
+
+  @override
+  String get commonBack => 'Retour';
+
+  @override
+  String get commonReset => 'Réinitialiser';
+
+  @override
+  String get commonSelect => 'Choisir';
+
+  @override
+  String get avatarStateIdle => 'Au repos';
+
+  @override
+  String get avatarStateThinking => 'Réflexion';
+
+  @override
+  String get avatarStateWorking => 'Au travail';
+
+  @override
+  String get avatarStateHappy => 'Content';
+
+  @override
+  String get avatarSizeSmall => 'Petit';
+
+  @override
+  String get avatarSizeMedium => 'Moyen';
+
+  @override
+  String get avatarSizeLarge => 'Grand';
+
+  @override
+  String get avatarGlowEffect => 'Effet lumineux';
+
+  @override
+  String get avatarGlowSubtitle =>
+      'Activer un halo lumineux pulsé autour de l\'avatar';
+
+  @override
+  String get avatarStageCuriousExplorer => 'Explorateur curieux';
+
+  @override
+  String get avatarStageCuriousExplorerInitial =>
+      'Explorateur curieux (initial)';
+
+  @override
+  String get avatarStageKnowledgeSeeker => 'Chercheur de savoir';
+
+  @override
+  String get avatarStageWiseCompanion => 'Compagnon sage';
+
+  @override
+  String get avatarStageEnlightenedGuide => 'Guide éclairé';
+
+  @override
+  String get avatarSettingsTitle => 'Réglages de l\'avatar';
+
+  @override
+  String avatarInitFailed(String error) {
+    return 'Impossible d\'initialiser le service d\'avatar : $error';
+  }
+
+  @override
+  String get avatarSaved => 'Réglages de l\'avatar enregistrés';
+
+  @override
+  String avatarSaveFailed(String error) {
+    return 'Impossible d\'enregistrer les réglages : $error';
+  }
+
+  @override
+  String get avatarEvolutionReasonMissing =>
+      'Indiquez la raison de l\'évolution';
+
+  @override
+  String avatarEvolutionApproved(String stage) {
+    return 'Évolution vers le stade $stage approuvée ! Votre avatar a évolué.';
+  }
+
+  @override
+  String avatarEvolutionDenied(String reason) {
+    return 'Demande d\'évolution refusée : $reason';
+  }
+
+  @override
+  String avatarEvolutionFailed(String error) {
+    return 'Impossible de demander l\'évolution : $error';
+  }
+
+  @override
+  String get avatarSaveSettings => 'Enregistrer les réglages';
+
+  @override
+  String get avatarLivePreview => 'Aperçu en direct';
+
+  @override
+  String avatarStageValue(String stage) {
+    return 'Stade : $stage';
+  }
+
+  @override
+  String get avatarConversations => 'Conversations';
+
+  @override
+  String get avatarDepthScore => 'Score de profondeur';
+
+  @override
+  String get avatarAgentName => 'Nom de l\'agent';
+
+  @override
+  String get avatarAgentNameHint => 'Entrez le nom de l\'agent';
+
+  @override
+  String get avatarAgentNameRequired => 'Entrez un nom d\'agent';
+
+  @override
+  String get avatarAgentNameTooShort =>
+      'Le nom doit comporter au moins 2 caractères';
+
+  @override
+  String get avatarAgentNameTooLong =>
+      'Le nom doit comporter moins de 50 caractères';
+
+  @override
+  String get avatarAgentNameHelp =>
+      'Ce nom servira à vous adresser à votre avatar dans les conversations.';
+
+  @override
+  String get avatarPersonalityTraits => 'Traits de personnalité';
+
+  @override
+  String get avatarPersonalityHelp =>
+      'Ajustez ces curseurs pour personnaliser la personnalité de votre avatar. Les changements apparaissent dans l\'aperçu ci-dessus.';
+
+  @override
+  String get avatarFormalityDescription => 'Le degré de formalité de l\'avatar';
+
+  @override
+  String get avatarHumorDescription => 'Fréquence et intensité de l\'humour';
+
+  @override
+  String get avatarEnthusiasmDescription =>
+      'Niveau d\'énergie et d\'enthousiasme';
+
+  @override
+  String get avatarEmpathyDescription => 'Compréhension et soutien émotionnels';
+
+  @override
+  String get avatarAppearance => 'Apparence';
+
+  @override
+  String get avatarAppearanceHelp =>
+      'Personnalisez le style visuel et l\'animation de votre avatar.';
+
+  @override
+  String get avatarColorTheme => 'Thème de couleur';
+
+  @override
+  String get avatarColorPersonality => 'Selon la personnalité';
+
+  @override
+  String get avatarColorOceanBlue => 'Bleu océan';
+
+  @override
+  String get avatarColorForestGreen => 'Vert forêt';
+
+  @override
+  String get avatarColorSunsetOrange => 'Orange coucher de soleil';
+
+  @override
+  String get avatarColorRoyalPurple => 'Violet royal';
+
+  @override
+  String get avatarColorMonochrome => 'Monochrome';
+
+  @override
+  String get avatarAnimationStyle => 'Style d\'animation';
+
+  @override
+  String get avatarAnimationBounce => 'Rebond';
+
+  @override
+  String get avatarAnimationPulse => 'Pulsation';
+
+  @override
+  String get avatarAnimationFloat => 'Flottement';
+
+  @override
+  String get avatarAnimationShake => 'Secousse';
+
+  @override
+  String get avatarAnimationNone => 'Aucune (statique)';
+
+  @override
+  String get avatarSize => 'Taille de l\'avatar';
+
+  @override
+  String get avatarAdvancedTitle => 'Personnalisation visuelle avancée';
+
+  @override
+  String get avatarAdvancedHelp =>
+      'Ajustez la couleur, le type et les effets de votre avatar dans l\'écran de personnalisation.';
+
+  @override
+  String get avatarOpenAdvanced => 'Ouvrir la personnalisation avancée';
+
+  @override
+  String get avatarAchievements => 'Succès';
+
+  @override
+  String get avatarAchievementsHelp =>
+      'Consultez vos succès débloqués et suivez votre progression.';
+
+  @override
+  String get avatarViewAchievements => 'Voir les succès';
+
+  @override
+  String get avatarEvolution => 'Évolution';
+
+  @override
+  String get avatarEvolutionHelp =>
+      'Faites évoluer votre avatar pour débloquer de nouvelles capacités de personnalité.';
+
+  @override
+  String get avatarCurrentStage => 'Stade actuel :';
+
+  @override
+  String get avatarEvolveTo => 'Évoluer vers le stade';
+
+  @override
+  String get avatarEvolutionReason => 'Raison de l\'évolution';
+
+  @override
+  String get avatarEvolutionReasonHint =>
+      'Expliquez pourquoi vous voulez faire évoluer votre avatar…';
+
+  @override
+  String get avatarEvolutionReasonRequired => 'Indiquez une raison';
+
+  @override
+  String get avatarRequesting => 'Demande en cours…';
+
+  @override
+  String get avatarRequestEvolution => 'Demander l\'évolution';
+
+  @override
+  String get avatarReadyToEvolve => 'Prêt à évoluer !';
+
+  @override
+  String get avatarEvolutionRequirements => 'Conditions d\'évolution';
+
+  @override
+  String get avatarDeepConversations => 'Conversations approfondies';
+
+  @override
+  String get avatarAverageNovelty => 'Nouveauté moyenne';
+
+  @override
+  String avatarRequirementPercent(int current, int required) {
+    return '$current % / $required %';
+  }
+
+  @override
+  String get avatarCustomizationTitle => 'Personnalisation de l\'avatar';
+
+  @override
+  String get avatarCustomizationSaved =>
+      'Personnalisation de l\'avatar enregistrée';
+
+  @override
+  String get avatarResetTitle => 'Rétablir les valeurs par défaut';
+
+  @override
+  String get avatarResetConfirm =>
+      'Voulez-vous vraiment rétablir tous les réglages de l\'avatar par défaut ?';
+
+  @override
+  String get avatarResetDone => 'Réglages de l\'avatar rétablis par défaut';
+
+  @override
+  String get avatarResetTooltip => 'Rétablir les valeurs par défaut';
+
+  @override
+  String get avatarSaveCustomization => 'Enregistrer la personnalisation';
+
+  @override
+  String get avatarPreview => 'Aperçu de l\'avatar';
+
+  @override
+  String get avatarType => 'Type d\'avatar';
+
+  @override
+  String get avatarTypeEmoji => 'Émoji';
+
+  @override
+  String get avatarColor => 'Couleur de l\'avatar';
+
+  @override
+  String get avatarCustomColorSelected => 'Couleur personnalisée choisie';
+
+  @override
+  String get avatarUsingPersonalityColors => 'Couleurs selon la personnalité';
+
+  @override
+  String get avatarPickColor => 'Choisir une couleur';
+
+  @override
+  String get avatarUsePersonalityColors =>
+      'Utiliser les couleurs de la personnalité';
+
+  @override
+  String get avatarPickColorTitle => 'Choisir la couleur de l\'avatar';
+
+  @override
+  String get achievementsTitle => 'Succès';
+
+  @override
+  String achievementsLoadFailed(String error) {
+    return 'Impossible de charger les succès : $error';
+  }
+
+  @override
+  String get achievementsUnlockedSection => 'Débloqués';
+
+  @override
+  String get achievementsLockedSection => 'Verrouillés';
+
+  @override
+  String get achievementsNoneUnlocked =>
+      'Aucun succès débloqué pour l\'instant. Commencez à discuter !';
+
+  @override
+  String get achievementsProgress => 'Progression des succès';
+
+  @override
+  String achievementsUnlockedCount(int unlocked, int total) {
+    return '$unlocked sur $total débloqués';
+  }
+
+  @override
+  String achievementsPercent(int percent) {
+    return '$percent %';
+  }
+
+  @override
+  String achievementsUnlockedWhen(String when) {
+    return 'Débloqué $when';
+  }
+
+  @override
+  String get achievementsToday => 'aujourd\'hui';
+
+  @override
+  String get achievementsYesterday => 'hier';
+
+  @override
+  String get achievementFirstChat => 'Première conversation';
+
+  @override
+  String get achievementFirstChatDescription =>
+      'Terminez votre première conversation avec l\'avatar';
+
+  @override
+  String get achievementGettingToKnow => 'Faire connaissance';
+
+  @override
+  String get achievementDeepThinker => 'Penseur profond';
+
+  @override
+  String get achievementConversationalMaster => 'Maître de la conversation';
+
+  @override
+  String achievementDeepConversationsDescription(int count) {
+    return 'Avoir $count conversations approfondies';
+  }
+
+  @override
+  String get achievementNoveltySeeker => 'Chercheur de nouveauté';
+
+  @override
+  String get achievementNoveltySeekerDescription =>
+      'Maintenir une grande nouveauté dans les conversations (60 % ou plus)';
+
+  @override
+  String achievementEvolveDescription(String stage) {
+    return 'Faire évoluer votre avatar jusqu\'au stade $stage';
+  }
 }

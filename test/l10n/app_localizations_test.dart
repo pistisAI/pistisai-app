@@ -3,11 +3,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/components/welcome_screen.dart';
 import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/screens/agents/agents_screen.dart';
+import 'package:pistisai/screens/avatar/avatar_customization_screen.dart';
 import 'package:pistisai/screens/cron/cron_jobs_screen.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
@@ -214,5 +217,42 @@ void main() {
     expect(find.text('Tâches planifiées'), findsOneWidget);
     expect(find.text('Aucune tâche planifiée'), findsOneWidget);
     expect(find.text('Cron Jobs'), findsNothing);
+  });
+
+  test('batch 8 avatar messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.avatarRequirementPercent(45, 60), '45 % / 60 %');
+    expect(fr.achievementsUnlockedCount(2, 8), '2 sur 8 débloqués');
+    expect(
+        fr.achievementsUnlockedWhen(fr.achievementsYesterday), 'Débloqué hier');
+    expect(fr.achievementEvolveDescription(fr.avatarStageWiseCompanion),
+        "Faire évoluer votre avatar jusqu'au stade Compagnon sage");
+    expect(fr.avatarEvolutionDenied('trop tôt'),
+        "Demande d'évolution refusée : trop tôt");
+  });
+
+  testWidgets('the avatar customization screen renders in French',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: AppTheme.darkTheme,
+        locale: const Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: const [Locale('fr'), Locale('en')],
+        routerConfig: GoRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, state) => const AvatarCustomizationScreen(),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text("Personnalisation de l'avatar"), findsOneWidget);
+    expect(find.text('Avatar Customization'), findsNothing);
   });
 }

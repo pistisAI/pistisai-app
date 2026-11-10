@@ -979,5 +979,216 @@
   "instancesHermesUrl": "Hermes API URL",
   "instancesApiKeyOptional": "API Key (optional)",
   "instancesApiKeyHint": "Leave empty for local-only use",
-  "instancesTestConnection": "Test Connection"
+  "instancesTestConnection": "Test Connection",
+  "commonBack": "Back",
+  "commonReset": "Reset",
+  "commonSelect": "Select",
+  "avatarStateIdle": "Idle",
+  "avatarStateThinking": "Thinking",
+  "avatarStateWorking": "Working",
+  "avatarStateHappy": "Happy",
+  "avatarSizeSmall": "Small",
+  "avatarSizeMedium": "Medium",
+  "avatarSizeLarge": "Large",
+  "avatarGlowEffect": "Glow Effect",
+  "avatarGlowSubtitle": "Enable pulsing glow effect around avatar",
+  "avatarStageCuriousExplorer": "Curious Explorer",
+  "avatarStageCuriousExplorerInitial": "Curious Explorer (Initial)",
+  "avatarStageKnowledgeSeeker": "Knowledge Seeker",
+  "avatarStageWiseCompanion": "Wise Companion",
+  "avatarStageEnlightenedGuide": "Enlightened Guide",
+  "avatarSettingsTitle": "Avatar Settings",
+  "avatarInitFailed": "Failed to initialize avatar service: {error}",
+  "@avatarInitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarSaved": "Avatar settings saved successfully",
+  "avatarSaveFailed": "Failed to save settings: {error}",
+  "@avatarSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarEvolutionReasonMissing": "Please provide a reason for evolution",
+  "avatarEvolutionApproved": "Evolution to {stage} approved! Your avatar has evolved.",
+  "@avatarEvolutionApproved": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarEvolutionDenied": "Evolution request denied: {reason}",
+  "@avatarEvolutionDenied": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarEvolutionFailed": "Failed to request evolution: {error}",
+  "@avatarEvolutionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarSaveSettings": "Save Settings",
+  "avatarLivePreview": "Live Preview",
+  "avatarStageValue": "Stage: {stage}",
+  "@avatarStageValue": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarConversations": "Conversations",
+  "avatarDepthScore": "Depth Score",
+  "avatarAgentName": "Agent Name",
+  "avatarAgentNameHint": "Enter agent name",
+  "avatarAgentNameRequired": "Please enter an agent name",
+  "avatarAgentNameTooShort": "Name must be at least 2 characters",
+  "avatarAgentNameTooLong": "Name must be less than 50 characters",
+  "avatarAgentNameHelp": "This name will be used to address your avatar in conversations.",
+  "avatarPersonalityTraits": "Personality Traits",
+  "avatarPersonalityHelp": "Adjust these sliders to customize your avatar's personality. Changes are reflected in the live preview above.",
+  "avatarFormalityDescription": "How formal the avatar communicates",
+  "avatarHumorDescription": "Frequency and intensity of humor",
+  "avatarEnthusiasmDescription": "Energy and excitement levels",
+  "avatarEmpathyDescription": "Emotional understanding and support",
+  "avatarAppearance": "Appearance",
+  "avatarAppearanceHelp": "Customize your avatar's visual style and animation.",
+  "avatarColorTheme": "Color Theme",
+  "avatarColorPersonality": "Personality-Derived",
+  "avatarColorOceanBlue": "Ocean Blue",
+  "avatarColorForestGreen": "Forest Green",
+  "avatarColorSunsetOrange": "Sunset Orange",
+  "avatarColorRoyalPurple": "Royal Purple",
+  "avatarColorMonochrome": "Monochrome",
+  "avatarAnimationStyle": "Animation Style",
+  "avatarAnimationBounce": "Bounce",
+  "avatarAnimationPulse": "Pulse",
+  "avatarAnimationFloat": "Float",
+  "avatarAnimationShake": "Shake",
+  "avatarAnimationNone": "None (Static)",
+  "avatarSize": "Avatar Size",
+  "avatarAdvancedTitle": "Advanced Visual Customization",
+  "avatarAdvancedHelp": "Fine-tune your avatar's color, type, and effects in the dedicated customization screen.",
+  "avatarOpenAdvanced": "Open Advanced Customization",
+  "avatarAchievements": "Achievements",
+  "avatarAchievementsHelp": "View your unlocked achievements and track your progress.",
+  "avatarViewAchievements": "View Achievements",
+  "avatarEvolution": "Evolution",
+  "avatarEvolutionHelp": "Evolve your avatar to unlock new personality capabilities.",
+  "avatarCurrentStage": "Current Stage:",
+  "avatarEvolveTo": "Evolve to Stage",
+  "avatarEvolutionReason": "Reason for Evolution",
+  "avatarEvolutionReasonHint": "Explain why you want to evolve your avatar...",
+  "avatarEvolutionReasonRequired": "Please provide a reason",
+  "avatarRequesting": "Requesting...",
+  "avatarRequestEvolution": "Request Evolution",
+  "avatarReadyToEvolve": "Ready to Evolve!",
+  "avatarEvolutionRequirements": "Evolution Requirements",
+  "avatarDeepConversations": "Deep Conversations",
+  "avatarAverageNovelty": "Average Novelty",
+  "avatarRequirementPercent": "{current}% / {required}%",
+  "@avatarRequirementPercent": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "avatarCustomizationTitle": "Avatar Customization",
+  "avatarCustomizationSaved": "Avatar customization saved successfully",
+  "avatarResetTitle": "Reset to Defaults",
+  "avatarResetConfirm": "Are you sure you want to reset all avatar settings to defaults?",
+  "avatarResetDone": "Avatar settings reset to defaults",
+  "avatarResetTooltip": "Reset to defaults",
+  "avatarSaveCustomization": "Save Customization",
+  "avatarPreview": "Avatar Preview",
+  "avatarType": "Avatar Type",
+  "avatarTypeEmoji": "Emoji",
+  "avatarColor": "Avatar Color",
+  "avatarCustomColorSelected": "Custom color selected",
+  "avatarUsingPersonalityColors": "Using personality-derived colors",
+  "avatarPickColor": "Pick Color",
+  "avatarUsePersonalityColors": "Use personality colors",
+  "avatarPickColorTitle": "Pick Avatar Color",
+  "achievementsTitle": "Achievements",
+  "achievementsLoadFailed": "Failed to load achievements: {error}",
+  "@achievementsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsUnlockedSection": "Unlocked",
+  "achievementsLockedSection": "Locked",
+  "achievementsNoneUnlocked": "No achievements unlocked yet. Start conversing!",
+  "achievementsProgress": "Achievement Progress",
+  "achievementsUnlockedCount": "{unlocked} of {total} unlocked",
+  "@achievementsUnlockedCount": {
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsPercent": "{percent}%",
+  "@achievementsPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsUnlockedWhen": "Unlocked {when}",
+  "@achievementsUnlockedWhen": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsToday": "today",
+  "achievementsYesterday": "yesterday",
+  "achievementFirstChat": "First Conversation",
+  "achievementFirstChatDescription": "Complete your first conversation with the avatar",
+  "achievementGettingToKnow": "Getting to Know You",
+  "achievementDeepThinker": "Deep Thinker",
+  "achievementConversationalMaster": "Conversational Master",
+  "achievementDeepConversationsDescription": "Have {count} deep conversations",
+  "@achievementDeepConversationsDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementNoveltySeeker": "Novelty Seeker",
+  "achievementNoveltySeekerDescription": "Maintain high novelty in conversations (60%+)",
+  "achievementEvolveDescription": "Evolve your avatar to the {stage} stage",
+  "@achievementEvolveDescription": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  }
 }

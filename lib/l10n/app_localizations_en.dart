@@ -1598,4 +1598,385 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get instancesTestConnection => 'Test Connection';
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
+  String get commonReset => 'Reset';
+
+  @override
+  String get commonSelect => 'Select';
+
+  @override
+  String get avatarStateIdle => 'Idle';
+
+  @override
+  String get avatarStateThinking => 'Thinking';
+
+  @override
+  String get avatarStateWorking => 'Working';
+
+  @override
+  String get avatarStateHappy => 'Happy';
+
+  @override
+  String get avatarSizeSmall => 'Small';
+
+  @override
+  String get avatarSizeMedium => 'Medium';
+
+  @override
+  String get avatarSizeLarge => 'Large';
+
+  @override
+  String get avatarGlowEffect => 'Glow Effect';
+
+  @override
+  String get avatarGlowSubtitle => 'Enable pulsing glow effect around avatar';
+
+  @override
+  String get avatarStageCuriousExplorer => 'Curious Explorer';
+
+  @override
+  String get avatarStageCuriousExplorerInitial => 'Curious Explorer (Initial)';
+
+  @override
+  String get avatarStageKnowledgeSeeker => 'Knowledge Seeker';
+
+  @override
+  String get avatarStageWiseCompanion => 'Wise Companion';
+
+  @override
+  String get avatarStageEnlightenedGuide => 'Enlightened Guide';
+
+  @override
+  String get avatarSettingsTitle => 'Avatar Settings';
+
+  @override
+  String avatarInitFailed(String error) {
+    return 'Failed to initialize avatar service: $error';
+  }
+
+  @override
+  String get avatarSaved => 'Avatar settings saved successfully';
+
+  @override
+  String avatarSaveFailed(String error) {
+    return 'Failed to save settings: $error';
+  }
+
+  @override
+  String get avatarEvolutionReasonMissing =>
+      'Please provide a reason for evolution';
+
+  @override
+  String avatarEvolutionApproved(String stage) {
+    return 'Evolution to $stage approved! Your avatar has evolved.';
+  }
+
+  @override
+  String avatarEvolutionDenied(String reason) {
+    return 'Evolution request denied: $reason';
+  }
+
+  @override
+  String avatarEvolutionFailed(String error) {
+    return 'Failed to request evolution: $error';
+  }
+
+  @override
+  String get avatarSaveSettings => 'Save Settings';
+
+  @override
+  String get avatarLivePreview => 'Live Preview';
+
+  @override
+  String avatarStageValue(String stage) {
+    return 'Stage: $stage';
+  }
+
+  @override
+  String get avatarConversations => 'Conversations';
+
+  @override
+  String get avatarDepthScore => 'Depth Score';
+
+  @override
+  String get avatarAgentName => 'Agent Name';
+
+  @override
+  String get avatarAgentNameHint => 'Enter agent name';
+
+  @override
+  String get avatarAgentNameRequired => 'Please enter an agent name';
+
+  @override
+  String get avatarAgentNameTooShort => 'Name must be at least 2 characters';
+
+  @override
+  String get avatarAgentNameTooLong => 'Name must be less than 50 characters';
+
+  @override
+  String get avatarAgentNameHelp =>
+      'This name will be used to address your avatar in conversations.';
+
+  @override
+  String get avatarPersonalityTraits => 'Personality Traits';
+
+  @override
+  String get avatarPersonalityHelp =>
+      'Adjust these sliders to customize your avatar\'s personality. Changes are reflected in the live preview above.';
+
+  @override
+  String get avatarFormalityDescription => 'How formal the avatar communicates';
+
+  @override
+  String get avatarHumorDescription => 'Frequency and intensity of humor';
+
+  @override
+  String get avatarEnthusiasmDescription => 'Energy and excitement levels';
+
+  @override
+  String get avatarEmpathyDescription => 'Emotional understanding and support';
+
+  @override
+  String get avatarAppearance => 'Appearance';
+
+  @override
+  String get avatarAppearanceHelp =>
+      'Customize your avatar\'s visual style and animation.';
+
+  @override
+  String get avatarColorTheme => 'Color Theme';
+
+  @override
+  String get avatarColorPersonality => 'Personality-Derived';
+
+  @override
+  String get avatarColorOceanBlue => 'Ocean Blue';
+
+  @override
+  String get avatarColorForestGreen => 'Forest Green';
+
+  @override
+  String get avatarColorSunsetOrange => 'Sunset Orange';
+
+  @override
+  String get avatarColorRoyalPurple => 'Royal Purple';
+
+  @override
+  String get avatarColorMonochrome => 'Monochrome';
+
+  @override
+  String get avatarAnimationStyle => 'Animation Style';
+
+  @override
+  String get avatarAnimationBounce => 'Bounce';
+
+  @override
+  String get avatarAnimationPulse => 'Pulse';
+
+  @override
+  String get avatarAnimationFloat => 'Float';
+
+  @override
+  String get avatarAnimationShake => 'Shake';
+
+  @override
+  String get avatarAnimationNone => 'None (Static)';
+
+  @override
+  String get avatarSize => 'Avatar Size';
+
+  @override
+  String get avatarAdvancedTitle => 'Advanced Visual Customization';
+
+  @override
+  String get avatarAdvancedHelp =>
+      'Fine-tune your avatar\'s color, type, and effects in the dedicated customization screen.';
+
+  @override
+  String get avatarOpenAdvanced => 'Open Advanced Customization';
+
+  @override
+  String get avatarAchievements => 'Achievements';
+
+  @override
+  String get avatarAchievementsHelp =>
+      'View your unlocked achievements and track your progress.';
+
+  @override
+  String get avatarViewAchievements => 'View Achievements';
+
+  @override
+  String get avatarEvolution => 'Evolution';
+
+  @override
+  String get avatarEvolutionHelp =>
+      'Evolve your avatar to unlock new personality capabilities.';
+
+  @override
+  String get avatarCurrentStage => 'Current Stage:';
+
+  @override
+  String get avatarEvolveTo => 'Evolve to Stage';
+
+  @override
+  String get avatarEvolutionReason => 'Reason for Evolution';
+
+  @override
+  String get avatarEvolutionReasonHint =>
+      'Explain why you want to evolve your avatar...';
+
+  @override
+  String get avatarEvolutionReasonRequired => 'Please provide a reason';
+
+  @override
+  String get avatarRequesting => 'Requesting...';
+
+  @override
+  String get avatarRequestEvolution => 'Request Evolution';
+
+  @override
+  String get avatarReadyToEvolve => 'Ready to Evolve!';
+
+  @override
+  String get avatarEvolutionRequirements => 'Evolution Requirements';
+
+  @override
+  String get avatarDeepConversations => 'Deep Conversations';
+
+  @override
+  String get avatarAverageNovelty => 'Average Novelty';
+
+  @override
+  String avatarRequirementPercent(int current, int required) {
+    return '$current% / $required%';
+  }
+
+  @override
+  String get avatarCustomizationTitle => 'Avatar Customization';
+
+  @override
+  String get avatarCustomizationSaved =>
+      'Avatar customization saved successfully';
+
+  @override
+  String get avatarResetTitle => 'Reset to Defaults';
+
+  @override
+  String get avatarResetConfirm =>
+      'Are you sure you want to reset all avatar settings to defaults?';
+
+  @override
+  String get avatarResetDone => 'Avatar settings reset to defaults';
+
+  @override
+  String get avatarResetTooltip => 'Reset to defaults';
+
+  @override
+  String get avatarSaveCustomization => 'Save Customization';
+
+  @override
+  String get avatarPreview => 'Avatar Preview';
+
+  @override
+  String get avatarType => 'Avatar Type';
+
+  @override
+  String get avatarTypeEmoji => 'Emoji';
+
+  @override
+  String get avatarColor => 'Avatar Color';
+
+  @override
+  String get avatarCustomColorSelected => 'Custom color selected';
+
+  @override
+  String get avatarUsingPersonalityColors => 'Using personality-derived colors';
+
+  @override
+  String get avatarPickColor => 'Pick Color';
+
+  @override
+  String get avatarUsePersonalityColors => 'Use personality colors';
+
+  @override
+  String get avatarPickColorTitle => 'Pick Avatar Color';
+
+  @override
+  String get achievementsTitle => 'Achievements';
+
+  @override
+  String achievementsLoadFailed(String error) {
+    return 'Failed to load achievements: $error';
+  }
+
+  @override
+  String get achievementsUnlockedSection => 'Unlocked';
+
+  @override
+  String get achievementsLockedSection => 'Locked';
+
+  @override
+  String get achievementsNoneUnlocked =>
+      'No achievements unlocked yet. Start conversing!';
+
+  @override
+  String get achievementsProgress => 'Achievement Progress';
+
+  @override
+  String achievementsUnlockedCount(int unlocked, int total) {
+    return '$unlocked of $total unlocked';
+  }
+
+  @override
+  String achievementsPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String achievementsUnlockedWhen(String when) {
+    return 'Unlocked $when';
+  }
+
+  @override
+  String get achievementsToday => 'today';
+
+  @override
+  String get achievementsYesterday => 'yesterday';
+
+  @override
+  String get achievementFirstChat => 'First Conversation';
+
+  @override
+  String get achievementFirstChatDescription =>
+      'Complete your first conversation with the avatar';
+
+  @override
+  String get achievementGettingToKnow => 'Getting to Know You';
+
+  @override
+  String get achievementDeepThinker => 'Deep Thinker';
+
+  @override
+  String get achievementConversationalMaster => 'Conversational Master';
+
+  @override
+  String achievementDeepConversationsDescription(int count) {
+    return 'Have $count deep conversations';
+  }
+
+  @override
+  String get achievementNoveltySeeker => 'Novelty Seeker';
+
+  @override
+  String get achievementNoveltySeekerDescription =>
+      'Maintain high novelty in conversations (60%+)';
+
+  @override
+  String achievementEvolveDescription(String stage) {
+    return 'Evolve your avatar to the $stage stage';
+  }
 }

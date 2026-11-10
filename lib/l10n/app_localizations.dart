@@ -2905,6 +2905,690 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test Connection'**
   String get instancesTestConnection;
+
+  /// No description provided for @commonBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get commonBack;
+
+  /// No description provided for @commonReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get commonReset;
+
+  /// No description provided for @commonSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get commonSelect;
+
+  /// No description provided for @avatarStateIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Idle'**
+  String get avatarStateIdle;
+
+  /// No description provided for @avatarStateThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get avatarStateThinking;
+
+  /// No description provided for @avatarStateWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get avatarStateWorking;
+
+  /// No description provided for @avatarStateHappy.
+  ///
+  /// In en, this message translates to:
+  /// **'Happy'**
+  String get avatarStateHappy;
+
+  /// No description provided for @avatarSizeSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get avatarSizeSmall;
+
+  /// No description provided for @avatarSizeMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get avatarSizeMedium;
+
+  /// No description provided for @avatarSizeLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get avatarSizeLarge;
+
+  /// No description provided for @avatarGlowEffect.
+  ///
+  /// In en, this message translates to:
+  /// **'Glow Effect'**
+  String get avatarGlowEffect;
+
+  /// No description provided for @avatarGlowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable pulsing glow effect around avatar'**
+  String get avatarGlowSubtitle;
+
+  /// No description provided for @avatarStageCuriousExplorer.
+  ///
+  /// In en, this message translates to:
+  /// **'Curious Explorer'**
+  String get avatarStageCuriousExplorer;
+
+  /// No description provided for @avatarStageCuriousExplorerInitial.
+  ///
+  /// In en, this message translates to:
+  /// **'Curious Explorer (Initial)'**
+  String get avatarStageCuriousExplorerInitial;
+
+  /// No description provided for @avatarStageKnowledgeSeeker.
+  ///
+  /// In en, this message translates to:
+  /// **'Knowledge Seeker'**
+  String get avatarStageKnowledgeSeeker;
+
+  /// No description provided for @avatarStageWiseCompanion.
+  ///
+  /// In en, this message translates to:
+  /// **'Wise Companion'**
+  String get avatarStageWiseCompanion;
+
+  /// No description provided for @avatarStageEnlightenedGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Enlightened Guide'**
+  String get avatarStageEnlightenedGuide;
+
+  /// No description provided for @avatarSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar Settings'**
+  String get avatarSettingsTitle;
+
+  /// No description provided for @avatarInitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to initialize avatar service: {error}'**
+  String avatarInitFailed(String error);
+
+  /// No description provided for @avatarSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar settings saved successfully'**
+  String get avatarSaved;
+
+  /// No description provided for @avatarSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save settings: {error}'**
+  String avatarSaveFailed(String error);
+
+  /// No description provided for @avatarEvolutionReasonMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason for evolution'**
+  String get avatarEvolutionReasonMissing;
+
+  /// No description provided for @avatarEvolutionApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolution to {stage} approved! Your avatar has evolved.'**
+  String avatarEvolutionApproved(String stage);
+
+  /// No description provided for @avatarEvolutionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolution request denied: {reason}'**
+  String avatarEvolutionDenied(String reason);
+
+  /// No description provided for @avatarEvolutionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to request evolution: {error}'**
+  String avatarEvolutionFailed(String error);
+
+  /// No description provided for @avatarSaveSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Settings'**
+  String get avatarSaveSettings;
+
+  /// No description provided for @avatarLivePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Preview'**
+  String get avatarLivePreview;
+
+  /// No description provided for @avatarStageValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Stage: {stage}'**
+  String avatarStageValue(String stage);
+
+  /// No description provided for @avatarConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get avatarConversations;
+
+  /// No description provided for @avatarDepthScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Depth Score'**
+  String get avatarDepthScore;
+
+  /// No description provided for @avatarAgentName.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Name'**
+  String get avatarAgentName;
+
+  /// No description provided for @avatarAgentNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter agent name'**
+  String get avatarAgentNameHint;
+
+  /// No description provided for @avatarAgentNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an agent name'**
+  String get avatarAgentNameRequired;
+
+  /// No description provided for @avatarAgentNameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get avatarAgentNameTooShort;
+
+  /// No description provided for @avatarAgentNameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be less than 50 characters'**
+  String get avatarAgentNameTooLong;
+
+  /// No description provided for @avatarAgentNameHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This name will be used to address your avatar in conversations.'**
+  String get avatarAgentNameHelp;
+
+  /// No description provided for @avatarPersonalityTraits.
+  ///
+  /// In en, this message translates to:
+  /// **'Personality Traits'**
+  String get avatarPersonalityTraits;
+
+  /// No description provided for @avatarPersonalityHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust these sliders to customize your avatar\'s personality. Changes are reflected in the live preview above.'**
+  String get avatarPersonalityHelp;
+
+  /// No description provided for @avatarFormalityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'How formal the avatar communicates'**
+  String get avatarFormalityDescription;
+
+  /// No description provided for @avatarHumorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency and intensity of humor'**
+  String get avatarHumorDescription;
+
+  /// No description provided for @avatarEnthusiasmDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy and excitement levels'**
+  String get avatarEnthusiasmDescription;
+
+  /// No description provided for @avatarEmpathyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Emotional understanding and support'**
+  String get avatarEmpathyDescription;
+
+  /// No description provided for @avatarAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get avatarAppearance;
+
+  /// No description provided for @avatarAppearanceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize your avatar\'s visual style and animation.'**
+  String get avatarAppearanceHelp;
+
+  /// No description provided for @avatarColorTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Color Theme'**
+  String get avatarColorTheme;
+
+  /// No description provided for @avatarColorPersonality.
+  ///
+  /// In en, this message translates to:
+  /// **'Personality-Derived'**
+  String get avatarColorPersonality;
+
+  /// No description provided for @avatarColorOceanBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Ocean Blue'**
+  String get avatarColorOceanBlue;
+
+  /// No description provided for @avatarColorForestGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest Green'**
+  String get avatarColorForestGreen;
+
+  /// No description provided for @avatarColorSunsetOrange.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunset Orange'**
+  String get avatarColorSunsetOrange;
+
+  /// No description provided for @avatarColorRoyalPurple.
+  ///
+  /// In en, this message translates to:
+  /// **'Royal Purple'**
+  String get avatarColorRoyalPurple;
+
+  /// No description provided for @avatarColorMonochrome.
+  ///
+  /// In en, this message translates to:
+  /// **'Monochrome'**
+  String get avatarColorMonochrome;
+
+  /// No description provided for @avatarAnimationStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animation Style'**
+  String get avatarAnimationStyle;
+
+  /// No description provided for @avatarAnimationBounce.
+  ///
+  /// In en, this message translates to:
+  /// **'Bounce'**
+  String get avatarAnimationBounce;
+
+  /// No description provided for @avatarAnimationPulse.
+  ///
+  /// In en, this message translates to:
+  /// **'Pulse'**
+  String get avatarAnimationPulse;
+
+  /// No description provided for @avatarAnimationFloat.
+  ///
+  /// In en, this message translates to:
+  /// **'Float'**
+  String get avatarAnimationFloat;
+
+  /// No description provided for @avatarAnimationShake.
+  ///
+  /// In en, this message translates to:
+  /// **'Shake'**
+  String get avatarAnimationShake;
+
+  /// No description provided for @avatarAnimationNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None (Static)'**
+  String get avatarAnimationNone;
+
+  /// No description provided for @avatarSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar Size'**
+  String get avatarSize;
+
+  /// No description provided for @avatarAdvancedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Visual Customization'**
+  String get avatarAdvancedTitle;
+
+  /// No description provided for @avatarAdvancedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Fine-tune your avatar\'s color, type, and effects in the dedicated customization screen.'**
+  String get avatarAdvancedHelp;
+
+  /// No description provided for @avatarOpenAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Advanced Customization'**
+  String get avatarOpenAdvanced;
+
+  /// No description provided for @avatarAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get avatarAchievements;
+
+  /// No description provided for @avatarAchievementsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'View your unlocked achievements and track your progress.'**
+  String get avatarAchievementsHelp;
+
+  /// No description provided for @avatarViewAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'View Achievements'**
+  String get avatarViewAchievements;
+
+  /// No description provided for @avatarEvolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolution'**
+  String get avatarEvolution;
+
+  /// No description provided for @avatarEvolutionHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolve your avatar to unlock new personality capabilities.'**
+  String get avatarEvolutionHelp;
+
+  /// No description provided for @avatarCurrentStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Stage:'**
+  String get avatarCurrentStage;
+
+  /// No description provided for @avatarEvolveTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolve to Stage'**
+  String get avatarEvolveTo;
+
+  /// No description provided for @avatarEvolutionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for Evolution'**
+  String get avatarEvolutionReason;
+
+  /// No description provided for @avatarEvolutionReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why you want to evolve your avatar...'**
+  String get avatarEvolutionReasonHint;
+
+  /// No description provided for @avatarEvolutionReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason'**
+  String get avatarEvolutionReasonRequired;
+
+  /// No description provided for @avatarRequesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Requesting...'**
+  String get avatarRequesting;
+
+  /// No description provided for @avatarRequestEvolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Evolution'**
+  String get avatarRequestEvolution;
+
+  /// No description provided for @avatarReadyToEvolve.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to Evolve!'**
+  String get avatarReadyToEvolve;
+
+  /// No description provided for @avatarEvolutionRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolution Requirements'**
+  String get avatarEvolutionRequirements;
+
+  /// No description provided for @avatarDeepConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep Conversations'**
+  String get avatarDeepConversations;
+
+  /// No description provided for @avatarAverageNovelty.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Novelty'**
+  String get avatarAverageNovelty;
+
+  /// No description provided for @avatarRequirementPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}% / {required}%'**
+  String avatarRequirementPercent(int current, int required);
+
+  /// No description provided for @avatarCustomizationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar Customization'**
+  String get avatarCustomizationTitle;
+
+  /// No description provided for @avatarCustomizationSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar customization saved successfully'**
+  String get avatarCustomizationSaved;
+
+  /// No description provided for @avatarResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Defaults'**
+  String get avatarResetTitle;
+
+  /// No description provided for @avatarResetConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reset all avatar settings to defaults?'**
+  String get avatarResetConfirm;
+
+  /// No description provided for @avatarResetDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar settings reset to defaults'**
+  String get avatarResetDone;
+
+  /// No description provided for @avatarResetTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to defaults'**
+  String get avatarResetTooltip;
+
+  /// No description provided for @avatarSaveCustomization.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Customization'**
+  String get avatarSaveCustomization;
+
+  /// No description provided for @avatarPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar Preview'**
+  String get avatarPreview;
+
+  /// No description provided for @avatarType.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar Type'**
+  String get avatarType;
+
+  /// No description provided for @avatarTypeEmoji.
+  ///
+  /// In en, this message translates to:
+  /// **'Emoji'**
+  String get avatarTypeEmoji;
+
+  /// No description provided for @avatarColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar Color'**
+  String get avatarColor;
+
+  /// No description provided for @avatarCustomColorSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom color selected'**
+  String get avatarCustomColorSelected;
+
+  /// No description provided for @avatarUsingPersonalityColors.
+  ///
+  /// In en, this message translates to:
+  /// **'Using personality-derived colors'**
+  String get avatarUsingPersonalityColors;
+
+  /// No description provided for @avatarPickColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Color'**
+  String get avatarPickColor;
+
+  /// No description provided for @avatarUsePersonalityColors.
+  ///
+  /// In en, this message translates to:
+  /// **'Use personality colors'**
+  String get avatarUsePersonalityColors;
+
+  /// No description provided for @avatarPickColorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Avatar Color'**
+  String get avatarPickColorTitle;
+
+  /// No description provided for @achievementsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get achievementsTitle;
+
+  /// No description provided for @achievementsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load achievements: {error}'**
+  String achievementsLoadFailed(String error);
+
+  /// No description provided for @achievementsUnlockedSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get achievementsUnlockedSection;
+
+  /// No description provided for @achievementsLockedSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get achievementsLockedSection;
+
+  /// No description provided for @achievementsNoneUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'No achievements unlocked yet. Start conversing!'**
+  String get achievementsNoneUnlocked;
+
+  /// No description provided for @achievementsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement Progress'**
+  String get achievementsProgress;
+
+  /// No description provided for @achievementsUnlockedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{unlocked} of {total} unlocked'**
+  String achievementsUnlockedCount(int unlocked, int total);
+
+  /// No description provided for @achievementsPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String achievementsPercent(int percent);
+
+  /// No description provided for @achievementsUnlockedWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked {when}'**
+  String achievementsUnlockedWhen(String when);
+
+  /// No description provided for @achievementsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'today'**
+  String get achievementsToday;
+
+  /// No description provided for @achievementsYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday'**
+  String get achievementsYesterday;
+
+  /// No description provided for @achievementFirstChat.
+  ///
+  /// In en, this message translates to:
+  /// **'First Conversation'**
+  String get achievementFirstChat;
+
+  /// No description provided for @achievementFirstChatDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your first conversation with the avatar'**
+  String get achievementFirstChatDescription;
+
+  /// No description provided for @achievementGettingToKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting to Know You'**
+  String get achievementGettingToKnow;
+
+  /// No description provided for @achievementDeepThinker.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep Thinker'**
+  String get achievementDeepThinker;
+
+  /// No description provided for @achievementConversationalMaster.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversational Master'**
+  String get achievementConversationalMaster;
+
+  /// No description provided for @achievementDeepConversationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Have {count} deep conversations'**
+  String achievementDeepConversationsDescription(int count);
+
+  /// No description provided for @achievementNoveltySeeker.
+  ///
+  /// In en, this message translates to:
+  /// **'Novelty Seeker'**
+  String get achievementNoveltySeeker;
+
+  /// No description provided for @achievementNoveltySeekerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain high novelty in conversations (60%+)'**
+  String get achievementNoveltySeekerDescription;
+
+  /// No description provided for @achievementEvolveDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolve your avatar to the {stage} stage'**
+  String achievementEvolveDescription(String stage);
 }
 
 class _AppLocalizationsDelegate

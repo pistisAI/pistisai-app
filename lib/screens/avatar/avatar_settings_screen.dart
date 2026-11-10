@@ -6,6 +6,7 @@ import '../../services/settings_preference_service.dart';
 import '../../models/avatar/personality_models.dart';
 import '../../features/avatar/avatar_widget.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'achievements_screen.dart';
 
@@ -61,6 +62,12 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
     'large': 1.3,
   };
 
+  AppLocalizations get _l10n => AppLocalizations.of(context);
+
+  /// Error raised while initializing, formatted in build so the message
+  /// follows the current locale.
+  Object? _initError;
+
   @override
   void initState() {
     super.initState();
@@ -94,7 +101,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
     } catch (e) {
       setState(() {
         _isInitializing = false;
-        _errorMessage = 'Failed to initialize avatar service: $e';
+        _initError = e;
       });
       debugPrint('Error initializing avatar state service: $e');
     }
@@ -194,6 +201,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
   /// Save avatar settings
   Future<void> _saveSettings() async {
+    final l10n = _l10n;
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -229,7 +237,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
       setState(() {
         _isLoading = false;
-        _successMessage = 'Avatar settings saved successfully';
+        _successMessage = l10n.avatarSaved;
         _errorMessage = null;
       });
 
@@ -244,17 +252,18 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Failed to save settings: $e';
+        _errorMessage = l10n.avatarSaveFailed('$e');
       });
     }
   }
 
   /// Request evolution to selected stage
   Future<void> _requestEvolution() async {
+    final l10n = _l10n;
     final reason = _evolutionReasonController.text.trim();
     if (reason.isEmpty) {
       setState(() {
-        _errorMessage = 'Please provide a reason for evolution';
+        _errorMessage = l10n.avatarEvolutionReasonMissing;
       });
       return;
     }
@@ -275,8 +284,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
       if (decision.approved) {
         setState(() {
-          _successMessage =
-              'Evolution to ${decision.newStage} approved! Your avatar has evolved.';
+          _successMessage = l10n.avatarEvolutionApproved(
+              _stageLabel(l10n, decision.newStage ?? _selectedEvolutionStage));
           _errorMessage = null;
         });
 
@@ -293,7 +302,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
         });
       } else {
         setState(() {
-          _errorMessage = 'Evolution request denied: ${decision.reason}';
+          _errorMessage = l10n.avatarEvolutionDenied(
+              decision.reason ?? l10n.commonUnknownError);
         });
       }
 
@@ -302,7 +312,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
     } catch (e) {
       setState(() {
         _isRequestingEvolution = false;
-        _errorMessage = 'Failed to request evolution: $e';
+        _errorMessage = l10n.avatarEvolutionFailed('$e');
       });
     }
   }
@@ -317,9 +327,13 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n;
+    final errorMessage = _initError != null
+        ? l10n.avatarInitFailed('$_initError')
+        : _errorMessage;
     if (_isInitializing) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Avatar Settings')),
+        appBar: AppBar(title: Text(l10n.avatarSettingsTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -328,11 +342,11 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       value: _avatarStateService,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Avatar Settings'),
+          title: Text(l10n.avatarSettingsTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.pop(),
-            tooltip: 'Back',
+            tooltip: l10n.commonBack,
           ),
         ),
         body: SingleChildScrollView(
@@ -343,7 +357,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Status messages
-                if (_errorMessage != null) _buildErrorMessage(_errorMessage!),
+                if (errorMessage != null) _buildErrorMessage(errorMessage),
                 if (_successMessage != null)
                   _buildSuccessMessage(_successMessage!),
 
@@ -398,7 +412,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Save Settings'),
+                        : Text(l10n.avatarSaveSettings),
                   ),
                 ),
               ],
@@ -420,7 +434,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
         child: Column(
           children: [
             Text(
-              'Live Preview',
+              _l10n.avatarLivePreview,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
@@ -456,31 +470,31 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SegmentedButton<AgentState>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: AgentState.idle,
-                    label: Text('Idle'),
-                    icon: Icon(Icons.pause_circle_outline),
+                    label: Text(_l10n.avatarStateIdle),
+                    icon: const Icon(Icons.pause_circle_outline),
                   ),
                   ButtonSegment(
                     value: AgentState.thinking,
-                    label: Text('Thinking'),
-                    icon: Icon(Icons.psychology),
+                    label: Text(_l10n.avatarStateThinking),
+                    icon: const Icon(Icons.psychology),
                   ),
                   ButtonSegment(
                     value: AgentState.working,
-                    label: Text('Working'),
-                    icon: Icon(Icons.construction),
+                    label: Text(_l10n.avatarStateWorking),
+                    icon: const Icon(Icons.construction),
                   ),
                   ButtonSegment(
                     value: AgentState.happy,
-                    label: Text('Happy'),
-                    icon: Icon(Icons.sentiment_satisfied),
+                    label: Text(_l10n.avatarStateHappy),
+                    icon: const Icon(Icons.sentiment_satisfied),
                   ),
                   ButtonSegment(
                     value: AgentState.error,
-                    label: Text('Error'),
-                    icon: Icon(Icons.error_outline),
+                    label: Text(_l10n.commonError),
+                    icon: const Icon(Icons.error_outline),
                   ),
                 ],
                 selected: {_previewState},
@@ -581,7 +595,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Stage: ${avatarState.evolutionStage}',
+                            _l10n.avatarStageValue(
+                                _stageLabel(_l10n, avatarState.evolutionStage)),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -601,14 +616,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                     Expanded(
                       child: _buildStatusItem(
                         icon: Icons.chat_bubble_outline,
-                        label: 'Conversations',
+                        label: _l10n.avatarConversations,
                         value: avatarState.conversationCount.toString(),
                       ),
                     ),
                     Expanded(
                       child: _buildStatusItem(
                         icon: Icons.insights,
-                        label: 'Depth Score',
+                        label: _l10n.avatarDepthScore,
                         value:
                             (avatarState.depthScore * 100).toStringAsFixed(0),
                       ),
@@ -657,33 +672,33 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Agent Name',
+              _l10n.avatarAgentName,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                hintText: 'Enter agent name',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.badge),
+              decoration: InputDecoration(
+                hintText: _l10n.avatarAgentNameHint,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.badge),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter an agent name';
+                  return _l10n.avatarAgentNameRequired;
                 }
                 if (value.trim().length < 2) {
-                  return 'Name must be at least 2 characters';
+                  return _l10n.avatarAgentNameTooShort;
                 }
                 if (value.trim().length > 50) {
-                  return 'Name must be less than 50 characters';
+                  return _l10n.avatarAgentNameTooLong;
                 }
                 return null;
               },
             ),
             const SizedBox(height: 8),
             Text(
-              'This name will be used to address your avatar in conversations.',
+              _l10n.avatarAgentNameHelp,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -703,48 +718,47 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Personality Traits',
+              _l10n.avatarPersonalityTraits,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 4),
             Text(
-              'Adjust these sliders to customize your avatar\'s personality. '
-              'Changes are reflected in the live preview above.',
+              _l10n.avatarPersonalityHelp,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
             const SizedBox(height: 16),
             _buildTraitSlider(
-              label: 'Formality',
+              label: _l10n.homeTraitFormality,
               value: _formality,
               onChanged: (value) => setState(() => _formality = value),
               icon: Icons.business_center,
-              description: 'How formal the avatar communicates',
+              description: _l10n.avatarFormalityDescription,
             ),
             const SizedBox(height: 16),
             _buildTraitSlider(
-              label: 'Humor',
+              label: _l10n.homeTraitHumor,
               value: _humor,
               onChanged: (value) => setState(() => _humor = value),
               icon: Icons.sentiment_very_satisfied,
-              description: 'Frequency and intensity of humor',
+              description: _l10n.avatarHumorDescription,
             ),
             const SizedBox(height: 16),
             _buildTraitSlider(
-              label: 'Enthusiasm',
+              label: _l10n.homeTraitEnthusiasm,
               value: _enthusiasm,
               onChanged: (value) => setState(() => _enthusiasm = value),
               icon: Icons.emoji_emotions,
-              description: 'Energy and excitement levels',
+              description: _l10n.avatarEnthusiasmDescription,
             ),
             const SizedBox(height: 16),
             _buildTraitSlider(
-              label: 'Empathy',
+              label: _l10n.homeTraitEmpathy,
               value: _empathy,
               onChanged: (value) => setState(() => _empathy = value),
               icon: Icons.favorite,
-              description: 'Emotional understanding and support',
+              description: _l10n.avatarEmpathyDescription,
             ),
           ],
         ),
@@ -826,14 +840,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                 Icon(Icons.palette, color: colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
-                  'Appearance',
+                  _l10n.avatarAppearance,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              'Customize your avatar\'s visual style and animation.',
+              _l10n.avatarAppearanceHelp,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -842,7 +856,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
             // Color theme selector
             Text(
-              'Color Theme',
+              _l10n.avatarColorTheme,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -856,30 +870,30 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                     EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                 prefixIcon: Icon(Icons.color_lens),
               ),
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'personality',
-                  child: Text('Personality-Derived'),
+                  child: Text(_l10n.avatarColorPersonality),
                 ),
                 DropdownMenuItem(
                   value: 'ocean_blue',
-                  child: Text('Ocean Blue'),
+                  child: Text(_l10n.avatarColorOceanBlue),
                 ),
                 DropdownMenuItem(
                   value: 'forest_green',
-                  child: Text('Forest Green'),
+                  child: Text(_l10n.avatarColorForestGreen),
                 ),
                 DropdownMenuItem(
                   value: 'sunset_orange',
-                  child: Text('Sunset Orange'),
+                  child: Text(_l10n.avatarColorSunsetOrange),
                 ),
                 DropdownMenuItem(
                   value: 'royal_purple',
-                  child: Text('Royal Purple'),
+                  child: Text(_l10n.avatarColorRoyalPurple),
                 ),
                 DropdownMenuItem(
                   value: 'monochrome',
-                  child: Text('Monochrome'),
+                  child: Text(_l10n.avatarColorMonochrome),
                 ),
               ],
               onChanged: (value) {
@@ -893,7 +907,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
             // Animation style selector
             Text(
-              'Animation Style',
+              _l10n.avatarAnimationStyle,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -907,26 +921,26 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                     EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                 prefixIcon: Icon(Icons.animation),
               ),
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'bounce',
-                  child: Text('Bounce'),
+                  child: Text(_l10n.avatarAnimationBounce),
                 ),
                 DropdownMenuItem(
                   value: 'pulse',
-                  child: Text('Pulse'),
+                  child: Text(_l10n.avatarAnimationPulse),
                 ),
                 DropdownMenuItem(
                   value: 'float',
-                  child: Text('Float'),
+                  child: Text(_l10n.avatarAnimationFloat),
                 ),
                 DropdownMenuItem(
                   value: 'shake',
-                  child: Text('Shake'),
+                  child: Text(_l10n.avatarAnimationShake),
                 ),
                 DropdownMenuItem(
                   value: 'none',
-                  child: Text('None (Static)'),
+                  child: Text(_l10n.avatarAnimationNone),
                 ),
               ],
               onChanged: (value) {
@@ -940,27 +954,27 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
 
             // Avatar size selector
             Text(
-              'Avatar Size',
+              _l10n.avatarSize,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 8),
             SegmentedButton<String>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: 'small',
-                  label: Text('Small'),
+                  label: Text(_l10n.avatarSizeSmall),
                   icon: Icon(Icons.circle, size: 16),
                 ),
                 ButtonSegment(
                   value: 'medium',
-                  label: Text('Medium'),
+                  label: Text(_l10n.avatarSizeMedium),
                   icon: Icon(Icons.circle, size: 24),
                 ),
                 ButtonSegment(
                   value: 'large',
-                  label: Text('Large'),
+                  label: Text(_l10n.avatarSizeLarge),
                   icon: Icon(Icons.circle, size: 32),
                 ),
               ],
@@ -982,14 +996,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Glow Effect',
+                        _l10n.avatarGlowEffect,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Enable pulsing glow effect around avatar',
+                        _l10n.avatarGlowSubtitle,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
@@ -1027,14 +1041,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Advanced Visual Customization',
+                  _l10n.avatarAdvancedTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              'Fine-tune your avatar\'s color, type, and effects in the dedicated customization screen.',
+              _l10n.avatarAdvancedHelp,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -1045,7 +1059,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               child: OutlinedButton.icon(
                 onPressed: () => context.pushNamed('avatar-customization'),
                 icon: const Icon(Icons.brush),
-                label: const Text('Open Advanced Customization'),
+                label: Text(_l10n.avatarOpenAdvanced),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -1073,14 +1087,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Achievements',
+                  _l10n.avatarAchievements,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              'View your unlocked achievements and track your progress.',
+              _l10n.avatarAchievementsHelp,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -1095,7 +1109,7 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                   ),
                 ),
                 icon: const Icon(Icons.emoji_events),
-                label: const Text('View Achievements'),
+                label: Text(_l10n.avatarViewAchievements),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -1123,14 +1137,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Evolution',
+                  _l10n.avatarEvolution,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              'Evolve your avatar to unlock new personality capabilities.',
+              _l10n.avatarEvolutionHelp,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -1142,10 +1156,11 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               builder: (context, avatarState, child) {
                 return Row(
                   children: [
-                    Text('Current Stage: '),
+                    Text(_l10n.avatarCurrentStage),
                     const SizedBox(width: 8),
                     Chip(
-                      label: Text(avatarState.evolutionStage),
+                      label:
+                          Text(_stageLabel(_l10n, avatarState.evolutionStage)),
                       backgroundColor:
                           Theme.of(context).colorScheme.primaryContainer,
                     ),
@@ -1165,27 +1180,27 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               initialValue: _isValidStage(_selectedEvolutionStage)
                   ? _selectedEvolutionStage
                   : 'curious_explorer',
-              decoration: const InputDecoration(
-                labelText: 'Evolve to Stage',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.trending_up),
+              decoration: InputDecoration(
+                labelText: _l10n.avatarEvolveTo,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.trending_up),
               ),
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'curious_explorer',
-                  child: Text('Curious Explorer (Initial)'),
+                  child: Text(_l10n.avatarStageCuriousExplorerInitial),
                 ),
                 DropdownMenuItem(
                   value: 'knowledge_seeker',
-                  child: Text('Knowledge Seeker'),
+                  child: Text(_l10n.avatarStageKnowledgeSeeker),
                 ),
                 DropdownMenuItem(
                   value: 'wise_companion',
-                  child: Text('Wise Companion'),
+                  child: Text(_l10n.avatarStageWiseCompanion),
                 ),
                 DropdownMenuItem(
                   value: 'enlightened_guide',
-                  child: Text('Enlightened Guide'),
+                  child: Text(_l10n.avatarStageEnlightenedGuide),
                 ),
               ],
               onChanged: (value) {
@@ -1200,15 +1215,15 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
             TextFormField(
               controller: _evolutionReasonController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Reason for Evolution',
-                hintText: 'Explain why you want to evolve your avatar...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.edit_note),
+              decoration: InputDecoration(
+                labelText: _l10n.avatarEvolutionReason,
+                hintText: _l10n.avatarEvolutionReasonHint,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.edit_note),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please provide a reason';
+                  return _l10n.avatarEvolutionReasonRequired;
                 }
                 return null;
               },
@@ -1226,8 +1241,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                       )
                     : const Icon(Icons.auto_awesome),
                 label: Text(_isRequestingEvolution
-                    ? 'Requesting...'
-                    : 'Request Evolution'),
+                    ? _l10n.avatarRequesting
+                    : _l10n.avatarRequestEvolution),
               ),
             ),
           ],
@@ -1274,7 +1289,9 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                canEvolve ? 'Ready to Evolve!' : 'Evolution Requirements',
+                canEvolve
+                    ? _l10n.avatarReadyToEvolve
+                    : _l10n.avatarEvolutionRequirements,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: canEvolve
@@ -1286,13 +1303,13 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
           ),
           const SizedBox(height: 12),
           _buildRequirementProgress(
-            label: 'Deep Conversations',
+            label: _l10n.avatarDeepConversations,
             current: reqs['deep_conversations'] as int,
             required: reqs['required_deep_conversations'] as int,
           ),
           const SizedBox(height: 8),
           _buildRequirementProgress(
-            label: 'Average Novelty',
+            label: _l10n.avatarAverageNovelty,
             current: ((reqs['average_novelty'] as double) * 100).toInt(),
             required: ((reqs['required_novelty'] as double) * 100).toInt(),
             isPercentage: true,
@@ -1300,6 +1317,22 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
         ],
       ),
     );
+  }
+
+  /// Localized name of an evolution stage id; unknown ids are shown as is.
+  static String _stageLabel(AppLocalizations l10n, String stage) {
+    switch (stage) {
+      case 'curious_explorer':
+        return l10n.avatarStageCuriousExplorer;
+      case 'knowledge_seeker':
+        return l10n.avatarStageKnowledgeSeeker;
+      case 'wise_companion':
+        return l10n.avatarStageWiseCompanion;
+      case 'enlightened_guide':
+        return l10n.avatarStageEnlightenedGuide;
+      default:
+        return stage;
+    }
   }
 
   /// Build requirement progress widget
@@ -1323,7 +1356,9 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             Text(
-              '$current${isPercentage ? '%' : ''} / $required${isPercentage ? '%' : ''}',
+              isPercentage
+                  ? _l10n.avatarRequirementPercent(current, required)
+                  : '$current / $required',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: isMet
                         ? Theme.of(context).colorScheme.primary
