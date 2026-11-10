@@ -675,4 +675,426 @@ class AppLocalizationsFr extends AppLocalizations {
   String logsDetailLabel(String label) {
     return '$label :';
   }
+
+  @override
+  String get commonRemove => 'Retirer';
+
+  @override
+  String get commonSave => 'Enregistrer';
+
+  @override
+  String get commonUnknownError => 'Erreur inconnue';
+
+  @override
+  String commonFieldLabel(String label) {
+    return '$label :';
+  }
+
+  @override
+  String get commonStatus => 'État';
+
+  @override
+  String get commonError => 'Erreur';
+
+  @override
+  String get commonActions => 'Actions';
+
+  @override
+  String get commonName => 'Nom';
+
+  @override
+  String get commonType => 'Type';
+
+  @override
+  String get commonMessages => 'Messages';
+
+  @override
+  String get commonNever => 'Jamais';
+
+  @override
+  String get timeJustNow => 'À l\'instant';
+
+  @override
+  String timeSecondsAgo(int seconds) {
+    return 'il y a $seconds s';
+  }
+
+  @override
+  String timeMinutesAgo(int minutes) {
+    return 'il y a $minutes min';
+  }
+
+  @override
+  String timeHoursAgo(int hours) {
+    return 'il y a $hours h';
+  }
+
+  @override
+  String timeDaysAgo(int days) {
+    return 'il y a $days j';
+  }
+
+  @override
+  String get agentsTitle => 'Agents';
+
+  @override
+  String get agentsAdd => 'Ajouter un agent';
+
+  @override
+  String get agentsTabRegistry => 'Registre';
+
+  @override
+  String get agentsTabMonitor => 'Suivi';
+
+  @override
+  String get agentsTabConfig => 'Configuration';
+
+  @override
+  String get agentsEmptyTitle => 'Aucun agent enregistré';
+
+  @override
+  String get agentsEmptyMessage =>
+      'Les agents apparaîtront ici une fois enregistrés';
+
+  @override
+  String get agentsNoTask => 'Aucune tâche assignée';
+
+  @override
+  String agentsActivityCompleted(String task) {
+    return 'Terminé : $task';
+  }
+
+  @override
+  String agentsActivityFailed(String error) {
+    return 'Échec : $error';
+  }
+
+  @override
+  String agentsActivityStarted(String task) {
+    return 'Démarré : $task';
+  }
+
+  @override
+  String get agentsActivityTaskFallback => 'tâche';
+
+  @override
+  String get agentsActivityErrorFallback => 'erreur inconnue';
+
+  @override
+  String get agentsRegistryUnavailable =>
+      'Le registre des agents n\'est pas disponible tant que le serveur API n\'est pas connecté';
+
+  @override
+  String get agentsRegisterFailed => 'Impossible d\'enregistrer l\'agent';
+
+  @override
+  String agentsRegistered(String name) {
+    return '$name enregistré';
+  }
+
+  @override
+  String agentsEditTitle(String name) {
+    return 'Modifier $name';
+  }
+
+  @override
+  String agentsUpdateFailed(String name) {
+    return 'Impossible de mettre à jour $name';
+  }
+
+  @override
+  String agentsUpdated(String name) {
+    return '$name mis à jour';
+  }
+
+  @override
+  String agentsRemoveFailed(String name) {
+    return 'Impossible de retirer $name';
+  }
+
+  @override
+  String agentsRemoved(String name) {
+    return '$name retiré';
+  }
+
+  @override
+  String get agentsStatTasks => 'Tâches';
+
+  @override
+  String get agentsStatAvgLatency => 'Latence moyenne';
+
+  @override
+  String get agentsStatLastActive => 'Dernière activité';
+
+  @override
+  String get agentsStatusOnline => 'EN LIGNE';
+
+  @override
+  String get agentsStatusBusy => 'OCCUPÉ';
+
+  @override
+  String get agentsStatusOffline => 'HORS LIGNE';
+
+  @override
+  String get agentsStatusError => 'ERREUR';
+
+  @override
+  String get agentsTotal => 'Agents au total';
+
+  @override
+  String get agentsTasksToday => 'Tâches aujourd\'hui';
+
+  @override
+  String get agentsErrors => 'Erreurs';
+
+  @override
+  String get agentsNoActivityTitle => 'Aucune activité récente';
+
+  @override
+  String get agentsNoActivityMessage => 'L\'activité des agents apparaîtra ici';
+
+  @override
+  String get agentsPoolSettings => 'Réglages du groupe d\'agents';
+
+  @override
+  String get agentsAutoScale => 'Ajuster automatiquement le nombre d\'agents';
+
+  @override
+  String get agentsAutoScaleSubtitle =>
+      'Ajouter des agents automatiquement selon la charge';
+
+  @override
+  String get agentsMin => 'Agents minimum';
+
+  @override
+  String get agentsMinSubtitle => 'Nombre minimal d\'agents actifs';
+
+  @override
+  String get agentsMax => 'Agents maximum';
+
+  @override
+  String get agentsMaxSubtitle => 'Nombre maximal d\'agents simultanés';
+
+  @override
+  String get agentsTimeoutSettings => 'Délais d\'attente';
+
+  @override
+  String get agentsRequestTimeout => 'Délai de requête';
+
+  @override
+  String get agentsRequestTimeoutSubtitle =>
+      'Temps maximal d\'attente d\'une réponse de l\'agent';
+
+  @override
+  String get agentsQueueTimeout => 'Délai en file d\'attente';
+
+  @override
+  String get agentsQueueTimeoutSubtitle =>
+      'Temps maximal en file d\'attente avant le refus';
+
+  @override
+  String get agentsPause => 'Mettre l\'agent en pause';
+
+  @override
+  String get agentsResume => 'Reprendre l\'agent';
+
+  @override
+  String get agentsRestart => 'Redémarrer l\'agent';
+
+  @override
+  String get agentsEditConfig => 'Modifier la configuration';
+
+  @override
+  String get agentsRemove => 'Retirer l\'agent';
+
+  @override
+  String agentsRemoveConfirm(String name) {
+    return 'Voulez-vous vraiment retirer $name ?';
+  }
+
+  @override
+  String get agentsRegisterTitle => 'Enregistrer un agent';
+
+  @override
+  String get agentsRegister => 'Enregistrer';
+
+  @override
+  String get agentsIdsRequired =>
+      'L\'identifiant du sous-agent et celui de l\'agent parent sont obligatoires';
+
+  @override
+  String get agentsSubagentId => 'Identifiant du sous-agent';
+
+  @override
+  String get agentsParentId => 'Identifiant de l\'agent parent';
+
+  @override
+  String get agentsDisplayLabel => 'Nom affiché';
+
+  @override
+  String get agentsTaskDescription => 'Description de la tâche';
+
+  @override
+  String get agentDetailTitle => 'Détails de l\'agent';
+
+  @override
+  String get agentDetailNotFound => 'Agent introuvable';
+
+  @override
+  String agentDetailIdValue(String id) {
+    return 'Identifiant : $id';
+  }
+
+  @override
+  String get agentDetailActivity => 'Activité';
+
+  @override
+  String get agentDetailLastUpdate => 'Dernière mise à jour';
+
+  @override
+  String get agentDetailStart => 'Démarrer';
+
+  @override
+  String get agentDetailStop => 'Arrêter';
+
+  @override
+  String get agentDetailRestart => 'Redémarrer';
+
+  @override
+  String get agentDetailInformation => 'Informations';
+
+  @override
+  String get agentDetailId => 'Identifiant';
+
+  @override
+  String get agentStateIdle => 'Inactif';
+
+  @override
+  String get agentStateStarting => 'Démarrage…';
+
+  @override
+  String get agentStateRunning => 'En cours';
+
+  @override
+  String get agentStateStopping => 'Arrêt…';
+
+  @override
+  String get agentStateError => 'Erreur';
+
+  @override
+  String get agentStateOffline => 'Hors ligne';
+
+  @override
+  String get sessionsTitle => 'Sessions';
+
+  @override
+  String get sessionsTabWebSocket => 'WebSocket';
+
+  @override
+  String get sessionsTabConversations => 'Conversations';
+
+  @override
+  String get sessionsTabUsers => 'Utilisateurs';
+
+  @override
+  String get sessionsRefresh => 'Actualiser les sessions';
+
+  @override
+  String get sessionsEmptyTitle => 'Aucune session';
+
+  @override
+  String get sessionsEmptyMessage =>
+      'Aucune session active dans cette catégorie.';
+
+  @override
+  String get sessionsDetailsTitle => 'Détails de la session';
+
+  @override
+  String get sessionsId => 'Identifiant de session';
+
+  @override
+  String get sessionsUserOrAgent => 'Utilisateur ou agent';
+
+  @override
+  String get sessionsStarted => 'Début';
+
+  @override
+  String get sessionsDuration => 'Durée';
+
+  @override
+  String get sessionsTokens => 'Jetons';
+
+  @override
+  String sessionsDurationHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String sessionsDurationMinutesSeconds(int minutes, int seconds) {
+    return '$minutes min $seconds s';
+  }
+
+  @override
+  String sessionsDurationSeconds(int seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get sessionsTerminateTitle => 'Mettre fin à la session';
+
+  @override
+  String sessionsTerminateConfirm(String id, String who) {
+    return 'Voulez-vous vraiment mettre fin à la session $id ?\n\n$who sera déconnecté. Cette action est irréversible.';
+  }
+
+  @override
+  String get sessionsServiceUnavailable => 'Service des sessions indisponible';
+
+  @override
+  String sessionsTerminated(String id) {
+    return 'Session $id terminée';
+  }
+
+  @override
+  String sessionsTerminateFailed(String id) {
+    return 'Impossible de mettre fin à la session $id';
+  }
+
+  @override
+  String get sessionsTerminate => 'Mettre fin';
+
+  @override
+  String get sessionsViewDetails => 'Voir les détails';
+
+  @override
+  String get sessionsTerminateTooltip => 'Mettre fin à la session';
+
+  @override
+  String get channelsTitle => 'Canaux';
+
+  @override
+  String get channelsRefresh => 'Actualiser les canaux';
+
+  @override
+  String channelsLoadError(String error) {
+    return 'Impossible de charger les canaux : $error';
+  }
+
+  @override
+  String get channelsEmptyTitle => 'Aucun canal';
+
+  @override
+  String get channelsEmptyMessage =>
+      'Aucun canal de communication n\'est disponible pour le moment.';
+
+  @override
+  String channelsMessageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages',
+      one: '$count message',
+    );
+    return '$_temp0';
+  }
 }

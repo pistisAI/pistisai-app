@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/l10n/app_localizations.dart';
+import 'package:pistisai/screens/agents/agents_screen.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
@@ -126,5 +127,35 @@ void main() {
         find.text('Aucun environnement d\'agent sélectionné'), findsOneWidget);
     expect(find.text('Appareils Tailscale'), findsOneWidget);
     expect(find.text('Nodes'), findsNothing);
+  });
+
+  test('batch 5 messages follow each language rules', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.channelsMessageCount(1), '1 message');
+    expect(en.channelsMessageCount(4), '4 messages');
+    expect(fr.channelsMessageCount(0), '0 message');
+    expect(fr.channelsMessageCount(4), '4 messages');
+    expect(fr.agentsRemoveConfirm('bot'), 'Voulez-vous vraiment retirer bot ?');
+    expect(fr.commonFieldLabel(fr.commonStatus), 'État :');
+    expect(fr.sessionsDurationHoursMinutes(2, 5), '2 h 5 min');
+    expect(fr.timeSecondsAgo(30), 'il y a 30 s');
+  });
+
+  testWidgets('the agents screen renders in French for a locked brand',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: AgentsScreen(),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Registre'), findsOneWidget);
+    expect(find.text('Aucun agent enregistré'), findsOneWidget);
+    expect(find.byTooltip('Ajouter un agent'), findsOneWidget);
+    expect(find.text('Registry'), findsNothing);
   });
 }
