@@ -1,4 +1,9 @@
+# syntax=docker/dockerfile:1
 # ---- Build stage: Flutter web ----
+# BRAND picks brand/<id>/. A paid white-label brand needs its licence as a
+# build secret:
+#   docker build -f Dockerfile.web --build-arg BRAND=acme \
+#     --secret id=brand_licence,src=acme.licence .
 FROM gmeligio/flutter-android:3.47.9 AS builder
 
 WORKDIR /app
@@ -7,8 +12,17 @@ COPY tool/cnativeapi/ tool/cnativeapi/
 COPY tool/linux_native_deps/ tool/linux_native_deps/
 RUN flutter pub get
 RUN flutter config --enable-web
+ARG BRAND=pistisai
 COPY . .
-RUN flutter build web --release --no-web-resources-cdn --dart-define=BRAND=pistisai \
+RUN --mount=type=secret,id=brand_licence,required=false \
+    if [ "$BRAND" != "pistisai" ]; then \
+      if [ -f /run/secrets/brand_licence ]; then \
+        dart run tool/brand_codegen.dart "$BRAND" --license /run/secrets/brand_licence; \
+      else \
+        dart run tool/brand_codegen.dart "$BRAND"; \
+      fi; \
+    fi
+RUN flutter build web --release --no-web-resources-cdn --dart-define=BRAND=$BRAND \
  && python3 -c 'import json,pathlib; m=json.loads(pathlib.Path("assets/version.json").read_text()); p=pathlib.Path("build/web/index.html"); p.write_text(p.read_text().replace("$FLUTTER_BUILD_NUMBER", m["version"]+"."+str(m["build_number"])))'
 
 # ---- Serve stage: Nginx ----

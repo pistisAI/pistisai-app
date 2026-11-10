@@ -10,10 +10,10 @@ class AppConfig {
   static const String appDescription =
       'Local-first agent companion. Offline until you choose to connect.';
 
-  // Public site and repository follow the brand. API hosts below stay fixed.
+  // Public site, repository, and every backend host follow the baked brand.
   static String get homepageUrl => Brand.current.websiteUrl;
   static String get appUrl => Brand.current.appUrl;
-  static const String adminCenterUrl = 'https://admin.pistisai.app';
+  static String get adminCenterUrl => Brand.current.adminCenterUrl;
   static String get githubUrl => Brand.current.repositoryUrl;
   static String get githubReleasesUrl => Brand.current.releasesUrl;
 
@@ -21,19 +21,19 @@ class AppConfig {
   static const AuthProviderType authProvider =
       AuthProviderType.cloudflareAccess;
 
-  /// Cloudflare Access team host, without a scheme. Empty unless the build
-  /// passes `--dart-define=CF_ACCESS_TEAM_DOMAIN=...`.
-  static const String cloudflareAccessTeamDomain = String.fromEnvironment(
-    'CF_ACCESS_TEAM_DOMAIN',
-    defaultValue: '',
-  );
+  /// Cloudflare Access team host, without a scheme. Comes from the baked
+  /// brand; `--dart-define=CF_ACCESS_TEAM_DOMAIN=...` overrides it.
+  static String get cloudflareAccessTeamDomain {
+    const define = String.fromEnvironment('CF_ACCESS_TEAM_DOMAIN');
+    return define.isNotEmpty ? define : Brand.current.accessTeamDomain;
+  }
 
-  /// Cloudflare Access application audience. Empty unless the build passes
-  /// `--dart-define=CF_ACCESS_AUD=...`.
-  static const String cloudflareAccessAud = String.fromEnvironment(
-    'CF_ACCESS_AUD',
-    defaultValue: '',
-  );
+  /// Cloudflare Access application audience. Comes from the baked brand;
+  /// `--dart-define=CF_ACCESS_AUD=...` overrides it.
+  static String get cloudflareAccessAud {
+    const define = String.fromEnvironment('CF_ACCESS_AUD');
+    return define.isNotEmpty ? define : Brand.current.accessAud;
+  }
 
   // Sentry Configuration
   // Override at compile time: flutter build --dart-define=SENTRY_DSN=your_dsn
@@ -48,7 +48,7 @@ class AppConfig {
 
   // Development mode settings
   static const bool enableDevMode = false; // Set to false for production
-  static const String devModeUser = 'dev@pistisai.app';
+  static String get devModeUser => 'dev@${Brand.current.websiteDomain}';
 
   // Testing mode settings
   static const bool forceSetupWizard =
@@ -57,11 +57,11 @@ class AppConfig {
   static const bool skipDeviceIdentity =
       false; // Use paired-device auth, reject token-only
   // API Configuration
-  static const String apiBaseUrl = 'https://api.pistisai.app';
+  static String get apiBaseUrl => Brand.current.apiBaseUrl;
   static const Duration apiTimeout = Duration(seconds: 30);
   // Tunnel Configuration (SSH over WebSocket)
-  static const String tunnelSshUrl = 'wss://api.pistisai.app/ssh';
-  static const String tunnelSshUrlDev = 'wss://api.pistisai.app/ssh';
+  static String get tunnelSshUrl => Brand.current.tunnelSshUrl;
+  static String get tunnelSshUrlDev => Brand.current.tunnelSshUrl;
   // UI Configuration
   static const double maxContentWidth = 1200.0;
   static const double mobileBreakpoint = 768.0;
@@ -220,7 +220,7 @@ class AppConfig {
   static String getGatewayUrlSync() => gatewayUrl;
 
   // Cloud Relay Configuration (via OpenClaw)
-  static const String cloudGatewayUrl = '$apiBaseUrl/v1';
+  static String get cloudGatewayUrl => '$apiBaseUrl/v1';
 
   // Admin Interface Configuration
   static const bool enableAdminInterface = true;
@@ -230,7 +230,7 @@ class AppConfig {
   static const int pistisaiUiPort = 1338;
 
   // Platform-specific admin server URLs
-  static const String adminServerUrlWeb = 'https://api.pistisai.app';
+  static String get adminServerUrlWeb => Brand.current.apiBaseUrl;
   static const String adminServerUrlDesktop = 'http://127.0.0.1:8080';
 
   // Get admin server URL based on platform
@@ -270,9 +270,9 @@ class AppConfig {
   }
 
   // Bridge Configuration
-  static const String bridgePollingUrl = '$apiBaseUrl/v1/bridge-polling';
-  static const String bridgeStatusUrl = '$bridgePollingUrl/:bridgeId/status';
-  static const String bridgeRegisterUrl = '$bridgePollingUrl/register';
+  static String get bridgePollingUrl => '$apiBaseUrl/v1/bridge-polling';
+  static String get bridgeStatusUrl => '$bridgePollingUrl/:bridgeId/status';
+  static String get bridgeRegisterUrl => '$bridgePollingUrl/register';
 }
 
 enum AuthProviderType {
