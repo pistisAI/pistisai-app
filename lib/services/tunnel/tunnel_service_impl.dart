@@ -15,6 +15,7 @@ import 'metrics_collector.dart' as metrics_impl;
 import 'error_recovery_strategy.dart';
 import 'tunnel_config_manager.dart';
 import 'diagnostics/diagnostic_test_suite.dart';
+import 'package:pistisai/brand/brand.dart';
 
 /// Concrete implementation of TunnelService
 /// Integrates all tunnel components for production use
@@ -426,7 +427,7 @@ class TunnelServiceImpl extends TunnelService {
 
       // Create diagnostic test suite
       final diagnosticSuite = DiagnosticTestSuite(
-        serverHost: 'api.pistisai.app',
+        serverHost: Brand.current.apiHost,
         serverPort: 443,
         testTimeout: const Duration(seconds: 30),
       );

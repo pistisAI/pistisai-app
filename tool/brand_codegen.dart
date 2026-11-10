@@ -41,8 +41,10 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
 
-  // The upstream product is free. Every other brand is a licensed whitelabel.
-  if (id != 'pistisai') {
+  // The upstream product is free, and so is the `example` placeholder that CI
+  // bakes to prove a white-label build carries no upstream hosts. Every other
+  // brand is a licensed whitelabel.
+  if (!_freeBrands.contains(id)) {
     if (licenseSource == null || licenseSource.trim().isEmpty) {
       stderr.writeln(
         'Brand "$id" is a paid whitelabel. Supply a licence:\n'
@@ -72,6 +74,8 @@ Future<void> main(List<String> args) async {
     'Build with: flutter build <target> --dart-define=BRAND=${brand.id}',
   );
 }
+
+const Set<String> _freeBrands = {'pistisai', 'example'};
 
 /// Read a licence from a file path, or treat the argument as the JSON itself.
 Future<String> _readLicence(String source) async {

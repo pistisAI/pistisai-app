@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../brand/brand_copy.dart';
+import '../components/app_logo.dart';
 import '../config/theme.dart';
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
@@ -234,10 +236,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: 3,
                               ),
                             ),
-                            child: const Center(
-                              child: Text(
-                                '🦞',
-                                style: TextStyle(fontSize: 48),
+                            child: Center(
+                              child: AppLogo(
+                                size: isMobile ? 64.0 : 80.0,
+                                showBorder: false,
                               ),
                             ),
                           ),
@@ -327,33 +329,34 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: const Text('Continue in Local Mode'),
                           ),
 
-                          const SizedBox(height: 8.0),
+                          if (!kReleaseMode) const SizedBox(height: 8.0),
 
-                          TextButton(
-                            onPressed: _isLoading
-                                ? null
-                                : () async {
-                                    final authService =
-                                        context.read<AuthService>();
-                                    setState(() => _isLoading = true);
-                                    try {
-                                      await authService.loginMockDeveloper();
-                                      if (!context.mounted) return;
-                                      context.go('/');
-                                    } catch (e) {
-                                      debugPrint('Bypass failed: $e');
-                                    } finally {
-                                      if (mounted) {
-                                        setState(() => _isLoading = false);
+                          if (!kReleaseMode)
+                            TextButton(
+                              onPressed: _isLoading
+                                  ? null
+                                  : () async {
+                                      final authService =
+                                          context.read<AuthService>();
+                                      setState(() => _isLoading = true);
+                                      try {
+                                        await authService.loginMockDeveloper();
+                                        if (!context.mounted) return;
+                                        context.go('/');
+                                      } catch (e) {
+                                        debugPrint('Bypass failed: $e');
+                                      } finally {
+                                        if (mounted) {
+                                          setState(() => _isLoading = false);
+                                        }
                                       }
-                                    }
-                                  },
-                            style: TextButton.styleFrom(
-                              foregroundColor:
-                                  AppTheme.colorsOf(context).warning,
+                                    },
+                              style: TextButton.styleFrom(
+                                foregroundColor:
+                                    AppTheme.colorsOf(context).warning,
+                              ),
+                              child: const Text('Bypass to Test User (Debug)'),
                             ),
-                            child: const Text('Bypass to Test User (Debug)'),
-                          ),
                         ],
                       ),
                     ),

@@ -11,6 +11,7 @@ import '../../services/auth_service.dart';
 import '../../services/connection_manager_service.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../services/platform_adapter.dart';
+import 'package:pistisai/brand/brand.dart';
 
 /// Connection Status Screen
 class ConnectionStatusScreen extends StatefulWidget {
@@ -360,7 +361,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
               ),
               _buildStatusRow(
                 'Endpoint',
-                'api.pistisai.app',
+                Brand.current.apiHost,
                 AppTheme.colorsOf(context).textColorLight,
               ),
               _buildStatusRow(

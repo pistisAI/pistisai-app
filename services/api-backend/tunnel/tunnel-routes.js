@@ -3,6 +3,7 @@
  */
 
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import winston from 'winston';
 import {
   TunnelLogger,
@@ -25,6 +26,16 @@ export function createTunnelRoutes(
   authService = null,
 ) {
   const router = express.Router();
+  // Same limit as the global pipeline limiter, applied here as well so every
+  // route on this router is visibly rate limited.
+  router.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 100,
+      standardHeaders: true,
+      legacyHeaders: false,
+    }),
+  );
 
   const tunnelLogger =
     logger instanceof TunnelLogger ? logger : new TunnelLogger('tunnel-routes');

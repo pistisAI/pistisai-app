@@ -173,7 +173,7 @@ describe("DashboardWebSocketManager", () => {
       await dashboardWSManager.sendAgentList(mockWs, "user123");
 
       expect(mockQuery).toHaveBeenCalledWith(
-        "SELECT * FROM agents WHERE user_id = $1 OR user_id IS NULL",
+        "SELECT * FROM agents WHERE user_id = $1",
         ["user123"],
       );
     });
@@ -194,9 +194,8 @@ describe("DashboardWebSocketManager", () => {
     it("should send multiple agents in list", async () => {
       const mockWs = { send: jest.fn() };
       const agents = [
-        { id: 1, name: "agent1", status: "active" },
-        { id: 2, name: "agent2", status: "idle" },
-        { id: 3, name: "global-agent", user_id: null },
+        { id: 1, name: "agent1", status: "active", user_id: "user1" },
+        { id: 2, name: "agent2", status: "idle", user_id: "user1" },
       ];
       mockGetPool.mockReturnValue({
         query: jest.fn().mockResolvedValue({ rows: agents }),
@@ -207,6 +206,19 @@ describe("DashboardWebSocketManager", () => {
       expect(mockWs.send).toHaveBeenCalledWith(
         JSON.stringify({ type: "agent_list", agents }),
       );
+    });
+
+    it("must not include unowned agents in the scoped query", async () => {
+      const mockWs = { send: jest.fn() };
+      const mockQuery = jest.fn().mockResolvedValue({ rows: [] });
+      mockGetPool.mockReturnValue({ query: mockQuery });
+
+      await dashboardWSManager.sendAgentList(mockWs, "user1");
+
+      const [sql] = mockQuery.mock.calls[0];
+      expect(sql).toBe("SELECT * FROM agents WHERE user_id = $1");
+      expect(sql).not.toMatch(/IS NULL/i);
+      expect(sql).not.toMatch(/\bOR\b/i);
     });
 
     it("should log connection errors without throwing", async () => {
