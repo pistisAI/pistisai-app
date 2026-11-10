@@ -75,7 +75,7 @@ void main([List<String> args = const []]) async {
   WidgetsFlutterBinding.ensureInitialized();
   // Start reading the crash-reporting preference now so it loads in parallel
   // with the rest of startup; it is awaited only where Sentry is decided.
-  final crashReportingAllowed = _crashReportingAllowed();
+  final Future<bool> crashReportingAllowedFuture = _crashReportingAllowed();
   Brand.assertCompileDefineMatches();
 
   // Ensure only one instance runs at a time (desktop hub only).
@@ -123,7 +123,7 @@ void main([List<String> args = const []]) async {
   // terminations) do not go through beforeSend, so the only way to keep
   // them silent is not to initialise the SDK. The binding is already
   // initialised above, so the preference can be read here.
-  if (AppConfig.sentryDsn.isNotEmpty && await crashReportingAllowed) {
+  if (AppConfig.sentryDsn.isNotEmpty && await crashReportingAllowedFuture) {
     await _runAppWithSentry();
   } else {
     debugPrint('[Main] Sentry not started (no DSN or crash reporting off)');
