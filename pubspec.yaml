@@ -182,6 +182,7 @@ flutter:
     - assets/images/lobster_avatar_128.png
     - assets/version.json
     - brand/example/assets/
+    - brand/iacle/assets/
     - assets/pistisai/hermes/plugins/pistisai/
     - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/

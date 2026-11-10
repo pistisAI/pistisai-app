@@ -1,0 +1,61 @@
+# IAClé white-label brand configuration
+# Use api.iacle.app backend instead of upstream pistisai API
+id: iacle
+product_name: IAClé
+short_name: IAClé
+company_name: IAClé Solutions
+tagline: IA Confidentielle et Localisée pour l'Entreprise
+support_email: support@iacle.app
+support_url: https://iacle.app/support
+privacy_email: privacy@iacle.app
+website_domain: iacle.app
+website_url: https://iacle.app
+app_url: https://app.iacle.app
+api_base_url: https://api.iacle.app
+ws_endpoint: wss://api.iacle.app/ws
+tunnel_ssh_url: wss://api.iacle.app/ssh
+streaming_base_url: https://streaming.iacle.app
+admin_center_url: https://admin.iacle.app
+url_scheme: iacle
+access_team_domain: ""
+access_aud: ""
+default_locale: fr
+lock_locale: true
+logo_asset: brand/iacle/assets/logo.png
+icon_asset: brand/iacle/assets/icon.png
+wordmark: IACLE
+greek_wordmark: ""
+colors:
+  primary: "#0066CC"
+  secondary: "#0080FF"
+  accent: "#004A99"
+  background: "#0A0E27"
+  text: "#E8ECFF"
+app_id: app.iacle.app
+bundle_id: app.iacle.app
+linux_application_id: app.iacle.app
+executable_name: iacle
+window_title: IAClé
+about_text: "IAClé offre une solution d'IA privée, confidentielle et localisée. Construite pour les entreprises qui exigent le contrôle, la transparence et la souveraineté de leurs données."
+closing_line: "IAClé — L'intelligence artificielle au service de votre confiance."
+legal_line: "© 2026 IAClé Solutions — Confiance technologique"
+copyright: "Copyright © 2026 IAClé Solutions. All rights reserved."
+windows_copyright: "Copyright (C) 2026 IAClé Solutions. All rights reserved."
+file_description: "IAClé Desktop Client"
+repository_url: https://github.com/iacle-solutions/iacle-app
+repository_label: iacle-solutions/iacle-app
+docs_url: https://docs.iacle.app
+releases_url: https://github.com/iacle-solutions/iacle-app/releases/latest
+artifact_prefix: IAClé
+accent_label: "IAClé blue"
+package_title: "IAClé package"
+package_blurb: |
+  Finishing this first-time setup installs the IAClé package into the Hermes you just connected. That home comes from that Hermes, including when it is not the usual Windows location. The package adds the IAClé bot, the analysis skill, and a routine that runs every 6 hours.
+footer_motto: "IACLE — Intelligence confidentielle"
+web_title: "IAClé — IA Confidentielle pour l'Entreprise"
+web_description: "IAClé — IA Confidentielle et Localisée pour l'Entreprise. Architecture quatre piliers, souveraineté des données."
+social_description: "Une solution d'IA privée et souveraine qui répond aux exigences des entreprises modernes — confiance, transparence et contrôle."
+manifest_description: "IAClé est une application multiplateforme qui fournit une IA confidentielle et localisée. Architecture quatre piliers avec souveraineté des données et contrôle total."
+appstream_summary: "IA confidentielle et localisée pour les entreprises"
+appstream_description: "IAClé est une solution d'IA privée et souveraine conçue pour les entreprises. Offrant une architecture quatre piliers avec confiance, transparence et contrôle total des données."
+developer_name: "IAClé Solutions"
