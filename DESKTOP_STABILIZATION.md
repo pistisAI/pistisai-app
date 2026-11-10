@@ -1,4 +1,4 @@
-# PistisAI Desktop Stabilization Plan
+# Pistisai Desktop Stabilization Plan
 
 **Status:** Feature Freeze — Stabilize desktop (Linux/macOS/Windows) before web/mobile.
 
@@ -8,10 +8,10 @@
 
 ## Executive Summary
 
-PistisAI has grown to **313 Dart files**, **110 test files**, and **9,812 JavaScript lines** across backend services. Desktop support exists for **Linux, macOS, and Windows**, but has not been systematically stabilized. This plan:
+Pistisai has grown to **313 Dart files**, **110 test files**, and **9,812 JavaScript lines** across backend services. Desktop support exists for **Linux, macOS, and Windows**, but has not been systematically stabilized. This plan:
 
 1. **Freeze features** — lock the current state, no new features until desktop is solid.
-2. **Fix critical blockers** — resolve 15+ known desktop/CI issues.
+2. **Fix critical blockers** — resolve the known desktop and CI issues.
 3. **Test desktop locally** — run the app on Linux/macOS/Windows, validate Hermes hub integration.
 4. **Pass all tests** — unit, integration, and manual smoke tests on desktop.
 5. **Ship** — merge to main when stable, tag as release-ready.
@@ -24,24 +24,22 @@ PistisAI has grown to **313 Dart files**, **110 test files**, and **9,812 JavaSc
 
 | PR | Status | Action | Deadline |
 |----|--------|--------|----------|
-| #600 | Test failing (CSP regex fixed) | ✅ Merge when CI passes | Nov 10 |
-| #558 | All CI passing | ✅ Merge | Nov 10 |
-| #595 | Desktop CI broken | ✓ Review + merge | Nov 10 |
+| #600 | White-label check fixed; CI green | ✅ Merge | Nov 10 |
+| #558 | Conflicts with `main` | Resolve conflicts (or close if #600 covers it), then merge | Nov 12 |
+| #595 | CI green | ✓ Review + merge | Nov 10 |
 | #599 | Web cache headers | ✓ Defer to Web phase | Nov 15 |
 
 ### 1.2 Fix Immediate CI Failures
 
-**Issue: `🏷️ White-label build has no upstream hosts` (PR #600)**
-- **Root cause:** `tool/brand_emit.dart` regex didn't match CSP line structure.
-- **Fix applied:** Use `replaceFirstMapped` to properly capture and replace brand hosts.
-- **Verify:** Run `bash tool/brand.sh example && flutter build web --release --dart-define=BRAND=example && bash tool/brand_leak_check.sh build/web`
-- **Action:** Test locally once Flutter is available.
+**Issue: `🏷️ White-label build has no upstream hosts` (PR #600) — fixed**
+- **Root cause:** two bundled Hermes plugin assets carried the upstream product name (`plugin.yaml` author, and a folder name in `drift_scanner.py`).
+- **Fix applied:** neutral author label; the notes folder is now `AIGENT_WATCH_VAULT`, default `vault`.
+- **Verify:** `bash tool/brand.sh example && flutter build web --release --dart-define=BRAND=example && bash tool/brand_leak_check.sh build/web`
 
-**Issue: Desktop CI uses upstream Pistisai brand instead of fork brand (PR #595)**
-- **Root cause:** `Dockerfile.test-desktop` bakes pistisai brand; should bake the fork's brand.
-- **Impact:** Test-desktop image doesn't match the app's actual brand.
-- **Fix:** Update Dockerfile.test-desktop to use the fork's brand config.
-- **Status:** PR #595 is open.
+**Issue: the desktop test image builds against whatever brand is committed (PR #595)**
+- **Root cause:** `Dockerfile.test-desktop` builds with `--dart-define=BRAND=pistisai` without baking that brand first, so the build fails in a tree that commits another brand.
+- **Fix:** the image runs `tool/brand.sh pistisai` before building. Upstream behaviour is unchanged.
+- **Status:** PR #595 is open, CI green.
 
 ---
 
@@ -49,26 +47,20 @@ PistisAI has grown to **313 Dart files**, **110 test files**, and **9,812 JavaSc
 
 ### 2.1 Establish Build Pipeline
 
-**Environment:**
-- Host: Linux (Fedora 45)
-- Distrobox pistisai-dev: Exists, but Flutter/Dart NOT installed
-- Decision: Install Flutter on host or in distrobox?
-
-**Recommendation:** Install on host (cleaner, faster CI).
+**Environment:** a Linux development machine with Flutter `3.47.9` (the version pinned in `pubspec.yaml`). Install it on the host or in a container; CI uses the same version.
 
 ```bash
-# Flutter 3.47.9 (from pubspec.yaml)
-# Installation: https://flutter.dev/docs/get-started/install/linux
-# Verify: flutter doctor
+# Installation: https://docs.flutter.dev/get-started/install/linux
+flutter doctor
 ```
 
 ### 2.2 Verify Build Success
 
 **Linux desktop:**
 ```bash
-cd /var/mnt/DATA/dev/projects/pistisai-app
 flutter pub get
-flutter build linux --release
+bash tool/brand.sh pistisai
+flutter build linux --release --dart-define=BRAND=pistisai
 # Expected: build/linux/x64/release/bundle/pistisai
 ```
 
@@ -80,10 +72,10 @@ flutter build linux --release
 
 Run:
 ```bash
-flutter analyze
+flutter analyze lib/
 ```
 
-Expected: 0 errors, <10 warnings (mostly deprecated APIs).
+Expected: no issues (this is the state of `main` on Nov 10).
 
 ---
 
@@ -91,13 +83,13 @@ Expected: 0 errors, <10 warnings (mostly deprecated APIs).
 
 ### 3.1 Desktop-Blocking Issues
 
-| Issue | Component | Priority | Est. Fix Time | Assignee |
-|-------|-----------|----------|---------------|----------|
-| #458 | Setup wizard tests broken | **P0** | 2 hours | Fable/Claude |
-| #462 | Deprecated tray_manager APIs (20 lints) | **P1** | 3 hours | Fable/Claude |
-| #568 | Router /v1/models unregistered providers | **P1** | 2 hours | Backend review |
-| #567 | Crash-report opt-in toggle missing | **P2** | 1 hour | Settings UI |
-| #569 | TTS fallback on Windows (USERPROFILE) | **P2** | 1 hour | Platform-specific |
+| Issue | Component | Priority | Status |
+|-------|-----------|----------|--------|
+| #458 | Setup wizard tests | — | Already fixed on `main` (18/18 pass); close the issue |
+| #462 | Deprecated tray_manager APIs | — | Already fixed on `main` (`flutter analyze lib/` is clean); close the issue |
+| #568 | Router `/v1/models` lists unregistered providers | **P1** | Open |
+| #567 | Crash-report opt-in toggle missing | **P1** | Open; depends on #562 |
+| #569 | TTS fallback on Windows (USERPROFILE) | **P2** | Open |
 
 ### 3.2 Backend Service Stability
 
@@ -112,17 +104,13 @@ Expected: 0 errors, <10 warnings (mostly deprecated APIs).
 
 ### 3.3 Test Coverage Gaps
 
-**Setup Wizard Tests (Issue #458):**
-- 6 assertions broken in `test/services/onboarding/setup_wizard_service_test.dart`
-- Must pass before desktop ship (onboarding is critical path).
-
 **Hermes Integration Tests:**
 - 25+ tests in `test/services/hermes/` — verify they pass locally.
 - Check for flaky tests or mock mismatches.
 
 **Router Tests (Issue #568):**
 - `/v1/models` endpoint should filter to registered providers only.
-- Add test case: unregistered provider returns 400, not 200.
+- Add test case: calling a model of an unregistered provider returns a client error, not a 500.
 
 ---
 
@@ -132,7 +120,6 @@ Expected: 0 errors, <10 warnings (mostly deprecated APIs).
 
 **Linux:**
 ```bash
-cd /var/mnt/DATA/dev/projects/pistisai-app
 flutter run -d linux
 # Or: ./build/linux/x64/release/bundle/pistisai
 ```
@@ -279,7 +266,7 @@ flutter test            # All unit tests pass
 
 | Resource | Status | Owner |
 |----------|--------|-------|
-| Flutter environment | Needs setup on host | Zoid / Infra |
+| Flutter environment | Needs setup on the development machine | Maintainer |
 | Desktop CI runners | Exist (.github/workflows) | CI maintainer |
 | Testing devices | Linux available; macOS/Win via CI | Team |
 | Release infrastructure | Missing; manual for now | Post-ship |
@@ -288,9 +275,9 @@ flutter test            # All unit tests pass
 
 ## Timeline
 
-- **Nov 10–12:** Merge PRs, fix CSP & white-label tests
+- **Nov 10–12:** Merge PRs, fix the white-label check
 - **Nov 12–14:** Flutter setup & build verification
-- **Nov 14–18:** Fix 5 critical issues, run tests
+- **Nov 14–18:** Fix the open critical issues, run tests
 - **Nov 18–20:** Local smoke tests, UI validation
 - **Nov 20–22:** E2E scenarios, multi-device routing
 - **Nov 22–23:** Code quality, perf, release prep
@@ -317,12 +304,12 @@ flutter test            # All unit tests pass
 
 1. **Immediately (Nov 10):** Assign Phase 1 PRs to reviewers, merge when CI passes.
 2. **By Nov 12:** Set up Flutter on host, verify builds.
-3. **By Nov 14:** Assign critical issues to Fable/Claude, start fixing.
+3. **By Nov 14:** Assign the open critical issues, start fixing.
 4. **By Nov 18:** Run local desktop smoke tests.
 5. **By Nov 24:** Ship v1.0.0-desktop.
 
 ---
 
 **Created:** Nov 10, 2026  
-**Owner:** Zoid Maltek  
+**Owner:** Project maintainer  
 **Status:** Active (Phase 1)
