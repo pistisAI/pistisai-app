@@ -154,3 +154,7 @@ scripts/run_init.sh
 
 # Archived tests
 test/archive/
+
+# Python bytecode
+__pycache__/
+*.pyc

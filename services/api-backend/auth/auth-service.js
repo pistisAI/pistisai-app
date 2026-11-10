@@ -255,13 +255,13 @@ export class AuthService {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev-user',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev-user' },
           scope: 'openid profile email admin',
         };
       } else {
@@ -337,13 +337,13 @@ export class AuthService {
           sub: '00000000-0000-0000-0000-000000000000',
           aud: this.config.CF_ACCESS_AUD,
           email: '<EMAIL>',
-          name: 'Christopher (Dev)',
-          nickname: 'rightguy',
+          name: 'Dev User',
+          nickname: 'dev-user',
           exp: Math.floor(Date.now() / 1000) + 3600 * 24 * 365,
           iat: Math.floor(Date.now() / 1000),
           role: 'authenticated',
           app_metadata: { role: 'admin' },
-          user_metadata: { name: 'Christopher (Dev)', nickname: 'rightguy' },
+          user_metadata: { name: 'Dev User', nickname: 'dev-user' },
           scope: 'openid profile email admin',
         };
       }

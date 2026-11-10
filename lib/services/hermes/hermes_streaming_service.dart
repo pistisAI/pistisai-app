@@ -249,7 +249,7 @@ class HermesStreamingService extends StreamingService {
               'message': prompt,
               'conversation_id': chatId,
               'user_id': 'operator',
-              'user_name': 'Christopher',
+              'user_name': 'operator',
               'message_id': messageId,
             }),
           )
@@ -510,7 +510,12 @@ class HermesStreamingService extends StreamingService {
     try {
       final client = _client ?? http.Client();
       final response = await client.get(
-        Uri.parse('$_baseUrl/api/sessions?source=pistisai&limit=20'),
+        // Ask for this app's own chat only: other chats can also carry
+        // source=pistisai, and the most recent of those is not ours (#629).
+        Uri.parse(
+          '$_baseUrl/api/sessions?source=pistisai'
+          '&chat=${Conversation.pistisaiChannelId}&limit=20',
+        ),
         headers: {..._headers(), 'Accept': 'application/json'},
       ).timeout(const Duration(seconds: 8));
       if (response.statusCode != 200) return null;
@@ -522,6 +527,10 @@ class HermesStreamingService extends StreamingService {
       for (final row in data) {
         if (row is! Map) continue;
         if (row['source'] != null && row['source'] != 'pistisai') continue;
+        // A runtime that ignores the chat filter still tells us which chat a
+        // row belongs to; never adopt another chat's session.
+        final chat = row['chat'] ?? row['chat_id'];
+        if (chat != null && chat != Conversation.pistisaiChannelId) continue;
         if (row['archived'] == true || row['is_internal_child'] == true) {
           continue;
         }
