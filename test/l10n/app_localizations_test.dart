@@ -255,4 +255,14 @@ void main() {
     expect(find.text("Personnalisation de l'avatar"), findsOneWidget);
     expect(find.text('Avatar Customization'), findsNothing);
   });
+
+  test('batch 9 configuration messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.configClearCacheConfirm(500),
+        'Vider toutes les données en cache ? (500 Mo seront libérés)');
+    expect(fr.configRuntimeSet('Hermes Agent'),
+        'Environnement actif : Hermes Agent');
+    expect(fr.configUpdateAvailable('3.2.0'), 'Mise à jour disponible : 3.2.0');
+    expect(fr.configWhatsNew('3.2.0'), 'Nouveautés de la version 3.2.0');
+  });
 }

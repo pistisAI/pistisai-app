@@ -3589,6 +3589,780 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Evolve your avatar to the {stage} stage'**
   String achievementEvolveDescription(String stage);
+
+  /// No description provided for @configPageGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get configPageGeneral;
+
+  /// No description provided for @configPageGeneralSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App preferences'**
+  String get configPageGeneralSubtitle;
+
+  /// No description provided for @configPageAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get configPageAppearance;
+
+  /// No description provided for @configPageAppearanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme and look'**
+  String get configPageAppearanceSubtitle;
+
+  /// No description provided for @configPageConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection'**
+  String get configPageConnection;
+
+  /// No description provided for @configPageConnectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daemon, mesh, and account'**
+  String get configPageConnectionSubtitle;
+
+  /// No description provided for @configPageLlm.
+  ///
+  /// In en, this message translates to:
+  /// **'LLM providers'**
+  String get configPageLlm;
+
+  /// No description provided for @configPageLlmSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Model provider settings'**
+  String get configPageLlmSubtitle;
+
+  /// No description provided for @configPageVision.
+  ///
+  /// In en, this message translates to:
+  /// **'Vision'**
+  String get configPageVision;
+
+  /// No description provided for @configPageVisionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen and vision tools'**
+  String get configPageVisionSubtitle;
+
+  /// No description provided for @configPageAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar'**
+  String get configPageAvatar;
+
+  /// No description provided for @configPageAvatarSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Companion appearance'**
+  String get configPageAvatarSubtitle;
+
+  /// No description provided for @configPageAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get configPageAchievements;
+
+  /// No description provided for @configPageAchievementsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar milestones'**
+  String get configPageAchievementsSubtitle;
+
+  /// No description provided for @configPageDesktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop'**
+  String get configPageDesktop;
+
+  /// No description provided for @configPageDesktopSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local desktop tools'**
+  String get configPageDesktopSubtitle;
+
+  /// No description provided for @configPageAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get configPageAbout;
+
+  /// No description provided for @configPagePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans'**
+  String get configPagePlans;
+
+  /// No description provided for @configPagePlansSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription options'**
+  String get configPagePlansSubtitle;
+
+  /// No description provided for @configPageBrain.
+  ///
+  /// In en, this message translates to:
+  /// **'Brain insights'**
+  String get configPageBrain;
+
+  /// No description provided for @configPageBrainSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local brain activity'**
+  String get configPageBrainSubtitle;
+
+  /// No description provided for @configPageRoadmap.
+  ///
+  /// In en, this message translates to:
+  /// **'Roadmap'**
+  String get configPageRoadmap;
+
+  /// No description provided for @configPageRoadmapSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What is in progress'**
+  String get configPageRoadmapSubtitle;
+
+  /// No description provided for @configTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime Settings'**
+  String get configTitle;
+
+  /// No description provided for @configBackToChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to runtime channel'**
+  String get configBackToChannel;
+
+  /// No description provided for @configTabRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime'**
+  String get configTabRuntime;
+
+  /// No description provided for @configTabMesh.
+  ///
+  /// In en, this message translates to:
+  /// **'Mesh'**
+  String get configTabMesh;
+
+  /// No description provided for @configTabApp.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get configTabApp;
+
+  /// No description provided for @configTabStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage'**
+  String get configTabStorage;
+
+  /// No description provided for @configTabSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get configTabSystem;
+
+  /// No description provided for @configLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load config: {error}'**
+  String configLoadFailed(String error);
+
+  /// No description provided for @configSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved'**
+  String get configSaved;
+
+  /// No description provided for @configSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save configuration: {error}'**
+  String configSaveFailed(String error);
+
+  /// No description provided for @configResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Defaults'**
+  String get configResetTitle;
+
+  /// No description provided for @configResetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This resets runtime preferences (theme, language, timeouts, proxy, developer flags) to their defaults.\n\nGateway URLs, API keys, and avatar settings are not affected.'**
+  String get configResetBody;
+
+  /// No description provided for @configResetDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration reset to defaults'**
+  String get configResetDone;
+
+  /// No description provided for @configResetFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reset configuration: {error}'**
+  String configResetFailed(String error);
+
+  /// No description provided for @configExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings exported to {filename}'**
+  String configExported(String filename);
+
+  /// No description provided for @configExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed: {error}'**
+  String configExportFailed(String error);
+
+  /// No description provided for @configImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings imported successfully'**
+  String get configImported;
+
+  /// No description provided for @configImportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed: {error}'**
+  String configImportFailed(String error);
+
+  /// No description provided for @configRuntimeNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get configRuntimeNone;
+
+  /// No description provided for @configActiveRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Agent Runtime'**
+  String get configActiveRuntime;
+
+  /// No description provided for @configSecureChannelRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure channel runtime: {runtime}'**
+  String configSecureChannelRuntime(String runtime);
+
+  /// No description provided for @configNoRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'No runtime selected - choose one below'**
+  String get configNoRuntime;
+
+  /// No description provided for @configAgentRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Runtime'**
+  String get configAgentRuntime;
+
+  /// No description provided for @configAgentRuntimeHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the runtime used by the secure channel'**
+  String get configAgentRuntimeHelper;
+
+  /// No description provided for @configRuntimeSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Active runtime set to {runtime}'**
+  String configRuntimeSet(String runtime);
+
+  /// No description provided for @configRuntimeCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime cleared'**
+  String get configRuntimeCleared;
+
+  /// No description provided for @configSupportProviders.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Model Providers'**
+  String get configSupportProviders;
+
+  /// No description provided for @configSupportProvidersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional helpers for memory, summaries, OCR cleanup, and background tasks'**
+  String get configSupportProvidersSubtitle;
+
+  /// No description provided for @configPreferredSupportProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Support Provider'**
+  String get configPreferredSupportProvider;
+
+  /// No description provided for @configSupportProviderAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get configSupportProviderAuto;
+
+  /// No description provided for @configSupportProvidersNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.'**
+  String get configSupportProvidersNote;
+
+  /// No description provided for @configRequestPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime Request Policy'**
+  String get configRequestPolicy;
+
+  /// No description provided for @configConcurrentRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Concurrent Requests'**
+  String get configConcurrentRequests;
+
+  /// No description provided for @configConcurrentRequestsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Max concurrent runtime requests'**
+  String get configConcurrentRequestsHint;
+
+  /// No description provided for @configRuntimeTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime Timeout (sec)'**
+  String get configRuntimeTimeout;
+
+  /// No description provided for @configAutoRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-restart Runtime on Failure'**
+  String get configAutoRestart;
+
+  /// No description provided for @configProxySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Proxy Settings'**
+  String get configProxySettings;
+
+  /// No description provided for @configUseProxy.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Proxy Server'**
+  String get configUseProxy;
+
+  /// No description provided for @configProxyHost.
+  ///
+  /// In en, this message translates to:
+  /// **'Proxy Host'**
+  String get configProxyHost;
+
+  /// No description provided for @configProxyHostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., proxy.example.com'**
+  String get configProxyHostHint;
+
+  /// No description provided for @configProxyPort.
+  ///
+  /// In en, this message translates to:
+  /// **'Proxy Port'**
+  String get configProxyPort;
+
+  /// No description provided for @configConnectionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Settings'**
+  String get configConnectionSettings;
+
+  /// No description provided for @configRequestTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Timeout (sec)'**
+  String get configRequestTimeout;
+
+  /// No description provided for @configMaxRetries.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Retries'**
+  String get configMaxRetries;
+
+  /// No description provided for @configAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get configAppearance;
+
+  /// No description provided for @configTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get configTheme;
+
+  /// No description provided for @configLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get configLanguage;
+
+  /// No description provided for @configNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get configNotifications;
+
+  /// No description provided for @configEnableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notifications'**
+  String get configEnableNotifications;
+
+  /// No description provided for @configShowTrayIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Tray Icon'**
+  String get configShowTrayIcon;
+
+  /// No description provided for @configSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get configSecurity;
+
+  /// No description provided for @configEncryptLocalData.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypt Local Data'**
+  String get configEncryptLocalData;
+
+  /// No description provided for @configEncryptLocalDataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypt conversation history and settings'**
+  String get configEncryptLocalDataSubtitle;
+
+  /// No description provided for @configBiometric.
+  ///
+  /// In en, this message translates to:
+  /// **'Require Biometric Auth'**
+  String get configBiometric;
+
+  /// No description provided for @configBiometricSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require fingerprint/auth to open app'**
+  String get configBiometricSubtitle;
+
+  /// No description provided for @configSessionTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Timeout (min)'**
+  String get configSessionTimeout;
+
+  /// No description provided for @configSessionTimeoutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-lock after inactivity'**
+  String get configSessionTimeoutHint;
+
+  /// No description provided for @configRememberTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember Authentication Tokens'**
+  String get configRememberTokens;
+
+  /// No description provided for @configDeveloperOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer Options'**
+  String get configDeveloperOptions;
+
+  /// No description provided for @configDebugMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug Mode'**
+  String get configDebugMode;
+
+  /// No description provided for @configDebugModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable additional debugging information'**
+  String get configDebugModeSubtitle;
+
+  /// No description provided for @configVerboseLogging.
+  ///
+  /// In en, this message translates to:
+  /// **'Verbose Logging'**
+  String get configVerboseLogging;
+
+  /// No description provided for @configVerboseLoggingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log detailed diagnostic information'**
+  String get configVerboseLoggingSubtitle;
+
+  /// No description provided for @configShowDevTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Developer Tools'**
+  String get configShowDevTools;
+
+  /// No description provided for @configShowDevToolsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable development tools and inspectors'**
+  String get configShowDevToolsSubtitle;
+
+  /// No description provided for @configDataRetention.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Retention'**
+  String get configDataRetention;
+
+  /// No description provided for @configMaxHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Conversation History'**
+  String get configMaxHistory;
+
+  /// No description provided for @configMaxHistoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum number of conversations to store locally'**
+  String get configMaxHistoryHint;
+
+  /// No description provided for @configAutoCleanup.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-cleanup Old Data'**
+  String get configAutoCleanup;
+
+  /// No description provided for @configCacheManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache Management'**
+  String get configCacheManagement;
+
+  /// No description provided for @configEnableCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Response Cache'**
+  String get configEnableCache;
+
+  /// No description provided for @configCacheSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache Size Limit (MB)'**
+  String get configCacheSize;
+
+  /// No description provided for @configClearCacheNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Cache Now'**
+  String get configClearCacheNow;
+
+  /// No description provided for @configApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get configApplication;
+
+  /// No description provided for @configVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get configVersion;
+
+  /// No description provided for @configVersionValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{version} (build {build})'**
+  String configVersionValue(String version, String build);
+
+  /// No description provided for @configPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get configPlatform;
+
+  /// No description provided for @configDartVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Dart Version'**
+  String get configDartVersion;
+
+  /// No description provided for @configSettingsPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings pages'**
+  String get configSettingsPages;
+
+  /// No description provided for @configPaths.
+  ///
+  /// In en, this message translates to:
+  /// **'Paths'**
+  String get configPaths;
+
+  /// No description provided for @configAppPath.
+  ///
+  /// In en, this message translates to:
+  /// **'App Path'**
+  String get configAppPath;
+
+  /// No description provided for @configConfigPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Config Path'**
+  String get configConfigPath;
+
+  /// No description provided for @configDataPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Path'**
+  String get configDataPath;
+
+  /// No description provided for @configWorkingDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Working Directory'**
+  String get configWorkingDirectory;
+
+  /// No description provided for @configSoftwareUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Software Updates'**
+  String get configSoftwareUpdates;
+
+  /// No description provided for @configCheckingUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates...'**
+  String get configCheckingUpdates;
+
+  /// No description provided for @configDownloadingUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update...'**
+  String get configDownloadingUpdate;
+
+  /// No description provided for @configInstallingUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Installing update...'**
+  String get configInstallingUpdate;
+
+  /// No description provided for @configUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available: {version}'**
+  String configUpdateAvailable(String version);
+
+  /// No description provided for @configCurrentVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Current version: {version}'**
+  String configCurrentVersion(String version);
+
+  /// No description provided for @configDownloadUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Update'**
+  String get configDownloadUpdate;
+
+  /// No description provided for @configViewChangelog.
+  ///
+  /// In en, this message translates to:
+  /// **'View Changelog'**
+  String get configViewChangelog;
+
+  /// No description provided for @configUpdateReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Ready to Install'**
+  String get configUpdateReady;
+
+  /// No description provided for @configInstallRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Install & Restart'**
+  String get configInstallRestart;
+
+  /// No description provided for @configUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to date'**
+  String get configUpToDate;
+
+  /// No description provided for @configCheckNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Now'**
+  String get configCheckNow;
+
+  /// No description provided for @configExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get configExport;
+
+  /// No description provided for @configImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get configImport;
+
+  /// No description provided for @configClearCacheTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Cache'**
+  String get configClearCacheTitle;
+
+  /// No description provided for @configClearCacheConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all cached data? ({size} MB will be freed)'**
+  String configClearCacheConfirm(int size);
+
+  /// No description provided for @configCacheCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache cleared successfully'**
+  String get configCacheCleared;
+
+  /// No description provided for @configUpdateMajor.
+  ///
+  /// In en, this message translates to:
+  /// **'Major version - may include breaking changes'**
+  String get configUpdateMajor;
+
+  /// No description provided for @configUpdateMinor.
+  ///
+  /// In en, this message translates to:
+  /// **'Minor version - new features and improvements'**
+  String get configUpdateMinor;
+
+  /// No description provided for @configUpdatePatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Patch version - bug fixes and security updates'**
+  String get configUpdatePatch;
+
+  /// No description provided for @configWhatsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New in {version}'**
+  String configWhatsNew(String version);
+
+  /// No description provided for @configNoChangelog.
+  ///
+  /// In en, this message translates to:
+  /// **'No changelog available'**
+  String get configNoChangelog;
 }
 
 class _AppLocalizationsDelegate
