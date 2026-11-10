@@ -263,7 +263,10 @@ def _default_targets():
     seen = set()
     scan_dirs = []
     for base in _roots():
-        scan_dirs.append((os.path.join(base, "Pistisai", "vault"), ".md"))
+        # No product or person name in the path: a white-label build ships
+        # this file too. AIGENT_WATCH_VAULT points at the notes folder
+        # (absolute, or relative to each root); the default is "vault".
+        scan_dirs.append((os.path.join(base, _env("AIGENT_WATCH_VAULT", "vault")), ".md"))
         scan_dirs.append((os.path.join(base, "docs", "personal"), ".md"))
         scan_dirs.append((os.path.join(base, "docs"), ".md"))
     for base, ext in scan_dirs:

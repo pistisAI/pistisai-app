@@ -9,7 +9,7 @@ Use when: the Bot's routine fires, or when checking the durable record for drift
 
 ## What it does
 
-Scans the durable record (vault, docs/personal, docs) for:
+Scans the durable record (the notes folder, docs/personal, docs) for:
 
 - **C1** — findings-record prose assertion with no source marker
 - **C2** — memory write about a person/relationship with no source annotation
@@ -27,6 +27,8 @@ python "$HERMES_HOME/profiles/aigent-watch/drift_scanner.py"
 JSON array of findings: `[{"check": "C1|C2|C3|C4", "path": "...", "line": "..."}]`
 
 Every trigger also logs to the drift log (`AIGENT_DRIFT_LOG`, else `<HERMES_HOME>/logs/drift-log.md`).
+
+The notes folder is `AIGENT_WATCH_VAULT` (absolute, or relative to each root), else `vault`.
 
 ## C2 — context filtering
 
