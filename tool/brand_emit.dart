@@ -224,10 +224,10 @@ String applyWebIndex(String source, BrandConfig brand) {
     RegExp(r'background-color:\s*#[0-9A-Fa-f]{6}'),
     'background-color: ${brand.backgroundHex}',
   );
-  out = out.replaceFirst(
-    RegExp(r'^ *https://\*\.\S+.* ws://127\.0\.0\.1:\* wss://\*\.\S+.*$',
-        multiLine: true),
-    '      ${cspBrandHosts(brand)}',
+  out = out.replaceFirstMapped(
+    RegExp(r"(connect-src 'self'\s*\n\s*)https://\*\.\S+.*?(?=\n\s*https://)",
+        multiLine: true, dotAll: true),
+    (match) => '${match.group(1)}${cspBrandHosts(brand)}',
   );
   return out;
 }
