@@ -695,5 +695,85 @@
         "type": "int"
       }
     }
-  }
+  },
+  "homeSettings": "Settings",
+  "homeNoAgentTitle": "No Agent Connected",
+  "homeNoAgentBanner": "Configure an agent runtime in Settings to enable AI responses and desktop control.",
+  "homeStatusConfigured": "Configured",
+  "homeStatusOffline": "Offline",
+  "homeNoAgentStandalone": "Configure an agent runtime in Settings to get started, or use the avatar and local features while offline.",
+  "homeOpenSettings": "Open Settings",
+  "homeConfigureManually": "Configure connection manually",
+  "homeMessagePlaceholder": "Message {name}...",
+  "@homeMessagePlaceholder": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homePillarAvatar": "Avatar",
+  "homePillarTools": "Tools",
+  "homePillarMood": "Mood",
+  "homeMoodTitle": "{possessive} Mood",
+  "@homeMoodTitle": {
+    "placeholders": {
+      "possessive": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMoodNotReady": "Personality engine not ready yet.",
+  "homeMoodAgent": "Agent: {name}",
+  "@homeMoodAgent": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTraitFormality": "Formality",
+  "homeTraitHumor": "Humor",
+  "homeTraitEnthusiasm": "Enthusiasm",
+  "homeTraitEmpathy": "Empathy",
+  "homeMoodEvolution": "Evolution: {stage}",
+  "@homeMoodEvolution": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "homeToolsTitle": "What {name} Can Do",
+  "@homeToolsTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeToolsSubtitle": "Available offline • Connect to unlock more",
+  "homeToolDesktop": "Desktop Control",
+  "homeToolDesktopDescription": "Click, type, scroll, drag on your PC",
+  "homeToolVision": "Vision",
+  "homeToolVisionDescription": "See and analyze your screen",
+  "homeToolVoice": "Voice",
+  "homeToolVoiceDescription": "Speak and listen",
+  "homeToolWebSearch": "Web Search",
+  "homeToolWebSearchDescription": "Search and extract web content",
+  "homeToolRequiresAgent": "Requires agent connection",
+  "homeToolCode": "Code Execution",
+  "homeToolCodeDescription": "Run Python, shell, and Dart scripts",
+  "homeToolLocal": "local",
+  "homeToolCloud": "cloud",
+  "welcomeSubtitle": "Your agent companion.\nFully offline until you choose to connect.",
+  "welcomeHint": "Type a message below or tap /new to start fresh. Connect an agent runtime in Settings for AI responses and agent features.",
+  "messageInputPlaceholder": "Type your message...",
+  "messageInputNewChat": "New Chat",
+  "messageInputNoModels": "No models available",
+  "messageInputSelectModel": "Select model",
+  "messageCopied": "Copied to clipboard"
 }

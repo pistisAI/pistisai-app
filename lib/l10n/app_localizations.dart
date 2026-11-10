@@ -1993,6 +1993,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 message} other{{count} messages}}'**
   String channelsMessageCount(int count);
+
+  /// No description provided for @homeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get homeSettings;
+
+  /// No description provided for @homeNoAgentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Agent Connected'**
+  String get homeNoAgentTitle;
+
+  /// No description provided for @homeNoAgentBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure an agent runtime in Settings to enable AI responses and desktop control.'**
+  String get homeNoAgentBanner;
+
+  /// No description provided for @homeStatusConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get homeStatusConfigured;
+
+  /// No description provided for @homeStatusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get homeStatusOffline;
+
+  /// No description provided for @homeNoAgentStandalone.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure an agent runtime in Settings to get started, or use the avatar and local features while offline.'**
+  String get homeNoAgentStandalone;
+
+  /// No description provided for @homeOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get homeOpenSettings;
+
+  /// No description provided for @homeConfigureManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure connection manually'**
+  String get homeConfigureManually;
+
+  /// No description provided for @homeMessagePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Message {name}...'**
+  String homeMessagePlaceholder(String name);
+
+  /// No description provided for @homePillarAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar'**
+  String get homePillarAvatar;
+
+  /// No description provided for @homePillarTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get homePillarTools;
+
+  /// No description provided for @homePillarMood.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get homePillarMood;
+
+  /// No description provided for @homeMoodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{possessive} Mood'**
+  String homeMoodTitle(String possessive, String name);
+
+  /// No description provided for @homeMoodNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Personality engine not ready yet.'**
+  String get homeMoodNotReady;
+
+  /// No description provided for @homeMoodAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent: {name}'**
+  String homeMoodAgent(String name);
+
+  /// No description provided for @homeTraitFormality.
+  ///
+  /// In en, this message translates to:
+  /// **'Formality'**
+  String get homeTraitFormality;
+
+  /// No description provided for @homeTraitHumor.
+  ///
+  /// In en, this message translates to:
+  /// **'Humor'**
+  String get homeTraitHumor;
+
+  /// No description provided for @homeTraitEnthusiasm.
+  ///
+  /// In en, this message translates to:
+  /// **'Enthusiasm'**
+  String get homeTraitEnthusiasm;
+
+  /// No description provided for @homeTraitEmpathy.
+  ///
+  /// In en, this message translates to:
+  /// **'Empathy'**
+  String get homeTraitEmpathy;
+
+  /// No description provided for @homeMoodEvolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolution: {stage}'**
+  String homeMoodEvolution(String stage);
+
+  /// No description provided for @homeToolsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What {name} Can Do'**
+  String homeToolsTitle(String name);
+
+  /// No description provided for @homeToolsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Available offline • Connect to unlock more'**
+  String get homeToolsSubtitle;
+
+  /// No description provided for @homeToolDesktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop Control'**
+  String get homeToolDesktop;
+
+  /// No description provided for @homeToolDesktopDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Click, type, scroll, drag on your PC'**
+  String get homeToolDesktopDescription;
+
+  /// No description provided for @homeToolVision.
+  ///
+  /// In en, this message translates to:
+  /// **'Vision'**
+  String get homeToolVision;
+
+  /// No description provided for @homeToolVisionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'See and analyze your screen'**
+  String get homeToolVisionDescription;
+
+  /// No description provided for @homeToolVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice'**
+  String get homeToolVoice;
+
+  /// No description provided for @homeToolVoiceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak and listen'**
+  String get homeToolVoiceDescription;
+
+  /// No description provided for @homeToolWebSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Web Search'**
+  String get homeToolWebSearch;
+
+  /// No description provided for @homeToolWebSearchDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Search and extract web content'**
+  String get homeToolWebSearchDescription;
+
+  /// No description provided for @homeToolRequiresAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires agent connection'**
+  String get homeToolRequiresAgent;
+
+  /// No description provided for @homeToolCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code Execution'**
+  String get homeToolCode;
+
+  /// No description provided for @homeToolCodeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Python, shell, and Dart scripts'**
+  String get homeToolCodeDescription;
+
+  /// No description provided for @homeToolLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'local'**
+  String get homeToolLocal;
+
+  /// No description provided for @homeToolCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'cloud'**
+  String get homeToolCloud;
+
+  /// No description provided for @welcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your agent companion.\nFully offline until you choose to connect.'**
+  String get welcomeSubtitle;
+
+  /// No description provided for @welcomeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message below or tap /new to start fresh. Connect an agent runtime in Settings for AI responses and agent features.'**
+  String get welcomeHint;
+
+  /// No description provided for @messageInputPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message...'**
+  String get messageInputPlaceholder;
+
+  /// No description provided for @messageInputNewChat.
+  ///
+  /// In en, this message translates to:
+  /// **'New Chat'**
+  String get messageInputNewChat;
+
+  /// No description provided for @messageInputNoModels.
+  ///
+  /// In en, this message translates to:
+  /// **'No models available'**
+  String get messageInputNoModels;
+
+  /// No description provided for @messageInputSelectModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select model'**
+  String get messageInputSelectModel;
+
+  /// No description provided for @messageCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get messageCopied;
 }
 
 class _AppLocalizationsDelegate

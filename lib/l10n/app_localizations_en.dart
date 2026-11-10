@@ -1083,4 +1083,145 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get homeSettings => 'Settings';
+
+  @override
+  String get homeNoAgentTitle => 'No Agent Connected';
+
+  @override
+  String get homeNoAgentBanner =>
+      'Configure an agent runtime in Settings to enable AI responses and desktop control.';
+
+  @override
+  String get homeStatusConfigured => 'Configured';
+
+  @override
+  String get homeStatusOffline => 'Offline';
+
+  @override
+  String get homeNoAgentStandalone =>
+      'Configure an agent runtime in Settings to get started, or use the avatar and local features while offline.';
+
+  @override
+  String get homeOpenSettings => 'Open Settings';
+
+  @override
+  String get homeConfigureManually => 'Configure connection manually';
+
+  @override
+  String homeMessagePlaceholder(String name) {
+    return 'Message $name...';
+  }
+
+  @override
+  String get homePillarAvatar => 'Avatar';
+
+  @override
+  String get homePillarTools => 'Tools';
+
+  @override
+  String get homePillarMood => 'Mood';
+
+  @override
+  String homeMoodTitle(String possessive, String name) {
+    return '$possessive Mood';
+  }
+
+  @override
+  String get homeMoodNotReady => 'Personality engine not ready yet.';
+
+  @override
+  String homeMoodAgent(String name) {
+    return 'Agent: $name';
+  }
+
+  @override
+  String get homeTraitFormality => 'Formality';
+
+  @override
+  String get homeTraitHumor => 'Humor';
+
+  @override
+  String get homeTraitEnthusiasm => 'Enthusiasm';
+
+  @override
+  String get homeTraitEmpathy => 'Empathy';
+
+  @override
+  String homeMoodEvolution(String stage) {
+    return 'Evolution: $stage';
+  }
+
+  @override
+  String homeToolsTitle(String name) {
+    return 'What $name Can Do';
+  }
+
+  @override
+  String get homeToolsSubtitle => 'Available offline • Connect to unlock more';
+
+  @override
+  String get homeToolDesktop => 'Desktop Control';
+
+  @override
+  String get homeToolDesktopDescription =>
+      'Click, type, scroll, drag on your PC';
+
+  @override
+  String get homeToolVision => 'Vision';
+
+  @override
+  String get homeToolVisionDescription => 'See and analyze your screen';
+
+  @override
+  String get homeToolVoice => 'Voice';
+
+  @override
+  String get homeToolVoiceDescription => 'Speak and listen';
+
+  @override
+  String get homeToolWebSearch => 'Web Search';
+
+  @override
+  String get homeToolWebSearchDescription => 'Search and extract web content';
+
+  @override
+  String get homeToolRequiresAgent => 'Requires agent connection';
+
+  @override
+  String get homeToolCode => 'Code Execution';
+
+  @override
+  String get homeToolCodeDescription => 'Run Python, shell, and Dart scripts';
+
+  @override
+  String get homeToolLocal => 'local';
+
+  @override
+  String get homeToolCloud => 'cloud';
+
+  @override
+  String get welcomeSubtitle =>
+      'Your agent companion.\nFully offline until you choose to connect.';
+
+  @override
+  String get welcomeHint =>
+      'Type a message below or tap /new to start fresh. Connect an agent runtime in Settings for AI responses and agent features.';
+
+  @override
+  String get messageInputPlaceholder => 'Type your message...';
+
+  @override
+  String get messageInputNewChat => 'New Chat';
+
+  @override
+  String get messageInputNoModels => 'No models available';
+
+  @override
+  String get messageInputSelectModel => 'Select model';
+
+  @override
+  String get messageCopied => 'Copied to clipboard';
 }

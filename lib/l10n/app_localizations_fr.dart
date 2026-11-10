@@ -1097,4 +1097,149 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get homeSettings => 'Paramètres';
+
+  @override
+  String get homeNoAgentTitle => 'Aucun agent connecté';
+
+  @override
+  String get homeNoAgentBanner =>
+      'Configurez un environnement d\'agent dans les Paramètres pour activer les réponses de l\'IA et le contrôle de l\'ordinateur.';
+
+  @override
+  String get homeStatusConfigured => 'Configuré';
+
+  @override
+  String get homeStatusOffline => 'Hors ligne';
+
+  @override
+  String get homeNoAgentStandalone =>
+      'Configurez un environnement d\'agent dans les Paramètres pour commencer, ou utilisez l\'avatar et les fonctions locales hors ligne.';
+
+  @override
+  String get homeOpenSettings => 'Ouvrir les paramètres';
+
+  @override
+  String get homeConfigureManually => 'Configurer la connexion manuellement';
+
+  @override
+  String homeMessagePlaceholder(String name) {
+    return 'Écrire à $name…';
+  }
+
+  @override
+  String get homePillarAvatar => 'Avatar';
+
+  @override
+  String get homePillarTools => 'Outils';
+
+  @override
+  String get homePillarMood => 'Humeur';
+
+  @override
+  String homeMoodTitle(String possessive, String name) {
+    return 'Humeur de l\'agent $name';
+  }
+
+  @override
+  String get homeMoodNotReady =>
+      'Le moteur de personnalité n\'est pas encore prêt.';
+
+  @override
+  String homeMoodAgent(String name) {
+    return 'Agent : $name';
+  }
+
+  @override
+  String get homeTraitFormality => 'Formalité';
+
+  @override
+  String get homeTraitHumor => 'Humour';
+
+  @override
+  String get homeTraitEnthusiasm => 'Enthousiasme';
+
+  @override
+  String get homeTraitEmpathy => 'Empathie';
+
+  @override
+  String homeMoodEvolution(String stage) {
+    return 'Évolution : $stage';
+  }
+
+  @override
+  String homeToolsTitle(String name) {
+    return 'Ce que l\'agent $name peut faire';
+  }
+
+  @override
+  String get homeToolsSubtitle =>
+      'Disponible hors ligne • Connectez-vous pour en débloquer davantage';
+
+  @override
+  String get homeToolDesktop => 'Contrôle de l\'ordinateur';
+
+  @override
+  String get homeToolDesktopDescription =>
+      'Cliquer, taper, faire défiler et glisser sur votre ordinateur';
+
+  @override
+  String get homeToolVision => 'Vision';
+
+  @override
+  String get homeToolVisionDescription => 'Voir et analyser votre écran';
+
+  @override
+  String get homeToolVoice => 'Voix';
+
+  @override
+  String get homeToolVoiceDescription => 'Parler et écouter';
+
+  @override
+  String get homeToolWebSearch => 'Recherche web';
+
+  @override
+  String get homeToolWebSearchDescription =>
+      'Chercher et extraire du contenu web';
+
+  @override
+  String get homeToolRequiresAgent => 'Nécessite la connexion d\'un agent';
+
+  @override
+  String get homeToolCode => 'Exécution de code';
+
+  @override
+  String get homeToolCodeDescription =>
+      'Exécuter des scripts Python, shell et Dart';
+
+  @override
+  String get homeToolLocal => 'local';
+
+  @override
+  String get homeToolCloud => 'nuage';
+
+  @override
+  String get welcomeSubtitle =>
+      'Votre compagnon d\'agent.\nEntièrement hors ligne jusqu\'à ce que vous décidiez de vous connecter.';
+
+  @override
+  String get welcomeHint =>
+      'Écrivez un message ci-dessous ou tapez /new pour repartir de zéro. Connectez un environnement d\'agent dans les Paramètres pour obtenir les réponses de l\'IA et les fonctions d\'agent.';
+
+  @override
+  String get messageInputPlaceholder => 'Écrivez votre message…';
+
+  @override
+  String get messageInputNewChat => 'Nouvelle conversation';
+
+  @override
+  String get messageInputNoModels => 'Aucun modèle disponible';
+
+  @override
+  String get messageInputSelectModel => 'Choisir un modèle';
+
+  @override
+  String get messageCopied => 'Copié dans le presse-papiers';
 }

@@ -11,6 +11,7 @@ import 'package:pistisai/brand/brand_yaml.dart';
 import 'package:pistisai/components/welcome_screen.dart';
 import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/config/theme_config.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/screens/onboarding/steps/welcome_step.dart';
 import 'package:pistisai/screens/settings/about_settings_screen.dart';
 
@@ -105,6 +106,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.darkTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: WelcomeScreen(onNewChat: () {}),
       ),
     );

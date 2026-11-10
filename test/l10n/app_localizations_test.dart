@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/l10n/app_localizations.dart';
+import 'package:pistisai/components/welcome_screen.dart';
+import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/screens/agents/agents_screen.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
@@ -157,5 +159,31 @@ void main() {
     expect(find.text('Aucun agent enregistré'), findsOneWidget);
     expect(find.byTooltip('Ajouter un agent'), findsOneWidget);
     expect(find.text('Registry'), findsNothing);
+  });
+
+  test('agent possessives read naturally in both languages', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.homeMoodTitle("Aria's", 'Aria'), "Aria's Mood");
+    expect(fr.homeMoodTitle("Aria's", 'Aria'), "Humeur de l'agent Aria");
+    expect(fr.homeToolsTitle('Aria'), "Ce que l'agent Aria peut faire");
+    expect(fr.homeMessagePlaceholder('Aria'), 'Écrire à Aria…');
+  });
+
+  testWidgets('the welcome screen renders in French for a locked brand',
+      (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        locale: const Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: const [Locale('fr'), Locale('en')],
+        home: WelcomeScreen(onNewChat: () {}),
+      ),
+    );
+    await tester.pump();
+    expect(
+        find.textContaining('Écrivez un message ci-dessous'), findsOneWidget);
+    expect(find.textContaining('Type a message below'), findsNothing);
   });
 }

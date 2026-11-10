@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 
 import '../config/theme.dart';
@@ -89,7 +90,8 @@ class _MessageInputState extends State<MessageInput> {
             color: AppTheme.colorsOf(context).backgroundMain,
             border: Border(
               top: BorderSide(
-                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
+                color:
+                    AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -111,8 +113,12 @@ class _MessageInputState extends State<MessageInput> {
                           BorderRadius.circular(AppTheme.borderRadiusM),
                       border: Border.all(
                         color: _focusNode.hasFocus
-                            ? AppTheme.colorsOf(context).primary.withValues(alpha: 0.5)
-                            : AppTheme.colorsOf(context).secondary.withValues(alpha: 0.3),
+                            ? AppTheme.colorsOf(context)
+                                .primary
+                                .withValues(alpha: 0.5)
+                            : AppTheme.colorsOf(context)
+                                .secondary
+                                .withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
@@ -127,12 +133,15 @@ class _MessageInputState extends State<MessageInput> {
                             height: 1.5,
                           ),
                       decoration: InputDecoration(
-                        hintText:
-                            widget.placeholder ?? 'Type your message...',
-                        hintStyle:
-                            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppTheme.colorsOf(context).textColorLight,
-                                ),
+                        hintText: widget.placeholder ??
+                            AppLocalizations.of(context)
+                                .messageInputPlaceholder,
+                        hintStyle: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                              color: AppTheme.colorsOf(context).textColorLight,
+                            ),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.all(AppTheme.spacingM),
                       ),
@@ -175,7 +184,9 @@ class _MessageInputState extends State<MessageInput> {
               boxShadow: canSend
                   ? [
                       BoxShadow(
-                        color: AppTheme.colorsOf(context).primary.withValues(alpha: 0.3),
+                        color: AppTheme.colorsOf(context)
+                            .primary
+                            .withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -190,13 +201,17 @@ class _MessageInputState extends State<MessageInput> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          AppTheme.colorsOf(context).textColor.withValues(alpha: 0.8),
+                          AppTheme.colorsOf(context)
+                              .textColor
+                              .withValues(alpha: 0.8),
                         ),
                       ),
                     )
                   : Icon(
                       Icons.send,
-                      color: canSend ? AppTheme.colorsOf(context).textColor : AppTheme.colorsOf(context).textColorLight,
+                      color: canSend
+                          ? AppTheme.colorsOf(context).textColor
+                          : AppTheme.colorsOf(context).textColorLight,
                       size: 20,
                     ),
             ),
@@ -226,7 +241,7 @@ class NewConversationFAB extends StatelessWidget {
       child: FloatingActionButton.extended(
         onPressed: onPressed,
         icon: const Icon(Icons.add),
-        label: const Text('New Chat'),
+        label: Text(AppLocalizations.of(context).messageInputNewChat),
         backgroundColor: AppTheme.colorsOf(context).primary,
         foregroundColor: AppTheme.colorsOf(context).textColor,
         elevation: 8,
@@ -279,10 +294,13 @@ class ModelSelector extends StatelessWidget {
             ),
             SizedBox(width: AppTheme.spacingS),
             Text(
-              'No models available',
+              AppLocalizations.of(context).messageInputNoModels,
               style: Theme.of(
                 context,
-              ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).warning),
+              )
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppTheme.colorsOf(context).warning),
             ),
           ],
         ),
@@ -303,17 +321,21 @@ class ModelSelector extends StatelessWidget {
         child: DropdownButton<String>(
           value: selectedModel,
           hint: Text(
-            'Select model',
+            AppLocalizations.of(context).messageInputSelectModel,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+            )
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           items: models.map((model) {
             return DropdownMenuItem(
               value: model,
               child: Row(
                 children: [
-                  Icon(Icons.smart_toy, color: AppTheme.colorsOf(context).primary, size: 16),
+                  Icon(Icons.smart_toy,
+                      color: AppTheme.colorsOf(context).primary, size: 16),
                   SizedBox(width: AppTheme.spacingS),
                   Flexible(
                     child: Text(
@@ -331,7 +353,10 @@ class ModelSelector extends StatelessWidget {
           onChanged: isLoading ? null : onModelChanged,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.colorsOf(context).textColor),
+          )
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: AppTheme.colorsOf(context).textColor),
           dropdownColor: AppTheme.colorsOf(context).backgroundCard,
           icon: Icon(
             Icons.arrow_drop_down,
