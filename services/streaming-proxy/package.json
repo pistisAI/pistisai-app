@@ -1,5 +1,5 @@
 {
-  "name": "Pistisai-tunnel-container",
+  "name": "streaming-proxy",
   "version": "10.1.187",
   "description": "Simplified tunnel-aware container for Pistisai using standard HTTP libraries",
   "main": "proxy-server.js",
