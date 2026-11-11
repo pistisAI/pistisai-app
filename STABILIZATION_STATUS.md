@@ -73,7 +73,6 @@ Modified:
 
 Untracked:
   - ATSPI_FIX_DOCUMENTATION.md
-  - VERIFICATION_REPORT.md
   - docs/architecture/service-layer/
   - linux/runner/atspi_integration.cc
   - linux/runner/atspi_integration.h
