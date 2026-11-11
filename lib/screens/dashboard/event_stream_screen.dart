@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/models/agent_event.dart';
@@ -104,7 +105,7 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
       AgentToolStarted(tool: var t, preview: var p) =>
         p != null ? '$t: $p' : t,
       AgentToolCompleted(tool: var t) => t,
-      AgentRunCompleted() => 'Run finished',
+      AgentRunCompleted() => AppLocalizations.of(context).eventsRunFinished,
       AgentRunFailed(error: var e) => e,
       _ => '',
     };
@@ -116,7 +117,7 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
     if (_connectionManager == null ||
         _connectionManager!.activeRuntimeClient == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Event Stream')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context).eventsTitle)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -124,14 +125,14 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
               Icon(Icons.stream, size: 48, color: AppTheme.colorsOf(context).textColorLight),
               const SizedBox(height: 16),
               Text(
-                'No agent runtime connected',
+                AppLocalizations.of(context).eventsNoRuntime,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: AppTheme.colorsOf(context).textColorLight,
                     ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Connect to a Hermes runtime to see live events.',
+                AppLocalizations.of(context).eventsConnectHelp,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppTheme.colorsOf(context).textColorLight,
                     ),
@@ -144,16 +145,18 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Event Stream'),
+        title: Text(AppLocalizations.of(context).eventsTitle),
         actions: [
           IconButton(
             icon: Icon(_paused ? Icons.play_arrow : Icons.pause),
-            tooltip: _paused ? 'Resume' : 'Pause',
+            tooltip: _paused
+                ? AppLocalizations.of(context).eventsResume
+                : AppLocalizations.of(context).eventsPause,
             onPressed: _togglePause,
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
-            tooltip: 'Clear',
+            tooltip: AppLocalizations.of(context).commonClear,
             onPressed: _events.isEmpty ? null : _clearEvents,
           ),
         ],
@@ -166,7 +169,7 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
                   Icon(Icons.stream, size: 48, color: AppTheme.colorsOf(context).textColorLight),
                   const SizedBox(height: 16),
                   Text(
-                    'Waiting for agent events…',
+                    AppLocalizations.of(context).eventsWaiting,
                     style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
                   ),
                 ],

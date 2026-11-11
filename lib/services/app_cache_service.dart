@@ -67,11 +67,11 @@ class AppCacheService {
     }
   }
 
-  /// "0 MB", "0.4 MB", "12 MB".
-  static String formatMegabytes(int bytes) {
+  /// "0 MB", "< 0.1 MB", "1.5 MB", "12 MB" ([unit] lets a translation say "Mo").
+  static String formatMegabytes(int bytes, {String unit = 'MB'}) {
     final mb = bytes / (1024 * 1024);
-    if (bytes == 0) return '0 MB';
-    if (mb < 10) return '${mb < 0.1 ? '< 0.1' : mb.toStringAsFixed(1)} MB';
-    return '${mb.round()} MB';
+    if (bytes == 0) return '0 $unit';
+    if (mb < 10) return '${mb < 0.1 ? '< 0.1' : mb.toStringAsFixed(1)} $unit';
+    return '${mb.round()} $unit';
   }
 }

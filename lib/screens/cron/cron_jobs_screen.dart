@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import '../../services/cron_service.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -29,7 +30,11 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
   List<CronJob> _jobs = [];
 
   CronService? get _cronService {
-    try { return di.serviceLocator<CronService>(); } catch (_) { return null; }
+    try {
+      return di.serviceLocator<CronService>();
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
@@ -54,7 +59,10 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) {
-        setState(() { _isLoading = false; _jobs = []; });
+        setState(() {
+          _isLoading = false;
+          _jobs = [];
+        });
       }
     }
   }
@@ -70,12 +78,13 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
   }
 
   Future<void> _runJob(CronJob job) async {
+    final l10n = AppLocalizations.of(context);
     final service = _cronService;
     if (service == null) return;
     await service.runJobNow(job.id);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Triggered: ${job.name}')),
+      SnackBar(content: Text(l10n.cronTriggered(job.name))),
     );
   }
 
@@ -86,6 +95,7 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
 
   /// Delete job
   Future<void> _deleteJob(CronJob job) async {
+    final l10n = AppLocalizations.of(context);
     final service = _cronService;
     if (service == null) return;
 
@@ -98,14 +108,14 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
             children: [
               Icon(Icons.warning_amber_rounded, color: theme.colorScheme.error),
               const SizedBox(width: 8),
-              const Text('Delete Scheduled Job'),
+              Text(l10n.cronDeleteTitle),
             ],
           ),
-          content: Text('Are you sure you want to delete "${job.name}"? This action cannot be undone.'),
+          content: Text(l10n.cronDeleteConfirm(job.name)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.commonCancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
@@ -113,7 +123,7 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                 backgroundColor: theme.colorScheme.error,
                 foregroundColor: theme.colorScheme.onError,
               ),
-              child: const Text('Delete'),
+              child: Text(l10n.commonDelete),
             ),
           ],
         );
@@ -125,12 +135,12 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
       if (mounted) {
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Job deleted successfully')),
+            SnackBar(content: Text(l10n.cronDeleted)),
           );
           unawaited(_loadData());
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete job')),
+            SnackBar(content: Text(l10n.cronDeleteFailed)),
           );
         }
       }
@@ -139,6 +149,7 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
 
   /// Show dialog to add or edit a cron job
   Future<void> _showJobDialog({CronJob? job}) async {
+    final l10n = AppLocalizations.of(context);
     final service = _cronService;
     if (service == null) return;
 
@@ -164,11 +175,13 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
               title: Row(
                 children: [
                   Icon(
-                    isEditing ? Icons.edit_calendar_outlined : Icons.add_alarm_outlined,
+                    isEditing
+                        ? Icons.edit_calendar_outlined
+                        : Icons.add_alarm_outlined,
                     color: theme.colorScheme.primary,
                   ),
                   const SizedBox(width: 8),
-                  Text(isEditing ? 'Edit Scheduled Job' : 'Create Scheduled Job'),
+                  Text(isEditing ? l10n.cronEditTitle : l10n.cronCreateTitle),
                 ],
               ),
               content: SizedBox(
@@ -183,15 +196,15 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                         // Name Field
                         TextFormField(
                           controller: nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Job Name',
-                            hintText: 'e.g. Daily Briefing',
-                            prefixIcon: Icon(Icons.label_outline),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: l10n.cronJobName,
+                            hintText: l10n.cronJobNameHint,
+                            prefixIcon: const Icon(Icons.label_outline),
+                            border: const OutlineInputBorder(),
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Please enter a job name';
+                              return l10n.cronJobNameRequired;
                             }
                             return null;
                           },
@@ -201,15 +214,15 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                         // Schedule Field
                         TextFormField(
                           controller: scheduleController,
-                          decoration: const InputDecoration(
-                            labelText: 'Schedule Expression / Interval',
-                            hintText: 'e.g. 30m, every 2h, or 0 9 * * *',
-                            prefixIcon: Icon(Icons.schedule_outlined),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: l10n.cronSchedule,
+                            hintText: l10n.cronScheduleHint,
+                            prefixIcon: const Icon(Icons.schedule_outlined),
+                            border: const OutlineInputBorder(),
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Please enter a schedule';
+                              return l10n.cronScheduleRequired;
                             }
                             return null;
                           },
@@ -221,31 +234,36 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                           spacing: 8,
                           runSpacing: 4,
                           children: [
-                            _buildPresetChip('30m', scheduleController, setDialogState),
-                            _buildPresetChip('every 2h', scheduleController, setDialogState),
-                            _buildPresetChip('0 9 * * *', scheduleController, setDialogState),
-                            _buildPresetChip('0 0 * * *', scheduleController, setDialogState),
+                            _buildPresetChip(
+                                '30m', scheduleController, setDialogState),
+                            _buildPresetChip(
+                                'every 2h', scheduleController, setDialogState),
+                            _buildPresetChip('0 9 * * *', scheduleController,
+                                setDialogState),
+                            _buildPresetChip('0 0 * * *', scheduleController,
+                                setDialogState),
                           ],
                         ),
                         const SizedBox(height: 16),
 
                         // Execution Mode Selector
                         Text(
-                          'Execution Mode',
-                          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                          l10n.cronExecutionMode,
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         SegmentedButton<bool>(
-                          segments: const [
+                          segments: [
                             ButtonSegment(
                               value: false,
-                              label: Text('LLM Agent'),
-                              icon: Icon(Icons.psychology_outlined),
+                              label: Text(l10n.cronModeAgent),
+                              icon: const Icon(Icons.psychology_outlined),
                             ),
                             ButtonSegment(
                               value: true,
-                              label: Text('Script Only (Watchdog)'),
-                              icon: Icon(Icons.terminal_outlined),
+                              label: Text(l10n.cronModeScript),
+                              icon: const Icon(Icons.terminal_outlined),
                             ),
                           ],
                           selected: {noAgent},
@@ -262,15 +280,17 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                           TextFormField(
                             controller: promptController,
                             maxLines: 3,
-                            decoration: const InputDecoration(
-                              labelText: 'Agent Instruction / Prompt',
-                              hintText: 'Describe the task the agent should perform periodically...',
-                              prefixIcon: Icon(Icons.chat_bubble_outline),
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: l10n.cronPrompt,
+                              hintText: l10n.cronPromptHint,
+                              prefixIcon: const Icon(Icons.chat_bubble_outline),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
-                              if (!noAgent && (value == null || value.trim().isEmpty) && scriptController.text.trim().isEmpty) {
-                                return 'Please enter instructions or attach a script';
+                              if (!noAgent &&
+                                  (value == null || value.trim().isEmpty) &&
+                                  scriptController.text.trim().isEmpty) {
+                                return l10n.cronPromptRequired;
                               }
                               return null;
                             },
@@ -282,15 +302,18 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                         TextFormField(
                           controller: scriptController,
                           decoration: InputDecoration(
-                            labelText: noAgent ? 'Script File (Required)' : 'Script File (Optional)',
-                            hintText: 'e.g. backup-vault.sh',
+                            labelText: noAgent
+                                ? l10n.cronScriptRequiredLabel
+                                : l10n.cronScriptOptionalLabel,
+                            hintText: l10n.cronScriptHint,
                             prefixIcon: const Icon(Icons.code_outlined),
                             border: const OutlineInputBorder(),
-                            helperText: 'Scripts must live under ~/.hermes/scripts/',
+                            helperText: l10n.cronScriptHelper,
                           ),
                           validator: (value) {
-                            if (noAgent && (value == null || value.trim().isEmpty)) {
-                              return 'Script file is required in Watchdog mode';
+                            if (noAgent &&
+                                (value == null || value.trim().isEmpty)) {
+                              return l10n.cronScriptRequired;
                             }
                             return null;
                           },
@@ -300,12 +323,12 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                         // Working Directory
                         TextFormField(
                           controller: workdirController,
-                          decoration: const InputDecoration(
-                            labelText: 'Workspace Directory (Optional)',
-                            hintText: 'Absolute path to project directory',
-                            prefixIcon: Icon(Icons.folder_open_outlined),
-                            border: OutlineInputBorder(),
-                            helperText: 'Injects project-level AGENTS.md/CLAUDE.md context',
+                          decoration: InputDecoration(
+                            labelText: l10n.cronWorkdir,
+                            hintText: l10n.cronWorkdirHint,
+                            prefixIcon: const Icon(Icons.folder_open_outlined),
+                            border: const OutlineInputBorder(),
+                            helperText: l10n.cronWorkdirHelper,
                           ),
                         ),
                       ],
@@ -315,8 +338,9 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
               ),
               actions: [
                 TextButton(
-                  onPressed: isSaving ? null : () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  onPressed:
+                      isSaving ? null : () => Navigator.of(context).pop(),
+                  child: Text(l10n.commonCancel),
                 ),
                 ElevatedButton(
                   onPressed: isSaving
@@ -334,7 +358,8 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                               jobId: job.id,
                               schedule: scheduleController.text.trim(),
                               name: nameController.text.trim(),
-                              prompt: noAgent ? '' : promptController.text.trim(),
+                              prompt:
+                                  noAgent ? '' : promptController.text.trim(),
                               script: scriptController.text.trim(),
                               noAgent: noAgent,
                               workdir: workdirController.text.trim(),
@@ -343,7 +368,8 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                             success = await service.createJob(
                               schedule: scheduleController.text.trim(),
                               name: nameController.text.trim(),
-                              prompt: noAgent ? null : promptController.text.trim(),
+                              prompt:
+                                  noAgent ? null : promptController.text.trim(),
                               script: scriptController.text.trim(),
                               noAgent: noAgent,
                               workdir: workdirController.text.trim(),
@@ -356,8 +382,8 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(isEditing
-                                      ? 'Job updated successfully'
-                                      : 'Job created successfully'),
+                                      ? l10n.cronUpdated
+                                      : l10n.cronCreated),
                                   backgroundColor: theme.colorScheme.primary,
                                 ),
                               );
@@ -365,8 +391,9 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Failed to save scheduled job'),
-                                  backgroundColor: AppTheme.colorsOf(context).danger,
+                                  content: Text(l10n.cronSaveFailed),
+                                  backgroundColor:
+                                      AppTheme.colorsOf(context).danger,
                                 ),
                               );
                             }
@@ -378,7 +405,7 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(isEditing ? 'Save' : 'Create'),
+                      : Text(isEditing ? l10n.commonSave : l10n.commonCreate),
                 ),
               ],
             );
@@ -388,7 +415,8 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
     );
   }
 
-  Widget _buildPresetChip(String val, TextEditingController controller, StateSetter setDialogState) {
+  Widget _buildPresetChip(String val, TextEditingController controller,
+      StateSetter setDialogState) {
     return ActionChip(
       label: Text(val),
       onPressed: () {
@@ -401,22 +429,23 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return RefreshableScreen(
       onRefresh: _onRefresh,
       errorMessage: _errorMessage,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Cron Jobs'),
+          title: Text(l10n.cronTitle),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _isLoading ? null : _onRefresh,
-              tooltip: 'Refresh',
+              tooltip: l10n.commonRefresh,
             ),
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: _isLoading ? null : _showJobDialog,
-              tooltip: 'Add Job',
+              tooltip: l10n.cronAddJob,
             ),
             const PopOutButton(sectionName: 'cron', branchIndex: 6),
           ],
@@ -426,30 +455,29 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
             : _errorMessage != null
                 ? ErrorState(message: _errorMessage!, onRetry: _onRefresh)
                 : _jobs.isEmpty
-                    ? const EmptyState(
+                    ? EmptyState(
                         icon: Icons.schedule_outlined,
-                        title: 'No Cron Jobs',
-                        message:
-                            'Create scheduled tasks to automate maintenance',
+                        title: l10n.cronEmptyTitle,
+                        message: l10n.cronEmptyMessage,
                       )
-                    : _buildJobsList(),
+                    : _buildJobsList(l10n),
       ),
     );
   }
 
-  Widget _buildJobsList() {
+  Widget _buildJobsList(AppLocalizations l10n) {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: _jobs.length,
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final job = _jobs[index];
-        return _buildJobCard(job);
+        return _buildJobCard(l10n, job);
       },
     );
   }
 
-  Widget _buildJobCard(CronJob job) {
+  Widget _buildJobCard(AppLocalizations l10n, CronJob job) {
     final theme = Theme.of(context);
     final statusColor = job.getStatusColor(context);
 
@@ -507,21 +535,21 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
             // Schedule and timing info
             _buildInfoRow(
               Icons.schedule_outlined,
-              'Schedule',
+              l10n.cronScheduleLabel,
               job.schedule,
             ),
             const SizedBox(height: 8),
             if (job.nextRun != null)
               _buildInfoRow(
                 Icons.access_time,
-                'Next run',
+                l10n.cronNextRun,
                 _formatDateTime(job.nextRun!),
               ),
             if (job.lastRun != null) ...[
               const SizedBox(height: 8),
               _buildInfoRow(
                 Icons.history,
-                'Last run',
+                l10n.cronLastRun,
                 _formatDateTime(job.lastRun!),
                 status: job.lastRunStatusText,
               ),
@@ -564,15 +592,15 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
               const SizedBox(height: 8),
               _buildInfoRow(
                 Icons.terminal_outlined,
-                'Mode',
-                'Watchdog (No Agent)',
+                l10n.cronMode,
+                l10n.cronModeWatchdog,
               ),
             ],
             if (job.workdir != null && job.workdir!.isNotEmpty) ...[
               const SizedBox(height: 8),
               _buildInfoRow(
                 Icons.folder_open_outlined,
-                'Workdir',
+                l10n.cronWorkdirLabel,
                 job.workdir!,
               ),
             ],
@@ -584,12 +612,12 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                 TextButton.icon(
                   onPressed: () => _runJob(job),
                   icon: const Icon(Icons.play_arrow, size: 18),
-                  label: const Text('Run Now'),
+                  label: Text(l10n.cronRunNow),
                 ),
                 TextButton.icon(
                   onPressed: () => _editJob(job),
                   icon: const Icon(Icons.edit_outlined, size: 18),
-                  label: const Text('Edit'),
+                  label: Text(l10n.commonEdit),
                 ),
                 TextButton.icon(
                   onPressed: () => _toggleJob(job),
@@ -600,13 +628,15 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
                     size: 18,
                   ),
                   label: Text(
-                    job.status == CronJobStatus.active ? 'Disable' : 'Enable',
+                    job.status == CronJobStatus.active
+                        ? l10n.commonDisable
+                        : l10n.commonEnable,
                   ),
                 ),
                 TextButton.icon(
                   onPressed: () => _deleteJob(job),
                   icon: const Icon(Icons.delete_outline, size: 18),
-                  label: const Text('Delete'),
+                  label: Text(l10n.commonDelete),
                   style: TextButton.styleFrom(
                     foregroundColor: theme.colorScheme.error,
                   ),
@@ -629,7 +659,7 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
         const SizedBox(width: 8),
         Text(
-          '$label: ',
+          '${AppLocalizations.of(context).commonFieldLabel(label)} ',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),

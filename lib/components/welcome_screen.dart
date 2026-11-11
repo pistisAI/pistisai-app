@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../brand/brand.dart';
 import '../config/theme_extensions.dart';
 
@@ -60,7 +61,7 @@ class WelcomeScreen extends StatelessWidget {
               const SizedBox(height: 12),
               // Subtitle — offline-first positioning
               Text(
-                'Your agent companion.\nFully offline until you choose to connect.',
+                AppLocalizations.of(context).welcomeSubtitle,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: colors.textColorLight,
                   height: 1.4,
@@ -92,9 +93,7 @@ class WelcomeScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Type a message below or tap /new to start fresh. '
-                        'Connect an agent runtime in Settings for AI responses '
-                        'and agent features.',
+                        AppLocalizations.of(context).welcomeHint,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colors.textColorLight,
                           height: 1.5,

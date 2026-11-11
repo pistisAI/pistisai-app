@@ -1083,4 +1083,2453 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get homeSettings => 'Settings';
+
+  @override
+  String get homeNoAgentTitle => 'No Agent Connected';
+
+  @override
+  String get homeNoAgentBanner =>
+      'Configure an agent runtime in Settings to enable AI responses and desktop control.';
+
+  @override
+  String get homeStatusConfigured => 'Configured';
+
+  @override
+  String get homeStatusOffline => 'Offline';
+
+  @override
+  String get homeNoAgentStandalone =>
+      'Configure an agent runtime in Settings to get started, or use the avatar and local features while offline.';
+
+  @override
+  String get homeOpenSettings => 'Open Settings';
+
+  @override
+  String get homeConfigureManually => 'Configure connection manually';
+
+  @override
+  String homeMessagePlaceholder(String name) {
+    return 'Message $name...';
+  }
+
+  @override
+  String get homePillarAvatar => 'Avatar';
+
+  @override
+  String get homePillarTools => 'Tools';
+
+  @override
+  String get homePillarMood => 'Mood';
+
+  @override
+  String homeMoodTitle(String possessive, String name) {
+    return '$possessive Mood';
+  }
+
+  @override
+  String get homeMoodNotReady => 'Personality engine not ready yet.';
+
+  @override
+  String homeMoodAgent(String name) {
+    return 'Agent: $name';
+  }
+
+  @override
+  String get homeTraitFormality => 'Formality';
+
+  @override
+  String get homeTraitHumor => 'Humor';
+
+  @override
+  String get homeTraitEnthusiasm => 'Enthusiasm';
+
+  @override
+  String get homeTraitEmpathy => 'Empathy';
+
+  @override
+  String homeMoodEvolution(String stage) {
+    return 'Evolution: $stage';
+  }
+
+  @override
+  String homeToolsTitle(String name) {
+    return 'What $name Can Do';
+  }
+
+  @override
+  String get homeToolsSubtitle => 'Available offline • Connect to unlock more';
+
+  @override
+  String get homeToolDesktop => 'Desktop Control';
+
+  @override
+  String get homeToolDesktopDescription =>
+      'Click, type, scroll, drag on your PC';
+
+  @override
+  String get homeToolVision => 'Vision';
+
+  @override
+  String get homeToolVisionDescription => 'See and analyze your screen';
+
+  @override
+  String get homeToolVoice => 'Voice';
+
+  @override
+  String get homeToolVoiceDescription => 'Speak and listen';
+
+  @override
+  String get homeToolWebSearch => 'Web Search';
+
+  @override
+  String get homeToolWebSearchDescription => 'Search and extract web content';
+
+  @override
+  String get homeToolRequiresAgent => 'Requires agent connection';
+
+  @override
+  String get homeToolCode => 'Code Execution';
+
+  @override
+  String get homeToolCodeDescription => 'Run Python, shell, and Dart scripts';
+
+  @override
+  String get homeToolLocal => 'local';
+
+  @override
+  String get homeToolCloud => 'cloud';
+
+  @override
+  String get welcomeSubtitle =>
+      'Your agent companion.\nFully offline until you choose to connect.';
+
+  @override
+  String get welcomeHint =>
+      'Type a message below or tap /new to start fresh. Connect an agent runtime in Settings for AI responses and agent features.';
+
+  @override
+  String get messageInputPlaceholder => 'Type your message...';
+
+  @override
+  String get messageInputNewChat => 'New Chat';
+
+  @override
+  String get messageInputNoModels => 'No models available';
+
+  @override
+  String get messageInputSelectModel => 'Select model';
+
+  @override
+  String get messageCopied => 'Copied to clipboard';
+
+  @override
+  String get commonStart => 'Start';
+
+  @override
+  String get commonStop => 'Stop';
+
+  @override
+  String get commonRestart => 'Restart';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get commonEdit => 'Edit';
+
+  @override
+  String get commonCreate => 'Create';
+
+  @override
+  String get commonEnable => 'Enable';
+
+  @override
+  String get commonDisable => 'Disable';
+
+  @override
+  String get commonDescription => 'Description';
+
+  @override
+  String get commonCategory => 'Category';
+
+  @override
+  String get commonApply => 'Apply';
+
+  @override
+  String get cronTitle => 'Cron Jobs';
+
+  @override
+  String get cronAddJob => 'Add Job';
+
+  @override
+  String get cronEmptyTitle => 'No Cron Jobs';
+
+  @override
+  String get cronEmptyMessage =>
+      'Create scheduled tasks to automate maintenance';
+
+  @override
+  String cronTriggered(String name) {
+    return 'Triggered: $name';
+  }
+
+  @override
+  String get cronDeleteTitle => 'Delete Scheduled Job';
+
+  @override
+  String cronDeleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"? This action cannot be undone.';
+  }
+
+  @override
+  String get cronDeleted => 'Job deleted successfully';
+
+  @override
+  String get cronDeleteFailed => 'Failed to delete job';
+
+  @override
+  String get cronEditTitle => 'Edit Scheduled Job';
+
+  @override
+  String get cronCreateTitle => 'Create Scheduled Job';
+
+  @override
+  String get cronJobName => 'Job Name';
+
+  @override
+  String get cronJobNameHint => 'e.g. Daily Briefing';
+
+  @override
+  String get cronJobNameRequired => 'Please enter a job name';
+
+  @override
+  String get cronSchedule => 'Schedule Expression / Interval';
+
+  @override
+  String get cronScheduleHint => 'e.g. 30m, every 2h, or 0 9 * * *';
+
+  @override
+  String get cronScheduleRequired => 'Please enter a schedule';
+
+  @override
+  String get cronExecutionMode => 'Execution Mode';
+
+  @override
+  String get cronModeAgent => 'LLM Agent';
+
+  @override
+  String get cronModeScript => 'Script Only (Watchdog)';
+
+  @override
+  String get cronPrompt => 'Agent Instruction / Prompt';
+
+  @override
+  String get cronPromptHint =>
+      'Describe the task the agent should perform periodically...';
+
+  @override
+  String get cronPromptRequired =>
+      'Please enter instructions or attach a script';
+
+  @override
+  String get cronScriptRequiredLabel => 'Script File (Required)';
+
+  @override
+  String get cronScriptOptionalLabel => 'Script File (Optional)';
+
+  @override
+  String get cronScriptHint => 'e.g. backup-vault.sh';
+
+  @override
+  String get cronScriptHelper => 'Scripts must live under ~/.hermes/scripts/';
+
+  @override
+  String get cronScriptRequired => 'Script file is required in Watchdog mode';
+
+  @override
+  String get cronWorkdir => 'Workspace Directory (Optional)';
+
+  @override
+  String get cronWorkdirHint => 'Absolute path to project directory';
+
+  @override
+  String get cronWorkdirHelper =>
+      'Injects project-level AGENTS.md/CLAUDE.md context';
+
+  @override
+  String get cronUpdated => 'Job updated successfully';
+
+  @override
+  String get cronCreated => 'Job created successfully';
+
+  @override
+  String get cronSaveFailed => 'Failed to save scheduled job';
+
+  @override
+  String get cronScheduleLabel => 'Schedule';
+
+  @override
+  String get cronNextRun => 'Next run';
+
+  @override
+  String get cronLastRun => 'Last run';
+
+  @override
+  String get cronMode => 'Mode';
+
+  @override
+  String get cronModeWatchdog => 'Watchdog (No Agent)';
+
+  @override
+  String get cronWorkdirLabel => 'Workdir';
+
+  @override
+  String get cronRunNow => 'Run Now';
+
+  @override
+  String get skillsTitle => 'Skills';
+
+  @override
+  String get skillsRegisterTitle => 'Register Skill';
+
+  @override
+  String get skillsTabRegistry => 'Registry';
+
+  @override
+  String get skillsTabUsage => 'Usage';
+
+  @override
+  String get skillsTabManagement => 'Management';
+
+  @override
+  String get skillsEmptyTitle => 'No Skills Registered';
+
+  @override
+  String get skillsEmptyMessage => 'Skills will appear here when registered';
+
+  @override
+  String get skillsServiceUnavailable =>
+      'Skill service is unavailable on this platform';
+
+  @override
+  String skillsRegistered(String name) {
+    return 'Registered skill $name';
+  }
+
+  @override
+  String skillsRegisterFailed(String error) {
+    return 'Failed to register skill: $error';
+  }
+
+  @override
+  String skillsEnabled(String name) {
+    return '$name enabled';
+  }
+
+  @override
+  String skillsDisabled(String name) {
+    return '$name disabled';
+  }
+
+  @override
+  String get skillsStatUses => 'Uses';
+
+  @override
+  String get skillsStatAvgTime => 'Avg Time';
+
+  @override
+  String get skillsStatLastUsed => 'Last Used';
+
+  @override
+  String get skillsUsageByCategory => 'Skill Usage by Category';
+
+  @override
+  String skillsUsesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count uses',
+      one: '1 use',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String skillsAvgSeconds(String seconds) {
+    return '${seconds}s avg';
+  }
+
+  @override
+  String get skillsTopPerforming => 'Top Performing Skills';
+
+  @override
+  String get skillsGlobalSettings => 'Global Settings';
+
+  @override
+  String get skillsAutoDisable => 'Auto-disable slow skills';
+
+  @override
+  String get skillsAutoDisableSubtitle =>
+      'Disable skills that take longer than 5 seconds';
+
+  @override
+  String get skillsCache => 'Cache skill results';
+
+  @override
+  String get skillsCacheSubtitle => 'Store responses for identical requests';
+
+  @override
+  String get skillsDefaultTimeout => 'Default timeout';
+
+  @override
+  String get skillsDefaultTimeoutValue => '30 seconds';
+
+  @override
+  String get skillsResourceLimits => 'Resource Limits';
+
+  @override
+  String get skillsMaxConcurrent => 'Max concurrent skills';
+
+  @override
+  String get skillsMaxConcurrentSubtitle =>
+      'Maximum skills running simultaneously';
+
+  @override
+  String get skillsMemory => 'Memory per skill';
+
+  @override
+  String get skillsMemorySubtitle => 'Maximum RAM allocation per skill';
+
+  @override
+  String get skillsNameDescriptionRequired =>
+      'Name and description are required';
+
+  @override
+  String skillsCreatesUnder(String directory) {
+    return 'Creates SKILL.md under $directory';
+  }
+
+  @override
+  String get instancesTitle => 'Instances';
+
+  @override
+  String get instancesRefresh => 'Refresh instances';
+
+  @override
+  String get instancesNotStarted => 'Not started';
+
+  @override
+  String instancesUptimeDaysHours(int days, int hours) {
+    return '${days}d ${hours}h';
+  }
+
+  @override
+  String get instancesStartFailed => 'Failed to start gateway';
+
+  @override
+  String get instancesStopFailed => 'Failed to stop gateway';
+
+  @override
+  String get instancesRestartFailed => 'Failed to restart gateway';
+
+  @override
+  String get instancesNoGatewayState => 'No gateway state available';
+
+  @override
+  String get instancesGatewayProcess => 'Gateway Process';
+
+  @override
+  String get instancesModelInstances => 'Model Instances';
+
+  @override
+  String instancesPort(String port) {
+    return 'Port $port';
+  }
+
+  @override
+  String instancesUptime(String uptime) {
+    return 'Uptime: $uptime';
+  }
+
+  @override
+  String get instancesRequests => 'Requests';
+
+  @override
+  String instancesUtilized(int percent) {
+    return '$percent% utilized';
+  }
+
+  @override
+  String get instancesHermesEnabledSnack =>
+      'Hermes Agent enabled — chat will use Hermes';
+
+  @override
+  String get instancesHermesDisabledSnack => 'Switched back to default gateway';
+
+  @override
+  String get instancesHermesTitle => '🦞 Hermes Agent';
+
+  @override
+  String get instancesHermesActive =>
+      'Active — routing chat through Hermes API server';
+
+  @override
+  String get instancesHermesInactive =>
+      'Disabled — using the default Hermes gateway';
+
+  @override
+  String get instancesHermesEnable => 'Enable Hermes Agent';
+
+  @override
+  String get instancesHermesEnableSubtitle =>
+      'Route chat through Hermes for tool use, file ops, web search, and code execution';
+
+  @override
+  String get instancesHermesUrl => 'Hermes API URL';
+
+  @override
+  String get instancesApiKeyOptional => 'API Key (optional)';
+
+  @override
+  String get instancesApiKeyHint => 'Leave empty for local-only use';
+
+  @override
+  String get instancesTestConnection => 'Test Connection';
+
+  @override
+  String get commonBack => 'Back';
+
+  @override
+  String get commonReset => 'Reset';
+
+  @override
+  String get commonSelect => 'Select';
+
+  @override
+  String get avatarStateIdle => 'Idle';
+
+  @override
+  String get avatarStateThinking => 'Thinking';
+
+  @override
+  String get avatarStateWorking => 'Working';
+
+  @override
+  String get avatarStateHappy => 'Happy';
+
+  @override
+  String get avatarSizeSmall => 'Small';
+
+  @override
+  String get avatarSizeMedium => 'Medium';
+
+  @override
+  String get avatarSizeLarge => 'Large';
+
+  @override
+  String get avatarGlowEffect => 'Glow Effect';
+
+  @override
+  String get avatarGlowSubtitle => 'Enable pulsing glow effect around avatar';
+
+  @override
+  String get avatarStageCuriousExplorer => 'Curious Explorer';
+
+  @override
+  String get avatarStageCuriousExplorerInitial => 'Curious Explorer (Initial)';
+
+  @override
+  String get avatarStageKnowledgeSeeker => 'Knowledge Seeker';
+
+  @override
+  String get avatarStageWiseCompanion => 'Wise Companion';
+
+  @override
+  String get avatarStageEnlightenedGuide => 'Enlightened Guide';
+
+  @override
+  String get avatarSettingsTitle => 'Avatar Settings';
+
+  @override
+  String avatarInitFailed(String error) {
+    return 'Failed to initialize avatar service: $error';
+  }
+
+  @override
+  String get avatarSaved => 'Avatar settings saved successfully';
+
+  @override
+  String avatarSaveFailed(String error) {
+    return 'Failed to save settings: $error';
+  }
+
+  @override
+  String get avatarEvolutionReasonMissing =>
+      'Please provide a reason for evolution';
+
+  @override
+  String avatarEvolutionApproved(String stage) {
+    return 'Evolution to $stage approved! Your avatar has evolved.';
+  }
+
+  @override
+  String avatarEvolutionDenied(String reason) {
+    return 'Evolution request denied: $reason';
+  }
+
+  @override
+  String avatarEvolutionFailed(String error) {
+    return 'Failed to request evolution: $error';
+  }
+
+  @override
+  String get avatarSaveSettings => 'Save Settings';
+
+  @override
+  String get avatarLivePreview => 'Live Preview';
+
+  @override
+  String avatarStageValue(String stage) {
+    return 'Stage: $stage';
+  }
+
+  @override
+  String get avatarConversations => 'Conversations';
+
+  @override
+  String get avatarDepthScore => 'Depth Score';
+
+  @override
+  String get avatarAgentName => 'Agent Name';
+
+  @override
+  String get avatarAgentNameHint => 'Enter agent name';
+
+  @override
+  String get avatarAgentNameRequired => 'Please enter an agent name';
+
+  @override
+  String get avatarAgentNameTooShort => 'Name must be at least 2 characters';
+
+  @override
+  String get avatarAgentNameTooLong => 'Name must be less than 50 characters';
+
+  @override
+  String get avatarAgentNameHelp =>
+      'This name will be used to address your avatar in conversations.';
+
+  @override
+  String get avatarPersonalityTraits => 'Personality Traits';
+
+  @override
+  String get avatarPersonalityHelp =>
+      'Adjust these sliders to customize your avatar\'s personality. Changes are reflected in the live preview above.';
+
+  @override
+  String get avatarFormalityDescription => 'How formal the avatar communicates';
+
+  @override
+  String get avatarHumorDescription => 'Frequency and intensity of humor';
+
+  @override
+  String get avatarEnthusiasmDescription => 'Energy and excitement levels';
+
+  @override
+  String get avatarEmpathyDescription => 'Emotional understanding and support';
+
+  @override
+  String get avatarAppearance => 'Appearance';
+
+  @override
+  String get avatarAppearanceHelp =>
+      'Customize your avatar\'s visual style and animation.';
+
+  @override
+  String get avatarColorTheme => 'Color Theme';
+
+  @override
+  String get avatarColorPersonality => 'Personality-Derived';
+
+  @override
+  String get avatarColorOceanBlue => 'Ocean Blue';
+
+  @override
+  String get avatarColorForestGreen => 'Forest Green';
+
+  @override
+  String get avatarColorSunsetOrange => 'Sunset Orange';
+
+  @override
+  String get avatarColorRoyalPurple => 'Royal Purple';
+
+  @override
+  String get avatarColorMonochrome => 'Monochrome';
+
+  @override
+  String get avatarAnimationStyle => 'Animation Style';
+
+  @override
+  String get avatarAnimationBounce => 'Bounce';
+
+  @override
+  String get avatarAnimationPulse => 'Pulse';
+
+  @override
+  String get avatarAnimationFloat => 'Float';
+
+  @override
+  String get avatarAnimationShake => 'Shake';
+
+  @override
+  String get avatarAnimationNone => 'None (Static)';
+
+  @override
+  String get avatarSize => 'Avatar Size';
+
+  @override
+  String get avatarAdvancedTitle => 'Advanced Visual Customization';
+
+  @override
+  String get avatarAdvancedHelp =>
+      'Fine-tune your avatar\'s color, type, and effects in the dedicated customization screen.';
+
+  @override
+  String get avatarOpenAdvanced => 'Open Advanced Customization';
+
+  @override
+  String get avatarAchievements => 'Achievements';
+
+  @override
+  String get avatarAchievementsHelp =>
+      'View your unlocked achievements and track your progress.';
+
+  @override
+  String get avatarViewAchievements => 'View Achievements';
+
+  @override
+  String get avatarEvolution => 'Evolution';
+
+  @override
+  String get avatarEvolutionHelp =>
+      'Evolve your avatar to unlock new personality capabilities.';
+
+  @override
+  String get avatarCurrentStage => 'Current Stage:';
+
+  @override
+  String get avatarEvolveTo => 'Evolve to Stage';
+
+  @override
+  String get avatarEvolutionReason => 'Reason for Evolution';
+
+  @override
+  String get avatarEvolutionReasonHint =>
+      'Explain why you want to evolve your avatar...';
+
+  @override
+  String get avatarEvolutionReasonRequired => 'Please provide a reason';
+
+  @override
+  String get avatarRequesting => 'Requesting...';
+
+  @override
+  String get avatarRequestEvolution => 'Request Evolution';
+
+  @override
+  String get avatarReadyToEvolve => 'Ready to Evolve!';
+
+  @override
+  String get avatarEvolutionRequirements => 'Evolution Requirements';
+
+  @override
+  String get avatarDeepConversations => 'Deep Conversations';
+
+  @override
+  String get avatarAverageNovelty => 'Average Novelty';
+
+  @override
+  String avatarRequirementPercent(int current, int required) {
+    return '$current% / $required%';
+  }
+
+  @override
+  String get avatarCustomizationTitle => 'Avatar Customization';
+
+  @override
+  String get avatarCustomizationSaved =>
+      'Avatar customization saved successfully';
+
+  @override
+  String get avatarResetTitle => 'Reset to Defaults';
+
+  @override
+  String get avatarResetConfirm =>
+      'Are you sure you want to reset all avatar settings to defaults?';
+
+  @override
+  String get avatarResetDone => 'Avatar settings reset to defaults';
+
+  @override
+  String get avatarResetTooltip => 'Reset to defaults';
+
+  @override
+  String get avatarSaveCustomization => 'Save Customization';
+
+  @override
+  String get avatarPreview => 'Avatar Preview';
+
+  @override
+  String get avatarType => 'Avatar Type';
+
+  @override
+  String get avatarTypeEmoji => 'Emoji';
+
+  @override
+  String get avatarColor => 'Avatar Color';
+
+  @override
+  String get avatarCustomColorSelected => 'Custom color selected';
+
+  @override
+  String get avatarUsingPersonalityColors => 'Using personality-derived colors';
+
+  @override
+  String get avatarPickColor => 'Pick Color';
+
+  @override
+  String get avatarUsePersonalityColors => 'Use personality colors';
+
+  @override
+  String get avatarPickColorTitle => 'Pick Avatar Color';
+
+  @override
+  String get achievementsTitle => 'Achievements';
+
+  @override
+  String achievementsLoadFailed(String error) {
+    return 'Failed to load achievements: $error';
+  }
+
+  @override
+  String get achievementsUnlockedSection => 'Unlocked';
+
+  @override
+  String get achievementsLockedSection => 'Locked';
+
+  @override
+  String get achievementsNoneUnlocked =>
+      'No achievements unlocked yet. Start conversing!';
+
+  @override
+  String get achievementsProgress => 'Achievement Progress';
+
+  @override
+  String achievementsUnlockedCount(int unlocked, int total) {
+    return '$unlocked of $total unlocked';
+  }
+
+  @override
+  String achievementsPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String achievementsUnlockedWhen(String when) {
+    return 'Unlocked $when';
+  }
+
+  @override
+  String get achievementsToday => 'today';
+
+  @override
+  String get achievementsYesterday => 'yesterday';
+
+  @override
+  String get achievementFirstChat => 'First Conversation';
+
+  @override
+  String get achievementFirstChatDescription =>
+      'Complete your first conversation with the avatar';
+
+  @override
+  String get achievementGettingToKnow => 'Getting to Know You';
+
+  @override
+  String get achievementDeepThinker => 'Deep Thinker';
+
+  @override
+  String get achievementConversationalMaster => 'Conversational Master';
+
+  @override
+  String achievementDeepConversationsDescription(int count) {
+    return 'Have $count deep conversations';
+  }
+
+  @override
+  String get achievementNoveltySeeker => 'Novelty Seeker';
+
+  @override
+  String get achievementNoveltySeekerDescription =>
+      'Maintain high novelty in conversations (60%+)';
+
+  @override
+  String achievementEvolveDescription(String stage) {
+    return 'Evolve your avatar to the $stage stage';
+  }
+
+  @override
+  String get configPageGeneral => 'General';
+
+  @override
+  String get configPageGeneralSubtitle => 'App preferences';
+
+  @override
+  String get configPageAppearance => 'Appearance';
+
+  @override
+  String get configPageAppearanceSubtitle => 'Theme and look';
+
+  @override
+  String get configPageConnection => 'Connection';
+
+  @override
+  String get configPageConnectionSubtitle => 'Daemon, mesh, and account';
+
+  @override
+  String get configPageLlm => 'LLM providers';
+
+  @override
+  String get configPageLlmSubtitle => 'Model provider settings';
+
+  @override
+  String get configPageVision => 'Vision';
+
+  @override
+  String get configPageVisionSubtitle => 'Screen and vision tools';
+
+  @override
+  String get configPageAvatar => 'Avatar';
+
+  @override
+  String get configPageAvatarSubtitle => 'Companion appearance';
+
+  @override
+  String get configPageAchievements => 'Achievements';
+
+  @override
+  String get configPageAchievementsSubtitle => 'Avatar milestones';
+
+  @override
+  String get configPageDesktop => 'Desktop';
+
+  @override
+  String get configPageDesktopSubtitle => 'Local desktop tools';
+
+  @override
+  String get configPageAbout => 'About';
+
+  @override
+  String get configPagePlans => 'Plans';
+
+  @override
+  String get configPagePlansSubtitle => 'Subscription options';
+
+  @override
+  String get configPageBrain => 'Brain insights';
+
+  @override
+  String get configPageBrainSubtitle => 'Local brain activity';
+
+  @override
+  String get configPageRoadmap => 'Roadmap';
+
+  @override
+  String get configPageRoadmapSubtitle => 'What is in progress';
+
+  @override
+  String get configTitle => 'Runtime Settings';
+
+  @override
+  String get configBackToChannel => 'Back to runtime channel';
+
+  @override
+  String get configTabRuntime => 'Runtime';
+
+  @override
+  String get configTabMesh => 'Mesh';
+
+  @override
+  String get configTabApp => 'App';
+
+  @override
+  String get configTabStorage => 'Storage';
+
+  @override
+  String get configTabSystem => 'System';
+
+  @override
+  String configLoadFailed(String error) {
+    return 'Failed to load config: $error';
+  }
+
+  @override
+  String get configSaved => 'Configuration saved';
+
+  @override
+  String configSaveFailed(String error) {
+    return 'Failed to save configuration: $error';
+  }
+
+  @override
+  String get configResetTitle => 'Reset to Defaults';
+
+  @override
+  String get configResetBody =>
+      'This resets runtime preferences (theme, language, timeouts, proxy, developer flags) to their defaults.\n\nGateway URLs, API keys, and avatar settings are not affected.';
+
+  @override
+  String get configResetDone => 'Configuration reset to defaults';
+
+  @override
+  String configResetFailed(String error) {
+    return 'Failed to reset configuration: $error';
+  }
+
+  @override
+  String configExported(String filename) {
+    return 'Settings exported to $filename';
+  }
+
+  @override
+  String configExportFailed(String error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get configImported => 'Settings imported successfully';
+
+  @override
+  String configImportFailed(String error) {
+    return 'Import failed: $error';
+  }
+
+  @override
+  String get configRuntimeNone => 'None';
+
+  @override
+  String get configActiveRuntime => 'Active Agent Runtime';
+
+  @override
+  String configSecureChannelRuntime(String runtime) {
+    return 'Secure channel runtime: $runtime';
+  }
+
+  @override
+  String get configNoRuntime => 'No runtime selected - choose one below';
+
+  @override
+  String get configAgentRuntime => 'Agent Runtime';
+
+  @override
+  String get configAgentRuntimeHelper =>
+      'Select the runtime used by the secure channel';
+
+  @override
+  String configRuntimeSet(String runtime) {
+    return 'Active runtime set to $runtime';
+  }
+
+  @override
+  String get configRuntimeCleared => 'Runtime cleared';
+
+  @override
+  String get configSupportProviders => 'Support Model Providers';
+
+  @override
+  String get configSupportProvidersSubtitle =>
+      'Optional helpers for memory, summaries, OCR cleanup, and background tasks';
+
+  @override
+  String get configPreferredSupportProvider => 'Preferred Support Provider';
+
+  @override
+  String get configSupportProviderAuto => 'Auto';
+
+  @override
+  String get configSupportProvidersNote =>
+      'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.';
+
+  @override
+  String get configRequestPolicy => 'Runtime Request Policy';
+
+  @override
+  String get configConcurrentRequests => 'Concurrent Requests';
+
+  @override
+  String get configConcurrentRequestsHint => 'Max concurrent runtime requests';
+
+  @override
+  String get configRuntimeTimeout => 'Runtime Timeout (sec)';
+
+  @override
+  String get configAutoRestart => 'Auto-restart Runtime on Failure';
+
+  @override
+  String get configProxySettings => 'Proxy Settings';
+
+  @override
+  String get configUseProxy => 'Use Proxy Server';
+
+  @override
+  String get configProxyHost => 'Proxy Host';
+
+  @override
+  String get configProxyHostHint => 'e.g., proxy.example.com';
+
+  @override
+  String get configProxyPort => 'Proxy Port';
+
+  @override
+  String get configConnectionSettings => 'Connection Settings';
+
+  @override
+  String get configRequestTimeout => 'Request Timeout (sec)';
+
+  @override
+  String get configMaxRetries => 'Max Retries';
+
+  @override
+  String get configAppearance => 'Appearance';
+
+  @override
+  String get configTheme => 'Theme';
+
+  @override
+  String get configLanguage => 'Language';
+
+  @override
+  String get configNotifications => 'Notifications';
+
+  @override
+  String get configEnableNotifications => 'Enable Notifications';
+
+  @override
+  String get configShowTrayIcon => 'Show Tray Icon';
+
+  @override
+  String get configSecurity => 'Security';
+
+  @override
+  String get configEncryptLocalData => 'Encrypt Local Data';
+
+  @override
+  String get configEncryptLocalDataSubtitle =>
+      'Encrypt conversation history and settings';
+
+  @override
+  String get configBiometric => 'Require Biometric Auth';
+
+  @override
+  String get configBiometricSubtitle => 'Require fingerprint/auth to open app';
+
+  @override
+  String get configSessionTimeout => 'Session Timeout (min)';
+
+  @override
+  String get configSessionTimeoutHint => 'Auto-lock after inactivity';
+
+  @override
+  String get configRememberTokens => 'Remember Authentication Tokens';
+
+  @override
+  String get configDeveloperOptions => 'Developer Options';
+
+  @override
+  String get configDebugMode => 'Debug Mode';
+
+  @override
+  String get configDebugModeSubtitle =>
+      'Enable additional debugging information';
+
+  @override
+  String get configVerboseLogging => 'Verbose Logging';
+
+  @override
+  String get configVerboseLoggingSubtitle =>
+      'Log detailed diagnostic information';
+
+  @override
+  String get configShowDevTools => 'Show Developer Tools';
+
+  @override
+  String get configShowDevToolsSubtitle =>
+      'Enable development tools and inspectors';
+
+  @override
+  String get configDataRetention => 'Data Retention';
+
+  @override
+  String get configMaxHistory => 'Max Conversation History';
+
+  @override
+  String get configMaxHistoryHint =>
+      'Maximum number of conversations to store locally';
+
+  @override
+  String get configAutoCleanup => 'Auto-cleanup Old Data';
+
+  @override
+  String get configCacheManagement => 'Cache Management';
+
+  @override
+  String get configEnableCache => 'Enable Response Cache';
+
+  @override
+  String get configCacheSize => 'Cache Size Limit (MB)';
+
+  @override
+  String get configClearCacheNow => 'Clear Cache Now';
+
+  @override
+  String get configApplication => 'Application';
+
+  @override
+  String get configVersion => 'Version';
+
+  @override
+  String configVersionValue(String version, String build) {
+    return '$version (build $build)';
+  }
+
+  @override
+  String get configPlatform => 'Platform';
+
+  @override
+  String get configDartVersion => 'Dart Version';
+
+  @override
+  String get configSettingsPages => 'Settings pages';
+
+  @override
+  String get configPaths => 'Paths';
+
+  @override
+  String get configAppPath => 'App Path';
+
+  @override
+  String get configConfigPath => 'Config Path';
+
+  @override
+  String get configDataPath => 'Data Path';
+
+  @override
+  String get configWorkingDirectory => 'Working Directory';
+
+  @override
+  String get configSoftwareUpdates => 'Software Updates';
+
+  @override
+  String get configCheckingUpdates => 'Checking for updates...';
+
+  @override
+  String get configDownloadingUpdate => 'Downloading update...';
+
+  @override
+  String get configInstallingUpdate => 'Installing update...';
+
+  @override
+  String configUpdateAvailable(String version) {
+    return 'Update Available: $version';
+  }
+
+  @override
+  String configCurrentVersion(String version) {
+    return 'Current version: $version';
+  }
+
+  @override
+  String get configDownloadUpdate => 'Download Update';
+
+  @override
+  String get configViewChangelog => 'View Changelog';
+
+  @override
+  String get configUpdateReady => 'Update Ready to Install';
+
+  @override
+  String get configInstallRestart => 'Install & Restart';
+
+  @override
+  String get configUpToDate => 'Up to date';
+
+  @override
+  String get configCheckNow => 'Check Now';
+
+  @override
+  String get configExport => 'Export';
+
+  @override
+  String get configImport => 'Import';
+
+  @override
+  String get configClearCacheTitle => 'Clear Cache';
+
+  @override
+  String get configCacheUnit => 'MB';
+
+  @override
+  String configClearCacheConfirmMeasured(String size) {
+    return 'Delete generated speech audio and cached images? ($size on disk)';
+  }
+
+  @override
+  String configCacheClearedFreed(String size) {
+    return 'Cache cleared ($size freed)';
+  }
+
+  @override
+  String configCacheClearFailed(String error) {
+    return 'Could not clear the cache: $error';
+  }
+
+  @override
+  String get configUpdateMajor =>
+      'Major version - may include breaking changes';
+
+  @override
+  String get configUpdateMinor =>
+      'Minor version - new features and improvements';
+
+  @override
+  String get configUpdatePatch =>
+      'Patch version - bug fixes and security updates';
+
+  @override
+  String configWhatsNew(String version) {
+    return 'What\'s New in $version';
+  }
+
+  @override
+  String get configNoChangelog => 'No changelog available';
+
+  @override
+  String get filesTitle => 'File Operations';
+
+  @override
+  String filesLoadFailed(String error) {
+    return 'Failed to load directory: $error';
+  }
+
+  @override
+  String get filesNewDirectory => 'New Directory';
+
+  @override
+  String get filesDirectoryName => 'Directory Name';
+
+  @override
+  String get filesDirectoryNameRequired => 'Please enter a directory name';
+
+  @override
+  String filesCreateDirectoryFailed(String error) {
+    return 'Failed to create directory: $error';
+  }
+
+  @override
+  String get filesNewFile => 'New File';
+
+  @override
+  String get filesFileName => 'File Name';
+
+  @override
+  String get filesFileNameRequired => 'Please enter a file name';
+
+  @override
+  String filesCreateFileFailed(String error) {
+    return 'Failed to create file: $error';
+  }
+
+  @override
+  String get filesConfirmDelete => 'Confirm Delete';
+
+  @override
+  String filesDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Are you sure you want to delete $count items?',
+      one: 'Are you sure you want to delete 1 item?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String filesDeleteFailed(String error) {
+    return 'Failed to delete items: $error';
+  }
+
+  @override
+  String filesCopied(String name) {
+    return 'Copied: $name';
+  }
+
+  @override
+  String filesCut(String name) {
+    return 'Cut: $name';
+  }
+
+  @override
+  String get filesPasted => 'Pasted successfully';
+
+  @override
+  String get filesMoved => 'Moved successfully';
+
+  @override
+  String filesPasteFailed(String error) {
+    return 'Failed to paste: $error';
+  }
+
+  @override
+  String get filesRename => 'Rename';
+
+  @override
+  String get filesNewName => 'New Name';
+
+  @override
+  String get filesNameRequired => 'Please enter a name';
+
+  @override
+  String filesRenameFailed(String error) {
+    return 'Failed to rename: $error';
+  }
+
+  @override
+  String get filesOk => 'OK';
+
+  @override
+  String filesSizeBytes(String size) {
+    return '$size B';
+  }
+
+  @override
+  String filesSizeKb(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String filesSizeMb(String size) {
+    return '$size MB';
+  }
+
+  @override
+  String get filesDirectory => 'Directory';
+
+  @override
+  String get filesFile => 'File';
+
+  @override
+  String get filesSize => 'Size';
+
+  @override
+  String get filesModified => 'Modified';
+
+  @override
+  String get filesPath => 'Path';
+
+  @override
+  String get filesPaste => 'Paste';
+
+  @override
+  String get filesGoHome => 'Go Home';
+
+  @override
+  String filesSelected(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get filesCopy => 'Copy';
+
+  @override
+  String get filesMove => 'Move';
+
+  @override
+  String get filesEmpty => 'This folder is empty';
+
+  @override
+  String get filesDetails => 'Details';
+
+  @override
+  String get debugTitle => 'Debug';
+
+  @override
+  String debugLoadFailed(String error) {
+    return 'Failed to load debug data: $error';
+  }
+
+  @override
+  String get debugConnectedToGateway => 'Connected to Gateway';
+
+  @override
+  String get debugNoModel => 'no model';
+
+  @override
+  String get debugUnknown => 'unknown';
+
+  @override
+  String get debugConnectionDebugger => 'Connection Debugger';
+
+  @override
+  String get debugConnectionDebuggerSubtitle =>
+      'Test Hermes gateway connectivity';
+
+  @override
+  String get debugTesting => 'Testing...';
+
+  @override
+  String get debugRunConnectionTest => 'Run Connection Test';
+
+  @override
+  String get debugNoTestsYet =>
+      'No tests run yet. Click \"Run Connection Test\" to check Hermes gateway health.';
+
+  @override
+  String get debugApiInspector => 'API Inspector';
+
+  @override
+  String get debugApiInspectorSubtitle => 'Send requests to any endpoint';
+
+  @override
+  String get debugMethod => 'Method';
+
+  @override
+  String get debugUrl => 'URL';
+
+  @override
+  String get debugBodyJson => 'Body (JSON)';
+
+  @override
+  String get debugSending => 'Sending...';
+
+  @override
+  String get debugSendRequest => 'Send Request';
+
+  @override
+  String get debugNoRequestsYet => 'No requests sent yet.';
+
+  @override
+  String get debugUrlRequired => 'Error: URL is required';
+
+  @override
+  String debugSendingMethod(String method) {
+    return 'Sending $method request...';
+  }
+
+  @override
+  String get debugServiceStatus => 'Service Status';
+
+  @override
+  String get debugServiceStatusSubtitle => 'Health checks and diagnostics';
+
+  @override
+  String get debugConnectionManager => 'Connection Manager';
+
+  @override
+  String get debugHermesGateway => 'Hermes Gateway';
+
+  @override
+  String get debugActive => 'Active';
+
+  @override
+  String get debugUnreachable => 'Unreachable';
+
+  @override
+  String get debugActiveModel => 'Active Model';
+
+  @override
+  String get debugNoneSelected => 'None selected';
+
+  @override
+  String debugModelsAvailable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count models available',
+      one: '1 model available',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String debugLastError(String error) {
+    return 'Last error: $error';
+  }
+
+  @override
+  String get debugAuto => 'auto';
+
+  @override
+  String wizardStepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get wizardSetUpLater => 'Set up later';
+
+  @override
+  String get wizardComplete => 'Complete';
+
+  @override
+  String get wizardLoading => 'Loading...';
+
+  @override
+  String get wizardNext => 'Next';
+
+  @override
+  String get wizardCompletionFailed =>
+      'Setup could not be completed right now. Please try again.';
+
+  @override
+  String get welcomeStepSubtitle => 'Your privacy-first local AI companion';
+
+  @override
+  String get welcomeFeatureChat => 'Chat';
+
+  @override
+  String get welcomeFeatureChatDescription => 'Streaming AI responses';
+
+  @override
+  String get welcomeFeatureRuntimes => 'Agent Runtimes';
+
+  @override
+  String get welcomeFeatureRuntimesDescription =>
+      'Hermes Agent on this device or over Tailscale';
+
+  @override
+  String get welcomeFeatureAvatar => 'Evolving Avatar';
+
+  @override
+  String get welcomeFeatureAvatarDescription => 'Personalized AI companion';
+
+  @override
+  String get welcomeFeatureDesktopDescription => 'GUI automation';
+
+  @override
+  String get welcomeFeatureVisionDescription => 'Screen understanding';
+
+  @override
+  String get welcomeStepInfo =>
+      'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.';
+
+  @override
+  String get locationTitle => 'Where is Hermes running?';
+
+  @override
+  String get locationSubtitle =>
+      'Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.';
+
+  @override
+  String get locationThisDevice => 'This device';
+
+  @override
+  String get locationThisDeviceDescription =>
+      'Hermes is installed and running locally';
+
+  @override
+  String get locationTailscale => 'Tailscale device or VPS';
+
+  @override
+  String get locationTailscaleDescription =>
+      'Hermes on a home server, VPS, or other machine on your tailnet';
+
+  @override
+  String get tailscaleDiscovering => 'Discovering Tailscale devices...';
+
+  @override
+  String get tailscaleScanning => 'Scanning your tailnet';
+
+  @override
+  String get tailscaleNoDevices => 'No Tailscale Devices Found';
+
+  @override
+  String get tailscaleNoDevicesHelp =>
+      'Make sure Tailscale is installed and logged in.';
+
+  @override
+  String get tailscaleChooseOtherMethod => 'Choose different connection method';
+
+  @override
+  String get tailscaleSelectServer => 'Select your Hermes server';
+
+  @override
+  String tailscaleSelectServerHelp(String port) {
+    return 'Pick the VPS or machine running Hermes on your tailnet (port $port)';
+  }
+
+  @override
+  String get tailscaleNoIp => 'No IP';
+
+  @override
+  String get tailscaleOnline => 'Online';
+
+  @override
+  String get urlRemoteSubtitle =>
+      'Confirm the Tailscale URL, then paste the API key from your server.';
+
+  @override
+  String get urlLooking => 'Looking for Hermes on this device...';
+
+  @override
+  String get urlDetected =>
+      'Hermes is running on this device. We auto-detected the connection details below.';
+
+  @override
+  String urlEnterLocal(String port) {
+    return 'Enter the Hermes Agent URL for this device. The default port is $port.';
+  }
+
+  @override
+  String get urlConnectRemote => 'Connect to remote Hermes';
+
+  @override
+  String get urlConnectLocal => 'Connect to Hermes Agent';
+
+  @override
+  String get urlLabel => 'Hermes Agent URL';
+
+  @override
+  String get urlAutoDetectingKey => 'Auto-detecting API key...';
+
+  @override
+  String get urlApiKeyRequired => 'Hermes API Key (required)';
+
+  @override
+  String get urlApiKey => 'Hermes API Key';
+
+  @override
+  String get urlApiKeyRemoteHint => 'From API_SERVER_KEY on the remote server';
+
+  @override
+  String get urlApiKeyLocalHint => 'Auto-discovered from Hermes config';
+
+  @override
+  String get urlAutoDiscovered => 'Auto-discovered from Hermes configuration';
+
+  @override
+  String get urlSaveContinue => 'Save and Continue';
+
+  @override
+  String get urlCommandCopied => 'Command copied — run it on your VPS';
+
+  @override
+  String get urlRemoteHelp =>
+      'On your VPS, run this command and paste the output into the API key field above.';
+
+  @override
+  String get urlCopyCommand => 'Copy command';
+
+  @override
+  String get connTesting => 'Testing connection...';
+
+  @override
+  String get connDns => 'DNS resolution';
+
+  @override
+  String get connTcp => 'TCP connection';
+
+  @override
+  String get connNotTestedYet => 'Connection not tested yet';
+
+  @override
+  String get connTestAction => 'Test connection';
+
+  @override
+  String get connRuntimeApi => 'Runtime API';
+
+  @override
+  String get connUnknown => 'Unknown';
+
+  @override
+  String get connFailed => 'Connection Failed';
+
+  @override
+  String get connRetry => 'Retry Test';
+
+  @override
+  String get connCheckSettings => 'Check connection settings';
+
+  @override
+  String connConnectingTo(String url) {
+    return 'Connecting to: $url';
+  }
+
+  @override
+  String get connSuccess => 'Connection Successful!';
+
+  @override
+  String get connConnectedTo => 'Connected to:';
+
+  @override
+  String get completionAllSet => 'You\'re All Set!';
+
+  @override
+  String get completionConfigured =>
+      'Your agent runtime is configured and ready to use.';
+
+  @override
+  String get completionSaving => 'Saving configuration...';
+
+  @override
+  String get completionConfiguration => 'Configuration:';
+
+  @override
+  String get completionRuntime => 'Runtime';
+
+  @override
+  String get completionLocation => 'Location';
+
+  @override
+  String get completionLocal => 'Local';
+
+  @override
+  String get completionRemote => 'Remote';
+
+  @override
+  String get completionReady => 'Ready to start chatting!';
+
+  @override
+  String get completionDone =>
+      'Your setup is complete. You can start chatting now!';
+
+  @override
+  String get installStatusInstalled => 'Installed';
+
+  @override
+  String get installStatusSkipped => 'Skipped';
+
+  @override
+  String get installStatusFailed => 'Failed';
+
+  @override
+  String get providerCustom => 'Custom';
+
+  @override
+  String get botInstallComplete =>
+      'Install complete. All steps succeeded or were skipped.';
+
+  @override
+  String botInstallFailed(String steps) {
+    return 'Install failed: $steps';
+  }
+
+  @override
+  String get eventsTitle => 'Event Stream';
+
+  @override
+  String get eventsRunFinished => 'Run finished';
+
+  @override
+  String get eventsNoRuntime => 'No agent runtime connected';
+
+  @override
+  String get eventsConnectHelp =>
+      'Connect to a Hermes runtime to see live events.';
+
+  @override
+  String get eventsResume => 'Resume';
+
+  @override
+  String get eventsPause => 'Pause';
+
+  @override
+  String get eventsWaiting => 'Waiting for agent events…';
+
+  @override
+  String get guiTitle => 'GUI Automation';
+
+  @override
+  String get guiScreenshot => 'Screenshot';
+
+  @override
+  String get guiAnalyze => 'Analyze';
+
+  @override
+  String get guiPrompt => 'What do you want to do?';
+
+  @override
+  String get guiHint => 'e.g., Click the search button, Type in the box';
+
+  @override
+  String get guiExecute => 'Execute';
+
+  @override
+  String get guiResult => 'Result';
+
+  @override
+  String get guiLocalRuntime => 'GUI Automation uses the local agent runtime.';
+
+  @override
+  String guiScreenshotSaved(String path) {
+    return 'Screenshot saved: $path';
+  }
+
+  @override
+  String get adminUsersTitle => 'User Management';
+
+  @override
+  String get adminUsersSubtitle =>
+      'View and manage user accounts, subscriptions, and permissions';
+
+  @override
+  String get adminUsersSearchHint => 'Search by email, username, or user ID...';
+
+  @override
+  String get adminUsersTierFilter => 'Subscription Tier';
+
+  @override
+  String get adminUsersAllTiers => 'All Tiers';
+
+  @override
+  String get adminUsersStatusFilter => 'Account Status';
+
+  @override
+  String get adminUsersAllStatuses => 'All Statuses';
+
+  @override
+  String get adminStatusActive => 'Active';
+
+  @override
+  String get adminStatusSuspended => 'Suspended';
+
+  @override
+  String get adminStatusDeleted => 'Deleted';
+
+  @override
+  String get adminUsersSortBy => 'Sort By';
+
+  @override
+  String get adminUsersSortRegistration => 'Registration Date';
+
+  @override
+  String get adminUsersLastLogin => 'Last Login';
+
+  @override
+  String get adminEmail => 'Email';
+
+  @override
+  String get adminUsersAscending => 'Ascending';
+
+  @override
+  String get adminUsersDescending => 'Descending';
+
+  @override
+  String get adminUsersNoPermissionView =>
+      'You do not have permission to view users';
+
+  @override
+  String adminUsersLoadFailed(String error) {
+    return 'Failed to load users: $error';
+  }
+
+  @override
+  String get adminUsersNone => 'No users found';
+
+  @override
+  String get adminUsername => 'Username';
+
+  @override
+  String get adminSubscription => 'Subscription';
+
+  @override
+  String get adminRegistered => 'Registered';
+
+  @override
+  String get adminNotAvailable => 'N/A';
+
+  @override
+  String get adminViewDetails => 'View Details';
+
+  @override
+  String get adminSuspend => 'Suspend';
+
+  @override
+  String get adminReactivate => 'Reactivate';
+
+  @override
+  String adminUsersShowing(int from, int to, int total) {
+    return 'Showing $from-$to of $total users';
+  }
+
+  @override
+  String adminPageOf(int page, int total) {
+    return 'Page $page of $total';
+  }
+
+  @override
+  String adminUserDetailsLoadFailed(String error) {
+    return 'Failed to load user details: $error';
+  }
+
+  @override
+  String get adminUserDetails => 'User Details';
+
+  @override
+  String get adminNoUserDetails => 'No user details available';
+
+  @override
+  String get adminProfileInfo => 'Profile Information';
+
+  @override
+  String get adminUserId => 'User ID';
+
+  @override
+  String get adminSubscriptionInfo => 'Subscription Information';
+
+  @override
+  String get adminTier => 'Tier';
+
+  @override
+  String get adminPeriodStart => 'Current Period Start';
+
+  @override
+  String get adminPeriodEnd => 'Current Period End';
+
+  @override
+  String get adminCancellation => 'Cancellation';
+
+  @override
+  String get adminCancelAtPeriodEnd => 'Scheduled at period end';
+
+  @override
+  String get adminRecentPayments => 'Recent Payment History';
+
+  @override
+  String get adminActiveSessions => 'Active Sessions';
+
+  @override
+  String get adminRecentActivity => 'Recent Activity';
+
+  @override
+  String get adminDate => 'Date';
+
+  @override
+  String get adminAmount => 'Amount';
+
+  @override
+  String get adminMethod => 'Method';
+
+  @override
+  String get adminIpAddress => 'IP Address';
+
+  @override
+  String get adminUserAgent => 'User Agent';
+
+  @override
+  String get adminLastActive => 'Last Active';
+
+  @override
+  String get adminUnknownAction => 'Unknown action';
+
+  @override
+  String get adminInvalidDate => 'Invalid date';
+
+  @override
+  String get adminNoPermissionEdit =>
+      'You do not have permission to edit users';
+
+  @override
+  String get adminSubscriptionUpdated =>
+      'User subscription updated successfully';
+
+  @override
+  String adminUpdateFailed(String error) {
+    return 'Failed to update user: $error';
+  }
+
+  @override
+  String get adminEditSubscriptionTitle => 'Edit User Subscription';
+
+  @override
+  String adminUserLabel(String email) {
+    return 'User: $email';
+  }
+
+  @override
+  String get adminSuspendReasonMissing =>
+      'Please provide a reason for suspension';
+
+  @override
+  String get adminNoPermissionSuspend =>
+      'You do not have permission to suspend users';
+
+  @override
+  String get adminSuspended => 'User suspended successfully';
+
+  @override
+  String adminSuspendFailed(String error) {
+    return 'Failed to suspend user: $error';
+  }
+
+  @override
+  String get adminSuspendTitle => 'Suspend User Account';
+
+  @override
+  String get adminSuspendWarning =>
+      'This will suspend the user account and prevent them from accessing the application.';
+
+  @override
+  String get adminSuspendReason => 'Reason for suspension *';
+
+  @override
+  String get adminSuspendReasonHint =>
+      'Enter the reason for suspending this account';
+
+  @override
+  String get adminNoPermissionReactivate =>
+      'You do not have permission to reactivate users';
+
+  @override
+  String get adminReactivated => 'User reactivated successfully';
+
+  @override
+  String adminReactivateFailed(String error) {
+    return 'Failed to reactivate user: $error';
+  }
+
+  @override
+  String get adminReactivateTitle => 'Reactivate User Account';
+
+  @override
+  String get adminReactivateInfo =>
+      'This will reactivate the user account and restore their access to the application.';
+
+  @override
+  String get adminDashboardTitle => 'Dashboard';
+
+  @override
+  String get adminRefreshMetrics => 'Refresh metrics';
+
+  @override
+  String get adminTotalUsers => 'Total Users';
+
+  @override
+  String adminNewThisMonth(String count) {
+    return '$count new this month';
+  }
+
+  @override
+  String get adminActiveUsers => 'Active Users';
+
+  @override
+  String adminPercentOfTotal(String percent) {
+    return '$percent% of total';
+  }
+
+  @override
+  String get adminMrr => 'Monthly Recurring Revenue';
+
+  @override
+  String adminFromSubscribers(String count) {
+    return 'From $count subscribers';
+  }
+
+  @override
+  String get adminCurrentMonthRevenue => 'Current Month Revenue';
+
+  @override
+  String adminTransactionsCount(String count) {
+    return '$count transactions';
+  }
+
+  @override
+  String get adminSubscriptionDistribution => 'Subscription Distribution';
+
+  @override
+  String adminConversionRate(String rate) {
+    return 'Conversion Rate: $rate%';
+  }
+
+  @override
+  String get adminTierFree => 'Free';
+
+  @override
+  String get adminTierPremium => 'Premium';
+
+  @override
+  String get adminTierEnterprise => 'Enterprise';
+
+  @override
+  String adminCountPercent(int count, String percent) {
+    return '$count ($percent%)';
+  }
+
+  @override
+  String get adminNoRecentTransactions => 'No recent transactions';
+
+  @override
+  String get adminRecentTransactions => 'Recent Transactions';
+
+  @override
+  String adminToday(String time) {
+    return 'Today $time';
+  }
+
+  @override
+  String get adminYesterday => 'Yesterday';
+
+  @override
+  String adminDaysAgo(int days) {
+    return '$days days ago';
+  }
+
+  @override
+  String auditLoadDetailsFailed(String error) {
+    return 'Failed to load log details: $error';
+  }
+
+  @override
+  String get auditExported => 'Audit logs exported successfully';
+
+  @override
+  String auditExportFailed(String error) {
+    return 'Failed to export logs: $error';
+  }
+
+  @override
+  String get auditTitle => 'Audit Logs';
+
+  @override
+  String get auditFilters => 'Filters';
+
+  @override
+  String get auditExportCsv => 'Export CSV';
+
+  @override
+  String auditFilterAdmin(String value) {
+    return 'Admin: $value';
+  }
+
+  @override
+  String auditFilterAction(String value) {
+    return 'Action: $value';
+  }
+
+  @override
+  String auditFilterResource(String value) {
+    return 'Resource: $value';
+  }
+
+  @override
+  String auditFilterAffectedUser(String value) {
+    return 'Affected User: $value';
+  }
+
+  @override
+  String auditFilterFrom(String date) {
+    return 'From: $date';
+  }
+
+  @override
+  String auditFilterTo(String date) {
+    return 'To: $date';
+  }
+
+  @override
+  String auditFilterSeverity(String value) {
+    return 'Severity: $value';
+  }
+
+  @override
+  String get auditTimestamp => 'Timestamp';
+
+  @override
+  String get auditAction => 'Action';
+
+  @override
+  String get auditResource => 'Resource';
+
+  @override
+  String get auditAdmin => 'Admin';
+
+  @override
+  String get auditAffectedUser => 'Affected User';
+
+  @override
+  String get auditSeverity => 'Severity';
+
+  @override
+  String auditShowing(int from, int to, int total) {
+    return 'Showing $from-$to of $total logs';
+  }
+
+  @override
+  String auditError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get auditNone => 'No audit logs found';
+
+  @override
+  String get auditClearFilters => 'Clear filters';
+
+  @override
+  String get auditFilterTitle => 'Filter Audit Logs';
+
+  @override
+  String get auditAdminUserId => 'Admin User ID';
+
+  @override
+  String get auditAdminUserIdHint => 'Filter by admin user ID';
+
+  @override
+  String get auditActionHint => 'e.g., user_suspended, refund_processed';
+
+  @override
+  String get auditResourceType => 'Resource Type';
+
+  @override
+  String get auditResourceTypeHint => 'e.g., user, subscription, transaction';
+
+  @override
+  String get auditAffectedUserId => 'Affected User ID';
+
+  @override
+  String get auditAffectedUserIdHint => 'Filter by affected user ID';
+
+  @override
+  String get auditDateRange => 'Date Range';
+
+  @override
+  String get auditStartDate => 'Start Date';
+
+  @override
+  String get auditEndDate => 'End Date';
+
+  @override
+  String get auditAllSeverities => 'All severities';
+
+  @override
+  String get auditClearAll => 'Clear All';
+
+  @override
+  String get auditDetailsTitle => 'Audit Log Details';
+
+  @override
+  String get auditLogId => 'Log ID';
+
+  @override
+  String get auditResourceId => 'Resource ID';
+
+  @override
+  String get auditAdminUser => 'Admin User';
+
+  @override
+  String get auditRole => 'Role';
+
+  @override
+  String get auditActionDetails => 'Action Details';
+
+  @override
+  String adminsLoadFailed(String error) {
+    return 'Failed to load administrators: $error';
+  }
+
+  @override
+  String get adminsRevokeTitle => 'Revoke Admin Role';
+
+  @override
+  String adminsRevokeConfirm(String role, String email) {
+    return 'Are you sure you want to revoke the $role role from $email?';
+  }
+
+  @override
+  String get adminsRevoke => 'Revoke';
+
+  @override
+  String get adminsRevoked => 'Admin role revoked successfully';
+
+  @override
+  String adminsRevokeFailed(String error) {
+    return 'Failed to revoke role: $error';
+  }
+
+  @override
+  String get adminsRoleSuper => 'Super Admin';
+
+  @override
+  String get adminsRoleSupport => 'Support Admin';
+
+  @override
+  String get adminsRoleFinance => 'Finance Admin';
+
+  @override
+  String get adminsSuperRequired => 'Super Admin Access Required';
+
+  @override
+  String get adminsSuperRequiredBody =>
+      'Only Super Admins can manage administrator accounts.';
+
+  @override
+  String get adminsTitle => 'Admin Management';
+
+  @override
+  String get adminsSubtitle => 'Manage administrator accounts and roles';
+
+  @override
+  String get adminsAdd => 'Add Admin';
+
+  @override
+  String get adminsNone => 'No administrators found';
+
+  @override
+  String get adminsTotalActions => 'Total Actions';
+
+  @override
+  String get adminsRecent30d => 'Recent (30d)';
+
+  @override
+  String get adminsLastAction => 'Last Action';
+
+  @override
+  String get adminsToday => 'Today';
+
+  @override
+  String adminsWeeksAgo(int weeks) {
+    return '${weeks}w ago';
+  }
+
+  @override
+  String adminsMonthsAgo(int months) {
+    return '${months}mo ago';
+  }
+
+  @override
+  String get adminsUnknown => 'Unknown';
+
+  @override
+  String get adminsAssigned => 'Admin role assigned successfully';
+
+  @override
+  String get adminsAddTitle => 'Add Administrator';
+
+  @override
+  String get adminsEmailAddress => 'Email Address';
+
+  @override
+  String get adminsEmailRequired => 'Email is required';
+
+  @override
+  String get adminsEmailInvalid => 'Invalid email address';
+
+  @override
+  String get adminsSelectRole => 'Select Role';
+
+  @override
+  String get adminsSupportDescription => 'User management and support';
+
+  @override
+  String get adminsFinanceDescription => 'Payments, refunds, and reports';
 }

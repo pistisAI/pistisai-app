@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -76,6 +77,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 
   /// Save settings to SharedPreferences
   Future<void> _saveSettings() async {
+    final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -96,7 +98,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Avatar customization saved successfully'),
+            content: Text(l10n.avatarCustomizationSaved),
             backgroundColor: AppTheme.colorsOf(context).success,
             duration: const Duration(seconds: 2),
           ),
@@ -106,7 +108,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to save settings: $e'),
+            content: Text(l10n.avatarSaveFailed('$e')),
             backgroundColor: AppTheme.colorsOf(context).danger,
             duration: const Duration(seconds: 3),
           ),
@@ -124,21 +126,22 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 
   /// Reset all settings to defaults
   Future<void> _resetToDefaults() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset to Defaults'),
-        content: const Text(
-            'Are you sure you want to reset all avatar settings to defaults?'),
+        title: Text(l10n.avatarResetTitle),
+        content: Text(l10n.avatarResetConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppTheme.colorsOf(context).danger),
-            child: const Text('Reset'),
+            style: TextButton.styleFrom(
+                foregroundColor: AppTheme.colorsOf(context).danger),
+            child: Text(l10n.commonReset),
           ),
         ],
       ),
@@ -155,7 +158,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Avatar settings reset to defaults'),
+            content: Text(l10n.avatarResetDone),
             backgroundColor: AppTheme.colorsOf(context).warning,
             duration: const Duration(seconds: 2),
           ),
@@ -175,11 +178,12 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Avatar Customization'),
+          title: Text(l10n.avatarCustomizationTitle),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -189,14 +193,14 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Avatar Customization'),
+        title: Text(l10n.avatarCustomizationTitle),
         leading: BackButton(
           onPressed: () => context.go('/settings/avatar'),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Reset to defaults',
+            tooltip: l10n.avatarResetTooltip,
             onPressed: _resetToDefaults,
           ),
         ],
@@ -239,7 +243,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                   FilledButton.icon(
                     onPressed: _saveSettings,
                     icon: const Icon(Icons.save),
-                    label: const Text('Save Customization'),
+                    label: Text(l10n.avatarSaveCustomization),
                     style: FilledButton.styleFrom(
                       minimumSize: const Size(double.infinity, 48),
                     ),
@@ -264,7 +268,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
         child: Column(
           children: [
             Text(
-              'Avatar Preview',
+              AppLocalizations.of(context).avatarPreview,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.primary,
@@ -292,20 +296,20 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
             const SizedBox(height: 16),
             // State switcher for preview
             SegmentedButton<AgentState>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: AgentState.idle,
-                  label: Text('Idle'),
+                  label: Text(AppLocalizations.of(context).avatarStateIdle),
                   icon: Icon(Icons.pause_circle_outline),
                 ),
                 ButtonSegment(
                   value: AgentState.thinking,
-                  label: Text('Thinking'),
+                  label: Text(AppLocalizations.of(context).avatarStateThinking),
                   icon: Icon(Icons.psychology),
                 ),
                 ButtonSegment(
                   value: AgentState.happy,
-                  label: Text('Happy'),
+                  label: Text(AppLocalizations.of(context).avatarStateHappy),
                   icon: Icon(Icons.sentiment_satisfied),
                 ),
               ],
@@ -333,7 +337,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 Icon(Icons.style, color: colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
-                  'Avatar Type',
+                  AppLocalizations.of(context).avatarType,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -348,10 +352,10 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               ),
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: 'emoji',
-                  child: Text('Emoji'),
+                  child: Text(AppLocalizations.of(context).avatarTypeEmoji),
                 ),
               ],
               onChanged: (value) {
@@ -383,7 +387,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 Icon(Icons.palette, color: colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
-                  'Avatar Color',
+                  AppLocalizations.of(context).avatarColor,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -416,22 +420,26 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                     children: [
                       Text(
                         hasCustomColor
-                            ? 'Custom color selected'
-                            : 'Using personality-derived colors',
+                            ? AppLocalizations.of(context)
+                                .avatarCustomColorSelected
+                            : AppLocalizations.of(context)
+                                .avatarUsingPersonalityColors,
                         style: const TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 8),
                       ElevatedButton.icon(
                         onPressed: _pickColor,
                         icon: const Icon(Icons.edit),
-                        label: const Text('Pick Color'),
+                        label:
+                            Text(AppLocalizations.of(context).avatarPickColor),
                       ),
                       if (hasCustomColor) ...[
                         const SizedBox(height: 8),
                         TextButton.icon(
                           onPressed: _resetColors,
                           icon: const Icon(Icons.autorenew),
-                          label: const Text('Use personality colors'),
+                          label: Text(AppLocalizations.of(context)
+                              .avatarUsePersonalityColors),
                         ),
                       ],
                     ],
@@ -458,7 +466,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 Icon(Icons.straighten, color: colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
-                  'Avatar Size',
+                  AppLocalizations.of(context).avatarSize,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -467,20 +475,20 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
             ),
             const SizedBox(height: 16),
             SegmentedButton<String>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: 'small',
-                  label: Text('Small'),
+                  label: Text(AppLocalizations.of(context).avatarSizeSmall),
                   icon: Icon(Icons.circle, size: 16),
                 ),
                 ButtonSegment(
                   value: 'medium',
-                  label: Text('Medium'),
+                  label: Text(AppLocalizations.of(context).avatarSizeMedium),
                   icon: Icon(Icons.circle, size: 24),
                 ),
                 ButtonSegment(
                   value: 'large',
-                  label: Text('Large'),
+                  label: Text(AppLocalizations.of(context).avatarSizeLarge),
                   icon: Icon(Icons.circle, size: 32),
                 ),
               ],
@@ -509,15 +517,17 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Glow Effect',
+                    AppLocalizations.of(context).avatarGlowEffect,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Enable pulsing glow effect around avatar',
-                    style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight),
+                    AppLocalizations.of(context).avatarGlowSubtitle,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.colorsOf(context).textColorLight),
                   ),
                 ],
               ),
@@ -536,6 +546,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
 
   /// Open color picker dialog
   Future<void> _pickColor() async {
+    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     // Updated as the user moves the picker, so Select returns their choice
     // and not the colour the dialog opened with.
@@ -543,7 +554,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
     final pickedColor = await showDialog<Color>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Pick Avatar Color'),
+        title: Text(l10n.avatarPickColorTitle),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: pickerColor,
@@ -554,13 +565,13 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(pickerColor);
             },
-            child: const Text('Select'),
+            child: Text(l10n.commonSelect),
           ),
         ],
       ),
