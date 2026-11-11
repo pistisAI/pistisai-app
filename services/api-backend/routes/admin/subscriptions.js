@@ -15,6 +15,11 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
+import {
+  changeSubscriptionBody,
+  cancelSubscriptionBody,
+  validateBody,
+} from './body-schemas.js';
 
 const router = express.Router();
 
@@ -429,6 +434,7 @@ router.patch(
   '/subscriptions/:subscriptionId',
   adminRateLimiter,
   adminAuth(['edit_subscriptions']),
+  validateBody(changeSubscriptionBody),
   async (req, res) => {
     try {
       const { subscriptionId } = req.params;
@@ -622,6 +628,7 @@ router.post(
   '/subscriptions/:subscriptionId/cancel',
   adminRateLimiter,
   adminAuth(['edit_subscriptions']),
+  validateBody(cancelSubscriptionBody),
   async (req, res) => {
     try {
       const { subscriptionId } = req.params;

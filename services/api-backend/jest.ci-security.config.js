@@ -10,6 +10,7 @@ export default {
     '**/test/api-backend/rbac.test.js',
     '**/test/api-backend/input-validation.test.js',
     '**/test/api-backend/admin-body-validation.test.js',
+    '**/test/api-backend/admin-body-validation-2.test.js',
     '**/test/api-backend/cloud-connector.test.js',
     '**/test/api-backend/webhook-rate-limiting.test.js',
     '**/test/api-backend/sandbox-service.test.js',

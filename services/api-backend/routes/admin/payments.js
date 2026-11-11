@@ -23,6 +23,7 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
+import { refundBody, validateBody } from './body-schemas.js';
 
 const router = express.Router();
 
@@ -537,6 +538,7 @@ router.post(
   '/refunds',
   adminRateLimiter,
   adminAuth(['process_refunds']),
+  validateBody(refundBody),
   async (req, res) => {
     try {
       const pool = getPool();
