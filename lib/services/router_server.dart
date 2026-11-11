@@ -15,6 +15,7 @@ import 'voice/cloud_tts_service.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:http/http.dart' as http;
 import 'package:pistisai/utils/http_constants.dart';
 
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
@@ -43,6 +44,10 @@ class RouterServer {
   /// When null, all endpoints are open (no auth check).
   final String? authSecret;
 
+  /// Co-resident Hermes gateway. Only the primary hub dials this;
+  /// remote clients must use this router instead.
+  final String hermesBaseUrl;
+
   HttpServer? _server;
 
   /// Endpoints that remain accessible without authentication.
@@ -61,7 +66,9 @@ class RouterServer {
     this.conscienceStorage,
     CloudTtsService? ttsService,
     this.authSecret,
-  }) : ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService());
+    String? hermesBaseUrl,
+  })  : hermesBaseUrl = hermesBaseUrl ?? AppConfig.defaultHermesUrl,
+        ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService());
 
   /// Start the server
   Future<void> start() async {
@@ -78,6 +85,12 @@ class RouterServer {
 
     // GET /api/pistisai/hub — mobile clients discover the primary desktop hub.
     router.get(AppConfig.hubPath, _handleHub);
+
+    // Hermes chat/session APIs for non-primary clients (proxied to local Hermes).
+    router.post('/api/pistisai/messages', _proxyHermes);
+    router.get('/api/sessions', _proxyHermes);
+    router.get('/api/sessions/<sessionId>/messages', _proxyHermes);
+    router.all('/api/sessions/<sessionId>', _proxyHermes);
 
     // OpenAI-compatible local speech endpoint for Hermes voice output.
     if (ttsService != null) {
@@ -193,19 +206,87 @@ class RouterServer {
   }
 
   Response _handleHub(Request request) {
+    final routerPort = _server?.port ?? port;
     return Response.ok(
       jsonEncode(<String, Object>{
         'role': 'primary_hub',
         'product': Brand.current.productName,
+        'routerPort': routerPort,
+        // Co-resident Hermes only. Remote clients must use routerPort / chatBasePath.
         'hermesPort': AppConfig.defaultHermesPort,
-        'routerPort': _server?.port ?? port,
+        'clientsMustUseHub': true,
+        'chatBasePath': '/',
       }),
       headers: {'Content-Type': 'application/json'},
     );
   }
 
+  /// Forward Hermes-native chat/session calls to the co-resident gateway.
+  Future<Response> _proxyHermes(Request request) async {
+    final upstream = Uri.parse(hermesBaseUrl);
+    final target = Uri(
+      scheme: upstream.scheme,
+      host: upstream.host,
+      port: upstream.hasPort ? upstream.port : null,
+      path: request.requestedUri.path,
+      query: request.requestedUri.hasQuery ? request.requestedUri.query : null,
+    );
+
+    final bodyBytes = await request.read().fold<List<int>>(
+      <int>[],
+      (List<int> acc, List<int> chunk) {
+        acc.addAll(chunk);
+        return acc;
+      },
+    );
+
+    final headers = <String, String>{};
+    request.headers.forEach((name, value) {
+      final lower = name.toLowerCase();
+      if (lower == 'host' || lower == 'content-length') return;
+      headers[name] = value;
+    });
+
+    try {
+      final streamed = http.StreamedRequest(request.method, target);
+      streamed.headers.addAll(headers);
+      if (bodyBytes.isNotEmpty) {
+        streamed.contentLength = bodyBytes.length;
+        streamed.sink.add(bodyBytes);
+      }
+      await streamed.sink.close();
+      final upstreamResponse = await streamed.send().timeout(
+        const Duration(seconds: 120),
+      );
+      final responseBytes = await upstreamResponse.stream.toBytes();
+      final responseHeaders = <String, String>{};
+      upstreamResponse.headers.forEach((name, value) {
+        final lower = name.toLowerCase();
+        if (lower == 'transfer-encoding' || lower == 'content-encoding') {
+          return;
+        }
+        responseHeaders[name] = value;
+      });
+      return Response(
+        upstreamResponse.statusCode,
+        body: responseBytes,
+        headers: responseHeaders,
+      );
+    } catch (e) {
+      debugPrint('[RouterServer] Hermes proxy failed for ${target.path}: $e');
+      return Response(
+        502,
+        body: jsonEncode({'error': 'Hub could not reach local Hermes'}),
+        headers: {'Content-Type': 'application/json'},
+      );
+    }
+  }
+
   Response _handleListModels(Request request) {
+    // Only models whose provider is registered can be served. Listing the
+    // rest would advertise models that fail on the first call.
     final models = ModelRegistry.models.values
+        .where((m) => providers.containsKey(m.provider))
         .map((m) => {
               'id': m.id,
               'object': 'model',
@@ -234,8 +315,20 @@ class RouterServer {
       final provider = providers[config.provider];
 
       if (provider == null) {
-        return Response.internalServerError(
-            body: 'Provider not found for model: $actualModel');
+        // The caller asked for a model this router cannot serve: a client
+        // error in the OpenAI error shape, not a server failure.
+        return Response.notFound(
+          jsonEncode({
+            'error': {
+              'message': 'The model `$actualModel` is not available: '
+                  'its provider is not configured on this router.',
+              'type': 'invalid_request_error',
+              'param': 'model',
+              'code': 'model_not_found',
+            },
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
       }
 
       // 2. Start request tracking

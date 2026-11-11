@@ -234,6 +234,7 @@ void main() {
 
       expect(service.state.currentStep, 3);
       expect(service.state.errorMessage, hermesUnreachableMessage);
+      expect(service.connectionVerified, isFalse);
     });
 
     test('desktop dashboard URL is kept and blocks Next', () async {
@@ -313,6 +314,7 @@ void main() {
       expect(service.state.hermesApiKey, 'psk_0123456789abcdef');
       expect(service.state.currentStep, 4);
       expect(service.state.errorMessage, isNull);
+      expect(service.connectionVerified, isTrue);
     });
 
     test('nextStep blocks the connection step until Hermes is chosen', () {

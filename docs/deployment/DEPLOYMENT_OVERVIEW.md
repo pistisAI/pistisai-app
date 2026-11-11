@@ -1,8 +1,8 @@
-# IAClé Deployment Overview
+# Pistisai Deployment Overview
 
-This document provides a comprehensive overview of deployment options and strategies for IAClé.
+This document provides a comprehensive overview of deployment options and strategies for Pistisai.
 
-> **Current orientation**: IAClé is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers for app-owned memory/background features, not primary app runtimes. Cloud deployment should focus on account sync, presence, web/mobile access, per-user cloud connectors, and optional per-user hosted agent runtime containers. Legacy streaming-proxy/tunnel components remain fallback architecture unless a deployment specifically depends on them.
+> **Current orientation**: Pistisai is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers for app-owned memory/background features, not primary app runtimes. Cloud deployment should focus on account sync, presence, web/mobile access, per-user cloud connectors, and optional per-user hosted agent runtime containers. Legacy streaming-proxy/tunnel components remain fallback architecture unless a deployment specifically depends on them.
 
 ## 📋 Table of Contents
 
@@ -19,7 +19,7 @@ This document provides a comprehensive overview of deployment options and strate
 
 ### 🚀 Kubernetes Deployment (Recommended)
 
-Deploy the full IAClé stack to **Kubernetes** using Dockerfiles and Kubernetes manifests. Works with:
+Deploy the full Pistisai stack to **Kubernetes** using Dockerfiles and Kubernetes manifests. Works with:
 
 - **Managed Kubernetes**: DigitalOcean Kubernetes (DOKS), Google GKE, AWS EKS, Azure AKS
 - **Self-Hosted Kubernetes**: On-premises or your own infrastructure
@@ -27,12 +27,12 @@ Deploy the full IAClé stack to **Kubernetes** using Dockerfiles and Kubernetes 
 ```bash
 # Build and push Docker images to your container registry
 docker build -f config/docker/Dockerfile.web \
-  -t your-registry.com/ghcr.io/IAClé/IAClé/web:latest .
-docker push your-registry.com/ghcr.io/IAClé/IAClé/web:latest
+  -t your-registry.com/ghcr.io/pistisai/pistisai/web:latest .
+docker push your-registry.com/ghcr.io/pistisai/pistisai/web:latest
 
 docker build -f services/api-backend/Dockerfile.prod \
-  -t your-registry.com/IAClé/api:latest .
-docker push your-registry.com/IAClé/api:latest
+  -t your-registry.com/Pistisai/api:latest .
+docker push your-registry.com/Pistisai/api:latest
 
 # Deploy to Kubernetes (any cluster) — see config/kubernetes/ and services/*/k8s/
 kubectl apply -f config/kubernetes/namespace.yaml
@@ -79,7 +79,7 @@ The legacy single-container deployment is deprecated and no longer supported. Pl
 
 ## Multi-Container Architecture
 
-IAClé features a modern multi-container architecture that provides:
+Pistisai features a modern multi-container architecture that provides:
 
 ### 🏗️ **Architecture Benefits**
 
@@ -103,7 +103,7 @@ For detailed information, see [System Architecture](../architecture/SYSTEM_ARCHI
 
 ## Dockerfile-Based Deployment
 
-IAClé uses **Dockerfiles** for building container images, which are then deployed to **Kubernetes** (managed or self-hosted).
+Pistisai uses **Dockerfiles** for building container images, which are then deployed to **Kubernetes** (managed or self-hosted).
 
 ### 🐳 **Dockerfiles**
 
@@ -112,7 +112,7 @@ IAClé uses **Dockerfiles** for building container images, which are then deploy
 Builds the Flutter web application as a static site served by Nginx.
 
 ```bash
-docker build -f config/docker/Dockerfile.web -t IAClé-web:latest .
+docker build -f config/docker/Dockerfile.web -t Pistisai-web:latest .
 ```
 
 #### `services/api-backend/Dockerfile.prod`
@@ -120,7 +120,7 @@ docker build -f config/docker/Dockerfile.web -t IAClé-web:latest .
 Builds the Node.js API backend service.
 
 ```bash
-docker build -f services/api-backend/Dockerfile.prod -t IAClé-api:latest .
+docker build -f services/api-backend/Dockerfile.prod -t Pistisai-api:latest .
 ```
 
 ### ☸️ **Kubernetes Deployment**
@@ -154,7 +154,7 @@ For detailed deployment instructions, see:
 
 ### 🎯 Strict Deployment Policy
 
-IAClé enforces a **zero-tolerance deployment policy** for production:
+Pistisai enforces a **zero-tolerance deployment policy** for production:
 
 - ✅ **Success**: Zero warnings AND zero errors required
 - ❌ **Failure**: Any warning condition triggers automatic rollback
@@ -175,7 +175,7 @@ See [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md) for complete details
 
 ## Versioning Strategy
 
-IAClé tracks version in two synced files (see [AGENTS.md](../../AGENTS.md)):
+Pistisai tracks version in two synced files (see [AGENTS.md](../../AGENTS.md)):
 
 - `assets/version.json` — `version` (semver) + integer `build_number`
 - `pubspec.yaml` — `version: X.Y.Z+<build_number>`
@@ -219,4 +219,4 @@ and [docs/development/versioning/](../development/versioning/).
 
 ---
 
-_For questions about deployment, please see our [troubleshooting guide](../user-guide/TROUBLESHOOTING.md) or [open an issue](https://github.com/iacle-solutions/iacle-app/issues)._
+_For questions about deployment, please see our [troubleshooting guide](../user-guide/TROUBLESHOOTING.md) or [open an issue](https://github.com/pistisAI/pistisai-app/issues)._

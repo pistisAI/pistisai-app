@@ -74,6 +74,7 @@ import '../screens/debug/debug_screen.dart';
 // Config screen
 import '../screens/config/config_screen.dart';
 import '../config/app_config.dart';
+import 'package:pistisai/brand/brand.dart';
 
 /// Wrapper widget that provides HomeLayout with its required dependencies
 class _HomeLayoutWrapper extends StatefulWidget {
@@ -124,7 +125,7 @@ bool _isAppSubdomain() {
 
   final hostname = _getCurrentHostname();
   final isApp = hostname.startsWith('app.') ||
-      hostname == 'app.pistisai.app' ||
+      hostname == Brand.current.appHost ||
       hostname == 'localhost' ||
       hostname == '127.0.0.1';
 

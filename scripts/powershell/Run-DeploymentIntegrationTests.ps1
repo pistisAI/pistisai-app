@@ -1,8 +1,8 @@
-# Zoidbot Deployment Integration Tests Runner
+# Pistisai Deployment Integration Tests Runner
 # Master script to run all deployment workflow tests
 #
 # Version: 1.0.0
-# Author: Zoidbot Development Team
+# Author: Pistisai Development Team
 # Last Updated: 2025-07-18
 #
 # This script implements task 12 from the automated deployment workflow specification:
@@ -14,7 +14,7 @@
 
 <#
 .SYNOPSIS
-    Master script to run all Zoidbot deployment workflow tests.
+    Master script to run all Pistisai deployment workflow tests.
 
 .DESCRIPTION
     This script orchestrates the execution of all deployment workflow tests,
@@ -45,7 +45,7 @@
     Run error scenario tests in local environment
 
 .NOTES
-    This script is the master test runner for the Zoidbot deployment workflow.
+    This script is the master test runner for the Pistisai deployment workflow.
     It orchestrates the execution of all test scripts and generates a comprehensive report.
 #>
 
@@ -94,7 +94,7 @@ if (-not (Test-Path $Script:LogsDir)) {
 }
 
 # Initialize test log file
-"Zoidbot Deployment Integration Tests - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File -FilePath $Script:TestLogFile -Encoding utf8
+"Pistisai Deployment Integration Tests - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" | Out-File -FilePath $Script:TestLogFile -Encoding utf8
 "Test Suite: $TestSuite" | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
 "Environment: $Environment" | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
 "=" * 80 | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
@@ -317,7 +317,7 @@ function Generate-HTMLReport {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoidbot Deployment Integration Test Report</title>
+    <title>Pistisai Deployment Integration Test Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -420,7 +420,7 @@ function Generate-HTMLReport {
 <body>
     <div class="container">
         <div class="header">
-            <h1>Zoidbot Deployment Integration Test Report</h1>
+            <h1>Pistisai Deployment Integration Test Report</h1>
             <p>Generated: $($Script:TestResults.EndTime.ToString("yyyy-MM-dd HH:mm:ss"))</p>
             <p>Test Suite: $TestSuite</p>
             <p>Environment: $Environment</p>
@@ -478,8 +478,8 @@ function Generate-HTMLReport {
         </table>
         
         <div class="footer">
-            <p>Zoidbot Deployment Integration Tests</p>
-            <p>© $(Get-Date -Format "yyyy") Zoidbot Development Team</p>
+            <p>Pistisai Deployment Integration Tests</p>
+            <p>© $(Get-Date -Format "yyyy") Pistisai Development Team</p>
         </div>
     </div>
 </body>
@@ -504,7 +504,7 @@ function Generate-TestSummary {
         0
     }
     
-    Write-Host "`n=== Zoidbot Deployment Integration Test Summary ===" -ForegroundColor Cyan
+    Write-Host "`n=== Pistisai Deployment Integration Test Summary ===" -ForegroundColor Cyan
     Write-Host "Timestamp: $($Script:TestResults.EndTime.ToString('yyyy-MM-dd HH:mm:ss'))"
     Write-Host "Test Suite: $TestSuite"
     Write-Host "Environment: $Environment"
@@ -523,7 +523,7 @@ function Generate-TestSummary {
     Write-Host ""
     
     # Add summary to log file
-    "=== Zoidbot Deployment Integration Test Summary ===" | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
+    "=== Pistisai Deployment Integration Test Summary ===" | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
     "Timestamp: $($Script:TestResults.EndTime.ToString('yyyy-MM-dd HH:mm:ss'))" | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
     "Test Suite: $TestSuite" | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
     "Environment: $Environment" | Out-File -FilePath $Script:TestLogFile -Encoding utf8 -Append
@@ -569,10 +569,10 @@ function Run-AllTests {
 
 # Main execution
 if ($Help) {
-    Write-Host "Zoidbot Deployment Integration Tests Runner" -ForegroundColor Cyan
+    Write-Host "Pistisai Deployment Integration Tests Runner" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "DESCRIPTION:" -ForegroundColor Yellow
-    Write-Host "  Master script to run all Zoidbot deployment workflow tests."
+    Write-Host "  Master script to run all Pistisai deployment workflow tests."
     Write-Host ""
     Write-Host "USAGE:" -ForegroundColor Yellow
     Write-Host "  .\Run-DeploymentIntegrationTests.ps1 [Options]"
@@ -593,7 +593,7 @@ if ($Help) {
 }
 
 try {
-    Write-Host "=== Zoidbot Deployment Integration Tests ===" -ForegroundColor Cyan
+    Write-Host "=== Pistisai Deployment Integration Tests ===" -ForegroundColor Cyan
     Write-Host "Timestamp: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     Write-Host "Test Suite: $TestSuite"
     Write-Host "Environment: $Environment"

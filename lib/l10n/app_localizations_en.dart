@@ -2378,12 +2378,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configClearCacheTitle => 'Clear Cache';
 
   @override
-  String configClearCacheConfirm(int size) {
-    return 'Clear all cached data? ($size MB will be freed)';
+  String get configCacheUnit => 'MB';
+
+  @override
+  String configClearCacheConfirmMeasured(String size) {
+    return 'Delete generated speech audio and cached images? ($size on disk)';
   }
 
   @override
-  String get configCacheCleared => 'Cache cleared successfully';
+  String configCacheClearedFreed(String size) {
+    return 'Cache cleared ($size freed)';
+  }
+
+  @override
+  String configCacheClearFailed(String error) {
+    return 'Could not clear the cache: $error';
+  }
 
   @override
   String get configUpdateMajor =>

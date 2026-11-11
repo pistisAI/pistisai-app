@@ -2416,12 +2416,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get configClearCacheTitle => 'Vider le cache';
 
   @override
-  String configClearCacheConfirm(int size) {
-    return 'Vider toutes les données en cache ? ($size Mo seront libérés)';
+  String get configCacheUnit => 'Mo';
+
+  @override
+  String configClearCacheConfirmMeasured(String size) {
+    return 'Supprimer l\'audio de synthèse vocale et les images en cache ? ($size sur le disque)';
   }
 
   @override
-  String get configCacheCleared => 'Cache vidé';
+  String configCacheClearedFreed(String size) {
+    return 'Cache vidé ($size libérés)';
+  }
+
+  @override
+  String configCacheClearFailed(String error) {
+    return 'Impossible de vider le cache : $error';
+  }
 
   @override
   String get configUpdateMajor =>

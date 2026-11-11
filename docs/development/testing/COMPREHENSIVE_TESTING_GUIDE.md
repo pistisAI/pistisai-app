@@ -1,6 +1,6 @@
 # Comprehensive Testing Guide
 
-This guide describes the current test entry points for IAClé.
+This guide describes the current test entry points for Pistisai.
 
 ## CI gates (fast path)
 
@@ -23,7 +23,6 @@ Workflow triggers: **push to `main`** and **pull requests to `main`** only (no d
 | --- | --- |
 | `test/smoke/` | Minimal Flutter smoke tests (app init, pump, main args) |
 | `test/integration/` | Small retained integration tests (navigation, settings, evolution) |
-| `test/archive/` | Legacy property/theming tests — **not in CI** |
 | `test/api-backend/` | API backend Jest tests |
 | `test/api-backend/security/` | Auth, session sync, cert revocation, developer bypass |
 | `test/services/` | Flutter service unit tests (subset in CI allowlist) |
@@ -36,9 +35,6 @@ flutter analyze lib/
 
 # CI-equivalent smoke + security/basic allowlist
 npm run test:ci:flutter
-
-# Optional: full archived theming/property suite (slow)
-npm run test:archive:flutter
 
 # Single file
 flutter test test/smoke/widget_test.dart
@@ -72,8 +68,7 @@ Requires Hermes, Ollama, and/or api-backend running locally:
 ```bash
 ./scripts/run_integration_test_rig.sh
 # Linux only: ./scripts/run_local_integration_tests.sh
-dart test test/archive/integration/local_demo_test.dart
-dart test test/archive/integration/setup_wizard_test.dart
+flutter test test/integration/ --dart-define=BRAND=pistisai
 ```
 
 Use `dart test` (not `flutter test`) for HTTP probes — `flutter test` blocks real `HttpClient`.
@@ -84,13 +79,12 @@ Use `dart test` (not `flutter test`) for HTTP probes — `flutter test` blocks r
 | --- | --- |
 | Streaming proxy | `cd services/streaming-proxy && npm test` |
 | SDK | `cd services/sdk && npm run build && npm test` |
-| OpenClaw skills | `cd services/openclaw-skills/IAClé && npm test` |
+| OpenClaw skills | `cd services/openclaw-skills/Pistisai && npm test` |
 
 ## Notes
 
 - `user-isolation.test.js` is documented historically but not present yet; user isolation is partially covered by `authentication-authorization.test.js` until a dedicated test is restored.
 - Property/deployment Jest tests and `*-integration.test.js` files are excluded from default runs via `testPathIgnorePatterns` — use `npm run test:full` locally when needed.
-- Archived Flutter tests live under `test/archive/` with rationale in `test/archive/README.md`.
 
 ## Related documentation
 

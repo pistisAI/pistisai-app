@@ -1,5 +1,5 @@
-# Zoidbot Update Checker
-# This script checks for updates to Zoidbot on GitHub and downloads/installs them if available
+# Pistisai Update Checker
+# This script checks for updates to Pistisai on GitHub and downloads/installs them if available
 
 # Parse command line arguments
 param (
@@ -8,12 +8,12 @@ param (
 )
 
 # GitHub repository information
-$repoOwner = "imrightguy"
-$repoName = "Zoidbot"
+$repoOwner = "iacle-solutions"
+$repoName = "Pistisai"
 $apiUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/latest"
 
 # Registry settings
-$registryPath = "HKCU:\Software\Zoidbot\Updates"
+$registryPath = "HKCU:\Software\Pistisai\Updates"
 
 # Function to get registry settings
 function Get-UpdateSettings {
@@ -55,10 +55,10 @@ function Get-CurrentVersion {
         }
 
         # Fallback: Try to extract version from the executable name
-        $exePath = Join-Path $PSScriptRoot "Zoidbot-*.exe"
+        $exePath = Join-Path $PSScriptRoot "Pistisai-*.exe"
         $exeFile = Get-ChildItem -Path $exePath | Select-Object -First 1
         if ($exeFile) {
-            $match = [regex]::Match($exeFile.Name, "Zoidbot-(\d+\.\d+\.\d+)\.exe")
+            $match = [regex]::Match($exeFile.Name, "Pistisai-(\d+\.\d+\.\d+)\.exe")
             if ($match.Success) {
                 return $match.Groups[1].Value
             }
@@ -128,7 +128,7 @@ function Install-Update {
 
     try {
         Write-Host "Downloading update..."
-        $tempFile = Join-Path $env:TEMP "Zoidbot-Update.exe"
+        $tempFile = Join-Path $env:TEMP "Pistisai-Update.exe"
 
         # Download the installer
         Invoke-WebRequest -Uri $downloadUrl -OutFile $tempFile

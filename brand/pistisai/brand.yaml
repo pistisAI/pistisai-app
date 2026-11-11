@@ -10,6 +10,14 @@ privacy_email: privacy@pistisai.app
 website_domain: pistisai.app
 website_url: https://pistisai.app
 app_url: https://app.pistisai.app
+api_base_url: https://api.pistisai.app
+ws_endpoint: wss://api.pistisai.app/ws
+tunnel_ssh_url: wss://api.pistisai.app/ssh
+streaming_base_url: https://streaming.pistisai.app
+admin_center_url: https://admin.pistisai.app
+url_scheme: pistisai
+access_team_domain: pistisai.cloudflareaccess.com
+access_aud: b1f78e752af5c24fccb62238333da87fca981436711244f31ba6d612b92bc9fd
 default_locale: en
 lock_locale: false
 logo_asset: assets/images/lobster_avatar.png

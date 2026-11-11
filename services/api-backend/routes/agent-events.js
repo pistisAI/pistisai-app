@@ -1,4 +1,5 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { getPool } from '../database/db-pool.js';
@@ -7,6 +8,16 @@ import logger from '../logger.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 
 const router = express.Router();
+// Same limit as the global pipeline limiter, applied here as well so every
+// route on this router is visibly rate limited.
+router.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
 
 const agentEventBodySchema = z.object({
   agent_id: z.string().min(1),
@@ -93,17 +104,26 @@ router.post('/', verifyWebhookSignature, validateSchema({ body: agentEventBodySc
     // 4. Update metrics (placeholder)
     // updateAgentMetrics(agent.id, event_type, event_data);
 
-    // 5. Broadcast to WebSocket clients
-    dashboardWSManager.broadcast({
-      type: 'agent_update',
-      agent: {
-        id: agent.id,
-        agent_id: agent.agent_id,
-        name: agent.name,
-        status: newStatus,
-        event: { event_type, event_data },
-      },
-    });
+    // 5. Broadcast only to the owning user. Never fan out unowned agents.
+    if (agent.user_id) {
+      dashboardWSManager.broadcast(
+        {
+          type: 'agent_update',
+          agent: {
+            id: agent.id,
+            agent_id: agent.agent_id,
+            name: agent.name,
+            status: newStatus,
+            event: { event_type, event_data },
+          },
+        },
+        agent.user_id,
+      );
+    } else {
+      logger.warn('Skipping agent_update broadcast for unowned agent', {
+        agentId: agent.agent_id,
+      });
+    }
 
     res.json({ success: true, agent_id: agent.id });
   } catch (error) {

@@ -7,9 +7,13 @@
 set -e
 
 # Secure Configuration (Inject via Env)
-CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-"cmaltais@pistisai.app"}
+CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL:-}
 DOMAIN=${CLOUDFLARE_DOMAIN:-"pistisai.app"}
-TUNNEL_ID=${CLOUDFLARE_TUNNEL_ID:-"62da6c19-947b-4bf6-acad-100a73de4e0d"}
+TUNNEL_ID=${CLOUDFLARE_TUNNEL_ID:-}
+if [ -z "$CLOUDFLARE_EMAIL" ] || [ -z "$TUNNEL_ID" ]; then
+  echo "CLOUDFLARE_EMAIL and CLOUDFLARE_TUNNEL_ID are required" >&2
+  exit 1
+fi
 
 # Colors for output
 RED='\033[0;31m'
