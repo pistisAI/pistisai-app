@@ -1,6 +1,7 @@
 library;
 
 import 'package:pistisai/di/locator.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/screens/config/config_screen.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
@@ -73,7 +74,10 @@ void main() {
             value: AutoUpdateService(),
           ),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pump();

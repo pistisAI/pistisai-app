@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../models/channel.dart';
 import '../../services/channel_service.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -30,8 +31,9 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   /// Loading state indicator
   bool _isLoading = true;
 
-  /// Error message if data loading fails
-  String? _errorMessage;
+  /// Error raised while loading, if any; formatted for display in build
+  /// so the message follows the current locale.
+  Object? _loadError;
 
   /// List of channels to display
   List<GatewayChannel> _channels = [];
@@ -54,7 +56,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   Future<void> _loadChannels() async {
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
+      _loadError = null;
     });
 
     try {
@@ -73,7 +75,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load channels: $e';
+          _loadError = e;
           _isLoading = false;
         });
       }
@@ -82,19 +84,20 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
 
   /// Format timestamp for display
   String _formatLastActivity(DateTime? timestamp) {
-    if (timestamp == null) return 'Never';
+    final l10n = AppLocalizations.of(context);
+    if (timestamp == null) return l10n.commonNever;
 
     final now = DateTime.now();
     final difference = now.difference(timestamp);
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.timeJustNow;
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return l10n.timeMinutesAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
+      return l10n.timeHoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n.timeDaysAgo(difference.inDays);
     } else {
       return DateFormat('MMM d, y').format(timestamp);
     }
@@ -122,14 +125,17 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final errorMessage =
+        _loadError == null ? null : l10n.channelsLoadError('$_loadError');
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Channels'),
+        title: Text(l10n.channelsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh channels',
+            tooltip: l10n.channelsRefresh,
             onPressed: _isLoading ? null : _loadChannels,
           ),
           const PopOutButton(
@@ -140,13 +146,14 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
       ),
       body: RefreshableScreen(
         onRefresh: _loadChannels,
-        errorMessage: _errorMessage,
-        child: _buildBody(theme),
+        errorMessage: errorMessage,
+        child: _buildBody(theme, l10n, errorMessage),
       ),
     );
   }
 
-  Widget _buildBody(ThemeData theme) {
+  Widget _buildBody(
+      ThemeData theme, AppLocalizations l10n, String? errorMessage) {
     if (_isLoading) {
       return const LoadingSkeleton(
         itemCount: 5,
@@ -154,18 +161,18 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
       );
     }
 
-    if (_errorMessage != null) {
+    if (errorMessage != null) {
       return ErrorState(
-        message: _errorMessage!,
+        message: errorMessage,
         onRetry: _loadChannels,
       );
     }
 
     if (_channels.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.tag,
-        title: 'No Channels',
-        message: 'No communication channels are currently available.',
+        title: l10n.channelsEmptyTitle,
+        message: l10n.channelsEmptyMessage,
       );
     }
 
@@ -199,6 +206,7 @@ class _ChannelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final icon = getChannelIcon(channel.name);
 
     return Card(
@@ -316,7 +324,7 @@ class _ChannelCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${channel.messageCount} messages',
+                          l10n.channelsMessageCount(channel.messageCount),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurface.withValues(
                               alpha: 0.6,
@@ -335,7 +343,9 @@ class _ChannelCard extends StatelessWidget {
                 status: channel.unreadCount > 0
                     ? StatusType.active
                     : StatusType.idle,
-                label: channel.unreadCount > 0 ? 'New' : 'Read',
+                label: channel.unreadCount > 0
+                    ? l10n.channelBadgeNew
+                    : l10n.channelBadgeRead,
               ),
             ],
           ),

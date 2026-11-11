@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pistisai/widgets/navigation/breadcrumb_bar.dart';
 
@@ -19,7 +20,12 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
   Directory _currentDirectory = Directory.current;
   List<FileSystemEntity> _items = [];
   bool _isLoading = true;
-  String? _errorMessage;
+
+  /// Error raised while listing a directory, formatted in build so the
+  /// message follows the current locale.
+  Object? _loadError;
+
+  AppLocalizations get _l10n => AppLocalizations.of(context);
 
   // Selection
   final Set<FileSystemEntity> _selectedItems = {};
@@ -40,7 +46,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
     try {
       setState(() {
         _isLoading = true;
-        _errorMessage = null;
+        _loadError = null;
       });
 
       final items = await directory.list().toList();
@@ -67,7 +73,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load directory: $e';
+          _loadError = e;
           _isLoading = false;
         });
       }
@@ -92,25 +98,26 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
   /// Create new directory
   Future<void> _createDirectory() async {
+    final l10n = _l10n;
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New Directory'),
+        title: Text(l10n.filesNewDirectory),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Directory Name',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.folder),
+            decoration: InputDecoration(
+              labelText: l10n.filesDirectoryName,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.folder),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter a directory name';
+                return l10n.filesDirectoryNameRequired;
               }
               return null;
             },
@@ -119,7 +126,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -127,7 +134,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('Create'),
+            child: Text(l10n.commonCreate),
           ),
         ],
       ),
@@ -140,32 +147,33 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         await newDir.create();
         await _refresh();
       } catch (e) {
-        _showErrorDialog('Failed to create directory: $e');
+        _showErrorDialog(l10n.filesCreateDirectoryFailed('$e'));
       }
     }
   }
 
   /// Create new file
   Future<void> _createFile() async {
+    final l10n = _l10n;
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('New File'),
+        title: Text(l10n.filesNewFile),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'File Name',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.description),
+            decoration: InputDecoration(
+              labelText: l10n.filesFileName,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.description),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter a file name';
+                return l10n.filesFileNameRequired;
               }
               return null;
             },
@@ -174,7 +182,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -182,7 +190,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('Create'),
+            child: Text(l10n.commonCreate),
           ),
         ],
       ),
@@ -195,7 +203,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         await newFile.create();
         await _refresh();
       } catch (e) {
-        _showErrorDialog('Failed to create file: $e');
+        _showErrorDialog(l10n.filesCreateFileFailed('$e'));
       }
     }
   }
@@ -203,17 +211,17 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
   /// Delete selected items
   Future<void> _deleteSelected() async {
     if (_selectedItems.isEmpty) return;
+    final l10n = _l10n;
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: Text(
-            'Are you sure you want to delete ${_selectedItems.length} item(s)?'),
+        title: Text(l10n.filesConfirmDelete),
+        content: Text(l10n.filesDeleteConfirm(_selectedItems.length)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
@@ -221,7 +229,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
               backgroundColor: AppTheme.colorsOf(context).danger,
               foregroundColor: AppTheme.colorsOf(context).textColor,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.commonDelete),
           ),
         ],
       ),
@@ -238,7 +246,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         }
         await _refresh();
       } catch (e) {
-        _showErrorDialog('Failed to delete items: $e');
+        _showErrorDialog(l10n.filesDeleteFailed('$e'));
       }
     }
   }
@@ -254,7 +262,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Copied: ${_getItemName(_clipboardItem!)}'),
+        content: Text(_l10n.filesCopied(_getItemName(_clipboardItem!))),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -271,7 +279,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Cut: ${_getItemName(_clipboardItem!)}'),
+        content: Text(_l10n.filesCut(_getItemName(_clipboardItem!))),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -280,6 +288,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
   /// Paste clipboard item
   Future<void> _pasteClipboard() async {
     if (_clipboardItem == null) return;
+    final l10n = _l10n;
 
     try {
       final destinationPath =
@@ -296,9 +305,9 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Pasted successfully'),
-              duration: Duration(seconds: 2),
+            SnackBar(
+              content: Text(l10n.filesPasted),
+              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -306,9 +315,9 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         await _clipboardItem!.rename(destinationPath);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Moved successfully'),
-              duration: Duration(seconds: 2),
+            SnackBar(
+              content: Text(l10n.filesMoved),
+              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -316,7 +325,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
       await _refresh();
     } catch (e) {
-      _showErrorDialog('Failed to paste: $e');
+      _showErrorDialog(l10n.filesPasteFailed('$e'));
     }
   }
 
@@ -338,24 +347,25 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
   /// Rename item
   Future<void> _renameItem(FileSystemEntity item) async {
+    final l10n = _l10n;
     final controller = TextEditingController(text: _getItemName(item));
     final formKey = GlobalKey<FormState>();
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Rename'),
+        title: Text(l10n.filesRename),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'New Name',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.filesNewName,
+              border: const OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter a name';
+                return l10n.filesNameRequired;
               }
               return null;
             },
@@ -364,7 +374,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -372,7 +382,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
                 Navigator.pop(context, true);
               }
             },
-            child: const Text('Rename'),
+            child: Text(l10n.filesRename),
           ),
         ],
       ),
@@ -384,7 +394,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         await item.rename(newPath);
         await _refresh();
       } catch (e) {
-        _showErrorDialog('Failed to rename: $e');
+        _showErrorDialog(l10n.filesRenameFailed('$e'));
       }
     }
   }
@@ -396,15 +406,17 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
   /// Show error dialog
   void _showErrorDialog(String message) {
+    if (!mounted) return;
+    final l10n = _l10n;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Error'),
+        title: Text(l10n.commonError),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(l10n.filesOk),
           ),
         ],
       ),
@@ -413,15 +425,12 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
   /// Show item details
   void _showItemDetails(FileSystemEntity item) async {
+    final l10n = _l10n;
     final stat = await item.stat();
     final size = stat.size;
     final modified = stat.modified;
 
-    final sizeText = size < 1024
-        ? '$size B'
-        : size < 1024 * 1024
-            ? '${(size / 1024).toStringAsFixed(1)} KB'
-            : '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    final sizeText = _formatSize(l10n, size);
 
     if (!mounted) return;
 
@@ -433,33 +442,35 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _detailRow(context, Icons.description, 'Type',
-                item is Directory ? 'Directory' : 'File'),
-            _detailRow(context, Icons.storage, 'Size', sizeText),
-            _detailRow(context, Icons.access_time, 'Modified',
+            _detailRow(context, Icons.description, l10n.commonType,
+                item is Directory ? l10n.filesDirectory : l10n.filesFile),
+            _detailRow(context, Icons.storage, l10n.filesSize, sizeText),
+            _detailRow(context, Icons.access_time, l10n.filesModified,
                 '${modified.day}/${modified.month}/${modified.year}'),
-            _detailRow(context, Icons.folder, 'Path', item.path),
+            _detailRow(context, Icons.folder, l10n.filesPath, item.path),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.commonClose),
           ),
         ],
       ),
     );
   }
 
-  Widget _detailRow(BuildContext context, IconData icon, String label, String value) {
+  Widget _detailRow(
+      BuildContext context, IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppTheme.colorsOf(context).textColorLight),
+          Icon(icon,
+              size: 18, color: AppTheme.colorsOf(context).textColorLight),
           const SizedBox(width: 12),
           Text(
-            '$label: ',
+            '${AppLocalizations.of(context).commonFieldLabel(label)} ',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Expanded(child: Text(value, overflow: TextOverflow.ellipsis)),
@@ -470,25 +481,26 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('File Operations'),
+        title: Text(l10n.filesTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
-          tooltip: 'Back',
+          tooltip: l10n.commonBack,
         ),
         actions: [
           if (_clipboardItem != null)
             IconButton(
               icon: const Icon(Icons.content_paste),
               onPressed: _pasteClipboard,
-              tooltip: 'Paste',
+              tooltip: l10n.filesPaste,
             ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refresh,
-            tooltip: 'Refresh',
+            tooltip: l10n.commonRefresh,
           ),
           PopupMenuButton<String>(
             onSelected: (action) {
@@ -502,18 +514,18 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'new_dir',
                 child: ListTile(
-                  leading: Icon(Icons.create_new_folder),
-                  title: Text('New Directory'),
+                  leading: const Icon(Icons.create_new_folder),
+                  title: Text(l10n.filesNewDirectory),
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'new_file',
                 child: ListTile(
-                  leading: Icon(Icons.note_add),
-                  title: Text('New File'),
+                  leading: const Icon(Icons.note_add),
+                  title: Text(l10n.filesNewFile),
                 ),
               ),
             ],
@@ -533,8 +545,8 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : _errorMessage != null
-                    ? Center(child: Text(_errorMessage!))
+                : _loadError != null
+                    ? Center(child: Text(l10n.filesLoadFailed('$_loadError')))
                     : _buildFileList(),
           ),
         ],
@@ -568,7 +580,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             IconButton(
               icon: const Icon(Icons.home),
               onPressed: () => _loadDirectory(Directory.current),
-              tooltip: 'Go Home',
+              tooltip: _l10n.filesGoHome,
               constraints: const BoxConstraints(),
               padding: EdgeInsets.zero,
             ),
@@ -585,7 +597,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
       child: Row(
         children: [
           Text(
-            '${_selectedItems.length} selected',
+            _l10n.filesSelected(_selectedItems.length),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                 ),
@@ -595,23 +607,23 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             IconButton(
               icon: const Icon(Icons.content_copy),
               onPressed: _copySelected,
-              tooltip: 'Copy',
+              tooltip: _l10n.filesCopy,
             ),
             IconButton(
               icon: const Icon(Icons.content_cut),
               onPressed: _moveSelected,
-              tooltip: 'Move',
+              tooltip: _l10n.filesMove,
             ),
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () => _renameItem(_selectedItems.first),
-              tooltip: 'Rename',
+              tooltip: _l10n.filesRename,
             ),
           ],
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: _deleteSelected,
-            tooltip: 'Delete',
+            tooltip: _l10n.commonDelete,
             color: AppTheme.colorsOf(context).danger,
           ),
         ],
@@ -629,11 +641,13 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             Icon(
               Icons.folder_open,
               size: 64,
-              color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6),
+              color: AppTheme.colorsOf(context)
+                  .textColorLight
+                  .withValues(alpha: 0.6),
             ),
             const SizedBox(height: 16),
             Text(
-              'This folder is empty',
+              _l10n.filesEmpty,
               style: TextStyle(
                 fontSize: 18,
                 color: AppTheme.colorsOf(context).textColorLight,
@@ -662,7 +676,9 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
             isDirectory ? Icons.folder : _getFileIcon(item),
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
-                : (isDirectory ? AppTheme.colorsOf(context).warning : AppTheme.colorsOf(context).info),
+                : (isDirectory
+                    ? AppTheme.colorsOf(context).warning
+                    : AppTheme.colorsOf(context).info),
           ),
           title: Text(
             _getItemName(item),
@@ -676,11 +692,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       final size = snapshot.data!.size;
-                      final sizeText = size < 1024
-                          ? '$size B'
-                          : size < 1024 * 1024
-                              ? '${(size / 1024).toStringAsFixed(1)} KB'
-                              : '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+                      final sizeText = _formatSize(_l10n, size);
                       return Text(sizeText);
                     }
                     return const SizedBox();
@@ -690,7 +702,7 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
           trailing: IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () => _showItemDetails(item),
-            tooltip: 'Details',
+            tooltip: _l10n.filesDetails,
           ),
           selected: isSelected,
           selectedTileColor: Theme.of(context)
@@ -739,6 +751,15 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         }
       },
     );
+  }
+
+  /// Human-readable size with localized units (B/KB/MB, o/Ko/Mo).
+  static String _formatSize(AppLocalizations l10n, int size) {
+    if (size < 1024) return l10n.filesSizeBytes('$size');
+    if (size < 1024 * 1024) {
+      return l10n.filesSizeKb((size / 1024).toStringAsFixed(1));
+    }
+    return l10n.filesSizeMb((size / (1024 * 1024)).toStringAsFixed(1));
   }
 
   /// Get icon for file based on extension

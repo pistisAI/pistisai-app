@@ -133,7 +133,7 @@ jobs:
   build_web:
     name: "🌐 Build Web"
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     needs: [changes, flutter_analyze, flutter_smoke_test]
     if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
 
@@ -148,6 +148,19 @@ jobs:
 
       - name: "📦 flutter pub get"
         run: flutter pub get
+
+      # The linux_native_deps build hook installs these itself when they are
+      # missing: silently, inside the first `dart run`, with no retry. On a slow
+      # mirror that used most of this job's time budget and the job was
+      # cancelled in "Bake". Installing them here makes the time visible and
+      # lets apt retry; the hook then finds them and skips its own install.
+      - name: "📦 Native build deps (for build hooks)"
+        run: |
+          apt_opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
+          sudo apt-get update -qq $apt_opts
+          sudo apt-get install -y -qq --no-install-recommends $apt_opts \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev
 
       - name: Bake Pistisai brand
         run: bash tool/brand.sh pistisai
@@ -165,7 +178,7 @@ jobs:
   whitelabel_leak_check:
     name: "🏷️ White-label build has no upstream hosts"
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     needs: [changes, flutter_analyze, flutter_smoke_test]
     if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
 
@@ -180,6 +193,19 @@ jobs:
 
       - name: "📦 flutter pub get"
         run: flutter pub get
+
+      # The linux_native_deps build hook installs these itself when they are
+      # missing: silently, inside the first `dart run`, with no retry. On a slow
+      # mirror that used most of this job's time budget and the job was
+      # cancelled in "Bake". Installing them here makes the time visible and
+      # lets apt retry; the hook then finds them and skips its own install.
+      - name: "📦 Native build deps (for build hooks)"
+        run: |
+          apt_opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
+          sudo apt-get update -qq $apt_opts
+          sudo apt-get install -y -qq --no-install-recommends $apt_opts \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev
 
       - name: Bake the example brand
         run: bash tool/brand.sh example

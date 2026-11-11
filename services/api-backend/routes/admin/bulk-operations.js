@@ -22,8 +22,7 @@ import {
   adminRateLimiter,
   adminReadOnlyLimiter,
 } from '../../middleware/admin-rate-limiter.js';
-import { validateSchema } from '../../middleware/schema-validation.js';
-import { BulkOperationSchema } from '../../schemas/validation-schemas.js';
+import { bulkCreateBody, validateBody } from './body-schemas.js';
 
 const router = express.Router();
 
@@ -43,10 +42,19 @@ router.post(
   '/create',
   adminRateLimiter,
   adminAuth(['edit_users']),
-  validateSchema({ body: BulkOperationSchema }),
+  validateBody(bulkCreateBody),
   async (req, res) => {
     try {
       const { operationType, userIds, operationData } = req.body;
+
+      // Validate input
+      if (!operationType || !userIds || !operationData) {
+        return res.status(400).json({
+          error: 'Missing required fields',
+          code: 'MISSING_FIELDS',
+          required: ['operationType', 'userIds', 'operationData'],
+        });
+      }
 
       // Create bulk operation
       const operation = await bulkOperationsService.createBulkOperation(

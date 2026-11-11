@@ -22,10 +22,7 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
-import { validateSchema } from '../../middleware/schema-validation.js';
-import {
-  CreateAdminSchema,
-} from '../../schemas/validation-schemas.js';
+import { addAdminBody, validateBody } from './body-schemas.js';
 
 const router = express.Router();
 
@@ -171,11 +168,30 @@ router.post(
   adminRateLimiter,
   adminAuth(),
   requireSuperAdmin,
-  validateSchema({ body: CreateAdminSchema }),
+  validateBody(addAdminBody),
   async (req, res) => {
     try {
       const pool = getPool();
       const { email, role } = req.body;
+
+      // Validate required fields
+      if (!email || !role) {
+        return res.status(400).json({
+          error: 'Missing required fields',
+          code: 'MISSING_FIELDS',
+          message: 'Email and role are required',
+        });
+      }
+
+      // Validate role
+      const validRoles = ['support_admin', 'finance_admin'];
+      if (!validRoles.includes(role)) {
+        return res.status(400).json({
+          error: 'Invalid role',
+          code: 'INVALID_ROLE',
+          message: `Role must be one of: ${validRoles.join(', ')}`,
+        });
+      }
 
       logger.info('👤 [AdminManagement] Assigning admin role', {
         email,

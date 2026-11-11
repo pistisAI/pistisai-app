@@ -8,6 +8,7 @@ import 'package:pistisai/screens/dashboard/widgets/agent_list_item.dart';
 import 'package:pistisai/services/agent_lifecycle_service.dart';
 import 'package:pistisai/services/agent_runtime/agent_runtime_client.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 
 /// Fake runtime client exposing a controllable [agentEventStream].
 class _FakeRuntimeClient implements AgentRuntimeClient {
@@ -34,7 +35,10 @@ class _StubConnectionManager implements ConnectionManagerService {
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
-Widget _wrap(Widget child) => MaterialApp(home: Scaffold(body: child));
+Widget _wrap(Widget child) => MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      home: Scaffold(body: child),
+    );
 
 void main() {
   group('EventStreamScreen', () {

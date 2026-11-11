@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../brand/brand_copy.dart';
 import '../../../config/theme.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +28,7 @@ class HermesLocationStep extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Where is Hermes running?',
+                AppLocalizations.of(context).locationTitle,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -35,7 +36,7 @@ class HermesLocationStep extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.',
+                AppLocalizations.of(context).locationSubtitle,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppTheme.colorsOf(context).textColorLight,
                     ),
@@ -44,8 +45,9 @@ class HermesLocationStep extends StatelessWidget {
               const SizedBox(height: 32),
               ConnectionMethodCard(
                 icon: Icons.computer,
-                title: 'This device',
-                description: 'Hermes is installed and running locally',
+                title: AppLocalizations.of(context).locationThisDevice,
+                description:
+                    AppLocalizations.of(context).locationThisDeviceDescription,
                 selected: selected == HermesLocation.local,
                 onTap: () {
                   wizard.selectHermesLocation(HermesLocation.local);
@@ -54,9 +56,9 @@ class HermesLocationStep extends StatelessWidget {
               const SizedBox(height: 16),
               ConnectionMethodCard(
                 icon: Icons.lan,
-                title: 'Tailscale device or VPS',
+                title: AppLocalizations.of(context).locationTailscale,
                 description:
-                    'Hermes on a home server, VPS, or other machine on your tailnet',
+                    AppLocalizations.of(context).locationTailscaleDescription,
                 selected: selected == HermesLocation.tailscale,
                 onTap: () {
                   wizard.selectHermesLocation(HermesLocation.tailscale);

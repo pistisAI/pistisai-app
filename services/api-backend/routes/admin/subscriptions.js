@@ -15,8 +15,11 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
-import { validateSchema } from '../../middleware/schema-validation.js';
-import { ChangeSubscriptionTierSchema } from '../../schemas/validation-schemas.js';
+import {
+  changeSubscriptionBody,
+  cancelSubscriptionBody,
+  validateBody,
+} from './body-schemas.js';
 
 const router = express.Router();
 
@@ -431,7 +434,7 @@ router.patch(
   '/subscriptions/:subscriptionId',
   adminRateLimiter,
   adminAuth(['edit_subscriptions']),
-  validateSchema({ body: ChangeSubscriptionTierSchema }),
+  validateBody(changeSubscriptionBody),
   async (req, res) => {
     try {
       const { subscriptionId } = req.params;
@@ -440,6 +443,30 @@ router.patch(
         priceId,
         prorationBehavior = 'create_prorations',
       } = req.body;
+
+      // Validate required fields
+      if (!tier || !priceId) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_REQUEST',
+            message: 'Missing required fields: tier and priceId',
+          },
+        });
+      }
+
+      // Validate tier
+      const validTiers = ['free', 'premium', 'enterprise'];
+      if (!validTiers.includes(tier)) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'INVALID_TIER',
+            message:
+              'Invalid subscription tier. Must be one of: free, premium, enterprise',
+          },
+        });
+      }
 
       // Get existing subscription
       const existingQuery = `
@@ -601,6 +628,7 @@ router.post(
   '/subscriptions/:subscriptionId/cancel',
   adminRateLimiter,
   adminAuth(['edit_subscriptions']),
+  validateBody(cancelSubscriptionBody),
   async (req, res) => {
     try {
       const { subscriptionId } = req.params;
