@@ -12,7 +12,7 @@ import 'package:dio/dio.dart';
 /// and perform real assertions when explicitly enabled.
 void main() {
   group('Download Functionality Tests', () {
-    const String repoOwner = 'imrightguy';
+    const String repoOwner = 'pistisAI';
     const String repoName = 'Pistisai';
     const String baseApiUrl = 'https://api.github.com/repos';
     final bool networkEnabled =
@@ -118,7 +118,7 @@ void main() {
   group('Download URL Construction Tests', () {
     test('Construct Valid Download URLs', () {
       const version = 'v3.14.45';
-      const repoOwner = 'imrightguy';
+      const repoOwner = 'pistisAI';
       const repoName = 'Pistisai';
 
       final portableUrl =

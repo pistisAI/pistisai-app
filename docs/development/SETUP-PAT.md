@@ -29,7 +29,7 @@ To enable automatic cloud deployment when version tags are created, we need a Pe
 ## Add to GitHub Secrets
 
 ```bash
-cd /home/rightguy/development/Pistisai
+cd the repository root
 gh secret set PAT_TOKEN --body 'your_generated_token_here'
 ```
 

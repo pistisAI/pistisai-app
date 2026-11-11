@@ -32,6 +32,25 @@ enum ConnectionType {
 /// by memory/background services only.
 /// Extends [ChangeNotifier] so UI layers can reactively observe state.
 class ConnectionManagerService extends ChangeNotifier {
+
+  /// Primary desktop co-hosts Hermes. Web/mobile/secondary clients must use the hub.
+  static bool get isPrimaryDesktopRole {
+    if (kIsWeb) return false;
+    try {
+      return !Platform.isAndroid && !Platform.isIOS;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// True when [url] points at the co-resident Hermes port instead of the hub.
+  static bool isDirectHermesUrl(String url) {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null || uri.host.isEmpty) return false;
+    final port = uri.hasPort ? uri.port : (uri.scheme == 'https' ? 443 : 80);
+    return port == AppConfig.defaultHermesPort;
+  }
+
   /// The current runtime type, if setup has selected one.
   BackendType? get currentBackend => _currentBackend;
   BackendType? _currentBackend;
@@ -273,7 +292,16 @@ class ConnectionManagerService extends ChangeNotifier {
         _configuredHermesApiKey = apiKey;
       }
       if (_configuredHermesUrl == null || _configuredHermesUrl!.isEmpty) {
-        _configuredHermesUrl = AppConfig.defaultHermesUrl;
+        _configuredHermesUrl = isPrimaryDesktopRole
+            ? AppConfig.defaultHermesUrl
+            : 'http://127.0.0.1:${AppConfig.defaultRouterPort}';
+      }
+      if (!isPrimaryDesktopRole &&
+          isDirectHermesUrl(_configuredHermesUrl!)) {
+        _log.warning(
+          'Refusing direct Hermes URL on a non-primary client: $_configuredHermesUrl',
+        );
+        return;
       }
       await hermesStreamingService.establishConnection();
       if (hermesStreamingService.connection.isActive) {

@@ -13,4 +13,4 @@ Restores/continues standards/CI enforcement artifacts for GH #29 / GH #30.
 ## Verification
 Run the verify commands listed in AGENTS.md / CONTRIBUTING.md
 
-Webhook: https://right-pc.tail5d7400.ts.net/webhooks
+Webhook: https://YOUR_HOST/webhooks

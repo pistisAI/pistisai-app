@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 # Load nvm if available
-[ -s "/home/rightguy/.nvm/nvm.sh" ] && source "/home/rightguy/.nvm/nvm.sh"
+NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 
 # Analyze which platforms need updates using Kilocode AI
 # Outputs: new_version, needs_managed, needs_local, needs_desktop, needs_mobile

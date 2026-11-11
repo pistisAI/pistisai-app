@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 
 /// Desktop Settings Screen - Desktop-specific settings and file operations
@@ -11,10 +12,11 @@ class DesktopSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = AppTheme.spacingOf(context);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Desktop Settings'),
+        title: Text(l10n.desktopSettingsTitle),
         elevation: 0,
         leading: BackButton(
           onPressed: () {
@@ -29,18 +31,18 @@ class DesktopSettingsScreen extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.all(spacing.l),
               children: [
-                Text('Desktop', style: theme.textTheme.headlineMedium),
+                Text(l10n.desktopHeading,
+                    style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 16),
-                const Text('Desktop-specific settings and file operations.'),
+                Text(l10n.desktopDescription),
                 const SizedBox(height: 32),
 
                 // File Operations
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.folder),
-                    title: const Text('File Operations'),
-                    subtitle:
-                        const Text('Manage file operations and permissions'),
+                    title: Text(l10n.desktopFileOperations),
+                    subtitle: Text(l10n.desktopFileOperationsSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.go('/settings/desktop/files'),
                   ),
@@ -51,8 +53,8 @@ class DesktopSettingsScreen extends StatelessWidget {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.mouse),
-                    title: const Text('GUI Automation'),
-                    subtitle: const Text('Configure desktop automation'),
+                    title: Text(l10n.desktopGuiAutomation),
+                    subtitle: Text(l10n.desktopGuiAutomationSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.go('/gui-automation'),
                   ),

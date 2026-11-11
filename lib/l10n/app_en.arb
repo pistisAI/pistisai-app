@@ -1,0 +1,162 @@
+{
+  "@@locale": "en",
+  "settingsGeneralTitle": "General Settings",
+  "@settingsGeneralTitle": {
+    "description": "Title of the general settings screen."
+  },
+  "settingsGeneralDescription": "Application preferences and configuration.",
+  "@settingsGeneralDescription": {
+    "description": "Intro sentence on the general settings screen."
+  },
+  "settingsAppearanceTitle": "Appearance Settings",
+  "@settingsAppearanceTitle": {
+    "description": "Entry to the appearance settings, and heading of that screen."
+  },
+  "settingsAppearanceSubtitle": "Customize the look and feel",
+  "@settingsAppearanceSubtitle": {
+    "description": "Subtitle of the appearance settings entry."
+  },
+  "appearanceScreenTitle": "Appearance",
+  "@appearanceScreenTitle": {
+    "description": "App bar title of the appearance settings screen."
+  },
+  "appearanceDescription": "Customize the look and feel of the application.",
+  "@appearanceDescription": {
+    "description": "Intro sentence on the appearance settings screen."
+  },
+  "appearanceThemeMode": "Theme Mode",
+  "@appearanceThemeMode": {
+    "description": "Label of the light/dark/system theme choice."
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option."
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option."
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "Theme that follows the operating system."
+  },
+  "appearanceAccentColor": "Accent Color",
+  "@appearanceAccentColor": {
+    "description": "Label of the brand accent color row."
+  },
+  "commonBackToSettings": "Back to Settings",
+  "commonCancel": "Cancel",
+  "commonRetry": "Retry",
+  "desktopSettingsTitle": "Desktop Settings",
+  "desktopHeading": "Desktop",
+  "desktopDescription": "Desktop-specific settings and file operations.",
+  "desktopFileOperations": "File Operations",
+  "desktopFileOperationsSubtitle": "Manage file operations and permissions",
+  "desktopGuiAutomation": "GUI Automation",
+  "desktopGuiAutomationSubtitle": "Configure desktop automation",
+  "llmProviderSettingsTitle": "LLM Provider Settings",
+  "llmProviderHermesDescription": "This application uses Hermes Agent as the primary runtime. Chat and related features go through your local Hermes install.",
+  "llmProviderOpenConfig": "Open Config",
+  "llmProviderSystemStatus": "System Status",
+  "llmProviderPrimaryRuntime": "Primary agent runtime",
+  "llmProviderSupportProviders": "Support model providers",
+  "llmProviderSupportProvidersSubtitle": "Optional helpers such as Ollama or LM Studio",
+  "visionSettingsTitle": "Vision Settings",
+  "visionServiceStatus": "Service Status",
+  "visionMainService": "Main Vision Service",
+  "visionRegionCaptureService": "Region Capture Service",
+  "visionCameraCaptureService": "Camera Capture Service",
+  "visionOcrService": "OCR Engine Service",
+  "visionInitialized": "Initialized",
+  "visionNotInitialized": "Not initialized",
+  "visionCameraPreview": "Camera Preview",
+  "visionCameraPreviewNote": "Local-only preview (v4l2/ffmpeg). Frames are not saved or sent.",
+  "visionTestResults": "Test Results",
+  "visionInitializeAll": "Initialize All Services",
+  "visionInitializing": "Initializing services...",
+  "visionInitComplete": "Initialization complete",
+  "visionInitFailed": "Initialization failed: {error}",
+  "@visionInitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "visionResultInitialized": "✅ {service} initialized",
+  "@visionResultInitialized": {
+    "placeholders": {
+      "service": {
+        "type": "String"
+      }
+    }
+  },
+  "visionResultError": "❌ {service}: {error}",
+  "@visionResultError": {
+    "placeholders": {
+      "service": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "visionLinuxCameraStarted": "✅ Linux camera capture started ({device})",
+  "@visionLinuxCameraStarted": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "visionLinuxCameraError": "❌ Linux camera: {error}",
+  "@visionLinuxCameraError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "visionFatalError": "❌ Fatal error: {error}",
+  "@visionFatalError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "meshTitle": "Device Mesh",
+  "meshRevokeTitle": "Revoke device?",
+  "meshRevokeBody": "Revoke {device}? The device will need to re-register to reconnect.",
+  "@meshRevokeBody": {
+    "placeholders": {
+      "device": {
+        "type": "String"
+      }
+    }
+  },
+  "meshRevoke": "Revoke",
+  "meshRevoked": "Device revoked",
+  "meshRevokeFailed": "Failed to revoke device",
+  "meshThisDevice": "This device",
+  "meshRegisteredDevices": "Registered devices",
+  "meshLoadFailed": "Failed to load devices",
+  "meshNoDevices": "No other devices registered.",
+  "meshStatusConnected": "Connected to cloud connector",
+  "meshStatusConnecting": "Connecting…",
+  "meshStatusError": "Connection error",
+  "meshStatusDisconnected": "Disconnected",
+  "meshUnknownPlatform": "unknown platform",
+  "meshNever": "never",
+  "meshOnline": "online",
+  "meshLastSeen": "last seen {time}",
+  "@meshLastSeen": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "meshRuntimeAvailable": "runtime available"
+}
