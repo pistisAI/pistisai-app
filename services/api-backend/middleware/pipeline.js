@@ -11,8 +11,9 @@
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import express from 'express';
-import cors from 'cors';
 
+import { traceContextMiddleware } from './trace-context.js';
+import { sentryTraceContextMiddleware } from './sentry-trace-context.js';
 import { requestLoggingMiddleware } from './request-logging.js';
 import { requestValidationMiddleware } from './request-validation.js';
 import { requestTimeoutMiddleware } from './request-timeout.js';
@@ -29,6 +30,12 @@ import {
   backwardCompatibilityMiddleware,
 } from './api-versioning.js';
 import logger from '../logger.js';
+import { createCircuitBreakerMiddleware } from './circuit-breaker.js';
+import {
+  dynamicBrandCorsMiddleware,
+  logBrandCorsDecisions,
+  initializeBrandCORSPolicies,
+} from './brand-cors-config.js';
 
 /**
  * Middleware Pipeline Order (CRITICAL - DO NOT CHANGE WITHOUT UNDERSTANDING IMPLICATIONS)
@@ -37,10 +44,12 @@ import logger from '../logger.js';
  * 2. Sentry Tracing Handler - Removed (Handled by Sentry.init in server.js)
  * 3. CORS Middleware - Handle preflight requests early
  * 4. Helmet Security Headers - Security headers
- * 5. Request Logging - Log all requests with correlation IDs
+ * 4.5. Trace Context - Extract/generate trace IDs (W3C traceparent)
+ * 5. Request Logging - Log all requests with trace and correlation IDs
  * 6. API Versioning - Extract and validate API version from URL
  * 7. Backward Compatibility - Apply version-specific transformations
  * 8. Request Validation - Validate request format
+ * 8.5. Circuit Breaker - Protect against cascading failures
  * 9. Rate Limiting - Protect against abuse
  * 10. Request Queuing - Queue requests when rate limit approached
  * 11. Body Parsing - Parse request body
@@ -59,17 +68,27 @@ import logger from '../logger.js';
  */
 export function setupMiddlewarePipeline(app, options = {}) {
   const {
-    corsOptions = {},
     rateLimitOptions = {},
     timeoutMs = 30000,
   } = options;
 
-  // 3. CORS Middleware - Handle preflight requests
+  // Initialize brand CORS policies
+  initializeBrandCORSPolicies();
+
+  // 3. CORS Middleware - Handle preflight requests with brand-aware enforcement
+  // Uses dynamic brand-aware CORS middleware for tenant isolation and per-brand policy enforcement
   try {
-    const corsMiddleware = cors(corsOptions);
-    app.use(corsMiddleware);
+    // First, add logging for CORS decisions (for observability)
+    app.use(logBrandCorsDecisions);
+
+    // Then, apply the brand-aware CORS enforcement middleware
+    app.use(dynamicBrandCorsMiddleware);
+
+    logger.info('Brand-aware CORS middleware initialized', {
+      mode: 'dynamic-per-brand',
+    });
   } catch (error) {
-    logger.error('Error setting up CORS', {
+    logger.error('Error setting up brand-aware CORS', {
       error: error.message,
       stack: error.stack,
     });
@@ -92,6 +111,12 @@ export function setupMiddlewarePipeline(app, options = {}) {
     }),
   );
 
+  // 4.5. Trace Context - Extract/generate trace IDs (W3C traceparent)
+  app.use(traceContextMiddleware);
+
+  // 4.75. Sentry Trace Context - Attach trace IDs to Sentry scope
+  app.use(sentryTraceContextMiddleware);
+
   // 5. Request Logging - Log all requests with correlation IDs
   app.use(requestLoggingMiddleware);
 
@@ -106,6 +131,57 @@ export function setupMiddlewarePipeline(app, options = {}) {
 
   // 8. Request Validation - Validate request format
   app.use(requestValidationMiddleware);
+
+  // 8.5. Circuit Breaker - Protect against cascading failures for external services
+  const circuitBreakerMiddleware = createCircuitBreakerMiddleware({
+    breakers: {
+      ollama: {
+        failureThreshold: 5,
+        successThreshold: 2,
+        timeout: 30000,
+      },
+      stripe: {
+        failureThreshold: 5,
+        successThreshold: 2,
+        timeout: 30000,
+      },
+      sendgrid: {
+        failureThreshold: 5,
+        successThreshold: 2,
+        timeout: 30000,
+      },
+      slack: {
+        failureThreshold: 5,
+        successThreshold: 2,
+        timeout: 30000,
+      },
+    },
+    isExternalServiceCall: (req) => {
+      // Identify external service calls based on route/request
+      if (req.path.startsWith('/api/ollama')) {
+        return 'ollama';
+      }
+      if (req.path.includes('/payment') || req.path.includes('/stripe')) {
+        return 'stripe';
+      }
+      if (req.path.includes('/email') || req.path.includes('/sendgrid')) {
+        return 'sendgrid';
+      }
+      if (req.path.includes('/slack')) {
+        return 'slack';
+      }
+      return null;
+    },
+    getFallbackResponse: (req, serviceName) => ({
+      status: 503,
+      body: {
+        error: 'Service Unavailable',
+        message: `External service "${serviceName}" is temporarily unavailable. Please retry in a moment.`,
+        service: serviceName,
+      },
+    }),
+  });
+  app.use(circuitBreakerMiddleware);
 
   // 9. Rate Limiting - Protect against abuse
   const standardLimiter = rateLimit({

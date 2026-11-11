@@ -47,6 +47,10 @@ export class ConfigManager {
           ...this.config.websocket,
           ...(updates.websocket || {}),
         },
+        ssh: {
+          ...this.config.ssh,
+          ...(updates.ssh || {}),
+        },
         connection: {
           ...this.config.connection,
           ...(updates.connection || {}),

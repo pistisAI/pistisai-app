@@ -61,7 +61,6 @@ import {
   getAuthMiddleware,
 } from './middleware/pipeline.js';
 import { setupGracefulShutdown } from './middleware/graceful-shutdown.js';
-import { standardCorsOptions } from './middleware/cors-config.js';
 
 import adminRoutes from './routes/admin.js';
 import adminUserRoutes from './routes/admin/users.js';
@@ -205,7 +204,6 @@ app.set('trust proxy', 1); // Trust first proxy (nginx)
 
 // Setup middleware pipeline with proper ordering
 setupMiddlewarePipeline(app, {
-  corsOptions: standardCorsOptions,
   rateLimitOptions: {
     windowMs: 15 * 60 * 1000,
     max: 100,

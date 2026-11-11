@@ -3,9 +3,17 @@
 
 import axios from 'axios';
 import logger from '../logger.js';
+import { createCircuitBreakerAxios } from '../middleware/circuit-breaker.js';
 
 // eslint-disable-next-line no-unused-vars
 let _sshProxy = null;
+
+// Create axios instance with circuit breaker for Ollama
+const ollamaClient = createCircuitBreakerAxios(axios.create(), 'ollama', {
+  failureThreshold: 5,
+  successThreshold: 2,
+  timeout: 30000,
+});
 
 /**
  * Set the SSH proxy (if needed for tunneling)
@@ -40,8 +48,8 @@ export async function handleOllamaProxyRequest(req, res) {
     delete config.headers.host;
     delete config.headers['content-length'];
 
-    // Make the request to Ollama
-    const ollamaResponse = await axios(config);
+    // Make the request to Ollama with circuit breaker
+    const ollamaResponse = await ollamaClient.request(config);
 
     // Forward the response from Ollama
     res.status(ollamaResponse.status);
@@ -67,7 +75,10 @@ export async function handleOllamaProxyRequest(req, res) {
     let statusCode = 502; // Bad Gateway
     let errorMessage = 'Failed to proxy request to Ollama';
 
-    if (error.code === 'ECONNREFUSED') {
+    if (error.code === 'CIRCUIT_BREAKER_OPEN') {
+      statusCode = 503; // Service Unavailable
+      errorMessage = 'Ollama service is temporarily unavailable due to recent failures. Please retry in a moment.';
+    } else if (error.code === 'ECONNREFUSED') {
       statusCode = 503; // Service Unavailable
       errorMessage =
         'Ollama service is not available. Please ensure Ollama is running on localhost:11434';

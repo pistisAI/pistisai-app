@@ -237,7 +237,9 @@ export class SSHConnectionImpl implements SSHConnection {
       this.isConnected = false;
       this.logger.info(`SSH connection ${this.id} closed successfully (disconnect message sent)`);
     } catch (error) {
-      this.logger.error(`Error closing SSH connection ${this.id}:`, error);
+      this.logger.error(`Error closing SSH connection ${this.id}:`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   }

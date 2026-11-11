@@ -128,8 +128,10 @@ export class GracefulShutdownManager {
       }
     } catch (error) {
       // Log shutdown error (Requirement 8.6)
-      this.eventLogger.logShutdownError(error);
-      this.logger.error('Fatal error during shutdown:', error);
+      this.eventLogger.logShutdownError(error instanceof Error ? error : new Error(String(error)));
+      this.logger.error('Fatal error during shutdown:', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       process.exit(1);
     }
   }

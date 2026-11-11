@@ -53,7 +53,21 @@ import { loadAuthConfig, validateAuthConfig } from './middleware/auth-config';
 import { createAdminAuthMiddleware } from './middleware/admin-auth.middleware';
 import { HTTP_STATUS, TIME_MS, WEBSOCKET_CLOSE_CODES } from './utils/http-constants';
 
-// ... (tracing and config initialization code)
+// Initialize tracing
+initializeTracing();
+
+// Initialize configuration manager
+const config = loadAndValidateConfig();
+initializeConfigManager(config);
+const configManager = getConfigManager();
+
+// Initialize logger
+const logLevelManager = getLogLevelManager();
+setLogLevelManagerGetter(() => logLevelManager);
+const logger = new ConsoleLogger('StreamingProxyServer');
+
+// Initialize metrics collector
+const metricsCollector = new ServerMetricsCollector();
 
 // Load and validate authentication configuration
 const authConfig = loadAuthConfig();
@@ -65,7 +79,30 @@ const supabaseValidator = new SupabaseJWTValidator(
   authConfig.supabase.audience
 );
 
-// ... (pool and rate limiter initialization)
+// Initialize connection pool
+const connectionPool = new ConnectionPoolImpl(
+  configManager,
+  logger,
+  metricsCollector
+);
+
+// Initialize rate limiter
+const rateLimiter = new TokenBucketRateLimiter({
+  requestsPerMinute: config.rateLimit.requestsPerMinute,
+  maxConcurrentConnections: config.connection.maxConnectionsPerUser,
+  maxQueueSize: 100,
+});
+
+// Initialize circuit breaker with defaults
+const circuitBreaker = new CircuitBreakerImpl({
+  failureThreshold: 5,
+  successThreshold: 2,
+  timeout: 30000,
+  resetTimeout: 60000,
+});
+
+// WebSocket path constant
+const WEBSOCKET_PATH = config.websocket?.path || '/tunnel';
 
 // Authentication middleware - Requirement 26.2: Connect AuthMiddleware to all protected endpoints
 const authMiddleware = new JWTValidationMiddleware(supabaseValidator);

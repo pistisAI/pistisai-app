@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tailscale-relay
+  namespace: pistisai
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: tailscale-relay
+  template:
+    metadata:
+      labels:
+        app: tailscale-relay
+    spec:
+      containers:
+        - name: tailscale-relay
+          image: gcr.io/YOUR_GCP_PROJECT_ID/tailscale-relay:latest
+          ports:
+            - containerPort: 3002
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: LOG_LEVEL
+              value: 'info'
+            - name: PORT
+              value: '3002'
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-secrets
+                  key: jwt-secret
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3002
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3002
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '256Mi'
+            limits:
+              cpu: '250m'
+              memory: '512Mi'

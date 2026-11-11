@@ -139,7 +139,9 @@ export class ConnectionCleanupService {
       }
 
     } catch (error) {
-      this.logger.error('Error during cleanup operation:', error);
+      this.logger.error('Error during cleanup operation:', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -159,7 +161,9 @@ export class ConnectionCleanupService {
       return cleaned;
       
     } catch (error) {
-      this.logger.error('Error during manual cleanup:', error);
+      this.logger.error('Error during manual cleanup:', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   }

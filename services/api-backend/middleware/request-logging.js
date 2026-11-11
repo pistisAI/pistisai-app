@@ -27,9 +27,16 @@ export function createRequestLoggingMiddleware() {
     // Record request start time
     const startTime = Date.now();
 
-    // Log incoming request
+    // Extract trace ID from trace context (set by traceContextMiddleware)
+    const traceId = req.traceId;
+    const traceContext = req.traceContext || {};
+
+    // Log incoming request with trace context
     logger.info('Incoming request', {
       correlationId,
+      traceId,
+      traceSpanId: traceContext.spanId,
+      traceFlags: traceContext.flags,
       method: req.method,
       path: req.path,
       query: req.query,
@@ -43,9 +50,12 @@ export function createRequestLoggingMiddleware() {
     res.send = function (data) {
       const duration = Date.now() - startTime;
 
-      // Log response
+      // Log response with trace context
       logger.info('Request completed', {
         correlationId,
+        traceId,
+        traceSpanId: traceContext.spanId,
+        traceFlags: traceContext.flags,
         method: req.method,
         path: req.path,
         statusCode: res.statusCode,
