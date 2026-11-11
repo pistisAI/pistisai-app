@@ -15,6 +15,8 @@ import logger from '../logger.js';
 import { webhookRateLimiterService } from '../services/webhook-rate-limiter.js';
 import { authenticateJWT } from '../middleware/auth.js';
 import { webhookRateLimitConfigMiddleware } from '../middleware/webhook-rate-limiter.js';
+import { validateSchema } from '../middleware/schema-validation.js';
+import { WebhookRateLimitSchema } from '../schemas/validation-schemas.js';
 
 const router = express.Router();
 
@@ -67,6 +69,7 @@ router.get(
 router.put(
   '/:webhookId/rate-limit',
   authenticateJWT,
+  validateSchema({ body: WebhookRateLimitSchema }),
   webhookRateLimitConfigMiddleware,
   async function (req, res) {
     try {
