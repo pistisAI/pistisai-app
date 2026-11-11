@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
 import '../../services/cloud_connector_service.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Device Mesh Settings — lists the user's registered cloud devices,
 /// their presence/runtime state, and allows revoking them.
@@ -33,8 +34,8 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
       _error = null;
     });
     try {
-      final devices = await di.serviceLocator<CloudConnectorService>()
-          .listDevices();
+      final devices =
+          await di.serviceLocator<CloudConnectorService>().listDevices();
       if (!mounted) return;
       setState(() {
         _devices = devices;
@@ -50,22 +51,24 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
   }
 
   Future<void> _revoke(CloudDevice device) async {
+    // Read the strings before any await so no BuildContext is used across
+    // an async gap.
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Revoke device?'),
+        title: Text(l10n.meshRevokeTitle),
         content: Text(
-          'Revoke ${device.deviceName ?? device.deviceId}? The device will '
-          'need to re-register to reconnect.',
+          l10n.meshRevokeBody(device.deviceName ?? device.deviceId),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Revoke'),
+            child: Text(l10n.meshRevoke),
           ),
         ],
       ),
@@ -73,14 +76,17 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
     if (confirmed != true) return;
     var ok = false;
     try {
-      ok = await di.serviceLocator<CloudConnectorService>()
+      ok = await di
+          .serviceLocator<CloudConnectorService>()
           .revokeDevice(device.deviceId);
     } catch (_) {
       ok = false;
     }
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(ok ? 'Device revoked' : 'Failed to revoke device')),
+      SnackBar(
+        content: Text(ok ? l10n.meshRevoked : l10n.meshRevokeFailed),
+      ),
     );
     if (ok) await _load();
   }
@@ -88,11 +94,12 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final connector = di.serviceLocator<CloudConnectorService>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Device Mesh'),
+        title: Text(l10n.meshTitle),
         elevation: 0,
         leading: BackButton(
           onPressed: () => context.go('/settings/connection'),
@@ -111,25 +118,29 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
                       ? AppTheme.colorsOf(context).success
                       : AppTheme.colorsOf(context).textColorLight,
                 ),
-                title: const Text('This device'),
+                title: Text(l10n.meshThisDevice),
                 subtitle: Text(_connectionLabel(connector.status)),
               ),
             ),
             const SizedBox(height: 16),
-            Text('Registered devices', style: theme.textTheme.titleMedium),
+            Text(l10n.meshRegisteredDevices,
+                style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             if (_loading)
               const Center(child: CircularProgressIndicator())
             else if (_error != null)
               Column(
                 children: [
-                  Text('Failed to load devices', style: theme.textTheme.bodyMedium),
+                  Text(l10n.meshLoadFailed, style: theme.textTheme.bodyMedium),
                   const SizedBox(height: 8),
-                  FilledButton.tonal(onPressed: _load, child: const Text('Retry')),
+                  FilledButton.tonal(
+                    onPressed: _load,
+                    child: Text(l10n.commonRetry),
+                  ),
                 ],
               )
             else if (_devices == null || _devices!.isEmpty)
-              const Text('No other devices registered.')
+              Text(l10n.meshNoDevices)
             else
               ..._devices!.map(_deviceCard),
           ],
@@ -139,23 +150,25 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
   }
 
   String _connectionLabel(CloudConnectionStatus status) {
+    final l10n = AppLocalizations.of(context);
     switch (status) {
       case CloudConnectionStatus.connected:
-        return 'Connected to cloud connector';
+        return l10n.meshStatusConnected;
       case CloudConnectionStatus.connecting:
-        return 'Connecting…';
+        return l10n.meshStatusConnecting;
       case CloudConnectionStatus.error:
-        return 'Connection error';
+        return l10n.meshStatusError;
       case CloudConnectionStatus.disconnected:
-        return 'Disconnected';
+        return l10n.meshStatusDisconnected;
     }
   }
 
   Widget _deviceCard(CloudDevice device) {
+    final l10n = AppLocalizations.of(context);
     final online = device.status == 'online';
     final lastSeen = device.lastSeen != null
         ? DateFormat.yMd().add_jm().format(device.lastSeen!.toLocal())
-        : 'never';
+        : l10n.meshNever;
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -165,14 +178,14 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
         ),
         title: Text(device.deviceName ?? device.deviceId),
         subtitle: Text(
-          '${device.platform ?? 'unknown platform'} · ${device.runtimeLocation}\n'
-          '${online ? 'online' : 'last seen $lastSeen'}'
-          '${device.runtimeAvailable ? ' · runtime available' : ''}',
+          '${device.platform ?? l10n.meshUnknownPlatform} · ${device.runtimeLocation}\n'
+          '${online ? l10n.meshOnline : l10n.meshLastSeen(lastSeen)}'
+          '${device.runtimeAvailable ? ' · ${l10n.meshRuntimeAvailable}' : ''}',
         ),
         isThreeLine: true,
         trailing: IconButton(
           icon: const Icon(Icons.delete_outline),
-          tooltip: 'Revoke',
+          tooltip: l10n.meshRevoke,
           onPressed: () => _revoke(device),
         ),
       ),
