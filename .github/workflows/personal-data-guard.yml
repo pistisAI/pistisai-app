@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   scan:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, right-pc]
     timeout-minutes: 10
     env:
       GITLEAKS_VERSION: "8.30.1"

@@ -28,7 +28,7 @@ permissions:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64, right-pc]
     timeout-minutes: 45
 
     strategy:
