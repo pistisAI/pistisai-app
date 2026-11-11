@@ -654,7 +654,7 @@ class _ActionBar extends StatelessWidget {
   }
 }
 
-/// "Zoidbot's Mood" in English; French avoids the possessive.
+/// "Agent's Mood" in English; French avoids the possessive.
 String _moodTitle(AppLocalizations l10n, String agentName) =>
     l10n.homeMoodTitle(agentPossessive(agentName), agentName);
 
