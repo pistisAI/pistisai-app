@@ -1273,6 +1273,726 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label}:'**
   String logsDetailLabel(String label);
+
+  /// No description provided for @commonRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get commonRemove;
+
+  /// No description provided for @commonSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get commonSave;
+
+  /// No description provided for @commonUnknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get commonUnknownError;
+
+  /// No description provided for @commonFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}:'**
+  String commonFieldLabel(String label);
+
+  /// No description provided for @commonStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get commonStatus;
+
+  /// No description provided for @commonError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get commonError;
+
+  /// No description provided for @commonActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get commonActions;
+
+  /// No description provided for @commonName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get commonName;
+
+  /// No description provided for @commonType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get commonType;
+
+  /// No description provided for @commonMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get commonMessages;
+
+  /// No description provided for @commonNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get commonNever;
+
+  /// No description provided for @timeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get timeJustNow;
+
+  /// No description provided for @timeSecondsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s ago'**
+  String timeSecondsAgo(int seconds);
+
+  /// No description provided for @timeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String timeMinutesAgo(int minutes);
+
+  /// No description provided for @timeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String timeHoursAgo(int hours);
+
+  /// No description provided for @timeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String timeDaysAgo(int days);
+
+  /// No description provided for @agentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agents'**
+  String get agentsTitle;
+
+  /// No description provided for @agentsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Agent'**
+  String get agentsAdd;
+
+  /// No description provided for @agentsTabRegistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Registry'**
+  String get agentsTabRegistry;
+
+  /// No description provided for @agentsTabMonitor.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor'**
+  String get agentsTabMonitor;
+
+  /// No description provided for @agentsTabConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Config'**
+  String get agentsTabConfig;
+
+  /// No description provided for @agentsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Agents Registered'**
+  String get agentsEmptyTitle;
+
+  /// No description provided for @agentsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Agents will appear here when registered'**
+  String get agentsEmptyMessage;
+
+  /// No description provided for @agentsNoTask.
+  ///
+  /// In en, this message translates to:
+  /// **'No task assigned'**
+  String get agentsNoTask;
+
+  /// No description provided for @agentsActivityCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed: {task}'**
+  String agentsActivityCompleted(String task);
+
+  /// No description provided for @agentsActivityFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {error}'**
+  String agentsActivityFailed(String error);
+
+  /// No description provided for @agentsActivityStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started: {task}'**
+  String agentsActivityStarted(String task);
+
+  /// No description provided for @agentsActivityTaskFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'task'**
+  String get agentsActivityTaskFallback;
+
+  /// No description provided for @agentsActivityErrorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown error'**
+  String get agentsActivityErrorFallback;
+
+  /// No description provided for @agentsRegistryUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent registry is unavailable until the API backend is connected'**
+  String get agentsRegistryUnavailable;
+
+  /// No description provided for @agentsRegisterFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to register agent'**
+  String get agentsRegisterFailed;
+
+  /// No description provided for @agentsRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered {name}'**
+  String agentsRegistered(String name);
+
+  /// No description provided for @agentsEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {name}'**
+  String agentsEditTitle(String name);
+
+  /// No description provided for @agentsUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update {name}'**
+  String agentsUpdateFailed(String name);
+
+  /// No description provided for @agentsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated {name}'**
+  String agentsUpdated(String name);
+
+  /// No description provided for @agentsRemoveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove {name}'**
+  String agentsRemoveFailed(String name);
+
+  /// No description provided for @agentsRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} removed'**
+  String agentsRemoved(String name);
+
+  /// No description provided for @agentsStatTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get agentsStatTasks;
+
+  /// No description provided for @agentsStatAvgLatency.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Latency'**
+  String get agentsStatAvgLatency;
+
+  /// No description provided for @agentsStatLastActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Active'**
+  String get agentsStatLastActive;
+
+  /// No description provided for @agentsStatusOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'ONLINE'**
+  String get agentsStatusOnline;
+
+  /// No description provided for @agentsStatusBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'BUSY'**
+  String get agentsStatusBusy;
+
+  /// No description provided for @agentsStatusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'OFFLINE'**
+  String get agentsStatusOffline;
+
+  /// No description provided for @agentsStatusError.
+  ///
+  /// In en, this message translates to:
+  /// **'ERROR'**
+  String get agentsStatusError;
+
+  /// No description provided for @agentsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Agents'**
+  String get agentsTotal;
+
+  /// No description provided for @agentsTasksToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Today'**
+  String get agentsTasksToday;
+
+  /// No description provided for @agentsErrors.
+  ///
+  /// In en, this message translates to:
+  /// **'Errors'**
+  String get agentsErrors;
+
+  /// No description provided for @agentsNoActivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Recent Activity'**
+  String get agentsNoActivityTitle;
+
+  /// No description provided for @agentsNoActivityMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent activity will appear here'**
+  String get agentsNoActivityMessage;
+
+  /// No description provided for @agentsPoolSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Pool Settings'**
+  String get agentsPoolSettings;
+
+  /// No description provided for @agentsAutoScale.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-scale agents'**
+  String get agentsAutoScale;
+
+  /// No description provided for @agentsAutoScaleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically add agents based on load'**
+  String get agentsAutoScaleSubtitle;
+
+  /// No description provided for @agentsMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min agents'**
+  String get agentsMin;
+
+  /// No description provided for @agentsMinSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum number of active agents'**
+  String get agentsMinSubtitle;
+
+  /// No description provided for @agentsMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max agents'**
+  String get agentsMax;
+
+  /// No description provided for @agentsMaxSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum number of concurrent agents'**
+  String get agentsMaxSubtitle;
+
+  /// No description provided for @agentsTimeoutSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeout Settings'**
+  String get agentsTimeoutSettings;
+
+  /// No description provided for @agentsRequestTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timeout'**
+  String get agentsRequestTimeout;
+
+  /// No description provided for @agentsRequestTimeoutSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum time to wait for agent response'**
+  String get agentsRequestTimeoutSubtitle;
+
+  /// No description provided for @agentsQueueTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue timeout'**
+  String get agentsQueueTimeout;
+
+  /// No description provided for @agentsQueueTimeoutSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum time in queue before rejection'**
+  String get agentsQueueTimeoutSubtitle;
+
+  /// No description provided for @agentsPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause Agent'**
+  String get agentsPause;
+
+  /// No description provided for @agentsResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Agent'**
+  String get agentsResume;
+
+  /// No description provided for @agentsRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart Agent'**
+  String get agentsRestart;
+
+  /// No description provided for @agentsEditConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Configuration'**
+  String get agentsEditConfig;
+
+  /// No description provided for @agentsRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Agent'**
+  String get agentsRemove;
+
+  /// No description provided for @agentsRemoveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove {name}?'**
+  String agentsRemoveConfirm(String name);
+
+  /// No description provided for @agentsRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Agent'**
+  String get agentsRegisterTitle;
+
+  /// No description provided for @agentsRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get agentsRegister;
+
+  /// No description provided for @agentsIdsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Subagent ID and parent agent ID are required'**
+  String get agentsIdsRequired;
+
+  /// No description provided for @agentsSubagentId.
+  ///
+  /// In en, this message translates to:
+  /// **'Subagent ID'**
+  String get agentsSubagentId;
+
+  /// No description provided for @agentsParentId.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent Agent ID'**
+  String get agentsParentId;
+
+  /// No description provided for @agentsDisplayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Label'**
+  String get agentsDisplayLabel;
+
+  /// No description provided for @agentsTaskDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Description'**
+  String get agentsTaskDescription;
+
+  /// No description provided for @agentDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Details'**
+  String get agentDetailTitle;
+
+  /// No description provided for @agentDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent not found'**
+  String get agentDetailNotFound;
+
+  /// No description provided for @agentDetailIdValue.
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {id}'**
+  String agentDetailIdValue(String id);
+
+  /// No description provided for @agentDetailActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get agentDetailActivity;
+
+  /// No description provided for @agentDetailLastUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Update'**
+  String get agentDetailLastUpdate;
+
+  /// No description provided for @agentDetailStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get agentDetailStart;
+
+  /// No description provided for @agentDetailStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get agentDetailStop;
+
+  /// No description provided for @agentDetailRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get agentDetailRestart;
+
+  /// No description provided for @agentDetailInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Information'**
+  String get agentDetailInformation;
+
+  /// No description provided for @agentDetailId.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get agentDetailId;
+
+  /// No description provided for @agentStateIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Idle'**
+  String get agentStateIdle;
+
+  /// No description provided for @agentStateStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting...'**
+  String get agentStateStarting;
+
+  /// No description provided for @agentStateRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get agentStateRunning;
+
+  /// No description provided for @agentStateStopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopping...'**
+  String get agentStateStopping;
+
+  /// No description provided for @agentStateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get agentStateError;
+
+  /// No description provided for @agentStateOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get agentStateOffline;
+
+  /// No description provided for @sessionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions'**
+  String get sessionsTitle;
+
+  /// No description provided for @sessionsTabWebSocket.
+  ///
+  /// In en, this message translates to:
+  /// **'WebSocket'**
+  String get sessionsTabWebSocket;
+
+  /// No description provided for @sessionsTabConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get sessionsTabConversations;
+
+  /// No description provided for @sessionsTabUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get sessionsTabUsers;
+
+  /// No description provided for @sessionsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh sessions'**
+  String get sessionsRefresh;
+
+  /// No description provided for @sessionsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Sessions'**
+  String get sessionsEmptyTitle;
+
+  /// No description provided for @sessionsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No active sessions for this category.'**
+  String get sessionsEmptyMessage;
+
+  /// No description provided for @sessionsDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Details'**
+  String get sessionsDetailsTitle;
+
+  /// No description provided for @sessionsId.
+  ///
+  /// In en, this message translates to:
+  /// **'Session ID'**
+  String get sessionsId;
+
+  /// No description provided for @sessionsUserOrAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'User/Agent'**
+  String get sessionsUserOrAgent;
+
+  /// No description provided for @sessionsStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Started'**
+  String get sessionsStarted;
+
+  /// No description provided for @sessionsDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get sessionsDuration;
+
+  /// No description provided for @sessionsTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Tokens'**
+  String get sessionsTokens;
+
+  /// No description provided for @sessionsDurationHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String sessionsDurationHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @sessionsDurationMinutesSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m {seconds}s'**
+  String sessionsDurationMinutesSeconds(int minutes, int seconds);
+
+  /// No description provided for @sessionsDurationSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String sessionsDurationSeconds(int seconds);
+
+  /// No description provided for @sessionsTerminateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminate Session'**
+  String get sessionsTerminateTitle;
+
+  /// No description provided for @sessionsTerminateConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to terminate session {id}?\n\nThis will disconnect {who} and cannot be undone.'**
+  String sessionsTerminateConfirm(String id, String who);
+
+  /// No description provided for @sessionsServiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Session service unavailable'**
+  String get sessionsServiceUnavailable;
+
+  /// No description provided for @sessionsTerminated.
+  ///
+  /// In en, this message translates to:
+  /// **'Session {id} terminated'**
+  String sessionsTerminated(String id);
+
+  /// No description provided for @sessionsTerminateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to terminate session {id}'**
+  String sessionsTerminateFailed(String id);
+
+  /// No description provided for @sessionsTerminate.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminate'**
+  String get sessionsTerminate;
+
+  /// No description provided for @sessionsViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get sessionsViewDetails;
+
+  /// No description provided for @sessionsTerminateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Terminate session'**
+  String get sessionsTerminateTooltip;
+
+  /// No description provided for @channelsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Channels'**
+  String get channelsTitle;
+
+  /// No description provided for @channelsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh channels'**
+  String get channelsRefresh;
+
+  /// No description provided for @channelsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load channels: {error}'**
+  String channelsLoadError(String error);
+
+  /// No description provided for @channelsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Channels'**
+  String get channelsEmptyTitle;
+
+  /// No description provided for @channelsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No communication channels are currently available.'**
+  String get channelsEmptyMessage;
+
+  /// No description provided for @channelsMessageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 message} other{{count} messages}}'**
+  String channelsMessageCount(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../models/session.dart';
 import '../../services/session_service.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -71,13 +72,20 @@ class _SessionsScreenState extends State<SessionsScreen>
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) {
-        setState(() { _isLoading = false; _allSessions = []; });
+        setState(() {
+          _isLoading = false;
+          _allSessions = [];
+        });
       }
     }
   }
 
   SessionService? get _sessionService {
-    try { return di.serviceLocator<SessionService>(); } catch (_) { return null; }
+    try {
+      return di.serviceLocator<SessionService>();
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Get sessions filtered by current tab
@@ -93,26 +101,30 @@ class _SessionsScreenState extends State<SessionsScreen>
 
   /// Format duration for display
   String _formatDuration(Duration duration) {
+    final l10n = AppLocalizations.of(context);
     if (duration.inHours > 0) {
-      return '${duration.inHours}h ${duration.inMinutes.remainder(60)}m';
+      return l10n.sessionsDurationHoursMinutes(
+          duration.inHours, duration.inMinutes.remainder(60));
     } else if (duration.inMinutes > 0) {
-      return '${duration.inMinutes}m ${duration.inSeconds.remainder(60)}s';
+      return l10n.sessionsDurationMinutesSeconds(
+          duration.inMinutes, duration.inSeconds.remainder(60));
     } else {
-      return '${duration.inSeconds}s';
+      return l10n.sessionsDurationSeconds(duration.inSeconds);
     }
   }
 
   /// Format timestamp for display
   String _formatStartTime(DateTime startTime) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = now.difference(startTime);
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.timeJustNow;
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return l10n.timeMinutesAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
+      return l10n.timeHoursAgo(difference.inHours);
     } else {
       return DateFormat('MMM d, HH:mm').format(startTime);
     }
@@ -120,30 +132,33 @@ class _SessionsScreenState extends State<SessionsScreen>
 
   /// Show session details dialog
   void _viewDetails(SessionData session) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Session Details'),
+        title: Text(l10n.sessionsDetailsTitle),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _detailRow('Session ID', session.id),
-              _detailRow('Type', session.type.toUpperCase()),
-              _detailRow('User/Agent', session.userOrAgent),
-              _detailRow('Started', _formatStartTime(session.startTime)),
-              _detailRow('Duration', _formatDuration(session.duration)),
-              _detailRow('Messages', '${session.messageCount}'),
-              _detailRow('Tokens', '${session.tokenUsage}'),
-              _detailRow('Status', session.status.toUpperCase()),
+              _detailRow(l10n.sessionsId, session.id),
+              _detailRow(l10n.commonType, session.type.toUpperCase()),
+              _detailRow(l10n.sessionsUserOrAgent, session.userOrAgent),
+              _detailRow(
+                  l10n.sessionsStarted, _formatStartTime(session.startTime)),
+              _detailRow(
+                  l10n.sessionsDuration, _formatDuration(session.duration)),
+              _detailRow(l10n.commonMessages, '${session.messageCount}'),
+              _detailRow(l10n.sessionsTokens, '${session.tokenUsage}'),
+              _detailRow(l10n.commonStatus, session.status.toUpperCase()),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text(l10n.commonClose),
           ),
         ],
       ),
@@ -160,7 +175,7 @@ class _SessionsScreenState extends State<SessionsScreen>
           SizedBox(
             width: 100,
             child: Text(
-              '$label:',
+              AppLocalizations.of(context).commonFieldLabel(label),
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface.withValues(
@@ -177,18 +192,18 @@ class _SessionsScreenState extends State<SessionsScreen>
 
   /// Terminate session after confirmation
   void _terminateSession(SessionData session) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Terminate Session'),
+        title: Text(l10n.sessionsTerminateTitle),
         content: Text(
-          'Are you sure you want to terminate session ${session.id}?\n\n'
-          'This will disconnect ${session.userOrAgent} and cannot be undone.',
+          l10n.sessionsTerminateConfirm(session.id, session.userOrAgent),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -200,7 +215,7 @@ class _SessionsScreenState extends State<SessionsScreen>
               if (service == null) {
                 messenger.showSnackBar(
                   SnackBar(
-                    content: const Text('Session service unavailable'),
+                    content: Text(l10n.sessionsServiceUnavailable),
                     backgroundColor: errorColor,
                   ),
                 );
@@ -213,13 +228,13 @@ class _SessionsScreenState extends State<SessionsScreen>
                 unawaited(_loadSessions());
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text('Session ${session.id} terminated'),
+                    content: Text(l10n.sessionsTerminated(session.id)),
                   ),
                 );
               } else {
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text('Failed to terminate session ${session.id}'),
+                    content: Text(l10n.sessionsTerminateFailed(session.id)),
                     backgroundColor: errorColor,
                   ),
                 );
@@ -228,7 +243,7 @@ class _SessionsScreenState extends State<SessionsScreen>
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Terminate'),
+            child: Text(l10n.sessionsTerminate),
           ),
         ],
       ),
@@ -237,21 +252,22 @@ class _SessionsScreenState extends State<SessionsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sessions'),
+        title: Text(l10n.sessionsTitle),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'WebSocket'),
-            Tab(text: 'Conversations'),
-            Tab(text: 'Users'),
+          tabs: [
+            Tab(text: l10n.sessionsTabWebSocket),
+            Tab(text: l10n.sessionsTabConversations),
+            Tab(text: l10n.sessionsTabUsers),
           ],
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh sessions',
+            tooltip: l10n.sessionsRefresh,
             onPressed: _isLoading ? null : _loadSessions,
           ),
           const PopOutButton(
@@ -294,10 +310,11 @@ class _SessionsScreenState extends State<SessionsScreen>
     final sessions = _filteredSessions;
 
     if (sessions.isEmpty) {
-      return const EmptyState(
+      final l10n = AppLocalizations.of(context);
+      return EmptyState(
         icon: Icons.link_off,
-        title: 'No Sessions',
-        message: 'No active sessions for this category.',
+        title: l10n.sessionsEmptyTitle,
+        message: l10n.sessionsEmptyMessage,
       );
     }
 
@@ -330,6 +347,8 @@ class _SessionsTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    const headerStyle = TextStyle(fontWeight: FontWeight.w600);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -349,40 +368,33 @@ class _SessionsTable extends StatelessWidget {
                   topRight: Radius.circular(12),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Expanded(
                       flex: 2,
-                      child: Text('Type',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child: Text(l10n.commonType, style: headerStyle)),
                   Expanded(
                       flex: 3,
-                      child: Text('User/Agent',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child:
+                          Text(l10n.sessionsUserOrAgent, style: headerStyle)),
                   Expanded(
                       flex: 2,
-                      child: Text('Started',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child: Text(l10n.sessionsStarted, style: headerStyle)),
                   Expanded(
                       flex: 2,
-                      child: Text('Duration',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child: Text(l10n.sessionsDuration, style: headerStyle)),
                   Expanded(
                       flex: 1,
-                      child: Text('Messages',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child: Text(l10n.commonMessages, style: headerStyle)),
                   Expanded(
                       flex: 1,
-                      child: Text('Tokens',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child: Text(l10n.sessionsTokens, style: headerStyle)),
                   Expanded(
                       flex: 2,
-                      child: Text('Status',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child: Text(l10n.commonStatus, style: headerStyle)),
                   Expanded(
                       flex: 2,
-                      child: Text('Actions',
-                          style: TextStyle(fontWeight: FontWeight.w600))),
+                      child: Text(l10n.commonActions, style: headerStyle)),
                 ],
               ),
             ),
@@ -511,7 +523,7 @@ class _SessionRow extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.visibility, size: 18),
-                  tooltip: 'View details',
+                  tooltip: AppLocalizations.of(context).sessionsViewDetails,
                   onPressed: () => viewDetails(session),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -519,7 +531,8 @@ class _SessionRow extends StatelessWidget {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.stop_circle, size: 18),
-                  tooltip: 'Terminate session',
+                  tooltip:
+                      AppLocalizations.of(context).sessionsTerminateTooltip,
                   onPressed: session.status == 'active'
                       ? () => terminateSession(session)
                       : null,
