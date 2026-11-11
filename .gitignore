@@ -158,3 +158,5 @@ test/archive/
 # Python bytecode
 __pycache__/
 *.pyc
+# N+1 detection report (generated at build time)
+services/api-backend/n1-detection-report.json
