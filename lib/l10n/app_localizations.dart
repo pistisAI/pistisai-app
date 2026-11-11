@@ -2245,6 +2245,666 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copied to clipboard'**
   String get messageCopied;
+
+  /// No description provided for @commonStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get commonStart;
+
+  /// No description provided for @commonStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get commonStop;
+
+  /// No description provided for @commonRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get commonRestart;
+
+  /// No description provided for @commonDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commonDelete;
+
+  /// No description provided for @commonEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get commonEdit;
+
+  /// No description provided for @commonCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get commonCreate;
+
+  /// No description provided for @commonEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get commonEnable;
+
+  /// No description provided for @commonDisable.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable'**
+  String get commonDisable;
+
+  /// No description provided for @commonDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get commonDescription;
+
+  /// No description provided for @commonCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get commonCategory;
+
+  /// No description provided for @commonApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get commonApply;
+
+  /// No description provided for @cronTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cron Jobs'**
+  String get cronTitle;
+
+  /// No description provided for @cronAddJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Job'**
+  String get cronAddJob;
+
+  /// No description provided for @cronEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Cron Jobs'**
+  String get cronEmptyTitle;
+
+  /// No description provided for @cronEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create scheduled tasks to automate maintenance'**
+  String get cronEmptyMessage;
+
+  /// No description provided for @cronTriggered.
+  ///
+  /// In en, this message translates to:
+  /// **'Triggered: {name}'**
+  String cronTriggered(String name);
+
+  /// No description provided for @cronDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Scheduled Job'**
+  String get cronDeleteTitle;
+
+  /// No description provided for @cronDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{name}\"? This action cannot be undone.'**
+  String cronDeleteConfirm(String name);
+
+  /// No description provided for @cronDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Job deleted successfully'**
+  String get cronDeleted;
+
+  /// No description provided for @cronDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete job'**
+  String get cronDeleteFailed;
+
+  /// No description provided for @cronEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Scheduled Job'**
+  String get cronEditTitle;
+
+  /// No description provided for @cronCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Scheduled Job'**
+  String get cronCreateTitle;
+
+  /// No description provided for @cronJobName.
+  ///
+  /// In en, this message translates to:
+  /// **'Job Name'**
+  String get cronJobName;
+
+  /// No description provided for @cronJobNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Daily Briefing'**
+  String get cronJobNameHint;
+
+  /// No description provided for @cronJobNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a job name'**
+  String get cronJobNameRequired;
+
+  /// No description provided for @cronSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Expression / Interval'**
+  String get cronSchedule;
+
+  /// No description provided for @cronScheduleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 30m, every 2h, or 0 9 * * *'**
+  String get cronScheduleHint;
+
+  /// No description provided for @cronScheduleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a schedule'**
+  String get cronScheduleRequired;
+
+  /// No description provided for @cronExecutionMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Execution Mode'**
+  String get cronExecutionMode;
+
+  /// No description provided for @cronModeAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'LLM Agent'**
+  String get cronModeAgent;
+
+  /// No description provided for @cronModeScript.
+  ///
+  /// In en, this message translates to:
+  /// **'Script Only (Watchdog)'**
+  String get cronModeScript;
+
+  /// No description provided for @cronPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Instruction / Prompt'**
+  String get cronPrompt;
+
+  /// No description provided for @cronPromptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the task the agent should perform periodically...'**
+  String get cronPromptHint;
+
+  /// No description provided for @cronPromptRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter instructions or attach a script'**
+  String get cronPromptRequired;
+
+  /// No description provided for @cronScriptRequiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Script File (Required)'**
+  String get cronScriptRequiredLabel;
+
+  /// No description provided for @cronScriptOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Script File (Optional)'**
+  String get cronScriptOptionalLabel;
+
+  /// No description provided for @cronScriptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. backup-vault.sh'**
+  String get cronScriptHint;
+
+  /// No description provided for @cronScriptHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Scripts must live under ~/.hermes/scripts/'**
+  String get cronScriptHelper;
+
+  /// No description provided for @cronScriptRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Script file is required in Watchdog mode'**
+  String get cronScriptRequired;
+
+  /// No description provided for @cronWorkdir.
+  ///
+  /// In en, this message translates to:
+  /// **'Workspace Directory (Optional)'**
+  String get cronWorkdir;
+
+  /// No description provided for @cronWorkdirHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Absolute path to project directory'**
+  String get cronWorkdirHint;
+
+  /// No description provided for @cronWorkdirHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Injects project-level AGENTS.md/CLAUDE.md context'**
+  String get cronWorkdirHelper;
+
+  /// No description provided for @cronUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Job updated successfully'**
+  String get cronUpdated;
+
+  /// No description provided for @cronCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Job created successfully'**
+  String get cronCreated;
+
+  /// No description provided for @cronSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save scheduled job'**
+  String get cronSaveFailed;
+
+  /// No description provided for @cronScheduleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get cronScheduleLabel;
+
+  /// No description provided for @cronNextRun.
+  ///
+  /// In en, this message translates to:
+  /// **'Next run'**
+  String get cronNextRun;
+
+  /// No description provided for @cronLastRun.
+  ///
+  /// In en, this message translates to:
+  /// **'Last run'**
+  String get cronLastRun;
+
+  /// No description provided for @cronMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get cronMode;
+
+  /// No description provided for @cronModeWatchdog.
+  ///
+  /// In en, this message translates to:
+  /// **'Watchdog (No Agent)'**
+  String get cronModeWatchdog;
+
+  /// No description provided for @cronWorkdirLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Workdir'**
+  String get cronWorkdirLabel;
+
+  /// No description provided for @cronRunNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Now'**
+  String get cronRunNow;
+
+  /// No description provided for @skillsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get skillsTitle;
+
+  /// No description provided for @skillsRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Skill'**
+  String get skillsRegisterTitle;
+
+  /// No description provided for @skillsTabRegistry.
+  ///
+  /// In en, this message translates to:
+  /// **'Registry'**
+  String get skillsTabRegistry;
+
+  /// No description provided for @skillsTabUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage'**
+  String get skillsTabUsage;
+
+  /// No description provided for @skillsTabManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Management'**
+  String get skillsTabManagement;
+
+  /// No description provided for @skillsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Skills Registered'**
+  String get skillsEmptyTitle;
+
+  /// No description provided for @skillsEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills will appear here when registered'**
+  String get skillsEmptyMessage;
+
+  /// No description provided for @skillsServiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Skill service is unavailable on this platform'**
+  String get skillsServiceUnavailable;
+
+  /// No description provided for @skillsRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered skill {name}'**
+  String skillsRegistered(String name);
+
+  /// No description provided for @skillsRegisterFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to register skill: {error}'**
+  String skillsRegisterFailed(String error);
+
+  /// No description provided for @skillsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} enabled'**
+  String skillsEnabled(String name);
+
+  /// No description provided for @skillsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} disabled'**
+  String skillsDisabled(String name);
+
+  /// No description provided for @skillsStatUses.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses'**
+  String get skillsStatUses;
+
+  /// No description provided for @skillsStatAvgTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Time'**
+  String get skillsStatAvgTime;
+
+  /// No description provided for @skillsStatLastUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Used'**
+  String get skillsStatLastUsed;
+
+  /// No description provided for @skillsUsageByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Skill Usage by Category'**
+  String get skillsUsageByCategory;
+
+  /// No description provided for @skillsUsesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 use} other{{count} uses}}'**
+  String skillsUsesCount(int count);
+
+  /// No description provided for @skillsAvgSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s avg'**
+  String skillsAvgSeconds(String seconds);
+
+  /// No description provided for @skillsTopPerforming.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Performing Skills'**
+  String get skillsTopPerforming;
+
+  /// No description provided for @skillsGlobalSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Settings'**
+  String get skillsGlobalSettings;
+
+  /// No description provided for @skillsAutoDisable.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-disable slow skills'**
+  String get skillsAutoDisable;
+
+  /// No description provided for @skillsAutoDisableSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable skills that take longer than 5 seconds'**
+  String get skillsAutoDisableSubtitle;
+
+  /// No description provided for @skillsCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache skill results'**
+  String get skillsCache;
+
+  /// No description provided for @skillsCacheSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Store responses for identical requests'**
+  String get skillsCacheSubtitle;
+
+  /// No description provided for @skillsDefaultTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Default timeout'**
+  String get skillsDefaultTimeout;
+
+  /// No description provided for @skillsDefaultTimeoutValue.
+  ///
+  /// In en, this message translates to:
+  /// **'30 seconds'**
+  String get skillsDefaultTimeoutValue;
+
+  /// No description provided for @skillsResourceLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Limits'**
+  String get skillsResourceLimits;
+
+  /// No description provided for @skillsMaxConcurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Max concurrent skills'**
+  String get skillsMaxConcurrent;
+
+  /// No description provided for @skillsMaxConcurrentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum skills running simultaneously'**
+  String get skillsMaxConcurrentSubtitle;
+
+  /// No description provided for @skillsMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory per skill'**
+  String get skillsMemory;
+
+  /// No description provided for @skillsMemorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum RAM allocation per skill'**
+  String get skillsMemorySubtitle;
+
+  /// No description provided for @skillsNameDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name and description are required'**
+  String get skillsNameDescriptionRequired;
+
+  /// No description provided for @skillsCreatesUnder.
+  ///
+  /// In en, this message translates to:
+  /// **'Creates SKILL.md under {directory}'**
+  String skillsCreatesUnder(String directory);
+
+  /// No description provided for @instancesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Instances'**
+  String get instancesTitle;
+
+  /// No description provided for @instancesRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh instances'**
+  String get instancesRefresh;
+
+  /// No description provided for @instancesNotStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started'**
+  String get instancesNotStarted;
+
+  /// No description provided for @instancesUptimeDaysHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d {hours}h'**
+  String instancesUptimeDaysHours(int days, int hours);
+
+  /// No description provided for @instancesStartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to start gateway'**
+  String get instancesStartFailed;
+
+  /// No description provided for @instancesStopFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to stop gateway'**
+  String get instancesStopFailed;
+
+  /// No description provided for @instancesRestartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to restart gateway'**
+  String get instancesRestartFailed;
+
+  /// No description provided for @instancesNoGatewayState.
+  ///
+  /// In en, this message translates to:
+  /// **'No gateway state available'**
+  String get instancesNoGatewayState;
+
+  /// No description provided for @instancesGatewayProcess.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway Process'**
+  String get instancesGatewayProcess;
+
+  /// No description provided for @instancesModelInstances.
+  ///
+  /// In en, this message translates to:
+  /// **'Model Instances'**
+  String get instancesModelInstances;
+
+  /// No description provided for @instancesPort.
+  ///
+  /// In en, this message translates to:
+  /// **'Port {port}'**
+  String instancesPort(String port);
+
+  /// No description provided for @instancesUptime.
+  ///
+  /// In en, this message translates to:
+  /// **'Uptime: {uptime}'**
+  String instancesUptime(String uptime);
+
+  /// No description provided for @instancesRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get instancesRequests;
+
+  /// No description provided for @instancesUtilized.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% utilized'**
+  String instancesUtilized(int percent);
+
+  /// No description provided for @instancesHermesEnabledSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes Agent enabled — chat will use Hermes'**
+  String get instancesHermesEnabledSnack;
+
+  /// No description provided for @instancesHermesDisabledSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched back to default gateway'**
+  String get instancesHermesDisabledSnack;
+
+  /// No description provided for @instancesHermesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'🦞 Hermes Agent'**
+  String get instancesHermesTitle;
+
+  /// No description provided for @instancesHermesActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active — routing chat through Hermes API server'**
+  String get instancesHermesActive;
+
+  /// No description provided for @instancesHermesInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled — using the default Hermes gateway'**
+  String get instancesHermesInactive;
+
+  /// No description provided for @instancesHermesEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Hermes Agent'**
+  String get instancesHermesEnable;
+
+  /// No description provided for @instancesHermesEnableSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Route chat through Hermes for tool use, file ops, web search, and code execution'**
+  String get instancesHermesEnableSubtitle;
+
+  /// No description provided for @instancesHermesUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes API URL'**
+  String get instancesHermesUrl;
+
+  /// No description provided for @instancesApiKeyOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'API Key (optional)'**
+  String get instancesApiKeyOptional;
+
+  /// No description provided for @instancesApiKeyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty for local-only use'**
+  String get instancesApiKeyHint;
+
+  /// No description provided for @instancesTestConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Connection'**
+  String get instancesTestConnection;
 }
 
 class _AppLocalizationsDelegate

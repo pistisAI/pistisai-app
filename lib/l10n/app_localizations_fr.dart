@@ -1242,4 +1242,385 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get messageCopied => 'Copié dans le presse-papiers';
+
+  @override
+  String get commonStart => 'Démarrer';
+
+  @override
+  String get commonStop => 'Arrêter';
+
+  @override
+  String get commonRestart => 'Redémarrer';
+
+  @override
+  String get commonDelete => 'Supprimer';
+
+  @override
+  String get commonEdit => 'Modifier';
+
+  @override
+  String get commonCreate => 'Créer';
+
+  @override
+  String get commonEnable => 'Activer';
+
+  @override
+  String get commonDisable => 'Désactiver';
+
+  @override
+  String get commonDescription => 'Description';
+
+  @override
+  String get commonCategory => 'Catégorie';
+
+  @override
+  String get commonApply => 'Appliquer';
+
+  @override
+  String get cronTitle => 'Tâches planifiées';
+
+  @override
+  String get cronAddJob => 'Ajouter une tâche';
+
+  @override
+  String get cronEmptyTitle => 'Aucune tâche planifiée';
+
+  @override
+  String get cronEmptyMessage =>
+      'Créez des tâches planifiées pour automatiser l\'entretien';
+
+  @override
+  String cronTriggered(String name) {
+    return 'Lancée : $name';
+  }
+
+  @override
+  String get cronDeleteTitle => 'Supprimer la tâche planifiée';
+
+  @override
+  String cronDeleteConfirm(String name) {
+    return 'Voulez-vous vraiment supprimer « $name » ? Cette action est irréversible.';
+  }
+
+  @override
+  String get cronDeleted => 'Tâche supprimée';
+
+  @override
+  String get cronDeleteFailed => 'Impossible de supprimer la tâche';
+
+  @override
+  String get cronEditTitle => 'Modifier la tâche planifiée';
+
+  @override
+  String get cronCreateTitle => 'Créer une tâche planifiée';
+
+  @override
+  String get cronJobName => 'Nom de la tâche';
+
+  @override
+  String get cronJobNameHint => 'ex. : Résumé quotidien';
+
+  @override
+  String get cronJobNameRequired => 'Entrez un nom de tâche';
+
+  @override
+  String get cronSchedule => 'Expression de planification ou intervalle';
+
+  @override
+  String get cronScheduleHint => 'ex. : 30m, every 2h ou 0 9 * * *';
+
+  @override
+  String get cronScheduleRequired => 'Entrez une planification';
+
+  @override
+  String get cronExecutionMode => 'Mode d\'exécution';
+
+  @override
+  String get cronModeAgent => 'Agent IA';
+
+  @override
+  String get cronModeScript => 'Script seulement (surveillance)';
+
+  @override
+  String get cronPrompt => 'Consigne pour l\'agent';
+
+  @override
+  String get cronPromptHint =>
+      'Décrivez la tâche que l\'agent doit effectuer régulièrement…';
+
+  @override
+  String get cronPromptRequired => 'Entrez une consigne ou joignez un script';
+
+  @override
+  String get cronScriptRequiredLabel => 'Fichier de script (obligatoire)';
+
+  @override
+  String get cronScriptOptionalLabel => 'Fichier de script (facultatif)';
+
+  @override
+  String get cronScriptHint => 'ex. : backup-vault.sh';
+
+  @override
+  String get cronScriptHelper =>
+      'Les scripts doivent se trouver dans ~/.hermes/scripts/';
+
+  @override
+  String get cronScriptRequired =>
+      'Un fichier de script est obligatoire en mode surveillance';
+
+  @override
+  String get cronWorkdir => 'Dossier de travail (facultatif)';
+
+  @override
+  String get cronWorkdirHint => 'Chemin absolu du dossier du projet';
+
+  @override
+  String get cronWorkdirHelper =>
+      'Ajoute le contexte AGENTS.md/CLAUDE.md du projet';
+
+  @override
+  String get cronUpdated => 'Tâche mise à jour';
+
+  @override
+  String get cronCreated => 'Tâche créée';
+
+  @override
+  String get cronSaveFailed => 'Impossible d\'enregistrer la tâche planifiée';
+
+  @override
+  String get cronScheduleLabel => 'Planification';
+
+  @override
+  String get cronNextRun => 'Prochaine exécution';
+
+  @override
+  String get cronLastRun => 'Dernière exécution';
+
+  @override
+  String get cronMode => 'Mode';
+
+  @override
+  String get cronModeWatchdog => 'Surveillance (sans agent)';
+
+  @override
+  String get cronWorkdirLabel => 'Dossier de travail';
+
+  @override
+  String get cronRunNow => 'Exécuter maintenant';
+
+  @override
+  String get skillsTitle => 'Compétences';
+
+  @override
+  String get skillsRegisterTitle => 'Enregistrer une compétence';
+
+  @override
+  String get skillsTabRegistry => 'Registre';
+
+  @override
+  String get skillsTabUsage => 'Utilisation';
+
+  @override
+  String get skillsTabManagement => 'Gestion';
+
+  @override
+  String get skillsEmptyTitle => 'Aucune compétence enregistrée';
+
+  @override
+  String get skillsEmptyMessage =>
+      'Les compétences apparaîtront ici une fois enregistrées';
+
+  @override
+  String get skillsServiceUnavailable =>
+      'Le service des compétences n\'est pas disponible sur cette plateforme';
+
+  @override
+  String skillsRegistered(String name) {
+    return 'Compétence $name enregistrée';
+  }
+
+  @override
+  String skillsRegisterFailed(String error) {
+    return 'Impossible d\'enregistrer la compétence : $error';
+  }
+
+  @override
+  String skillsEnabled(String name) {
+    return '$name activée';
+  }
+
+  @override
+  String skillsDisabled(String name) {
+    return '$name désactivée';
+  }
+
+  @override
+  String get skillsStatUses => 'Utilisations';
+
+  @override
+  String get skillsStatAvgTime => 'Temps moyen';
+
+  @override
+  String get skillsStatLastUsed => 'Dernière utilisation';
+
+  @override
+  String get skillsUsageByCategory =>
+      'Utilisation des compétences par catégorie';
+
+  @override
+  String skillsUsesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count utilisations',
+      one: '$count utilisation',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String skillsAvgSeconds(String seconds) {
+    return '$seconds s en moyenne';
+  }
+
+  @override
+  String get skillsTopPerforming => 'Compétences les plus performantes';
+
+  @override
+  String get skillsGlobalSettings => 'Réglages généraux';
+
+  @override
+  String get skillsAutoDisable =>
+      'Désactiver automatiquement les compétences lentes';
+
+  @override
+  String get skillsAutoDisableSubtitle =>
+      'Désactiver les compétences qui prennent plus de 5 secondes';
+
+  @override
+  String get skillsCache => 'Mettre en cache les résultats';
+
+  @override
+  String get skillsCacheSubtitle =>
+      'Conserver les réponses aux requêtes identiques';
+
+  @override
+  String get skillsDefaultTimeout => 'Délai par défaut';
+
+  @override
+  String get skillsDefaultTimeoutValue => '30 secondes';
+
+  @override
+  String get skillsResourceLimits => 'Limites de ressources';
+
+  @override
+  String get skillsMaxConcurrent => 'Compétences simultanées maximum';
+
+  @override
+  String get skillsMaxConcurrentSubtitle =>
+      'Nombre maximal de compétences exécutées en même temps';
+
+  @override
+  String get skillsMemory => 'Mémoire par compétence';
+
+  @override
+  String get skillsMemorySubtitle => 'Mémoire vive maximale par compétence';
+
+  @override
+  String get skillsNameDescriptionRequired =>
+      'Le nom et la description sont obligatoires';
+
+  @override
+  String skillsCreatesUnder(String directory) {
+    return 'Crée SKILL.md dans $directory';
+  }
+
+  @override
+  String get instancesTitle => 'Instances';
+
+  @override
+  String get instancesRefresh => 'Actualiser les instances';
+
+  @override
+  String get instancesNotStarted => 'Non démarré';
+
+  @override
+  String instancesUptimeDaysHours(int days, int hours) {
+    return '$days j $hours h';
+  }
+
+  @override
+  String get instancesStartFailed => 'Impossible de démarrer la passerelle';
+
+  @override
+  String get instancesStopFailed => 'Impossible d\'arrêter la passerelle';
+
+  @override
+  String get instancesRestartFailed => 'Impossible de redémarrer la passerelle';
+
+  @override
+  String get instancesNoGatewayState => 'Aucun état de passerelle disponible';
+
+  @override
+  String get instancesGatewayProcess => 'Processus de la passerelle';
+
+  @override
+  String get instancesModelInstances => 'Instances de modèles';
+
+  @override
+  String instancesPort(String port) {
+    return 'Port $port';
+  }
+
+  @override
+  String instancesUptime(String uptime) {
+    return 'Temps de fonctionnement : $uptime';
+  }
+
+  @override
+  String get instancesRequests => 'Requêtes';
+
+  @override
+  String instancesUtilized(int percent) {
+    return '$percent % utilisé';
+  }
+
+  @override
+  String get instancesHermesEnabledSnack =>
+      'Agent Hermes activé — la discussion passera par Hermes';
+
+  @override
+  String get instancesHermesDisabledSnack =>
+      'Retour à la passerelle par défaut';
+
+  @override
+  String get instancesHermesTitle => '🦞 Agent Hermes';
+
+  @override
+  String get instancesHermesActive =>
+      'Actif — la discussion passe par le serveur API Hermes';
+
+  @override
+  String get instancesHermesInactive =>
+      'Désactivé — utilisation de la passerelle Hermes par défaut';
+
+  @override
+  String get instancesHermesEnable => 'Activer l\'agent Hermes';
+
+  @override
+  String get instancesHermesEnableSubtitle =>
+      'Faire passer la discussion par Hermes pour les outils, les fichiers, la recherche web et l\'exécution de code';
+
+  @override
+  String get instancesHermesUrl => 'URL de l\'API Hermes';
+
+  @override
+  String get instancesApiKeyOptional => 'Clé API (facultative)';
+
+  @override
+  String get instancesApiKeyHint =>
+      'Laisser vide pour un usage local seulement';
+
+  @override
+  String get instancesTestConnection => 'Tester la connexion';
 }

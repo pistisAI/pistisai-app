@@ -1224,4 +1224,378 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messageCopied => 'Copied to clipboard';
+
+  @override
+  String get commonStart => 'Start';
+
+  @override
+  String get commonStop => 'Stop';
+
+  @override
+  String get commonRestart => 'Restart';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get commonEdit => 'Edit';
+
+  @override
+  String get commonCreate => 'Create';
+
+  @override
+  String get commonEnable => 'Enable';
+
+  @override
+  String get commonDisable => 'Disable';
+
+  @override
+  String get commonDescription => 'Description';
+
+  @override
+  String get commonCategory => 'Category';
+
+  @override
+  String get commonApply => 'Apply';
+
+  @override
+  String get cronTitle => 'Cron Jobs';
+
+  @override
+  String get cronAddJob => 'Add Job';
+
+  @override
+  String get cronEmptyTitle => 'No Cron Jobs';
+
+  @override
+  String get cronEmptyMessage =>
+      'Create scheduled tasks to automate maintenance';
+
+  @override
+  String cronTriggered(String name) {
+    return 'Triggered: $name';
+  }
+
+  @override
+  String get cronDeleteTitle => 'Delete Scheduled Job';
+
+  @override
+  String cronDeleteConfirm(String name) {
+    return 'Are you sure you want to delete \"$name\"? This action cannot be undone.';
+  }
+
+  @override
+  String get cronDeleted => 'Job deleted successfully';
+
+  @override
+  String get cronDeleteFailed => 'Failed to delete job';
+
+  @override
+  String get cronEditTitle => 'Edit Scheduled Job';
+
+  @override
+  String get cronCreateTitle => 'Create Scheduled Job';
+
+  @override
+  String get cronJobName => 'Job Name';
+
+  @override
+  String get cronJobNameHint => 'e.g. Daily Briefing';
+
+  @override
+  String get cronJobNameRequired => 'Please enter a job name';
+
+  @override
+  String get cronSchedule => 'Schedule Expression / Interval';
+
+  @override
+  String get cronScheduleHint => 'e.g. 30m, every 2h, or 0 9 * * *';
+
+  @override
+  String get cronScheduleRequired => 'Please enter a schedule';
+
+  @override
+  String get cronExecutionMode => 'Execution Mode';
+
+  @override
+  String get cronModeAgent => 'LLM Agent';
+
+  @override
+  String get cronModeScript => 'Script Only (Watchdog)';
+
+  @override
+  String get cronPrompt => 'Agent Instruction / Prompt';
+
+  @override
+  String get cronPromptHint =>
+      'Describe the task the agent should perform periodically...';
+
+  @override
+  String get cronPromptRequired =>
+      'Please enter instructions or attach a script';
+
+  @override
+  String get cronScriptRequiredLabel => 'Script File (Required)';
+
+  @override
+  String get cronScriptOptionalLabel => 'Script File (Optional)';
+
+  @override
+  String get cronScriptHint => 'e.g. backup-vault.sh';
+
+  @override
+  String get cronScriptHelper => 'Scripts must live under ~/.hermes/scripts/';
+
+  @override
+  String get cronScriptRequired => 'Script file is required in Watchdog mode';
+
+  @override
+  String get cronWorkdir => 'Workspace Directory (Optional)';
+
+  @override
+  String get cronWorkdirHint => 'Absolute path to project directory';
+
+  @override
+  String get cronWorkdirHelper =>
+      'Injects project-level AGENTS.md/CLAUDE.md context';
+
+  @override
+  String get cronUpdated => 'Job updated successfully';
+
+  @override
+  String get cronCreated => 'Job created successfully';
+
+  @override
+  String get cronSaveFailed => 'Failed to save scheduled job';
+
+  @override
+  String get cronScheduleLabel => 'Schedule';
+
+  @override
+  String get cronNextRun => 'Next run';
+
+  @override
+  String get cronLastRun => 'Last run';
+
+  @override
+  String get cronMode => 'Mode';
+
+  @override
+  String get cronModeWatchdog => 'Watchdog (No Agent)';
+
+  @override
+  String get cronWorkdirLabel => 'Workdir';
+
+  @override
+  String get cronRunNow => 'Run Now';
+
+  @override
+  String get skillsTitle => 'Skills';
+
+  @override
+  String get skillsRegisterTitle => 'Register Skill';
+
+  @override
+  String get skillsTabRegistry => 'Registry';
+
+  @override
+  String get skillsTabUsage => 'Usage';
+
+  @override
+  String get skillsTabManagement => 'Management';
+
+  @override
+  String get skillsEmptyTitle => 'No Skills Registered';
+
+  @override
+  String get skillsEmptyMessage => 'Skills will appear here when registered';
+
+  @override
+  String get skillsServiceUnavailable =>
+      'Skill service is unavailable on this platform';
+
+  @override
+  String skillsRegistered(String name) {
+    return 'Registered skill $name';
+  }
+
+  @override
+  String skillsRegisterFailed(String error) {
+    return 'Failed to register skill: $error';
+  }
+
+  @override
+  String skillsEnabled(String name) {
+    return '$name enabled';
+  }
+
+  @override
+  String skillsDisabled(String name) {
+    return '$name disabled';
+  }
+
+  @override
+  String get skillsStatUses => 'Uses';
+
+  @override
+  String get skillsStatAvgTime => 'Avg Time';
+
+  @override
+  String get skillsStatLastUsed => 'Last Used';
+
+  @override
+  String get skillsUsageByCategory => 'Skill Usage by Category';
+
+  @override
+  String skillsUsesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count uses',
+      one: '1 use',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String skillsAvgSeconds(String seconds) {
+    return '${seconds}s avg';
+  }
+
+  @override
+  String get skillsTopPerforming => 'Top Performing Skills';
+
+  @override
+  String get skillsGlobalSettings => 'Global Settings';
+
+  @override
+  String get skillsAutoDisable => 'Auto-disable slow skills';
+
+  @override
+  String get skillsAutoDisableSubtitle =>
+      'Disable skills that take longer than 5 seconds';
+
+  @override
+  String get skillsCache => 'Cache skill results';
+
+  @override
+  String get skillsCacheSubtitle => 'Store responses for identical requests';
+
+  @override
+  String get skillsDefaultTimeout => 'Default timeout';
+
+  @override
+  String get skillsDefaultTimeoutValue => '30 seconds';
+
+  @override
+  String get skillsResourceLimits => 'Resource Limits';
+
+  @override
+  String get skillsMaxConcurrent => 'Max concurrent skills';
+
+  @override
+  String get skillsMaxConcurrentSubtitle =>
+      'Maximum skills running simultaneously';
+
+  @override
+  String get skillsMemory => 'Memory per skill';
+
+  @override
+  String get skillsMemorySubtitle => 'Maximum RAM allocation per skill';
+
+  @override
+  String get skillsNameDescriptionRequired =>
+      'Name and description are required';
+
+  @override
+  String skillsCreatesUnder(String directory) {
+    return 'Creates SKILL.md under $directory';
+  }
+
+  @override
+  String get instancesTitle => 'Instances';
+
+  @override
+  String get instancesRefresh => 'Refresh instances';
+
+  @override
+  String get instancesNotStarted => 'Not started';
+
+  @override
+  String instancesUptimeDaysHours(int days, int hours) {
+    return '${days}d ${hours}h';
+  }
+
+  @override
+  String get instancesStartFailed => 'Failed to start gateway';
+
+  @override
+  String get instancesStopFailed => 'Failed to stop gateway';
+
+  @override
+  String get instancesRestartFailed => 'Failed to restart gateway';
+
+  @override
+  String get instancesNoGatewayState => 'No gateway state available';
+
+  @override
+  String get instancesGatewayProcess => 'Gateway Process';
+
+  @override
+  String get instancesModelInstances => 'Model Instances';
+
+  @override
+  String instancesPort(String port) {
+    return 'Port $port';
+  }
+
+  @override
+  String instancesUptime(String uptime) {
+    return 'Uptime: $uptime';
+  }
+
+  @override
+  String get instancesRequests => 'Requests';
+
+  @override
+  String instancesUtilized(int percent) {
+    return '$percent% utilized';
+  }
+
+  @override
+  String get instancesHermesEnabledSnack =>
+      'Hermes Agent enabled — chat will use Hermes';
+
+  @override
+  String get instancesHermesDisabledSnack => 'Switched back to default gateway';
+
+  @override
+  String get instancesHermesTitle => '🦞 Hermes Agent';
+
+  @override
+  String get instancesHermesActive =>
+      'Active — routing chat through Hermes API server';
+
+  @override
+  String get instancesHermesInactive =>
+      'Disabled — using the default Hermes gateway';
+
+  @override
+  String get instancesHermesEnable => 'Enable Hermes Agent';
+
+  @override
+  String get instancesHermesEnableSubtitle =>
+      'Route chat through Hermes for tool use, file ops, web search, and code execution';
+
+  @override
+  String get instancesHermesUrl => 'Hermes API URL';
+
+  @override
+  String get instancesApiKeyOptional => 'API Key (optional)';
+
+  @override
+  String get instancesApiKeyHint => 'Leave empty for local-only use';
+
+  @override
+  String get instancesTestConnection => 'Test Connection';
 }
