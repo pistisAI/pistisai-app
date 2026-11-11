@@ -132,7 +132,11 @@ jobs:
         run: |
           apt_opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
           for attempt in 1 2 3; do
-            if timeout 240 bash -c "sudo apt-get update -qq $apt_opts && sudo apt-get install -y -qq --no-install-recommends $apt_opts clang cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev"; then
+            # diagnostics: what apt is doing if it stalls (print before/after)
+            echo "--- attempt $attempt: apt processes + sources"
+            ps -eo pid,etime,cmd | grep -E "apt|dpkg" | grep -v grep || true
+            ls /etc/apt/sources.list.d/ 2>/dev/null; grep -h "^URIs\|^deb " /etc/apt/sources.list.d/* /etc/apt/sources.list 2>/dev/null | head -5
+            if timeout 240 bash -c "sudo apt-get -o Debug::Acquire::http=true update $apt_opts && sudo apt-get install -y --no-install-recommends $apt_opts clang cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev"; then
               echo "native deps installed (attempt $attempt)"
               exit 0
             fi
