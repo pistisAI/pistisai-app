@@ -4,9 +4,9 @@ Status: proposed companion surface for Hermes durable background work
 
 ## Why this exists
 
-Telegram is Christopher's main text channel, but Telegram turns are request/response events. After a final reply, the foreground Hermes loop is not still running. Durable continuation needs explicit work sources: local systemd jobs, cron, webhooks, process completion callbacks, startup recovery, or kanban.
+Telegram is the operator's main text channel, but Telegram turns are request/response events. After a final reply, the foreground Hermes loop is not still running. Durable continuation needs explicit work sources: local systemd jobs, cron, webhooks, process completion callbacks, startup recovery, or kanban.
 
-RIGHT-PC now has a local detached background lane:
+The hub host now has a local detached background lane:
 
 - `~/.local/bin/hermes-local-think`
 - `~/.local/bin/hermes-local-think-status`
@@ -16,11 +16,11 @@ RIGHT-PC now has a local detached background lane:
 
 Pistisai can make that lane visible as a "thought train": a local companion panel showing what Hermes is doing in the background, what finished, what was skipped by wake gates, and which jobs are chained together.
 
-Christopher's stronger product direction: the main window should not hide this in a secondary diagnostics page. It should become the primary cockpit: a permanent direct chat channel synced across devices through the Tailscale/private mesh, with the Hermes thought-train/activity stream and verbose tool/event log mixed into the same timeline in a controlled way.
+the operator's stronger product direction: the main window should not hide this in a secondary diagnostics page. It should become the primary cockpit: a permanent direct chat channel synced across devices through the Tailscale/private mesh, with the Hermes thought-train/activity stream and verbose tool/event log mixed into the same timeline in a controlled way.
 
 ## Current split
 
-- Telegram: main text channel for Christopher-facing updates.
+- Telegram: main text channel for the operator-facing updates.
 - Hermes foreground turn: immediate request/response tool use.
 - `hermes-local-think`: bounded detached background reasoning or verification.
 - Cron/webhooks/startup recovery: recurring/event-driven wake sources.
@@ -51,7 +51,7 @@ Timeline layering:
 3. Tool/event log — visible as expandable rows, with verbose mode toggle.
 4. Raw tool output/logs — hidden until clicked.
 
-This gives Christopher the sense that Hermes is continuously operating without pretending to expose raw hidden model chain-of-thought.
+This gives the operator the sense that Hermes is continuously operating without pretending to expose raw hidden model chain-of-thought.
 Useful controls later:
 
 - open full final/log/artifacts
@@ -153,7 +153,7 @@ Good first placement:
 - compact card above the input can show current active job / gateway state
 - no demo controls by default
 
-Avoid burying it only in the dashboard overview; Christopher may not see it during normal chat.
+Avoid burying it only in the dashboard overview; the operator may not see it during normal chat.
 
 ## Permanent synced chat channel
 

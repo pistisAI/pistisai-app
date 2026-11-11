@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'dart:io' show Platform;
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/services/vision/vision_service.dart';
@@ -38,70 +39,77 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
   final V4L2CameraService _v4l2 = V4L2CameraService();
   bool _v4l2Running = false;
 
-  Future<void> _startLinuxCamera() async {
+  Future<void> _startLinuxCamera(AppLocalizations l10n) async {
     try {
       await _v4l2.start();
       _v4l2Running = true;
-      _testResults.add('✅ Linux camera capture started (${_v4l2.device})');
+      _testResults.add(l10n.visionLinuxCameraStarted(_v4l2.device));
     } catch (e) {
       _v4l2Running = false;
-      _testResults.add('❌ Linux camera: $e');
+      _testResults.add(l10n.visionLinuxCameraError('$e'));
     }
     if (mounted) setState(() {});
   }
 
   Future<void> _initializeAllServices() async {
+    // Read the strings before any await so no BuildContext is used across
+    // an async gap.
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _isInitializing = true;
-      _statusMessage = 'Initializing services...';
+      _statusMessage = l10n.visionInitializing;
     });
 
     try {
       // Initialize Main Vision Service
       try {
         await _mainVisionService.initialize();
-        _testResults.add('✅ Main Vision Service initialized');
+        _testResults.add(l10n.visionResultInitialized(l10n.visionMainService));
       } catch (e) {
-        _testResults.add('❌ Main Vision Service: $e');
+        _testResults.add(l10n.visionResultError(l10n.visionMainService, '$e'));
       }
 
       // Initialize Region Capture Service
       try {
         await _regionCaptureService.initialize();
-        _testResults.add('✅ Region Capture Service initialized');
+        _testResults
+            .add(l10n.visionResultInitialized(l10n.visionRegionCaptureService));
       } catch (e) {
-        _testResults.add('❌ Region Capture Service: $e');
+        _testResults
+            .add(l10n.visionResultError(l10n.visionRegionCaptureService, '$e'));
       }
 
       // Initialize Camera Capture Service
       try {
         await _cameraCaptureService.initialize();
-        _testResults.add('✅ Camera Capture Service initialized');
+        _testResults
+            .add(l10n.visionResultInitialized(l10n.visionCameraCaptureService));
       } catch (e) {
-        _testResults.add('❌ Camera Capture Service: $e');
+        _testResults
+            .add(l10n.visionResultError(l10n.visionCameraCaptureService, '$e'));
       }
 
       // Initialize OCR Engine Service
       try {
         await _ocrEngineService.initialize();
-        _testResults.add('✅ OCR Engine Service initialized');
+        _testResults.add(l10n.visionResultInitialized(l10n.visionOcrService));
       } catch (e) {
-        _testResults.add('❌ OCR Engine Service: $e');
+        _testResults.add(l10n.visionResultError(l10n.visionOcrService, '$e'));
       }
 
       // On desktop Linux, start the v4l2 capture path (camera plugin has
       // no Linux backend; camera_desktop can't convert YUYV frames).
       if (Platform.isLinux) {
-        await _startLinuxCamera();
+        await _startLinuxCamera(l10n);
       }
 
       setState(() {
-        _statusMessage = 'Initialization complete';
+        _statusMessage = l10n.visionInitComplete;
       });
     } catch (e) {
       setState(() {
-        _statusMessage = 'Initialization failed: $e';
-        _testResults.add('❌ Fatal error: $e');
+        _statusMessage = l10n.visionInitFailed('$e');
+        _testResults.add(l10n.visionFatalError('$e'));
       });
     } finally {
       setState(() {
@@ -128,7 +136,10 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
         ),
         title: Text(title),
         subtitle: Text(
-          isInitialized ? 'Initialized' : (lastError ?? 'Not initialized'),
+          isInitialized
+              ? AppLocalizations.of(context).visionInitialized
+              : (lastError ??
+                  AppLocalizations.of(context).visionNotInitialized),
           style: TextStyle(
             color: isInitialized
                 ? Theme.of(context).colorScheme.onPrimaryContainer
@@ -137,7 +148,9 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
         ),
         trailing: Icon(
           isInitialized ? Icons.check_circle : Icons.error,
-          color: isInitialized ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
+          color: isInitialized
+              ? AppTheme.colorsOf(context).success
+              : AppTheme.colorsOf(context).danger,
         ),
       ),
     );
@@ -145,9 +158,10 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vision Settings'),
+        title: Text(l10n.visionSettingsTitle),
       ),
       body: Column(
         children: [
@@ -158,34 +172,34 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Service Status',
+                    l10n.visionServiceStatus,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
                 _buildServiceStatusCard(
                   context: context,
-                  title: 'Main Vision Service',
+                  title: l10n.visionMainService,
                   icon: '👁️',
                   isInitialized: _mainVisionService.isInitialized,
                   lastError: null,
                 ),
                 _buildServiceStatusCard(
                   context: context,
-                  title: 'Region Capture Service',
+                  title: l10n.visionRegionCaptureService,
                   icon: '🖼️',
                   isInitialized: _regionCaptureService.isInitialized,
                   lastError: _regionCaptureService.lastError,
                 ),
                 _buildServiceStatusCard(
                   context: context,
-                  title: 'Camera Capture Service',
+                  title: l10n.visionCameraCaptureService,
                   icon: '📷',
                   isInitialized: _cameraCaptureService.isInitialized,
                   lastError: _cameraCaptureService.lastError,
                 ),
                 _buildServiceStatusCard(
                   context: context,
-                  title: 'OCR Engine Service',
+                  title: l10n.visionOcrService,
                   icon: '🔤',
                   isInitialized: _ocrEngineService.isInitialized,
                   lastError: _ocrEngineService.lastError,
@@ -200,7 +214,7 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Camera Preview',
+                          l10n.visionCameraPreview,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
@@ -213,22 +227,24 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Local-only preview (v4l2/ffmpeg). Frames are not saved or sent.',
+                          l10n.visionCameraPreviewNote,
                           style: Theme.of(context)
                               .textTheme
                               .bodySmall
-                              ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+                              ?.copyWith(
+                                  color: AppTheme.colorsOf(context)
+                                      .textColorLight),
                         ),
                       ],
                     ),
                   ),
                 if (_testResults.isNotEmpty) ...[
-                  const Padding(
-                    padding: EdgeInsets.all(16),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Text(
-                      'Test Results',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      l10n.visionTestResults,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   Padding(
@@ -260,7 +276,9 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
               color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.colorsOf(context).textColor.withValues(alpha: 0.1),
+                  color: AppTheme.colorsOf(context)
+                      .textColor
+                      .withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),
@@ -286,7 +304,7 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Initialize All Services'),
+                      : Text(l10n.visionInitializeAll),
                 ),
               ],
             ),

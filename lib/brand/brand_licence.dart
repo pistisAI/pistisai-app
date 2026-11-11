@@ -75,7 +75,7 @@ class BrandLicence {
   const BrandLicence._();
 
   /// Ed25519 public key (base64url, unpadded) for the whitelabel key.
-  /// Generated 2026-11-09; the private key is held by Christopher only.
+  /// Generated 2026-11-09; the private key is held by the licensor only.
   static const String _publicKeyB64Url =
       'JTu_dDC7g2J8NnfxJ60tD4w6CGiA66CBtCojh9H_q08';
 
