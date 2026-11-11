@@ -286,10 +286,10 @@ jobs:
         uses: actions/cache@v6
         with:
           path: services/api-backend/node_modules
-          key: ${{ runner.os }}-api-backend-node-modules-${{ hashFiles('services/api-backend/package.json') }}
+          key: ${{ runner.os }}-api-backend-node-modules-${{ hashFiles('services/api-backend/package-lock.json') }}
 
-      - name: "📦 npm install"
-        run: npm install
+      - name: "📦 npm ci"
+        run: npm ci
 
       - name: "🔍 npm lint"
         run: npm run lint

@@ -10,7 +10,9 @@ test-results/
 
 # Node.js
 node_modules/
-package-lock.json
+# package-lock.json is committed for each Node package: `npm ci` needs it.
+# Only the root one stays ignored (it is a local tooling folder, not a service).
+/package-lock.json
 yarn.lock
 npm-debug.log*
 yarn-debug.log*
