@@ -1393,15 +1393,31 @@
   "configExport": "Export",
   "configImport": "Import",
   "configClearCacheTitle": "Clear Cache",
-  "configClearCacheConfirm": "Clear all cached data? ({size} MB will be freed)",
-  "@configClearCacheConfirm": {
+  "configCacheUnit": "MB",
+  "configClearCacheConfirmMeasured": "Delete generated speech audio and cached images? ({size} on disk)",
+  "@configClearCacheConfirmMeasured": {
     "placeholders": {
       "size": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
-  "configCacheCleared": "Cache cleared successfully",
+  "configCacheClearedFreed": "Cache cleared ({size} freed)",
+  "@configCacheClearedFreed": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "configCacheClearFailed": "Could not clear the cache: {error}",
+  "@configCacheClearFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "configUpdateMajor": "Major version - may include breaking changes",
   "configUpdateMinor": "Minor version - new features and improvements",
   "configUpdatePatch": "Patch version - bug fixes and security updates",
@@ -1677,6 +1693,8 @@
   "connTesting": "Testing connection...",
   "connDns": "DNS resolution",
   "connTcp": "TCP connection",
+  "connNotTestedYet": "Connection not tested yet",
+  "connTestAction": "Test connection",
   "connRuntimeApi": "Runtime API",
   "connUnknown": "Unknown",
   "connFailed": "Connection Failed",

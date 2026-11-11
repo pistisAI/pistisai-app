@@ -165,4 +165,4 @@ mountVersionedRoutes(app, '/users', {
 
 - Documentation: https://docs.example.com
 - Migration Guide: See API_VERSIONING_GUIDE.md
-- Issues: https://github.com/ghcr.io/IAClé/IAClé/api/issues
+- Issues: https://github.com/pistisAI/pistisai-app/issues

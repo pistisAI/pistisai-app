@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the implementation of proxy failover and redundancy management for the IAClé API backend.
+This document summarizes the implementation of proxy failover and redundancy management for the Pistisai API backend.
 
 **Validates: Requirements 5.8**
 

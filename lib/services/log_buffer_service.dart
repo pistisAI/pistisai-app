@@ -6,6 +6,7 @@ import '../utils/web_interop_stub.dart'
     if (dart.library.html) '../utils/web_interop.dart';
 
 import '../config/app_config.dart';
+import 'package:pistisai/brand/brand.dart';
 
 /// Simple client-side log buffer that mirrors debug output into localStorage
 /// and periodically uploads entries to the backend, where they are persisted
@@ -98,7 +99,7 @@ class LogBufferService {
     try {
       final url = window.location.href;
       final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
-      if (host.isNotEmpty && host != 'app.pistisai.app') {
+      if (host.isNotEmpty && host != Brand.current.appHost) {
         // Marketing/non-app hosts should never depend on API availability.
         return;
       }

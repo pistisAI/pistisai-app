@@ -1,6 +1,6 @@
 # Desktop Control Architecture
 
-Desktop Control lets IAClé inspect and operate the local desktop through explicit services and user-controlled actions.
+Desktop Control lets Pistisai inspect and operate the local desktop through explicit services and user-controlled actions.
 
 ## Current Status
 

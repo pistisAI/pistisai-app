@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ThemeConfig` class provides a centralized, unified theme configuration system for the IAClé application. It supports Light, Dark, and System themes with platform-specific variations and comprehensive validation.
+The `ThemeConfig` class provides a centralized, unified theme configuration system for the Pistisai application. It supports Light, Dark, and System themes with platform-specific variations and comprehensive validation.
 
 ## Features
 
@@ -14,7 +14,7 @@ The `ThemeConfig` class provides a centralized, unified theme configuration syst
 
 ### 2. Color Definitions
 
-#### Brand Colors (IAClé Gold)
+#### Brand Colors (Pistisai Gold)
 
 - Primary: `#FFD700` (Gold)
 - Highlight: `#FFE44D` (Bright gold / glow)

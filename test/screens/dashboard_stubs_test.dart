@@ -107,7 +107,7 @@ void main() {
   group('AgentListItem', () {
     AgentInfo makeAgent(AgentLifecycleState state) => AgentInfo(
           id: 'a1',
-          name: 'Zoidbot',
+          name: 'Test Agent',
           type: 'hermes',
           state: state,
         );
@@ -120,7 +120,7 @@ void main() {
         onTap: () => tapped = true,
       )));
 
-      expect(find.text('Zoidbot'), findsOneWidget);
+      expect(find.text('Test Agent'), findsOneWidget);
       expect(find.text('Running'), findsOneWidget);
 
       await tester.tap(find.byType(ListTile));

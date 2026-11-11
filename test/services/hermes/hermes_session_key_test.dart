@@ -176,6 +176,82 @@ void main() {
       service.dispose();
     });
 
+    test('resolves the pistisai chat session, not a newer session of another chat',
+        () async {
+      final requests = <http.Request>[];
+      final service = HermesStreamingService(
+        client: MockClient((request) async {
+          requests.add(request);
+          if (request.url.path == '/api/sessions') {
+            // A runtime that ignores the chat filter: the other chat's
+            // session is the most recently active one.
+            return http.Response(
+              jsonEncode(<String, Object>{
+                'data': <Object>[
+                  <String, Object>{
+                    'id': 'other-chat-session',
+                    'source': 'pistisai',
+                    'chat': 'main',
+                    'last_active': 200,
+                  },
+                  <String, Object>{
+                    'id': 'own-chat-session',
+                    'source': 'pistisai',
+                    'chat': 'pistisai',
+                    'last_active': 100,
+                  },
+                ],
+              }),
+              200,
+            );
+          }
+          return http.Response('{"object":"list","data":[]}', 200);
+        }),
+      );
+
+      await service.fetchSessionMessages('pistisai');
+
+      final list =
+          requests.firstWhere((request) => request.url.path == '/api/sessions');
+      expect(list.url.queryParameters['source'], 'pistisai');
+      expect(list.url.queryParameters['chat'], 'pistisai');
+      final poll = requests.lastWhere(
+          (request) => request.url.path.startsWith('/api/sessions/'));
+      expect(poll.url.path, '/api/sessions/own-chat-session/messages');
+      service.dispose();
+    });
+
+    test('rows without a chat field are still accepted', () async {
+      final requests = <http.Request>[];
+      final service = HermesStreamingService(
+        client: MockClient((request) async {
+          requests.add(request);
+          if (request.url.path == '/api/sessions') {
+            return http.Response(
+              jsonEncode(<String, Object>{
+                'data': <Object>[
+                  <String, Object>{
+                    'id': 'legacy-session',
+                    'source': 'pistisai',
+                    'last_active': 5,
+                  },
+                ],
+              }),
+              200,
+            );
+          }
+          return http.Response('{"object":"list","data":[]}', 200);
+        }),
+      );
+
+      await service.fetchSessionMessages('pistisai');
+
+      final poll = requests.lastWhere(
+          (request) => request.url.path.startsWith('/api/sessions/'));
+      expect(poll.url.path, '/api/sessions/legacy-session/messages');
+      service.dispose();
+    });
+
     test('an unbound short id polls that id directly (never creates a session)', () async {
       final requests = <http.Request>[];
       final service = HermesStreamingService(

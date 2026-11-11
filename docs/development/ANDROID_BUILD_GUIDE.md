@@ -1,6 +1,6 @@
 # Android Build Guide
 
-This guide explains the Android build system for IAClé, which creates multi-architecture APKs.
+This guide explains the Android build system for Pistisai, which creates multi-architecture APKs.
 
 ## Overview
 
@@ -204,7 +204,7 @@ If you prefer to configure secrets manually:
    gh secret set ANDROID_KEYSTORE_B64 < android/release-keystore.base64.txt
    gh secret set ANDROID_STORE_PASSWORD
    gh secret set ANDROID_KEY_PASSWORD
-   gh secret set ANDROID_KEY_ALIAS -b "IAClé-release"
+   gh secret set ANDROID_KEY_ALIAS -b "Pistisai-release"
    ```
 
 ### Security Best Practices
@@ -263,7 +263,7 @@ android {
 
 ### Check android/app/src/main/AndroidManifest.xml
 
-SDK levels are not declared in the manifest. `minSdkVersion` and `targetSdkVersion` come from the Flutter Gradle plugin inside `android/app/build.gradle`. The manifest does declare `INTERNET`, `ACCESS_NETWORK_STATE`, and an OAuth callback intent filter with scheme `IAClé` and host `callback`.
+SDK levels are not declared in the manifest. `minSdkVersion` and `targetSdkVersion` come from the Flutter Gradle plugin inside `android/app/build.gradle`. The manifest does declare `INTERNET`, `ACCESS_NETWORK_STATE`, and an OAuth callback intent filter with scheme `Pistisai` and host `callback`.
 
 ### Update pubspec.yaml
 
@@ -388,7 +388,7 @@ After successful build:
    adb shell am start -n app.example.com/.MainActivity
 
    # Check logs
-   adb logcat | grep -i IAClé
+   adb logcat | grep -i Pistisai
    ```
 
 The mobile workflow does not publish `.sha256` files next to the APKs.

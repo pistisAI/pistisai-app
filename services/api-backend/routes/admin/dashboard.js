@@ -121,8 +121,8 @@ router.get('/metrics', adminReadOnlyLimiter, adminAuth(), async (req, res) => {
     // 5. Calculate monthly recurring revenue (MRR)
     const tierPricing = {
       free: 0,
-      premium: 9.99,
-      enterprise: 29.99,
+      premium: Number(process.env.PISTISAI_PRICE_PREMIUM) || 0,
+      enterprise: Number(process.env.PISTISAI_PRICE_ENTERPRISE) || 0,
     };
 
     const mrr =

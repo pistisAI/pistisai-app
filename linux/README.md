@@ -8,7 +8,7 @@ This directory contains files required for Linux desktop integration and Flatpak
 Desktop entry file that provides application menu integration on Linux systems.
 
 **Purpose**: 
-- Adds IAClé to application menus
+- Adds Pistisai to application menus
 - Defines application name, icon, and categories
 - Specifies how to launch the application
 

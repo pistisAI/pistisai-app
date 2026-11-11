@@ -18,9 +18,9 @@ BeforeAll {
     # Set up staging environment configuration
     $Global:StagingConfig = @{
         Environment = "Staging"
-        VPSHost = "staging.zoidbot.online"
+        VPSHost = "staging.example.com"
         VPSUser = "staging-user"
-        VPSProjectPath = "/opt/zoidbot-staging"
+        VPSProjectPath = "/opt/pistisai-staging"
         WSLDistribution = "Ubuntu-24.04"
         TimeoutSeconds = 300
         DryRun = $true  # Use dry run for integration tests to avoid actual deployment
@@ -394,7 +394,7 @@ Describe "Environment-Specific Integration Tests" {
         BeforeEach {
             $Script:DeploymentConfig = @{
                 Environment = "Staging"
-                VPSHost = "staging.zoidbot.online"
+                VPSHost = "staging.example.com"
                 VPSUser = "staging-user"
                 DryRun = $true
             }
@@ -402,12 +402,12 @@ Describe "Environment-Specific Integration Tests" {
         
         It "Should configure staging environment correctly" {
             $Script:DeploymentConfig.Environment | Should -Be "Staging"
-            $Script:DeploymentConfig.VPSHost | Should -Be "staging.zoidbot.online"
+            $Script:DeploymentConfig.VPSHost | Should -Be "staging.example.com"
             $Script:DeploymentConfig.DryRun | Should -Be $true
         }
         
         It "Should use staging-specific deployment paths" {
-            $Script:DeploymentConfig.VPSHost | Should -Not -Be "zoidbot.online"  # Not production
+            $Script:DeploymentConfig.VPSHost | Should -Not -Be "example.com"  # Not production
             $Script:DeploymentConfig.VPSUser | Should -Be "staging-user"
         }
     }
@@ -416,7 +416,7 @@ Describe "Environment-Specific Integration Tests" {
         BeforeEach {
             $Script:DeploymentConfig = @{
                 Environment = "Production"
-                VPSHost = "zoidbot.online"
+                VPSHost = "example.com"
                 VPSUser = "cloudllm"
                 DryRun = $true  # Keep dry run for tests
             }
@@ -424,12 +424,12 @@ Describe "Environment-Specific Integration Tests" {
         
         It "Should configure production environment correctly" {
             $Script:DeploymentConfig.Environment | Should -Be "Production"
-            $Script:DeploymentConfig.VPSHost | Should -Be "zoidbot.online"
+            $Script:DeploymentConfig.VPSHost | Should -Be "example.com"
             $Script:DeploymentConfig.VPSUser | Should -Be "cloudllm"
         }
         
         It "Should use production-specific deployment paths" {
-            $Script:DeploymentConfig.VPSHost | Should -Be "zoidbot.online"
+            $Script:DeploymentConfig.VPSHost | Should -Be "example.com"
             $Script:DeploymentConfig.VPSUser | Should -Be "cloudllm"
         }
     }

@@ -1,10 +1,10 @@
 # Self-Hosting Guide
 
-This guide explains how to deploy IAClé for self-hosted, privacy-first operation.
+This guide explains how to deploy Pistisai for self-hosted, privacy-first operation.
 
 ## Overview
 
-IAClé is designed to run primarily on local devices with optional cloud/SaaS features. Self-hosting allows you to run backend services on your own infrastructure while maintaining control over your data.
+Pistisai is designed to run primarily on local devices with optional cloud/SaaS features. Self-hosting allows you to run backend services on your own infrastructure while maintaining control over your data.
 
 Current orientation is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are optional support model providers for app-owned memory/background features, not primary app runtimes. Remote agent runtimes and cloud connectors should live inside the user's Tailscale tailnet where possible.
 
@@ -19,7 +19,7 @@ Current orientation is agent-runtime-first and Tailscale-first. The setup wizard
 
 ## Architecture Overview
 
-When self-hosted, IAClé consists of:
+When self-hosted, Pistisai consists of:
 
 1. **Frontend**: Flutter application (runs locally on user's device)
 2. **Backend Services** (optional, for cloud features):
@@ -37,8 +37,8 @@ Run only the Flutter frontend with local SQLite storage. No backend services req
 
 ```bash
 # Get the code
-git clone https://github.com/iacle-solutions/iacle-app.git
-cd iacle-app
+git clone https://github.com/pistisAI/pistisai-app.git
+cd pistisai-app
 
 # Install Flutter dependencies (app + shared package)
 flutter pub get
@@ -131,9 +131,9 @@ Key environment variables in `.env`:
 # Database
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
-POSTGRES_USER=IAClé
+POSTGRES_USER=Pistisai
 POSTGRES_PASSWORD=your_secure_password
-POSTGRES_DB=IAClé
+POSTGRES_DB=Pistisai
 
 # Redis
 REDIS_HOST=localhost
@@ -187,7 +187,7 @@ Default local ports: API backend `8080`, embedded router `1337`, streaming proxy
 
 ```bash
 # Backup PostgreSQL database
-pg_dump -h localhost -U IAClé IAClé > backup.sql
+pg_dump -h localhost -U Pistisai Pistisai > backup.sql
 
 # Backup Redis (optional, mainly for caching)
 redis-cli BGSAVE

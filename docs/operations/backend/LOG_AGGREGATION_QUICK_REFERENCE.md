@@ -48,7 +48,7 @@ logger.info('User login', {
 | LOKI_BATCH_TIMEOUT | 5000 | Batch timeout in ms |
 | ELK_ENABLED | false | Enable ELK log aggregation |
 | ELK_HOSTS | localhost:9200 | Elasticsearch hosts |
-| ELK_INDEX | IAClé-api | Index name |
+| ELK_INDEX | Pistisai-api | Index name |
 | LOG_ERRORS_TO_SENTRY | true | Send errors to Sentry |
 | LOG_ERRORS_TO_FILE | true | Write errors to file |
 | LOG_WARNINGS_TO_FILE | true | Write warnings to file |
@@ -124,38 +124,38 @@ if (logRouter.isDestinationEnabled('loki')) {
 
 ```
 # All logs
-{service="IAClé-api"}
+{service="Pistisai-api"}
 
 # Error logs
-{service="IAClé-api", level="error"}
+{service="Pistisai-api", level="error"}
 
 # Logs for specific user
-{service="IAClé-api", userId="user-123"}
+{service="Pistisai-api", userId="user-123"}
 
 # Logs with correlation ID
-{service="IAClé-api", correlationId="corr-123"}
+{service="Pistisai-api", correlationId="corr-123"}
 
 # Logs in time range
-{service="IAClé-api"} | since 1h
+{service="Pistisai-api"} | since 1h
 ```
 
 ## ELK Queries
 
 ```
 # All logs
-service: "IAClé-api"
+service: "Pistisai-api"
 
 # Error logs
-service: "IAClé-api" AND level: "error"
+service: "Pistisai-api" AND level: "error"
 
 # Logs for specific user
-service: "IAClé-api" AND userId: "user-123"
+service: "Pistisai-api" AND userId: "user-123"
 
 # Logs with correlation ID
-service: "IAClé-api" AND correlationId: "corr-123"
+service: "Pistisai-api" AND correlationId: "corr-123"
 
 # Logs in time range
-service: "IAClé-api" AND @timestamp: [now-1h TO now]
+service: "Pistisai-api" AND @timestamp: [now-1h TO now]
 ```
 
 ## Testing

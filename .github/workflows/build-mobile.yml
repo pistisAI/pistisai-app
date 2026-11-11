@@ -285,12 +285,12 @@ jobs:
         with:
           artifacts: "release-assets/*"
           tag: "mobile-v${{ needs.analyze.outputs.version }}"
-          name: "IAClé Mobile v${{ needs.analyze.outputs.version }}"
+          name: "Pistisai Mobile v${{ needs.analyze.outputs.version }}"
           artifactErrorsFailBuild: true
           allowUpdates: true
           makeLatest: false
           body: |
-            ## IAClé Mobile v${{ needs.analyze.outputs.version }}
+            ## Pistisai Mobile v${{ needs.analyze.outputs.version }}
 
             ### Android
             - APK(s) attached

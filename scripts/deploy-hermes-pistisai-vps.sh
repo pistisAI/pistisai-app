@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Deploy the hosted test Hermes agent to the production Pistisai VPS.
 # Target: cloudllm@pistisai.app:/opt/Pistisai
-# This is NOT Simon's VPS (31.97.140.7).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,37 +13,19 @@ REMOTE_DIR="${REMOTE_DIR:-${PISTISAI_REMOTE_DIR:-/opt/Pistisai}}"
 HERMES_API_SERVER_KEY="${HERMES_API_SERVER_KEY:-}"
 PISTISAI_VPS_SSH_HOST="${PISTISAI_VPS_SSH_HOST:-}"
 
-is_simon_host() {
-  case "${1:-}" in
-    31.97.140.7) return 0 ;;
-    *) return 1 ;;
-  esac
-}
-
-if is_simon_host "$VPS_HOST"; then
-  echo "[deploy-hermes] ignoring Simon VPS host $VPS_HOST; using pistisai.app" >&2
-  VPS_HOST="pistisai.app"
-  VPS_USER="cloudllm"
-  REMOTE_DIR="/opt/Pistisai"
-fi
-
 if [[ "$VPS_USER" == "pistisai" ]]; then
-  echo "[deploy-hermes] ignoring Simon SSH user pistisai; using cloudllm" >&2
+  echo "[deploy-hermes] ignoring legacy SSH user pistisai; using cloudllm" >&2
   VPS_USER="cloudllm"
 fi
 
 case "$REMOTE_DIR" in
   /opt/pistisai|/opt/pistisai/deploy)
-    echo "[deploy-hermes] ignoring Simon remote dir $REMOTE_DIR; using /opt/Pistisai" >&2
+    echo "[deploy-hermes] ignoring legacy remote dir $REMOTE_DIR; using /opt/Pistisai" >&2
     REMOTE_DIR="/opt/Pistisai"
     ;;
 esac
 
 SSH_HOST="${PISTISAI_VPS_SSH_HOST:-$VPS_HOST}"
-if is_simon_host "$SSH_HOST"; then
-  echo "[deploy-hermes] ignoring Simon origin SSH host $SSH_HOST; using pistisai.app" >&2
-  SSH_HOST="pistisai.app"
-fi
 
 if [[ -z "$VPS_SSH_KEY_FILE" ]]; then
   echo "VPS_SSH_KEY_FILE is required" >&2
@@ -74,7 +55,7 @@ ssh_target="${VPS_USER}@${SSH_HOST}"
 case "$SSH_HOST" in
   pistisai.app|www.pistisai.app|app.pistisai.app|api.pistisai.app|hermes.pistisai.app)
     echo "[deploy-hermes] $SSH_HOST is Cloudflare-proxied; GitHub/CI cannot SSH to :22" >&2
-    echo "[deploy-hermes] set PISTISAI_VPS_SSH_HOST to the origin VPS IP (not 31.97.140.7)" >&2
+    echo "[deploy-hermes] set PISTISAI_VPS_SSH_HOST to the origin address" >&2
     exit 1
     ;;
 esac

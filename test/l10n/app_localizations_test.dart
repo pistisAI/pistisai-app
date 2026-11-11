@@ -264,8 +264,9 @@ void main() {
 
   test('batch 9 configuration messages read naturally in French', () {
     final fr = lookupAppLocalizations(const Locale('fr'));
-    expect(fr.configClearCacheConfirm(500),
-        'Vider toutes les données en cache ? (500 Mo seront libérés)');
+    expect(fr.configClearCacheConfirmMeasured('12 Mo'),
+        "Supprimer l'audio de synthèse vocale et les images en cache ? (12 Mo sur le disque)");
+    expect(fr.configCacheClearedFreed('12 Mo'), 'Cache vidé (12 Mo libérés)');
     expect(fr.configRuntimeSet('Hermes Agent'),
         'Environnement actif : Hermes Agent');
     expect(fr.configUpdateAvailable('3.2.0'), 'Mise à jour disponible : 3.2.0');

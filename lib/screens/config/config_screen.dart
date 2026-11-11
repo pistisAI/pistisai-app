@@ -19,6 +19,7 @@ import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../config/app_config.dart';
 import '../../config/theme.dart';
+import '../../services/app_cache_service.dart';
 import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
 import '../../services/settings_preference_service.dart';
@@ -433,9 +434,9 @@ class _ConfigScreenState extends State<ConfigScreen>
           ],
           suggestedName: filename,
         );
-        if (saveLocation != null) {
-          await File(saveLocation.path).writeAsString(jsonString);
-        }
+        // The user closed the dialog: nothing was written, so say nothing.
+        if (saveLocation == null) return;
+        await File(saveLocation.path).writeAsString(jsonString);
       }
 
       if (mounted) {
@@ -1118,11 +1119,20 @@ class _ConfigScreenState extends State<ConfigScreen>
 
   Future<void> _clearCache() async {
     final l10n = _l10n;
+    // The size shown and the result reported are measured, not assumed.
+    final cache = kIsWeb ? null : AppCacheService();
+    final sizeBefore = await cache?.sizeInBytes() ?? 0;
+    if (!mounted) return;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.configClearCacheTitle),
-        content: Text(l10n.configClearCacheConfirm(_cacheSizeMB)),
+        content: Text(
+          l10n.configClearCacheConfirmMeasured(
+            AppCacheService.formatMegabytes(sizeBefore, unit: l10n.configCacheUnit),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -1136,8 +1146,22 @@ class _ConfigScreenState extends State<ConfigScreen>
       ),
     );
 
-    if (confirmed == true) {
-      _showSnackBar(l10n.configCacheCleared, isError: false);
+    if (confirmed != true) return;
+    try {
+      PaintingBinding.instance.imageCache
+        ..clear()
+        ..clearLiveImages();
+      final freed = await cache?.clear() ?? 0;
+      if (mounted) {
+        _showSnackBar(
+          l10n.configCacheClearedFreed(AppCacheService.formatMegabytes(freed, unit: l10n.configCacheUnit)),
+          isError: false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(l10n.configCacheClearFailed('$e'), isError: true);
+      }
     }
   }
 

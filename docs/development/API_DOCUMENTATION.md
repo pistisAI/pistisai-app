@@ -1,8 +1,8 @@
-# IAClé API Documentation
+# Pistisai API Documentation
 
 ## 📋 Overview
 
-IAClé v3.6.2+ provides APIs for bridge communication, legacy streaming proxy management, and service integration. Current main-channel work should use the selected agent runtime, Tailscale secure device mesh, and per-user cloud connector model rather than assuming a streaming proxy is the default path.
+Pistisai v3.6.2+ provides APIs for bridge communication, legacy streaming proxy management, and service integration. Current main-channel work should use the selected agent runtime, Tailscale secure device mesh, and per-user cloud connector model rather than assuming a streaming proxy is the default path.
 
 **API Base URLs:**
 
@@ -26,8 +26,8 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 #### **Token Validation**
 
 - **Algorithm**: RS256
-- **Issuer**: `https://IAClé.auth0.com/`
-- **Audience**: `IAClé-api`
+- **Issuer**: `https://Pistisai.auth0.com/`
+- **Audience**: `Pistisai-api`
 - **Expiry**: 24 hours
 
 #### **Error Responses**
@@ -653,8 +653,8 @@ wss://app.example.com/ws/{type}/{id}
 Download the complete API collection:
 
 ```bash
-curl -o IAClé-api.json \
-  https://raw.githubusercontent.com/IAClé/iacle-app/main/docs/api/postman-collection.json
+curl -o Pistisai-api.json \
+  https://raw.githubusercontent.com/Pistisai/pistisai-app/main/docs/api/postman-collection.json
 ```
 
 #### **OpenAPI Specification**
@@ -708,4 +708,4 @@ X-RateLimit-Reset: 1640995200
 
 ---
 
-**For additional API details, examples, and SDKs, visit the [GitHub repository](https://github.com/iacle-solutions/iacle-app) or check the interactive API documentation at `/api/docs`.**
+**For additional API details, examples, and SDKs, visit the [GitHub repository](https://github.com/pistisAI/pistisai-app) or check the interactive API documentation at `/api/docs`.**

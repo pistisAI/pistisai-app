@@ -188,6 +188,44 @@ void main() {
       });
     });
 
+    test('lists only models whose provider is registered', () async {
+      final baseUrl = await _startRouter(serverRef: (value) => server = value);
+
+      final response = await http.get(baseUrl.replace(path: '/v1/models'));
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = (body['data'] as List<dynamic>).cast<Map<String, dynamic>>();
+
+      expect(data, isNotEmpty);
+      expect(data.map((m) => m['owned_by']).toSet(), {'zhipu'});
+      expect(data.map((m) => m['id']), contains('glm-4-flash'));
+    });
+
+    test('answers a client error for a model of an unregistered provider',
+        () async {
+      final baseUrl = await _startRouter(serverRef: (value) => server = value);
+
+      for (final model in ['gpt-4-turbo', 'no-such-model']) {
+        final response = await http.post(
+          baseUrl.replace(path: '/v1/chat/completions'),
+          headers: {
+            'Authorization': 'Bearer router-secret',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'model': model,
+            'messages': [
+              {'role': 'user', 'content': 'hello'},
+            ],
+          }),
+        );
+
+        expect(response.statusCode, HttpStatus.notFound, reason: model);
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final error = body['error'] as Map<String, dynamic>;
+        expect(error['code'], 'model_not_found');
+      }
+    });
+
     test('advertises an unauthenticated primary hub discovery document',
         () async {
       final baseUrl = await _startRouter(serverRef: (value) => server = value);
@@ -199,6 +237,8 @@ void main() {
       expect(body, containsPair('role', 'primary_hub'));
       expect(body, containsPair('product', 'Pistisai'));
       expect(body, containsPair('hermesPort', 8642));
+      expect(body, containsPair('clientsMustUseHub', true));
+      expect(body, containsPair('routerPort', baseUrl.port));
     });
   });
 }
