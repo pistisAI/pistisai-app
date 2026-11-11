@@ -29,6 +29,7 @@ import {
   UpdateDnsRecordSchema,
 } from '../../schemas/validation-schemas.js';
 import CloudflareDNSService from '../../services/cloudflare-dns-service.js';
+import { dnsSetupGoogleBody, validateBody } from '../misc-body-schemas.js';
 
 const router = express.Router();
 
@@ -512,6 +513,7 @@ router.post(
   '/setup-google',
   adminRateLimiter,
   adminAuth(['manage_dns_config']),
+  validateBody(dnsSetupGoogleBody),
   async (req, res) => {
     try {
       const pool = getPool();

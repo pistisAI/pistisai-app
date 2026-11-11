@@ -23,6 +23,7 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { TunnelSharingService } from '../services/tunnel-sharing-service.js';
 import logger from '../logger.js';
+import { tunnelSharePermissionBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 let tunnelSharingService = null;
@@ -748,6 +749,7 @@ router.get('/:id/access-logs', authenticateJWT, validateSchema({ params: tunnelI
 router.put(
   '/:id/shares/:shareId/permission',
   authenticateJWT,
+  validateBody(tunnelSharePermissionBody),
   async (req, res) => {
     try {
       if (!req.user) {

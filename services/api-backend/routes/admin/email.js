@@ -29,6 +29,7 @@ import GoogleWorkspaceService from '../../services/google-workspace-service.js';
 import EmailConfigService from '../../services/email-config-service.js';
 import EmailQueueService from '../../services/email-queue-service.js';
 import crypto from 'crypto';
+import { emailOauthCallbackBody, emailTemplateBody, emailTestBody, validateBody } from '../misc-body-schemas.js';
 
 const router = express.Router();
 
@@ -120,6 +121,7 @@ router.post(
   '/oauth/callback',
   adminRateLimiter,
   adminAuth(['manage_email_config']),
+  validateBody(emailOauthCallbackBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -361,6 +363,7 @@ router.post(
   '/test',
   adminRateLimiter,
   adminAuth(['manage_email_config']),
+  validateBody(emailTestBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -682,6 +685,7 @@ router.post(
   '/templates',
   adminRateLimiter,
   adminAuth(['manage_email_config']),
+  validateBody(emailTemplateBody),
   async (req, res) => {
     try {
       const pool = getPool();
