@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../brand/brand_copy.dart';
 import '../../../config/theme.dart';
 
@@ -84,7 +85,7 @@ class _SubtitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Your privacy-first local AI companion',
+      AppLocalizations.of(context).welcomeStepSubtitle,
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
             color: AppTheme.colorsOf(context).textColorLight,
           ),
@@ -108,32 +109,37 @@ class _FeatureCards extends StatelessWidget {
         _FeatureCard(
           compact: compact,
           icon: Icons.chat_bubble_outline,
-          title: 'Chat',
-          description: 'Streaming AI responses',
+          title: AppLocalizations.of(context).welcomeFeatureChat,
+          description:
+              AppLocalizations.of(context).welcomeFeatureChatDescription,
         ),
         _FeatureCard(
           compact: compact,
           icon: Icons.hub_outlined,
-          title: 'Agent Runtimes',
-          description: 'Hermes Agent on this device or over Tailscale',
+          title: AppLocalizations.of(context).welcomeFeatureRuntimes,
+          description:
+              AppLocalizations.of(context).welcomeFeatureRuntimesDescription,
         ),
         _FeatureCard(
           compact: compact,
           icon: Icons.face_outlined,
-          title: 'Evolving Avatar',
-          description: 'Personalized AI companion',
+          title: AppLocalizations.of(context).welcomeFeatureAvatar,
+          description:
+              AppLocalizations.of(context).welcomeFeatureAvatarDescription,
         ),
         _FeatureCard(
           compact: compact,
           icon: Icons.desktop_windows_outlined,
-          title: 'Desktop Control',
-          description: 'GUI automation',
+          title: AppLocalizations.of(context).homeToolDesktop,
+          description:
+              AppLocalizations.of(context).welcomeFeatureDesktopDescription,
         ),
         _FeatureCard(
           compact: compact,
           icon: Icons.visibility_outlined,
-          title: 'Vision',
-          description: 'Screen understanding',
+          title: AppLocalizations.of(context).homeToolVision,
+          description:
+              AppLocalizations.of(context).welcomeFeatureVisionDescription,
         ),
       ],
     );
@@ -164,7 +170,7 @@ class _InfoBox extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.',
+              AppLocalizations.of(context).welcomeStepInfo,
               style: TextStyle(
                   color: AppTheme.colorsOf(context).info, height: 1.35),
             ),

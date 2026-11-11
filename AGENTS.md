@@ -102,3 +102,10 @@ Restart OpenCode after editing `opencode.json` so it refetches server tools.
 - api-backend Jest needs `node --experimental-vm-modules ... --forceExit`; sdk uses plain `jest`
 - Don't edit `lib/**/*.g.dart` / `lib/**/*.freezed.dart` — regenerate via build_runner
 - Preserve branding exactly: `Pistisai`, `OpenClaw`
+
+## Naming and infrastructure (rename of 2026-11-11)
+
+- The product and hostnames are `pistisai` (`pistisai.app`, `api.pistisai.app`). The former `cloudtolocalllm` name is retired: do not reintroduce it in code, docs, config, CI, or issue text.
+- Kept on purpose until a planned migration (tracked in pistisAI/pistisai-app#650): the Postgres database name and user, the Auth0 audience, and the `cloudtolocalllm_pgdata` volume. Do not rename these in passing; they break login and data access if changed alone.
+- Never write server IPs, DNS records, or host names of private infrastructure into this repo. Use `example.com` / `YOUR_HOST` placeholders.
+

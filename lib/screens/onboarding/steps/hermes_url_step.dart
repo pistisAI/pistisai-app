@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../config/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -38,25 +39,26 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
 
   String _localHermesSubtitle(SetupWizardService wizard, bool isRemote) {
     if (isRemote) {
-      return 'Confirm the Tailscale URL, then paste the API key from your server.';
+      return AppLocalizations.of(context).urlRemoteSubtitle;
     }
     if (_isResolvingEndpoint) {
-      return 'Looking for Hermes on this device...';
+      return AppLocalizations.of(context).urlLooking;
     }
     if (wizard.state.detectedHermesKind == HermesEndpointKind.agentApi) {
-      return 'Hermes is running on this device. We auto-detected the connection details below.';
+      return AppLocalizations.of(context).urlDetected;
     }
     final detection = wizard.state.hermesDetectionMessage;
     if (detection != null && detection.isNotEmpty) {
       return detection;
     }
-    return 'Enter the Hermes Agent URL for this device. The default port is ${AppConfig.defaultHermesPort}.';
+    return AppLocalizations.of(context)
+        .urlEnterLocal('${AppConfig.defaultHermesPort}');
   }
 
   void _syncFromWizard(SetupWizardService wizard) {
     final isRemote = wizard.state.hermesLocation == HermesLocation.tailscale;
-    final url = wizard.state.hermesUrl ??
-        (isRemote ? '' : AppConfig.defaultHermesUrl);
+    final url =
+        wizard.state.hermesUrl ?? (isRemote ? '' : AppConfig.defaultHermesUrl);
     if (_urlController.text != url) {
       _urlController.text = url;
     }
@@ -91,7 +93,8 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
   Widget build(BuildContext context) {
     return Consumer<SetupWizardService>(
       builder: (context, wizard, child) {
-        final isRemote = wizard.state.hermesLocation == HermesLocation.tailscale;
+        final isRemote =
+            wizard.state.hermesLocation == HermesLocation.tailscale;
 
         if (!_initialized) {
           _initialized = true;
@@ -128,7 +131,9 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
               ),
               const SizedBox(height: 16),
               Text(
-                isRemote ? 'Connect to remote Hermes' : 'Connect to Hermes Agent',
+                isRemote
+                    ? AppLocalizations.of(context).urlConnectRemote
+                    : AppLocalizations.of(context).urlConnectLocal,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -147,7 +152,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
               TextField(
                 controller: _urlController,
                 decoration: InputDecoration(
-                  labelText: 'Hermes Agent URL',
+                  labelText: AppLocalizations.of(context).urlLabel,
                   hintText: isRemote
                       ? 'http://100.x.y.z:${AppConfig.defaultHermesPort}'
                       : AppConfig.defaultHermesUrl,
@@ -160,7 +165,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
               ),
               const SizedBox(height: 20),
               if (_isDiscovering)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(bottom: 16),
                   child: Row(
                     children: [
@@ -170,7 +175,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                       SizedBox(width: 12),
-                      Text('Auto-detecting API key...'),
+                      Text(AppLocalizations.of(context).urlAutoDetectingKey),
                     ],
                   ),
                 )
@@ -179,14 +184,15 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                   controller: _apiKeyController,
                   decoration: InputDecoration(
                     labelText: isRemote
-                        ? 'Hermes API Key (required)'
-                        : 'Hermes API Key',
+                        ? AppLocalizations.of(context).urlApiKeyRequired
+                        : AppLocalizations.of(context).urlApiKey,
                     hintText: isRemote
-                        ? 'From API_SERVER_KEY on the remote server'
-                        : 'Auto-discovered from Hermes config',
+                        ? AppLocalizations.of(context).urlApiKeyRemoteHint
+                        : AppLocalizations.of(context).urlApiKeyLocalHint,
                     prefixIcon: const Icon(Icons.vpn_key),
                     suffixIcon: _autoDiscovered
-                        ? Icon(Icons.check_circle, color: AppTheme.colorsOf(context).success)
+                        ? Icon(Icons.check_circle,
+                            color: AppTheme.colorsOf(context).success)
                         : null,
                     border: const OutlineInputBorder(),
                   ),
@@ -204,9 +210,14 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppTheme.colorsOf(context).success.withValues(alpha: 0.05),
+                    color: AppTheme.colorsOf(context)
+                        .success
+                        .withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.colorsOf(context).success.withValues(alpha: 0.2)),
+                    border: Border.all(
+                        color: AppTheme.colorsOf(context)
+                            .success
+                            .withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -215,7 +226,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                           size: 16, color: AppTheme.colorsOf(context).success),
                       const SizedBox(width: 8),
                       Text(
-                        'Auto-discovered from Hermes configuration',
+                        AppLocalizations.of(context).urlAutoDiscovered,
                         style: TextStyle(
                           color: AppTheme.colorsOf(context).success,
                           fontSize: 13,
@@ -249,7 +260,7 @@ class _HermesUrlStepState extends State<HermesUrlStep> {
                         }
                       : null,
                   icon: const Icon(Icons.arrow_forward),
-                  label: const Text('Save and Continue'),
+                  label: Text(AppLocalizations.of(context).urlSaveContinue),
                 ),
               ),
             ],
@@ -269,8 +280,8 @@ class _RemoteApiKeyHelp extends StatelessWidget {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Command copied — run it on your VPS'),
+      SnackBar(
+        content: Text(AppLocalizations.of(context).urlCommandCopied),
         duration: Duration(seconds: 3),
       ),
     );
@@ -285,14 +296,16 @@ class _RemoteApiKeyHelp extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.colorsOf(context).info.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.2)),
+        border: Border.all(
+            color: AppTheme.colorsOf(context).info.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'On your VPS, run this command and paste the output into the API key field above.',
-            style: TextStyle(color: AppTheme.colorsOf(context).info, height: 1.35),
+            AppLocalizations.of(context).urlRemoteHelp,
+            style:
+                TextStyle(color: AppTheme.colorsOf(context).info, height: 1.35),
           ),
           const SizedBox(height: 10),
           _CommandBlock(
@@ -322,7 +335,8 @@ class _CommandBlock extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.colorsOf(context).textColor,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1)),
+        border: Border.all(
+            color: AppTheme.colorsOf(context).info.withValues(alpha: 0.1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,9 +352,10 @@ class _CommandBlock extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Copy command',
+            tooltip: AppLocalizations.of(context).urlCopyCommand,
             onPressed: onCopy,
-            icon: Icon(Icons.copy, size: 18, color: AppTheme.colorsOf(context).info),
+            icon: Icon(Icons.copy,
+                size: 18, color: AppTheme.colorsOf(context).info),
             visualDensity: VisualDensity.compact,
           ),
         ],

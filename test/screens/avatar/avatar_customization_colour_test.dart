@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pistisai/config/theme.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/screens/avatar/avatar_customization_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,6 +27,9 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(MaterialApp.router(
       theme: AppTheme.darkTheme,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
       routerConfig: router,
     ));
     await tester.pump(const Duration(milliseconds: 100));

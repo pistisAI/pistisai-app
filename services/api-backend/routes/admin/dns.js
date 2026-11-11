@@ -23,6 +23,11 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
+import { validateSchema } from '../../middleware/schema-validation.js';
+import {
+  CreateDnsRecordSchema,
+  UpdateDnsRecordSchema,
+} from '../../schemas/validation-schemas.js';
 import CloudflareDNSService from '../../services/cloudflare-dns-service.js';
 
 const router = express.Router();
@@ -57,48 +62,13 @@ router.post(
   '/records',
   adminRateLimiter,
   adminAuth(['manage_dns_config']),
+  validateSchema({ body: CreateDnsRecordSchema }),
   async (req, res) => {
     try {
       const pool = getPool();
       initializeService(pool);
 
       const { recordType, name, value, ttl = 3600, priority = null } = req.body;
-
-      // Validate required fields
-      if (!recordType || !name || !value) {
-        return res.status(400).json({
-          error: 'Missing required fields: recordType, name, value',
-          code: 'MISSING_FIELDS',
-        });
-      }
-
-      // Validate record type
-      const validRecordTypes = [
-        'A',
-        'AAAA',
-        'CNAME',
-        'MX',
-        'TXT',
-        'SPF',
-        'DKIM',
-        'DMARC',
-        'NS',
-        'SRV',
-      ];
-      if (!validRecordTypes.includes(recordType)) {
-        return res.status(400).json({
-          error: `Invalid record type. Valid types: ${validRecordTypes.join(', ')}`,
-          code: 'INVALID_RECORD_TYPE',
-        });
-      }
-
-      // Validate TTL
-      if (ttl < 60 || ttl > 86400) {
-        return res.status(400).json({
-          error: 'TTL must be between 60 and 86400 seconds',
-          code: 'INVALID_TTL',
-        });
-      }
 
       // Create DNS record
       const record = await cloudflareDNSService.createRecord({
@@ -257,6 +227,7 @@ router.put(
   '/records/:id',
   adminRateLimiter,
   adminAuth(['manage_dns_config']),
+  validateSchema({ body: UpdateDnsRecordSchema }),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -264,22 +235,6 @@ router.put(
 
       const { id } = req.params;
       const { value = null, ttl = null, priority = null } = req.body;
-
-      // Validate at least one field is provided
-      if (!value && !ttl && priority === null) {
-        return res.status(400).json({
-          error: 'At least one field must be provided: value, ttl, or priority',
-          code: 'NO_UPDATE_FIELDS',
-        });
-      }
-
-      // Validate TTL if provided
-      if (ttl && (ttl < 60 || ttl > 86400)) {
-        return res.status(400).json({
-          error: 'TTL must be between 60 and 86400 seconds',
-          code: 'INVALID_TTL',
-        });
-      }
 
       // Update DNS record
       const record = await cloudflareDNSService.updateRecord({

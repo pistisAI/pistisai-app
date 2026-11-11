@@ -129,6 +129,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: const SizedBox(
             width: 1200,
             height: 800,
@@ -158,6 +159,7 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: SizedBox(
             width: 1200,
             height: 800,
@@ -183,6 +185,7 @@ void main() {
     testWidgets('shows scheduled tasks after loading', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: CronJobsScreen(),
         ),
       );

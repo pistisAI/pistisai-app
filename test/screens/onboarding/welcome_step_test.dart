@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/screens/onboarding/steps/welcome_step.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('WelcomeStep shows full info message in compact wizard viewport',
       (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(
           body: SizedBox(
             key: Key('welcome_viewport'),
