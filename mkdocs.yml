@@ -1,6 +1,6 @@
-site_name: IAClé Docs
-site_description: Documentation for IAClé, a local-first assistant for Quebec businesses
-repo_url: https://github.com/iacle-solutions/iacle-app
+site_name: Pistisai Docs
+site_description: Documentation for Pistisai, a local-first companion for your AI agent
+repo_url: https://github.com/pistisAI/pistisai-app
 edit_uri: edit/main/docs/
 
 theme:

@@ -148,7 +148,8 @@ fi
 
 if [[ "$RUN_DESKTOP" == "true" ]]; then
   test_rig_log_info "Running Linux integration tests (host → localhost:1337)..."
-  if "$DART_BIN" test test/archive/integration/app_running_integration_test.dart --reporter expanded; then
+  # Same suite as the CI rig (integration-test-rig.yml).
+  if "$FLUTTER_BIN" test test/integration/ --reporter expanded --dart-define=BRAND=pistisai; then
     test_rig_log_ok "Desktop integration tests passed."
   else
     DESKTOP_EXIT=$?

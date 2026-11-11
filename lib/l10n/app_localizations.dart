@@ -4322,17 +4322,29 @@ abstract class AppLocalizations {
   /// **'Clear Cache'**
   String get configClearCacheTitle;
 
-  /// No description provided for @configClearCacheConfirm.
+  /// No description provided for @configCacheUnit.
   ///
   /// In en, this message translates to:
-  /// **'Clear all cached data? ({size} MB will be freed)'**
-  String configClearCacheConfirm(int size);
+  /// **'MB'**
+  String get configCacheUnit;
 
-  /// No description provided for @configCacheCleared.
+  /// No description provided for @configClearCacheConfirmMeasured.
   ///
   /// In en, this message translates to:
-  /// **'Cache cleared successfully'**
-  String get configCacheCleared;
+  /// **'Delete generated speech audio and cached images? ({size} on disk)'**
+  String configClearCacheConfirmMeasured(String size);
+
+  /// No description provided for @configCacheClearedFreed.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache cleared ({size} freed)'**
+  String configCacheClearedFreed(String size);
+
+  /// No description provided for @configCacheClearFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not clear the cache: {error}'**
+  String configCacheClearFailed(String error);
 
   /// No description provided for @configUpdateMajor.
   ///
@@ -5083,6 +5095,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'TCP connection'**
   String get connTcp;
+
+  /// No description provided for @connNotTestedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection not tested yet'**
+  String get connNotTestedYet;
+
+  /// No description provided for @connTestAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Test connection'**
+  String get connTestAction;
 
   /// No description provided for @connRuntimeApi.
   ///

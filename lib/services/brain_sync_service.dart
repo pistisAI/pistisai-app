@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:drift/drift.dart';
 import '../database/local_brain.dart';
+import 'package:pistisai/brand/brand.dart';
 
 /// Service to synchronize local Drift database with cloud PostgreSQL
 class BrainSyncService {
@@ -17,7 +18,7 @@ class BrainSyncService {
 
   BrainSyncService(LocalBrain db, {String? backendUrl, String? authToken})
       : _db = db,
-        _backendUrl = backendUrl ?? 'https://api.pistisai.app',
+        _backendUrl = backendUrl ?? Brand.current.apiBaseUrl,
         _authToken = authToken;
 
   @visibleForTesting

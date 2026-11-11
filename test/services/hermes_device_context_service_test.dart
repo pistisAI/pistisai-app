@@ -22,13 +22,13 @@ void main() {
       apiKey: 'sekret',
       client: client,
     );
-    await service.report(location: 'Sherbrooke', connection: 'wifi');
+    await service.report(location: 'Example City', connection: 'wifi');
 
     expect(capturedUrl, 'http://127.0.0.1:8642/api/pistisai/device-context');
     expect(authHeader, 'Bearer sekret');
     expect(capturedBody!['session'], isA<String>());
     expect(capturedBody!['device'], isA<String>());
-    expect(capturedBody!['location'], 'Sherbrooke');
+    expect(capturedBody!['location'], 'Example City');
     expect(capturedBody!['connection'], 'wifi');
   });
 

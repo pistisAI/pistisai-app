@@ -5,6 +5,21 @@ import 'package:provider/provider.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import '../../../config/theme.dart';
 
+/// What the connection test step should show.
+enum ConnectionTestView { testing, failed, verified, notTested }
+
+/// Success is shown only for a test that really passed. "No error" alone is
+/// not success: it is also the state before any test has run.
+ConnectionTestView connectionTestView({
+  required bool isLoading,
+  required String? errorMessage,
+  required bool verified,
+}) {
+  if (isLoading) return ConnectionTestView.testing;
+  if (errorMessage != null) return ConnectionTestView.failed;
+  return verified ? ConnectionTestView.verified : ConnectionTestView.notTested;
+}
+
 /// Connection Test Step
 /// Tests connectivity to the selected provider
 class ConnectionTestStep extends StatefulWidget {
@@ -20,8 +35,10 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
     super.initState();
     // Auto-start test when step is shown
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Run whenever there is something to test and it has not already
+      // passed; _runTest picks the URL the same way.
       final wizard = context.read<SetupWizardService>();
-      if (wizard.state.selectedProvider?.url != null) {
+      if (!wizard.connectionVerified && !wizard.state.isLoading) {
         _runTest(wizard);
       }
     });
@@ -45,13 +62,20 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Header
-              if (wizard.state.isLoading) ...[
-                _buildLoading(context),
-              ] else if (wizard.state.errorMessage != null) ...[
-                _buildError(context, wizard),
-              ] else ...[
-                _buildSuccess(context, wizard),
-              ],
+              ...switch (connectionTestView(
+                isLoading: wizard.state.isLoading,
+                errorMessage: wizard.state.errorMessage,
+                verified: wizard.connectionVerified,
+              )) {
+                ConnectionTestView.testing => [_buildLoading(context)],
+                ConnectionTestView.failed => [_buildError(context, wizard)],
+                ConnectionTestView.verified => [
+                    _buildSuccess(context, wizard)
+                  ],
+                ConnectionTestView.notTested => [
+                    _buildNotTested(context, wizard)
+                  ],
+              },
             ],
           ),
         );
@@ -73,10 +97,34 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 16),
-        _buildTestItem(context, AppLocalizations.of(context).connDns, true),
+        // Nothing is known until the test answers, so nothing is ticked.
+        _buildTestItem(context, AppLocalizations.of(context).connDns, null),
         _buildTestItem(context, AppLocalizations.of(context).connTcp, null),
         _buildTestItem(
             context, AppLocalizations.of(context).connRuntimeApi, null),
+      ],
+    );
+  }
+
+  Widget _buildNotTested(BuildContext context, SetupWizardService wizard) {
+    return Column(
+      children: [
+        Icon(
+          Icons.help_outline,
+          size: 64,
+          color: AppTheme.colorsOf(context).textColorLight,
+        ),
+        const SizedBox(height: 24),
+        Text(
+          AppLocalizations.of(context).connNotTestedYet,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton.icon(
+          onPressed: () => _runTest(wizard),
+          icon: const Icon(Icons.wifi_tethering),
+          label: Text(AppLocalizations.of(context).connTestAction),
+        ),
       ],
     );
   }

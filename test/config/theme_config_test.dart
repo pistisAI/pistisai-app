@@ -28,6 +28,17 @@ void main() {
       expect(theme.colorScheme.secondary, ThemeConfig.secondaryColor);
     });
 
+    test('primaryColor is the brand colour, not the surface, in both themes',
+        () {
+      for (final mode in [ThemeMode.dark, ThemeMode.light]) {
+        final theme = ThemeConfig.loadThemeConfiguration(mode, null);
+
+        expect(theme.primaryColor, theme.colorScheme.primary, reason: '$mode');
+        expect(theme.primaryColor, isNot(theme.colorScheme.surface),
+            reason: '$mode');
+      }
+    });
+
     test('respects system theme mode with dark brightness', () {
       final theme = ThemeConfig.loadThemeConfiguration(
         ThemeMode.system,

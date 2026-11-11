@@ -8,6 +8,7 @@ import 'package:provider/single_child_widget.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 
 import 'package:pistisai/bootstrap/bootstrapper.dart';
 import 'package:pistisai/brand/brand.dart';
@@ -54,15 +55,15 @@ import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 
 /// Resolve the OAuth callback URL from process arguments, if present.
 ///
-/// Returns the first argument that looks like a Pistisai callback scheme
-/// (`pistisai://` or `com.pistisai.app://`). Returns `null` when none of the
+/// Returns the first argument that uses the brand's callback scheme
+/// (`<url_scheme>://` or `<app_id>://`). Returns `null` when none of the
 /// arguments are a callback URL — including when conventional engine/flutter
 /// flags such as `--enable-logging` or `--verbose` are passed. This prevents
 /// non-callback arguments from ever triggering the early `return` in [main]
 /// that would skip `runApp` and leave the window black.
 String? resolveCallbackUrl(List<String> args) {
   for (final a in args) {
-    if (a.startsWith('com.pistisai.app://') || a.startsWith('pistisai://')) {
+    if (Brand.current.isCallbackUrl(a)) {
       return a;
     }
   }
@@ -72,6 +73,9 @@ String? resolveCallbackUrl(List<String> args) {
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+  // Start reading the crash-reporting preference now so it loads in parallel
+  // with the rest of startup; it is awaited only where Sentry is decided.
+  final Future<bool> crashReportingAllowedFuture = _crashReportingAllowed();
   Brand.assertCompileDefineMatches();
 
   // Ensure only one instance runs at a time (desktop hub only).
@@ -114,10 +118,15 @@ void main([List<String> args = const []]) async {
   debugPrint('[Main] Initializing Sentry...');
 
   // Sentry DSN is empty by default; set via --dart-define=SENTRY_DSN=...
-  if (AppConfig.sentryDsn.isNotEmpty) {
+  // Sentry starts only when the user has turned crash reporting on: its
+  // native collectors (sessions, native crashes, app hangs, watchdog
+  // terminations) do not go through beforeSend, so the only way to keep
+  // them silent is not to initialise the SDK. The binding is already
+  // initialised above, so the preference can be read here.
+  if (AppConfig.sentryDsn.isNotEmpty && await crashReportingAllowedFuture) {
     await _runAppWithSentry();
   } else {
-    debugPrint('[Main] Sentry DSN not configured, running without Sentry');
+    debugPrint('[Main] Sentry not started (no DSN or crash reporting off)');
     unawaited(_registerWindowsUrlScheme());
     _initializeClientLogBuffer();
     _runAppCommon();
@@ -133,6 +142,17 @@ Future<void> _registerWindowsUrlScheme() async {
   }
 }
 
+/// Whether the user allowed crash reports. Read at startup and on each event
+/// (cached by SharedPreferences) so turning the setting off takes effect at once.
+Future<bool> _crashReportingAllowed() async {
+  try {
+    return await SettingsPreferenceService().isCrashReportingEnabled();
+  } catch (_) {
+    // If the setting cannot be read, send nothing.
+    return false;
+  }
+}
+
 /// Run the app with Sentry error tracking enabled.
 /// Sentry DSN is configured via --dart-define=SENTRY_DSN=... at build time.
 Future<void> _runAppWithSentry() async {
@@ -144,8 +164,25 @@ Future<void> _runAppWithSentry() async {
       options.environment = AppConfig.sentryEnvironment;
       // Capture full stack traces for all errors, not just catch-block exceptions.
       options.attachStacktrace = true;
-      // Balanced sampling: real errors always reported, traces sampled at 10%.
-      options.tracesSampleRate = 0.1;
+      // No performance traces: they carry request URLs and timings off the
+      // user's network and are not needed for crash diagnosis.
+      options.tracesSampleRate = 0.0;
+      // Never attach IP address, user or request bodies.
+      options.sendDefaultPii = false;
+      // Breadcrumbs can hold chat text, file paths and URLs.
+      options.maxBreadcrumbs = 0;
+      // Sentry only runs once the user has opted in (see main()). Usage
+      // telemetry beyond crash reports stays off even then: release-health
+      // sessions, SDK client reports and automatic performance tracing.
+      // Native crash, app-hang and watchdog reports stay on for users who
+      // opted in.
+      options.enableAutoSessionTracking = false;
+      options.sendClientReports = false;
+      options.enableAutoPerformanceTracing = false;
+      // If the user turns crash reporting off during a session, Dart events
+      // stop at once; native collectors stop at the next launch.
+      options.beforeSend = (event, hint) async =>
+          await _crashReportingAllowed() ? event : null;
     },
     // Start the app inside Sentry's error-tracking zone once the SDK is live.
     appRunner: _runAppCommon,
@@ -489,8 +526,7 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
   debugPrint('[Main] Handling command-line arguments: $args');
   String? callbackUrl;
   for (final arg in args) {
-    if (arg.startsWith('com.pistisai.app://') ||
-        arg.startsWith('pistisai://')) {
+    if (Brand.current.isCallbackUrl(arg)) {
       callbackUrl = arg;
       break;
     }

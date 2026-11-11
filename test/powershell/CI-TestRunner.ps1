@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    CI/CD optimized PowerShell test runner for Zoidbot
+    CI/CD optimized PowerShell test runner for Pistisai
 
 .DESCRIPTION
     This script runs PowerShell tests in a CI/CD environment with proper

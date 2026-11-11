@@ -1221,12 +1221,9 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.edit_note),
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return _l10n.avatarEvolutionReasonRequired;
-                }
-                return null;
-              },
+              // No validator here: this field shares the form with Save, and
+              // a required reason would block saving unrelated settings.
+              // "Request Evolution" checks the reason itself.
             ),
             const SizedBox(height: 16),
             SizedBox(
