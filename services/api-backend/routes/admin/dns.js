@@ -27,7 +27,6 @@ import { validateSchema } from '../../middleware/schema-validation.js';
 import {
   CreateDnsRecordSchema,
   UpdateDnsRecordSchema,
-  CheckDnsSchema,
 } from '../../schemas/validation-schemas.js';
 import CloudflareDNSService from '../../services/cloudflare-dns-service.js';
 
