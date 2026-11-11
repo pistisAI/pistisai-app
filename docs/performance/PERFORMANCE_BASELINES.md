@@ -1,7 +1,7 @@
 # Performance Baselines & SLOs
 
 **Last Updated:** 2026-11-10  
-**Reference Machine:** Linux (x86_64), Fedora 45, 8-core CPU, 16GB RAM  
+**Reference Machine:** Linux (x86_64), mid-range desktop (see the hardware note in the measurement methodology)  
 **Status:** Baseline established — ready for regression testing
 
 ---
@@ -180,7 +180,7 @@ A performance regression is detected and reported when:
 ## 6. Platform-Specific Notes
 
 ### Linux (Wayland + X11)
-- Baseline taken on **Fedora 45, Wayland session**
+- Baseline taken on **a Linux desktop, Wayland session**
 - X11 measurements expected to be **±5% of Wayland baseline** (lower startup, similar latency)
 - Key instrumentation: `systemd-analyze blame` for boot-time analysis
 
