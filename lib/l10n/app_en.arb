@@ -979,5 +979,1187 @@
   "instancesHermesUrl": "Hermes API URL",
   "instancesApiKeyOptional": "API Key (optional)",
   "instancesApiKeyHint": "Leave empty for local-only use",
-  "instancesTestConnection": "Test Connection"
+  "instancesTestConnection": "Test Connection",
+  "commonBack": "Back",
+  "commonReset": "Reset",
+  "commonSelect": "Select",
+  "avatarStateIdle": "Idle",
+  "avatarStateThinking": "Thinking",
+  "avatarStateWorking": "Working",
+  "avatarStateHappy": "Happy",
+  "avatarSizeSmall": "Small",
+  "avatarSizeMedium": "Medium",
+  "avatarSizeLarge": "Large",
+  "avatarGlowEffect": "Glow Effect",
+  "avatarGlowSubtitle": "Enable pulsing glow effect around avatar",
+  "avatarStageCuriousExplorer": "Curious Explorer",
+  "avatarStageCuriousExplorerInitial": "Curious Explorer (Initial)",
+  "avatarStageKnowledgeSeeker": "Knowledge Seeker",
+  "avatarStageWiseCompanion": "Wise Companion",
+  "avatarStageEnlightenedGuide": "Enlightened Guide",
+  "avatarSettingsTitle": "Avatar Settings",
+  "avatarInitFailed": "Failed to initialize avatar service: {error}",
+  "@avatarInitFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarSaved": "Avatar settings saved successfully",
+  "avatarSaveFailed": "Failed to save settings: {error}",
+  "@avatarSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarEvolutionReasonMissing": "Please provide a reason for evolution",
+  "avatarEvolutionApproved": "Evolution to {stage} approved! Your avatar has evolved.",
+  "@avatarEvolutionApproved": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarEvolutionDenied": "Evolution request denied: {reason}",
+  "@avatarEvolutionDenied": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarEvolutionFailed": "Failed to request evolution: {error}",
+  "@avatarEvolutionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarSaveSettings": "Save Settings",
+  "avatarLivePreview": "Live Preview",
+  "avatarStageValue": "Stage: {stage}",
+  "@avatarStageValue": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarConversations": "Conversations",
+  "avatarDepthScore": "Depth Score",
+  "avatarAgentName": "Agent Name",
+  "avatarAgentNameHint": "Enter agent name",
+  "avatarAgentNameRequired": "Please enter an agent name",
+  "avatarAgentNameTooShort": "Name must be at least 2 characters",
+  "avatarAgentNameTooLong": "Name must be less than 50 characters",
+  "avatarAgentNameHelp": "This name will be used to address your avatar in conversations.",
+  "avatarPersonalityTraits": "Personality Traits",
+  "avatarPersonalityHelp": "Adjust these sliders to customize your avatar's personality. Changes are reflected in the live preview above.",
+  "avatarFormalityDescription": "How formal the avatar communicates",
+  "avatarHumorDescription": "Frequency and intensity of humor",
+  "avatarEnthusiasmDescription": "Energy and excitement levels",
+  "avatarEmpathyDescription": "Emotional understanding and support",
+  "avatarAppearance": "Appearance",
+  "avatarAppearanceHelp": "Customize your avatar's visual style and animation.",
+  "avatarColorTheme": "Color Theme",
+  "avatarColorPersonality": "Personality-Derived",
+  "avatarColorOceanBlue": "Ocean Blue",
+  "avatarColorForestGreen": "Forest Green",
+  "avatarColorSunsetOrange": "Sunset Orange",
+  "avatarColorRoyalPurple": "Royal Purple",
+  "avatarColorMonochrome": "Monochrome",
+  "avatarAnimationStyle": "Animation Style",
+  "avatarAnimationBounce": "Bounce",
+  "avatarAnimationPulse": "Pulse",
+  "avatarAnimationFloat": "Float",
+  "avatarAnimationShake": "Shake",
+  "avatarAnimationNone": "None (Static)",
+  "avatarSize": "Avatar Size",
+  "avatarAdvancedTitle": "Advanced Visual Customization",
+  "avatarAdvancedHelp": "Fine-tune your avatar's color, type, and effects in the dedicated customization screen.",
+  "avatarOpenAdvanced": "Open Advanced Customization",
+  "avatarAchievements": "Achievements",
+  "avatarAchievementsHelp": "View your unlocked achievements and track your progress.",
+  "avatarViewAchievements": "View Achievements",
+  "avatarEvolution": "Evolution",
+  "avatarEvolutionHelp": "Evolve your avatar to unlock new personality capabilities.",
+  "avatarCurrentStage": "Current Stage:",
+  "avatarEvolveTo": "Evolve to Stage",
+  "avatarEvolutionReason": "Reason for Evolution",
+  "avatarEvolutionReasonHint": "Explain why you want to evolve your avatar...",
+  "avatarEvolutionReasonRequired": "Please provide a reason",
+  "avatarRequesting": "Requesting...",
+  "avatarRequestEvolution": "Request Evolution",
+  "avatarReadyToEvolve": "Ready to Evolve!",
+  "avatarEvolutionRequirements": "Evolution Requirements",
+  "avatarDeepConversations": "Deep Conversations",
+  "avatarAverageNovelty": "Average Novelty",
+  "avatarRequirementPercent": "{current}% / {required}%",
+  "@avatarRequirementPercent": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "avatarCustomizationTitle": "Avatar Customization",
+  "avatarCustomizationSaved": "Avatar customization saved successfully",
+  "avatarResetTitle": "Reset to Defaults",
+  "avatarResetConfirm": "Are you sure you want to reset all avatar settings to defaults?",
+  "avatarResetDone": "Avatar settings reset to defaults",
+  "avatarResetTooltip": "Reset to defaults",
+  "avatarSaveCustomization": "Save Customization",
+  "avatarPreview": "Avatar Preview",
+  "avatarType": "Avatar Type",
+  "avatarTypeEmoji": "Emoji",
+  "avatarColor": "Avatar Color",
+  "avatarCustomColorSelected": "Custom color selected",
+  "avatarUsingPersonalityColors": "Using personality-derived colors",
+  "avatarPickColor": "Pick Color",
+  "avatarUsePersonalityColors": "Use personality colors",
+  "avatarPickColorTitle": "Pick Avatar Color",
+  "achievementsTitle": "Achievements",
+  "achievementsLoadFailed": "Failed to load achievements: {error}",
+  "@achievementsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsUnlockedSection": "Unlocked",
+  "achievementsLockedSection": "Locked",
+  "achievementsNoneUnlocked": "No achievements unlocked yet. Start conversing!",
+  "achievementsProgress": "Achievement Progress",
+  "achievementsUnlockedCount": "{unlocked} of {total} unlocked",
+  "@achievementsUnlockedCount": {
+    "placeholders": {
+      "unlocked": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsPercent": "{percent}%",
+  "@achievementsPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsUnlockedWhen": "Unlocked {when}",
+  "@achievementsUnlockedWhen": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsToday": "today",
+  "achievementsYesterday": "yesterday",
+  "achievementFirstChat": "First Conversation",
+  "achievementFirstChatDescription": "Complete your first conversation with the avatar",
+  "achievementGettingToKnow": "Getting to Know You",
+  "achievementDeepThinker": "Deep Thinker",
+  "achievementConversationalMaster": "Conversational Master",
+  "achievementDeepConversationsDescription": "Have {count} deep conversations",
+  "@achievementDeepConversationsDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementNoveltySeeker": "Novelty Seeker",
+  "achievementNoveltySeekerDescription": "Maintain high novelty in conversations (60%+)",
+  "achievementEvolveDescription": "Evolve your avatar to the {stage} stage",
+  "@achievementEvolveDescription": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "configPageGeneral": "General",
+  "configPageGeneralSubtitle": "App preferences",
+  "configPageAppearance": "Appearance",
+  "configPageAppearanceSubtitle": "Theme and look",
+  "configPageConnection": "Connection",
+  "configPageConnectionSubtitle": "Daemon, mesh, and account",
+  "configPageLlm": "LLM providers",
+  "configPageLlmSubtitle": "Model provider settings",
+  "configPageVision": "Vision",
+  "configPageVisionSubtitle": "Screen and vision tools",
+  "configPageAvatar": "Avatar",
+  "configPageAvatarSubtitle": "Companion appearance",
+  "configPageAchievements": "Achievements",
+  "configPageAchievementsSubtitle": "Avatar milestones",
+  "configPageDesktop": "Desktop",
+  "configPageDesktopSubtitle": "Local desktop tools",
+  "configPageAbout": "About",
+  "configPagePlans": "Plans",
+  "configPagePlansSubtitle": "Subscription options",
+  "configPageBrain": "Brain insights",
+  "configPageBrainSubtitle": "Local brain activity",
+  "configPageRoadmap": "Roadmap",
+  "configPageRoadmapSubtitle": "What is in progress",
+  "configTitle": "Runtime Settings",
+  "configBackToChannel": "Back to runtime channel",
+  "configTabRuntime": "Runtime",
+  "configTabMesh": "Mesh",
+  "configTabApp": "App",
+  "configTabStorage": "Storage",
+  "configTabSystem": "System",
+  "configLoadFailed": "Failed to load config: {error}",
+  "@configLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configSaved": "Configuration saved",
+  "configSaveFailed": "Failed to save configuration: {error}",
+  "@configSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configResetTitle": "Reset to Defaults",
+  "configResetBody": "This resets runtime preferences (theme, language, timeouts, proxy, developer flags) to their defaults.\n\nGateway URLs, API keys, and avatar settings are not affected.",
+  "configResetDone": "Configuration reset to defaults",
+  "configResetFailed": "Failed to reset configuration: {error}",
+  "@configResetFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configExported": "Settings exported to {filename}",
+  "@configExported": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "configExportFailed": "Export failed: {error}",
+  "@configExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configImported": "Settings imported successfully",
+  "configImportFailed": "Import failed: {error}",
+  "@configImportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configRuntimeNone": "None",
+  "configActiveRuntime": "Active Agent Runtime",
+  "configSecureChannelRuntime": "Secure channel runtime: {runtime}",
+  "@configSecureChannelRuntime": {
+    "placeholders": {
+      "runtime": {
+        "type": "String"
+      }
+    }
+  },
+  "configNoRuntime": "No runtime selected - choose one below",
+  "configAgentRuntime": "Agent Runtime",
+  "configAgentRuntimeHelper": "Select the runtime used by the secure channel",
+  "configRuntimeSet": "Active runtime set to {runtime}",
+  "@configRuntimeSet": {
+    "placeholders": {
+      "runtime": {
+        "type": "String"
+      }
+    }
+  },
+  "configRuntimeCleared": "Runtime cleared",
+  "configSupportProviders": "Support Model Providers",
+  "configSupportProvidersSubtitle": "Optional helpers for memory, summaries, OCR cleanup, and background tasks",
+  "configPreferredSupportProvider": "Preferred Support Provider",
+  "configSupportProviderAuto": "Auto",
+  "configSupportProvidersNote": "Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.",
+  "configRequestPolicy": "Runtime Request Policy",
+  "configConcurrentRequests": "Concurrent Requests",
+  "configConcurrentRequestsHint": "Max concurrent runtime requests",
+  "configRuntimeTimeout": "Runtime Timeout (sec)",
+  "configAutoRestart": "Auto-restart Runtime on Failure",
+  "configProxySettings": "Proxy Settings",
+  "configUseProxy": "Use Proxy Server",
+  "configProxyHost": "Proxy Host",
+  "configProxyHostHint": "e.g., proxy.example.com",
+  "configProxyPort": "Proxy Port",
+  "configConnectionSettings": "Connection Settings",
+  "configRequestTimeout": "Request Timeout (sec)",
+  "configMaxRetries": "Max Retries",
+  "configAppearance": "Appearance",
+  "configTheme": "Theme",
+  "configLanguage": "Language",
+  "configNotifications": "Notifications",
+  "configEnableNotifications": "Enable Notifications",
+  "configShowTrayIcon": "Show Tray Icon",
+  "configSecurity": "Security",
+  "configEncryptLocalData": "Encrypt Local Data",
+  "configEncryptLocalDataSubtitle": "Encrypt conversation history and settings",
+  "configBiometric": "Require Biometric Auth",
+  "configBiometricSubtitle": "Require fingerprint/auth to open app",
+  "configSessionTimeout": "Session Timeout (min)",
+  "configSessionTimeoutHint": "Auto-lock after inactivity",
+  "configRememberTokens": "Remember Authentication Tokens",
+  "configDeveloperOptions": "Developer Options",
+  "configDebugMode": "Debug Mode",
+  "configDebugModeSubtitle": "Enable additional debugging information",
+  "configVerboseLogging": "Verbose Logging",
+  "configVerboseLoggingSubtitle": "Log detailed diagnostic information",
+  "configShowDevTools": "Show Developer Tools",
+  "configShowDevToolsSubtitle": "Enable development tools and inspectors",
+  "configDataRetention": "Data Retention",
+  "configMaxHistory": "Max Conversation History",
+  "configMaxHistoryHint": "Maximum number of conversations to store locally",
+  "configAutoCleanup": "Auto-cleanup Old Data",
+  "configCacheManagement": "Cache Management",
+  "configEnableCache": "Enable Response Cache",
+  "configCacheSize": "Cache Size Limit (MB)",
+  "configClearCacheNow": "Clear Cache Now",
+  "configApplication": "Application",
+  "configVersion": "Version",
+  "configVersionValue": "{version} (build {build})",
+  "@configVersionValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "configPlatform": "Platform",
+  "configDartVersion": "Dart Version",
+  "configSettingsPages": "Settings pages",
+  "configPaths": "Paths",
+  "configAppPath": "App Path",
+  "configConfigPath": "Config Path",
+  "configDataPath": "Data Path",
+  "configWorkingDirectory": "Working Directory",
+  "configSoftwareUpdates": "Software Updates",
+  "configCheckingUpdates": "Checking for updates...",
+  "configDownloadingUpdate": "Downloading update...",
+  "configInstallingUpdate": "Installing update...",
+  "configUpdateAvailable": "Update Available: {version}",
+  "@configUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "configCurrentVersion": "Current version: {version}",
+  "@configCurrentVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "configDownloadUpdate": "Download Update",
+  "configViewChangelog": "View Changelog",
+  "configUpdateReady": "Update Ready to Install",
+  "configInstallRestart": "Install & Restart",
+  "configUpToDate": "Up to date",
+  "configCheckNow": "Check Now",
+  "configExport": "Export",
+  "configImport": "Import",
+  "configClearCacheTitle": "Clear Cache",
+  "configCacheUnit": "MB",
+  "configClearCacheConfirmMeasured": "Delete generated speech audio and cached images? ({size} on disk)",
+  "@configClearCacheConfirmMeasured": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "configCacheClearedFreed": "Cache cleared ({size} freed)",
+  "@configCacheClearedFreed": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "configCacheClearFailed": "Could not clear the cache: {error}",
+  "@configCacheClearFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configUpdateMajor": "Major version - may include breaking changes",
+  "configUpdateMinor": "Minor version - new features and improvements",
+  "configUpdatePatch": "Patch version - bug fixes and security updates",
+  "configWhatsNew": "What's New in {version}",
+  "@configWhatsNew": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "configNoChangelog": "No changelog available",
+  "filesTitle": "File Operations",
+  "filesLoadFailed": "Failed to load directory: {error}",
+  "@filesLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesNewDirectory": "New Directory",
+  "filesDirectoryName": "Directory Name",
+  "filesDirectoryNameRequired": "Please enter a directory name",
+  "filesCreateDirectoryFailed": "Failed to create directory: {error}",
+  "@filesCreateDirectoryFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesNewFile": "New File",
+  "filesFileName": "File Name",
+  "filesFileNameRequired": "Please enter a file name",
+  "filesCreateFileFailed": "Failed to create file: {error}",
+  "@filesCreateFileFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesConfirmDelete": "Confirm Delete",
+  "filesDeleteConfirm": "{count, plural, =1{Are you sure you want to delete 1 item?} other{Are you sure you want to delete {count} items?}}",
+  "@filesDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filesDeleteFailed": "Failed to delete items: {error}",
+  "@filesDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesCopied": "Copied: {name}",
+  "@filesCopied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "filesCut": "Cut: {name}",
+  "@filesCut": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "filesPasted": "Pasted successfully",
+  "filesMoved": "Moved successfully",
+  "filesPasteFailed": "Failed to paste: {error}",
+  "@filesPasteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesRename": "Rename",
+  "filesNewName": "New Name",
+  "filesNameRequired": "Please enter a name",
+  "filesRenameFailed": "Failed to rename: {error}",
+  "@filesRenameFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "filesOk": "OK",
+  "filesSizeBytes": "{size} B",
+  "@filesSizeBytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "filesSizeKb": "{size} KB",
+  "@filesSizeKb": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "filesSizeMb": "{size} MB",
+  "@filesSizeMb": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "filesDirectory": "Directory",
+  "filesFile": "File",
+  "filesSize": "Size",
+  "filesModified": "Modified",
+  "filesPath": "Path",
+  "filesPaste": "Paste",
+  "filesGoHome": "Go Home",
+  "filesSelected": "{count} selected",
+  "@filesSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filesCopy": "Copy",
+  "filesMove": "Move",
+  "filesEmpty": "This folder is empty",
+  "filesDetails": "Details",
+  "debugTitle": "Debug",
+  "debugLoadFailed": "Failed to load debug data: {error}",
+  "@debugLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "debugConnectedToGateway": "Connected to Gateway",
+  "debugNoModel": "no model",
+  "debugUnknown": "unknown",
+  "debugConnectionDebugger": "Connection Debugger",
+  "debugConnectionDebuggerSubtitle": "Test Hermes gateway connectivity",
+  "debugTesting": "Testing...",
+  "debugRunConnectionTest": "Run Connection Test",
+  "debugNoTestsYet": "No tests run yet. Click \"Run Connection Test\" to check Hermes gateway health.",
+  "debugApiInspector": "API Inspector",
+  "debugApiInspectorSubtitle": "Send requests to any endpoint",
+  "debugMethod": "Method",
+  "debugUrl": "URL",
+  "debugBodyJson": "Body (JSON)",
+  "debugSending": "Sending...",
+  "debugSendRequest": "Send Request",
+  "debugNoRequestsYet": "No requests sent yet.",
+  "debugUrlRequired": "Error: URL is required",
+  "debugSendingMethod": "Sending {method} request...",
+  "@debugSendingMethod": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "debugServiceStatus": "Service Status",
+  "debugServiceStatusSubtitle": "Health checks and diagnostics",
+  "debugConnectionManager": "Connection Manager",
+  "debugHermesGateway": "Hermes Gateway",
+  "debugActive": "Active",
+  "debugUnreachable": "Unreachable",
+  "debugActiveModel": "Active Model",
+  "debugNoneSelected": "None selected",
+  "debugModelsAvailable": "{count, plural, =1{1 model available} other{{count} models available}}",
+  "@debugModelsAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "debugLastError": "Last error: {error}",
+  "@debugLastError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "debugAuto": "auto",
+  "wizardStepOf": "Step {current} of {total}",
+  "@wizardStepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wizardSetUpLater": "Set up later",
+  "wizardComplete": "Complete",
+  "wizardLoading": "Loading...",
+  "wizardNext": "Next",
+  "wizardCompletionFailed": "Setup could not be completed right now. Please try again.",
+  "welcomeStepSubtitle": "Your privacy-first local AI companion",
+  "welcomeFeatureChat": "Chat",
+  "welcomeFeatureChatDescription": "Streaming AI responses",
+  "welcomeFeatureRuntimes": "Agent Runtimes",
+  "welcomeFeatureRuntimesDescription": "Hermes Agent on this device or over Tailscale",
+  "welcomeFeatureAvatar": "Evolving Avatar",
+  "welcomeFeatureAvatarDescription": "Personalized AI companion",
+  "welcomeFeatureDesktopDescription": "GUI automation",
+  "welcomeFeatureVisionDescription": "Screen understanding",
+  "welcomeStepInfo": "We'll set up your local AI in about 2 minutes. All processing happens privately on your computer.",
+  "locationTitle": "Where is Hermes running?",
+  "locationSubtitle": "Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.",
+  "locationThisDevice": "This device",
+  "locationThisDeviceDescription": "Hermes is installed and running locally",
+  "locationTailscale": "Tailscale device or VPS",
+  "locationTailscaleDescription": "Hermes on a home server, VPS, or other machine on your tailnet",
+  "tailscaleDiscovering": "Discovering Tailscale devices...",
+  "tailscaleScanning": "Scanning your tailnet",
+  "tailscaleNoDevices": "No Tailscale Devices Found",
+  "tailscaleNoDevicesHelp": "Make sure Tailscale is installed and logged in.",
+  "tailscaleChooseOtherMethod": "Choose different connection method",
+  "tailscaleSelectServer": "Select your Hermes server",
+  "tailscaleSelectServerHelp": "Pick the VPS or machine running Hermes on your tailnet (port {port})",
+  "@tailscaleSelectServerHelp": {
+    "placeholders": {
+      "port": {
+        "type": "String"
+      }
+    }
+  },
+  "tailscaleNoIp": "No IP",
+  "tailscaleOnline": "Online",
+  "urlRemoteSubtitle": "Confirm the Tailscale URL, then paste the API key from your server.",
+  "urlLooking": "Looking for Hermes on this device...",
+  "urlDetected": "Hermes is running on this device. We auto-detected the connection details below.",
+  "urlEnterLocal": "Enter the Hermes Agent URL for this device. The default port is {port}.",
+  "@urlEnterLocal": {
+    "placeholders": {
+      "port": {
+        "type": "String"
+      }
+    }
+  },
+  "urlConnectRemote": "Connect to remote Hermes",
+  "urlConnectLocal": "Connect to Hermes Agent",
+  "urlLabel": "Hermes Agent URL",
+  "urlAutoDetectingKey": "Auto-detecting API key...",
+  "urlApiKeyRequired": "Hermes API Key (required)",
+  "urlApiKey": "Hermes API Key",
+  "urlApiKeyRemoteHint": "From API_SERVER_KEY on the remote server",
+  "urlApiKeyLocalHint": "Auto-discovered from Hermes config",
+  "urlAutoDiscovered": "Auto-discovered from Hermes configuration",
+  "urlSaveContinue": "Save and Continue",
+  "urlCommandCopied": "Command copied — run it on your VPS",
+  "urlRemoteHelp": "On your VPS, run this command and paste the output into the API key field above.",
+  "urlCopyCommand": "Copy command",
+  "connTesting": "Testing connection...",
+  "connDns": "DNS resolution",
+  "connTcp": "TCP connection",
+  "connNotTestedYet": "Connection not tested yet",
+  "connTestAction": "Test connection",
+  "connRuntimeApi": "Runtime API",
+  "connUnknown": "Unknown",
+  "connFailed": "Connection Failed",
+  "connRetry": "Retry Test",
+  "connCheckSettings": "Check connection settings",
+  "connConnectingTo": "Connecting to: {url}",
+  "@connConnectingTo": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "connSuccess": "Connection Successful!",
+  "connConnectedTo": "Connected to:",
+  "completionAllSet": "You're All Set!",
+  "completionConfigured": "Your agent runtime is configured and ready to use.",
+  "completionSaving": "Saving configuration...",
+  "completionConfiguration": "Configuration:",
+  "completionRuntime": "Runtime",
+  "completionLocation": "Location",
+  "completionLocal": "Local",
+  "completionRemote": "Remote",
+  "completionReady": "Ready to start chatting!",
+  "completionDone": "Your setup is complete. You can start chatting now!",
+  "installStatusInstalled": "Installed",
+  "installStatusSkipped": "Skipped",
+  "installStatusFailed": "Failed",
+  "providerCustom": "Custom",
+  "botInstallComplete": "Install complete. All steps succeeded or were skipped.",
+  "botInstallFailed": "Install failed: {steps}",
+  "@botInstallFailed": {
+    "placeholders": {
+      "steps": {
+        "type": "String"
+      }
+    }
+  },
+  "eventsTitle": "Event Stream",
+  "eventsRunFinished": "Run finished",
+  "eventsNoRuntime": "No agent runtime connected",
+  "eventsConnectHelp": "Connect to a Hermes runtime to see live events.",
+  "eventsResume": "Resume",
+  "eventsPause": "Pause",
+  "eventsWaiting": "Waiting for agent events…",
+  "guiTitle": "GUI Automation",
+  "guiScreenshot": "Screenshot",
+  "guiAnalyze": "Analyze",
+  "guiPrompt": "What do you want to do?",
+  "guiHint": "e.g., Click the search button, Type in the box",
+  "guiExecute": "Execute",
+  "guiResult": "Result",
+  "guiLocalRuntime": "GUI Automation uses the local agent runtime.",
+  "guiScreenshotSaved": "Screenshot saved: {path}",
+  "@guiScreenshotSaved": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsersTitle": "User Management",
+  "adminUsersSubtitle": "View and manage user accounts, subscriptions, and permissions",
+  "adminUsersSearchHint": "Search by email, username, or user ID...",
+  "adminUsersTierFilter": "Subscription Tier",
+  "adminUsersAllTiers": "All Tiers",
+  "adminUsersStatusFilter": "Account Status",
+  "adminUsersAllStatuses": "All Statuses",
+  "adminStatusActive": "Active",
+  "adminStatusSuspended": "Suspended",
+  "adminStatusDeleted": "Deleted",
+  "adminUsersSortBy": "Sort By",
+  "adminUsersSortRegistration": "Registration Date",
+  "adminUsersLastLogin": "Last Login",
+  "adminEmail": "Email",
+  "adminUsersAscending": "Ascending",
+  "adminUsersDescending": "Descending",
+  "adminUsersNoPermissionView": "You do not have permission to view users",
+  "adminUsersLoadFailed": "Failed to load users: {error}",
+  "@adminUsersLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsersNone": "No users found",
+  "adminUsername": "Username",
+  "adminSubscription": "Subscription",
+  "adminRegistered": "Registered",
+  "adminNotAvailable": "N/A",
+  "adminViewDetails": "View Details",
+  "adminSuspend": "Suspend",
+  "adminReactivate": "Reactivate",
+  "adminUsersShowing": "Showing {from}-{to} of {total} users",
+  "@adminUsersShowing": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminPageOf": "Page {page} of {total}",
+  "@adminPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminUserDetailsLoadFailed": "Failed to load user details: {error}",
+  "@adminUserDetailsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUserDetails": "User Details",
+  "adminNoUserDetails": "No user details available",
+  "adminProfileInfo": "Profile Information",
+  "adminUserId": "User ID",
+  "adminSubscriptionInfo": "Subscription Information",
+  "adminTier": "Tier",
+  "adminPeriodStart": "Current Period Start",
+  "adminPeriodEnd": "Current Period End",
+  "adminCancellation": "Cancellation",
+  "adminCancelAtPeriodEnd": "Scheduled at period end",
+  "adminRecentPayments": "Recent Payment History",
+  "adminActiveSessions": "Active Sessions",
+  "adminRecentActivity": "Recent Activity",
+  "adminDate": "Date",
+  "adminAmount": "Amount",
+  "adminMethod": "Method",
+  "adminIpAddress": "IP Address",
+  "adminUserAgent": "User Agent",
+  "adminLastActive": "Last Active",
+  "adminUnknownAction": "Unknown action",
+  "adminInvalidDate": "Invalid date",
+  "adminNoPermissionEdit": "You do not have permission to edit users",
+  "adminSubscriptionUpdated": "User subscription updated successfully",
+  "adminUpdateFailed": "Failed to update user: {error}",
+  "@adminUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminEditSubscriptionTitle": "Edit User Subscription",
+  "adminUserLabel": "User: {email}",
+  "@adminUserLabel": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSuspendReasonMissing": "Please provide a reason for suspension",
+  "adminNoPermissionSuspend": "You do not have permission to suspend users",
+  "adminSuspended": "User suspended successfully",
+  "adminSuspendFailed": "Failed to suspend user: {error}",
+  "@adminSuspendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSuspendTitle": "Suspend User Account",
+  "adminSuspendWarning": "This will suspend the user account and prevent them from accessing the application.",
+  "adminSuspendReason": "Reason for suspension *",
+  "adminSuspendReasonHint": "Enter the reason for suspending this account",
+  "adminNoPermissionReactivate": "You do not have permission to reactivate users",
+  "adminReactivated": "User reactivated successfully",
+  "adminReactivateFailed": "Failed to reactivate user: {error}",
+  "@adminReactivateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReactivateTitle": "Reactivate User Account",
+  "adminReactivateInfo": "This will reactivate the user account and restore their access to the application.",
+  "adminDashboardTitle": "Dashboard",
+  "adminRefreshMetrics": "Refresh metrics",
+  "adminTotalUsers": "Total Users",
+  "adminNewThisMonth": "{count} new this month",
+  "@adminNewThisMonth": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminActiveUsers": "Active Users",
+  "adminPercentOfTotal": "{percent}% of total",
+  "@adminPercentOfTotal": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMrr": "Monthly Recurring Revenue",
+  "adminFromSubscribers": "From {count} subscribers",
+  "@adminFromSubscribers": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminCurrentMonthRevenue": "Current Month Revenue",
+  "adminTransactionsCount": "{count} transactions",
+  "@adminTransactionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSubscriptionDistribution": "Subscription Distribution",
+  "adminConversionRate": "Conversion Rate: {rate}%",
+  "@adminConversionRate": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "adminTierFree": "Free",
+  "adminTierPremium": "Premium",
+  "adminTierEnterprise": "Enterprise",
+  "adminCountPercent": "{count} ({percent}%)",
+  "@adminCountPercent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoRecentTransactions": "No recent transactions",
+  "adminRecentTransactions": "Recent Transactions",
+  "adminToday": "Today {time}",
+  "@adminToday": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "adminYesterday": "Yesterday",
+  "adminDaysAgo": "{days} days ago",
+  "@adminDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "auditLoadDetailsFailed": "Failed to load log details: {error}",
+  "@auditLoadDetailsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditExported": "Audit logs exported successfully",
+  "auditExportFailed": "Failed to export logs: {error}",
+  "@auditExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTitle": "Audit Logs",
+  "auditFilters": "Filters",
+  "auditExportCsv": "Export CSV",
+  "auditFilterAdmin": "Admin: {value}",
+  "@auditFilterAdmin": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterAction": "Action: {value}",
+  "@auditFilterAction": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterResource": "Resource: {value}",
+  "@auditFilterResource": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterAffectedUser": "Affected User: {value}",
+  "@auditFilterAffectedUser": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterFrom": "From: {date}",
+  "@auditFilterFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterTo": "To: {date}",
+  "@auditFilterTo": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterSeverity": "Severity: {value}",
+  "@auditFilterSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTimestamp": "Timestamp",
+  "auditAction": "Action",
+  "auditResource": "Resource",
+  "auditAdmin": "Admin",
+  "auditAffectedUser": "Affected User",
+  "auditSeverity": "Severity",
+  "auditShowing": "Showing {from}-{to} of {total} logs",
+  "@auditShowing": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "auditError": "Error: {error}",
+  "@auditError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditNone": "No audit logs found",
+  "auditClearFilters": "Clear filters",
+  "auditFilterTitle": "Filter Audit Logs",
+  "auditAdminUserId": "Admin User ID",
+  "auditAdminUserIdHint": "Filter by admin user ID",
+  "auditActionHint": "e.g., user_suspended, refund_processed",
+  "auditResourceType": "Resource Type",
+  "auditResourceTypeHint": "e.g., user, subscription, transaction",
+  "auditAffectedUserId": "Affected User ID",
+  "auditAffectedUserIdHint": "Filter by affected user ID",
+  "auditDateRange": "Date Range",
+  "auditStartDate": "Start Date",
+  "auditEndDate": "End Date",
+  "auditAllSeverities": "All severities",
+  "auditClearAll": "Clear All",
+  "auditDetailsTitle": "Audit Log Details",
+  "auditLogId": "Log ID",
+  "auditResourceId": "Resource ID",
+  "auditAdminUser": "Admin User",
+  "auditRole": "Role",
+  "auditActionDetails": "Action Details",
+  "adminsLoadFailed": "Failed to load administrators: {error}",
+  "@adminsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRevokeTitle": "Revoke Admin Role",
+  "adminsRevokeConfirm": "Are you sure you want to revoke the {role} role from {email}?",
+  "@adminsRevokeConfirm": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRevoke": "Revoke",
+  "adminsRevoked": "Admin role revoked successfully",
+  "adminsRevokeFailed": "Failed to revoke role: {error}",
+  "@adminsRevokeFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRoleSuper": "Super Admin",
+  "adminsRoleSupport": "Support Admin",
+  "adminsRoleFinance": "Finance Admin",
+  "adminsSuperRequired": "Super Admin Access Required",
+  "adminsSuperRequiredBody": "Only Super Admins can manage administrator accounts.",
+  "adminsTitle": "Admin Management",
+  "adminsSubtitle": "Manage administrator accounts and roles",
+  "adminsAdd": "Add Admin",
+  "adminsNone": "No administrators found",
+  "adminsTotalActions": "Total Actions",
+  "adminsRecent30d": "Recent (30d)",
+  "adminsLastAction": "Last Action",
+  "adminsToday": "Today",
+  "adminsWeeksAgo": "{weeks}w ago",
+  "@adminsWeeksAgo": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "adminsMonthsAgo": "{months}mo ago",
+  "@adminsMonthsAgo": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "adminsUnknown": "Unknown",
+  "adminsAssigned": "Admin role assigned successfully",
+  "adminsAddTitle": "Add Administrator",
+  "adminsEmailAddress": "Email Address",
+  "adminsEmailRequired": "Email is required",
+  "adminsEmailInvalid": "Invalid email address",
+  "adminsSelectRole": "Select Role",
+  "adminsSupportDescription": "User management and support",
+  "adminsFinanceDescription": "Payments, refunds, and reports"
 }

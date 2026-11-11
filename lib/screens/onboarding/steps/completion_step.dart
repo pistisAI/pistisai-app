@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/services/hermes/hermes_bot_install_service.dart';
@@ -56,7 +57,7 @@ class _CompletionStepState extends State<CompletionStep> {
                         ),
                         const SizedBox(height: 32),
                         Text(
-                          'You\'re All Set!',
+                          AppLocalizations.of(context).completionAllSet,
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium
@@ -67,7 +68,7 @@ class _CompletionStepState extends State<CompletionStep> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Your agent runtime is configured and ready to use.',
+                          AppLocalizations.of(context).completionConfigured,
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
@@ -79,7 +80,7 @@ class _CompletionStepState extends State<CompletionStep> {
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          'Saving configuration...',
+                          AppLocalizations.of(context).completionSaving,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ],
@@ -102,17 +103,28 @@ class _CompletionStepState extends State<CompletionStep> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Configuration:',
+                                AppLocalizations.of(context)
+                                    .completionConfiguration,
                                 style: Theme.of(context).textTheme.labelMedium,
                               ),
                               const SizedBox(height: 12),
-                              _buildConfigRow('Runtime', provider.name),
                               _buildConfigRow(
-                                  'Type', _getProviderTypeLabel(provider.type)),
-                              _buildConfigRow('URL', provider.url),
+                                  AppLocalizations.of(context)
+                                      .completionRuntime,
+                                  provider.name),
                               _buildConfigRow(
-                                'Location',
-                                provider.isLocal ? 'Local' : 'Remote',
+                                  AppLocalizations.of(context).commonType,
+                                  _getProviderTypeLabel(provider.type)),
+                              _buildConfigRow(
+                                  AppLocalizations.of(context).debugUrl,
+                                  provider.url),
+                              _buildConfigRow(
+                                AppLocalizations.of(context).completionLocation,
+                                provider.isLocal
+                                    ? AppLocalizations.of(context)
+                                        .completionLocal
+                                    : AppLocalizations.of(context)
+                                        .completionRemote,
                               ),
                             ],
                           ),
@@ -145,7 +157,8 @@ class _CompletionStepState extends State<CompletionStep> {
                                       color: AppTheme.colorsOf(context).info),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Ready to start chatting!',
+                                    AppLocalizations.of(context)
+                                        .completionReady,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: AppTheme.colorsOf(context).info,
@@ -155,7 +168,7 @@ class _CompletionStepState extends State<CompletionStep> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Your setup is complete. You can start chatting now!',
+                                AppLocalizations.of(context).completionDone,
                                 style: TextStyle(
                                     color: AppTheme.colorsOf(context).info),
                               ),
@@ -216,11 +229,11 @@ class _CompletionStepState extends State<CompletionStep> {
   String _installStatusLabel(HermesBotInstallStatus status) {
     switch (status) {
       case HermesBotInstallStatus.installed:
-        return 'Installed';
+        return AppLocalizations.of(context).installStatusInstalled;
       case HermesBotInstallStatus.skipped:
-        return 'Skipped';
+        return AppLocalizations.of(context).installStatusSkipped;
       case HermesBotInstallStatus.failed:
-        return 'Failed';
+        return AppLocalizations.of(context).installStatusFailed;
     }
   }
 
@@ -233,7 +246,7 @@ class _CompletionStepState extends State<CompletionStep> {
           SizedBox(
             width: 80,
             child: Text(
-              '$label:',
+              AppLocalizations.of(context).commonFieldLabel(label),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppTheme.colorsOf(context).textColorLight,
                   ),
@@ -263,7 +276,7 @@ class _CompletionStepState extends State<CompletionStep> {
       case ProviderType.openAICompatible:
         return 'OpenAI Compatible';
       case ProviderType.custom:
-        return 'Custom';
+        return AppLocalizations.of(context).providerCustom;
     }
   }
 }

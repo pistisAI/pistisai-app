@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/brand/brand_copy.dart';
 import 'package:pistisai/config/app_config.dart';
@@ -137,7 +138,7 @@ class _HermesBotStepState extends State<HermesBotStep> {
                 FilledButton.icon(
                   onPressed: _runInstall,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
+                  label: Text(AppLocalizations.of(context).commonRetry),
                 ),
               ],
             ],
@@ -208,7 +209,7 @@ class _HermesBotStepState extends State<HermesBotStep> {
   Widget _buildSummary(BuildContext context, HermesBotInstallReport report) {
     if (report.succeeded) {
       return Text(
-        'Install complete. All steps succeeded or were skipped.',
+        AppLocalizations.of(context).botInstallComplete,
         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: AppTheme.colorsOf(context).success,
               fontWeight: FontWeight.w600,
@@ -222,7 +223,7 @@ class _HermesBotStepState extends State<HermesBotStep> {
     final failedNames = failed.map((step) => step.name).join(', ');
 
     return Text(
-      'Install failed: $failedNames',
+      AppLocalizations.of(context).botInstallFailed(failedNames),
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: AppTheme.colorsOf(context).danger,
             fontWeight: FontWeight.w600,
@@ -233,11 +234,11 @@ class _HermesBotStepState extends State<HermesBotStep> {
   String _statusLabel(HermesBotInstallStatus status) {
     switch (status) {
       case HermesBotInstallStatus.installed:
-        return 'Installed';
+        return AppLocalizations.of(context).installStatusInstalled;
       case HermesBotInstallStatus.skipped:
-        return 'Skipped';
+        return AppLocalizations.of(context).installStatusSkipped;
       case HermesBotInstallStatus.failed:
-        return 'Failed';
+        return AppLocalizations.of(context).installStatusFailed;
     }
   }
 
