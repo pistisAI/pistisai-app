@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../config/theme.dart';
 import '../services/gui_automation_service.dart';
@@ -26,7 +27,7 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GUI Automation'),
+        title: Text(AppLocalizations.of(context).guiTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -67,12 +68,13 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
                         ElevatedButton.icon(
                           onPressed: _isProcessing ? null : _takeScreenshot,
                           icon: const Icon(Icons.camera_alt),
-                          label: const Text('Screenshot'),
+                          label:
+                              Text(AppLocalizations.of(context).guiScreenshot),
                         ),
                         ElevatedButton.icon(
                           onPressed: _isProcessing ? null : _runAnalysis,
                           icon: const Icon(Icons.analytics),
-                          label: const Text('Analyze'),
+                          label: Text(AppLocalizations.of(context).guiAnalyze),
                         ),
                       ],
                     ),
@@ -90,16 +92,15 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'What do you want to do?',
+                    Text(
+                      AppLocalizations.of(context).guiPrompt,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _instructionController,
-                      decoration: const InputDecoration(
-                        hintText:
-                            'e.g., Click the search button, Type in the box',
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).guiHint,
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -108,7 +109,7 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _isProcessing ? null : _runWorkflow,
-                        child: const Text('Execute'),
+                        child: Text(AppLocalizations.of(context).guiExecute),
                       ),
                     ),
                   ],
@@ -126,8 +127,8 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Result',
+                      Text(
+                        AppLocalizations.of(context).guiResult,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -143,7 +144,8 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
+                color:
+                    AppTheme.colorsOf(context).secondary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -152,7 +154,7 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'GUI Automation uses the local agent runtime.',
+                      AppLocalizations.of(context).guiLocalRuntime,
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
@@ -166,10 +168,11 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
   }
 
   Future<void> _takeScreenshot() async {
+    final l10n = AppLocalizations.of(context);
     final path = await _service.takeScreenshot();
     if (path != null) {
       setState(() {
-        _result = 'Screenshot saved: $path';
+        _result = l10n.guiScreenshotSaved(path);
       });
     }
   }
