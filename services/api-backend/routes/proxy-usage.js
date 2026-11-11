@@ -2,6 +2,11 @@ import express from 'express';
 import { authenticateJWT } from '../middleware/auth.js';
 import { addTierInfo } from '../middleware/tier-check.js';
 import winston from 'winston';
+import {
+  proxyUsageRecordBody,
+  proxyUsageAggregateBody,
+  validateBody,
+} from './body-schemas.js';
 
 const router = express.Router();
 
@@ -46,6 +51,7 @@ router.post(
   '/usage/:proxyId/record',
   authenticateJWT,
   addTierInfo,
+  validateBody(proxyUsageRecordBody),
   async function (req, res) {
     try {
       const { proxyId } = req.params;
@@ -397,6 +403,7 @@ router.post(
   '/usage/aggregate',
   authenticateJWT,
   addTierInfo,
+  validateBody(proxyUsageAggregateBody),
   async function (req, res) {
     try {
       const userId = req.user?.sub;
