@@ -25,8 +25,6 @@ import {
 import { validateSchema } from '../../middleware/schema-validation.js';
 import {
   CreateAdminSchema,
-  UpdateAdminSchema,
-  UserNoteSchema,
 } from '../../schemas/validation-schemas.js';
 
 const router = express.Router();
