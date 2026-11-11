@@ -1979,4 +1979,429 @@ class AppLocalizationsEn extends AppLocalizations {
   String achievementEvolveDescription(String stage) {
     return 'Evolve your avatar to the $stage stage';
   }
+
+  @override
+  String get configPageGeneral => 'General';
+
+  @override
+  String get configPageGeneralSubtitle => 'App preferences';
+
+  @override
+  String get configPageAppearance => 'Appearance';
+
+  @override
+  String get configPageAppearanceSubtitle => 'Theme and look';
+
+  @override
+  String get configPageConnection => 'Connection';
+
+  @override
+  String get configPageConnectionSubtitle => 'Daemon, mesh, and account';
+
+  @override
+  String get configPageLlm => 'LLM providers';
+
+  @override
+  String get configPageLlmSubtitle => 'Model provider settings';
+
+  @override
+  String get configPageVision => 'Vision';
+
+  @override
+  String get configPageVisionSubtitle => 'Screen and vision tools';
+
+  @override
+  String get configPageAvatar => 'Avatar';
+
+  @override
+  String get configPageAvatarSubtitle => 'Companion appearance';
+
+  @override
+  String get configPageAchievements => 'Achievements';
+
+  @override
+  String get configPageAchievementsSubtitle => 'Avatar milestones';
+
+  @override
+  String get configPageDesktop => 'Desktop';
+
+  @override
+  String get configPageDesktopSubtitle => 'Local desktop tools';
+
+  @override
+  String get configPageAbout => 'About';
+
+  @override
+  String get configPagePlans => 'Plans';
+
+  @override
+  String get configPagePlansSubtitle => 'Subscription options';
+
+  @override
+  String get configPageBrain => 'Brain insights';
+
+  @override
+  String get configPageBrainSubtitle => 'Local brain activity';
+
+  @override
+  String get configPageRoadmap => 'Roadmap';
+
+  @override
+  String get configPageRoadmapSubtitle => 'What is in progress';
+
+  @override
+  String get configTitle => 'Runtime Settings';
+
+  @override
+  String get configBackToChannel => 'Back to runtime channel';
+
+  @override
+  String get configTabRuntime => 'Runtime';
+
+  @override
+  String get configTabMesh => 'Mesh';
+
+  @override
+  String get configTabApp => 'App';
+
+  @override
+  String get configTabStorage => 'Storage';
+
+  @override
+  String get configTabSystem => 'System';
+
+  @override
+  String configLoadFailed(String error) {
+    return 'Failed to load config: $error';
+  }
+
+  @override
+  String get configSaved => 'Configuration saved';
+
+  @override
+  String configSaveFailed(String error) {
+    return 'Failed to save configuration: $error';
+  }
+
+  @override
+  String get configResetTitle => 'Reset to Defaults';
+
+  @override
+  String get configResetBody =>
+      'This resets runtime preferences (theme, language, timeouts, proxy, developer flags) to their defaults.\n\nGateway URLs, API keys, and avatar settings are not affected.';
+
+  @override
+  String get configResetDone => 'Configuration reset to defaults';
+
+  @override
+  String configResetFailed(String error) {
+    return 'Failed to reset configuration: $error';
+  }
+
+  @override
+  String configExported(String filename) {
+    return 'Settings exported to $filename';
+  }
+
+  @override
+  String configExportFailed(String error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get configImported => 'Settings imported successfully';
+
+  @override
+  String configImportFailed(String error) {
+    return 'Import failed: $error';
+  }
+
+  @override
+  String get configRuntimeNone => 'None';
+
+  @override
+  String get configActiveRuntime => 'Active Agent Runtime';
+
+  @override
+  String configSecureChannelRuntime(String runtime) {
+    return 'Secure channel runtime: $runtime';
+  }
+
+  @override
+  String get configNoRuntime => 'No runtime selected - choose one below';
+
+  @override
+  String get configAgentRuntime => 'Agent Runtime';
+
+  @override
+  String get configAgentRuntimeHelper =>
+      'Select the runtime used by the secure channel';
+
+  @override
+  String configRuntimeSet(String runtime) {
+    return 'Active runtime set to $runtime';
+  }
+
+  @override
+  String get configRuntimeCleared => 'Runtime cleared';
+
+  @override
+  String get configSupportProviders => 'Support Model Providers';
+
+  @override
+  String get configSupportProvidersSubtitle =>
+      'Optional helpers for memory, summaries, OCR cleanup, and background tasks';
+
+  @override
+  String get configPreferredSupportProvider => 'Preferred Support Provider';
+
+  @override
+  String get configSupportProviderAuto => 'Auto';
+
+  @override
+  String get configSupportProvidersNote =>
+      'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.';
+
+  @override
+  String get configRequestPolicy => 'Runtime Request Policy';
+
+  @override
+  String get configConcurrentRequests => 'Concurrent Requests';
+
+  @override
+  String get configConcurrentRequestsHint => 'Max concurrent runtime requests';
+
+  @override
+  String get configRuntimeTimeout => 'Runtime Timeout (sec)';
+
+  @override
+  String get configAutoRestart => 'Auto-restart Runtime on Failure';
+
+  @override
+  String get configProxySettings => 'Proxy Settings';
+
+  @override
+  String get configUseProxy => 'Use Proxy Server';
+
+  @override
+  String get configProxyHost => 'Proxy Host';
+
+  @override
+  String get configProxyHostHint => 'e.g., proxy.example.com';
+
+  @override
+  String get configProxyPort => 'Proxy Port';
+
+  @override
+  String get configConnectionSettings => 'Connection Settings';
+
+  @override
+  String get configRequestTimeout => 'Request Timeout (sec)';
+
+  @override
+  String get configMaxRetries => 'Max Retries';
+
+  @override
+  String get configAppearance => 'Appearance';
+
+  @override
+  String get configTheme => 'Theme';
+
+  @override
+  String get configLanguage => 'Language';
+
+  @override
+  String get configNotifications => 'Notifications';
+
+  @override
+  String get configEnableNotifications => 'Enable Notifications';
+
+  @override
+  String get configShowTrayIcon => 'Show Tray Icon';
+
+  @override
+  String get configSecurity => 'Security';
+
+  @override
+  String get configEncryptLocalData => 'Encrypt Local Data';
+
+  @override
+  String get configEncryptLocalDataSubtitle =>
+      'Encrypt conversation history and settings';
+
+  @override
+  String get configBiometric => 'Require Biometric Auth';
+
+  @override
+  String get configBiometricSubtitle => 'Require fingerprint/auth to open app';
+
+  @override
+  String get configSessionTimeout => 'Session Timeout (min)';
+
+  @override
+  String get configSessionTimeoutHint => 'Auto-lock after inactivity';
+
+  @override
+  String get configRememberTokens => 'Remember Authentication Tokens';
+
+  @override
+  String get configDeveloperOptions => 'Developer Options';
+
+  @override
+  String get configDebugMode => 'Debug Mode';
+
+  @override
+  String get configDebugModeSubtitle =>
+      'Enable additional debugging information';
+
+  @override
+  String get configVerboseLogging => 'Verbose Logging';
+
+  @override
+  String get configVerboseLoggingSubtitle =>
+      'Log detailed diagnostic information';
+
+  @override
+  String get configShowDevTools => 'Show Developer Tools';
+
+  @override
+  String get configShowDevToolsSubtitle =>
+      'Enable development tools and inspectors';
+
+  @override
+  String get configDataRetention => 'Data Retention';
+
+  @override
+  String get configMaxHistory => 'Max Conversation History';
+
+  @override
+  String get configMaxHistoryHint =>
+      'Maximum number of conversations to store locally';
+
+  @override
+  String get configAutoCleanup => 'Auto-cleanup Old Data';
+
+  @override
+  String get configCacheManagement => 'Cache Management';
+
+  @override
+  String get configEnableCache => 'Enable Response Cache';
+
+  @override
+  String get configCacheSize => 'Cache Size Limit (MB)';
+
+  @override
+  String get configClearCacheNow => 'Clear Cache Now';
+
+  @override
+  String get configApplication => 'Application';
+
+  @override
+  String get configVersion => 'Version';
+
+  @override
+  String configVersionValue(String version, String build) {
+    return '$version (build $build)';
+  }
+
+  @override
+  String get configPlatform => 'Platform';
+
+  @override
+  String get configDartVersion => 'Dart Version';
+
+  @override
+  String get configSettingsPages => 'Settings pages';
+
+  @override
+  String get configPaths => 'Paths';
+
+  @override
+  String get configAppPath => 'App Path';
+
+  @override
+  String get configConfigPath => 'Config Path';
+
+  @override
+  String get configDataPath => 'Data Path';
+
+  @override
+  String get configWorkingDirectory => 'Working Directory';
+
+  @override
+  String get configSoftwareUpdates => 'Software Updates';
+
+  @override
+  String get configCheckingUpdates => 'Checking for updates...';
+
+  @override
+  String get configDownloadingUpdate => 'Downloading update...';
+
+  @override
+  String get configInstallingUpdate => 'Installing update...';
+
+  @override
+  String configUpdateAvailable(String version) {
+    return 'Update Available: $version';
+  }
+
+  @override
+  String configCurrentVersion(String version) {
+    return 'Current version: $version';
+  }
+
+  @override
+  String get configDownloadUpdate => 'Download Update';
+
+  @override
+  String get configViewChangelog => 'View Changelog';
+
+  @override
+  String get configUpdateReady => 'Update Ready to Install';
+
+  @override
+  String get configInstallRestart => 'Install & Restart';
+
+  @override
+  String get configUpToDate => 'Up to date';
+
+  @override
+  String get configCheckNow => 'Check Now';
+
+  @override
+  String get configExport => 'Export';
+
+  @override
+  String get configImport => 'Import';
+
+  @override
+  String get configClearCacheTitle => 'Clear Cache';
+
+  @override
+  String configClearCacheConfirm(int size) {
+    return 'Clear all cached data? ($size MB will be freed)';
+  }
+
+  @override
+  String get configCacheCleared => 'Cache cleared successfully';
+
+  @override
+  String get configUpdateMajor =>
+      'Major version - may include breaking changes';
+
+  @override
+  String get configUpdateMinor =>
+      'Minor version - new features and improvements';
+
+  @override
+  String get configUpdatePatch =>
+      'Patch version - bug fixes and security updates';
+
+  @override
+  String configWhatsNew(String version) {
+    return 'What\'s New in $version';
+  }
+
+  @override
+  String get configNoChangelog => 'No changelog available';
 }

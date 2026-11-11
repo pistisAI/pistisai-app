@@ -26,6 +26,7 @@ import '../../services/settings_import_export_service.dart';
 import '../../services/theme_provider.dart';
 import '../../utils/file_download_helper.dart';
 import '../../di/locator.dart';
+import '../../l10n/app_localizations.dart';
 
 class _SettingsPageLink {
   const _SettingsPageLink(this.label, this.subtitle, this.route, this.icon);
@@ -36,80 +37,80 @@ class _SettingsPageLink {
   final IconData icon;
 }
 
-const _settingsPages = <_SettingsPageLink>[
-  _SettingsPageLink(
-    'General',
-    'App preferences',
-    '/settings/general',
-    Icons.tune,
-  ),
-  _SettingsPageLink(
-    'Appearance',
-    'Theme and look',
-    '/settings/appearance',
-    Icons.palette_outlined,
-  ),
-  _SettingsPageLink(
-    'Connection',
-    'Daemon, mesh, and account',
-    '/settings/connection',
-    Icons.lan_outlined,
-  ),
-  _SettingsPageLink(
-    'LLM providers',
-    'Model provider settings',
-    '/settings/llm',
-    Icons.psychology_outlined,
-  ),
-  _SettingsPageLink(
-    'Vision',
-    'Screen and vision tools',
-    '/settings/vision',
-    Icons.visibility_outlined,
-  ),
-  _SettingsPageLink(
-    'Avatar',
-    'Companion appearance',
-    '/settings/avatar',
-    Icons.face_outlined,
-  ),
-  _SettingsPageLink(
-    'Achievements',
-    'Avatar milestones',
-    '/settings/achievements',
-    Icons.emoji_events_outlined,
-  ),
-  _SettingsPageLink(
-    'Desktop',
-    'Local desktop tools',
-    '/settings/desktop',
-    Icons.desktop_windows_outlined,
-  ),
-  _SettingsPageLink(
-    'About',
-    '',
-    '/settings/about',
-    Icons.info_outline,
-  ),
-  _SettingsPageLink(
-    'Plans',
-    'Subscription options',
-    '/upgrade',
-    Icons.workspace_premium_outlined,
-  ),
-  _SettingsPageLink(
-    'Brain insights',
-    'Local brain activity',
-    '/brain-insights',
-    Icons.bubble_chart_outlined,
-  ),
-  _SettingsPageLink(
-    'Roadmap',
-    'What is in progress',
-    '/construction',
-    Icons.construction_outlined,
-  ),
-];
+List<_SettingsPageLink> _settingsPages(AppLocalizations l10n) => [
+      _SettingsPageLink(
+        l10n.configPageGeneral,
+        l10n.configPageGeneralSubtitle,
+        '/settings/general',
+        Icons.tune,
+      ),
+      _SettingsPageLink(
+        l10n.configPageAppearance,
+        l10n.configPageAppearanceSubtitle,
+        '/settings/appearance',
+        Icons.palette_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageConnection,
+        l10n.configPageConnectionSubtitle,
+        '/settings/connection',
+        Icons.lan_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageLlm,
+        l10n.configPageLlmSubtitle,
+        '/settings/llm',
+        Icons.psychology_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageVision,
+        l10n.configPageVisionSubtitle,
+        '/settings/vision',
+        Icons.visibility_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageAvatar,
+        l10n.configPageAvatarSubtitle,
+        '/settings/avatar',
+        Icons.face_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageAchievements,
+        l10n.configPageAchievementsSubtitle,
+        '/settings/achievements',
+        Icons.emoji_events_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageDesktop,
+        l10n.configPageDesktopSubtitle,
+        '/settings/desktop',
+        Icons.desktop_windows_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageAbout,
+        '',
+        '/settings/about',
+        Icons.info_outline,
+      ),
+      _SettingsPageLink(
+        l10n.configPagePlans,
+        l10n.configPagePlansSubtitle,
+        '/upgrade',
+        Icons.workspace_premium_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageBrain,
+        l10n.configPageBrainSubtitle,
+        '/brain-insights',
+        Icons.bubble_chart_outlined,
+      ),
+      _SettingsPageLink(
+        l10n.configPageRoadmap,
+        l10n.configPageRoadmapSubtitle,
+        '/construction',
+        Icons.construction_outlined,
+      ),
+    ];
 
 /// Configuration screen with tabbed organization for better UX.
 /// Settings are persisted via SettingsPreferenceService and ConnectionManagerService.
@@ -141,8 +142,19 @@ class _ConfigScreenState extends State<ConfigScreen>
   int _requestTimeout = 60;
 
   // App Settings
-  String _selectedTheme = 'System';
-  String _selectedLanguage = 'English';
+  /// Stored theme code: 'system', 'light' or 'dark'.
+  String _selectedTheme = 'system';
+
+  /// Stored language code: 'en', 'es', 'fr' or 'de'.
+  String _selectedLanguage = 'en';
+
+  /// Language names shown in their own language, so they need no translation.
+  static const _languageNames = {
+    'en': 'English',
+    'es': 'Español',
+    'fr': 'Français',
+    'de': 'Deutsch',
+  };
   bool _notificationsEnabled = true;
   bool _trayIconEnabled = true;
 
@@ -173,6 +185,12 @@ class _ConfigScreenState extends State<ConfigScreen>
   BackendType? _activeBackend;
   final _settingsService = serviceLocator<SettingsPreferenceService>();
   final _importExportService = serviceLocator<SettingsImportExportService>();
+
+  AppLocalizations get _l10n => AppLocalizations.of(context);
+
+  /// Error raised while loading, formatted in build so the message follows
+  /// the current locale.
+  Object? _loadError;
 
   @override
   void initState() {
@@ -216,10 +234,10 @@ class _ConfigScreenState extends State<ConfigScreen>
     connectionManager.clearActiveRuntime();
   }
 
-  String _runtimeLabel(BackendType? backend) {
+  String _runtimeLabel(AppLocalizations l10n, BackendType? backend) {
     return switch (backend) {
       BackendType.hermes => 'Hermes Agent',
-      _ => 'None',
+      _ => l10n.configRuntimeNone,
     };
   }
 
@@ -242,18 +260,12 @@ class _ConfigScreenState extends State<ConfigScreen>
     try {
       final theme = await _settingsService.getTheme();
       _selectedTheme = switch (theme) {
-        'light' => 'Light',
-        'dark' => 'Dark',
-        _ => 'System',
+        'light' || 'dark' => theme,
+        _ => 'system',
       };
 
       final lang = await _settingsService.getLanguage();
-      _selectedLanguage = switch (lang) {
-        'es' => 'Spanish',
-        'fr' => 'French',
-        'de' => 'German',
-        _ => 'English',
-      };
+      _selectedLanguage = _languageNames.containsKey(lang) ? lang : 'en';
 
       _notificationsEnabled = await _settingsService.isNotificationsEnabled();
       _trayIconEnabled = await _settingsService.isMinimizeToTrayEnabled();
@@ -293,18 +305,15 @@ class _ConfigScreenState extends State<ConfigScreen>
 
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
-      if (mounted) setState(() => _errorMessage = 'Failed to load config: $e');
+      if (mounted) setState(() => _loadError = e);
     }
   }
 
   Future<void> _saveConfig() async {
+    final l10n = _l10n;
     setState(() => _isSaving = true);
     try {
-      final themeString = switch (_selectedTheme) {
-        'Light' => 'light',
-        'Dark' => 'dark',
-        _ => 'system',
-      };
+      final themeString = _selectedTheme;
       await _settingsService.setTheme(themeString);
       // Keep ThemeProvider in sync so the live UI and persistence agree.
       if (mounted) {
@@ -313,14 +322,7 @@ class _ConfigScreenState extends State<ConfigScreen>
         );
       }
 
-      await _settingsService.setLanguage(
-        switch (_selectedLanguage) {
-          'Spanish' => 'es',
-          'French' => 'fr',
-          'German' => 'de',
-          _ => 'en',
-        },
-      );
+      await _settingsService.setLanguage(_selectedLanguage);
 
       await _settingsService.setNotificationsEnabled(_notificationsEnabled);
       await _settingsService.setMinimizeToTrayEnabled(_trayIconEnabled);
@@ -357,12 +359,12 @@ class _ConfigScreenState extends State<ConfigScreen>
 
       if (mounted) {
         setState(() => _isSaving = false);
-        _showSnackBar('Configuration saved', isError: false);
+        _showSnackBar(l10n.configSaved, isError: false);
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        _showSnackBar('Failed to save configuration: $e', isError: true);
+        _showSnackBar(l10n.configSaveFailed('$e'), isError: true);
       }
     }
   }
@@ -380,23 +382,20 @@ class _ConfigScreenState extends State<ConfigScreen>
   }
 
   Future<void> _resetToDefaults() async {
+    final l10n = _l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset to Defaults'),
-        content: const Text(
-          'This resets runtime preferences (theme, language, timeouts, proxy, '
-          'developer flags) to their defaults.\n\n'
-          'Gateway URLs, API keys, and avatar settings are not affected.',
-        ),
+        title: Text(l10n.configResetTitle),
+        content: Text(l10n.configResetBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reset'),
+            child: Text(l10n.commonReset),
           ),
         ],
       ),
@@ -409,16 +408,17 @@ class _ConfigScreenState extends State<ConfigScreen>
       if (!mounted) return;
       await _loadData();
       if (mounted) {
-        _showSnackBar('Configuration reset to defaults', isError: false);
+        _showSnackBar(l10n.configResetDone, isError: false);
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar('Failed to reset configuration: $e', isError: true);
+        _showSnackBar(l10n.configResetFailed('$e'), isError: true);
       }
     }
   }
 
   Future<void> _exportSettings() async {
+    final l10n = _l10n;
     try {
       final jsonString = await _importExportService.exportSettingsToJson();
       final filename = _importExportService.generateExportFilename();
@@ -439,16 +439,17 @@ class _ConfigScreenState extends State<ConfigScreen>
       }
 
       if (mounted) {
-        _showSnackBar('Settings exported to $filename', isError: false);
+        _showSnackBar(l10n.configExported(filename), isError: false);
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar('Export failed: $e', isError: true);
+        _showSnackBar(l10n.configExportFailed('$e'), isError: true);
       }
     }
   }
 
   Future<void> _importSettings() async {
+    final l10n = _l10n;
     try {
       final file = await file_selector.openFile(
         acceptedTypeGroups: [
@@ -466,30 +467,34 @@ class _ConfigScreenState extends State<ConfigScreen>
       await _importExportService.applyImportedSettings(settings);
       if (mounted) {
         await _loadData();
-        _showSnackBar('Settings imported successfully', isError: false);
+        _showSnackBar(l10n.configImported, isError: false);
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar('Import failed: $e', isError: true);
+        _showSnackBar(l10n.configImportFailed('$e'), isError: true);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n;
+    final errorMessage = _loadError != null
+        ? l10n.configLoadFailed('$_loadError')
+        : _errorMessage;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/chat'),
-          tooltip: 'Back to runtime channel',
+          tooltip: l10n.configBackToChannel,
         ),
-        title: const Text('Runtime Settings'),
+        title: Text(l10n.configTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _loadData,
-            tooltip: 'Refresh',
+            tooltip: l10n.commonRefresh,
           ),
           IconButton(
             onPressed: _isSaving ? null : _saveConfig,
@@ -500,69 +505,70 @@ class _ConfigScreenState extends State<ConfigScreen>
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.save),
-            tooltip: 'Save',
+            tooltip: l10n.commonSave,
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
-          tabs: const [
-            Tab(text: 'Runtime', icon: Icon(Icons.hub)),
-            Tab(text: 'Mesh', icon: Icon(Icons.wifi)),
-            Tab(text: 'App', icon: Icon(Icons.smartphone)),
-            Tab(text: 'Storage', icon: Icon(Icons.storage)),
-            Tab(text: 'System', icon: Icon(Icons.info)),
+          tabs: [
+            Tab(text: l10n.configTabRuntime, icon: const Icon(Icons.hub)),
+            Tab(text: l10n.configTabMesh, icon: const Icon(Icons.wifi)),
+            Tab(text: l10n.configTabApp, icon: const Icon(Icons.smartphone)),
+            Tab(text: l10n.configTabStorage, icon: const Icon(Icons.storage)),
+            Tab(text: l10n.configTabSystem, icon: const Icon(Icons.info)),
           ],
         ),
       ),
       body: RefreshableScreen(
         onRefresh: _loadData,
-        errorMessage: _errorMessage,
+        errorMessage: errorMessage,
         child: _isLoading
             ? const LoadingSkeleton(itemCount: 3)
-            : _errorMessage != null
-                ? ErrorState(message: _errorMessage!, onRetry: _loadData)
+            : errorMessage != null
+                ? ErrorState(message: errorMessage, onRetry: _loadData)
                 : TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildGatewayTab(),
-                      _buildNetworkTab(),
-                      _buildAppTab(),
-                      _buildStorageTab(),
-                      _buildSystemTab(),
+                      _buildGatewayTab(l10n),
+                      _buildNetworkTab(l10n),
+                      _buildAppTab(l10n),
+                      _buildStorageTab(l10n),
+                      _buildSystemTab(l10n),
                     ],
                   ),
       ),
     );
   }
 
-  Widget _buildGatewayTab() {
+  Widget _buildGatewayTab(AppLocalizations l10n) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         CardSection(
-          title: 'Active Agent Runtime',
+          title: l10n.configActiveRuntime,
           subtitle: _activeBackend != null
-              ? 'Secure channel runtime: ${_runtimeLabel(_activeBackend)}'
-              : 'No runtime selected - choose one below',
+              ? l10n.configSecureChannelRuntime(
+                  _runtimeLabel(l10n, _activeBackend))
+              : l10n.configNoRuntime,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: DropdownButtonFormField<BackendType?>(
                 initialValue: _activeBackend,
                 decoration: InputDecoration(
-                  labelText: 'Agent Runtime',
+                  labelText: l10n.configAgentRuntime,
                   border: const OutlineInputBorder(),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  helperText: 'Select the runtime used by the secure channel',
+                  helperText: l10n.configAgentRuntimeHelper,
                 ),
-                items: const [
+                items: [
                   DropdownMenuItem(
                     value: null,
-                    child: Text('None'),
+                    child: Text(l10n.configRuntimeNone),
                   ),
-                  DropdownMenuItem(
+                  const DropdownMenuItem(
                     value: BackendType.hermes,
                     child: Text('Hermes Agent'),
                   ),
@@ -574,8 +580,8 @@ class _ConfigScreenState extends State<ConfigScreen>
                   if (mounted) {
                     _showSnackBar(
                       value != null
-                          ? 'Active runtime set to ${_runtimeLabel(value)}'
-                          : 'Runtime cleared',
+                          ? l10n.configRuntimeSet(_runtimeLabel(l10n, value))
+                          : l10n.configRuntimeCleared,
                       isError: false,
                     );
                   }
@@ -586,13 +592,17 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Support Model Providers',
-          subtitle:
-              'Optional helpers for memory, summaries, OCR cleanup, and background tasks',
+          title: l10n.configSupportProviders,
+          subtitle: l10n.configSupportProvidersSubtitle,
           children: [
             _dropdown(
-              'Preferred Support Provider',
-              ['Auto', 'Ollama', 'LM Studio', 'OpenAI-compatible'],
+              l10n.configPreferredSupportProvider,
+              {
+                'Auto': l10n.configSupportProviderAuto,
+                'Ollama': 'Ollama',
+                'LM Studio': 'LM Studio',
+                'OpenAI-compatible': 'OpenAI-compatible',
+              },
               _selectedSupportProvider,
               (v) async {
                 final val = v!;
@@ -600,33 +610,31 @@ class _ConfigScreenState extends State<ConfigScreen>
                 await _settingsService.setSupportProvider(val);
               },
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 4, 16, 12),
-              child: Text(
-                'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.',
-              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+              child: Text(l10n.configSupportProvidersNote),
             ),
           ],
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Runtime Request Policy',
+          title: l10n.configRequestPolicy,
           children: [
-            _field('Concurrent Requests', '$_rateLimit', (v) async {
+            _field(l10n.configConcurrentRequests, '$_rateLimit', (v) async {
               final l = int.tryParse(v);
               if (l != null && l > 0) {
                 setState(() => _rateLimit = l);
                 await _settingsService.setRateLimit(l);
               }
-            }, numeric: true, hint: 'Max concurrent runtime requests'),
-            _field('Runtime Timeout (sec)', '$_runtimeTimeout', (v) async {
+            }, numeric: true, hint: l10n.configConcurrentRequestsHint),
+            _field(l10n.configRuntimeTimeout, '$_runtimeTimeout', (v) async {
               final l = int.tryParse(v);
               if (l != null && l > 0) {
                 setState(() => _runtimeTimeout = l);
                 await _settingsService.setRuntimeTimeout(l);
               }
             }, numeric: true),
-            _switch('Auto-restart Runtime on Failure', _autoRestart, (v) async {
+            _switch(l10n.configAutoRestart, _autoRestart, (v) async {
               setState(() => _autoRestart = v);
               await _settingsService.setGatewayAutoRestart(v);
             }),
@@ -636,23 +644,23 @@ class _ConfigScreenState extends State<ConfigScreen>
     );
   }
 
-  Widget _buildNetworkTab() {
+  Widget _buildNetworkTab(AppLocalizations l10n) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         CardSection(
-          title: 'Proxy Settings',
+          title: l10n.configProxySettings,
           children: [
-            _switch('Use Proxy Server', _useProxy, (v) async {
+            _switch(l10n.configUseProxy, _useProxy, (v) async {
               setState(() => _useProxy = v);
               await _settingsService.setProxyEnabled(v);
             }),
             if (_useProxy) ...[
-              _field('Proxy Host', _proxyHost, (v) async {
+              _field(l10n.configProxyHost, _proxyHost, (v) async {
                 setState(() => _proxyHost = v);
                 await _settingsService.setProxyHost(v);
-              }, hint: 'e.g., proxy.example.com'),
-              _field('Proxy Port', '$_proxyPort', (v) async {
+              }, hint: l10n.configProxyHostHint),
+              _field(l10n.configProxyPort, '$_proxyPort', (v) async {
                 final p = int.tryParse(v);
                 if (p != null && p > 0 && p < 65536) {
                   setState(() => _proxyPort = p);
@@ -664,16 +672,16 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Connection Settings',
+          title: l10n.configConnectionSettings,
           children: [
-            _field('Request Timeout (sec)', '$_requestTimeout', (v) async {
+            _field(l10n.configRequestTimeout, '$_requestTimeout', (v) async {
               final t = int.tryParse(v);
               if (t != null && t > 0) {
                 setState(() => _requestTimeout = t);
                 await _settingsService.setRequestTimeout(t);
               }
             }, numeric: true),
-            _field('Max Retries', '$_maxRetries', (v) async {
+            _field(l10n.configMaxRetries, '$_maxRetries', (v) async {
               final r = int.tryParse(v);
               if (r != null && r >= 0) {
                 setState(() => _maxRetries = r);
@@ -686,50 +694,44 @@ class _ConfigScreenState extends State<ConfigScreen>
     );
   }
 
-  Widget _buildAppTab() {
+  Widget _buildAppTab(AppLocalizations l10n) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         CardSection(
-          title: 'Appearance',
+          title: l10n.configAppearance,
           children: [
-            _dropdown('Theme', ['System', 'Light', 'Dark'], _selectedTheme,
-                (v) async {
+            _dropdown(
+                l10n.configTheme,
+                {
+                  'system': l10n.themeSystem,
+                  'light': l10n.themeLight,
+                  'dark': l10n.themeDark,
+                },
+                _selectedTheme, (v) async {
               final val = v!;
               setState(() => _selectedTheme = val);
-              await _settingsService.setTheme(
-                switch (val) {
-                  'Light' => 'light',
-                  'Dark' => 'dark',
-                  _ => 'system',
-                },
-              );
+              await _settingsService.setTheme(val);
             }),
-            _dropdown('Language', ['English', 'Spanish', 'French', 'German'],
-                _selectedLanguage, (v) async {
+            _dropdown(l10n.configLanguage, _languageNames, _selectedLanguage,
+                (v) async {
               final val = v!;
               setState(() => _selectedLanguage = val);
-              await _settingsService.setLanguage(
-                switch (val) {
-                  'Spanish' => 'es',
-                  'French' => 'fr',
-                  'German' => 'de',
-                  _ => 'en',
-                },
-              );
+              await _settingsService.setLanguage(val);
             }),
           ],
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Notifications',
+          title: l10n.configNotifications,
           children: [
-            _switch('Enable Notifications', _notificationsEnabled, (v) async {
+            _switch(l10n.configEnableNotifications, _notificationsEnabled,
+                (v) async {
               setState(() => _notificationsEnabled = v);
               await _settingsService.setNotificationsEnabled(v);
             }),
             if (!kIsWeb)
-              _switch('Show Tray Icon', _trayIconEnabled, (v) async {
+              _switch(l10n.configShowTrayIcon, _trayIconEnabled, (v) async {
                 setState(() => _trayIconEnabled = v);
                 await _settingsService.setMinimizeToTrayEnabled(v);
               }),
@@ -737,27 +739,26 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Security',
+          title: l10n.configSecurity,
           children: [
-            _switch('Encrypt Local Data', _encryptLocalData, (v) async {
+            _switch(l10n.configEncryptLocalData, _encryptLocalData, (v) async {
               setState(() => _encryptLocalData = v);
               await _settingsService.setEncryptLocalDataEnabled(v);
-            }, subtitle: 'Encrypt conversation history and settings'),
+            }, subtitle: l10n.configEncryptLocalDataSubtitle),
             if (!kIsWeb)
-              _switch('Require Biometric Auth', _biometricAuth, (v) async {
+              _switch(l10n.configBiometric, _biometricAuth, (v) async {
                 setState(() => _biometricAuth = v);
                 await _settingsService.setBiometricAuthEnabled(v);
-              }, subtitle: 'Require fingerprint/auth to open app'),
-            _field('Session Timeout (min)', '$_sessionTimeoutMinutes',
+              }, subtitle: l10n.configBiometricSubtitle),
+            _field(l10n.configSessionTimeout, '$_sessionTimeoutMinutes',
                 (v) async {
               final t = int.tryParse(v);
               if (t != null && t > 0) {
                 setState(() => _sessionTimeoutMinutes = t);
                 await _settingsService.setSessionTimeoutMinutes(t);
               }
-            }, numeric: true, hint: 'Auto-lock after inactivity'),
-            _switch('Remember Authentication Tokens', _rememberTokens,
-                (v) async {
+            }, numeric: true, hint: l10n.configSessionTimeoutHint),
+            _switch(l10n.configRememberTokens, _rememberTokens, (v) async {
               setState(() => _rememberTokens = v);
               await _settingsService.setRememberTokensEnabled(v);
             }),
@@ -765,44 +766,42 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Developer Options',
+          title: l10n.configDeveloperOptions,
           children: [
-            _switch('Debug Mode', _debugMode, (v) async {
+            _switch(l10n.configDebugMode, _debugMode, (v) async {
               setState(() => _debugMode = v);
               await _settingsService.setDebugModeEnabled(v);
-            }, subtitle: 'Enable additional debugging information'),
-            _switch('Verbose Logging', _verboseLogging, (v) async {
+            }, subtitle: l10n.configDebugModeSubtitle),
+            _switch(l10n.configVerboseLogging, _verboseLogging, (v) async {
               setState(() => _verboseLogging = v);
               await _settingsService.setVerboseLoggingEnabled(v);
-            }, subtitle: 'Log detailed diagnostic information'),
-            _switch('Show Developer Tools', _showDevTools, (v) async {
+            }, subtitle: l10n.configVerboseLoggingSubtitle),
+            _switch(l10n.configShowDevTools, _showDevTools, (v) async {
               setState(() => _showDevTools = v);
               await _settingsService.setShowDevToolsEnabled(v);
-            }, subtitle: 'Enable development tools and inspectors'),
+            }, subtitle: l10n.configShowDevToolsSubtitle),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildStorageTab() {
+  Widget _buildStorageTab(AppLocalizations l10n) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         CardSection(
-          title: 'Data Retention',
+          title: l10n.configDataRetention,
           children: [
-            _field('Max Conversation History', '$_maxConversationHistory',
+            _field(l10n.configMaxHistory, '$_maxConversationHistory',
                 (v) async {
               final h = int.tryParse(v);
               if (h != null && h >= 0) {
                 setState(() => _maxConversationHistory = h);
                 await _settingsService.setMaxConversationHistory(h);
               }
-            },
-                numeric: true,
-                hint: 'Maximum number of conversations to store locally'),
-            _switch('Auto-cleanup Old Data', _autoCleanup, (v) async {
+            }, numeric: true, hint: l10n.configMaxHistoryHint),
+            _switch(l10n.configAutoCleanup, _autoCleanup, (v) async {
               setState(() => _autoCleanup = v);
               await _settingsService.setAutoCleanupEnabled(v);
             }),
@@ -810,14 +809,14 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Cache Management',
+          title: l10n.configCacheManagement,
           children: [
-            _switch('Enable Response Cache', _enableCache, (v) async {
+            _switch(l10n.configEnableCache, _enableCache, (v) async {
               setState(() => _enableCache = v);
               await _settingsService.setCacheEnabled(v);
             }),
             if (_enableCache)
-              _field('Cache Size Limit (MB)', '$_cacheSizeMB', (v) async {
+              _field(l10n.configCacheSize, '$_cacheSizeMB', (v) async {
                 final c = int.tryParse(v);
                 if (c != null && c > 0) {
                   setState(() => _cacheSizeMB = c);
@@ -830,7 +829,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                 child: OutlinedButton.icon(
                   onPressed: _clearCache,
                   icon: const Icon(Icons.cleaning_services, size: 18),
-                  label: const Text('Clear Cache Now'),
+                  label: Text(l10n.configClearCacheNow),
                 ),
               ),
           ],
@@ -839,25 +838,26 @@ class _ConfigScreenState extends State<ConfigScreen>
     );
   }
 
-  Widget _buildSystemTab() {
+  Widget _buildSystemTab(AppLocalizations l10n) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         CardSection(
-          title: 'Application',
+          title: l10n.configApplication,
           children: [
-            _readOnly(
-                'Version', '${AppConfig.appVersion} (build $_buildNumber)'),
-            _readOnly('Platform',
+            _readOnly(l10n.configVersion,
+                l10n.configVersionValue(AppConfig.appVersion, _buildNumber)),
+            _readOnly(l10n.configPlatform,
                 '${Platform.operatingSystem} ${Platform.operatingSystemVersion}'),
-            _readOnly('Dart Version', Platform.version.split(' ').first),
+            _readOnly(
+                l10n.configDartVersion, Platform.version.split(' ').first),
           ],
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Settings pages',
+          title: l10n.configSettingsPages,
           children: [
-            for (final page in _settingsPages)
+            for (final page in _settingsPages(l10n))
               ListTile(
                 leading: Icon(page.icon),
                 title: Text(page.label),
@@ -873,17 +873,18 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Paths',
+          title: l10n.configPaths,
           children: [
-            if (_appPath.isNotEmpty) _readOnly('App Path', _appPath),
-            if (_configPath.isNotEmpty) _readOnly('Config Path', _configPath),
-            if (_dataPath.isNotEmpty) _readOnly('Data Path', _dataPath),
-            _readOnly('Working Directory', Directory.current.path),
+            if (_appPath.isNotEmpty) _readOnly(l10n.configAppPath, _appPath),
+            if (_configPath.isNotEmpty)
+              _readOnly(l10n.configConfigPath, _configPath),
+            if (_dataPath.isNotEmpty) _readOnly(l10n.configDataPath, _dataPath),
+            _readOnly(l10n.configWorkingDirectory, Directory.current.path),
           ],
         ),
         const SizedBox(height: 16),
         CardSection(
-          title: 'Software Updates',
+          title: l10n.configSoftwareUpdates,
           children: [
             Consumer<AutoUpdateService>(
               builder: (context, updateService, child) {
@@ -891,15 +892,15 @@ class _ConfigScreenState extends State<ConfigScreen>
                 final updateInfo = updateService.updateInfo;
 
                 if (status == UpdateStatus.checking) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text('Checking for updates...'),
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16),
+                          Text(l10n.configCheckingUpdates),
                         ],
                       ),
                     ),
@@ -907,15 +908,15 @@ class _ConfigScreenState extends State<ConfigScreen>
                 }
 
                 if (status == UpdateStatus.downloading) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text('Downloading update...'),
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16),
+                          Text(l10n.configDownloadingUpdate),
                         ],
                       ),
                     ),
@@ -923,15 +924,15 @@ class _ConfigScreenState extends State<ConfigScreen>
                 }
 
                 if (status == UpdateStatus.installing) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
                     child: Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text('Installing update...'),
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16),
+                          Text(l10n.configInstallingUpdate),
                         ],
                       ),
                     ),
@@ -955,7 +956,8 @@ class _ConfigScreenState extends State<ConfigScreen>
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Update Available: ${updateInfo.latestVersion}',
+                                l10n.configUpdateAvailable(
+                                    updateInfo.latestVersion),
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium
@@ -969,12 +971,12 @@ class _ConfigScreenState extends State<ConfigScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Current version: ${updateInfo.currentVersion}',
+                          l10n.configCurrentVersion(updateInfo.currentVersion),
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _getUpdateTypeLabel(updateInfo.type),
+                          _getUpdateTypeLabel(l10n, updateInfo.type),
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context)
@@ -990,13 +992,13 @@ class _ConfigScreenState extends State<ConfigScreen>
                             ElevatedButton.icon(
                               onPressed: () => updateService.downloadUpdate(),
                               icon: const Icon(Icons.download, size: 18),
-                              label: const Text('Download Update'),
+                              label: Text(l10n.configDownloadUpdate),
                             ),
                             TextButton.icon(
                               onPressed: () =>
                                   _showChangelogDialog(context, updateInfo),
                               icon: const Icon(Icons.description, size: 18),
-                              label: const Text('View Changelog'),
+                              label: Text(l10n.configViewChangelog),
                             ),
                           ],
                         ),
@@ -1021,7 +1023,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Update Ready to Install',
+                                l10n.configUpdateReady,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium
@@ -1036,7 +1038,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                         ElevatedButton.icon(
                           onPressed: () => updateService.installUpdate(),
                           icon: const Icon(Icons.restart_alt, size: 18),
-                          label: const Text('Install & Restart'),
+                          label: Text(l10n.configInstallRestart),
                         ),
                       ],
                     ),
@@ -1058,7 +1060,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Up to date',
+                            l10n.configUpToDate,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -1073,7 +1075,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                       TextButton.icon(
                         onPressed: () => updateService.checkForUpdates(),
                         icon: const Icon(Icons.refresh, size: 16),
-                        label: const Text('Check Now'),
+                        label: Text(l10n.configCheckNow),
                       ),
                     ],
                   ),
@@ -1094,17 +1096,17 @@ class _ConfigScreenState extends State<ConfigScreen>
                 OutlinedButton.icon(
                   onPressed: _resetToDefaults,
                   icon: const Icon(Icons.restore),
-                  label: const Text('Reset to Defaults'),
+                  label: Text(l10n.configResetTitle),
                 ),
                 OutlinedButton.icon(
                   onPressed: _exportSettings,
                   icon: const Icon(Icons.download),
-                  label: const Text('Export'),
+                  label: Text(l10n.configExport),
                 ),
                 OutlinedButton.icon(
                   onPressed: _importSettings,
                   icon: const Icon(Icons.upload),
-                  label: const Text('Import'),
+                  label: Text(l10n.configImport),
                 ),
               ],
             ),
@@ -1115,31 +1117,32 @@ class _ConfigScreenState extends State<ConfigScreen>
   }
 
   Future<void> _clearCache() async {
+    final l10n = _l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear Cache'),
-        content:
-            Text('Clear all cached data? ($_cacheSizeMB MB will be freed)'),
+        title: Text(l10n.configClearCacheTitle),
+        content: Text(l10n.configClearCacheConfirm(_cacheSizeMB)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Clear'),
+            child: Text(l10n.commonClear),
           ),
         ],
       ),
     );
 
     if (confirmed == true) {
-      _showSnackBar('Cache cleared successfully', isError: false);
+      _showSnackBar(l10n.configCacheCleared, isError: false);
     }
   }
 
-  Widget _dropdown(String label, List<String> items, String value,
+  /// Dropdown over [items], a map from stored value to displayed label.
+  Widget _dropdown(String label, Map<String, String> items, String value,
       ValueChanged<String?> onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1151,8 +1154,8 @@ class _ConfigScreenState extends State<ConfigScreen>
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         ),
-        items: items
-            .map((i) => DropdownMenuItem(value: i, child: Text(i)))
+        items: items.entries
+            .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
             .toList(),
         onChanged: onChanged,
       ),
@@ -1212,24 +1215,25 @@ class _ConfigScreenState extends State<ConfigScreen>
     );
   }
 
-  String _getUpdateTypeLabel(UpdateType type) {
+  String _getUpdateTypeLabel(AppLocalizations l10n, UpdateType type) {
     switch (type) {
       case UpdateType.major:
-        return 'Major version - may include breaking changes';
+        return l10n.configUpdateMajor;
       case UpdateType.minor:
-        return 'Minor version - new features and improvements';
+        return l10n.configUpdateMinor;
       case UpdateType.patch:
-        return 'Patch version - bug fixes and security updates';
+        return l10n.configUpdatePatch;
       case UpdateType.none:
         return '';
     }
   }
 
   void _showChangelogDialog(BuildContext context, UpdateInfo info) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('What\'s New in ${info.latestVersion}'),
+        title: Text(l10n.configWhatsNew(info.latestVersion)),
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
@@ -1240,7 +1244,7 @@ class _ConfigScreenState extends State<ConfigScreen>
                 if (info.changelog != null && info.changelog!.isNotEmpty)
                   MarkdownBody(data: info.changelog!)
                 else
-                  const Text('No changelog available'),
+                  Text(l10n.configNoChangelog),
               ],
             ),
           ),
@@ -1248,7 +1252,7 @@ class _ConfigScreenState extends State<ConfigScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.commonClose),
           ),
         ],
       ),

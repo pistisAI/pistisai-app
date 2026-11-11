@@ -2010,4 +2010,436 @@ class AppLocalizationsFr extends AppLocalizations {
   String achievementEvolveDescription(String stage) {
     return 'Faire évoluer votre avatar jusqu\'au stade $stage';
   }
+
+  @override
+  String get configPageGeneral => 'Général';
+
+  @override
+  String get configPageGeneralSubtitle => 'Préférences de l\'application';
+
+  @override
+  String get configPageAppearance => 'Apparence';
+
+  @override
+  String get configPageAppearanceSubtitle => 'Thème et apparence';
+
+  @override
+  String get configPageConnection => 'Connexion';
+
+  @override
+  String get configPageConnectionSubtitle => 'Service, maillage et compte';
+
+  @override
+  String get configPageLlm => 'Fournisseurs de modèles';
+
+  @override
+  String get configPageLlmSubtitle => 'Réglages des fournisseurs de modèles';
+
+  @override
+  String get configPageVision => 'Vision';
+
+  @override
+  String get configPageVisionSubtitle => 'Outils d\'écran et de vision';
+
+  @override
+  String get configPageAvatar => 'Avatar';
+
+  @override
+  String get configPageAvatarSubtitle => 'Apparence du compagnon';
+
+  @override
+  String get configPageAchievements => 'Succès';
+
+  @override
+  String get configPageAchievementsSubtitle => 'Étapes franchies par l\'avatar';
+
+  @override
+  String get configPageDesktop => 'Bureau';
+
+  @override
+  String get configPageDesktopSubtitle => 'Outils locaux de l\'ordinateur';
+
+  @override
+  String get configPageAbout => 'À propos';
+
+  @override
+  String get configPagePlans => 'Forfaits';
+
+  @override
+  String get configPagePlansSubtitle => 'Options d\'abonnement';
+
+  @override
+  String get configPageBrain => 'Analyse du cerveau local';
+
+  @override
+  String get configPageBrainSubtitle => 'Activité du cerveau local';
+
+  @override
+  String get configPageRoadmap => 'Feuille de route';
+
+  @override
+  String get configPageRoadmapSubtitle => 'Ce qui est en cours';
+
+  @override
+  String get configTitle => 'Réglages de l\'environnement';
+
+  @override
+  String get configBackToChannel => 'Retour au canal de l\'environnement';
+
+  @override
+  String get configTabRuntime => 'Environnement';
+
+  @override
+  String get configTabMesh => 'Maillage';
+
+  @override
+  String get configTabApp => 'Application';
+
+  @override
+  String get configTabStorage => 'Stockage';
+
+  @override
+  String get configTabSystem => 'Système';
+
+  @override
+  String configLoadFailed(String error) {
+    return 'Impossible de charger la configuration : $error';
+  }
+
+  @override
+  String get configSaved => 'Configuration enregistrée';
+
+  @override
+  String configSaveFailed(String error) {
+    return 'Impossible d\'enregistrer la configuration : $error';
+  }
+
+  @override
+  String get configResetTitle => 'Rétablir les valeurs par défaut';
+
+  @override
+  String get configResetBody =>
+      'Les préférences de l\'environnement (thème, langue, délais, proxy, options de développement) reprennent leurs valeurs par défaut.\n\nLes URL de passerelle, les clés API et les réglages de l\'avatar ne sont pas touchés.';
+
+  @override
+  String get configResetDone => 'Configuration rétablie par défaut';
+
+  @override
+  String configResetFailed(String error) {
+    return 'Impossible de rétablir la configuration : $error';
+  }
+
+  @override
+  String configExported(String filename) {
+    return 'Réglages exportés vers $filename';
+  }
+
+  @override
+  String configExportFailed(String error) {
+    return 'Échec de l\'exportation : $error';
+  }
+
+  @override
+  String get configImported => 'Réglages importés';
+
+  @override
+  String configImportFailed(String error) {
+    return 'Échec de l\'importation : $error';
+  }
+
+  @override
+  String get configRuntimeNone => 'Aucun';
+
+  @override
+  String get configActiveRuntime => 'Environnement d\'agent actif';
+
+  @override
+  String configSecureChannelRuntime(String runtime) {
+    return 'Environnement du canal sécurisé : $runtime';
+  }
+
+  @override
+  String get configNoRuntime =>
+      'Aucun environnement sélectionné — choisissez-en un ci-dessous';
+
+  @override
+  String get configAgentRuntime => 'Environnement d\'agent';
+
+  @override
+  String get configAgentRuntimeHelper =>
+      'Choisissez l\'environnement utilisé par le canal sécurisé';
+
+  @override
+  String configRuntimeSet(String runtime) {
+    return 'Environnement actif : $runtime';
+  }
+
+  @override
+  String get configRuntimeCleared => 'Environnement retiré';
+
+  @override
+  String get configSupportProviders => 'Fournisseurs de modèles d\'appoint';
+
+  @override
+  String get configSupportProvidersSubtitle =>
+      'Aides facultatives pour la mémoire, les résumés, le nettoyage OCR et les tâches de fond';
+
+  @override
+  String get configPreferredSupportProvider => 'Fournisseur d\'appoint préféré';
+
+  @override
+  String get configSupportProviderAuto => 'Automatique';
+
+  @override
+  String get configSupportProvidersNote =>
+      'Les fournisseurs d\'appoint ne peuvent ni terminer la configuration ni recevoir le contrôle de l\'ordinateur, sauf s\'ils passent par un environnement d\'agent.';
+
+  @override
+  String get configRequestPolicy => 'Règles des requêtes';
+
+  @override
+  String get configConcurrentRequests => 'Requêtes simultanées';
+
+  @override
+  String get configConcurrentRequestsHint =>
+      'Nombre maximal de requêtes simultanées';
+
+  @override
+  String get configRuntimeTimeout => 'Délai de l\'environnement (s)';
+
+  @override
+  String get configAutoRestart =>
+      'Redémarrer automatiquement l\'environnement en cas d\'échec';
+
+  @override
+  String get configProxySettings => 'Réglages du proxy';
+
+  @override
+  String get configUseProxy => 'Utiliser un serveur proxy';
+
+  @override
+  String get configProxyHost => 'Hôte du proxy';
+
+  @override
+  String get configProxyHostHint => 'ex. : proxy.example.com';
+
+  @override
+  String get configProxyPort => 'Port du proxy';
+
+  @override
+  String get configConnectionSettings => 'Réglages de connexion';
+
+  @override
+  String get configRequestTimeout => 'Délai de requête (s)';
+
+  @override
+  String get configMaxRetries => 'Nombre maximal de tentatives';
+
+  @override
+  String get configAppearance => 'Apparence';
+
+  @override
+  String get configTheme => 'Thème';
+
+  @override
+  String get configLanguage => 'Langue';
+
+  @override
+  String get configNotifications => 'Notifications';
+
+  @override
+  String get configEnableNotifications => 'Activer les notifications';
+
+  @override
+  String get configShowTrayIcon =>
+      'Afficher l\'icône dans la zone de notification';
+
+  @override
+  String get configSecurity => 'Sécurité';
+
+  @override
+  String get configEncryptLocalData => 'Chiffrer les données locales';
+
+  @override
+  String get configEncryptLocalDataSubtitle =>
+      'Chiffrer l\'historique des conversations et les réglages';
+
+  @override
+  String get configBiometric => 'Exiger l\'authentification biométrique';
+
+  @override
+  String get configBiometricSubtitle =>
+      'Exiger l\'empreinte digitale ou une authentification pour ouvrir l\'application';
+
+  @override
+  String get configSessionTimeout => 'Délai d\'expiration de session (min)';
+
+  @override
+  String get configSessionTimeoutHint =>
+      'Verrouillage automatique après inactivité';
+
+  @override
+  String get configRememberTokens => 'Mémoriser les jetons d\'authentification';
+
+  @override
+  String get configDeveloperOptions => 'Options de développement';
+
+  @override
+  String get configDebugMode => 'Mode débogage';
+
+  @override
+  String get configDebugModeSubtitle =>
+      'Afficher des informations de débogage supplémentaires';
+
+  @override
+  String get configVerboseLogging => 'Journalisation détaillée';
+
+  @override
+  String get configVerboseLoggingSubtitle =>
+      'Consigner des informations de diagnostic détaillées';
+
+  @override
+  String get configShowDevTools => 'Afficher les outils de développement';
+
+  @override
+  String get configShowDevToolsSubtitle =>
+      'Activer les outils et inspecteurs de développement';
+
+  @override
+  String get configDataRetention => 'Conservation des données';
+
+  @override
+  String get configMaxHistory => 'Historique maximal des conversations';
+
+  @override
+  String get configMaxHistoryHint =>
+      'Nombre maximal de conversations conservées localement';
+
+  @override
+  String get configAutoCleanup =>
+      'Nettoyer automatiquement les anciennes données';
+
+  @override
+  String get configCacheManagement => 'Gestion du cache';
+
+  @override
+  String get configEnableCache => 'Activer le cache des réponses';
+
+  @override
+  String get configCacheSize => 'Taille maximale du cache (Mo)';
+
+  @override
+  String get configClearCacheNow => 'Vider le cache maintenant';
+
+  @override
+  String get configApplication => 'Application';
+
+  @override
+  String get configVersion => 'Version';
+
+  @override
+  String configVersionValue(String version, String build) {
+    return '$version (build $build)';
+  }
+
+  @override
+  String get configPlatform => 'Plateforme';
+
+  @override
+  String get configDartVersion => 'Version de Dart';
+
+  @override
+  String get configSettingsPages => 'Pages de réglages';
+
+  @override
+  String get configPaths => 'Chemins';
+
+  @override
+  String get configAppPath => 'Chemin de l\'application';
+
+  @override
+  String get configConfigPath => 'Chemin de la configuration';
+
+  @override
+  String get configDataPath => 'Chemin des données';
+
+  @override
+  String get configWorkingDirectory => 'Dossier de travail';
+
+  @override
+  String get configSoftwareUpdates => 'Mises à jour';
+
+  @override
+  String get configCheckingUpdates => 'Recherche de mises à jour…';
+
+  @override
+  String get configDownloadingUpdate => 'Téléchargement de la mise à jour…';
+
+  @override
+  String get configInstallingUpdate => 'Installation de la mise à jour…';
+
+  @override
+  String configUpdateAvailable(String version) {
+    return 'Mise à jour disponible : $version';
+  }
+
+  @override
+  String configCurrentVersion(String version) {
+    return 'Version actuelle : $version';
+  }
+
+  @override
+  String get configDownloadUpdate => 'Télécharger la mise à jour';
+
+  @override
+  String get configViewChangelog => 'Voir les nouveautés';
+
+  @override
+  String get configUpdateReady => 'Mise à jour prête à installer';
+
+  @override
+  String get configInstallRestart => 'Installer et redémarrer';
+
+  @override
+  String get configUpToDate => 'À jour';
+
+  @override
+  String get configCheckNow => 'Vérifier maintenant';
+
+  @override
+  String get configExport => 'Exporter';
+
+  @override
+  String get configImport => 'Importer';
+
+  @override
+  String get configClearCacheTitle => 'Vider le cache';
+
+  @override
+  String configClearCacheConfirm(int size) {
+    return 'Vider toutes les données en cache ? ($size Mo seront libérés)';
+  }
+
+  @override
+  String get configCacheCleared => 'Cache vidé';
+
+  @override
+  String get configUpdateMajor =>
+      'Version majeure — peut comporter des changements incompatibles';
+
+  @override
+  String get configUpdateMinor =>
+      'Version mineure — nouvelles fonctions et améliorations';
+
+  @override
+  String get configUpdatePatch =>
+      'Version corrective — corrections de bogues et de sécurité';
+
+  @override
+  String configWhatsNew(String version) {
+    return 'Nouveautés de la version $version';
+  }
+
+  @override
+  String get configNoChangelog => 'Aucune liste des nouveautés disponible';
 }
