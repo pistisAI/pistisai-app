@@ -29,6 +29,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: "🔒 Trust Flutter SDK git directories"
+        run: |
+          set -euo pipefail
+          if [ -d /opt/flutter ]; then
+            git config --global --add safe.directory /opt/flutter
+          fi
+          shopt -s nullglob
+          for flutter_dir in /opt/flutter_*; do
+            git config --global --add safe.directory "$flutter_dir"
+          done
+
       - name: "🔧 Flutter pub get"
         run: flutter pub get
 
