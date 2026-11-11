@@ -28,8 +28,8 @@ void main() {
   test('default brand file is the Pistisai product', () {
     expect(pistisai.productName, 'Pistisai');
     expect(pistisai.packageTitle, 'PistisAI package');
-    expect(pistisai.primaryArgb, 0xFFFFD700);
-    expect(pistisai.backgroundArgb, 0xFF181A20);
+    expect(pistisai.primaryArgb, 0xFFB8924A);
+    expect(pistisai.backgroundArgb, 0xFF0D0F14);
     expect(pistisai.lockLocale, isFalse);
     expect(pistisai.websiteUrl, 'https://pistisai.app');
   });

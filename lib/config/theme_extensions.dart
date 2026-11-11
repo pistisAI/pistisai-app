@@ -96,21 +96,21 @@ class AppColorsTheme extends ThemeExtension<AppColorsTheme> {
   final Color glassBorder;
 
   static const AppColorsTheme dark = AppColorsTheme(
-    primary: Color(0xFFFFD700),
-    secondary: Color(0xFFFFE44D),
-    accent: Color(0xFFD4A017),
-    backgroundMain: Color(0xFF181A20),
-    backgroundCard: Color(0xFF1E2230),
+    primary: Color(0xFFB8924A),
+    secondary: Color(0xFFD2B374),
+    accent: Color(0xFF8F6F2E),
+    backgroundMain: Color(0xFF0D0F14),
+    backgroundCard: Color(0xFF141821),
     backgroundLight: Color(0xFFf5f5f5),
-    textColor: Color(0xFFF5E6C8),
-    textColorLight: Color(0xFFB8A88A),
+    textColor: Color(0xFFE9E2D0),
+    textColorLight: Color(0xFF9A9484),
     textColorDark: Color(0xFF2c3e50),
     success: Color(0xFF4caf50),
     warning: Color(0xFFffa726),
     danger: Color(0xFFff5252),
     info: Color(0xFF2196f3),
-    glassBackground: Color(0x33FFD700),
-    glassBorder: Color(0x4DFFD700),
+    glassBackground: Color(0x33B8924A),
+    glassBorder: Color(0x4DB8924A),
   );
 
   static const AppColorsTheme light = AppColorsTheme(

@@ -25,11 +25,11 @@ icon_asset: assets/images/app_icon.png
 wordmark: PISTISAI
 greek_wordmark: "ΠΙΣΤΙΣΑΙ"
 colors:
-  primary: "#FFD700"
-  secondary: "#FFE44D"
-  accent: "#D4A017"
-  background: "#181A20"
-  text: "#F5E6C8"
+  primary: "#B8924A"
+  secondary: "#D2B374"
+  accent: "#8F6F2E"
+  background: "#0D0F14"
+  text: "#E9E2D0"
 app_id: app.pistisai.app
 bundle_id: app.pistisai.pistisai
 linux_application_id: app.pistisai.pistisai

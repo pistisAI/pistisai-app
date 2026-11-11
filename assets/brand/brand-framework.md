@@ -24,15 +24,15 @@ l'humanité.
 
 | Role | Hex | Description |
 |------|-----|-------------|
-| Fond principal | `#181A20` | Noir profond et chaud |
-| Fond carte | `#1E2230` | Carte légèrement plus claire |
-| Or primaire | `#FFD700` | Or pur, couleur principale |
-| Or secondaire | `#FFE44D` | Or chaud clair |
-| Or accent | `#D4A017` | Or foncé, profondeur |
+| Fond principal | `#0D0F14` | Noir obsidienne |
+| Fond carte | `#141821` | Carte légèrement plus claire |
+| Or primaire | `#B8924A` | Or ancien, couleur principale |
+| Or secondaire | `#D2B374` | Champagne, accents lumineux |
+| Or accent | `#8F6F2E` | Bronze, profondeur |
 | Or ombre | `#B8860B` | Or très foncé, textes |
-| Texte principal | `#F5E6C8` | Blanc chaud |
-| Texte secondaire | `#B8A88A` | Beige doux |
-| Bordure | `#2A2A3E` | Ligne subtile |
+| Texte principal | `#E9E2D0` | Ivoire |
+| Texte secondaire | `#9A9484` | Pierre |
+| Bordure | `#232834` | Ligne subtile |
 
 ## Architecture du Logo
 

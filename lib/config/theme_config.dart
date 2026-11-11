@@ -36,12 +36,16 @@ class ThemeConfig {
 
   // Dark surfaces follow the active brand background and text.
   static Color get darkBackgroundMain => Brand.current.background;
-  static const Color darkBackgroundCard = Color(0xFF1E2230);
+  static const Color darkBackgroundCard = Color(0xFF141821);
   static Color get darkTextColor => Brand.current.textColor;
-  static const Color darkTextColorLight = Color(0xFFB8A88A);
-  static const Color darkBorderColor = Color(0xFF2A2A3E);
+  static const Color darkTextColorLight = Color(0xFF9A9484);
+  static const Color darkBorderColor = Color(0xFF232834);
   static Color get darkGlassBackground => Brand.current.primary.withAlpha(0x33);
   static Color get darkGlassBorder => Brand.current.primary.withAlpha(0x26);
+
+  /// Text and icons drawn on the gold. Near-black: white on gold is 2.9:1 or
+  /// worse, this is 6:1.
+  static const Color onGoldColor = Color(0xFF14110A);
 
   // Light Mode Colors
   static const Color lightBackgroundMain = Colors.white;
@@ -326,8 +330,8 @@ class ThemeConfig {
       secondary: secondaryColor,
       surface: darkBackgroundCard,
       onSurface: darkTextColor,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
+      onPrimary: onGoldColor,
+      onSecondary: onGoldColor,
     );
 
     return ThemeData(
@@ -381,8 +385,8 @@ class ThemeConfig {
       secondary: secondaryColor,
       surface: lightBackgroundLight,
       onSurface: lightTextColor,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
+      onPrimary: onGoldColor,
+      onSecondary: onGoldColor,
     );
 
     return ThemeData(
@@ -478,7 +482,7 @@ class ThemeConfig {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+        foregroundColor: onGoldColor,
         elevation: elevationMedium,
         shadowColor: primaryColor.withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(
@@ -710,7 +714,7 @@ class ThemeConfig {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+        foregroundColor: onGoldColor,
         elevation: elevationLow,
         shadowColor: primaryColor.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
