@@ -158,5 +158,542 @@
       }
     }
   },
-  "meshRuntimeAvailable": "runtime available"
+  "meshRuntimeAvailable": "runtime available",
+  "commonConnected": "Connected",
+  "commonDisconnected": "Disconnected",
+  "connectionSettingsTitle": "Connection Settings",
+  "connectionHeading": "Connection",
+  "connectionDescription": "Manage tunnel and daemon connections.",
+  "connectionDaemonSettings": "Daemon Settings",
+  "connectionDaemonSubtitle": "Configure system tray daemon",
+  "connectionDeviceMeshSubtitle": "Registered devices and cloud presence",
+  "connectionStatusTitle": "Connection Status",
+  "connectionStatusSubtitle": "View current connection status",
+  "connectionRerunWizard": "Re-run Setup Wizard",
+  "connectionRerunWizardSubtitle": "Configure gateway connection again",
+  "connectionRerunWizardBody": "This will clear your saved setup configuration and restart the setup wizard. You will need to reconfigure your gateway connection.\n\nContinue?",
+  "connectionClearAndRerun": "Clear & Re-run",
+  "connectionClearFailed": "Failed to clear setup data: {error}",
+  "@connectionClearFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonSettingsTitle": "System Tray Daemon Settings",
+  "daemonHeading": "System Tray Configuration",
+  "daemonDescription": "Configure the system tray daemon behavior and appearance",
+  "daemonSaved": "Daemon settings saved successfully",
+  "daemonSaveFailed": "Failed to save settings: {error}",
+  "@daemonSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonRestarting": "Restarting system tray daemon...",
+  "daemonRestarted": "System tray daemon restarted successfully",
+  "daemonRestartFailed": "Failed to restart daemon: {error}",
+  "@daemonRestartFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonRealtimeStatus": "Real-time Connection Status",
+  "daemonConnectionType": "Connection Type",
+  "daemonVersion": "Version",
+  "daemonAvailableModels": "Available Models",
+  "daemonModelCount": "{count, plural, =1{1 model} other{{count} models}}",
+  "@daemonModelCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daemonError": "Error",
+  "daemonLastUpdated": "Last updated: {time}",
+  "@daemonLastUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "daemonLoadingStatus": "Loading connection status...",
+  "daemonEnableTray": "Enable System Tray",
+  "daemonStartMinimized": "Start Minimized",
+  "daemonStartMinimizedSubtitle": "Start application minimized to system tray",
+  "daemonEnableNotifications": "Enable Notifications",
+  "daemonEnableNotificationsSubtitle": "Show system notifications for important events",
+  "daemonAutoStart": "Auto-start Daemon",
+  "daemonAutoStartSubtitle": "Automatically start tray daemon with system",
+  "daemonTrayIconTheme": "Tray Icon Theme",
+  "daemonTrayIconThemeSubtitle": "Choose icon style for system tray",
+  "themeMonochrome": "Monochrome",
+  "daemonConnectionTimeout": "Connection Timeout",
+  "daemonConnectionTimeoutSubtitle": "Timeout for daemon connections (seconds)",
+  "daemonHealthCheckInterval": "Health Check Interval",
+  "daemonHealthCheckIntervalSubtitle": "Interval for daemon health checks (seconds)",
+  "daemonActions": "Actions",
+  "daemonSaveSettings": "Save Settings",
+  "daemonRestart": "Restart Daemon",
+  "commonRefresh": "Refresh",
+  "commonClose": "Close",
+  "commonClear": "Clear",
+  "commonErrorDetails": "Error: {error}",
+  "@commonErrorDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "nodesTitle": "Nodes",
+  "nodesAgentRuntimes": "Agent Runtimes",
+  "nodesNoAgentRuntimes": "No agent runtimes discovered",
+  "nodesSupportProviders": "Support Providers",
+  "nodesNoSupportProviders": "No support providers discovered",
+  "nodesTailscaleDevices": "Tailscale Devices",
+  "nodesNoTailscaleDevices": "No Tailscale devices discovered",
+  "nodesLoadError": "Failed to load discovery data: {error}",
+  "@nodesLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "nodesSelectedRuntime": "Agent runtime: {name} ({version})",
+  "@nodesSelectedRuntime": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "nodesVersionUnknown": "unknown",
+  "nodesNoRuntimeSelected": "No agent runtime selected",
+  "channelDetailsTitle": "Channel Details",
+  "channelNotFound": "Channel not found",
+  "channelBadgeNew": "New",
+  "channelBadgeRead": "Read",
+  "channelStatistics": "Statistics",
+  "channelMessages": "Messages",
+  "channelPlatform": "Platform",
+  "channelPlatformUnknown": "Unknown",
+  "channelLastActivity": "Last Activity",
+  "channelNever": "Never",
+  "channelControls": "Controls",
+  "channelStart": "Start Channel",
+  "channelStop": "Stop Channel",
+  "channelReconnect": "Reconnect",
+  "channelViewLogs": "View Logs",
+  "channelActionPerformed": "Action {action} performed for channel {channelId}",
+  "@channelActionPerformed": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "channelId": {
+        "type": "String"
+      }
+    }
+  },
+  "channelJustNow": "Just now",
+  "channelMinutesAgo": "{minutes}m ago",
+  "@channelMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "channelHoursAgo": "{hours}h ago",
+  "@channelHoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "channelDaysAgo": "{days}d ago",
+  "@channelDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "usageTitle": "Usage",
+  "usageToday": "Today",
+  "usageWeek": "Week",
+  "usageMonth": "Month",
+  "usageActiveConcurrency": "Active Concurrency",
+  "usageOfLimit": "of {limit}",
+  "@usageOfLimit": {
+    "placeholders": {
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "usageConcurrencySubtitle": "Concurrent requests in flight",
+  "usageConcurrencyUtilization": "Concurrency utilization",
+  "usageRequestRate": "Request Rate",
+  "usageRequestsPerMinuteUnit": "req/min",
+  "usageRequestRateSubtitle": "Requests per minute across models",
+  "usageRpmUtilization": "RPM utilization",
+  "usageTokenRate": "Token Rate",
+  "usageTokensPerMinuteUnit": "tok/min",
+  "usageTokenRateSubtitle": "Tokens per minute across models",
+  "usageTpmUtilization": "TPM utilization",
+  "usageChartTokenUsage": "Token Usage Over Time",
+  "usageChartRequestVolume": "Request Volume",
+  "usageChartResourceTrends": "Resource Trends",
+  "usageChartPlaceholder": "Chart placeholder",
+  "usageNoActiveModels": "No active models",
+  "usagePerModelConcurrency": "Per-model concurrency",
+  "usageNoRateData": "No rate data",
+  "usageTopModelsByRpm": "Top models by RPM",
+  "usageNoTokenData": "No token data",
+  "usageTopModelsByTpm": "Top models by TPM",
+  "logsTitle": "Logs",
+  "logsExport": "Export Logs",
+  "logsServiceUnavailable": "Log service unavailable",
+  "logsExportedTo": "Logs exported to {path}",
+  "@logsExportedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "logsCopied": "Logs copied to clipboard",
+  "logsNoneFound": "No logs found",
+  "logsAdjustFilters": "Try adjusting your filters",
+  "logsNoneAvailable": "No logs available",
+  "logsSearchHint": "Search logs...",
+  "logsSeverity": "Severity",
+  "logsSource": "Source",
+  "logsClearAll": "Clear All",
+  "logsViewDetails": "View details",
+  "logsDetailsTitle": "Log Details",
+  "logsTimestamp": "Timestamp",
+  "logsMessage": "Message",
+  "logsError": "Error",
+  "logsStackTrace": "Stack Trace",
+  "logsFilterBySource": "Filter by Source",
+  "logsDetailLabel": "{label}:",
+  "@logsDetailLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "commonRemove": "Remove",
+  "commonSave": "Save",
+  "commonUnknownError": "Unknown error",
+  "commonFieldLabel": "{label}:",
+  "@commonFieldLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "commonStatus": "Status",
+  "commonError": "Error",
+  "commonActions": "Actions",
+  "commonName": "Name",
+  "commonType": "Type",
+  "commonMessages": "Messages",
+  "commonNever": "Never",
+  "timeJustNow": "Just now",
+  "timeSecondsAgo": "{seconds}s ago",
+  "@timeSecondsAgo": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "timeMinutesAgo": "{minutes}m ago",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHoursAgo": "{hours}h ago",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDaysAgo": "{days}d ago",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "agentsTitle": "Agents",
+  "agentsAdd": "Add Agent",
+  "agentsTabRegistry": "Registry",
+  "agentsTabMonitor": "Monitor",
+  "agentsTabConfig": "Config",
+  "agentsEmptyTitle": "No Agents Registered",
+  "agentsEmptyMessage": "Agents will appear here when registered",
+  "agentsNoTask": "No task assigned",
+  "agentsActivityCompleted": "Completed: {task}",
+  "@agentsActivityCompleted": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsActivityFailed": "Failed: {error}",
+  "@agentsActivityFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsActivityStarted": "Started: {task}",
+  "@agentsActivityStarted": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsActivityTaskFallback": "task",
+  "agentsActivityErrorFallback": "unknown error",
+  "agentsRegistryUnavailable": "Agent registry is unavailable until the API backend is connected",
+  "agentsRegisterFailed": "Failed to register agent",
+  "agentsRegistered": "Registered {name}",
+  "@agentsRegistered": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsEditTitle": "Edit {name}",
+  "@agentsEditTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsUpdateFailed": "Failed to update {name}",
+  "@agentsUpdateFailed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsUpdated": "Updated {name}",
+  "@agentsUpdated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsRemoveFailed": "Failed to remove {name}",
+  "@agentsRemoveFailed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsRemoved": "{name} removed",
+  "@agentsRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsStatTasks": "Tasks",
+  "agentsStatAvgLatency": "Avg Latency",
+  "agentsStatLastActive": "Last Active",
+  "agentsStatusOnline": "ONLINE",
+  "agentsStatusBusy": "BUSY",
+  "agentsStatusOffline": "OFFLINE",
+  "agentsStatusError": "ERROR",
+  "agentsTotal": "Total Agents",
+  "agentsTasksToday": "Tasks Today",
+  "agentsErrors": "Errors",
+  "agentsNoActivityTitle": "No Recent Activity",
+  "agentsNoActivityMessage": "Agent activity will appear here",
+  "agentsPoolSettings": "Agent Pool Settings",
+  "agentsAutoScale": "Auto-scale agents",
+  "agentsAutoScaleSubtitle": "Automatically add agents based on load",
+  "agentsMin": "Min agents",
+  "agentsMinSubtitle": "Minimum number of active agents",
+  "agentsMax": "Max agents",
+  "agentsMaxSubtitle": "Maximum number of concurrent agents",
+  "agentsTimeoutSettings": "Timeout Settings",
+  "agentsRequestTimeout": "Request timeout",
+  "agentsRequestTimeoutSubtitle": "Maximum time to wait for agent response",
+  "agentsQueueTimeout": "Queue timeout",
+  "agentsQueueTimeoutSubtitle": "Maximum time in queue before rejection",
+  "agentsPause": "Pause Agent",
+  "agentsResume": "Resume Agent",
+  "agentsRestart": "Restart Agent",
+  "agentsEditConfig": "Edit Configuration",
+  "agentsRemove": "Remove Agent",
+  "agentsRemoveConfirm": "Are you sure you want to remove {name}?",
+  "@agentsRemoveConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsRegisterTitle": "Register Agent",
+  "agentsRegister": "Register",
+  "agentsIdsRequired": "Subagent ID and parent agent ID are required",
+  "agentsSubagentId": "Subagent ID",
+  "agentsParentId": "Parent Agent ID",
+  "agentsDisplayLabel": "Display Label",
+  "agentsTaskDescription": "Task Description",
+  "agentDetailTitle": "Agent Details",
+  "agentDetailNotFound": "Agent not found",
+  "agentDetailIdValue": "ID: {id}",
+  "@agentDetailIdValue": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "agentDetailActivity": "Activity",
+  "agentDetailLastUpdate": "Last Update",
+  "agentDetailStart": "Start",
+  "agentDetailStop": "Stop",
+  "agentDetailRestart": "Restart",
+  "agentDetailInformation": "Information",
+  "agentDetailId": "ID",
+  "agentStateIdle": "Idle",
+  "agentStateStarting": "Starting...",
+  "agentStateRunning": "Running",
+  "agentStateStopping": "Stopping...",
+  "agentStateError": "Error",
+  "agentStateOffline": "Offline",
+  "sessionsTitle": "Sessions",
+  "sessionsTabWebSocket": "WebSocket",
+  "sessionsTabConversations": "Conversations",
+  "sessionsTabUsers": "Users",
+  "sessionsRefresh": "Refresh sessions",
+  "sessionsEmptyTitle": "No Sessions",
+  "sessionsEmptyMessage": "No active sessions for this category.",
+  "sessionsDetailsTitle": "Session Details",
+  "sessionsId": "Session ID",
+  "sessionsUserOrAgent": "User/Agent",
+  "sessionsStarted": "Started",
+  "sessionsDuration": "Duration",
+  "sessionsTokens": "Tokens",
+  "sessionsDurationHoursMinutes": "{hours}h {minutes}m",
+  "@sessionsDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionsDurationMinutesSeconds": "{minutes}m {seconds}s",
+  "@sessionsDurationMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionsDurationSeconds": "{seconds}s",
+  "@sessionsDurationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionsTerminateTitle": "Terminate Session",
+  "sessionsTerminateConfirm": "Are you sure you want to terminate session {id}?\n\nThis will disconnect {who} and cannot be undone.",
+  "@sessionsTerminateConfirm": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsServiceUnavailable": "Session service unavailable",
+  "sessionsTerminated": "Session {id} terminated",
+  "@sessionsTerminated": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsTerminateFailed": "Failed to terminate session {id}",
+  "@sessionsTerminateFailed": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsTerminate": "Terminate",
+  "sessionsViewDetails": "View details",
+  "sessionsTerminateTooltip": "Terminate session",
+  "channelsTitle": "Channels",
+  "channelsRefresh": "Refresh channels",
+  "channelsLoadError": "Failed to load channels: {error}",
+  "@channelsLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "channelsEmptyTitle": "No Channels",
+  "channelsEmptyMessage": "No communication channels are currently available.",
+  "channelsMessageCount": "{count, plural, =1{1 message} other{{count} messages}}",
+  "@channelsMessageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand_localizations.dart';
 import 'package:pistisai/l10n/app_localizations.dart';
+import 'package:pistisai/screens/agents/agents_screen.dart';
+import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
 Set<String> _arbKeys(String path) {
@@ -86,5 +88,74 @@ void main() {
     expect(find.text('Fournisseurs de modèles'), findsOneWidget);
     expect(find.text('Ouvrir la configuration'), findsOneWidget);
     expect(find.text('LLM Provider Settings'), findsNothing);
+  });
+
+  test('model counts use each language plural rules', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.daemonModelCount(1), '1 model');
+    expect(en.daemonModelCount(0), '0 models');
+    expect(en.daemonModelCount(3), '3 models');
+    expect(fr.daemonModelCount(0), '0 modèle');
+    expect(fr.daemonModelCount(1), '1 modèle');
+    expect(fr.daemonModelCount(3), '3 modèles');
+  });
+
+  test('batch 4 messages with values read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.nodesSelectedRuntime('Hermes', '1.2.3'),
+        'Environnement d\'agent : Hermes (1.2.3)');
+    expect(fr.logsDetailLabel(fr.logsSource), 'Source :');
+    expect(fr.commonErrorDetails('boom'), 'Erreur : boom');
+    expect(fr.channelMinutesAgo(5), 'il y a 5 min');
+    expect(fr.usageOfLimit(8), 'sur 8');
+  });
+
+  testWidgets('the nodes screen renders in French for a locked brand',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: NodesScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Nœuds'), findsOneWidget);
+    expect(
+        find.text('Aucun environnement d\'agent sélectionné'), findsOneWidget);
+    expect(find.text('Appareils Tailscale'), findsOneWidget);
+    expect(find.text('Nodes'), findsNothing);
+  });
+
+  test('batch 5 messages follow each language rules', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.channelsMessageCount(1), '1 message');
+    expect(en.channelsMessageCount(4), '4 messages');
+    expect(fr.channelsMessageCount(0), '0 message');
+    expect(fr.channelsMessageCount(4), '4 messages');
+    expect(fr.agentsRemoveConfirm('bot'), 'Voulez-vous vraiment retirer bot ?');
+    expect(fr.commonFieldLabel(fr.commonStatus), 'État :');
+    expect(fr.sessionsDurationHoursMinutes(2, 5), '2 h 5 min');
+    expect(fr.timeSecondsAgo(30), 'il y a 30 s');
+  });
+
+  testWidgets('the agents screen renders in French for a locked brand',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: AgentsScreen(),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Registre'), findsOneWidget);
+    expect(find.text('Aucun agent enregistré'), findsOneWidget);
+    expect(find.byTooltip('Ajouter un agent'), findsOneWidget);
+    expect(find.text('Registry'), findsNothing);
   });
 }

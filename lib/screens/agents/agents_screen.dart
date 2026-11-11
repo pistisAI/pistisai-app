@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import '../../services/subagent_registry_service.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
@@ -16,7 +17,9 @@ import '../../widgets/navigation/popout_button.dart';
 class Agent {
   final String id;
   final String name;
-  final String description;
+
+  /// Task given to the agent, or null when none is assigned.
+  final String? description;
   final AgentStatus status;
   final int taskCount;
   final double avgLatency;
@@ -25,7 +28,7 @@ class Agent {
   const Agent({
     required this.id,
     required this.name,
-    required this.description,
+    this.description,
     required this.status,
     this.taskCount = 0,
     this.avgLatency = 0.0,
@@ -41,18 +44,25 @@ enum AgentStatus {
   error,
 }
 
+/// What happened in an [ActivityEvent].
+enum ActivityKind { started, completed, failed }
+
 /// Activity event for monitoring
 class ActivityEvent {
   final String agentId;
   final String agentName;
-  final String action;
+  final ActivityKind kind;
+
+  /// Task for started/completed events, error message for failed ones.
+  final String? detail;
   final DateTime timestamp;
   final bool success;
 
   const ActivityEvent({
     required this.agentId,
     required this.agentName,
-    required this.action,
+    required this.kind,
+    this.detail,
     required this.timestamp,
     required this.success,
   });
@@ -119,7 +129,7 @@ class _AgentsScreenState extends State<AgentsScreen>
           .map((s) => Agent(
                 id: s.subagentId,
                 name: s.label ?? s.subagentId,
-                description: s.task ?? 'No task assigned',
+                description: s.task,
                 status: _mapStatus(s.status),
                 taskCount: 0,
                 avgLatency: 0.0,
@@ -132,11 +142,13 @@ class _AgentsScreenState extends State<AgentsScreen>
           .map((s) => ActivityEvent(
                 agentId: s.subagentId,
                 agentName: s.label ?? s.subagentId,
-                action: s.status == SubagentStatus.completed
-                    ? 'Completed: ${s.task ?? "task"}'
+                kind: s.status == SubagentStatus.completed
+                    ? ActivityKind.completed
                     : s.status == SubagentStatus.failed
-                        ? 'Failed: ${s.errorMessage ?? "unknown error"}'
-                        : 'Started: ${s.task ?? "task"}',
+                        ? ActivityKind.failed
+                        : ActivityKind.started,
+                detail:
+                    s.status == SubagentStatus.failed ? s.errorMessage : s.task,
                 timestamp: s.completedAt ?? s.startedAt ?? s.createdAt,
                 success: s.status != SubagentStatus.failed,
               ))
@@ -178,11 +190,10 @@ class _AgentsScreenState extends State<AgentsScreen>
   }
 
   Future<void> _showAddAgentDialog() async {
+    final l10n = AppLocalizations.of(context);
     final registry = _subagentRegistry;
     if (registry == null) {
-      _showUnavailable(
-        'Agent registry is unavailable until the API backend is connected',
-      );
+      _showUnavailable(l10n.agentsRegistryUnavailable);
       return;
     }
 
@@ -201,14 +212,14 @@ class _AgentsScreenState extends State<AgentsScreen>
 
     if (!mounted) return;
     if (result == null) {
-      _showUnavailable('Failed to register agent');
+      _showUnavailable(l10n.agentsRegisterFailed);
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Registered ${result.label ?? result.subagentId}',
+          l10n.agentsRegistered(result.label ?? result.subagentId),
         ),
       ),
     );
@@ -216,18 +227,17 @@ class _AgentsScreenState extends State<AgentsScreen>
   }
 
   Future<void> _showEditAgentDialog(Agent agent) async {
+    final l10n = AppLocalizations.of(context);
     final registry = _subagentRegistry;
     if (registry == null) {
-      _showUnavailable(
-        'Agent registry is unavailable until the API backend is connected',
-      );
+      _showUnavailable(l10n.agentsRegistryUnavailable);
       return;
     }
 
     final updated = await showDialog<_AgentDraft>(
       context: context,
       builder: (context) => _AgentFormDialog(
-        title: 'Edit ${agent.name}',
+        title: l10n.agentsEditTitle(agent.name),
         initial: _AgentDraft(
           subagentId: agent.id,
           agentId: 'main',
@@ -247,80 +257,84 @@ class _AgentsScreenState extends State<AgentsScreen>
 
     if (!mounted) return;
     if (!ok) {
-      _showUnavailable('Failed to update ${agent.name}');
+      _showUnavailable(l10n.agentsUpdateFailed(agent.name));
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Updated ${updated.label ?? agent.id}')),
+      SnackBar(content: Text(l10n.agentsUpdated(updated.label ?? agent.id))),
     );
     await _loadData();
   }
 
   Future<void> _setAgentStatus(Agent agent, SubagentStatus status) async {
+    final l10n = AppLocalizations.of(context);
     final registry = _subagentRegistry;
     if (registry == null) {
-      _showUnavailable(
-        'Agent registry is unavailable until the API backend is connected',
-      );
+      _showUnavailable(l10n.agentsRegistryUnavailable);
       return;
     }
 
     final ok = await registry.updateStatus(agent.id, status: status);
     if (!mounted) return;
     if (!ok) {
-      _showUnavailable('Failed to update ${agent.name}');
+      _showUnavailable(l10n.agentsUpdateFailed(agent.name));
       return;
     }
     await _loadData();
   }
 
   Future<void> _removeAgent(Agent agent) async {
+    final l10n = AppLocalizations.of(context);
     final registry = _subagentRegistry;
     if (registry == null) {
-      _showUnavailable(
-        'Agent registry is unavailable until the API backend is connected',
-      );
+      _showUnavailable(l10n.agentsRegistryUnavailable);
       return;
     }
 
     final deleted = await registry.deleteSubagent(agent.id);
     if (!mounted) return;
     if (!deleted) {
-      _showUnavailable('Failed to remove ${agent.name}');
+      _showUnavailable(l10n.agentsRemoveFailed(agent.name));
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${agent.name} removed')),
+      SnackBar(content: Text(l10n.agentsRemoved(agent.name))),
     );
     await _loadData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return RefreshableScreen(
       onRefresh: _onRefresh,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Agents'),
+          title: Text(l10n.agentsTitle),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _onRefresh,
+              tooltip: l10n.commonRefresh,
             ),
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: _showAddAgentDialog,
-              tooltip: 'Add Agent',
+              tooltip: l10n.agentsAdd,
             ),
             PopOutButton(sectionName: 'agents', branchIndex: 7),
           ],
           bottom: TabBar(
             controller: _tabController,
-            tabs: const [
-              Tab(text: 'Registry', icon: Icon(Icons.people_outline)),
-              Tab(text: 'Monitor', icon: Icon(Icons.monitor_heart)),
-              Tab(text: 'Config', icon: Icon(Icons.settings)),
+            tabs: [
+              Tab(
+                  text: l10n.agentsTabRegistry,
+                  icon: const Icon(Icons.people_outline)),
+              Tab(
+                  text: l10n.agentsTabMonitor,
+                  icon: const Icon(Icons.monitor_heart)),
+              Tab(text: l10n.agentsTabConfig, icon: const Icon(Icons.settings)),
             ],
           ),
         ),
@@ -331,21 +345,21 @@ class _AgentsScreenState extends State<AgentsScreen>
                 : TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildRegistryTab(),
-                      _buildMonitorTab(),
-                      _buildConfigTab(),
+                      _buildRegistryTab(l10n),
+                      _buildMonitorTab(l10n),
+                      _buildConfigTab(l10n),
                     ],
                   ),
       ),
     );
   }
 
-  Widget _buildRegistryTab() {
+  Widget _buildRegistryTab(AppLocalizations l10n) {
     if (_agents.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.people,
-        title: 'No Agents Registered',
-        message: 'Agents will appear here when registered',
+        title: l10n.agentsEmptyTitle,
+        message: l10n.agentsEmptyMessage,
       );
     }
 
@@ -355,12 +369,13 @@ class _AgentsScreenState extends State<AgentsScreen>
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final agent = _agents[index];
-        return _buildAgentCard(context, agent);
+        return _buildAgentCard(context, l10n, agent);
       },
     );
   }
 
-  Widget _buildAgentCard(BuildContext context, Agent agent) {
+  Widget _buildAgentCard(
+      BuildContext context, AppLocalizations l10n, Agent agent) {
     final theme = Theme.of(context);
 
     return Card(
@@ -373,8 +388,8 @@ class _AgentsScreenState extends State<AgentsScreen>
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor:
-                      _getStatusColor(context, agent.status).withValues(alpha: 0.1),
+                  backgroundColor: _getStatusColor(context, agent.status)
+                      .withValues(alpha: 0.1),
                   child: Icon(
                     _getStatusIcon(agent.status),
                     color: _getStatusColor(context, agent.status),
@@ -403,14 +418,14 @@ class _AgentsScreenState extends State<AgentsScreen>
                                     : agent.status == AgentStatus.offline
                                         ? StatusType.stopped
                                         : StatusType.error,
-                            label: agent.status.name.toUpperCase(),
+                            label: _statusLabel(l10n, agent.status),
                             showIcon: false,
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        agent.description,
+                        agent.description ?? l10n.agentsNoTask,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.7),
@@ -432,11 +447,14 @@ class _AgentsScreenState extends State<AgentsScreen>
               spacing: 16,
               runSpacing: 8,
               children: [
+                _buildStat(Icons.check_circle, agent.taskCount.toString(),
+                    l10n.agentsStatTasks),
+                _buildStat(Icons.speed, '${agent.avgLatency}s',
+                    l10n.agentsStatAvgLatency),
                 _buildStat(
-                    Icons.check_circle, agent.taskCount.toString(), 'Tasks'),
-                _buildStat(Icons.speed, '${agent.avgLatency}s', 'Avg Latency'),
-                _buildStat(Icons.access_time,
-                    _formatLastActive(agent.lastActive), 'Last Active'),
+                    Icons.access_time,
+                    _formatLastActive(l10n, agent.lastActive),
+                    l10n.agentsStatLastActive),
               ],
             ),
           ],
@@ -475,7 +493,7 @@ class _AgentsScreenState extends State<AgentsScreen>
     );
   }
 
-  Widget _buildMonitorTab() {
+  Widget _buildMonitorTab(AppLocalizations l10n) {
     return Column(
       children: [
         // Summary cards
@@ -488,28 +506,28 @@ class _AgentsScreenState extends State<AgentsScreen>
               _buildSummaryCard(
                 context,
                 Icons.people,
-                'Total Agents',
+                l10n.agentsTotal,
                 '${_agents.length}',
                 AppTheme.colorsOf(context).info,
               ),
               _buildSummaryCard(
                 context,
                 Icons.check_circle,
-                'Tasks Today',
+                l10n.agentsTasksToday,
                 '${_agents.fold<int>(0, (sum, a) => sum + a.taskCount)}',
                 AppTheme.colorsOf(context).success,
               ),
               _buildSummaryCard(
                 context,
                 Icons.speed,
-                'Avg Latency',
+                l10n.agentsStatAvgLatency,
                 '${(_agents.fold<double>(0, (sum, a) => sum + a.avgLatency) / _agents.length).toStringAsFixed(1)}s',
                 AppTheme.colorsOf(context).warning,
               ),
               _buildSummaryCard(
                 context,
                 Icons.error,
-                'Errors',
+                l10n.agentsErrors,
                 '${_agents.where((a) => a.status == AgentStatus.error).length}',
                 AppTheme.colorsOf(context).danger,
               ),
@@ -520,10 +538,10 @@ class _AgentsScreenState extends State<AgentsScreen>
         // Activity feed
         Expanded(
           child: _activityFeed.isEmpty
-              ? const EmptyState(
+              ? EmptyState(
                   icon: Icons.history,
-                  title: 'No Recent Activity',
-                  message: 'Agent activity will appear here',
+                  title: l10n.agentsNoActivityTitle,
+                  message: l10n.agentsNoActivityMessage,
                 )
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
@@ -532,7 +550,7 @@ class _AgentsScreenState extends State<AgentsScreen>
                       const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final event = _activityFeed[index];
-                    return _buildActivityCard(context, event);
+                    return _buildActivityCard(context, l10n, event);
                   },
                 ),
         ),
@@ -540,8 +558,8 @@ class _AgentsScreenState extends State<AgentsScreen>
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context,
-      IconData icon, String title, String value, Color color) {
+  Widget _buildSummaryCard(BuildContext context, IconData icon, String title,
+      String value, Color color) {
     return Card(
       child: Container(
         width: 150,
@@ -568,7 +586,8 @@ class _AgentsScreenState extends State<AgentsScreen>
     );
   }
 
-  Widget _buildActivityCard(BuildContext context, ActivityEvent event) {
+  Widget _buildActivityCard(
+      BuildContext context, AppLocalizations l10n, ActivityEvent event) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
@@ -577,11 +596,13 @@ class _AgentsScreenState extends State<AgentsScreen>
               : AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
           child: Icon(
             event.success ? Icons.check : Icons.close,
-            color: event.success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
+            color: event.success
+                ? AppTheme.colorsOf(context).success
+                : AppTheme.colorsOf(context).danger,
             size: 20,
           ),
         ),
-        title: Text(event.action),
+        title: Text(_activityText(l10n, event)),
         subtitle:
             Text('${_formatTimestamp(event.timestamp)} • ${event.agentName}'),
         trailing: event.success
@@ -592,7 +613,7 @@ class _AgentsScreenState extends State<AgentsScreen>
     );
   }
 
-  Widget _buildConfigTab() {
+  Widget _buildConfigTab(AppLocalizations l10n) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -608,27 +629,26 @@ class _AgentsScreenState extends State<AgentsScreen>
                     children: [
                       const Icon(Icons.settings, size: 20),
                       const SizedBox(width: 8),
-                      Text('Agent Pool Settings',
+                      Text(l10n.agentsPoolSettings,
                           style: Theme.of(context).textTheme.titleMedium),
                     ],
                   ),
                   const SizedBox(height: 16),
                   SwitchListTile(
-                    title: const Text('Auto-scale agents'),
-                    subtitle:
-                        const Text('Automatically add agents based on load'),
+                    title: Text(l10n.agentsAutoScale),
+                    subtitle: Text(l10n.agentsAutoScaleSubtitle),
                     value: true,
                     onChanged: (value) {},
                   ),
                   ListTile(
-                    title: const Text('Min agents'),
-                    subtitle: const Text('Minimum number of active agents'),
+                    title: Text(l10n.agentsMin),
+                    subtitle: Text(l10n.agentsMinSubtitle),
                     trailing: const Text('2'),
                     onTap: () {},
                   ),
                   ListTile(
-                    title: const Text('Max agents'),
-                    subtitle: const Text('Maximum number of concurrent agents'),
+                    title: Text(l10n.agentsMax),
+                    subtitle: Text(l10n.agentsMaxSubtitle),
                     trailing: const Text('10'),
                     onTap: () {},
                   ),
@@ -647,22 +667,20 @@ class _AgentsScreenState extends State<AgentsScreen>
                     children: [
                       const Icon(Icons.timer, size: 20),
                       const SizedBox(width: 8),
-                      Text('Timeout Settings',
+                      Text(l10n.agentsTimeoutSettings,
                           style: Theme.of(context).textTheme.titleMedium),
                     ],
                   ),
                   const SizedBox(height: 16),
                   ListTile(
-                    title: const Text('Request timeout'),
-                    subtitle:
-                        const Text('Maximum time to wait for agent response'),
+                    title: Text(l10n.agentsRequestTimeout),
+                    subtitle: Text(l10n.agentsRequestTimeoutSubtitle),
                     trailing: const Text('30s'),
                     onTap: () {},
                   ),
                   ListTile(
-                    title: const Text('Queue timeout'),
-                    subtitle:
-                        const Text('Maximum time in queue before rejection'),
+                    title: Text(l10n.agentsQueueTimeout),
+                    subtitle: Text(l10n.agentsQueueTimeoutSubtitle),
                     trailing: const Text('60s'),
                     onTap: () {},
                   ),
@@ -676,6 +694,7 @@ class _AgentsScreenState extends State<AgentsScreen>
   }
 
   void _showAgentMenu(Agent agent) {
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -688,8 +707,8 @@ class _AgentsScreenState extends State<AgentsScreen>
                   ? Icons.pause
                   : Icons.play_arrow),
               title: Text(agent.status == AgentStatus.busy
-                  ? 'Pause Agent'
-                  : 'Resume Agent'),
+                  ? l10n.agentsPause
+                  : l10n.agentsResume),
               onTap: () {
                 Navigator.pop(context);
                 _setAgentStatus(
@@ -702,7 +721,7 @@ class _AgentsScreenState extends State<AgentsScreen>
             ),
             ListTile(
               leading: const Icon(Icons.refresh),
-              title: const Text('Restart Agent'),
+              title: Text(l10n.agentsRestart),
               onTap: () {
                 Navigator.pop(context);
                 _setAgentStatus(agent, SubagentStatus.pending);
@@ -710,7 +729,7 @@ class _AgentsScreenState extends State<AgentsScreen>
             ),
             ListTile(
               leading: const Icon(Icons.edit),
-              title: const Text('Edit Configuration'),
+              title: Text(l10n.agentsEditConfig),
               onTap: () {
                 Navigator.pop(context);
                 _showEditAgentDialog(agent);
@@ -718,7 +737,7 @@ class _AgentsScreenState extends State<AgentsScreen>
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline),
-              title: const Text('Remove Agent'),
+              title: Text(l10n.agentsRemove),
               onTap: () {
                 Navigator.pop(context);
                 _confirmRemoveAgent(agent);
@@ -731,15 +750,16 @@ class _AgentsScreenState extends State<AgentsScreen>
   }
 
   void _confirmRemoveAgent(Agent agent) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Agent'),
-        content: Text('Are you sure you want to remove ${agent.name}?'),
+        title: Text(l10n.agentsRemove),
+        content: Text(l10n.agentsRemoveConfirm(agent.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () {
@@ -749,11 +769,38 @@ class _AgentsScreenState extends State<AgentsScreen>
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Remove'),
+            child: Text(l10n.commonRemove),
           ),
         ],
       ),
     );
+  }
+
+  String _statusLabel(AppLocalizations l10n, AgentStatus status) {
+    switch (status) {
+      case AgentStatus.online:
+        return l10n.agentsStatusOnline;
+      case AgentStatus.offline:
+        return l10n.agentsStatusOffline;
+      case AgentStatus.busy:
+        return l10n.agentsStatusBusy;
+      case AgentStatus.error:
+        return l10n.agentsStatusError;
+    }
+  }
+
+  String _activityText(AppLocalizations l10n, ActivityEvent event) {
+    switch (event.kind) {
+      case ActivityKind.completed:
+        return l10n.agentsActivityCompleted(
+            event.detail ?? l10n.agentsActivityTaskFallback);
+      case ActivityKind.failed:
+        return l10n.agentsActivityFailed(
+            event.detail ?? l10n.agentsActivityErrorFallback);
+      case ActivityKind.started:
+        return l10n.agentsActivityStarted(
+            event.detail ?? l10n.agentsActivityTaskFallback);
+    }
   }
 
   IconData _getStatusIcon(AgentStatus status) {
@@ -782,16 +829,16 @@ class _AgentsScreenState extends State<AgentsScreen>
     }
   }
 
-  String _formatLastActive(DateTime dt) {
+  String _formatLastActive(AppLocalizations l10n, DateTime dt) {
     final now = DateTime.now();
     final diff = now.difference(dt);
 
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
+      return l10n.timeMinutesAgo(diff.inMinutes);
     } else if (diff.inHours < 24) {
-      return '${diff.inHours}h ago';
+      return l10n.timeHoursAgo(diff.inHours);
     } else {
-      return '${diff.inDays}d ago';
+      return l10n.timeDaysAgo(diff.inDays);
     }
   }
 
@@ -816,12 +863,13 @@ class _AgentDraft {
 
 class _AgentFormDialog extends StatefulWidget {
   const _AgentFormDialog({
-    this.title = 'Register Agent',
+    this.title,
     this.initial,
     this.lockIds = false,
   });
 
-  final String title;
+  /// Dialog title; defaults to the localized "Register Agent".
+  final String? title;
   final _AgentDraft? initial;
   final bool lockIds;
 
@@ -856,12 +904,13 @@ class _AgentFormDialogState extends State<_AgentFormDialog> {
   }
 
   void _submit() {
+    final l10n = AppLocalizations.of(context);
     final subagentId = _subagentIdController.text.trim();
     final agentId = _agentIdController.text.trim();
     if (subagentId.isEmpty || agentId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Subagent ID and parent agent ID are required'),
+        SnackBar(
+          content: Text(l10n.agentsIdsRequired),
         ),
       );
       return;
@@ -882,8 +931,9 @@ class _AgentFormDialogState extends State<_AgentFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: Text(widget.title),
+      title: Text(widget.title ?? l10n.agentsRegisterTitle),
       content: SizedBox(
         width: 420,
         child: Column(
@@ -892,8 +942,8 @@ class _AgentFormDialogState extends State<_AgentFormDialog> {
             TextField(
               controller: _subagentIdController,
               enabled: !widget.lockIds,
-              decoration: const InputDecoration(
-                labelText: 'Subagent ID',
+              decoration: InputDecoration(
+                labelText: l10n.agentsSubagentId,
                 hintText: 'research-bot-1',
               ),
             ),
@@ -901,22 +951,22 @@ class _AgentFormDialogState extends State<_AgentFormDialog> {
             TextField(
               controller: _agentIdController,
               enabled: !widget.lockIds,
-              decoration: const InputDecoration(
-                labelText: 'Parent Agent ID',
+              decoration: InputDecoration(
+                labelText: l10n.agentsParentId,
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _labelController,
-              decoration: const InputDecoration(
-                labelText: 'Display Label',
+              decoration: InputDecoration(
+                labelText: l10n.agentsDisplayLabel,
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _taskController,
-              decoration: const InputDecoration(
-                labelText: 'Task Description',
+              decoration: InputDecoration(
+                labelText: l10n.agentsTaskDescription,
               ),
               maxLines: 2,
             ),
@@ -926,11 +976,11 @@ class _AgentFormDialogState extends State<_AgentFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.commonCancel),
         ),
         FilledButton(
           onPressed: _submit,
-          child: Text(widget.lockIds ? 'Save' : 'Register'),
+          child: Text(widget.lockIds ? l10n.commonSave : l10n.agentsRegister),
         ),
       ],
     );

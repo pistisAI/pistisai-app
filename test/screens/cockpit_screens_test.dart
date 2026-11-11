@@ -11,6 +11,7 @@ import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/services/session_service.dart';
 import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -179,7 +180,10 @@ void main() {
   group('Cockpit screens', () {
     testWidgets('ChannelsScreen renders without crashing', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: ChannelsScreen()),
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: ChannelsScreen(),
+        ),
       );
       // Allow async initState loading to complete
       await tester.pump(const Duration(seconds: 2));
@@ -189,7 +193,10 @@ void main() {
 
     testWidgets('SessionsScreen renders without crashing', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: SessionsScreen()),
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: SessionsScreen(),
+        ),
       );
       // Allow async initState loading to complete
       await tester.pump(const Duration(seconds: 2));

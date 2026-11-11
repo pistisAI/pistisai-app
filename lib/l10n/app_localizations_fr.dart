@@ -233,4 +233,868 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get meshRuntimeAvailable => 'environnement d\'exécution disponible';
+
+  @override
+  String get commonConnected => 'Connecté';
+
+  @override
+  String get commonDisconnected => 'Déconnecté';
+
+  @override
+  String get connectionSettingsTitle => 'Paramètres de connexion';
+
+  @override
+  String get connectionHeading => 'Connexion';
+
+  @override
+  String get connectionDescription =>
+      'Gérer les connexions du tunnel et du service d\'arrière-plan.';
+
+  @override
+  String get connectionDaemonSettings => 'Service d\'arrière-plan';
+
+  @override
+  String get connectionDaemonSubtitle =>
+      'Configurer le service de la zone de notification';
+
+  @override
+  String get connectionDeviceMeshSubtitle =>
+      'Appareils inscrits et présence infonuagique';
+
+  @override
+  String get connectionStatusTitle => 'État de la connexion';
+
+  @override
+  String get connectionStatusSubtitle => 'Voir l\'état actuel de la connexion';
+
+  @override
+  String get connectionRerunWizard => 'Relancer l\'assistant de configuration';
+
+  @override
+  String get connectionRerunWizardSubtitle =>
+      'Reconfigurer la connexion à la passerelle';
+
+  @override
+  String get connectionRerunWizardBody =>
+      'Cela effacera votre configuration enregistrée et relancera l\'assistant de configuration. Vous devrez reconfigurer la connexion à votre passerelle.\n\nContinuer?';
+
+  @override
+  String get connectionClearAndRerun => 'Effacer et relancer';
+
+  @override
+  String connectionClearFailed(String error) {
+    return 'Impossible d\'effacer les données de configuration : $error';
+  }
+
+  @override
+  String get daemonSettingsTitle => 'Service de la zone de notification';
+
+  @override
+  String get daemonHeading => 'Configuration de la zone de notification';
+
+  @override
+  String get daemonDescription =>
+      'Configurer le comportement et l\'apparence du service de la zone de notification';
+
+  @override
+  String get daemonSaved => 'Paramètres du service enregistrés avec succès';
+
+  @override
+  String daemonSaveFailed(String error) {
+    return 'Impossible d\'enregistrer les paramètres : $error';
+  }
+
+  @override
+  String get daemonRestarting =>
+      'Redémarrage du service de la zone de notification…';
+
+  @override
+  String get daemonRestarted =>
+      'Service de la zone de notification redémarré avec succès';
+
+  @override
+  String daemonRestartFailed(String error) {
+    return 'Impossible de redémarrer le service : $error';
+  }
+
+  @override
+  String get daemonRealtimeStatus => 'État de la connexion en temps réel';
+
+  @override
+  String get daemonConnectionType => 'Type de connexion';
+
+  @override
+  String get daemonVersion => 'Version';
+
+  @override
+  String get daemonAvailableModels => 'Modèles disponibles';
+
+  @override
+  String daemonModelCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modèles',
+      one: '$count modèle',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get daemonError => 'Erreur';
+
+  @override
+  String daemonLastUpdated(String time) {
+    return 'Dernière mise à jour : $time';
+  }
+
+  @override
+  String get daemonLoadingStatus => 'Chargement de l\'état de la connexion…';
+
+  @override
+  String get daemonEnableTray => 'Activer la zone de notification';
+
+  @override
+  String get daemonStartMinimized => 'Démarrer réduit';
+
+  @override
+  String get daemonStartMinimizedSubtitle =>
+      'Démarrer l\'application réduite dans la zone de notification';
+
+  @override
+  String get daemonEnableNotifications => 'Activer les notifications';
+
+  @override
+  String get daemonEnableNotificationsSubtitle =>
+      'Afficher des notifications système pour les événements importants';
+
+  @override
+  String get daemonAutoStart => 'Démarrage automatique du service';
+
+  @override
+  String get daemonAutoStartSubtitle =>
+      'Démarrer automatiquement le service avec l\'ordinateur';
+
+  @override
+  String get daemonTrayIconTheme => 'Style de l\'icône';
+
+  @override
+  String get daemonTrayIconThemeSubtitle =>
+      'Choisir le style de l\'icône dans la zone de notification';
+
+  @override
+  String get themeMonochrome => 'Monochrome';
+
+  @override
+  String get daemonConnectionTimeout => 'Délai de connexion';
+
+  @override
+  String get daemonConnectionTimeoutSubtitle =>
+      'Délai d\'attente des connexions au service (secondes)';
+
+  @override
+  String get daemonHealthCheckInterval => 'Intervalle de vérification';
+
+  @override
+  String get daemonHealthCheckIntervalSubtitle =>
+      'Intervalle entre les vérifications de l\'état du service (secondes)';
+
+  @override
+  String get daemonActions => 'Actions';
+
+  @override
+  String get daemonSaveSettings => 'Enregistrer les paramètres';
+
+  @override
+  String get daemonRestart => 'Redémarrer le service';
+
+  @override
+  String get commonRefresh => 'Actualiser';
+
+  @override
+  String get commonClose => 'Fermer';
+
+  @override
+  String get commonClear => 'Effacer';
+
+  @override
+  String commonErrorDetails(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get nodesTitle => 'Nœuds';
+
+  @override
+  String get nodesAgentRuntimes => 'Environnements d\'agents';
+
+  @override
+  String get nodesNoAgentRuntimes => 'Aucun environnement d\'agent détecté';
+
+  @override
+  String get nodesSupportProviders => 'Fournisseurs de modèles d\'appoint';
+
+  @override
+  String get nodesNoSupportProviders =>
+      'Aucun fournisseur de modèles d\'appoint détecté';
+
+  @override
+  String get nodesTailscaleDevices => 'Appareils Tailscale';
+
+  @override
+  String get nodesNoTailscaleDevices => 'Aucun appareil Tailscale détecté';
+
+  @override
+  String nodesLoadError(String error) {
+    return 'Impossible de charger les données de découverte : $error';
+  }
+
+  @override
+  String nodesSelectedRuntime(String name, String version) {
+    return 'Environnement d\'agent : $name ($version)';
+  }
+
+  @override
+  String get nodesVersionUnknown => 'version inconnue';
+
+  @override
+  String get nodesNoRuntimeSelected =>
+      'Aucun environnement d\'agent sélectionné';
+
+  @override
+  String get channelDetailsTitle => 'Détails du canal';
+
+  @override
+  String get channelNotFound => 'Canal introuvable';
+
+  @override
+  String get channelBadgeNew => 'Nouveau';
+
+  @override
+  String get channelBadgeRead => 'Lu';
+
+  @override
+  String get channelStatistics => 'Statistiques';
+
+  @override
+  String get channelMessages => 'Messages';
+
+  @override
+  String get channelPlatform => 'Plateforme';
+
+  @override
+  String get channelPlatformUnknown => 'Inconnue';
+
+  @override
+  String get channelLastActivity => 'Dernière activité';
+
+  @override
+  String get channelNever => 'Jamais';
+
+  @override
+  String get channelControls => 'Commandes';
+
+  @override
+  String get channelStart => 'Démarrer le canal';
+
+  @override
+  String get channelStop => 'Arrêter le canal';
+
+  @override
+  String get channelReconnect => 'Reconnecter';
+
+  @override
+  String get channelViewLogs => 'Voir les journaux';
+
+  @override
+  String channelActionPerformed(String action, String channelId) {
+    return 'Action $action effectuée pour le canal $channelId';
+  }
+
+  @override
+  String get channelJustNow => 'À l\'instant';
+
+  @override
+  String channelMinutesAgo(int minutes) {
+    return 'il y a $minutes min';
+  }
+
+  @override
+  String channelHoursAgo(int hours) {
+    return 'il y a $hours h';
+  }
+
+  @override
+  String channelDaysAgo(int days) {
+    return 'il y a $days j';
+  }
+
+  @override
+  String get usageTitle => 'Utilisation';
+
+  @override
+  String get usageToday => 'Aujourd\'hui';
+
+  @override
+  String get usageWeek => 'Semaine';
+
+  @override
+  String get usageMonth => 'Mois';
+
+  @override
+  String get usageActiveConcurrency => 'Requêtes simultanées actives';
+
+  @override
+  String usageOfLimit(int limit) {
+    return 'sur $limit';
+  }
+
+  @override
+  String get usageConcurrencySubtitle => 'Requêtes en cours de traitement';
+
+  @override
+  String get usageConcurrencyUtilization => 'Utilisation de la simultanéité';
+
+  @override
+  String get usageRequestRate => 'Débit de requêtes';
+
+  @override
+  String get usageRequestsPerMinuteUnit => 'req./min';
+
+  @override
+  String get usageRequestRateSubtitle =>
+      'Requêtes par minute, tous modèles confondus';
+
+  @override
+  String get usageRpmUtilization => 'Utilisation des requêtes par minute';
+
+  @override
+  String get usageTokenRate => 'Débit de jetons';
+
+  @override
+  String get usageTokensPerMinuteUnit => 'jetons/min';
+
+  @override
+  String get usageTokenRateSubtitle =>
+      'Jetons par minute, tous modèles confondus';
+
+  @override
+  String get usageTpmUtilization => 'Utilisation des jetons par minute';
+
+  @override
+  String get usageChartTokenUsage => 'Utilisation des jetons dans le temps';
+
+  @override
+  String get usageChartRequestVolume => 'Volume de requêtes';
+
+  @override
+  String get usageChartResourceTrends => 'Tendances des ressources';
+
+  @override
+  String get usageChartPlaceholder => 'Graphique à venir';
+
+  @override
+  String get usageNoActiveModels => 'Aucun modèle actif';
+
+  @override
+  String get usagePerModelConcurrency => 'Simultanéité par modèle';
+
+  @override
+  String get usageNoRateData => 'Aucune donnée de débit';
+
+  @override
+  String get usageTopModelsByRpm =>
+      'Modèles les plus sollicités (requêtes/min)';
+
+  @override
+  String get usageNoTokenData => 'Aucune donnée de jetons';
+
+  @override
+  String get usageTopModelsByTpm => 'Modèles les plus sollicités (jetons/min)';
+
+  @override
+  String get logsTitle => 'Journaux';
+
+  @override
+  String get logsExport => 'Exporter les journaux';
+
+  @override
+  String get logsServiceUnavailable => 'Service de journalisation indisponible';
+
+  @override
+  String logsExportedTo(String path) {
+    return 'Journaux exportés vers $path';
+  }
+
+  @override
+  String get logsCopied => 'Journaux copiés dans le presse-papiers';
+
+  @override
+  String get logsNoneFound => 'Aucune entrée de journal trouvée';
+
+  @override
+  String get logsAdjustFilters => 'Essayez de modifier vos filtres';
+
+  @override
+  String get logsNoneAvailable => 'Aucune entrée de journal disponible';
+
+  @override
+  String get logsSearchHint => 'Rechercher dans les journaux…';
+
+  @override
+  String get logsSeverity => 'Gravité';
+
+  @override
+  String get logsSource => 'Source';
+
+  @override
+  String get logsClearAll => 'Tout effacer';
+
+  @override
+  String get logsViewDetails => 'Voir les détails';
+
+  @override
+  String get logsDetailsTitle => 'Détails de l\'entrée';
+
+  @override
+  String get logsTimestamp => 'Horodatage';
+
+  @override
+  String get logsMessage => 'Message';
+
+  @override
+  String get logsError => 'Erreur';
+
+  @override
+  String get logsStackTrace => 'Pile d\'appels';
+
+  @override
+  String get logsFilterBySource => 'Filtrer par source';
+
+  @override
+  String logsDetailLabel(String label) {
+    return '$label :';
+  }
+
+  @override
+  String get commonRemove => 'Retirer';
+
+  @override
+  String get commonSave => 'Enregistrer';
+
+  @override
+  String get commonUnknownError => 'Erreur inconnue';
+
+  @override
+  String commonFieldLabel(String label) {
+    return '$label :';
+  }
+
+  @override
+  String get commonStatus => 'État';
+
+  @override
+  String get commonError => 'Erreur';
+
+  @override
+  String get commonActions => 'Actions';
+
+  @override
+  String get commonName => 'Nom';
+
+  @override
+  String get commonType => 'Type';
+
+  @override
+  String get commonMessages => 'Messages';
+
+  @override
+  String get commonNever => 'Jamais';
+
+  @override
+  String get timeJustNow => 'À l\'instant';
+
+  @override
+  String timeSecondsAgo(int seconds) {
+    return 'il y a $seconds s';
+  }
+
+  @override
+  String timeMinutesAgo(int minutes) {
+    return 'il y a $minutes min';
+  }
+
+  @override
+  String timeHoursAgo(int hours) {
+    return 'il y a $hours h';
+  }
+
+  @override
+  String timeDaysAgo(int days) {
+    return 'il y a $days j';
+  }
+
+  @override
+  String get agentsTitle => 'Agents';
+
+  @override
+  String get agentsAdd => 'Ajouter un agent';
+
+  @override
+  String get agentsTabRegistry => 'Registre';
+
+  @override
+  String get agentsTabMonitor => 'Suivi';
+
+  @override
+  String get agentsTabConfig => 'Configuration';
+
+  @override
+  String get agentsEmptyTitle => 'Aucun agent enregistré';
+
+  @override
+  String get agentsEmptyMessage =>
+      'Les agents apparaîtront ici une fois enregistrés';
+
+  @override
+  String get agentsNoTask => 'Aucune tâche assignée';
+
+  @override
+  String agentsActivityCompleted(String task) {
+    return 'Terminé : $task';
+  }
+
+  @override
+  String agentsActivityFailed(String error) {
+    return 'Échec : $error';
+  }
+
+  @override
+  String agentsActivityStarted(String task) {
+    return 'Démarré : $task';
+  }
+
+  @override
+  String get agentsActivityTaskFallback => 'tâche';
+
+  @override
+  String get agentsActivityErrorFallback => 'erreur inconnue';
+
+  @override
+  String get agentsRegistryUnavailable =>
+      'Le registre des agents n\'est pas disponible tant que le serveur API n\'est pas connecté';
+
+  @override
+  String get agentsRegisterFailed => 'Impossible d\'enregistrer l\'agent';
+
+  @override
+  String agentsRegistered(String name) {
+    return '$name enregistré';
+  }
+
+  @override
+  String agentsEditTitle(String name) {
+    return 'Modifier $name';
+  }
+
+  @override
+  String agentsUpdateFailed(String name) {
+    return 'Impossible de mettre à jour $name';
+  }
+
+  @override
+  String agentsUpdated(String name) {
+    return '$name mis à jour';
+  }
+
+  @override
+  String agentsRemoveFailed(String name) {
+    return 'Impossible de retirer $name';
+  }
+
+  @override
+  String agentsRemoved(String name) {
+    return '$name retiré';
+  }
+
+  @override
+  String get agentsStatTasks => 'Tâches';
+
+  @override
+  String get agentsStatAvgLatency => 'Latence moyenne';
+
+  @override
+  String get agentsStatLastActive => 'Dernière activité';
+
+  @override
+  String get agentsStatusOnline => 'EN LIGNE';
+
+  @override
+  String get agentsStatusBusy => 'OCCUPÉ';
+
+  @override
+  String get agentsStatusOffline => 'HORS LIGNE';
+
+  @override
+  String get agentsStatusError => 'ERREUR';
+
+  @override
+  String get agentsTotal => 'Agents au total';
+
+  @override
+  String get agentsTasksToday => 'Tâches aujourd\'hui';
+
+  @override
+  String get agentsErrors => 'Erreurs';
+
+  @override
+  String get agentsNoActivityTitle => 'Aucune activité récente';
+
+  @override
+  String get agentsNoActivityMessage => 'L\'activité des agents apparaîtra ici';
+
+  @override
+  String get agentsPoolSettings => 'Réglages du groupe d\'agents';
+
+  @override
+  String get agentsAutoScale => 'Ajuster automatiquement le nombre d\'agents';
+
+  @override
+  String get agentsAutoScaleSubtitle =>
+      'Ajouter des agents automatiquement selon la charge';
+
+  @override
+  String get agentsMin => 'Agents minimum';
+
+  @override
+  String get agentsMinSubtitle => 'Nombre minimal d\'agents actifs';
+
+  @override
+  String get agentsMax => 'Agents maximum';
+
+  @override
+  String get agentsMaxSubtitle => 'Nombre maximal d\'agents simultanés';
+
+  @override
+  String get agentsTimeoutSettings => 'Délais d\'attente';
+
+  @override
+  String get agentsRequestTimeout => 'Délai de requête';
+
+  @override
+  String get agentsRequestTimeoutSubtitle =>
+      'Temps maximal d\'attente d\'une réponse de l\'agent';
+
+  @override
+  String get agentsQueueTimeout => 'Délai en file d\'attente';
+
+  @override
+  String get agentsQueueTimeoutSubtitle =>
+      'Temps maximal en file d\'attente avant le refus';
+
+  @override
+  String get agentsPause => 'Mettre l\'agent en pause';
+
+  @override
+  String get agentsResume => 'Reprendre l\'agent';
+
+  @override
+  String get agentsRestart => 'Redémarrer l\'agent';
+
+  @override
+  String get agentsEditConfig => 'Modifier la configuration';
+
+  @override
+  String get agentsRemove => 'Retirer l\'agent';
+
+  @override
+  String agentsRemoveConfirm(String name) {
+    return 'Voulez-vous vraiment retirer $name ?';
+  }
+
+  @override
+  String get agentsRegisterTitle => 'Enregistrer un agent';
+
+  @override
+  String get agentsRegister => 'Enregistrer';
+
+  @override
+  String get agentsIdsRequired =>
+      'L\'identifiant du sous-agent et celui de l\'agent parent sont obligatoires';
+
+  @override
+  String get agentsSubagentId => 'Identifiant du sous-agent';
+
+  @override
+  String get agentsParentId => 'Identifiant de l\'agent parent';
+
+  @override
+  String get agentsDisplayLabel => 'Nom affiché';
+
+  @override
+  String get agentsTaskDescription => 'Description de la tâche';
+
+  @override
+  String get agentDetailTitle => 'Détails de l\'agent';
+
+  @override
+  String get agentDetailNotFound => 'Agent introuvable';
+
+  @override
+  String agentDetailIdValue(String id) {
+    return 'Identifiant : $id';
+  }
+
+  @override
+  String get agentDetailActivity => 'Activité';
+
+  @override
+  String get agentDetailLastUpdate => 'Dernière mise à jour';
+
+  @override
+  String get agentDetailStart => 'Démarrer';
+
+  @override
+  String get agentDetailStop => 'Arrêter';
+
+  @override
+  String get agentDetailRestart => 'Redémarrer';
+
+  @override
+  String get agentDetailInformation => 'Informations';
+
+  @override
+  String get agentDetailId => 'Identifiant';
+
+  @override
+  String get agentStateIdle => 'Inactif';
+
+  @override
+  String get agentStateStarting => 'Démarrage…';
+
+  @override
+  String get agentStateRunning => 'En cours';
+
+  @override
+  String get agentStateStopping => 'Arrêt…';
+
+  @override
+  String get agentStateError => 'Erreur';
+
+  @override
+  String get agentStateOffline => 'Hors ligne';
+
+  @override
+  String get sessionsTitle => 'Sessions';
+
+  @override
+  String get sessionsTabWebSocket => 'WebSocket';
+
+  @override
+  String get sessionsTabConversations => 'Conversations';
+
+  @override
+  String get sessionsTabUsers => 'Utilisateurs';
+
+  @override
+  String get sessionsRefresh => 'Actualiser les sessions';
+
+  @override
+  String get sessionsEmptyTitle => 'Aucune session';
+
+  @override
+  String get sessionsEmptyMessage =>
+      'Aucune session active dans cette catégorie.';
+
+  @override
+  String get sessionsDetailsTitle => 'Détails de la session';
+
+  @override
+  String get sessionsId => 'Identifiant de session';
+
+  @override
+  String get sessionsUserOrAgent => 'Utilisateur ou agent';
+
+  @override
+  String get sessionsStarted => 'Début';
+
+  @override
+  String get sessionsDuration => 'Durée';
+
+  @override
+  String get sessionsTokens => 'Jetons';
+
+  @override
+  String sessionsDurationHoursMinutes(int hours, int minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String sessionsDurationMinutesSeconds(int minutes, int seconds) {
+    return '$minutes min $seconds s';
+  }
+
+  @override
+  String sessionsDurationSeconds(int seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get sessionsTerminateTitle => 'Mettre fin à la session';
+
+  @override
+  String sessionsTerminateConfirm(String id, String who) {
+    return 'Voulez-vous vraiment mettre fin à la session $id ?\n\n$who sera déconnecté. Cette action est irréversible.';
+  }
+
+  @override
+  String get sessionsServiceUnavailable => 'Service des sessions indisponible';
+
+  @override
+  String sessionsTerminated(String id) {
+    return 'Session $id terminée';
+  }
+
+  @override
+  String sessionsTerminateFailed(String id) {
+    return 'Impossible de mettre fin à la session $id';
+  }
+
+  @override
+  String get sessionsTerminate => 'Mettre fin';
+
+  @override
+  String get sessionsViewDetails => 'Voir les détails';
+
+  @override
+  String get sessionsTerminateTooltip => 'Mettre fin à la session';
+
+  @override
+  String get channelsTitle => 'Canaux';
+
+  @override
+  String get channelsRefresh => 'Actualiser les canaux';
+
+  @override
+  String channelsLoadError(String error) {
+    return 'Impossible de charger les canaux : $error';
+  }
+
+  @override
+  String get channelsEmptyTitle => 'Aucun canal';
+
+  @override
+  String get channelsEmptyMessage =>
+      'Aucun canal de communication n\'est disponible pour le moment.';
+
+  @override
+  String channelsMessageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages',
+      one: '$count message',
+    );
+    return '$_temp0';
+  }
 }

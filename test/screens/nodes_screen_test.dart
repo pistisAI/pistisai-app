@@ -1,4 +1,5 @@
 import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
@@ -81,7 +82,10 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider<ConnectionManagerService>.value(
         value: connectionManager,
-        child: const MaterialApp(home: NodesScreen()),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: NodesScreen(),
+        ),
       ),
     );
 
@@ -100,7 +104,10 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider<ConnectionManagerService>.value(
         value: connectionManager,
-        child: const MaterialApp(home: NodesScreen()),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: NodesScreen(),
+        ),
       ),
     );
 
@@ -117,13 +124,17 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider<ConnectionManagerService>.value(
         value: connectionManager,
-        child: const MaterialApp(home: NodesScreen()),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: NodesScreen(),
+        ),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Failed to load discovery data'), findsOneWidget);
+    expect(
+        find.textContaining('Failed to load discovery data'), findsOneWidget);
     expect(find.widgetWithText(ElevatedButton, 'Retry'), findsOneWidget);
   });
 }
