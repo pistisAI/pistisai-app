@@ -1,0 +1,162 @@
+# Prometheus Alert Rules for PistisAI Backend
+
+groups:
+  - name: pistisai_backend_health
+    interval: 15s
+    rules:
+      # HTTP Error Rate Alert
+      - alert: HighHTTPErrorRate
+        expr: |
+          (sum(rate(http_request_errors_total[5m])) / sum(rate(http_requests_total[5m]))) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High HTTP error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 1%)"
+          dashboard: "http://grafana:3000/d/pistisai-backend-health"
+
+      # Request Latency Alert (p95)
+      - alert: HighRequestLatency
+        expr: |
+          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High API request latency detected"
+          description: "p95 latency is {{ $value | humanizeDuration }} (threshold: 1s)"
+
+      # Database Query Latency Alert
+      - alert: SlowDatabaseQueries
+        expr: |
+          rate(db_query_duration_seconds_sum[5m]) / rate(db_query_duration_seconds_count[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "Average query latency is {{ $value | humanizeDuration }} (threshold: 50ms)"
+
+      # Database Connection Pool Exhaustion
+      - alert: LowDatabaseConnectionPool
+        expr: |
+          (db_connection_pool_available / db_connection_pool_size) < 0.2
+        for: 2m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "Database connection pool running low"
+          description: "Only {{ $value | humanizePercentage }} of connections available"
+
+      # Database Query Error Rate
+      - alert: HighDatabaseErrorRate
+        expr: |
+          rate(db_query_errors_total[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database query errors detected"
+          description: "Error rate is {{ $value | humanize }}/sec"
+
+      # No Tunnel Connections
+      - alert: NoActiveTunnelConnections
+        expr: |
+          tunnel_connections_active == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: tunnel
+        annotations:
+          summary: "No active tunnel connections"
+          description: "There are currently no active tunnel connections"
+
+      # High Rate Limiting
+      - alert: HighRateLimitViolations
+        expr: |
+          rate(rate_limit_violations_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: ratelimit
+        annotations:
+          summary: "High rate limit violations detected"
+          description: "{{ $value | humanize }}/sec violations (threshold: 1/sec)"
+
+      # Service Downtime
+      - alert: ServiceDown
+        expr: |
+          up{job=~"api-backend|streaming-proxy"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: service
+        annotations:
+          summary: "Service is down: {{ $labels.job }}"
+          description: "Service {{ $labels.job }} is not responding to health checks"
+
+      # Low API Uptime
+      - alert: LowAPIUptime
+        expr: |
+          api_uptime_seconds < (24 * 60 * 60 * 0.995)
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "API uptime below 99.5%"
+          description: "Current uptime: {{ $value | humanizeDuration }}"
+
+      # Database Query Timeout
+      - alert: SlowQueryDetected
+        expr: |
+          histogram_quantile(0.99, rate(db_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database query detected (p99)"
+          description: "p99 query latency is {{ $value | humanizeDuration }} (threshold: 1s)"
+
+      # Memory Pressure
+      - alert: HighMemoryUsage
+        expr: |
+          system_load{load_type="memory"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory utilization is {{ $value | humanizePercentage }}"
+
+      # CPU Pressure
+      - alert: HighCPUUsage
+        expr: |
+          system_load{load_type="cpu"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU utilization is {{ $value | humanizePercentage }}"
+
+      # Authentication Failures
+      - alert: HighAuthFailureRate
+        expr: |
+          rate(auth_attempts_total{result="failed"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: auth
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value | humanize }} auth failures/sec"

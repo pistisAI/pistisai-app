@@ -1,0 +1,48 @@
+{
+  "name": "@pistisai/middleware-config",
+  "version": "1.0.0",
+  "description": "Unified middleware configuration for PistisAI backend services",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./auth": "./auth/index.js",
+    "./security": "./security/index.js",
+    "./logging": "./logging/index.js",
+    "./validation": "./validation/index.js",
+    "./operational": "./operational/index.js",
+    "./pipeline": "./pipeline/index.js"
+  },
+  "private": true,
+  "files": [
+    "auth/",
+    "security/",
+    "logging/",
+    "validation/",
+    "operational/",
+    "pipeline/",
+    "index.js",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "middleware",
+    "express",
+    "auth",
+    "cors",
+    "rate-limit",
+    "logging"
+  ],
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

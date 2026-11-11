@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PistisAI Service Layer Architecture Diagram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            color: #e0e0e0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #64b5f6;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(100, 181, 246, 0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #90caf9;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        svg {
+            width: 100%;
+            height: auto;
+            margin: 2rem 0;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .legend-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .legend-item h3 {
+            color: #64b5f6;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .legend-item .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        
+        .legend-item p {
+            color: #b0bec5;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .rules {
+            background: rgba(33, 150, 243, 0.1);
+            border-left: 4px solid #2196f3;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            color: #b0bec5;
+        }
+        
+        .rules h2 {
+            color: #64b5f6;
+            margin-bottom: 1rem;
+        }
+        
+        .rules ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .rules li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .rules li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .rules li.violation:before {
+            content: "✗";
+            color: #f44336;
+        }
+        
+        .code-example {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            color: #81c784;
+        }
+        
+        .section {
+            margin-top: 3rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #757575;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            svg {
+                margin: 1rem 0;
+            }
+            
+            .legend {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ PistisAI Service Layer Architecture</h1>
+        <p class="subtitle">Dependency Injection & Layered Architecture</p>
+        
+        <!-- Main Architecture Diagram -->
+        <svg viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg">
+            <!-- Define gradients -->
+            <defs>
+                <linearGradient id="routesGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff9800;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#f57c00;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="middlewareGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#9c27b0;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#7b1fa2;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="servicesGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#2196f3;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1565c0;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="dataGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#4caf50;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#2e7d32;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="utilsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffc107;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#f57f17;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            
+            <!-- Routes Layer -->
+            <g>
+                <rect x="50" y="20" width="700" height="100" fill="url(#routesGrad)" rx="8" opacity="0.9"/>
+                <text x="400" y="55" text-anchor="middle" font-size="24" font-weight="bold" fill="white">
+                    🌐 Routes Layer
+                </text>
+                <text x="400" y="85" text-anchor="middle" font-size="14" fill="rgba(255,255,255,0.9)">
+                    HTTP/WebSocket Entry Points (routes/*.js)
+                </text>
+                <text x="400" y="105" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.7)">
+                    Handles requests, extracts parameters, calls services, formats responses
+                </text>
+            </g>
+            
+            <!-- Arrow 1 -->
+            <path d="M 400 120 L 400 160" stroke="#64b5f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+            <text x="420" y="145" font-size="12" fill="#64b5f6">✓ Depends On</text>
+            
+            <!-- Middleware Layer -->
+            <g>
+                <rect x="50" y="160" width="700" height="100" fill="url(#middlewareGrad)" rx="8" opacity="0.9"/>
+                <text x="400" y="195" text-anchor="middle" font-size="24" font-weight="bold" fill="white">
+                    🔐 Middleware Layer
+                </text>
+                <text x="400" y="225" text-anchor="middle" font-size="14" fill="rgba(255,255,255,0.9)">
+                    Auth, Validation, Error Handling (middleware/*.js)
+                </text>
+                <text x="400" y="245" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.7)">
+                    Cross-cutting concerns applied to requests
+                </text>
+            </g>
+            
+            <!-- Arrow 2 -->
+            <path d="M 400 260 L 400 300" stroke="#64b5f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+            <text x="420" y="285" font-size="12" fill="#64b5f6">✓ Depends On</text>
+            
+            <!-- Services Layer (Main) -->
+            <g>
+                <rect x="50" y="300" width="700" height="140" fill="url(#servicesGrad)" rx="8" opacity="0.9"/>
+                <text x="400" y="335" text-anchor="middle" font-size="24" font-weight="bold" fill="white">
+                    ⚙️ Service Layer (Dependency Injection)
+                </text>
+                <text x="400" y="365" text-anchor="middle" font-size="14" fill="rgba(255,255,255,0.9)">
+                    Business Logic, Domain Operations (services/*.js)
+                </text>
+                <text x="400" y="385" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.8)">
+                    User Services • Tunnel Services • Email Services • Subscription Services • Metrics Services
+                </text>
+                <text x="400" y="410" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.7)" font-weight="bold">
+                    ❌ NO CROSS-SERVICE IMPORTS ❌ | ✅ Compose via DI ✅
+                </text>
+            </g>
+            
+            <!-- Arrow 3 - Split -->
+            <path d="M 250 440 L 200 480" stroke="#64b5f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+            <path d="M 400 440 L 400 480" stroke="#64b5f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+            <path d="M 550 440 L 600 480" stroke="#64b5f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+            
+            <!-- Database Layer -->
+            <g>
+                <rect x="50" y="480" width="300" height="100" fill="url(#dataGrad)" rx="8" opacity="0.9"/>
+                <text x="200" y="515" text-anchor="middle" font-size="20" font-weight="bold" fill="white">
+                    🗄️ Database Layer
+                </text>
+                <text x="200" y="540" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">
+                    PostgreSQL Connection Pools
+                </text>
+                <text x="200" y="555" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">
+                    Query Execution, Migrations
+                </text>
+            </g>
+            
+            <!-- Utils Layer -->
+            <g>
+                <rect x="400" y="480" width="350" height="100" fill="url(#utilsGrad)" rx="8" opacity="0.9"/>
+                <text x="575" y="515" text-anchor="middle" font-size="20" font-weight="bold" fill="white">
+                    🔧 Supporting Layers
+                </text>
+                <text x="575" y="540" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">
+                    Utils • Auth • Constants • Validators
+                </text>
+                <text x="575" y="555" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">
+                    Error Types • Helpers • Adapters
+                </text>
+            </g>
+            
+            <!-- Allowed Imports Box -->
+            <g>
+                <rect x="50" y="650" width="700" height="180" fill="rgba(76, 175, 80, 0.1)" stroke="#4caf50" stroke-width="2" rx="8"/>
+                
+                <text x="400" y="675" text-anchor="middle" font-size="16" font-weight="bold" fill="#4caf50">
+                    ✅ Allowed Import Paths
+                </text>
+                
+                <text x="70" y="705" font-size="12" fill="#81c784" font-weight="bold">Routes → Services, Middleware, Utils, Auth</text>
+                <text x="70" y="725" font-size="12" fill="#81c784" font-weight="bold">Services → Database, Utils, Auth (via DI)</text>
+                <text x="70" y="745" font-size="12" fill="#81c784" font-weight="bold">Middleware → Utils, Auth</text>
+                <text x="70" y="765" font-size="12" fill="#81c784" font-weight="bold">Database → Utils</text>
+                
+                <text x="70" y="800" font-size="12" fill="#ff9800" font-weight="bold">⚠️  Routes ↛ Database (directly)</text>
+                <text x="70" y="820" font-size="12" fill="#ff9800" font-weight="bold">⚠️  Services ↛ Routes, Middleware, other Services</text>
+            </g>
+            
+            <!-- Arrow marker definition -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#64b5f6" />
+                </marker>
+            </defs>
+        </svg>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <h3><span class="color-box" style="background: linear-gradient(to bottom, #ff9800, #f57c00);"></span>Routes Layer</h3>
+                <p>Express route handlers, request/response management. Depends on services for business logic.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3><span class="color-box" style="background: linear-gradient(to bottom, #9c27b0, #7b1fa2);"></span>Middleware Layer</h3>
+                <p>Auth, validation, error handling. Applied before/after route execution.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3><span class="color-box" style="background: linear-gradient(to bottom, #2196f3, #1565c0);"></span>Services Layer</h3>
+                <p>Business logic, domain operations. Composed via Dependency Injection, never imported directly.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3><span class="color-box" style="background: linear-gradient(to bottom, #4caf50, #2e7d32);"></span>Database Layer</h3>
+                <p>PostgreSQL access, connection pools, migrations. Used by services only.</p>
+            </div>
+            
+            <div class="legend-item">
+                <h3><span class="color-box" style="background: linear-gradient(to bottom, #ffc107, #f57f17);"></span>Utils & Auth</h3>
+                <p>Shared helpers, constants, validators, error types. Imported by all layers.</p>
+            </div>
+        </div>
+        
+        <!-- Rules Section -->
+        <div class="rules">
+            <h2>🚀 Enforcement Rules</h2>
+            <ul>
+                <li>✓ Routes import from Services, Middleware, Utils</li>
+                <li>✓ Services import from Database, Utils, Auth (NO other services)</li>
+                <li>✓ Middleware imports from Utils, Auth only</li>
+                <li>✓ Database imports from Utils only</li>
+                <li>✓ No circular dependencies</li>
+                <li class="violation">✗ Services importing Routes</li>
+                <li class="violation">✗ Services importing Middleware</li>
+                <li class="violation">✗ Services importing other Services (use DI)</li>
+                <li class="violation">✗ Routes importing Database directly</li>
+                <li class="violation">✗ Middleware importing Services</li>
+            </ul>
+        </div>
+        
+        <!-- Example Section -->
+        <div class="section">
+            <h2 style="color: #64b5f6; margin-bottom: 1rem;">📖 DI Pattern Example</h2>
+            <div class="code-example">
+<pre>// ✅ CORRECT: Service accepts dependencies via constructor
+export class SubscriptionService {
+  constructor(db, logger, emailService) {
+    this.db = db;
+    this.logger = logger;
+    this.emailService = emailService; // Injected, not imported
+  }
+  
+  async createSubscription(userId, planId) {
+    const result = await this.db.query(...);
+    await this.emailService.send(...);
+    return result;
+  }
+}
+
+// ✅ Routes instantiate with dependencies
+import { SubscriptionService } from '../services/subscription-service.js';
+import { emailQueueService } from '../services/email-queue-service.js';
+
+const subService = new SubscriptionService(
+  getPool(), logger, emailQueueService
+);
+
+router.post('/:userId/subscribe', async (req, res) => {
+  const result = await subService.createSubscription(
+    req.params.userId, req.body.planId
+  );
+  res.json(result);
+});</pre>
+            </div>
+        </div>
+        
+        <!-- Enforcement Tools -->
+        <div class="section">
+            <h2 style="color: #64b5f6; margin-bottom: 1rem;">🛠️ Enforcement Tools</h2>
+            <div class="legend">
+                <div class="legend-item">
+                    <h3>🔍 ESLint Rule</h3>
+                    <p><code>architecture/service-layer-boundaries</code></p>
+                    <p>Detects violations during linting. Run with <code>npm run lint</code></p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>🧪 Jest Test Gate</h3>
+                    <p><code>service-layer-boundaries.test.js</code></p>
+                    <p>Comprehensive boundary checks. Run with <code>npm run test:boundaries</code></p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>🪝 Husky Pre-commit</h3>
+                    <p>Runs ESLint before commits</p>
+                    <p>Prevents pushing violations to repository</p>
+                </div>
+                
+                <div class="legend-item">
+                    <h3>⚙️ CI/CD Pipeline</h3>
+                    <p>GitHub Actions runs both ESLint and Jest tests</p>
+                    <p>Blocks PRs with architectural violations</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Documentation Links -->
+        <div class="section">
+            <h2 style="color: #64b5f6; margin-bottom: 1rem;">📚 Documentation</h2>
+            <div class="rules">
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 0.5rem 0;">📖 <a href="SERVICE_LAYER_ARCHITECTURE.md" style="color: #64b5f6;">SERVICE_LAYER_ARCHITECTURE.md</a> - Complete architecture guide</li>
+                    <li style="padding: 0.5rem 0;">🏗️ <a href="DI_PATTERNS.md" style="color: #64b5f6;">DI_PATTERNS.md</a> - Dependency Injection patterns and examples</li>
+                    <li style="padding: 0.5rem 0;">⚙️ <a href="ENFORCEMENT_GUIDE.md" style="color: #64b5f6;">ENFORCEMENT_GUIDE.md</a> - How to use enforcement tools</li>
+                    <li style="padding: 0.5rem 0;">🔗 <a href="https://github.com/pistisai/pistisai-app/issues/623" style="color: #64b5f6;" target="_blank">GitHub Issue #623</a> - Architecture discussion</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Service Layer Architecture Documentation for PistisAI API Backend</p>
+            <p>Last Updated: 2026-11-10 | Issue: #623</p>
+        </div>
+    </div>
+</body>
+</html>

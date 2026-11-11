@@ -14,7 +14,7 @@ alerting:
 
 # Rule files
 rule_files:
-  # - "alerts/*.yml"
+  - "alerts.yml"
 
 # Scrape configurations
 scrape_configs:
@@ -25,6 +25,9 @@ scrape_configs:
         labels:
           service: 'api-backend'
           component: 'backend'
+    metrics_path: '/prometheus/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
 
   # Streaming Proxy metrics
   - job_name: 'streaming-proxy'
@@ -33,6 +36,9 @@ scrape_configs:
         labels:
           service: 'streaming-proxy'
           component: 'proxy'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
 
   # Traefik metrics
   - job_name: 'traefik'

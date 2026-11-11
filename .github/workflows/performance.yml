@@ -1,0 +1,168 @@
+name: Performance Regression Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, release/* ]
+  schedule:
+    # Weekly performance check (Tuesday 9 AM UTC)
+    - cron: '0 9 * * 2'
+
+jobs:
+  startup-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+      
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+      
+      - name: Build release binary (Linux)
+        run: |
+          flutter build linux -v
+      
+      - name: Run startup performance tests
+        env:
+          DISPLAY: :99
+        run: |
+          # Start virtual display
+          Xvfb :99 -screen 0 1920x1080x24 &
+          sleep 2
+          
+          # Run measurement
+          ./scripts/performance/measure_startup.sh --cold-start
+      
+      - name: Check for regressions
+        run: |
+          # Parse JSON report
+          COLD_START=$(jq '.measurements.cold_start_ms' performance_report.json)
+          BASELINE=$(jq '.baselines_ms.cold_start' performance_report.json)
+          
+          echo "Cold start: $COLD_START ms (baseline: $BASELINE ms)"
+          
+          # Fail if regression > 2x baseline
+          THRESHOLD=$((BASELINE * 2))
+          if [ "$COLD_START" -gt "$THRESHOLD" ]; then
+            echo "❌ REGRESSION DETECTED: Cold start time exceeds 2x baseline threshold"
+            exit 1
+          fi
+          
+          if [ "$COLD_START" -gt "$BASELINE" ]; then
+            echo "⚠️  SLIGHT INCREASE: Cold start time above baseline but within threshold"
+          fi
+      
+      - name: Upload performance report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-report-linux
+          path: performance_report.json
+
+  memory-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+      
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+      
+      - name: Build release binary
+        run: flutter build linux -v
+      
+      - name: Run app and monitor memory
+        env:
+          DISPLAY: :99
+        run: |
+          # Start virtual display
+          Xvfb :99 -screen 0 1920x1080x24 &
+          sleep 2
+          
+          # Start app in background
+          ./build/linux/x64/release/bundle/pistisai &
+          APP_PID=$!
+          
+          # Monitor for 5 minutes
+          ./scripts/performance/measure_memory.sh --duration 300 --output memory_report.csv
+          
+          kill $APP_PID || true
+      
+      - name: Analyze memory results
+        run: |
+          # Extract peak memory from CSV
+          PEAK_MEMORY=$(tail -1 memory_monitor.csv | cut -d',' -f2)
+          BASELINE=200  # MB
+          
+          echo "Peak memory: $PEAK_MEMORY MB (baseline: $BASELINE MB)"
+          
+          # Fail if > 2x baseline (400 MB)
+          if [ "$PEAK_MEMORY" -gt 400 ]; then
+            echo "❌ REGRESSION: Peak memory exceeds 2x baseline"
+            exit 1
+          fi
+      
+      - name: Upload memory report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: memory-report-linux
+          path: memory_monitor.csv
+
+  latency-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+      
+      - name: Check for latency instrumentation
+        run: |
+          # Verify chat_screen.dart has Stopwatch instrumentation
+          if grep -q "first_token_ms" lib/features/chat/presentation/pages/chat_screen.dart; then
+            echo "✓ Chat latency instrumentation found"
+          else
+            echo "⚠️  Chat latency instrumentation not found in chat_screen.dart"
+            echo "   See docs/performance/PERFORMANCE_BASELINES.md for details"
+          fi
+
+  summary:
+    needs: [ startup-performance, memory-performance ]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v3
+      
+      - name: Print summary
+        run: |
+          echo "=== Performance Test Summary ==="
+          echo "Startup: $(jq '.status.cold_start' performance-report-linux/performance_report.json 2>/dev/null || echo 'N/A')"
+          echo "Memory:  $(if [ -f memory-report-linux/memory_monitor.csv ]; then echo 'PASS'; else echo 'N/A'; fi)"
+          echo ""
+          echo "Full reports in artifacts"
