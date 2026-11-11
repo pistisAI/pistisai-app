@@ -9,6 +9,7 @@ export default {
     '**/test/api-backend/security/*.test.js',
     '**/test/api-backend/rbac.test.js',
     '**/test/api-backend/input-validation.test.js',
+    '**/test/api-backend/route-body-validation-2.test.js',
     '**/test/api-backend/admin-body-validation.test.js',
     '**/test/api-backend/admin-body-validation-2.test.js',
     '**/test/api-backend/cloud-connector.test.js',
