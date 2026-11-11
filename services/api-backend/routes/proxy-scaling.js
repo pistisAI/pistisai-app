@@ -4,6 +4,7 @@ import { addTierInfo } from '../middleware/tier-check.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { z } from 'zod';
 import winston from 'winston';
+import { proxyScalingExecuteBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 
@@ -407,6 +408,7 @@ router.post(
   '/proxy/scaling/execute/:proxyId',
   authenticateJWT,
   addTierInfo,
+  validateBody(proxyScalingExecuteBody),
   async (req, res) => {
     try {
       const { proxyId } = req.params;

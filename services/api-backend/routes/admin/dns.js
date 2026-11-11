@@ -24,6 +24,7 @@ import {
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
 import CloudflareDNSService from '../../services/cloudflare-dns-service.js';
+import { dnsCreateBody, dnsSetupGoogleBody, dnsUpdateBody, validateBody } from '../misc-body-schemas.js';
 
 const router = express.Router();
 
@@ -57,6 +58,7 @@ router.post(
   '/records',
   adminRateLimiter,
   adminAuth(['manage_dns_config']),
+  validateBody(dnsCreateBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -257,6 +259,7 @@ router.put(
   '/records/:id',
   adminRateLimiter,
   adminAuth(['manage_dns_config']),
+  validateBody(dnsUpdateBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -557,6 +560,7 @@ router.post(
   '/setup-google',
   adminRateLimiter,
   adminAuth(['manage_dns_config']),
+  validateBody(dnsSetupGoogleBody),
   async (req, res) => {
     try {
       const pool = getPool();

@@ -15,6 +15,7 @@ import logger from '../logger.js';
 import { authenticateJWT, extractUserId } from '../middleware/auth.js';
 import { logLogout, logTokenRevoke } from '../services/auth-audit-service.js';
 import { validateSchema } from '../middleware/schema-validation.js';
+import { tokenExpiryBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 
@@ -209,7 +210,8 @@ router.get('/me', authenticateJWT, async function (req, res) {
   }
 });
 
-router.post('/token/check-expiry', authCheckLimiter, async function (req, res) {
+router.post('/token/check-expiry', authCheckLimiter, validateBody(tokenExpiryBody),
+  async function (req, res) {
   try {
     const { token } = req.body;
     const authHeader = req.headers.authorization;

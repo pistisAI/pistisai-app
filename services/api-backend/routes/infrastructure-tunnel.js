@@ -26,6 +26,7 @@ import { authenticateInfrastructure } from '../middleware/infrastructure-auth.js
 import { getInfrastructureTunnelService } from '../services/cloudflare-infrastructure-tunnel-service.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import logger from '../logger.js';
+import { cachePurgeBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 
@@ -378,7 +379,8 @@ router.post('/restart', authenticateInfrastructure, async (req, res) => {
  *
  * Authentication: X-Infrastructure-Key
  */
-router.post('/cache/purge', authenticateInfrastructure, async (req, res) => {
+router.post('/cache/purge', authenticateInfrastructure, validateBody(cachePurgeBody),
+  async (req, res) => {
   try {
     const { urls } = req.body;
     const service = getInfrastructureTunnelService();
