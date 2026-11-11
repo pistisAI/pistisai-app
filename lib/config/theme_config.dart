@@ -333,6 +333,10 @@ class ThemeConfig {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      // Without this, ThemeData.primaryColor falls back to the surface
+      // colour in dark mode, and every widget that paints with
+      // Theme.of(context).primaryColor disappears into its background.
+      primaryColor: colorScheme.primary,
       extensions: [
         AppSpacingTheme.standard,
         AppColorsTheme(
@@ -388,6 +392,10 @@ class ThemeConfig {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      // Without this, ThemeData.primaryColor falls back to the surface
+      // colour in dark mode, and every widget that paints with
+      // Theme.of(context).primaryColor disappears into its background.
+      primaryColor: colorScheme.primary,
       extensions: [
         AppSpacingTheme.standard,
         AppColorsTheme(

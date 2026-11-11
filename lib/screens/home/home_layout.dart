@@ -18,6 +18,7 @@ import '../../components/welcome_screen.dart';
 import '../../components/animated_background.dart';
 import '../../models/avatar/personality_models.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../services/agent_display_name.dart';
 
 /// Main layout — clean chat interface, nothing else.
@@ -173,7 +174,7 @@ class _ChatPaneState extends State<_ChatPane> {
             IconButton(
               icon: const Icon(Icons.settings_outlined),
               onPressed: () => context.go('/config'),
-              tooltip: 'Settings',
+              tooltip: AppLocalizations.of(context).homeSettings,
               style: IconButton.styleFrom(
                 hoverColor: theme.colorScheme.primary.withValues(alpha: 0.1),
               ),
@@ -200,6 +201,7 @@ class _ChatPaneState extends State<_ChatPane> {
 
   Widget _buildConnectionWarning(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final spacing = AppTheme.spacingOf(context);
 
     return Container(
@@ -226,7 +228,7 @@ class _ChatPaneState extends State<_ChatPane> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'No Agent Connected',
+                    l10n.homeNoAgentTitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppTheme.colorsOf(context).warning,
@@ -234,7 +236,7 @@ class _ChatPaneState extends State<_ChatPane> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Configure an agent runtime in Settings to enable AI responses and desktop control.',
+                    l10n.homeNoAgentBanner,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.textTheme.bodySmall?.color
                           ?.withValues(alpha: 0.8),
@@ -247,7 +249,7 @@ class _ChatPaneState extends State<_ChatPane> {
             ElevatedButton.icon(
               onPressed: () => context.go('/config'),
               icon: const Icon(Icons.settings_rounded, size: 16),
-              label: const Text('Settings'),
+              label: Text(l10n.homeSettings),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.colorsOf(context).warning,
                 foregroundColor: AppTheme.colorsOf(context).textColor,
@@ -271,7 +273,9 @@ class _ChatPaneState extends State<_ChatPane> {
     final AgentState state;
     if (chatService.isLoading) {
       state = AgentState.working;
-    } else if (chatService.currentConversation?.messages.any((m) => m.hasError) ?? false) {
+    } else if (chatService.currentConversation?.messages
+            .any((m) => m.hasError) ??
+        false) {
       state = AgentState.error;
     } else {
       state = AgentState.idle;
@@ -289,19 +293,20 @@ class _ChatPaneState extends State<_ChatPane> {
   }
 
   Widget _buildConnectionStatus(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final connectionManager = context.watch<ConnectionManagerService>();
     final StatusType status;
     final String label;
 
     if (connectionManager.isConnected) {
       status = StatusType.healthy;
-      label = 'Connected';
+      label = l10n.commonConnected;
     } else if (connectionManager.currentBackend != null) {
       status = StatusType.idle;
-      label = 'Configured';
+      label = l10n.homeStatusConfigured;
     } else {
       status = StatusType.stopped;
-      label = 'Offline';
+      label = l10n.homeStatusOffline;
     }
 
     return StatusBadge(
@@ -313,6 +318,7 @@ class _ChatPaneState extends State<_ChatPane> {
 
   Widget _buildStandaloneWarning(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final colors = theme.colorScheme;
 
     return Center(
@@ -331,7 +337,9 @@ class _ChatPaneState extends State<_ChatPane> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.15),
+                      color: AppTheme.colorsOf(context)
+                          .warning
+                          .withValues(alpha: 0.15),
                       blurRadius: 40,
                       spreadRadius: 8,
                     ),
@@ -345,7 +353,7 @@ class _ChatPaneState extends State<_ChatPane> {
               ),
               const SizedBox(height: 28),
               Text(
-                'No Agent Connected',
+                l10n.homeNoAgentTitle,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colors.onSurface,
@@ -354,7 +362,7 @@ class _ChatPaneState extends State<_ChatPane> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Configure an agent runtime in Settings to get started, or use the avatar and local features while offline.',
+                l10n.homeNoAgentStandalone,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurface.withValues(alpha: 0.7),
                   height: 1.4,
@@ -366,7 +374,7 @@ class _ChatPaneState extends State<_ChatPane> {
               ElevatedButton.icon(
                 onPressed: () => context.go('/config'),
                 icon: const Icon(Icons.settings_rounded),
-                label: const Text('Open Settings'),
+                label: Text(l10n.homeOpenSettings),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.colorsOf(context).warning,
                   foregroundColor: AppTheme.colorsOf(context).textColor,
@@ -387,7 +395,7 @@ class _ChatPaneState extends State<_ChatPane> {
               TextButton.icon(
                 onPressed: () => context.go('/config'),
                 icon: const Icon(Icons.settings_outlined, size: 18),
-                label: const Text('Configure connection manually'),
+                label: Text(l10n.homeConfigureManually),
                 style: TextButton.styleFrom(
                   foregroundColor: colors.primary,
                 ),
@@ -443,8 +451,8 @@ class _ChatPaneState extends State<_ChatPane> {
                   onSendMessage: (message) =>
                       widget.onSendMessage(chatService, message),
                   isLoading: chatService.isLoading,
-                  placeholder:
-                      'Message ${connectedAgentDisplayName()}...',
+                  placeholder: AppLocalizations.of(context)
+                      .homeMessagePlaceholder(connectedAgentDisplayName()),
                 ),
               ),
             ],
@@ -532,6 +540,7 @@ class _ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
@@ -539,19 +548,19 @@ class _ActionBar extends StatelessWidget {
         children: [
           _PillarButton(
             icon: Icons.face_6,
-            label: 'Avatar',
+            label: l10n.homePillarAvatar,
             enabled: true,
             onTap: () => _openAvatar(context),
           ),
           _PillarButton(
             icon: Icons.handyman,
-            label: 'Tools',
+            label: l10n.homePillarTools,
             enabled: true,
             onTap: () => _showTools(context, connectedAgentDisplayName()),
           ),
           _PillarButton(
             icon: Icons.favorite,
-            label: 'Mood',
+            label: l10n.homePillarMood,
             enabled: true,
             onTap: () => _showMood(context),
           ),
@@ -572,6 +581,7 @@ class _ActionBar extends StatelessWidget {
   }
 
   void _showMood(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final engine = di.serviceLocator<PersonalityEngine>();
     showDialog(
       context: context,
@@ -589,14 +599,14 @@ class _ActionBar extends StatelessWidget {
                 children: [
                   const Icon(Icons.favorite, size: 24),
                   const SizedBox(width: 8),
-                  Text('${agentPossessive(connectedAgentDisplayName())} Mood'),
+                  Text(_moodTitle(l10n, connectedAgentDisplayName())),
                 ],
               ),
-              content: const Text('Personality engine not ready yet.'),
+              content: Text(l10n.homeMoodNotReady),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Close'),
+                  child: Text(l10n.commonClose),
                 ),
               ],
             );
@@ -608,30 +618,33 @@ class _ActionBar extends StatelessWidget {
               children: [
                 const Icon(Icons.favorite, size: 24),
                 const SizedBox(width: 8),
-                Text('${agentPossessive(profile.agentName)} Mood'),
+                Text(_moodTitle(l10n, profile.agentName)),
               ],
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Agent: ${profile.agentName}',
+                Text(l10n.homeMoodAgent(profile.agentName),
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                _TraitBar('Formality', traits.formality),
-                _TraitBar('Humor', traits.humor),
-                _TraitBar('Enthusiasm', traits.enthusiasm),
-                _TraitBar('Empathy', traits.empathy),
+                _TraitBar(l10n.homeTraitFormality, traits.formality),
+                _TraitBar(l10n.homeTraitHumor, traits.humor),
+                _TraitBar(l10n.homeTraitEnthusiasm, traits.enthusiasm),
+                _TraitBar(l10n.homeTraitEmpathy, traits.empathy),
                 const SizedBox(height: 8),
-                Text('Evolution: ${profile.evolutionStage}',
-                    style:
-                        TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6))),
+                Text(l10n.homeMoodEvolution(profile.evolutionStage),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.colorsOf(context)
+                            .textColorLight
+                            .withValues(alpha: 0.6))),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Close'),
+                child: Text(l10n.commonClose),
               ),
             ],
           );
@@ -640,6 +653,10 @@ class _ActionBar extends StatelessWidget {
     );
   }
 }
+
+/// "Agent's Mood" in English; French avoids the possessive.
+String _moodTitle(AppLocalizations l10n, String agentName) =>
+    l10n.homeMoodTitle(agentPossessive(agentName), agentName);
 
 class _TraitBar extends StatelessWidget {
   final String label;
@@ -659,7 +676,11 @@ class _TraitBar extends StatelessWidget {
             children: [
               Text(label, style: const TextStyle(fontSize: 13)),
               Text('${(value * 100).round()}%',
-                  style: TextStyle(fontSize: 12, color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6))),
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.colorsOf(context)
+                          .textColorLight
+                          .withValues(alpha: 0.6))),
             ],
           ),
           const SizedBox(height: 2),
@@ -668,7 +689,9 @@ class _TraitBar extends StatelessWidget {
             child: LinearProgressIndicator(
               value: value,
               minHeight: 6,
-              backgroundColor: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.3),
+              backgroundColor: AppTheme.colorsOf(context)
+                  .textColorLight
+                  .withValues(alpha: 0.3),
             ),
           ),
         ],
@@ -733,6 +756,7 @@ class _ToolsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -742,10 +766,11 @@ class _ToolsPanel extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.handyman, size: 24, color: AppTheme.colorsOf(context).warning),
+                Icon(Icons.handyman,
+                    size: 24, color: AppTheme.colorsOf(context).warning),
                 const SizedBox(width: 12),
                 Text(
-                  'What $agentName Can Do',
+                  l10n.homeToolsTitle(agentName),
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -754,7 +779,7 @@ class _ToolsPanel extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Available offline • Connect to unlock more',
+              l10n.homeToolsSubtitle,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppTheme.colorsOf(context).textColorLight,
               ),
@@ -762,33 +787,33 @@ class _ToolsPanel extends StatelessWidget {
             const SizedBox(height: 20),
             _ToolRow(
               icon: Icons.desktop_windows,
-              title: 'Desktop Control',
-              description: 'Click, type, scroll, drag on your PC',
+              title: l10n.homeToolDesktop,
+              description: l10n.homeToolDesktopDescription,
               available: true,
             ),
             _ToolRow(
               icon: Icons.visibility,
-              title: 'Vision',
-              description: 'See and analyze your screen',
+              title: l10n.homeToolVision,
+              description: l10n.homeToolVisionDescription,
               available: true,
             ),
             _ToolRow(
               icon: Icons.record_voice_over,
-              title: 'Voice',
-              description: 'Speak and listen',
+              title: l10n.homeToolVoice,
+              description: l10n.homeToolVoiceDescription,
               available: true,
             ),
             _ToolRow(
               icon: Icons.language,
-              title: 'Web Search',
-              description: 'Search and extract web content',
+              title: l10n.homeToolWebSearch,
+              description: l10n.homeToolWebSearchDescription,
               available: false,
-              note: 'Requires agent connection',
+              note: l10n.homeToolRequiresAgent,
             ),
             _ToolRow(
               icon: Icons.code,
-              title: 'Code Execution',
-              description: 'Run Python, shell, and Dart scripts',
+              title: l10n.homeToolCode,
+              description: l10n.homeToolCodeDescription,
               available: true,
             ),
             const SizedBox(height: 16),
@@ -825,13 +850,17 @@ class _ToolRow extends StatelessWidget {
             decoration: BoxDecoration(
               color: available
                   ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
-                  : AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.1),
+                  : AppTheme.colorsOf(context)
+                      .textColorLight
+                      .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
               size: 22,
-              color: available ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).textColorLight,
+              color: available
+                  ? AppTheme.colorsOf(context).success
+                  : AppTheme.colorsOf(context).textColorLight,
             ),
           ),
           const SizedBox(width: 16),
@@ -851,16 +880,24 @@ class _ToolRow extends StatelessWidget {
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: available
-                            ? AppTheme.colorsOf(context).success.withValues(alpha: 0.15)
-                            : AppTheme.colorsOf(context).warning.withValues(alpha: 0.15),
+                            ? AppTheme.colorsOf(context)
+                                .success
+                                .withValues(alpha: 0.15)
+                            : AppTheme.colorsOf(context)
+                                .warning
+                                .withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        available ? 'local' : 'cloud',
+                        available
+                            ? AppLocalizations.of(context).homeToolLocal
+                            : AppLocalizations.of(context).homeToolCloud,
                         style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
-                          color: available ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).warning,
+                          color: available
+                              ? AppTheme.colorsOf(context).success
+                              : AppTheme.colorsOf(context).warning,
                         ),
                       ),
                     ),
@@ -871,7 +908,9 @@ class _ToolRow extends StatelessWidget {
                   description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppTheme.colorsOf(context).textColorLight.withValues(alpha: 0.6),
+                    color: AppTheme.colorsOf(context)
+                        .textColorLight
+                        .withValues(alpha: 0.6),
                   ),
                 ),
                 if (note != null)
@@ -881,7 +920,9 @@ class _ToolRow extends StatelessWidget {
                       note!,
                       style: TextStyle(
                         fontSize: 10,
-                        color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.6),
+                        color: AppTheme.colorsOf(context)
+                            .warning
+                            .withValues(alpha: 0.6),
                         fontStyle: FontStyle.italic,
                       ),
                     ),

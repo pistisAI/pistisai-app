@@ -63,6 +63,11 @@ void main() {
         // Test crash reporting
         var crashReportingEnabled =
             await settingsService.isCrashReportingEnabled();
+        expect(crashReportingEnabled, false,
+            reason: 'crash reports are opt-in');
+
+        await settingsService.setCrashReportingEnabled(true);
+        crashReportingEnabled = await settingsService.isCrashReportingEnabled();
         expect(crashReportingEnabled, true);
 
         await settingsService.setCrashReportingEnabled(false);

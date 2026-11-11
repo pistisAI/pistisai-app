@@ -143,10 +143,13 @@ class SettingsPreferenceService {
     await prefs.setBool(_analyticsKey, value);
   }
 
-  /// Get crash reporting enabled preference
+  /// Get crash reporting enabled preference.
+  ///
+  /// Off unless the user turns it on: crash reports leave the user's network
+  /// (Sentry), so they are opt-in.
   Future<bool> isCrashReportingEnabled() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_crashReportingKey) ?? true;
+    return prefs.getBool(_crashReportingKey) ?? false;
   }
 
   /// Set crash reporting enabled preference

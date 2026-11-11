@@ -8,13 +8,47 @@ import 'package:pistisai/models/cron_job.dart';
 /// hyphens, underscores, dots, colons — no shell metacharacters).
 bool _isValidJobId(String id) {
   return id.isNotEmpty &&
+      !id.startsWith('-') &&
       !id.contains(RegExp(r'[;&|`$(){}!<>~\n\r\s]'));
+}
+
+/// Validates free text passed to the Hermes CLI as one argument: a job name,
+/// a schedule ("every 30m", "0 9 * * *"), a prompt, a script or folder path.
+///
+/// The command runs without a shell and each value is its own argument, so
+/// spaces and punctuation are safe. Two things are still refused: control
+/// characters (a line break would corrupt the job list this app parses), and
+/// a leading "-", which the CLI would read as an option, not a value.
+@visibleForTesting
+bool isSafeCronText(String value) {
+  final text = value.trim();
+  return text.isNotEmpty &&
+      !text.startsWith('-') &&
+      !value.contains(RegExp(r'[\x00-\x1F\x7F]'));
+}
+
+/// Runs the Hermes CLI. Replaceable in tests.
+typedef CronProcessRunner = Future<ProcessResult> Function(
+  String executable,
+  List<String> arguments,
+);
+
+Future<ProcessResult> _runProcess(String executable, List<String> arguments) {
+  return Process.run(
+    executable,
+    arguments,
+    stdoutEncoding: utf8,
+    stderrEncoding: utf8,
+  );
 }
 
 class CronService {
   final String _hermesPath;
+  final CronProcessRunner _run;
 
-  CronService({String? hermesPath}) : _hermesPath = hermesPath ?? 'hermes';
+  CronService({String? hermesPath, CronProcessRunner? processRunner})
+      : _hermesPath = hermesPath ?? 'hermes',
+        _run = processRunner ?? _runProcess;
 
   Future<List<CronJob>> listJobs() async {
     try {
@@ -70,31 +104,26 @@ class CronService {
     try {
       final args = ['cron', 'create'];
       if (name != null && name.isNotEmpty) {
-        if (!_isValidJobId(name)) return false;
+        if (!isSafeCronText(name)) return false;
         args.addAll(['--name', name]);
       }
       if (script != null && script.isNotEmpty) {
-        if (!_isValidJobId(script)) return false;
+        if (!isSafeCronText(script)) return false;
         args.addAll(['--script', script]);
       }
       if (noAgent) args.add('--no-agent');
       if (workdir != null && workdir.isNotEmpty) {
-        if (!_isValidJobId(workdir)) return false;
+        if (!isSafeCronText(workdir)) return false;
         args.addAll(['--workdir', workdir]);
       }
-      if (!_isValidJobId(schedule)) return false;
+      if (!isSafeCronText(schedule)) return false;
       args.add(schedule);
       if (prompt != null && prompt.isNotEmpty) {
-        if (!_isValidJobId(prompt)) return false;
+        if (!isSafeCronText(prompt)) return false;
         args.add(prompt);
       }
 
-      final r = await Process.run(
-        _hermesPath,
-        args,
-        stdoutEncoding: utf8,
-        stderrEncoding: utf8,
-      );
+      final r = await _run(_hermesPath, args);
       return r.exitCode == 0;
     } catch (e) {
       debugPrint('[CronService] Error creating job: $e');
@@ -116,36 +145,31 @@ class CronService {
     try {
       final args = ['cron', 'edit'];
       if (schedule != null && schedule.isNotEmpty) {
-        if (!_isValidJobId(schedule)) return false;
+        if (!isSafeCronText(schedule)) return false;
         args.addAll(['--schedule', schedule]);
       }
       if (prompt != null && prompt.isNotEmpty) {
-        if (!_isValidJobId(prompt)) return false;
+        if (!isSafeCronText(prompt)) return false;
         args.addAll(['--prompt', prompt]);
       }
       if (name != null && name.isNotEmpty) {
-        if (!_isValidJobId(name)) return false;
+        if (!isSafeCronText(name)) return false;
         args.addAll(['--name', name]);
       }
       if (script != null && script.isNotEmpty) {
-        if (!_isValidJobId(script)) return false;
+        if (!isSafeCronText(script)) return false;
         args.addAll(['--script', script]);
       }
       if (noAgent != null) {
         args.add(noAgent ? '--no-agent' : '--agent');
       }
       if (workdir != null && workdir.isNotEmpty) {
-        if (!_isValidJobId(workdir)) return false;
+        if (!isSafeCronText(workdir)) return false;
         args.addAll(['--workdir', workdir]);
       }
       args.add(jobId);
 
-      final r = await Process.run(
-        _hermesPath,
-        args,
-        stdoutEncoding: utf8,
-        stderrEncoding: utf8,
-      );
+      final r = await _run(_hermesPath, args);
       return r.exitCode == 0;
     } catch (e) {
       debugPrint('[CronService] Error editing job: $e');

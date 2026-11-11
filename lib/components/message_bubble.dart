@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../config/theme_extensions.dart';
 import '../models/chat_model.dart';
 import 'message_actions.dart';
@@ -213,9 +214,9 @@ class _MessageBubbleState extends State<MessageBubble>
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: widget.message.content));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Copied to clipboard'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text(AppLocalizations.of(context).messageCopied),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

@@ -150,6 +150,10 @@ class SetupWizardService extends ChangeNotifier {
   bool _setupCompleted = false; // Track if setup was completed this session
   bool _hermesAgentApiConnected = false;
 
+  /// True only after a connection test reached the Hermes agent API. The
+  /// wizard screens use it to show success for a test that really passed.
+  bool get connectionVerified => _hermesAgentApiConnected;
+
   SetupWizardService(
     this._discovery,
     this._setupStatus,

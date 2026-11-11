@@ -180,6 +180,8 @@ class _MinimalAuthService extends ChangeNotifier implements AuthService {
   @override
   bool get isRestoringSession => false;
   @override
+  String? get lastLoginError => null;
+  @override
   Future<void> updateDisplayName(String name) async {}
   final ValueNotifier<bool> _isAuthenticated = ValueNotifier(false);
   final ValueNotifier<bool> _isLoading = ValueNotifier(false);

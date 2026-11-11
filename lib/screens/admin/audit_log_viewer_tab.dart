@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../di/locator.dart' as di;
 import 'dart:async';
 import 'dart:convert';
@@ -119,6 +120,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
 
   /// Show log detail modal
   void _showLogDetail(AdminAuditLogModel log) async {
+    final l10n = AppLocalizations.of(context);
     try {
       final adminService = di.serviceLocator.get<AdminCenterService>();
       final response = await adminService.getAuditLogDetails(log.id);
@@ -134,7 +136,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to load log details: $e'),
+          content: Text(l10n.auditLoadDetailsFailed('$e')),
           backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
@@ -143,6 +145,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
 
   /// Export audit logs to CSV
   Future<void> _exportLogs() async {
+    final l10n = AppLocalizations.of(context);
     try {
       final adminService = di.serviceLocator.get<AdminCenterService>();
       await adminService.exportAuditLogs(
@@ -157,7 +160,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Audit logs exported successfully'),
+          content: Text(l10n.auditExported),
           backgroundColor: AppTheme.colorsOf(context).success,
         ),
       );
@@ -165,7 +168,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to export logs: $e'),
+          content: Text(l10n.auditExportFailed('$e')),
           backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
@@ -264,8 +267,8 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
     return Row(
       children: [
         // Title
-        const Text(
-          'Audit Logs',
+        Text(
+          AppLocalizations.of(context).auditTitle,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const Spacer(),
@@ -277,7 +280,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           child: OutlinedButton.icon(
             onPressed: _showFilterDialog,
             icon: const Icon(Icons.filter_list),
-            label: const Text('Filters'),
+            label: Text(AppLocalizations.of(context).auditFilters),
           ),
         ),
         const SizedBox(width: 8),
@@ -287,7 +290,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           TextButton.icon(
             onPressed: _clearFilters,
             icon: const Icon(Icons.clear),
-            label: const Text('Clear'),
+            label: Text(AppLocalizations.of(context).commonClear),
           ),
         const SizedBox(width: 8),
 
@@ -295,7 +298,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         ElevatedButton.icon(
           onPressed: _exportLogs,
           icon: const Icon(Icons.download),
-          label: const Text('Export CSV'),
+          label: Text(AppLocalizations.of(context).auditExportCsv),
         ),
         const SizedBox(width: 8),
 
@@ -303,7 +306,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         IconButton(
           onPressed: _loadAuditLogs,
           icon: const Icon(Icons.refresh),
-          tooltip: 'Refresh',
+          tooltip: AppLocalizations.of(context).commonRefresh,
         ),
       ],
     );
@@ -316,7 +319,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
       children: [
         if (_selectedAdminUserId != null)
           Chip(
-            label: Text('Admin: $_selectedAdminUserId'),
+            label: Text(AppLocalizations.of(context).auditFilterAdmin('$_selectedAdminUserId')),
             onDeleted: () {
               setState(() => _selectedAdminUserId = null);
               _loadAuditLogs();
@@ -324,7 +327,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           ),
         if (_selectedAction != null)
           Chip(
-            label: Text('Action: $_selectedAction'),
+            label: Text(AppLocalizations.of(context).auditFilterAction('$_selectedAction')),
             onDeleted: () {
               setState(() => _selectedAction = null);
               _loadAuditLogs();
@@ -332,7 +335,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           ),
         if (_selectedResourceType != null)
           Chip(
-            label: Text('Resource: $_selectedResourceType'),
+            label: Text(AppLocalizations.of(context).auditFilterResource('$_selectedResourceType')),
             onDeleted: () {
               setState(() => _selectedResourceType = null);
               _loadAuditLogs();
@@ -340,7 +343,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           ),
         if (_selectedAffectedUserId != null)
           Chip(
-            label: Text('Affected User: $_selectedAffectedUserId'),
+            label: Text(AppLocalizations.of(context).auditFilterAffectedUser('$_selectedAffectedUserId')),
             onDeleted: () {
               setState(() => _selectedAffectedUserId = null);
               _loadAuditLogs();
@@ -349,7 +352,8 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         if (_startDate != null)
           Chip(
             label: Text(
-              'From: ${_startDate!.toLocal().toString().split(' ')[0]}',
+              AppLocalizations.of(context).auditFilterFrom(
+                  _startDate!.toLocal().toString().split(' ')[0]),
             ),
             onDeleted: () {
               setState(() => _startDate = null);
@@ -358,7 +362,8 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           ),
         if (_endDate != null)
           Chip(
-            label: Text('To: ${_endDate!.toLocal().toString().split(' ')[0]}'),
+            label: Text(AppLocalizations.of(context).auditFilterTo(
+                _endDate!.toLocal().toString().split(' ')[0])),
             onDeleted: () {
               setState(() => _endDate = null);
               _loadAuditLogs();
@@ -366,7 +371,8 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           ),
         if (_selectedSeverity != null)
           Chip(
-            label: Text('Severity: ${_selectedSeverity!.displayName}'),
+            label: Text(
+                AppLocalizations.of(context).auditFilterSeverity(_selectedSeverity!.displayName)),
             onDeleted: () {
               setState(() => _selectedSeverity = null);
               _loadAuditLogs();
@@ -382,15 +388,15 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         scrollDirection: Axis.horizontal,
         child: SingleChildScrollView(
           child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Timestamp')),
-              DataColumn(label: Text('Action')),
-              DataColumn(label: Text('Resource')),
-              DataColumn(label: Text('Admin')),
-              DataColumn(label: Text('Affected User')),
-              DataColumn(label: Text('Severity')),
-              DataColumn(label: Text('IP Address')),
-              DataColumn(label: Text('Actions')),
+            columns: [
+              DataColumn(label: Text(AppLocalizations.of(context).auditTimestamp)),
+              DataColumn(label: Text(AppLocalizations.of(context).auditAction)),
+              DataColumn(label: Text(AppLocalizations.of(context).auditResource)),
+              DataColumn(label: Text(AppLocalizations.of(context).auditAdmin)),
+              DataColumn(label: Text(AppLocalizations.of(context).auditAffectedUser)),
+              DataColumn(label: Text(AppLocalizations.of(context).auditSeverity)),
+              DataColumn(label: Text(AppLocalizations.of(context).adminIpAddress)),
+              DataColumn(label: Text(AppLocalizations.of(context).commonActions)),
             ],
             rows: _logs.map((log) {
               return DataRow(
@@ -464,7 +470,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
                     IconButton(
                       icon: const Icon(Icons.visibility, size: 20),
                       onPressed: () => _showLogDetail(log),
-                      tooltip: 'View Details',
+                      tooltip: AppLocalizations.of(context).adminViewDetails,
                     ),
                   ),
                 ],
@@ -494,7 +500,11 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Showing ${(_currentPage - 1) * _itemsPerPage + 1}-${(_currentPage * _itemsPerPage).clamp(0, _totalLogs)} of $_totalLogs logs',
+            AppLocalizations.of(context).auditShowing(
+              (_currentPage - 1) * _itemsPerPage + 1,
+              (_currentPage * _itemsPerPage).clamp(0, _totalLogs),
+              _totalLogs,
+            ),
             style: TextStyle(color: AppTheme.colorsOf(context).textColorLight),
           ),
           Row(
@@ -508,7 +518,7 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
                     : null,
                 icon: const Icon(Icons.chevron_left),
               ),
-              Text('Page $_currentPage of $_totalPages'),
+              Text(AppLocalizations.of(context).adminPageOf(_currentPage, _totalPages)),
               IconButton(
                 onPressed: _currentPage < _totalPages
                     ? () {
@@ -532,9 +542,10 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         children: [
           Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger),
           const SizedBox(height: 16),
-          Text('Error: $_error'),
+          Text(AppLocalizations.of(context).auditError('$_error')),
           const SizedBox(height: 16),
-          ElevatedButton(onPressed: _loadAuditLogs, child: const Text('Retry')),
+          ElevatedButton(
+              onPressed: _loadAuditLogs, child: Text(AppLocalizations.of(context).commonRetry)),
         ],
       ),
     );
@@ -548,14 +559,14 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
           Icon(Icons.history, size: 64, color: AppTheme.colorsOf(context).textColorLight),
           const SizedBox(height: 16),
           Text(
-            'No audit logs found',
+            AppLocalizations.of(context).auditNone,
             style: TextStyle(fontSize: 18, color: AppTheme.colorsOf(context).textColorLight),
           ),
           if (_activeFilterCount > 0) ...[
             const SizedBox(height: 8),
             TextButton(
               onPressed: _clearFilters,
-              child: const Text('Clear filters'),
+              child: Text(AppLocalizations.of(context).auditClearFilters),
             ),
           ],
         ],
@@ -646,7 +657,7 @@ class _FilterDialogState extends State<_FilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Filter Audit Logs'),
+      title: Text(AppLocalizations.of(context).auditFilterTitle),
       content: SizedBox(
         width: 500,
         child: SingleChildScrollView(
@@ -657,9 +668,9 @@ class _FilterDialogState extends State<_FilterDialog> {
               // Admin User ID
               TextField(
                 controller: _adminUserIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Admin User ID',
-                  hintText: 'Filter by admin user ID',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).auditAdminUserId,
+                  hintText: AppLocalizations.of(context).auditAdminUserIdHint,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -668,9 +679,9 @@ class _FilterDialogState extends State<_FilterDialog> {
               // Action
               TextField(
                 controller: _actionController,
-                decoration: const InputDecoration(
-                  labelText: 'Action',
-                  hintText: 'e.g., user_suspended, refund_processed',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).auditAction,
+                  hintText: AppLocalizations.of(context).auditActionHint,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -679,9 +690,9 @@ class _FilterDialogState extends State<_FilterDialog> {
               // Resource Type
               TextField(
                 controller: _resourceTypeController,
-                decoration: const InputDecoration(
-                  labelText: 'Resource Type',
-                  hintText: 'e.g., user, subscription, transaction',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).auditResourceType,
+                  hintText: AppLocalizations.of(context).auditResourceTypeHint,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -690,17 +701,17 @@ class _FilterDialogState extends State<_FilterDialog> {
               // Affected User ID
               TextField(
                 controller: _affectedUserIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Affected User ID',
-                  hintText: 'Filter by affected user ID',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).auditAffectedUserId,
+                  hintText: AppLocalizations.of(context).auditAffectedUserIdHint,
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
 
               // Date Range
-              const Text(
-                'Date Range',
+              Text(
+                AppLocalizations.of(context).auditDateRange,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -713,7 +724,7 @@ class _FilterDialogState extends State<_FilterDialog> {
                       label: Text(
                         _startDate != null
                             ? _startDate!.toLocal().toString().split(' ')[0]
-                            : 'Start Date',
+                            : AppLocalizations.of(context).auditStartDate,
                       ),
                     ),
                   ),
@@ -725,7 +736,7 @@ class _FilterDialogState extends State<_FilterDialog> {
                       label: Text(
                         _endDate != null
                             ? _endDate!.toLocal().toString().split(' ')[0]
-                            : 'End Date',
+                            : AppLocalizations.of(context).auditEndDate,
                       ),
                     ),
                   ),
@@ -734,21 +745,21 @@ class _FilterDialogState extends State<_FilterDialog> {
               const SizedBox(height: 16),
 
               // Severity
-              const Text(
-                'Severity',
+              Text(
+                AppLocalizations.of(context).auditSeverity,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<AuditLogSeverity>(
                 initialValue: _severity,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'All severities',
+                  hintText: AppLocalizations.of(context).auditAllSeverities,
                 ),
                 items: [
-                  const DropdownMenuItem(
+                  DropdownMenuItem(
                     value: null,
-                    child: Text('All severities'),
+                    child: Text(AppLocalizations.of(context).auditAllSeverities),
                   ),
                   ...AuditLogSeverity.values.map((severity) {
                     return DropdownMenuItem(
@@ -768,7 +779,7 @@ class _FilterDialogState extends State<_FilterDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).commonCancel),
         ),
         TextButton(
           onPressed: () {
@@ -783,7 +794,7 @@ class _FilterDialogState extends State<_FilterDialog> {
               _severity = null;
             });
           },
-          child: const Text('Clear All'),
+          child: Text(AppLocalizations.of(context).auditClearAll),
         ),
         ElevatedButton(
           onPressed: () {
@@ -806,7 +817,7 @@ class _FilterDialogState extends State<_FilterDialog> {
             });
             Navigator.of(context).pop();
           },
-          child: const Text('Apply'),
+          child: Text(AppLocalizations.of(context).commonApply),
         ),
       ],
     );
@@ -831,7 +842,7 @@ class _LogDetailDialog extends StatelessWidget {
         children: [
           const Icon(Icons.info_outline),
           const SizedBox(width: 8),
-          const Text('Audit Log Details'),
+          Text(AppLocalizations.of(context).auditDetailsTitle),
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.close),
@@ -847,13 +858,13 @@ class _LogDetailDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Log ID
-              _buildDetailRow(context, 'Log ID', log['id']),
+              _buildDetailRow(context, AppLocalizations.of(context).auditLogId, log['id']),
               const Divider(),
 
               // Timestamp
               _buildDetailRow(
                 context,
-                'Timestamp',
+                AppLocalizations.of(context).auditTimestamp,
                 DateTime.parse(
                   log['createdAt'],
                 ).toLocal().toString().split('.')[0],
@@ -861,49 +872,51 @@ class _LogDetailDialog extends StatelessWidget {
               const Divider(),
 
               // Action
-              _buildDetailRow(context, 'Action', log['action']),
+              _buildDetailRow(context, AppLocalizations.of(context).auditAction, log['action']),
               const Divider(),
 
               // Resource
-              _buildDetailRow(context, 'Resource Type', log['resourceType']),
-              _buildDetailRow(context, 'Resource ID', log['resourceId']),
+              _buildDetailRow(context, AppLocalizations.of(context).auditResourceType, log['resourceType']),
+              _buildDetailRow(context, AppLocalizations.of(context).auditResourceId, log['resourceId']),
               const Divider(),
 
               // Admin User
-              const Text(
-                'Admin User',
+              Text(
+                AppLocalizations.of(context).auditAdminUser,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 8),
               if (adminUser != null) ...[
-                _buildDetailRow(context, 'Email', adminUser['email']),
-                _buildDetailRow(context, 'Username', adminUser['username']),
-                _buildDetailRow(context, 'Role', adminUser['role']),
-                _buildDetailRow(context, 'User ID', adminUser['id']),
+                _buildDetailRow(context, AppLocalizations.of(context).adminEmail, adminUser['email']),
+                _buildDetailRow(context, AppLocalizations.of(context).adminUsername, adminUser['username']),
+                _buildDetailRow(context, AppLocalizations.of(context).auditRole, adminUser['role']),
+                _buildDetailRow(context, AppLocalizations.of(context).adminUserId, adminUser['id']),
               ],
               const Divider(),
 
               // Affected User
               if (affectedUser != null) ...[
-                const Text(
-                  'Affected User',
+                Text(
+                  AppLocalizations.of(context).auditAffectedUser,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 8),
-                _buildDetailRow(context, 'Email', affectedUser['email']),
-                _buildDetailRow(context, 'Username', affectedUser['username']),
-                _buildDetailRow(context, 'User ID', affectedUser['id']),
+                _buildDetailRow(context, AppLocalizations.of(context).adminEmail, affectedUser['email']),
+                _buildDetailRow(context, AppLocalizations.of(context).adminUsername, affectedUser['username']),
+                _buildDetailRow(context, AppLocalizations.of(context).adminUserId, affectedUser['id']),
                 const Divider(),
               ],
 
               // IP Address and User Agent
-              _buildDetailRow(context, 'IP Address', log['ipAddress'] ?? 'N/A'),
-              _buildDetailRow(context, 'User Agent', log['userAgent'] ?? 'N/A'),
+              _buildDetailRow(context, AppLocalizations.of(context).adminIpAddress,
+                  log['ipAddress'] ?? AppLocalizations.of(context).adminNotAvailable),
+              _buildDetailRow(context, AppLocalizations.of(context).adminUserAgent,
+                  log['userAgent'] ?? AppLocalizations.of(context).adminNotAvailable),
               const Divider(),
 
               // Action Details (JSON)
-              const Text(
-                'Action Details',
+              Text(
+                AppLocalizations.of(context).auditActionDetails,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 8),
@@ -927,7 +940,7 @@ class _LogDetailDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: Text(AppLocalizations.of(context).commonClose),
         ),
       ],
     );
@@ -951,7 +964,7 @@ class _LogDetailDialog extends StatelessWidget {
           ),
           Expanded(
             child: SelectableText(
-              value ?? 'N/A',
+              value ?? AppLocalizations.of(context).adminNotAvailable,
               style: const TextStyle(fontWeight: FontWeight.w400),
             ),
           ),

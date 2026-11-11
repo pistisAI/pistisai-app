@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../services/setup_status_service.dart';
 import '../../services/auth_service.dart';
@@ -22,10 +23,11 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
     final spacing = AppTheme.spacingOf(context);
     final setupStatusService = context.watch<SetupStatusService>();
     final authService = context.watch<AuthService>();
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Connection Settings'),
+        title: Text(l10n.connectionSettingsTitle),
         elevation: 0,
         leading: BackButton(
           onPressed: () {
@@ -40,17 +42,18 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
             child: ListView(
               padding: EdgeInsets.all(spacing.l),
               children: [
-                Text('Connection', style: theme.textTheme.headlineMedium),
+                Text(l10n.connectionHeading,
+                    style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 16),
-                const Text('Manage tunnel and daemon connections.'),
+                Text(l10n.connectionDescription),
                 const SizedBox(height: 32),
 
                 // Daemon Settings
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.settings_ethernet),
-                    title: const Text('Daemon Settings'),
-                    subtitle: const Text('Configure system tray daemon'),
+                    title: Text(l10n.connectionDaemonSettings),
+                    subtitle: Text(l10n.connectionDaemonSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.go('/settings/daemon'),
                   ),
@@ -61,9 +64,8 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.devices),
-                    title: const Text('Device Mesh'),
-                    subtitle:
-                        const Text('Registered devices and cloud presence'),
+                    title: Text(l10n.meshTitle),
+                    subtitle: Text(l10n.connectionDeviceMeshSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.go('/settings/device-mesh'),
                   ),
@@ -74,8 +76,8 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.link),
-                    title: const Text('Connection Status'),
-                    subtitle: const Text('View current connection status'),
+                    title: Text(l10n.connectionStatusTitle),
+                    subtitle: Text(l10n.connectionStatusSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.go('/settings/connection-status'),
                   ),
@@ -86,22 +88,20 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.restart_alt),
-                    title: const Text('Re-run Setup Wizard'),
-                    subtitle: const Text('Configure gateway connection again'),
+                    title: Text(l10n.connectionRerunWizard),
+                    subtitle: Text(l10n.connectionRerunWizardSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () async {
                       // Confirm before clearing setup
                       final confirmed = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('Re-run Setup Wizard'),
-                          content: const Text(
-                            'This will clear your saved setup configuration and restart the setup wizard. You will need to reconfigure your gateway connection.\n\nContinue?',
-                          ),
+                          title: Text(l10n.connectionRerunWizard),
+                          content: Text(l10n.connectionRerunWizardBody),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('Cancel'),
+                              child: Text(l10n.commonCancel),
                             ),
                             FilledButton(
                               onPressed: () => Navigator.of(context).pop(true),
@@ -109,7 +109,7 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                                 backgroundColor:
                                     AppTheme.colorsOf(context).warning,
                               ),
-                              child: const Text('Clear & Re-run'),
+                              child: Text(l10n.connectionClearAndRerun),
                             ),
                           ],
                         ),
@@ -136,7 +136,7 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Failed to clear setup data: $e'),
+                                content: Text(l10n.connectionClearFailed('$e')),
                                 backgroundColor:
                                     AppTheme.colorsOf(context).danger,
                               ),

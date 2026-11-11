@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../di/locator.dart' as di;
 import '../../services/admin_center_service.dart';
 import '../../widgets/admin_stat_card.dart';
@@ -83,7 +84,7 @@ class _DashboardTabState extends State<DashboardTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(AppLocalizations.of(context).adminDashboardTitle),
         actions: [
           // Last updated timestamp
           if (_lastUpdated != null)
@@ -91,7 +92,7 @@ class _DashboardTabState extends State<DashboardTab> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingM),
                 child: Text(
-                  'Last updated: ${_formatTime(_lastUpdated!)}',
+                  AppLocalizations.of(context).daemonLastUpdated(_formatTime(_lastUpdated!)),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppTheme.colorsOf(context).textColorLight,
                       ),
@@ -114,7 +115,7 @@ class _DashboardTabState extends State<DashboardTab> {
                   )
                 : const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _handleRefresh,
-            tooltip: 'Refresh metrics',
+            tooltip: AppLocalizations.of(context).adminRefreshMetrics,
           ),
           SizedBox(width: AppTheme.spacingS),
         ],
@@ -134,7 +135,7 @@ class _DashboardTabState extends State<DashboardTab> {
             ElevatedButton.icon(
               onPressed: _loadMetrics,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context).commonRetry),
             ),
           ],
         ),
@@ -179,38 +180,38 @@ class _DashboardTabState extends State<DashboardTab> {
       cards: [
         // Total Users
         AdminStatCard(
-          title: 'Total Users',
+          title: AppLocalizations.of(context).adminTotalUsers,
           value: _formatNumber(users['total']),
           icon: Icons.people,
           iconColor: AppTheme.colorsOf(context).primary,
-          subtitle: '${users['newThisMonth']} new this month',
+          subtitle: AppLocalizations.of(context).adminNewThisMonth('${users['newThisMonth']}'),
         ),
 
         // Active Users
         AdminStatCard(
-          title: 'Active Users',
+          title: AppLocalizations.of(context).adminActiveUsers,
           value: _formatNumber(users['active']),
           icon: Icons.person_outline,
           iconColor: AppTheme.colorsOf(context).success,
-          subtitle: '${users['activePercentage']}% of total',
+          subtitle: AppLocalizations.of(context).adminPercentOfTotal('${users['activePercentage']}'),
         ),
 
         // Monthly Recurring Revenue
         AdminStatCard(
-          title: 'Monthly Recurring Revenue',
+          title: AppLocalizations.of(context).adminMrr,
           value: '\$${_formatCurrency(revenue['mrr'])}',
           icon: Icons.attach_money,
           iconColor: AppTheme.colorsOf(context).warning,
-          subtitle: 'From ${subscriptions['totalSubscribed']} subscribers',
+          subtitle: AppLocalizations.of(context).adminFromSubscribers('${subscriptions['totalSubscribed']}'),
         ),
 
         // Current Month Revenue
         AdminStatCard(
-          title: 'Current Month Revenue',
+          title: AppLocalizations.of(context).adminCurrentMonthRevenue,
           value: '\$${_formatCurrency(revenue['currentMonth'])}',
           icon: Icons.trending_up,
           iconColor: AppTheme.colorsOf(context).info,
-          subtitle: '${revenue['transactionCount']} transactions',
+          subtitle: AppLocalizations.of(context).adminTransactionsCount('${revenue['transactionCount']}'),
         ),
       ],
     );
@@ -231,7 +232,7 @@ class _DashboardTabState extends State<DashboardTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Subscription Distribution',
+              AppLocalizations.of(context).adminSubscriptionDistribution,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -240,7 +241,7 @@ class _DashboardTabState extends State<DashboardTab> {
             SizedBox(height: AppTheme.spacingM),
 
             Text(
-              'Conversion Rate: ${subscriptions['conversionRate']}%',
+              AppLocalizations.of(context).adminConversionRate('${subscriptions['conversionRate']}'),
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
@@ -250,7 +251,7 @@ class _DashboardTabState extends State<DashboardTab> {
 
             // Subscription tier bars
             _buildSubscriptionBar(
-              'Free',
+              AppLocalizations.of(context).adminTierFree,
               distribution['free'] as int,
               total,
               AppTheme.colorsOf(context).textColorLight,
@@ -259,7 +260,7 @@ class _DashboardTabState extends State<DashboardTab> {
             SizedBox(height: AppTheme.spacingM),
 
             _buildSubscriptionBar(
-              'Premium',
+              AppLocalizations.of(context).adminTierPremium,
               distribution['premium'] as int,
               total,
               AppTheme.colorsOf(context).primary,
@@ -268,7 +269,7 @@ class _DashboardTabState extends State<DashboardTab> {
             SizedBox(height: AppTheme.spacingM),
 
             _buildSubscriptionBar(
-              'Enterprise',
+              AppLocalizations.of(context).adminTierEnterprise,
               distribution['enterprise'] as int,
               total,
               AppTheme.colorsOf(context).warning,
@@ -295,7 +296,7 @@ class _DashboardTabState extends State<DashboardTab> {
               ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             Text(
-              '$count (${percentage.toStringAsFixed(1)}%)',
+              AppLocalizations.of(context).adminCountPercent(count, percentage.toStringAsFixed(1)),
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
@@ -325,7 +326,7 @@ class _DashboardTabState extends State<DashboardTab> {
           padding: EdgeInsets.all(AppTheme.spacingL),
           child: Center(
             child: Text(
-              'No recent transactions',
+              AppLocalizations.of(context).adminNoRecentTransactions,
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
@@ -342,7 +343,7 @@ class _DashboardTabState extends State<DashboardTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Recent Transactions',
+              AppLocalizations.of(context).adminRecentTransactions,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -443,9 +444,9 @@ class _DashboardTabState extends State<DashboardTab> {
     final difference = now.difference(dateTime);
 
     if (difference.inSeconds < 60) {
-      return 'Just now';
+      return AppLocalizations.of(context).timeJustNow;
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return AppLocalizations.of(context).timeMinutesAgo(difference.inMinutes);
     } else {
       return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     }
@@ -460,11 +461,12 @@ class _DashboardTabState extends State<DashboardTab> {
       final difference = now.difference(dateTime);
 
       if (difference.inDays == 0) {
-        return 'Today ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+        return AppLocalizations.of(context).adminToday(
+            '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}');
       } else if (difference.inDays == 1) {
-        return 'Yesterday';
+        return AppLocalizations.of(context).adminYesterday;
       } else if (difference.inDays < 7) {
-        return '${difference.inDays} days ago';
+        return AppLocalizations.of(context).adminDaysAgo(difference.inDays);
       } else {
         return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
       }

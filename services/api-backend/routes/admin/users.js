@@ -23,11 +23,12 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
-import { validateSchema } from '../../middleware/schema-validation.js';
 import {
-  ChangeSubscriptionTierSchema,
-  UserNoteSchema,
-} from '../../schemas/validation-schemas.js';
+  changeTierBody,
+  suspendBody,
+  reactivateBody,
+  validateBody,
+} from './body-schemas.js';
 
 const router = express.Router();
 
@@ -454,7 +455,7 @@ router.patch(
   '/:userId',
   adminRateLimiter,
   adminAuth(['edit_users']),
-  validateSchema({ body: ChangeSubscriptionTierSchema }),
+  validateBody(changeTierBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -468,6 +469,19 @@ router.patch(
         return res.status(400).json({
           error: 'Invalid user ID format',
           code: 'INVALID_USER_ID',
+        });
+      }
+
+      // Validate subscription tier
+      const validTiers = ['free', 'premium', 'enterprise'];
+      if (
+        subscriptionTier &&
+        !validTiers.includes(subscriptionTier.toLowerCase())
+      ) {
+        return res.status(400).json({
+          error: 'Invalid subscription tier',
+          code: 'INVALID_TIER',
+          validTiers,
         });
       }
 
@@ -504,8 +518,8 @@ router.patch(
       let proratedCharge = 0;
       const tierPricing = {
         free: 0,
-        premium: 9.99,
-        enterprise: 29.99,
+        premium: Number(process.env.PISTISAI_PRICE_PREMIUM) || 0,
+        enterprise: Number(process.env.PISTISAI_PRICE_ENTERPRISE) || 0,
       };
 
       if (tierPricing[newTier] > tierPricing[previousTier]) {
@@ -658,6 +672,7 @@ router.post(
   '/:userId/suspend',
   adminRateLimiter,
   adminAuth(['suspend_users']),
+  validateBody(suspendBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -815,7 +830,7 @@ router.post(
   '/:userId/reactivate',
   adminRateLimiter,
   adminAuth(['suspend_users']),
-  validateSchema({ body: UserNoteSchema }),
+  validateBody(reactivateBody),
   async (req, res) => {
     try {
       const pool = getPool();

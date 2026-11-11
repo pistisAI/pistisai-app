@@ -3,6 +3,7 @@ import '../../services/avatar/avatar_state_service.dart';
 import '../../di/locator.dart' as di;
 import '../../database/drift_local_brain.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Screen for displaying avatar achievements
 ///
@@ -18,7 +19,10 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   late AvatarStateService _avatarStateService;
   late LocalBrain _localBrain;
   bool _isLoading = true;
-  String? _errorMessage;
+
+  /// Error raised while loading, formatted in build so the message follows
+  /// the current locale.
+  Object? _loadError;
 
   List<Achievement> _unlockedAchievements = [];
   Map<String, AchievementProgress> _progressMap = {};
@@ -47,7 +51,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Failed to load achievements: $e';
+          _loadError = e;
         });
       }
     }
@@ -132,61 +136,66 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   }
 
   /// Get achievement metadata
-  AchievementMetadata _getAchievementMetadata(BuildContext context, String achievementId) {
+  AchievementMetadata _getAchievementMetadata(
+      BuildContext context, String achievementId) {
+    final l10n = AppLocalizations.of(context);
     switch (achievementId) {
       case 'first_chat':
         return AchievementMetadata(
-          title: 'First Conversation',
-          description: 'Complete your first conversation with the avatar',
+          title: l10n.achievementFirstChat,
+          description: l10n.achievementFirstChatDescription,
           icon: Icons.chat_bubble_outline,
           color: AppTheme.colorsOf(context).info,
         );
       case 'deep_conversations_5':
         return AchievementMetadata(
-          title: 'Getting to Know You',
-          description: 'Have 5 deep conversations',
+          title: l10n.achievementGettingToKnow,
+          description: l10n.achievementDeepConversationsDescription(5),
           icon: Icons.auto_awesome,
           color: AppTheme.colorsOf(context).success,
         );
       case 'deep_conversations_15':
         return AchievementMetadata(
-          title: 'Deep Thinker',
-          description: 'Have 15 deep conversations',
+          title: l10n.achievementDeepThinker,
+          description: l10n.achievementDeepConversationsDescription(15),
           icon: Icons.psychology,
           color: AppTheme.colorsOf(context).accent,
         );
       case 'deep_conversations_30':
         return AchievementMetadata(
-          title: 'Conversational Master',
-          description: 'Have 30 deep conversations',
+          title: l10n.achievementConversationalMaster,
+          description: l10n.achievementDeepConversationsDescription(30),
           icon: Icons.school,
           color: AppTheme.colorsOf(context).warning,
         );
       case 'high_novelty':
         return AchievementMetadata(
-          title: 'Novelty Seeker',
-          description: 'Maintain high novelty in conversations (60%+)',
+          title: l10n.achievementNoveltySeeker,
+          description: l10n.achievementNoveltySeekerDescription,
           icon: Icons.explore,
           color: AppTheme.colorsOf(context).info,
         );
       case 'knowledge_seeker':
         return AchievementMetadata(
-          title: 'Knowledge Seeker',
-          description: 'Evolve your avatar to the Knowledge Seeker stage',
+          title: l10n.avatarStageKnowledgeSeeker,
+          description: l10n
+              .achievementEvolveDescription(l10n.avatarStageKnowledgeSeeker),
           icon: Icons.trending_up,
           color: AppTheme.colorsOf(context).primary,
         );
       case 'wise_companion':
         return AchievementMetadata(
-          title: 'Wise Companion',
-          description: 'Evolve your avatar to the Wise Companion stage',
+          title: l10n.avatarStageWiseCompanion,
+          description:
+              l10n.achievementEvolveDescription(l10n.avatarStageWiseCompanion),
           icon: Icons.stars,
           color: AppTheme.colorsOf(context).warning,
         );
       case 'enlightened_guide':
         return AchievementMetadata(
-          title: 'Enlightened Guide',
-          description: 'Evolve your avatar to the Enlightened Guide stage',
+          title: l10n.avatarStageEnlightenedGuide,
+          description: l10n
+              .achievementEvolveDescription(l10n.avatarStageEnlightenedGuide),
           icon: Icons.workspace_premium,
           color: AppTheme.colorsOf(context).danger,
         );
@@ -202,27 +211,30 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Achievements')),
+        appBar: AppBar(title: Text(l10n.achievementsTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (_errorMessage != null) {
+    if (_loadError != null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Achievements')),
+        appBar: AppBar(title: Text(l10n.achievementsTitle)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, size: 64, color: AppTheme.colorsOf(context).danger),
+              Icon(Icons.error_outline,
+                  size: 64, color: AppTheme.colorsOf(context).danger),
               const SizedBox(height: 16),
-              Text(_errorMessage!, textAlign: TextAlign.center),
+              Text(l10n.achievementsLoadFailed('$_loadError'),
+                  textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _initializeServices,
-                child: const Text('Retry'),
+                child: Text(l10n.commonRetry),
               ),
             ],
           ),
@@ -234,11 +246,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Achievements'),
+        title: Text(l10n.achievementsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
-          tooltip: 'Back',
+          tooltip: l10n.commonBack,
         ),
       ),
       body: SingleChildScrollView(
@@ -251,11 +263,11 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             SizedBox(height: 24),
 
             // Unlocked achievements
-            _buildSectionHeader('Unlocked', Icons.check_circle, AppTheme.colorsOf(context).success),
+            _buildSectionHeader(l10n.achievementsUnlockedSection,
+                Icons.check_circle, AppTheme.colorsOf(context).success),
             const SizedBox(height: 12),
             if (_unlockedAchievements.isEmpty)
-              _buildEmptyState(
-                  'No achievements unlocked yet. Start conversing!')
+              _buildEmptyState(l10n.achievementsNoneUnlocked)
             else
               ..._unlockedAchievements.map((achievement) {
                 final metadata =
@@ -270,7 +282,8 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
             SizedBox(height: 32),
 
             // Locked achievements
-            _buildSectionHeader('Locked', Icons.lock, AppTheme.colorsOf(context).textColorLight),
+            _buildSectionHeader(l10n.achievementsLockedSection, Icons.lock,
+                AppTheme.colorsOf(context).textColorLight),
             const SizedBox(height: 12),
             ..._progressMap.entries.where((entry) {
               final achievementId = entry.key;
@@ -303,6 +316,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
   /// Build stats card
   Widget _buildStatsCard() {
+    final l10n = AppLocalizations.of(context);
     final unlockedCount = _unlockedAchievements.length;
     final totalCount = _progressMap.length;
     final percentage =
@@ -327,14 +341,15 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Achievement Progress',
+                        l10n.achievementsProgress,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '$unlockedCount of $totalCount unlocked',
+                        l10n.achievementsUnlockedCount(
+                            unlockedCount, totalCount),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppTheme.colorsOf(context).textColorLight,
                             ),
@@ -343,7 +358,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                   ),
                 ),
                 Text(
-                  '$percentage%',
+                  l10n.achievementsPercent(percentage),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -439,14 +454,18 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                     : AppTheme.colorsOf(context).textColorLight,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isUnlocked ? metadata.color : AppTheme.colorsOf(context).textColorLight,
+                  color: isUnlocked
+                      ? metadata.color
+                      : AppTheme.colorsOf(context).textColorLight,
                   width: 2,
                 ),
               ),
               child: Icon(
                 metadata.icon,
                 size: 32,
-                color: isUnlocked ? metadata.color : AppTheme.colorsOf(context).textColorLight,
+                color: isUnlocked
+                    ? metadata.color
+                    : AppTheme.colorsOf(context).textColorLight,
               ),
             ),
             const SizedBox(width: 16),
@@ -491,7 +510,8 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                         const SizedBox(width: 8),
                         Text(
                           progress.isPercentage
-                              ? '${progress.currentValue}%'
+                              ? AppLocalizations.of(context)
+                                  .achievementsPercent(progress.currentValue)
                               : '${progress.currentValue}/${progress.requiredValue}',
                           style: TextStyle(
                             fontSize: 12,
@@ -504,7 +524,8 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                   ],
                   if (isUnlocked && achievement.unlockedAt != null)
                     Text(
-                      'Unlocked ${_formatDate(achievement.unlockedAt!)}',
+                      AppLocalizations.of(context).achievementsUnlockedWhen(
+                          _formatDate(achievement.unlockedAt!)),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                             fontStyle: FontStyle.italic,
@@ -528,18 +549,19 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
   /// Format date
   String _formatDate(DateTime date) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
-        return 'today';
+        return l10n.achievementsToday;
       }
-      return '${difference.inHours}h ago';
+      return l10n.timeHoursAgo(difference.inHours);
     } else if (difference.inDays == 1) {
-      return 'yesterday';
+      return l10n.achievementsYesterday;
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n.timeDaysAgo(difference.inDays);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

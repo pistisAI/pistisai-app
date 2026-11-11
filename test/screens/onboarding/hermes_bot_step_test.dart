@@ -12,6 +12,7 @@ import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/models/provider_configuration.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -151,6 +152,7 @@ SetupWizardService _wizard() {
 
 Widget _host(SetupWizardService service, Widget child) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     home: ChangeNotifierProvider<SetupWizardService>.value(
       value: service,
       child: Scaffold(body: child),

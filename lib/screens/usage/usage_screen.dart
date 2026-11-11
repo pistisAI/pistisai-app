@@ -9,6 +9,7 @@ import '../../widgets/navigation/popout_button.dart';
 import 'package:pistisai/services/rate_limit_manager.dart';
 import 'package:pistisai/database/drift_local_brain.dart';
 import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/l10n/app_localizations.dart';
 
 enum TimeRange { today, week, month }
 
@@ -60,15 +61,16 @@ class _UsageScreenState extends State<UsageScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Usage'),
+        title: Text(l10n.usageTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _onRefresh,
-            tooltip: 'Refresh',
+            tooltip: l10n.commonRefresh,
           ),
           const PopOutButton(
             sectionName: 'usage',
@@ -86,21 +88,21 @@ class _UsageScreenState extends State<UsageScreen> {
               // Time range selector
               Center(
                 child: SegmentedButton<TimeRange>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: TimeRange.today,
-                      label: Text('Today'),
-                      icon: Icon(Icons.today),
+                      label: Text(l10n.usageToday),
+                      icon: const Icon(Icons.today),
                     ),
                     ButtonSegment(
                       value: TimeRange.week,
-                      label: Text('Week'),
-                      icon: Icon(Icons.date_range),
+                      label: Text(l10n.usageWeek),
+                      icon: const Icon(Icons.date_range),
                     ),
                     ButtonSegment(
                       value: TimeRange.month,
-                      label: Text('Month'),
-                      icon: Icon(Icons.calendar_month),
+                      label: Text(l10n.usageMonth),
+                      icon: const Icon(Icons.calendar_month),
                     ),
                   ],
                   selected: {_selectedTimeRange},
@@ -109,137 +111,121 @@ class _UsageScreenState extends State<UsageScreen> {
               ),
               const SizedBox(height: 24),
 
-                        // Concurrency / active requests Card (real capacity data)
-                        StreamBuilder<List<ModelCapacityData>>(
-                          stream: _rateLimitManager?.watchCapacities() ??
-                              const Stream.empty(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox();
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              final capacities = snapshot.data!;
-                              final totalUsed = capacities.fold(
-                                  0,
-                                  (sum, c) =>
-                                      sum + c.concurrentUsed);
-                              final totalLimit = capacities.fold(
-                                  0,
-                                  (sum, c) =>
-                                      sum + c.concurrentLimit);
-                              final utilization = totalLimit > 0
-                                  ? totalUsed / totalLimit
-                                  : 0.0;
+              // Concurrency / active requests Card (real capacity data)
+              StreamBuilder<List<ModelCapacityData>>(
+                stream: _rateLimitManager?.watchCapacities() ??
+                    const Stream.empty(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox();
+                  } else if (snapshot.hasError) {
+                    return Text(l10n.commonErrorDetails('${snapshot.error}'));
+                  } else {
+                    final capacities = snapshot.data!;
+                    final totalUsed =
+                        capacities.fold(0, (sum, c) => sum + c.concurrentUsed);
+                    final totalLimit =
+                        capacities.fold(0, (sum, c) => sum + c.concurrentLimit);
+                    final utilization =
+                        totalLimit > 0 ? totalUsed / totalLimit : 0.0;
 
-                              return MetricCard(
-                                title: 'Active Concurrency',
-                                icon: Icons.sync,
-                                value: '$totalUsed',
-                                unit: 'of $totalLimit',
-                                subtitle: 'Concurrent requests in flight',
-                                trend: utilization > 0.8
-                                    ? MetricTrend.up
-                                    : MetricTrend.neutral,
-                                progressValue: utilization,
-                                progressLabel: 'Concurrency utilization',
-                                child: _buildConcurrencyBreakdown(
-                                    theme, capacities),
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
+                    return MetricCard(
+                      title: l10n.usageActiveConcurrency,
+                      icon: Icons.sync,
+                      value: '$totalUsed',
+                      unit: l10n.usageOfLimit(totalLimit),
+                      subtitle: l10n.usageConcurrencySubtitle,
+                      trend: utilization > 0.8
+                          ? MetricTrend.up
+                          : MetricTrend.neutral,
+                      progressValue: utilization,
+                      progressLabel: l10n.usageConcurrencyUtilization,
+                      child:
+                          _buildConcurrencyBreakdown(theme, l10n, capacities),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
 
-                        // Requests-per-minute Card (real capacity data)
-                        StreamBuilder<List<ModelCapacityData>>(
-                          stream: _rateLimitManager?.watchCapacities() ??
-                              const Stream.empty(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox();
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              final capacities = snapshot.data!;
-                              final totalRpm = capacities.fold(
-                                  0, (sum, c) => sum + c.rpmUsed);
-                              final totalRpmLimit = capacities.fold(
-                                  0,
-                                  (sum, c) =>
-                                      sum + (c.rpmLimit ?? 0));
-                              final rpmUtil = totalRpmLimit > 0
-                                  ? totalRpm / totalRpmLimit
-                                  : 0.0;
+              // Requests-per-minute Card (real capacity data)
+              StreamBuilder<List<ModelCapacityData>>(
+                stream: _rateLimitManager?.watchCapacities() ??
+                    const Stream.empty(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox();
+                  } else if (snapshot.hasError) {
+                    return Text(l10n.commonErrorDetails('${snapshot.error}'));
+                  } else {
+                    final capacities = snapshot.data!;
+                    final totalRpm =
+                        capacities.fold(0, (sum, c) => sum + c.rpmUsed);
+                    final totalRpmLimit =
+                        capacities.fold(0, (sum, c) => sum + (c.rpmLimit ?? 0));
+                    final rpmUtil =
+                        totalRpmLimit > 0 ? totalRpm / totalRpmLimit : 0.0;
 
-                              return MetricCard(
-                                title: 'Request Rate',
-                                icon: Icons.api,
-                                value: '$totalRpm',
-                                unit: 'req/min',
-                                subtitle: 'Requests per minute across models',
-                                trend: MetricTrend.neutral,
-                                progressValue: rpmUtil,
-                                progressLabel: 'RPM utilization',
-                                child: _buildRpmBreakdown(
-                                    theme, capacities),
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
+                    return MetricCard(
+                      title: l10n.usageRequestRate,
+                      icon: Icons.api,
+                      value: '$totalRpm',
+                      unit: l10n.usageRequestsPerMinuteUnit,
+                      subtitle: l10n.usageRequestRateSubtitle,
+                      trend: MetricTrend.neutral,
+                      progressValue: rpmUtil,
+                      progressLabel: l10n.usageRpmUtilization,
+                      child: _buildRpmBreakdown(theme, l10n, capacities),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
 
-                        // Tokens-per-minute Card (real capacity data)
-                        StreamBuilder<List<ModelCapacityData>>(
-                          stream: _rateLimitManager?.watchCapacities() ??
-                              const Stream.empty(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox();
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              final capacities = snapshot.data!;
-                              final totalTpm = capacities.fold(
-                                  0, (sum, c) => sum + c.tpmUsed);
-                              final totalTpmLimit = capacities.fold(
-                                  0,
-                                  (sum, c) =>
-                                      sum + (c.tpmLimit ?? 0));
-                              final tpmUtil = totalTpmLimit > 0
-                                  ? totalTpm / totalTpmLimit
-                                  : 0.0;
+              // Tokens-per-minute Card (real capacity data)
+              StreamBuilder<List<ModelCapacityData>>(
+                stream: _rateLimitManager?.watchCapacities() ??
+                    const Stream.empty(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox();
+                  } else if (snapshot.hasError) {
+                    return Text(l10n.commonErrorDetails('${snapshot.error}'));
+                  } else {
+                    final capacities = snapshot.data!;
+                    final totalTpm =
+                        capacities.fold(0, (sum, c) => sum + c.tpmUsed);
+                    final totalTpmLimit =
+                        capacities.fold(0, (sum, c) => sum + (c.tpmLimit ?? 0));
+                    final tpmUtil =
+                        totalTpmLimit > 0 ? totalTpm / totalTpmLimit : 0.0;
 
-                              return MetricCard(
-                                title: 'Token Rate',
-                                icon: Icons.token,
-                                value: _formatTokenValue(totalTpm),
-                                unit: 'tok/min',
-                                subtitle: 'Tokens per minute across models',
-                                trend: MetricTrend.neutral,
-                                progressValue: tpmUtil,
-                                progressLabel: 'TPM utilization',
-                                child: _buildTpmBreakdown(
-                                    theme, capacities),
-                              );
-                            }
-                          },
-                        ),
+                    return MetricCard(
+                      title: l10n.usageTokenRate,
+                      icon: Icons.token,
+                      value: _formatTokenValue(totalTpm),
+                      unit: l10n.usageTokensPerMinuteUnit,
+                      subtitle: l10n.usageTokenRateSubtitle,
+                      trend: MetricTrend.neutral,
+                      progressValue: tpmUtil,
+                      progressLabel: l10n.usageTpmUtilization,
+                      child: _buildTpmBreakdown(theme, l10n, capacities),
+                    );
+                  }
+                },
+              ),
 
-                        const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                        // Chart placeholders
-                        _buildChartPlaceholder('Token Usage Over Time'),
-                        const SizedBox(height: 16),
-                        _buildChartPlaceholder('Request Volume'),
-                        const SizedBox(height: 16),
-                        _buildChartPlaceholder('Resource Trends'),
-                      ],
-                    ),
-                  ),
+              // Chart placeholders
+              _buildChartPlaceholder(l10n.usageChartTokenUsage),
+              const SizedBox(height: 16),
+              _buildChartPlaceholder(l10n.usageChartRequestVolume),
+              const SizedBox(height: 16),
+              _buildChartPlaceholder(l10n.usageChartResourceTrends),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -254,21 +240,19 @@ class _UsageScreenState extends State<UsageScreen> {
     }
   }
 
-  Widget _buildConcurrencyBreakdown(
-      ThemeData theme, List<ModelCapacityData> capacities) {
+  Widget _buildConcurrencyBreakdown(ThemeData theme, AppLocalizations l10n,
+      List<ModelCapacityData> capacities) {
     if (capacities.isEmpty) {
-      return _buildEmptyRow(theme, 'No active models');
+      return _buildEmptyRow(theme, l10n.usageNoActiveModels);
     }
-    final top = capacities
-        .where((c) => c.concurrentLimit > 0)
-        .toList()
+    final top = capacities.where((c) => c.concurrentLimit > 0).toList()
       ..sort((a, b) => b.concurrentUsed.compareTo(a.concurrentUsed));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
         Text(
-          'Per-model concurrency',
+          l10n.usagePerModelConcurrency,
           style: theme.textTheme.labelSmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
@@ -286,10 +270,10 @@ class _UsageScreenState extends State<UsageScreen> {
     );
   }
 
-  Widget _buildRpmBreakdown(
-      ThemeData theme, List<ModelCapacityData> capacities) {
+  Widget _buildRpmBreakdown(ThemeData theme, AppLocalizations l10n,
+      List<ModelCapacityData> capacities) {
     if (capacities.isEmpty) {
-      return _buildEmptyRow(theme, 'No rate data');
+      return _buildEmptyRow(theme, l10n.usageNoRateData);
     }
     final withLimit = capacities.where((c) => c.rpmLimit != null).toList()
       ..sort((a, b) => b.rpmUsed.compareTo(a.rpmUsed));
@@ -298,7 +282,7 @@ class _UsageScreenState extends State<UsageScreen> {
       children: [
         const SizedBox(height: 8),
         Text(
-          'Top models by RPM',
+          l10n.usageTopModelsByRpm,
           style: theme.textTheme.labelSmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
@@ -316,10 +300,10 @@ class _UsageScreenState extends State<UsageScreen> {
     );
   }
 
-  Widget _buildTpmBreakdown(
-      ThemeData theme, List<ModelCapacityData> capacities) {
+  Widget _buildTpmBreakdown(ThemeData theme, AppLocalizations l10n,
+      List<ModelCapacityData> capacities) {
     if (capacities.isEmpty) {
-      return _buildEmptyRow(theme, 'No token data');
+      return _buildEmptyRow(theme, l10n.usageNoTokenData);
     }
     final withLimit = capacities.where((c) => c.tpmLimit != null).toList()
       ..sort((a, b) => b.tpmUsed.compareTo(a.tpmUsed));
@@ -328,7 +312,7 @@ class _UsageScreenState extends State<UsageScreen> {
       children: [
         const SizedBox(height: 8),
         Text(
-          'Top models by TPM',
+          l10n.usageTopModelsByTpm,
           style: theme.textTheme.labelSmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
@@ -411,7 +395,7 @@ class _UsageScreenState extends State<UsageScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Chart placeholder',
+                      AppLocalizations.of(context).usageChartPlaceholder,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color:
                             theme.colorScheme.onSurface.withValues(alpha: 0.5),
