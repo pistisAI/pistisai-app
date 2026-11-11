@@ -1950,5 +1950,198 @@
         "type": "int"
       }
     }
-  }
+  },
+  "auditLoadDetailsFailed": "Failed to load log details: {error}",
+  "@auditLoadDetailsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditExported": "Audit logs exported successfully",
+  "auditExportFailed": "Failed to export logs: {error}",
+  "@auditExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTitle": "Audit Logs",
+  "auditFilters": "Filters",
+  "auditExportCsv": "Export CSV",
+  "auditFilterAdmin": "Admin: {value}",
+  "@auditFilterAdmin": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterAction": "Action: {value}",
+  "@auditFilterAction": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterResource": "Resource: {value}",
+  "@auditFilterResource": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterAffectedUser": "Affected User: {value}",
+  "@auditFilterAffectedUser": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterFrom": "From: {date}",
+  "@auditFilterFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterTo": "To: {date}",
+  "@auditFilterTo": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterSeverity": "Severity: {value}",
+  "@auditFilterSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTimestamp": "Timestamp",
+  "auditAction": "Action",
+  "auditResource": "Resource",
+  "auditAdmin": "Admin",
+  "auditAffectedUser": "Affected User",
+  "auditSeverity": "Severity",
+  "auditShowing": "Showing {from}-{to} of {total} logs",
+  "@auditShowing": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "auditError": "Error: {error}",
+  "@auditError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditNone": "No audit logs found",
+  "auditClearFilters": "Clear filters",
+  "auditFilterTitle": "Filter Audit Logs",
+  "auditAdminUserId": "Admin User ID",
+  "auditAdminUserIdHint": "Filter by admin user ID",
+  "auditActionHint": "e.g., user_suspended, refund_processed",
+  "auditResourceType": "Resource Type",
+  "auditResourceTypeHint": "e.g., user, subscription, transaction",
+  "auditAffectedUserId": "Affected User ID",
+  "auditAffectedUserIdHint": "Filter by affected user ID",
+  "auditDateRange": "Date Range",
+  "auditStartDate": "Start Date",
+  "auditEndDate": "End Date",
+  "auditAllSeverities": "All severities",
+  "auditClearAll": "Clear All",
+  "auditDetailsTitle": "Audit Log Details",
+  "auditLogId": "Log ID",
+  "auditResourceId": "Resource ID",
+  "auditAdminUser": "Admin User",
+  "auditRole": "Role",
+  "auditActionDetails": "Action Details",
+  "adminsLoadFailed": "Failed to load administrators: {error}",
+  "@adminsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRevokeTitle": "Revoke Admin Role",
+  "adminsRevokeConfirm": "Are you sure you want to revoke the {role} role from {email}?",
+  "@adminsRevokeConfirm": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRevoke": "Revoke",
+  "adminsRevoked": "Admin role revoked successfully",
+  "adminsRevokeFailed": "Failed to revoke role: {error}",
+  "@adminsRevokeFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRoleSuper": "Super Admin",
+  "adminsRoleSupport": "Support Admin",
+  "adminsRoleFinance": "Finance Admin",
+  "adminsSuperRequired": "Super Admin Access Required",
+  "adminsSuperRequiredBody": "Only Super Admins can manage administrator accounts.",
+  "adminsTitle": "Admin Management",
+  "adminsSubtitle": "Manage administrator accounts and roles",
+  "adminsAdd": "Add Admin",
+  "adminsNone": "No administrators found",
+  "adminsTotalActions": "Total Actions",
+  "adminsRecent30d": "Recent (30d)",
+  "adminsLastAction": "Last Action",
+  "adminsToday": "Today",
+  "adminsWeeksAgo": "{weeks}w ago",
+  "@adminsWeeksAgo": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "adminsMonthsAgo": "{months}mo ago",
+  "@adminsMonthsAgo": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "adminsUnknown": "Unknown",
+  "adminsAssigned": "Admin role assigned successfully",
+  "adminsAddTitle": "Add Administrator",
+  "adminsEmailAddress": "Email Address",
+  "adminsEmailRequired": "Email is required",
+  "adminsEmailInvalid": "Invalid email address",
+  "adminsSelectRole": "Select Role",
+  "adminsSupportDescription": "User management and support",
+  "adminsFinanceDescription": "Payments, refunds, and reports"
 }

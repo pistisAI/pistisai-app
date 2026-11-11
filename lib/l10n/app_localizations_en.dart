@@ -3267,4 +3267,253 @@ class AppLocalizationsEn extends AppLocalizations {
   String adminDaysAgo(int days) {
     return '$days days ago';
   }
+
+  @override
+  String auditLoadDetailsFailed(String error) {
+    return 'Failed to load log details: $error';
+  }
+
+  @override
+  String get auditExported => 'Audit logs exported successfully';
+
+  @override
+  String auditExportFailed(String error) {
+    return 'Failed to export logs: $error';
+  }
+
+  @override
+  String get auditTitle => 'Audit Logs';
+
+  @override
+  String get auditFilters => 'Filters';
+
+  @override
+  String get auditExportCsv => 'Export CSV';
+
+  @override
+  String auditFilterAdmin(String value) {
+    return 'Admin: $value';
+  }
+
+  @override
+  String auditFilterAction(String value) {
+    return 'Action: $value';
+  }
+
+  @override
+  String auditFilterResource(String value) {
+    return 'Resource: $value';
+  }
+
+  @override
+  String auditFilterAffectedUser(String value) {
+    return 'Affected User: $value';
+  }
+
+  @override
+  String auditFilterFrom(String date) {
+    return 'From: $date';
+  }
+
+  @override
+  String auditFilterTo(String date) {
+    return 'To: $date';
+  }
+
+  @override
+  String auditFilterSeverity(String value) {
+    return 'Severity: $value';
+  }
+
+  @override
+  String get auditTimestamp => 'Timestamp';
+
+  @override
+  String get auditAction => 'Action';
+
+  @override
+  String get auditResource => 'Resource';
+
+  @override
+  String get auditAdmin => 'Admin';
+
+  @override
+  String get auditAffectedUser => 'Affected User';
+
+  @override
+  String get auditSeverity => 'Severity';
+
+  @override
+  String auditShowing(int from, int to, int total) {
+    return 'Showing $from-$to of $total logs';
+  }
+
+  @override
+  String auditError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get auditNone => 'No audit logs found';
+
+  @override
+  String get auditClearFilters => 'Clear filters';
+
+  @override
+  String get auditFilterTitle => 'Filter Audit Logs';
+
+  @override
+  String get auditAdminUserId => 'Admin User ID';
+
+  @override
+  String get auditAdminUserIdHint => 'Filter by admin user ID';
+
+  @override
+  String get auditActionHint => 'e.g., user_suspended, refund_processed';
+
+  @override
+  String get auditResourceType => 'Resource Type';
+
+  @override
+  String get auditResourceTypeHint => 'e.g., user, subscription, transaction';
+
+  @override
+  String get auditAffectedUserId => 'Affected User ID';
+
+  @override
+  String get auditAffectedUserIdHint => 'Filter by affected user ID';
+
+  @override
+  String get auditDateRange => 'Date Range';
+
+  @override
+  String get auditStartDate => 'Start Date';
+
+  @override
+  String get auditEndDate => 'End Date';
+
+  @override
+  String get auditAllSeverities => 'All severities';
+
+  @override
+  String get auditClearAll => 'Clear All';
+
+  @override
+  String get auditDetailsTitle => 'Audit Log Details';
+
+  @override
+  String get auditLogId => 'Log ID';
+
+  @override
+  String get auditResourceId => 'Resource ID';
+
+  @override
+  String get auditAdminUser => 'Admin User';
+
+  @override
+  String get auditRole => 'Role';
+
+  @override
+  String get auditActionDetails => 'Action Details';
+
+  @override
+  String adminsLoadFailed(String error) {
+    return 'Failed to load administrators: $error';
+  }
+
+  @override
+  String get adminsRevokeTitle => 'Revoke Admin Role';
+
+  @override
+  String adminsRevokeConfirm(String role, String email) {
+    return 'Are you sure you want to revoke the $role role from $email?';
+  }
+
+  @override
+  String get adminsRevoke => 'Revoke';
+
+  @override
+  String get adminsRevoked => 'Admin role revoked successfully';
+
+  @override
+  String adminsRevokeFailed(String error) {
+    return 'Failed to revoke role: $error';
+  }
+
+  @override
+  String get adminsRoleSuper => 'Super Admin';
+
+  @override
+  String get adminsRoleSupport => 'Support Admin';
+
+  @override
+  String get adminsRoleFinance => 'Finance Admin';
+
+  @override
+  String get adminsSuperRequired => 'Super Admin Access Required';
+
+  @override
+  String get adminsSuperRequiredBody =>
+      'Only Super Admins can manage administrator accounts.';
+
+  @override
+  String get adminsTitle => 'Admin Management';
+
+  @override
+  String get adminsSubtitle => 'Manage administrator accounts and roles';
+
+  @override
+  String get adminsAdd => 'Add Admin';
+
+  @override
+  String get adminsNone => 'No administrators found';
+
+  @override
+  String get adminsTotalActions => 'Total Actions';
+
+  @override
+  String get adminsRecent30d => 'Recent (30d)';
+
+  @override
+  String get adminsLastAction => 'Last Action';
+
+  @override
+  String get adminsToday => 'Today';
+
+  @override
+  String adminsWeeksAgo(int weeks) {
+    return '${weeks}w ago';
+  }
+
+  @override
+  String adminsMonthsAgo(int months) {
+    return '${months}mo ago';
+  }
+
+  @override
+  String get adminsUnknown => 'Unknown';
+
+  @override
+  String get adminsAssigned => 'Admin role assigned successfully';
+
+  @override
+  String get adminsAddTitle => 'Add Administrator';
+
+  @override
+  String get adminsEmailAddress => 'Email Address';
+
+  @override
+  String get adminsEmailRequired => 'Email is required';
+
+  @override
+  String get adminsEmailInvalid => 'Invalid email address';
+
+  @override
+  String get adminsSelectRole => 'Select Role';
+
+  @override
+  String get adminsSupportDescription => 'User management and support';
+
+  @override
+  String get adminsFinanceDescription => 'Payments, refunds, and reports';
 }
