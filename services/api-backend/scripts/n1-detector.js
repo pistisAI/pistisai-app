@@ -2,12 +2,12 @@
 
 /**
  * N+1 Query Detector for api-backend
- * 
+ *
  * Scans JavaScript files for potential N+1 query patterns:
  * - Queries inside loops without batching
  * - Queries in array.map() without Promise.all()
  * - Sequential queries instead of JOINs
- * 
+ *
  * Output: JSON report with findings, risk levels, and remediation advice
  */
 
@@ -73,7 +73,7 @@ class N1Detector {
 
   async scan() {
     const dirs = ['routes', 'services'];
-    
+
     for (const dir of dirs) {
       const fullPath = path.join(this.rootDir, dir);
       if (fs.existsSync(fullPath)) {

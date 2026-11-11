@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-11T00:06:28.990Z",
-  "rootDir": "/var/home/rightguy/pistisai-app/services/api-backend",
+  "timestamp": "2026-11-11T00:08:12.483Z",
+  "rootDir": ".",
   "stats": {
     "filesScanned": 116,
     "queriesFound": 473,

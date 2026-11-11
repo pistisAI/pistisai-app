@@ -1,7 +1,7 @@
 /**
  * Centralized Zod Schemas for Input Validation
  * Addresses security audit findings from #619
- * 
+ *
  * Serves as template for PR implementation.
  * Place in: services/api-backend/schemas/validation-schemas.js
  *
