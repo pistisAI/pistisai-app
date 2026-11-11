@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 
 flutter test \
-  --dart-define=BRAND=iacle \
+  --dart-define=BRAND=pistisai \
   test/smoke/ \
   test/config/ \
   test/services/onboarding/mobile_connection_service_test.dart \

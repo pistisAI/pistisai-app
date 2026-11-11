@@ -22,6 +22,7 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
+import { addAdminBody, validateBody } from './body-schemas.js';
 
 const router = express.Router();
 
@@ -167,6 +168,7 @@ router.post(
   adminRateLimiter,
   adminAuth(),
   requireSuperAdmin,
+  validateBody(addAdminBody),
   async (req, res) => {
     try {
       const pool = getPool();

@@ -5,9 +5,6 @@ cmake_minimum_required(VERSION 3.14)
 if(DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
         CACHE STRING "Vcpkg toolchain file")
-elseif(EXISTS "C:/Users/rightguy/dev/vcpkg/scripts/buildsystems/vcpkg.cmake")
-    set(CMAKE_TOOLCHAIN_FILE "C:/Users/rightguy/dev/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file")
 endif()
 
 project(Pistisai LANGUAGES CXX)

@@ -1,6 +1,6 @@
 # Secure Device Mesh
 
-IAClé uses a Tailscale-first secure device mesh to connect the user's devices, selected agent runtime, and optional cloud connector.
+Pistisai uses a Tailscale-first secure device mesh to connect the user's devices, selected agent runtime, and optional cloud connector.
 
 ## Goal
 
@@ -18,7 +18,7 @@ The agent runtime location is chosen by setup. It can be:
 
 Ollama, LM Studio, and similar local model providers are not agent runtime nodes. They can live on the same tailnet, but they support app-owned local intelligence features rather than the main secure agent channel.
 
-IAClé can be installed on multiple user devices. The secure agent channel can sync across those devices, while desktop control and vision remain targeted to a specific device.
+Pistisai can be installed on multiple user devices. The secure agent channel can sync across those devices, while desktop control and vision remain targeted to a specific device.
 
 ## Preferred Transport
 
@@ -27,11 +27,11 @@ Tailscale is the preferred private network transport.
 ```text
 Client UI / web / phone
         |
-Optional per-user IAClé cloud connector
+Optional per-user Pistisai cloud connector
         |
 User's Tailscale tailnet
         |
-IAClé desktop apps and user-selected agent runtimes
+Pistisai desktop apps and user-selected agent runtimes
 ```
 
 ## Per-User Cloud Connector
@@ -51,7 +51,7 @@ Constraints:
 
 - no shared multi-user connector with broad network reach
 - no desktop action without target-device selection and local permission checks
-- no broad tailnet scanning beyond the IAClé device/runtime discovery scope
+- no broad tailnet scanning beyond the Pistisai device/runtime discovery scope
 - no cloud connector bypass around local desktop-control prompts
 
 ## Device Nodes
@@ -60,7 +60,7 @@ Each desktop app install can become a device node.
 
 Responsibilities:
 
-- expose a local IAClé device API only on approved interfaces
+- expose a local Pistisai device API only on approved interfaces
 - report presence and capability state
 - enforce local permissions for desktop control, vision, files, clipboard, and commands
 - execute only device-scoped actions
@@ -76,7 +76,7 @@ Examples:
 - Hermes on another workstation/server
 - OpenClaw Gateway on a lab machine
 - compatible custom agent gateway
-- IAClé-hosted agent runtime as hosted compute
+- Pistisai-hosted agent runtime as hosted compute
 
 The app should present runtime location as setup state, not product destiny.
 

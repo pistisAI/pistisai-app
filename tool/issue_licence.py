@@ -6,12 +6,12 @@ The private key NEVER leaves the licensor's machine and never enters this
 repository. The public key is embedded in lib/brand/brand_licence.dart.
 
 Usage:
-    python3 tool/issue_licence.py --brand iacle --licensee "IAClé" \
+    python3 tool/issue_licence.py --brand acme --licensee "Acme Labs" \
         --expires 2027-12-31 --seats 5 --key /path/to/private.key \
-        --out iacle.licence
+        --out acme.licence
 
 The output licence is passed to the bake step:
-    tool/brand.sh iacle --license iacle.licence
+    tool/brand.sh acme --license acme.licence
 """
 import argparse
 import base64
@@ -38,8 +38,9 @@ def canonical_payload(payload: dict) -> bytes:
     """Deterministic serialization — must match lib/brand/brand_licence.dart.
 
     ensure_ascii=False is essential: Dart's jsonEncode emits literal UTF-8
-    (e.g. "IAClé"), while Python's default escapes it to "IACl\\u00e9". The
-    two produce different bytes and the signature would not verify.
+    (for example a licensee name containing "é"), while Python's default
+    escapes it to "\\u00e9". The two produce different bytes and the
+    signature would not verify.
     """
     return json.dumps(
         payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
@@ -67,7 +68,7 @@ def main() -> None:
 
     payload = {
         "brand": args.brand,
-        "format": "iacle-whitelabel-1",
+        "format": "pistisai-whitelabel-1",
         "issued": issued,
         "licensee": args.licensee,
         "plan": args.plan,
@@ -82,7 +83,7 @@ def main() -> None:
     licence = {
         "payload": payload,
         "signature": b64url_encode(sig),
-        "signing_key_id": "iacle-whitelabel-2026",
+        "signing_key_id": "pistisai-whitelabel-2026",
     }
 
     with open(args.out, "w", encoding="utf-8") as f:

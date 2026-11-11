@@ -109,7 +109,7 @@ async function cleanSeedData() {
       // Delete in reverse order of dependencies
       console.log('  Deleting admin audit logs...');
       await client.query(`DELETE FROM admin_audit_logs WHERE admin_user_id IN (
-        SELECT id FROM users WHERE email LIKE 'test.%@example.com' OR email = 'cmaltais@pistisai.app'
+        SELECT id FROM users WHERE email LIKE 'test.%@example.com' OR email = 'dev@example.com'
       )`);
 
       console.log('  Deleting admin roles...');

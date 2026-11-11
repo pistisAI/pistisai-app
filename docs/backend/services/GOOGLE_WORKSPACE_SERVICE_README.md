@@ -89,7 +89,7 @@ await googleWorkspaceService.storeOAuthConfiguration({
 const result = await googleWorkspaceService.sendEmail({
   userId: user.id,
   to: 'recipient@example.com',
-  subject: 'Welcome to IAClé',
+  subject: 'Welcome to Pistisai',
   body: '<h1>Welcome!</h1><p>Thank you for signing up.</p>',
   from: 'ops@example.com',
   replyTo: 'ops@example.com',

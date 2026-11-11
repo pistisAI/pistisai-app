@@ -23,6 +23,12 @@ import {
   adminReadOnlyLimiter,
   adminRateLimiter,
 } from '../../middleware/admin-rate-limiter.js';
+import {
+  changeTierBody,
+  suspendBody,
+  reactivateBody,
+  validateBody,
+} from './body-schemas.js';
 
 const router = express.Router();
 
@@ -449,6 +455,7 @@ router.patch(
   '/:userId',
   adminRateLimiter,
   adminAuth(['edit_users']),
+  validateBody(changeTierBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -511,8 +518,8 @@ router.patch(
       let proratedCharge = 0;
       const tierPricing = {
         free: 0,
-        premium: 9.99,
-        enterprise: 29.99,
+        premium: Number(process.env.PISTISAI_PRICE_PREMIUM) || 0,
+        enterprise: Number(process.env.PISTISAI_PRICE_ENTERPRISE) || 0,
       };
 
       if (tierPricing[newTier] > tierPricing[previousTier]) {
@@ -665,6 +672,7 @@ router.post(
   '/:userId/suspend',
   adminRateLimiter,
   adminAuth(['suspend_users']),
+  validateBody(suspendBody),
   async (req, res) => {
     try {
       const pool = getPool();
@@ -822,6 +830,7 @@ router.post(
   '/:userId/reactivate',
   adminRateLimiter,
   adminAuth(['suspend_users']),
+  validateBody(reactivateBody),
   async (req, res) => {
     try {
       const pool = getPool();

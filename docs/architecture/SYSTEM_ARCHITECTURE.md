@@ -1,6 +1,6 @@
-# IAClé System Architecture
+# Pistisai System Architecture
 
-IAClé is a Flutter desktop/web application with optional Node.js backend services. It is a local-first companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, and compatible custom agent gateways.
+Pistisai is a Flutter desktop/web application with optional Node.js backend services. It is a local-first companion and desktop capability layer for user-selected agent runtimes such as Hermes, OpenClaw, and compatible custom agent gateways.
 
 Ollama, LM Studio, and similar local model servers are support model providers. They can power memory, embeddings, summarization, semantic search, OCR cleanup, speech helpers, and other app-owned background intelligence, but they are not primary app runtimes.
 
@@ -10,7 +10,7 @@ The setup wizard is the authority for agent runtime selection. Do not assume one
 
 ## Desktop-as-Hub Topology
 
-The **primary IAClé desktop install** (normally the first app installed) is the main node: the **device/client hub** for all IAClé clients. Web, mobile, and secondary desktop clients connect through that hub, not directly to the agent runtime.
+The **primary Pistisai desktop install** (normally the first app installed) is the main node: the **device/client hub** for all Pistisai clients. Web, mobile, and secondary desktop clients connect through that hub, not directly to the agent runtime.
 
 ```text
   Telegram / Slack / Discord / ...          (messaging platforms)
@@ -23,20 +23,20 @@ The **primary IAClé desktop install** (normally the first app installed) is the
                │ agent channel (local or Tailscale)
                ▼
   ┌──────────────────────────┐
-  │  Primary IAClé desktop   │  device/client hub: first installed app, main node
+  │  Primary Pistisai desktop   │  device/client hub: first installed app, main node
   │  (embedded router :1337, │  exposes the hub endpoint for discovery
   │   desktop control,       │
   │   vision, local brain)   │
   └──┬──────────┬─────────┬──┘
      │          │         │   Tailscale / private mesh
      ▼          ▼         ▼
-   Web app   Mobile app  Secondary desktops     (IAClé clients)
+   Web app   Mobile app  Secondary desktops     (Pistisai clients)
 ```
 
 | Role | Owner | Scope |
 | --- | --- | --- |
 | Messaging-platform hub | Hermes gateway | Telegram, Slack, Discord, and other messaging adapters, owned directly by Hermes. They do **not** route through the Flutter app. |
-| Device/client hub | Primary IAClé desktop | Web app, mobile app, secondary desktops. Owns the agent-channel connection, desktop control, vision, and channel sync for IAClé clients. |
+| Device/client hub | Primary Pistisai desktop | Web app, mobile app, secondary desktops. Owns the agent-channel connection, desktop control, vision, and channel sync for Pistisai clients. |
 
 - Discovery: the hub's embedded router (`lib/services/router_server.dart`) serves the hub endpoint (`AppConfig.hubPath`); mobile clients use it over Tailscale to locate the primary desktop hub.
 - Transitional: any current code path where web, mobile, or a secondary desktop connects straight to Hermes (or another runtime) is transitional and slated for removal (issue #492). New client work should target the hub.
@@ -46,7 +46,7 @@ The **primary IAClé desktop install** (normally the first app installed) is the
 
 | Layer | Current implementation |
 | --- | --- |
-| Flutter app | `pubspec.yaml`, Dart `>=3.5.0 <4.0.0`, package `IAClé` |
+| Flutter app | `pubspec.yaml`, Dart `>=3.5.0 <4.0.0`, package `pistisai` |
 | Shared Flutter package | `lib/shared/pubspec.yaml`, Dart `>=3.9.0 <4.0.0` |
 | Local database | Drift/SQLite in `lib/database/drift_local_brain.dart` |
 | Embedded router | Shelf server in `lib/services/router_server.dart`, default port `1337` |
@@ -188,16 +188,16 @@ Minimum runtime capabilities include health, session lifecycle, chat streaming, 
 
 ## Secure Device Mesh
 
-Tailscale is the preferred private transport for multi-device IAClé.
+Tailscale is the preferred private transport for multi-device Pistisai.
 
 ```text
 Client UI / web / phone
         |
-Optional per-user IAClé cloud connector
+Optional per-user Pistisai cloud connector
         |
 User's Tailscale tailnet
         |
-IAClé desktop apps and user-selected agent runtimes
+Pistisai desktop apps and user-selected agent runtimes
 ```
 
 The intended cloud connector shape is one isolated container per user. The connector joins only that user's tailnet, coordinates secure channel sync and device presence, and must not bypass local desktop permissions.
@@ -219,7 +219,7 @@ dart run build_runner build --delete-conflicting-outputs
 | Tailscale relay | `services/tailscale-relay/` | Relay service using Express 4 |
 | Auth backend | `backend/auth/` | Lightweight CommonJS Auth0 JWT validation |
 | SDK | `services/sdk/` | TypeScript SDK published from `dist/` |
-| OpenClaw skills | `services/openclaw-skills/IAClé/` | Avatar personality/evolution skill package |
+| OpenClaw skills | `services/openclaw-skills/Pistisai/` | Avatar personality/evolution skill package |
 
 ## Platform Boundaries
 

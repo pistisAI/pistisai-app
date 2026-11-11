@@ -93,11 +93,9 @@ class CloudTtsService {
             Platform.environment['pistisai_FFMPEG_COMMAND'] ??
             'ffmpeg',
         _outputDirectory = outputDirectory ??
-            Directory(p.join(
-              Platform.environment['XDG_CACHE_HOME'] ??
-                  p.join(Platform.environment['HOME'] ?? '/tmp', '.cache'),
-              'pistisai',
-              'tts',
+            Directory(defaultCacheDirectory(
+              Platform.environment,
+              tempDirectory: Directory.systemTemp.path,
             )),
         _timeout = timeout;
 
@@ -205,21 +203,70 @@ class CloudTtsService {
     }
   }
 
-  Map<String, String> _mergedPathEnvironment() {
-    final env = Map<String, String>.from(Platform.environment);
-    final hermesVenvBin = p.join(
-      Platform.environment['HOME'] ?? '/home/rightguy',
+  /// The user's home directory: `HOME`, else `USERPROFILE` (Windows often
+  /// has no `HOME`). Null when neither is set, so callers never resolve a
+  /// path against the process working directory by accident.
+  static String? homeDirectory(Map<String, String> environment) {
+    for (final name in const ['HOME', 'USERPROFILE']) {
+      final value = environment[name];
+      if (value != null && value.trim().isNotEmpty) return value;
+    }
+    return null;
+  }
+
+  /// Where generated speech is cached. Falls back to [tempDirectory] when
+  /// there is no home directory.
+  static String defaultCacheDirectory(
+    Map<String, String> environment, {
+    required String tempDirectory,
+    p.Context? pathContext,
+  }) {
+    final ctx = pathContext ?? p.context;
+    final xdg = environment['XDG_CACHE_HOME'];
+    final home = homeDirectory(environment);
+    final base = (xdg != null && xdg.trim().isNotEmpty)
+        ? xdg
+        : home != null
+            ? ctx.join(home, '.cache')
+            : tempDirectory;
+    return ctx.join(base, 'pistisai', 'tts');
+  }
+
+  /// [environment] with the Hermes virtual-env tools prepended to `PATH`.
+  /// Left unchanged when there is no home directory to find Hermes in.
+  static Map<String, String> pathEnvironment(
+    Map<String, String> environment, {
+    required bool isWindows,
+    p.Context? pathContext,
+  }) {
+    final ctx = pathContext ?? p.context;
+    final env = Map<String, String>.from(environment);
+    final home = homeDirectory(environment);
+    if (home == null) return env;
+    final hermesVenvBin = ctx.join(
+      home,
       '.hermes',
       'hermes-agent',
       'venv',
-      'bin',
+      isWindows ? 'Scripts' : 'bin',
     );
-    final currentPath = env['PATH'] ?? '';
-    if (!currentPath.split(':').contains(hermesVenvBin)) {
-      env['PATH'] = '$hermesVenvBin:$currentPath';
+    final separator = isWindows ? ';' : ':';
+    // Windows environment names are case-insensitive ("Path" is common).
+    final pathKey = env.keys.firstWhere(
+      (k) => k.toUpperCase() == 'PATH',
+      orElse: () => 'PATH',
+    );
+    final currentPath = env[pathKey] ?? '';
+    if (!currentPath.split(separator).contains(hermesVenvBin)) {
+      env[pathKey] = currentPath.isEmpty
+          ? hermesVenvBin
+          : '$hermesVenvBin$separator$currentPath';
     }
     return env;
   }
+
+  Map<String, String> _mergedPathEnvironment() =>
+      pathEnvironment(Platform.environment, isWindows: Platform.isWindows);
 
   String _processOutput(ProcessResult result) {
     final stderrText = _stringifyProcessStream(result.stderr);
