@@ -368,7 +368,9 @@ describe("valid bodies still reach the handlers", () => {
   });
 
   it("updates a DNS record", async () => {
-    await request(app).put("/dns/records/r1").send({ ttl: 300 });
+    await request(app)
+      .put("/dns/records/r1")
+      .send({ value: "target.example.com", ttl: 300 });
     expect(dnsService.updateRecord).toHaveBeenCalledTimes(1);
   });
 
@@ -382,9 +384,11 @@ describe("valid bodies still reach the handlers", () => {
   });
 
   it("scales a proxy", async () => {
-    await request(app)
-      .post("/scale/proxy/scaling/execute/p1")
-      .send({ newReplicaCount: 3 });
+    await request(app).post("/scale/proxy/scaling/execute/p1").send({
+      newReplicaCount: 3,
+      reason: "load",
+      triggeredBy: "123e4567-e89b-12d3-a456-426614174000",
+    });
     expect(scaling.executeScaling).toHaveBeenCalledTimes(1);
   });
 

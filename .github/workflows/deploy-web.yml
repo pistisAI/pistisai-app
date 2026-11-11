@@ -21,10 +21,35 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pistisai/pistisai-app-web
   COOLIFY_URL: https://deploy.pistisai.app
-  COOLIFY_APP_UUID: umnmzbzlgcnjssqphnrgiejt
+  COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
   COOLIFY_HOST: ${{ secrets.COOLIFY_HOST }}
 
 jobs:
+  validate_secrets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Validate required secrets
+        env:
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          COOLIFY_SSH_KEY: ${{ secrets.COOLIFY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${COOLIFY_APP_UUID}" ]; then
+            echo "❌ COOLIFY_APP_UUID secret not set"
+            exit 1
+          fi
+          if [ -z "${COOLIFY_API_TOKEN}" ]; then
+            echo "❌ COOLIFY_API_TOKEN secret not set"
+            exit 1
+          fi
+          if [ -z "${COOLIFY_SSH_KEY}" ]; then
+            echo "❌ COOLIFY_SSH_KEY secret not set"
+            exit 1
+          fi
+          echo "✅ All required secrets are set"
+
   analyze:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -48,7 +73,7 @@ jobs:
           echo "✅ Analysis passed"
 
   build_and_push:
-    needs: analyze
+    needs: [validate_secrets, analyze]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     outputs:
