@@ -4,6 +4,7 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { TunnelLogger } from '../utils/logger.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import db from '../database/db-pool.js';
+import { subagentMetadataBody, validateBody } from './misc-body-schemas.js';
 
 const logger = new TunnelLogger('subagent-registry-routes');
 const router = express.Router();
@@ -218,7 +219,8 @@ router.patch('/:subagentId/status', validateSchema(updateSubagentStatusSchema), 
  * Update label and/or task without touching execution state.
  * Accessible to all agents.
  */
-router.patch('/:subagentId/metadata', async (req, res) => {
+router.patch('/:subagentId/metadata', validateBody(subagentMetadataBody),
+  async (req, res) => {
   const { subagentId } = req.params;
   const { label, task } = req.body;
 

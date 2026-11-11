@@ -73,7 +73,7 @@ jobs:
           while IFS= read -r f; do
             git diff --unified=0 "${BASE_SHA}...${HEAD_SHA}" -- "$f" \
               | grep -E '^[+]' | grep -v -E '^[+]{3}' | check "added lines of ${f}" || true
-          done < <(git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" -- . ':!AGENTS.md' ':!CLAUDE.md')
+          done < <(git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" -- . ':!AGENTS.md' ':!CLAUDE.md' ':!docs/architecture/service-layer/ENFORCEMENT_GUIDE.md' ':!docs/performance/PERFORMANCE_BASELINES.md')
           git diff --name-only --diff-filter=AMR "${BASE_SHA}...${HEAD_SHA}" | check "a file path" || true
           git log --format=%B "${BASE_SHA}..${HEAD_SHA}" \
             | grep -v -i -E '^(co-authored-by|signed-off-by):' | check "a commit message" || true

@@ -1,5 +1,6 @@
 import logger from '../logger.js';
 import { StreamingProxyManager } from '../streaming-proxy-manager.js';
+import { proxyProvisionBody } from './body-schemas.js';
 
 const proxyManager = new StreamingProxyManager();
 
@@ -70,7 +71,20 @@ export const proxyProvisionHandler = async (req, res) => {
   try {
     const userId = req.user.sub;
     const userToken = req.headers.authorization;
-    const { testMode = false } = req.body;
+    // `req.body` is undefined when no body was sent (Express 5), and
+    // `testMode` must be a real boolean: the text "false" is truthy.
+    const parsedBody = proxyProvisionBody.safeParse(req.body ?? {});
+    if (!parsedBody.success) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        code: 'INVALID_FIELDS',
+        details: parsedBody.error.issues.map((issue) => ({
+          path: issue.path.join('.'),
+          message: issue.message,
+        })),
+      });
+    }
+    const { testMode = false } = parsedBody.data;
 
     logger.info(
       `Provisioning streaming proxy for user: ${userId}, testMode: ${testMode}`,
@@ -122,7 +136,7 @@ export const proxyProvisionHandler = async (req, res) => {
     res.status(500).json({
       error: 'Failed to provision streaming proxy',
       message: error.message,
-      testMode: req.body.testMode || false,
+      testMode: req.body?.testMode === true,
     });
   }
 };
