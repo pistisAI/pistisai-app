@@ -2,6 +2,7 @@ import express from 'express';
 import { authenticateJWT } from '../middleware/auth.js';
 import { addTierInfo } from '../middleware/tier-check.js';
 import winston from 'winston';
+import { proxyMetricsRecordBody, validateBody } from './body-schemas.js';
 
 const router = express.Router();
 
@@ -46,6 +47,7 @@ router.post(
   '/metrics/:proxyId/record',
   authenticateJWT,
   addTierInfo,
+  validateBody(proxyMetricsRecordBody),
   async function (req, res) {
     try {
       const { proxyId } = req.params;

@@ -9,6 +9,12 @@ import rateLimit from 'express-rate-limit';
 import { authenticateComposite } from '../middleware/composite-auth.js';
 import { addTierInfo } from '../middleware/tier-check.js';
 import { TunnelLogger } from '../utils/logger.js';
+import {
+  bridgeRegisterBody,
+  bridgeProviderStatusBody,
+  bridgeResponseBody,
+  validateBody,
+} from './body-schemas.js';
 
 const router = express.Router();
 const logger = new TunnelLogger('BridgePolling');
@@ -84,6 +90,7 @@ router.post(
   bridgeRegistrationLimiter,
   ...authenticateComposite,
   addTierInfo,
+  validateBody(bridgeRegisterBody),
   (req, res) => {
     const { clientId, platform, version, capabilities } = req.body;
     // Use req.userId which is populated by both JWT and API Key auth
@@ -282,6 +289,7 @@ router.post(
   '/:bridgeId/provider-status',
   bridgeProviderStatusLimiter,
   ...authenticateComposite,
+  validateBody(bridgeProviderStatusBody),
   (req, res) => {
     const { bridgeId } = req.params;
     const userId = req.userId || req.user?.sub;
@@ -321,63 +329,68 @@ router.post(
  * Submit response from desktop client
  * POST /api/bridge/{bridgeId}/response
  */
-router.post('/:bridgeId/response', ...authenticateComposite, (req, res) => {
-  const { bridgeId } = req.params;
-  const userId = req.userId || req.user?.sub;
-  const { requestId, status, headers, body, error } = req.body;
+router.post(
+  '/:bridgeId/response',
+  ...authenticateComposite,
+  validateBody(bridgeResponseBody),
+  (req, res) => {
+    const { bridgeId } = req.params;
+    const userId = req.userId || req.user?.sub;
+    const { requestId, status, headers, body, error } = req.body;
 
-  const bridge = bridgeRegistrations.get(bridgeId);
-  if (!bridge || bridge.userId !== userId) {
-    return res.status(404).json({
-      error: 'Bridge not found or access denied',
+    const bridge = bridgeRegistrations.get(bridgeId);
+    if (!bridge || bridge.userId !== userId) {
+      return res.status(404).json({
+        error: 'Bridge not found or access denied',
+      });
+    }
+
+    if (!requestId) {
+      return res.status(400).json({
+        error: 'Missing requestId',
+      });
+    }
+
+    // Update heartbeat
+    bridgeHeartbeats.set(bridgeId, Date.now());
+
+    // Store response
+    const responseData = {
+      requestId,
+      bridgeId,
+      status: status || (error ? 500 : 200),
+      headers: headers || {},
+      body: body || '',
+      error,
+      timestamp: new Date(),
+    };
+
+    completedResponses.set(requestId, responseData);
+
+    // Clean up old responses (keep only recent ones)
+    if (completedResponses.size > MAX_COMPLETED_RESPONSES) {
+      const entries = Array.from(completedResponses.entries());
+      entries.sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+      // Keep only the most recent responses
+      completedResponses.clear();
+      entries.slice(0, MAX_COMPLETED_RESPONSES).forEach(([id, data]) => {
+        completedResponses.set(id, data);
+      });
+    }
+
+    logger.debug('Received response from bridge', {
+      bridgeId,
+      requestId,
+      status: responseData.status,
     });
-  }
 
-  if (!requestId) {
-    return res.status(400).json({
-      error: 'Missing requestId',
+    res.json({
+      success: true,
+      message: 'Response received',
     });
-  }
-
-  // Update heartbeat
-  bridgeHeartbeats.set(bridgeId, Date.now());
-
-  // Store response
-  const responseData = {
-    requestId,
-    bridgeId,
-    status: status || (error ? 500 : 200),
-    headers: headers || {},
-    body: body || '',
-    error,
-    timestamp: new Date(),
-  };
-
-  completedResponses.set(requestId, responseData);
-
-  // Clean up old responses (keep only recent ones)
-  if (completedResponses.size > MAX_COMPLETED_RESPONSES) {
-    const entries = Array.from(completedResponses.entries());
-    entries.sort((a, b) => b[1].timestamp - a[1].timestamp);
-
-    // Keep only the most recent responses
-    completedResponses.clear();
-    entries.slice(0, MAX_COMPLETED_RESPONSES).forEach(([id, data]) => {
-      completedResponses.set(id, data);
-    });
-  }
-
-  logger.debug('Received response from bridge', {
-    bridgeId,
-    requestId,
-    status: responseData.status,
-  });
-
-  res.json({
-    success: true,
-    message: 'Response received',
-  });
-});
+  },
+);
 
 /**
  * Send heartbeat (Desktop client calls this)
