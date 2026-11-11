@@ -22,6 +22,7 @@ import {
   adminRateLimiter,
   adminReadOnlyLimiter,
 } from '../../middleware/admin-rate-limiter.js';
+import { bulkCreateBody, validateBody } from './body-schemas.js';
 
 const router = express.Router();
 
@@ -41,6 +42,7 @@ router.post(
   '/create',
   adminRateLimiter,
   adminAuth(['edit_users']),
+  validateBody(bulkCreateBody),
   async (req, res) => {
     try {
       const { operationType, userIds, operationData } = req.body;
