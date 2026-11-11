@@ -59,13 +59,13 @@ class ThemeConfig {
   static const Color lightGlassBorder = Color(0x4DFFFFFF);
 
   // Status Colors (same for both themes)
-  static const Color successColor = Color(0xFF4caf50);
+  static const Color successColor = Color(0xFF5E9E78);
   static const Color successColorLight = Color(0xFF2E7D32);
-  static const Color warningColor = Color(0xFFffa726);
+  static const Color warningColor = Color(0xFFD1974A);
   static const Color warningColorLight = Color(0xFFF57C00);
-  static const Color dangerColor = Color(0xFFff5252);
+  static const Color dangerColor = Color(0xFFD2655F);
   static const Color dangerColorLight = Color(0xFFD32F2F);
-  static const Color infoColor = Color(0xFF2196f3);
+  static const Color infoColor = Color(0xFF7C9CC2);
   static const Color infoColorLight = Color(0xFF1976D2);
 
   // ============================================================================
