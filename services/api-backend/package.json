@@ -14,7 +14,7 @@
     "test:security:verbose": "node --experimental-vm-modules node_modules/jest/bin/jest.js ../../test/api-backend/security/ --verbose --forceExit",
     "test:ci:security": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.ci-security.config.js --forceExit",
     "test:n1": "node --experimental-vm-modules node_modules/jest/bin/jest.js ../../test/api-backend/n1-query-detection.test.js --forceExit",
-    "scan:n1": "node scripts/n1-detector.js",
+    "scan:n1": "node scripts/n1-detector.js .",
     "db:validate": "node database/migrate-pg.js validate",
     "db:stats": "node database/migrate-pg.js stats",
     "db:test": "node scripts/test-database.js",
