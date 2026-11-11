@@ -2,6 +2,26 @@
 # Builds and deploys the Node.js backend with PostgreSQL support
 
 steps:
+  # N+1 Query Detection (Performance Gate)
+  - name: 'node:26'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd services/api-backend
+        echo "Running N+1 Query Detection..."
+        node scripts/n1-detector.js
+    dir: '.'
+    waitFor: ['-']
+
+  # Install dependencies
+  - name: 'node:26'
+    entrypoint: 'npm'
+    args:
+      - 'ci'
+    dir: 'services/api-backend'
+    waitFor: ['n1-detection']
+
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
     args:

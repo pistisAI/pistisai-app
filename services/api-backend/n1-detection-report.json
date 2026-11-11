@@ -1,0 +1,87 @@
+{
+  "timestamp": "2026-11-11T00:06:28.990Z",
+  "rootDir": "/var/home/rightguy/pistisai-app/services/api-backend",
+  "stats": {
+    "filesScanned": 116,
+    "queriesFound": 473,
+    "riskiesFound": 10,
+    "highRisk": 10,
+    "mediumRisk": 0
+  },
+  "findings": [
+    {
+      "file": "routes/admin/payments.js",
+      "pattern": "Loop Query",
+      "severity": "HIGH",
+      "description": "Query inside a for/while loop without batching",
+      "remediation": "Use Promise.all() to batch queries or refactor to use JOIN with IN clause"
+    },
+    {
+      "file": "routes/admin/payments.js",
+      "pattern": "Sequential Awaits in Loop",
+      "severity": "HIGH",
+      "description": "Sequential await in forEach - not concurrent",
+      "remediation": "Use Promise.all(array.map(item => pool.query(...)))"
+    },
+    {
+      "file": "routes/conversations.js",
+      "pattern": "Loop Query",
+      "severity": "HIGH",
+      "description": "Query inside a for/while loop without batching",
+      "remediation": "Use Promise.all() to batch queries or refactor to use JOIN with IN clause"
+    },
+    {
+      "file": "routes/conversations.js",
+      "pattern": "Sequential Awaits in Loop",
+      "severity": "HIGH",
+      "description": "Sequential await in forEach - not concurrent",
+      "remediation": "Use Promise.all(array.map(item => pool.query(...)))"
+    },
+    {
+      "file": "services/bulk-operations-service.js",
+      "pattern": "Loop Query",
+      "severity": "HIGH",
+      "description": "Query inside a for/while loop without batching",
+      "remediation": "Use Promise.all() to batch queries or refactor to use JOIN with IN clause"
+    },
+    {
+      "file": "services/bulk-operations-service.js",
+      "pattern": "Sequential Awaits in Loop",
+      "severity": "HIGH",
+      "description": "Sequential await in forEach - not concurrent",
+      "remediation": "Use Promise.all(array.map(item => pool.query(...)))"
+    },
+    {
+      "file": "services/proxy-webhook-service.js",
+      "pattern": "Loop Query",
+      "severity": "HIGH",
+      "description": "Query inside a for/while loop without batching",
+      "remediation": "Use Promise.all() to batch queries or refactor to use JOIN with IN clause"
+    },
+    {
+      "file": "services/proxy-webhook-service.js",
+      "pattern": "Sequential Awaits in Loop",
+      "severity": "HIGH",
+      "description": "Sequential await in forEach - not concurrent",
+      "remediation": "Use Promise.all(array.map(item => pool.query(...)))"
+    },
+    {
+      "file": "services/tunnel-webhook-service.js",
+      "pattern": "Loop Query",
+      "severity": "HIGH",
+      "description": "Query inside a for/while loop without batching",
+      "remediation": "Use Promise.all() to batch queries or refactor to use JOIN with IN clause"
+    },
+    {
+      "file": "services/tunnel-webhook-service.js",
+      "pattern": "Sequential Awaits in Loop",
+      "severity": "HIGH",
+      "description": "Sequential await in forEach - not concurrent",
+      "remediation": "Use Promise.all(array.map(item => pool.query(...)))"
+    }
+  ],
+  "summary": {
+    "passed": false,
+    "message": "Detected 10 potential N+1 issues (10 HIGH, 0 MEDIUM)"
+  }
+}
