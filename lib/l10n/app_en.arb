@@ -1755,5 +1755,411 @@
         "type": "String"
       }
     }
-  }
+  },
+  "adminUsersTitle": "User Management",
+  "adminUsersSubtitle": "View and manage user accounts, subscriptions, and permissions",
+  "adminUsersSearchHint": "Search by email, username, or user ID...",
+  "adminUsersTierFilter": "Subscription Tier",
+  "adminUsersAllTiers": "All Tiers",
+  "adminUsersStatusFilter": "Account Status",
+  "adminUsersAllStatuses": "All Statuses",
+  "adminStatusActive": "Active",
+  "adminStatusSuspended": "Suspended",
+  "adminStatusDeleted": "Deleted",
+  "adminUsersSortBy": "Sort By",
+  "adminUsersSortRegistration": "Registration Date",
+  "adminUsersLastLogin": "Last Login",
+  "adminEmail": "Email",
+  "adminUsersAscending": "Ascending",
+  "adminUsersDescending": "Descending",
+  "adminUsersNoPermissionView": "You do not have permission to view users",
+  "adminUsersLoadFailed": "Failed to load users: {error}",
+  "@adminUsersLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUsersNone": "No users found",
+  "adminUsername": "Username",
+  "adminSubscription": "Subscription",
+  "adminRegistered": "Registered",
+  "adminNotAvailable": "N/A",
+  "adminViewDetails": "View Details",
+  "adminSuspend": "Suspend",
+  "adminReactivate": "Reactivate",
+  "adminUsersShowing": "Showing {from}-{to} of {total} users",
+  "@adminUsersShowing": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminPageOf": "Page {page} of {total}",
+  "@adminPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "adminUserDetailsLoadFailed": "Failed to load user details: {error}",
+  "@adminUserDetailsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUserDetails": "User Details",
+  "adminNoUserDetails": "No user details available",
+  "adminProfileInfo": "Profile Information",
+  "adminUserId": "User ID",
+  "adminSubscriptionInfo": "Subscription Information",
+  "adminTier": "Tier",
+  "adminPeriodStart": "Current Period Start",
+  "adminPeriodEnd": "Current Period End",
+  "adminCancellation": "Cancellation",
+  "adminCancelAtPeriodEnd": "Scheduled at period end",
+  "adminRecentPayments": "Recent Payment History",
+  "adminActiveSessions": "Active Sessions",
+  "adminRecentActivity": "Recent Activity",
+  "adminDate": "Date",
+  "adminAmount": "Amount",
+  "adminMethod": "Method",
+  "adminIpAddress": "IP Address",
+  "adminUserAgent": "User Agent",
+  "adminLastActive": "Last Active",
+  "adminUnknownAction": "Unknown action",
+  "adminInvalidDate": "Invalid date",
+  "adminNoPermissionEdit": "You do not have permission to edit users",
+  "adminSubscriptionUpdated": "User subscription updated successfully",
+  "adminUpdateFailed": "Failed to update user: {error}",
+  "@adminUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminEditSubscriptionTitle": "Edit User Subscription",
+  "adminUserLabel": "User: {email}",
+  "@adminUserLabel": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSuspendReasonMissing": "Please provide a reason for suspension",
+  "adminNoPermissionSuspend": "You do not have permission to suspend users",
+  "adminSuspended": "User suspended successfully",
+  "adminSuspendFailed": "Failed to suspend user: {error}",
+  "@adminSuspendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSuspendTitle": "Suspend User Account",
+  "adminSuspendWarning": "This will suspend the user account and prevent them from accessing the application.",
+  "adminSuspendReason": "Reason for suspension *",
+  "adminSuspendReasonHint": "Enter the reason for suspending this account",
+  "adminNoPermissionReactivate": "You do not have permission to reactivate users",
+  "adminReactivated": "User reactivated successfully",
+  "adminReactivateFailed": "Failed to reactivate user: {error}",
+  "@adminReactivateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReactivateTitle": "Reactivate User Account",
+  "adminReactivateInfo": "This will reactivate the user account and restore their access to the application.",
+  "adminDashboardTitle": "Dashboard",
+  "adminRefreshMetrics": "Refresh metrics",
+  "adminTotalUsers": "Total Users",
+  "adminNewThisMonth": "{count} new this month",
+  "@adminNewThisMonth": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminActiveUsers": "Active Users",
+  "adminPercentOfTotal": "{percent}% of total",
+  "@adminPercentOfTotal": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMrr": "Monthly Recurring Revenue",
+  "adminFromSubscribers": "From {count} subscribers",
+  "@adminFromSubscribers": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminCurrentMonthRevenue": "Current Month Revenue",
+  "adminTransactionsCount": "{count} transactions",
+  "@adminTransactionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSubscriptionDistribution": "Subscription Distribution",
+  "adminConversionRate": "Conversion Rate: {rate}%",
+  "@adminConversionRate": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "adminTierFree": "Free",
+  "adminTierPremium": "Premium",
+  "adminTierEnterprise": "Enterprise",
+  "adminCountPercent": "{count} ({percent}%)",
+  "@adminCountPercent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoRecentTransactions": "No recent transactions",
+  "adminRecentTransactions": "Recent Transactions",
+  "adminToday": "Today {time}",
+  "@adminToday": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "adminYesterday": "Yesterday",
+  "adminDaysAgo": "{days} days ago",
+  "@adminDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "auditLoadDetailsFailed": "Failed to load log details: {error}",
+  "@auditLoadDetailsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditExported": "Audit logs exported successfully",
+  "auditExportFailed": "Failed to export logs: {error}",
+  "@auditExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTitle": "Audit Logs",
+  "auditFilters": "Filters",
+  "auditExportCsv": "Export CSV",
+  "auditFilterAdmin": "Admin: {value}",
+  "@auditFilterAdmin": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterAction": "Action: {value}",
+  "@auditFilterAction": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterResource": "Resource: {value}",
+  "@auditFilterResource": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterAffectedUser": "Affected User: {value}",
+  "@auditFilterAffectedUser": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterFrom": "From: {date}",
+  "@auditFilterFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterTo": "To: {date}",
+  "@auditFilterTo": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "auditFilterSeverity": "Severity: {value}",
+  "@auditFilterSeverity": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTimestamp": "Timestamp",
+  "auditAction": "Action",
+  "auditResource": "Resource",
+  "auditAdmin": "Admin",
+  "auditAffectedUser": "Affected User",
+  "auditSeverity": "Severity",
+  "auditShowing": "Showing {from}-{to} of {total} logs",
+  "@auditShowing": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "auditError": "Error: {error}",
+  "@auditError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "auditNone": "No audit logs found",
+  "auditClearFilters": "Clear filters",
+  "auditFilterTitle": "Filter Audit Logs",
+  "auditAdminUserId": "Admin User ID",
+  "auditAdminUserIdHint": "Filter by admin user ID",
+  "auditActionHint": "e.g., user_suspended, refund_processed",
+  "auditResourceType": "Resource Type",
+  "auditResourceTypeHint": "e.g., user, subscription, transaction",
+  "auditAffectedUserId": "Affected User ID",
+  "auditAffectedUserIdHint": "Filter by affected user ID",
+  "auditDateRange": "Date Range",
+  "auditStartDate": "Start Date",
+  "auditEndDate": "End Date",
+  "auditAllSeverities": "All severities",
+  "auditClearAll": "Clear All",
+  "auditDetailsTitle": "Audit Log Details",
+  "auditLogId": "Log ID",
+  "auditResourceId": "Resource ID",
+  "auditAdminUser": "Admin User",
+  "auditRole": "Role",
+  "auditActionDetails": "Action Details",
+  "adminsLoadFailed": "Failed to load administrators: {error}",
+  "@adminsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRevokeTitle": "Revoke Admin Role",
+  "adminsRevokeConfirm": "Are you sure you want to revoke the {role} role from {email}?",
+  "@adminsRevokeConfirm": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRevoke": "Revoke",
+  "adminsRevoked": "Admin role revoked successfully",
+  "adminsRevokeFailed": "Failed to revoke role: {error}",
+  "@adminsRevokeFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminsRoleSuper": "Super Admin",
+  "adminsRoleSupport": "Support Admin",
+  "adminsRoleFinance": "Finance Admin",
+  "adminsSuperRequired": "Super Admin Access Required",
+  "adminsSuperRequiredBody": "Only Super Admins can manage administrator accounts.",
+  "adminsTitle": "Admin Management",
+  "adminsSubtitle": "Manage administrator accounts and roles",
+  "adminsAdd": "Add Admin",
+  "adminsNone": "No administrators found",
+  "adminsTotalActions": "Total Actions",
+  "adminsRecent30d": "Recent (30d)",
+  "adminsLastAction": "Last Action",
+  "adminsToday": "Today",
+  "adminsWeeksAgo": "{weeks}w ago",
+  "@adminsWeeksAgo": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "adminsMonthsAgo": "{months}mo ago",
+  "@adminsMonthsAgo": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "adminsUnknown": "Unknown",
+  "adminsAssigned": "Admin role assigned successfully",
+  "adminsAddTitle": "Add Administrator",
+  "adminsEmailAddress": "Email Address",
+  "adminsEmailRequired": "Email is required",
+  "adminsEmailInvalid": "Invalid email address",
+  "adminsSelectRole": "Select Role",
+  "adminsSupportDescription": "User management and support",
+  "adminsFinanceDescription": "Payments, refunds, and reports"
 }

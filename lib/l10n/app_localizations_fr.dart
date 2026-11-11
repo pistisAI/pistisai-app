@@ -3027,4 +3027,567 @@ class AppLocalizationsFr extends AppLocalizations {
   String guiScreenshotSaved(String path) {
     return 'Capture enregistrée : $path';
   }
+
+  @override
+  String get adminUsersTitle => 'Gestion des utilisateurs';
+
+  @override
+  String get adminUsersSubtitle =>
+      'Consulter et gérer les comptes, les abonnements et les autorisations des utilisateurs';
+
+  @override
+  String get adminUsersSearchHint =>
+      'Rechercher par courriel, nom d\'utilisateur ou identifiant…';
+
+  @override
+  String get adminUsersTierFilter => 'Forfait';
+
+  @override
+  String get adminUsersAllTiers => 'Tous les forfaits';
+
+  @override
+  String get adminUsersStatusFilter => 'État du compte';
+
+  @override
+  String get adminUsersAllStatuses => 'Tous les états';
+
+  @override
+  String get adminStatusActive => 'Actif';
+
+  @override
+  String get adminStatusSuspended => 'Suspendu';
+
+  @override
+  String get adminStatusDeleted => 'Supprimé';
+
+  @override
+  String get adminUsersSortBy => 'Trier par';
+
+  @override
+  String get adminUsersSortRegistration => 'Date d\'inscription';
+
+  @override
+  String get adminUsersLastLogin => 'Dernière connexion';
+
+  @override
+  String get adminEmail => 'Courriel';
+
+  @override
+  String get adminUsersAscending => 'Croissant';
+
+  @override
+  String get adminUsersDescending => 'Décroissant';
+
+  @override
+  String get adminUsersNoPermissionView =>
+      'Vous n\'avez pas l\'autorisation de consulter les utilisateurs';
+
+  @override
+  String adminUsersLoadFailed(String error) {
+    return 'Impossible de charger les utilisateurs : $error';
+  }
+
+  @override
+  String get adminUsersNone => 'Aucun utilisateur trouvé';
+
+  @override
+  String get adminUsername => 'Nom d\'utilisateur';
+
+  @override
+  String get adminSubscription => 'Abonnement';
+
+  @override
+  String get adminRegistered => 'Inscrit le';
+
+  @override
+  String get adminNotAvailable => 'S. O.';
+
+  @override
+  String get adminViewDetails => 'Voir les détails';
+
+  @override
+  String get adminSuspend => 'Suspendre';
+
+  @override
+  String get adminReactivate => 'Réactiver';
+
+  @override
+  String adminUsersShowing(int from, int to, int total) {
+    return 'Utilisateurs $from à $to sur $total';
+  }
+
+  @override
+  String adminPageOf(int page, int total) {
+    return 'Page $page sur $total';
+  }
+
+  @override
+  String adminUserDetailsLoadFailed(String error) {
+    return 'Impossible de charger les détails de l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminUserDetails => 'Détails de l\'utilisateur';
+
+  @override
+  String get adminNoUserDetails => 'Aucun détail disponible';
+
+  @override
+  String get adminProfileInfo => 'Profil';
+
+  @override
+  String get adminUserId => 'Identifiant de l\'utilisateur';
+
+  @override
+  String get adminSubscriptionInfo => 'Abonnement';
+
+  @override
+  String get adminTier => 'Forfait';
+
+  @override
+  String get adminPeriodStart => 'Début de la période en cours';
+
+  @override
+  String get adminPeriodEnd => 'Fin de la période en cours';
+
+  @override
+  String get adminCancellation => 'Annulation';
+
+  @override
+  String get adminCancelAtPeriodEnd => 'Prévue à la fin de la période';
+
+  @override
+  String get adminRecentPayments => 'Paiements récents';
+
+  @override
+  String get adminActiveSessions => 'Sessions actives';
+
+  @override
+  String get adminRecentActivity => 'Activité récente';
+
+  @override
+  String get adminDate => 'Date';
+
+  @override
+  String get adminAmount => 'Montant';
+
+  @override
+  String get adminMethod => 'Méthode';
+
+  @override
+  String get adminIpAddress => 'Adresse IP';
+
+  @override
+  String get adminUserAgent => 'Navigateur (User-Agent)';
+
+  @override
+  String get adminLastActive => 'Dernière activité';
+
+  @override
+  String get adminUnknownAction => 'Action inconnue';
+
+  @override
+  String get adminInvalidDate => 'Date invalide';
+
+  @override
+  String get adminNoPermissionEdit =>
+      'Vous n\'avez pas l\'autorisation de modifier les utilisateurs';
+
+  @override
+  String get adminSubscriptionUpdated =>
+      'Abonnement de l\'utilisateur mis à jour';
+
+  @override
+  String adminUpdateFailed(String error) {
+    return 'Impossible de mettre à jour l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminEditSubscriptionTitle =>
+      'Modifier l\'abonnement de l\'utilisateur';
+
+  @override
+  String adminUserLabel(String email) {
+    return 'Utilisateur : $email';
+  }
+
+  @override
+  String get adminSuspendReasonMissing => 'Indiquez la raison de la suspension';
+
+  @override
+  String get adminNoPermissionSuspend =>
+      'Vous n\'avez pas l\'autorisation de suspendre des utilisateurs';
+
+  @override
+  String get adminSuspended => 'Utilisateur suspendu';
+
+  @override
+  String adminSuspendFailed(String error) {
+    return 'Impossible de suspendre l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminSuspendTitle => 'Suspendre le compte';
+
+  @override
+  String get adminSuspendWarning =>
+      'Le compte sera suspendu et l\'utilisateur ne pourra plus accéder à l\'application.';
+
+  @override
+  String get adminSuspendReason => 'Raison de la suspension *';
+
+  @override
+  String get adminSuspendReasonHint =>
+      'Indiquez pourquoi ce compte est suspendu';
+
+  @override
+  String get adminNoPermissionReactivate =>
+      'Vous n\'avez pas l\'autorisation de réactiver des utilisateurs';
+
+  @override
+  String get adminReactivated => 'Utilisateur réactivé';
+
+  @override
+  String adminReactivateFailed(String error) {
+    return 'Impossible de réactiver l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminReactivateTitle => 'Réactiver le compte';
+
+  @override
+  String get adminReactivateInfo =>
+      'Le compte sera réactivé et l\'utilisateur retrouvera l\'accès à l\'application.';
+
+  @override
+  String get adminDashboardTitle => 'Tableau de bord';
+
+  @override
+  String get adminRefreshMetrics => 'Actualiser les indicateurs';
+
+  @override
+  String get adminTotalUsers => 'Utilisateurs au total';
+
+  @override
+  String adminNewThisMonth(String count) {
+    return '$count nouveaux ce mois-ci';
+  }
+
+  @override
+  String get adminActiveUsers => 'Utilisateurs actifs';
+
+  @override
+  String adminPercentOfTotal(String percent) {
+    return '$percent % du total';
+  }
+
+  @override
+  String get adminMrr => 'Revenu mensuel récurrent';
+
+  @override
+  String adminFromSubscribers(String count) {
+    return 'Provenant de $count abonnés';
+  }
+
+  @override
+  String get adminCurrentMonthRevenue => 'Revenu du mois en cours';
+
+  @override
+  String adminTransactionsCount(String count) {
+    return '$count transactions';
+  }
+
+  @override
+  String get adminSubscriptionDistribution => 'Répartition des abonnements';
+
+  @override
+  String adminConversionRate(String rate) {
+    return 'Taux de conversion : $rate %';
+  }
+
+  @override
+  String get adminTierFree => 'Gratuit';
+
+  @override
+  String get adminTierPremium => 'Premium';
+
+  @override
+  String get adminTierEnterprise => 'Entreprise';
+
+  @override
+  String adminCountPercent(int count, String percent) {
+    return '$count ($percent %)';
+  }
+
+  @override
+  String get adminNoRecentTransactions => 'Aucune transaction récente';
+
+  @override
+  String get adminRecentTransactions => 'Transactions récentes';
+
+  @override
+  String adminToday(String time) {
+    return 'Aujourd\'hui $time';
+  }
+
+  @override
+  String get adminYesterday => 'Hier';
+
+  @override
+  String adminDaysAgo(int days) {
+    return 'il y a $days jours';
+  }
+
+  @override
+  String auditLoadDetailsFailed(String error) {
+    return 'Impossible de charger les détails de l\'entrée : $error';
+  }
+
+  @override
+  String get auditExported => 'Journal d\'audit exporté';
+
+  @override
+  String auditExportFailed(String error) {
+    return 'Impossible d\'exporter le journal : $error';
+  }
+
+  @override
+  String get auditTitle => 'Journal d\'audit';
+
+  @override
+  String get auditFilters => 'Filtres';
+
+  @override
+  String get auditExportCsv => 'Exporter en CSV';
+
+  @override
+  String auditFilterAdmin(String value) {
+    return 'Administrateur : $value';
+  }
+
+  @override
+  String auditFilterAction(String value) {
+    return 'Action : $value';
+  }
+
+  @override
+  String auditFilterResource(String value) {
+    return 'Ressource : $value';
+  }
+
+  @override
+  String auditFilterAffectedUser(String value) {
+    return 'Utilisateur visé : $value';
+  }
+
+  @override
+  String auditFilterFrom(String date) {
+    return 'Du : $date';
+  }
+
+  @override
+  String auditFilterTo(String date) {
+    return 'Au : $date';
+  }
+
+  @override
+  String auditFilterSeverity(String value) {
+    return 'Gravité : $value';
+  }
+
+  @override
+  String get auditTimestamp => 'Horodatage';
+
+  @override
+  String get auditAction => 'Action';
+
+  @override
+  String get auditResource => 'Ressource';
+
+  @override
+  String get auditAdmin => 'Administrateur';
+
+  @override
+  String get auditAffectedUser => 'Utilisateur visé';
+
+  @override
+  String get auditSeverity => 'Gravité';
+
+  @override
+  String auditShowing(int from, int to, int total) {
+    return 'Entrées $from à $to sur $total';
+  }
+
+  @override
+  String auditError(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get auditNone => 'Aucune entrée trouvée dans le journal';
+
+  @override
+  String get auditClearFilters => 'Effacer les filtres';
+
+  @override
+  String get auditFilterTitle => 'Filtrer le journal d\'audit';
+
+  @override
+  String get auditAdminUserId => 'Identifiant de l\'administrateur';
+
+  @override
+  String get auditAdminUserIdHint =>
+      'Filtrer par identifiant d\'administrateur';
+
+  @override
+  String get auditActionHint => 'ex. : user_suspended, refund_processed';
+
+  @override
+  String get auditResourceType => 'Type de ressource';
+
+  @override
+  String get auditResourceTypeHint => 'ex. : user, subscription, transaction';
+
+  @override
+  String get auditAffectedUserId => 'Identifiant de l\'utilisateur visé';
+
+  @override
+  String get auditAffectedUserIdHint =>
+      'Filtrer par identifiant de l\'utilisateur visé';
+
+  @override
+  String get auditDateRange => 'Période';
+
+  @override
+  String get auditStartDate => 'Date de début';
+
+  @override
+  String get auditEndDate => 'Date de fin';
+
+  @override
+  String get auditAllSeverities => 'Toutes les gravités';
+
+  @override
+  String get auditClearAll => 'Tout effacer';
+
+  @override
+  String get auditDetailsTitle => 'Détails de l\'entrée';
+
+  @override
+  String get auditLogId => 'Identifiant de l\'entrée';
+
+  @override
+  String get auditResourceId => 'Identifiant de la ressource';
+
+  @override
+  String get auditAdminUser => 'Administrateur';
+
+  @override
+  String get auditRole => 'Rôle';
+
+  @override
+  String get auditActionDetails => 'Détails de l\'action';
+
+  @override
+  String adminsLoadFailed(String error) {
+    return 'Impossible de charger les administrateurs : $error';
+  }
+
+  @override
+  String get adminsRevokeTitle => 'Retirer le rôle d\'administrateur';
+
+  @override
+  String adminsRevokeConfirm(String role, String email) {
+    return 'Voulez-vous vraiment retirer le rôle $role à $email ?';
+  }
+
+  @override
+  String get adminsRevoke => 'Retirer';
+
+  @override
+  String get adminsRevoked => 'Rôle d\'administrateur retiré';
+
+  @override
+  String adminsRevokeFailed(String error) {
+    return 'Impossible de retirer le rôle : $error';
+  }
+
+  @override
+  String get adminsRoleSuper => 'Super administrateur';
+
+  @override
+  String get adminsRoleSupport => 'Administrateur du soutien';
+
+  @override
+  String get adminsRoleFinance => 'Administrateur des finances';
+
+  @override
+  String get adminsSuperRequired => 'Accès super administrateur requis';
+
+  @override
+  String get adminsSuperRequiredBody =>
+      'Seuls les super administrateurs peuvent gérer les comptes d\'administrateur.';
+
+  @override
+  String get adminsTitle => 'Gestion des administrateurs';
+
+  @override
+  String get adminsSubtitle =>
+      'Gérer les comptes et les rôles d\'administrateur';
+
+  @override
+  String get adminsAdd => 'Ajouter un administrateur';
+
+  @override
+  String get adminsNone => 'Aucun administrateur trouvé';
+
+  @override
+  String get adminsTotalActions => 'Actions au total';
+
+  @override
+  String get adminsRecent30d => 'Récentes (30 j)';
+
+  @override
+  String get adminsLastAction => 'Dernière action';
+
+  @override
+  String get adminsToday => 'Aujourd\'hui';
+
+  @override
+  String adminsWeeksAgo(int weeks) {
+    return 'il y a $weeks sem.';
+  }
+
+  @override
+  String adminsMonthsAgo(int months) {
+    return 'il y a $months mois';
+  }
+
+  @override
+  String get adminsUnknown => 'Inconnue';
+
+  @override
+  String get adminsAssigned => 'Rôle d\'administrateur attribué';
+
+  @override
+  String get adminsAddTitle => 'Ajouter un administrateur';
+
+  @override
+  String get adminsEmailAddress => 'Adresse courriel';
+
+  @override
+  String get adminsEmailRequired => 'Le courriel est obligatoire';
+
+  @override
+  String get adminsEmailInvalid => 'Adresse courriel invalide';
+
+  @override
+  String get adminsSelectRole => 'Choisir un rôle';
+
+  @override
+  String get adminsSupportDescription => 'Gestion des utilisateurs et soutien';
+
+  @override
+  String get adminsFinanceDescription =>
+      'Paiements, remboursements et rapports';
 }

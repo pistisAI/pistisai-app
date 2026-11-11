@@ -335,4 +335,22 @@ void main() {
         findsOneWidget);
     expect(find.textContaining("We'll set up your local AI"), findsNothing);
   });
+
+  test('batch 12 admin messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.adminUsersShowing(1, 50, 120), 'Utilisateurs 1 à 50 sur 120');
+    expect(fr.adminPageOf(2, 3), 'Page 2 sur 3');
+    expect(fr.adminConversionRate('4.2'), 'Taux de conversion : 4.2 %');
+    expect(fr.adminCountPercent(12, '34.0'), '12 (34.0 %)');
+    expect(fr.adminUserLabel('a@example.com'), 'Utilisateur : a@example.com');
+  });
+
+  test('batch 13 audit and admin messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.auditShowing(1, 25, 300), 'Entrées 1 à 25 sur 300');
+    expect(fr.auditFilterFrom('2026-11-01'), 'Du : 2026-11-01');
+    expect(fr.adminsRevokeConfirm(fr.adminsRoleFinance, 'a@example.com'),
+        'Voulez-vous vraiment retirer le rôle Administrateur des finances à a@example.com ?');
+    expect(fr.adminsWeeksAgo(2), 'il y a 2 sem.');
+  });
 }
