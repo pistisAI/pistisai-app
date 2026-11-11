@@ -398,5 +398,302 @@
         "type": "String"
       }
     }
+  },
+  "commonRemove": "Remove",
+  "commonSave": "Save",
+  "commonUnknownError": "Unknown error",
+  "commonFieldLabel": "{label}:",
+  "@commonFieldLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "commonStatus": "Status",
+  "commonError": "Error",
+  "commonActions": "Actions",
+  "commonName": "Name",
+  "commonType": "Type",
+  "commonMessages": "Messages",
+  "commonNever": "Never",
+  "timeJustNow": "Just now",
+  "timeSecondsAgo": "{seconds}s ago",
+  "@timeSecondsAgo": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "timeMinutesAgo": "{minutes}m ago",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHoursAgo": "{hours}h ago",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDaysAgo": "{days}d ago",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "agentsTitle": "Agents",
+  "agentsAdd": "Add Agent",
+  "agentsTabRegistry": "Registry",
+  "agentsTabMonitor": "Monitor",
+  "agentsTabConfig": "Config",
+  "agentsEmptyTitle": "No Agents Registered",
+  "agentsEmptyMessage": "Agents will appear here when registered",
+  "agentsNoTask": "No task assigned",
+  "agentsActivityCompleted": "Completed: {task}",
+  "@agentsActivityCompleted": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsActivityFailed": "Failed: {error}",
+  "@agentsActivityFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsActivityStarted": "Started: {task}",
+  "@agentsActivityStarted": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsActivityTaskFallback": "task",
+  "agentsActivityErrorFallback": "unknown error",
+  "agentsRegistryUnavailable": "Agent registry is unavailable until the API backend is connected",
+  "agentsRegisterFailed": "Failed to register agent",
+  "agentsRegistered": "Registered {name}",
+  "@agentsRegistered": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsEditTitle": "Edit {name}",
+  "@agentsEditTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsUpdateFailed": "Failed to update {name}",
+  "@agentsUpdateFailed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsUpdated": "Updated {name}",
+  "@agentsUpdated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsRemoveFailed": "Failed to remove {name}",
+  "@agentsRemoveFailed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsRemoved": "{name} removed",
+  "@agentsRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsStatTasks": "Tasks",
+  "agentsStatAvgLatency": "Avg Latency",
+  "agentsStatLastActive": "Last Active",
+  "agentsStatusOnline": "ONLINE",
+  "agentsStatusBusy": "BUSY",
+  "agentsStatusOffline": "OFFLINE",
+  "agentsStatusError": "ERROR",
+  "agentsTotal": "Total Agents",
+  "agentsTasksToday": "Tasks Today",
+  "agentsErrors": "Errors",
+  "agentsNoActivityTitle": "No Recent Activity",
+  "agentsNoActivityMessage": "Agent activity will appear here",
+  "agentsPoolSettings": "Agent Pool Settings",
+  "agentsAutoScale": "Auto-scale agents",
+  "agentsAutoScaleSubtitle": "Automatically add agents based on load",
+  "agentsMin": "Min agents",
+  "agentsMinSubtitle": "Minimum number of active agents",
+  "agentsMax": "Max agents",
+  "agentsMaxSubtitle": "Maximum number of concurrent agents",
+  "agentsTimeoutSettings": "Timeout Settings",
+  "agentsRequestTimeout": "Request timeout",
+  "agentsRequestTimeoutSubtitle": "Maximum time to wait for agent response",
+  "agentsQueueTimeout": "Queue timeout",
+  "agentsQueueTimeoutSubtitle": "Maximum time in queue before rejection",
+  "agentsPause": "Pause Agent",
+  "agentsResume": "Resume Agent",
+  "agentsRestart": "Restart Agent",
+  "agentsEditConfig": "Edit Configuration",
+  "agentsRemove": "Remove Agent",
+  "agentsRemoveConfirm": "Are you sure you want to remove {name}?",
+  "@agentsRemoveConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsRegisterTitle": "Register Agent",
+  "agentsRegister": "Register",
+  "agentsIdsRequired": "Subagent ID and parent agent ID are required",
+  "agentsSubagentId": "Subagent ID",
+  "agentsParentId": "Parent Agent ID",
+  "agentsDisplayLabel": "Display Label",
+  "agentsTaskDescription": "Task Description",
+  "agentDetailTitle": "Agent Details",
+  "agentDetailNotFound": "Agent not found",
+  "agentDetailIdValue": "ID: {id}",
+  "@agentDetailIdValue": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "agentDetailActivity": "Activity",
+  "agentDetailLastUpdate": "Last Update",
+  "agentDetailStart": "Start",
+  "agentDetailStop": "Stop",
+  "agentDetailRestart": "Restart",
+  "agentDetailInformation": "Information",
+  "agentDetailId": "ID",
+  "agentStateIdle": "Idle",
+  "agentStateStarting": "Starting...",
+  "agentStateRunning": "Running",
+  "agentStateStopping": "Stopping...",
+  "agentStateError": "Error",
+  "agentStateOffline": "Offline",
+  "sessionsTitle": "Sessions",
+  "sessionsTabWebSocket": "WebSocket",
+  "sessionsTabConversations": "Conversations",
+  "sessionsTabUsers": "Users",
+  "sessionsRefresh": "Refresh sessions",
+  "sessionsEmptyTitle": "No Sessions",
+  "sessionsEmptyMessage": "No active sessions for this category.",
+  "sessionsDetailsTitle": "Session Details",
+  "sessionsId": "Session ID",
+  "sessionsUserOrAgent": "User/Agent",
+  "sessionsStarted": "Started",
+  "sessionsDuration": "Duration",
+  "sessionsTokens": "Tokens",
+  "sessionsDurationHoursMinutes": "{hours}h {minutes}m",
+  "@sessionsDurationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionsDurationMinutesSeconds": "{minutes}m {seconds}s",
+  "@sessionsDurationMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionsDurationSeconds": "{seconds}s",
+  "@sessionsDurationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionsTerminateTitle": "Terminate Session",
+  "sessionsTerminateConfirm": "Are you sure you want to terminate session {id}?\n\nThis will disconnect {who} and cannot be undone.",
+  "@sessionsTerminateConfirm": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "who": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsServiceUnavailable": "Session service unavailable",
+  "sessionsTerminated": "Session {id} terminated",
+  "@sessionsTerminated": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsTerminateFailed": "Failed to terminate session {id}",
+  "@sessionsTerminateFailed": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsTerminate": "Terminate",
+  "sessionsViewDetails": "View details",
+  "sessionsTerminateTooltip": "Terminate session",
+  "channelsTitle": "Channels",
+  "channelsRefresh": "Refresh channels",
+  "channelsLoadError": "Failed to load channels: {error}",
+  "@channelsLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "channelsEmptyTitle": "No Channels",
+  "channelsEmptyMessage": "No communication channels are currently available.",
+  "channelsMessageCount": "{count, plural, =1{1 message} other{{count} messages}}",
+  "@channelsMessageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

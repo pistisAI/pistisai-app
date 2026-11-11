@@ -1,4 +1,5 @@
 import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/models/cron_job.dart';
 import 'package:pistisai/screens/agents/agents_screen.dart';
 import 'package:pistisai/screens/cron/cron_jobs_screen.dart';
@@ -74,6 +75,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: AgentsScreen(),
         ),
       );
@@ -98,6 +100,7 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: AgentsScreen(),
         ),
       );
