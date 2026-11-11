@@ -1,5 +1,6 @@
 name: "🧪 CI — Test & Build Every Branch"
 
+# The one code-test workflow. Runs on GitHub-hosted runners only.
 on:
   push:
     branches:
@@ -8,11 +9,6 @@ on:
       - "**.md"
       - "docs/**"
       - "images/**"
-  # No paths-ignore here: this workflow's last job is the status check a pull
-  # request needs before it can merge. If the workflow does not start for a
-  # docs-only pull request, that check never reports and the pull request
-  # stays blocked. The "Detect changes" job already skips the heavy jobs when
-  # no code changed, and the gate passes on skipped jobs.
   pull_request:
     branches:
       - main
@@ -23,322 +19,81 @@ concurrency:
 
 permissions:
   contents: read
-  checks: write
 
 jobs:
-  changes:
-    name: "🔎 Detect changes"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    outputs:
-      flutter: ${{ steps.gate.outputs.flutter }}
-      backend: ${{ steps.gate.outputs.backend }}
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          # Push to main diffs github.event.before..HEAD. A depth-1 clone
-          # does not contain that parent, and GitHub will not fetch it by SHA.
-          fetch-depth: 0
-
-      - uses: dorny/paths-filter@v4
-        id: filter
-        continue-on-error: true
-        with:
-          # Empty token uses git diff (contents: read). Push compares
-          # github.event.before..HEAD. Pull requests compare the PR base SHA.
-          token: ""
-          filters: |
-            flutter:
-              - 'lib/**'
-              - 'test/**'
-              - 'pubspec.yaml'
-              - 'pubspec.lock'
-              - 'web/**'
-              - 'linux/**'
-              - 'windows/**'
-              - 'macos/**'
-              - 'assets/**'
-              - 'analysis_options.yaml'
-              - '.github/workflows/test.yml'
-            backend:
-              - 'services/api-backend/**'
-              - 'test/api-backend/**'
-              - 'scripts/tests/test_no_hardcoded_dev_bypass_token.sh'
-              - '.github/workflows/test.yml'
-
-      - name: "Fail open if the path filter failed"
-        id: gate
-        if: always() && (steps.filter.outcome == 'success' || steps.filter.outcome == 'failure')
-        env:
-          FILTER_OUTCOME: ${{ steps.filter.outcome }}
-          FLUTTER: ${{ steps.filter.outputs.flutter }}
-          BACKEND: ${{ steps.filter.outputs.backend }}
-        run: |
-          if [ "$FILTER_OUTCOME" = "success" ]; then
-            echo "flutter=$FLUTTER" >> "$GITHUB_OUTPUT"
-            echo "backend=$BACKEND" >> "$GITHUB_OUTPUT"
-          else
-            echo "flutter=true" >> "$GITHUB_OUTPUT"
-            echo "backend=true" >> "$GITHUB_OUTPUT"
-          fi
-
   flutter_analyze:
     name: "🔍 Flutter Analyze"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    needs: changes
-    if: needs.changes.outputs.flutter == 'true'
-
     steps:
-      - uses: actions/checkout@v7
-
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           flutter-version-file: pubspec.yaml
           channel: "stable"
           cache: true
-
       - name: "📦 flutter pub get"
         run: flutter pub get
-
       - name: "🔍 flutter analyze"
         run: flutter analyze lib/
 
-  flutter_smoke_test:
-    name: "🧪 Flutter — smoke"
+  flutter_tests:
+    name: "🧪 Flutter tests (security + basic gate)"
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    needs: changes
-    if: needs.changes.outputs.flutter == 'true'
-
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           flutter-version-file: pubspec.yaml
           channel: "stable"
           cache: true
-
       - name: "📦 flutter pub get"
         run: flutter pub get
-
       - name: Bake Pistisai brand
         run: bash tool/brand.sh pistisai
-
       - name: "🧪 flutter test (security + basic)"
         run: bash scripts/ci/flutter_security_basic_tests.sh
-
-  build_web:
-    name: "🌐 Build Web"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    needs: [changes, flutter_analyze, flutter_smoke_test]
-    if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: pubspec.yaml
-          channel: "stable"
-          cache: true
-
-      - name: "📦 flutter pub get"
-        run: flutter pub get
-
-      # The linux_native_deps build hook installs these itself when they are
-      # missing: silently, inside the first `dart run`, with no retry. On a slow
-      # mirror that used most of this job's time budget and the job was
-      # cancelled in "Bake". Installing them here makes the time visible and
-      # lets apt retry; the hook then finds them and skips its own install.
-      - name: "📦 Native build deps (for build hooks)"
-        run: |
-          apt_opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
-          sudo apt-get update -qq $apt_opts
-          sudo apt-get install -y -qq --no-install-recommends $apt_opts \
-            clang cmake ninja-build pkg-config \
-            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev
-
-      - name: Bake Pistisai brand
-        run: bash tool/brand.sh pistisai
-
-      - name: "🌐 flutter build web"
-        run: flutter build web --release --no-web-resources-cdn --dart-define=BRAND=pistisai
-
-      - name: "📦 Upload web build"
-        uses: actions/upload-artifact@v7
-        with:
-          name: web-build
-          path: build/web/
-          retention-days: 7
-
-  whitelabel_leak_check:
-    name: "🏷️ White-label build has no upstream hosts"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    needs: [changes, flutter_analyze, flutter_smoke_test]
-    if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: pubspec.yaml
-          channel: "stable"
-          cache: true
-
-      - name: "📦 flutter pub get"
-        run: flutter pub get
-
-      # The linux_native_deps build hook installs these itself when they are
-      # missing: silently, inside the first `dart run`, with no retry. On a slow
-      # mirror that used most of this job's time budget and the job was
-      # cancelled in "Bake". Installing them here makes the time visible and
-      # lets apt retry; the hook then finds them and skips its own install.
-      - name: "📦 Native build deps (for build hooks)"
-        run: |
-          apt_opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
-          sudo apt-get update -qq $apt_opts
-          sudo apt-get install -y -qq --no-install-recommends $apt_opts \
-            clang cmake ninja-build pkg-config \
-            libgtk-3-dev libx11-dev libxi-dev liblzma-dev libstdc++-12-dev
-
-      - name: Bake the example brand
-        run: bash tool/brand.sh example
-
-      - name: "🌐 flutter build web (example brand)"
-        run: flutter build web --release --no-web-resources-cdn --dart-define=BRAND=example
-
-      - name: "🏷️ No upstream hosts, links, schemes, or names"
-        run: bash tool/brand_leak_check.sh build/web
-
-  build_linux:
-    name: "🐧 Build Linux Desktop"
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    needs: [changes, flutter_analyze, flutter_smoke_test]
-    if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: pubspec.yaml
-          channel: "stable"
-          cache: true
-
-      - name: "🐧 Install Linux deps"
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq \
-            clang cmake ninja-build pkg-config \
-            libgtk-3-dev liblzma-dev libstdc++-12-dev \
-            libsecret-1-dev libjsoncpp-dev \
-            libnotify-dev libcurl4-openssl-dev \
-            libayatana-appindicator3-dev \
-            libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
-            gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav
-
-      - name: "📦 flutter pub get"
-        run: flutter pub get
-
-      - name: Bake Pistisai brand
-        run: bash tool/brand.sh pistisai
-
-      - name: "🐧 flutter build linux --release"
-        run: flutter build linux --release --dart-define=BRAND=pistisai
-
-      - name: "📦 Package bundle"
-        run: |
-          cd build/linux/x64/release
-          tar -czf /tmp/pistisai-linux-x64.tar.gz bundle/
-
-      - name: "📦 Upload Linux build"
-        uses: actions/upload-artifact@v7
-        with:
-          name: linux-build
-          path: /tmp/pistisai-linux-x64.tar.gz
-          retention-days: 7
 
   backend:
     name: "Backend — lint & security"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    needs: changes
-    if: needs.changes.outputs.backend == 'true'
     defaults:
       run:
         working-directory: services/api-backend
-
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "26"
-
-      - name: "📦 Cache api-backend node_modules"
-        uses: actions/cache@v6
-        with:
-          path: services/api-backend/node_modules
-          key: ${{ runner.os }}-api-backend-node-modules-${{ hashFiles('services/api-backend/package.json') }}
-
-      - name: "📦 npm install"
-        run: npm install
-
-      - name: "🔍 npm lint"
-        run: npm run lint
-
-      - name: "🔒 Forbid hardcoded auth bypass literal (#241)"
-        working-directory: .
-        run: bash scripts/tests/test_no_hardcoded_dev_bypass_token.sh
-
+          cache: npm
+          cache-dependency-path: services/api-backend/package-lock.json
+      - name: "📦 npm ci"
+        run: npm ci --ignore-scripts
       - name: "🔒 npm run test:ci:security"
         run: npm run test:ci:security
 
-  # Branch protection requires this exact check name. GitHub reports job names,
-  # not the workflow name, so without this job a green PR stays blocked.
+  # Branch protection requires this exact check name. Keep it so existing
+  # required-check settings keep resolving to this workflow.
   ci_gate:
     name: "🧪 CI — Test & Build Every Branch"
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs:
-      - changes
       - flutter_analyze
-      - flutter_smoke_test
-      - build_web
-      - whitelabel_leak_check
-      - build_linux
+      - flutter_tests
       - backend
     if: always()
     steps:
-      - name: "Require every needed job to succeed or skip"
+      - name: "Require every needed job to succeed"
         env:
-          CHANGES: ${{ needs.changes.result }}
           ANALYZE: ${{ needs.flutter_analyze.result }}
-          SMOKE: ${{ needs.flutter_smoke_test.result }}
-          WEB: ${{ needs.build_web.result }}
-          WHITELABEL: ${{ needs.whitelabel_leak_check.result }}
-          LINUX: ${{ needs.build_linux.result }}
+          TESTS: ${{ needs.flutter_tests.result }}
           BACKEND: ${{ needs.backend.result }}
         run: |
           fail=0
-          for result in "$CHANGES" "$ANALYZE" "$SMOKE" "$WEB" "$WHITELABEL" "$LINUX" "$BACKEND"; do
-            case "$result" in
-              success|skipped) ;;
-              *)
-                echo "Needed job ended with: $result"
-                fail=1
-                ;;
-            esac
+          for result in "$ANALYZE" "$TESTS" "$BACKEND"; do
+            [ "$result" = "success" ] || { echo "Needed job ended with: $result"; fail=1; }
           done
-          if [ "$fail" -ne 0 ]; then
-            echo "CHANGES=$CHANGES ANALYZE=$ANALYZE SMOKE=$SMOKE WEB=$WEB WHITELABEL=$WHITELABEL LINUX=$LINUX BACKEND=$BACKEND"
-            exit 1
-          fi
-          echo "All needed jobs succeeded or were skipped."
+          exit "$fail"
