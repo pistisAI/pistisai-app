@@ -12,7 +12,13 @@ import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/screens/agents/agents_screen.dart';
 import 'package:pistisai/screens/avatar/avatar_customization_screen.dart';
 import 'package:pistisai/screens/cron/cron_jobs_screen.dart';
+import 'package:pistisai/screens/debug/debug_screen.dart';
+import 'package:pistisai/services/connection_manager_service.dart';
+import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
+import 'package:provider/provider.dart';
 import 'package:pistisai/screens/nodes/nodes_screen.dart';
+import 'package:pistisai/screens/onboarding/steps/welcome_step.dart';
 import 'package:pistisai/screens/settings/llm_provider_settings_screen.dart';
 
 Set<String> _arbKeys(String path) {
@@ -265,5 +271,86 @@ void main() {
         'Environnement actif : Hermes Agent');
     expect(fr.configUpdateAvailable('3.2.0'), 'Mise à jour disponible : 3.2.0');
     expect(fr.configWhatsNew('3.2.0'), 'Nouveautés de la version 3.2.0');
+  });
+
+  test('batch 10 file and debug messages follow each language rules', () {
+    final en = lookupAppLocalizations(const Locale('en'));
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(en.filesDeleteConfirm(1), 'Are you sure you want to delete 1 item?');
+    expect(fr.filesDeleteConfirm(3),
+        'Voulez-vous vraiment supprimer 3 éléments ?');
+    expect(fr.filesSelected(1), '1 sélectionné');
+    expect(fr.filesSizeKb('12.5'), '12.5 Ko');
+    expect(fr.debugModelsAvailable(2), '2 modèles disponibles');
+  });
+
+  testWidgets('the debug screen renders in French for a locked brand',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final connectionManager = ConnectionManagerService(
+      hermesStreamingService: HermesStreamingService(),
+      settingsPreferenceService: SettingsPreferenceService(),
+      autoDetectOnInitialize: false,
+    );
+    addTearDown(connectionManager.dispose);
+    await tester.pumpWidget(
+      ChangeNotifierProvider<ConnectionManagerService>.value(
+        value: connectionManager,
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          locale: const Locale('fr'),
+          localizationsDelegates: brandLocalizationsDelegates,
+          supportedLocales: const [Locale('fr'), Locale('en')],
+          home: const DebugScreen(),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Débogage'), findsOneWidget);
+    expect(find.text('Diagnostic de connexion'), findsOneWidget);
+    expect(find.text('Debug'), findsNothing);
+  });
+
+  test('batch 11 setup wizard messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.wizardStepOf(2, 6), 'Étape 2 sur 6');
+    expect(fr.locationTitle, 'Où Hermes fonctionne-t-il ?');
+    expect(fr.connConnectingTo('http://127.0.0.1:8642'),
+        'Connexion à : http://127.0.0.1:8642');
+    expect(fr.botInstallFailed('agent'), "Échec de l'installation : agent");
+  });
+
+  testWidgets('the setup wizard welcome step renders in French',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        localizationsDelegates: brandLocalizationsDelegates,
+        supportedLocales: [Locale('fr'), Locale('en')],
+        home: Scaffold(body: WelcomeStep()),
+      ),
+    );
+    await tester.pump();
+    expect(find.textContaining('Nous allons configurer votre IA locale'),
+        findsOneWidget);
+    expect(find.textContaining("We'll set up your local AI"), findsNothing);
+  });
+
+  test('batch 12 admin messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.adminUsersShowing(1, 50, 120), 'Utilisateurs 1 à 50 sur 120');
+    expect(fr.adminPageOf(2, 3), 'Page 2 sur 3');
+    expect(fr.adminConversionRate('4.2'), 'Taux de conversion : 4.2 %');
+    expect(fr.adminCountPercent(12, '34.0'), '12 (34.0 %)');
+    expect(fr.adminUserLabel('a@example.com'), 'Utilisateur : a@example.com');
+  });
+
+  test('batch 13 audit and admin messages read naturally in French', () {
+    final fr = lookupAppLocalizations(const Locale('fr'));
+    expect(fr.auditShowing(1, 25, 300), 'Entrées 1 à 25 sur 300');
+    expect(fr.auditFilterFrom('2026-11-01'), 'Du : 2026-11-01');
+    expect(fr.adminsRevokeConfirm(fr.adminsRoleFinance, 'a@example.com'),
+        'Voulez-vous vraiment retirer le rôle Administrateur des finances à a@example.com ?');
+    expect(fr.adminsWeeksAgo(2), 'il y a 2 sem.');
   });
 }

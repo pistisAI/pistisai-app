@@ -2452,4 +2452,1142 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get configNoChangelog => 'Aucune liste des nouveautés disponible';
+
+  @override
+  String get filesTitle => 'Opérations sur les fichiers';
+
+  @override
+  String filesLoadFailed(String error) {
+    return 'Impossible de charger le dossier : $error';
+  }
+
+  @override
+  String get filesNewDirectory => 'Nouveau dossier';
+
+  @override
+  String get filesDirectoryName => 'Nom du dossier';
+
+  @override
+  String get filesDirectoryNameRequired => 'Entrez un nom de dossier';
+
+  @override
+  String filesCreateDirectoryFailed(String error) {
+    return 'Impossible de créer le dossier : $error';
+  }
+
+  @override
+  String get filesNewFile => 'Nouveau fichier';
+
+  @override
+  String get filesFileName => 'Nom du fichier';
+
+  @override
+  String get filesFileNameRequired => 'Entrez un nom de fichier';
+
+  @override
+  String filesCreateFileFailed(String error) {
+    return 'Impossible de créer le fichier : $error';
+  }
+
+  @override
+  String get filesConfirmDelete => 'Confirmer la suppression';
+
+  @override
+  String filesDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Voulez-vous vraiment supprimer $count éléments ?',
+      one: 'Voulez-vous vraiment supprimer $count élément ?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String filesDeleteFailed(String error) {
+    return 'Impossible de supprimer les éléments : $error';
+  }
+
+  @override
+  String filesCopied(String name) {
+    return 'Copié : $name';
+  }
+
+  @override
+  String filesCut(String name) {
+    return 'Coupé : $name';
+  }
+
+  @override
+  String get filesPasted => 'Collé';
+
+  @override
+  String get filesMoved => 'Déplacé';
+
+  @override
+  String filesPasteFailed(String error) {
+    return 'Impossible de coller : $error';
+  }
+
+  @override
+  String get filesRename => 'Renommer';
+
+  @override
+  String get filesNewName => 'Nouveau nom';
+
+  @override
+  String get filesNameRequired => 'Entrez un nom';
+
+  @override
+  String filesRenameFailed(String error) {
+    return 'Impossible de renommer : $error';
+  }
+
+  @override
+  String get filesOk => 'OK';
+
+  @override
+  String filesSizeBytes(String size) {
+    return '$size o';
+  }
+
+  @override
+  String filesSizeKb(String size) {
+    return '$size Ko';
+  }
+
+  @override
+  String filesSizeMb(String size) {
+    return '$size Mo';
+  }
+
+  @override
+  String get filesDirectory => 'Dossier';
+
+  @override
+  String get filesFile => 'Fichier';
+
+  @override
+  String get filesSize => 'Taille';
+
+  @override
+  String get filesModified => 'Modifié le';
+
+  @override
+  String get filesPath => 'Chemin';
+
+  @override
+  String get filesPaste => 'Coller';
+
+  @override
+  String get filesGoHome => 'Dossier de départ';
+
+  @override
+  String filesSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sélectionnés',
+      one: '$count sélectionné',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filesCopy => 'Copier';
+
+  @override
+  String get filesMove => 'Déplacer';
+
+  @override
+  String get filesEmpty => 'Ce dossier est vide';
+
+  @override
+  String get filesDetails => 'Détails';
+
+  @override
+  String get debugTitle => 'Débogage';
+
+  @override
+  String debugLoadFailed(String error) {
+    return 'Impossible de charger les données de débogage : $error';
+  }
+
+  @override
+  String get debugConnectedToGateway => 'Connecté à la passerelle';
+
+  @override
+  String get debugNoModel => 'aucun modèle';
+
+  @override
+  String get debugUnknown => 'inconnu';
+
+  @override
+  String get debugConnectionDebugger => 'Diagnostic de connexion';
+
+  @override
+  String get debugConnectionDebuggerSubtitle =>
+      'Tester la connexion à la passerelle Hermes';
+
+  @override
+  String get debugTesting => 'Test en cours…';
+
+  @override
+  String get debugRunConnectionTest => 'Lancer le test de connexion';
+
+  @override
+  String get debugNoTestsYet =>
+      'Aucun test lancé. Cliquez sur « Lancer le test de connexion » pour vérifier l\'état de la passerelle Hermes.';
+
+  @override
+  String get debugApiInspector => 'Inspecteur d\'API';
+
+  @override
+  String get debugApiInspectorSubtitle =>
+      'Envoyer des requêtes à n\'importe quel point d\'accès';
+
+  @override
+  String get debugMethod => 'Méthode';
+
+  @override
+  String get debugUrl => 'URL';
+
+  @override
+  String get debugBodyJson => 'Corps (JSON)';
+
+  @override
+  String get debugSending => 'Envoi en cours…';
+
+  @override
+  String get debugSendRequest => 'Envoyer la requête';
+
+  @override
+  String get debugNoRequestsYet => 'Aucune requête envoyée.';
+
+  @override
+  String get debugUrlRequired => 'Erreur : l\'URL est obligatoire';
+
+  @override
+  String debugSendingMethod(String method) {
+    return 'Envoi de la requête $method…';
+  }
+
+  @override
+  String get debugServiceStatus => 'État des services';
+
+  @override
+  String get debugServiceStatusSubtitle => 'Vérifications et diagnostics';
+
+  @override
+  String get debugConnectionManager => 'Gestionnaire de connexion';
+
+  @override
+  String get debugHermesGateway => 'Passerelle Hermes';
+
+  @override
+  String get debugActive => 'Active';
+
+  @override
+  String get debugUnreachable => 'Injoignable';
+
+  @override
+  String get debugActiveModel => 'Modèle actif';
+
+  @override
+  String get debugNoneSelected => 'Aucun';
+
+  @override
+  String debugModelsAvailable(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modèles disponibles',
+      one: '$count modèle disponible',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String debugLastError(String error) {
+    return 'Dernière erreur : $error';
+  }
+
+  @override
+  String get debugAuto => 'automatique';
+
+  @override
+  String wizardStepOf(int current, int total) {
+    return 'Étape $current sur $total';
+  }
+
+  @override
+  String get wizardSetUpLater => 'Configurer plus tard';
+
+  @override
+  String get wizardComplete => 'Terminer';
+
+  @override
+  String get wizardLoading => 'Chargement…';
+
+  @override
+  String get wizardNext => 'Suivant';
+
+  @override
+  String get wizardCompletionFailed =>
+      'La configuration n\'a pas pu être terminée. Réessayez.';
+
+  @override
+  String get welcomeStepSubtitle =>
+      'Votre compagnon IA local, qui respecte votre vie privée';
+
+  @override
+  String get welcomeFeatureChat => 'Discussion';
+
+  @override
+  String get welcomeFeatureChatDescription => 'Réponses de l\'IA en direct';
+
+  @override
+  String get welcomeFeatureRuntimes => 'Environnements d\'agents';
+
+  @override
+  String get welcomeFeatureRuntimesDescription =>
+      'Hermes Agent sur cet appareil ou par Tailscale';
+
+  @override
+  String get welcomeFeatureAvatar => 'Avatar évolutif';
+
+  @override
+  String get welcomeFeatureAvatarDescription => 'Compagnon IA personnalisé';
+
+  @override
+  String get welcomeFeatureDesktopDescription =>
+      'Automatisation de l\'interface';
+
+  @override
+  String get welcomeFeatureVisionDescription => 'Compréhension de l\'écran';
+
+  @override
+  String get welcomeStepInfo =>
+      'Nous allons configurer votre IA locale en 2 minutes environ. Tout le traitement se fait en privé sur votre ordinateur.';
+
+  @override
+  String get locationTitle => 'Où Hermes fonctionne-t-il ?';
+
+  @override
+  String get locationSubtitle =>
+      'Hermes peut fonctionner sur cet ordinateur ou sur une autre machine que vous joignez par Tailscale, y compris un serveur privé virtuel (VPS).';
+
+  @override
+  String get locationThisDevice => 'Cet appareil';
+
+  @override
+  String get locationThisDeviceDescription =>
+      'Hermes est installé et fonctionne localement';
+
+  @override
+  String get locationTailscale => 'Appareil Tailscale ou VPS';
+
+  @override
+  String get locationTailscaleDescription =>
+      'Hermes sur un serveur à la maison, un VPS ou une autre machine de votre réseau Tailscale';
+
+  @override
+  String get tailscaleDiscovering => 'Recherche des appareils Tailscale…';
+
+  @override
+  String get tailscaleScanning => 'Analyse de votre réseau Tailscale';
+
+  @override
+  String get tailscaleNoDevices => 'Aucun appareil Tailscale trouvé';
+
+  @override
+  String get tailscaleNoDevicesHelp =>
+      'Vérifiez que Tailscale est installé et connecté.';
+
+  @override
+  String get tailscaleChooseOtherMethod =>
+      'Choisir une autre méthode de connexion';
+
+  @override
+  String get tailscaleSelectServer => 'Choisissez votre serveur Hermes';
+
+  @override
+  String tailscaleSelectServerHelp(String port) {
+    return 'Choisissez le VPS ou la machine qui exécute Hermes sur votre réseau Tailscale (port $port)';
+  }
+
+  @override
+  String get tailscaleNoIp => 'Aucune IP';
+
+  @override
+  String get tailscaleOnline => 'En ligne';
+
+  @override
+  String get urlRemoteSubtitle =>
+      'Confirmez l\'URL Tailscale, puis collez la clé API de votre serveur.';
+
+  @override
+  String get urlLooking => 'Recherche de Hermes sur cet appareil…';
+
+  @override
+  String get urlDetected =>
+      'Hermes fonctionne sur cet appareil. Les informations de connexion ci-dessous ont été détectées automatiquement.';
+
+  @override
+  String urlEnterLocal(String port) {
+    return 'Entrez l\'URL de Hermes Agent pour cet appareil. Le port par défaut est $port.';
+  }
+
+  @override
+  String get urlConnectRemote => 'Se connecter à un Hermes distant';
+
+  @override
+  String get urlConnectLocal => 'Se connecter à Hermes Agent';
+
+  @override
+  String get urlLabel => 'URL de Hermes Agent';
+
+  @override
+  String get urlAutoDetectingKey => 'Détection automatique de la clé API…';
+
+  @override
+  String get urlApiKeyRequired => 'Clé API Hermes (obligatoire)';
+
+  @override
+  String get urlApiKey => 'Clé API Hermes';
+
+  @override
+  String get urlApiKeyRemoteHint =>
+      'Valeur de API_SERVER_KEY sur le serveur distant';
+
+  @override
+  String get urlApiKeyLocalHint =>
+      'Détectée automatiquement dans la configuration de Hermes';
+
+  @override
+  String get urlAutoDiscovered =>
+      'Détectée automatiquement dans la configuration de Hermes';
+
+  @override
+  String get urlSaveContinue => 'Enregistrer et continuer';
+
+  @override
+  String get urlCommandCopied => 'Commande copiée — exécutez-la sur votre VPS';
+
+  @override
+  String get urlRemoteHelp =>
+      'Sur votre VPS, exécutez cette commande et collez le résultat dans le champ de la clé API ci-dessus.';
+
+  @override
+  String get urlCopyCommand => 'Copier la commande';
+
+  @override
+  String get connTesting => 'Test de la connexion…';
+
+  @override
+  String get connDns => 'Résolution DNS';
+
+  @override
+  String get connTcp => 'Connexion TCP';
+
+  @override
+  String get connNotTestedYet => 'Connexion pas encore testée';
+
+  @override
+  String get connTestAction => 'Tester la connexion';
+
+  @override
+  String get connRuntimeApi => 'API de l\'environnement';
+
+  @override
+  String get connUnknown => 'Inconnue';
+
+  @override
+  String get connFailed => 'Échec de la connexion';
+
+  @override
+  String get connRetry => 'Relancer le test';
+
+  @override
+  String get connCheckSettings => 'Vérifier les réglages de connexion';
+
+  @override
+  String connConnectingTo(String url) {
+    return 'Connexion à : $url';
+  }
+
+  @override
+  String get connSuccess => 'Connexion réussie !';
+
+  @override
+  String get connConnectedTo => 'Connecté à :';
+
+  @override
+  String get completionAllSet => 'Tout est prêt !';
+
+  @override
+  String get completionConfigured =>
+      'Votre environnement d\'agent est configuré et prêt à l\'emploi.';
+
+  @override
+  String get completionSaving => 'Enregistrement de la configuration…';
+
+  @override
+  String get completionConfiguration => 'Configuration :';
+
+  @override
+  String get completionRuntime => 'Environnement';
+
+  @override
+  String get completionLocation => 'Emplacement';
+
+  @override
+  String get completionLocal => 'Local';
+
+  @override
+  String get completionRemote => 'Distant';
+
+  @override
+  String get completionReady => 'Prêt à discuter !';
+
+  @override
+  String get completionDone =>
+      'La configuration est terminée. Vous pouvez commencer à discuter !';
+
+  @override
+  String get installStatusInstalled => 'Installé';
+
+  @override
+  String get installStatusSkipped => 'Ignoré';
+
+  @override
+  String get installStatusFailed => 'Échec';
+
+  @override
+  String get providerCustom => 'Personnalisé';
+
+  @override
+  String get botInstallComplete =>
+      'Installation terminée. Toutes les étapes ont réussi ou ont été ignorées.';
+
+  @override
+  String botInstallFailed(String steps) {
+    return 'Échec de l\'installation : $steps';
+  }
+
+  @override
+  String get eventsTitle => 'Flux d\'événements';
+
+  @override
+  String get eventsRunFinished => 'Exécution terminée';
+
+  @override
+  String get eventsNoRuntime => 'Aucun environnement d\'agent connecté';
+
+  @override
+  String get eventsConnectHelp =>
+      'Connectez un environnement Hermes pour voir les événements en direct.';
+
+  @override
+  String get eventsResume => 'Reprendre';
+
+  @override
+  String get eventsPause => 'Pause';
+
+  @override
+  String get eventsWaiting => 'En attente d\'événements de l\'agent…';
+
+  @override
+  String get guiTitle => 'Automatisation de l\'interface';
+
+  @override
+  String get guiScreenshot => 'Capture d\'écran';
+
+  @override
+  String get guiAnalyze => 'Analyser';
+
+  @override
+  String get guiPrompt => 'Que voulez-vous faire ?';
+
+  @override
+  String get guiHint =>
+      'ex. : cliquer sur le bouton de recherche, écrire dans la zone';
+
+  @override
+  String get guiExecute => 'Exécuter';
+
+  @override
+  String get guiResult => 'Résultat';
+
+  @override
+  String get guiLocalRuntime =>
+      'L\'automatisation de l\'interface utilise l\'environnement d\'agent local.';
+
+  @override
+  String guiScreenshotSaved(String path) {
+    return 'Capture enregistrée : $path';
+  }
+
+  @override
+  String get adminUsersTitle => 'Gestion des utilisateurs';
+
+  @override
+  String get adminUsersSubtitle =>
+      'Consulter et gérer les comptes, les abonnements et les autorisations des utilisateurs';
+
+  @override
+  String get adminUsersSearchHint =>
+      'Rechercher par courriel, nom d\'utilisateur ou identifiant…';
+
+  @override
+  String get adminUsersTierFilter => 'Forfait';
+
+  @override
+  String get adminUsersAllTiers => 'Tous les forfaits';
+
+  @override
+  String get adminUsersStatusFilter => 'État du compte';
+
+  @override
+  String get adminUsersAllStatuses => 'Tous les états';
+
+  @override
+  String get adminStatusActive => 'Actif';
+
+  @override
+  String get adminStatusSuspended => 'Suspendu';
+
+  @override
+  String get adminStatusDeleted => 'Supprimé';
+
+  @override
+  String get adminUsersSortBy => 'Trier par';
+
+  @override
+  String get adminUsersSortRegistration => 'Date d\'inscription';
+
+  @override
+  String get adminUsersLastLogin => 'Dernière connexion';
+
+  @override
+  String get adminEmail => 'Courriel';
+
+  @override
+  String get adminUsersAscending => 'Croissant';
+
+  @override
+  String get adminUsersDescending => 'Décroissant';
+
+  @override
+  String get adminUsersNoPermissionView =>
+      'Vous n\'avez pas l\'autorisation de consulter les utilisateurs';
+
+  @override
+  String adminUsersLoadFailed(String error) {
+    return 'Impossible de charger les utilisateurs : $error';
+  }
+
+  @override
+  String get adminUsersNone => 'Aucun utilisateur trouvé';
+
+  @override
+  String get adminUsername => 'Nom d\'utilisateur';
+
+  @override
+  String get adminSubscription => 'Abonnement';
+
+  @override
+  String get adminRegistered => 'Inscrit le';
+
+  @override
+  String get adminNotAvailable => 'S. O.';
+
+  @override
+  String get adminViewDetails => 'Voir les détails';
+
+  @override
+  String get adminSuspend => 'Suspendre';
+
+  @override
+  String get adminReactivate => 'Réactiver';
+
+  @override
+  String adminUsersShowing(int from, int to, int total) {
+    return 'Utilisateurs $from à $to sur $total';
+  }
+
+  @override
+  String adminPageOf(int page, int total) {
+    return 'Page $page sur $total';
+  }
+
+  @override
+  String adminUserDetailsLoadFailed(String error) {
+    return 'Impossible de charger les détails de l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminUserDetails => 'Détails de l\'utilisateur';
+
+  @override
+  String get adminNoUserDetails => 'Aucun détail disponible';
+
+  @override
+  String get adminProfileInfo => 'Profil';
+
+  @override
+  String get adminUserId => 'Identifiant de l\'utilisateur';
+
+  @override
+  String get adminSubscriptionInfo => 'Abonnement';
+
+  @override
+  String get adminTier => 'Forfait';
+
+  @override
+  String get adminPeriodStart => 'Début de la période en cours';
+
+  @override
+  String get adminPeriodEnd => 'Fin de la période en cours';
+
+  @override
+  String get adminCancellation => 'Annulation';
+
+  @override
+  String get adminCancelAtPeriodEnd => 'Prévue à la fin de la période';
+
+  @override
+  String get adminRecentPayments => 'Paiements récents';
+
+  @override
+  String get adminActiveSessions => 'Sessions actives';
+
+  @override
+  String get adminRecentActivity => 'Activité récente';
+
+  @override
+  String get adminDate => 'Date';
+
+  @override
+  String get adminAmount => 'Montant';
+
+  @override
+  String get adminMethod => 'Méthode';
+
+  @override
+  String get adminIpAddress => 'Adresse IP';
+
+  @override
+  String get adminUserAgent => 'Navigateur (User-Agent)';
+
+  @override
+  String get adminLastActive => 'Dernière activité';
+
+  @override
+  String get adminUnknownAction => 'Action inconnue';
+
+  @override
+  String get adminInvalidDate => 'Date invalide';
+
+  @override
+  String get adminNoPermissionEdit =>
+      'Vous n\'avez pas l\'autorisation de modifier les utilisateurs';
+
+  @override
+  String get adminSubscriptionUpdated =>
+      'Abonnement de l\'utilisateur mis à jour';
+
+  @override
+  String adminUpdateFailed(String error) {
+    return 'Impossible de mettre à jour l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminEditSubscriptionTitle =>
+      'Modifier l\'abonnement de l\'utilisateur';
+
+  @override
+  String adminUserLabel(String email) {
+    return 'Utilisateur : $email';
+  }
+
+  @override
+  String get adminSuspendReasonMissing => 'Indiquez la raison de la suspension';
+
+  @override
+  String get adminNoPermissionSuspend =>
+      'Vous n\'avez pas l\'autorisation de suspendre des utilisateurs';
+
+  @override
+  String get adminSuspended => 'Utilisateur suspendu';
+
+  @override
+  String adminSuspendFailed(String error) {
+    return 'Impossible de suspendre l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminSuspendTitle => 'Suspendre le compte';
+
+  @override
+  String get adminSuspendWarning =>
+      'Le compte sera suspendu et l\'utilisateur ne pourra plus accéder à l\'application.';
+
+  @override
+  String get adminSuspendReason => 'Raison de la suspension *';
+
+  @override
+  String get adminSuspendReasonHint =>
+      'Indiquez pourquoi ce compte est suspendu';
+
+  @override
+  String get adminNoPermissionReactivate =>
+      'Vous n\'avez pas l\'autorisation de réactiver des utilisateurs';
+
+  @override
+  String get adminReactivated => 'Utilisateur réactivé';
+
+  @override
+  String adminReactivateFailed(String error) {
+    return 'Impossible de réactiver l\'utilisateur : $error';
+  }
+
+  @override
+  String get adminReactivateTitle => 'Réactiver le compte';
+
+  @override
+  String get adminReactivateInfo =>
+      'Le compte sera réactivé et l\'utilisateur retrouvera l\'accès à l\'application.';
+
+  @override
+  String get adminDashboardTitle => 'Tableau de bord';
+
+  @override
+  String get adminRefreshMetrics => 'Actualiser les indicateurs';
+
+  @override
+  String get adminTotalUsers => 'Utilisateurs au total';
+
+  @override
+  String adminNewThisMonth(String count) {
+    return '$count nouveaux ce mois-ci';
+  }
+
+  @override
+  String get adminActiveUsers => 'Utilisateurs actifs';
+
+  @override
+  String adminPercentOfTotal(String percent) {
+    return '$percent % du total';
+  }
+
+  @override
+  String get adminMrr => 'Revenu mensuel récurrent';
+
+  @override
+  String adminFromSubscribers(String count) {
+    return 'Provenant de $count abonnés';
+  }
+
+  @override
+  String get adminCurrentMonthRevenue => 'Revenu du mois en cours';
+
+  @override
+  String adminTransactionsCount(String count) {
+    return '$count transactions';
+  }
+
+  @override
+  String get adminSubscriptionDistribution => 'Répartition des abonnements';
+
+  @override
+  String adminConversionRate(String rate) {
+    return 'Taux de conversion : $rate %';
+  }
+
+  @override
+  String get adminTierFree => 'Gratuit';
+
+  @override
+  String get adminTierPremium => 'Premium';
+
+  @override
+  String get adminTierEnterprise => 'Entreprise';
+
+  @override
+  String adminCountPercent(int count, String percent) {
+    return '$count ($percent %)';
+  }
+
+  @override
+  String get adminNoRecentTransactions => 'Aucune transaction récente';
+
+  @override
+  String get adminRecentTransactions => 'Transactions récentes';
+
+  @override
+  String adminToday(String time) {
+    return 'Aujourd\'hui $time';
+  }
+
+  @override
+  String get adminYesterday => 'Hier';
+
+  @override
+  String adminDaysAgo(int days) {
+    return 'il y a $days jours';
+  }
+
+  @override
+  String auditLoadDetailsFailed(String error) {
+    return 'Impossible de charger les détails de l\'entrée : $error';
+  }
+
+  @override
+  String get auditExported => 'Journal d\'audit exporté';
+
+  @override
+  String auditExportFailed(String error) {
+    return 'Impossible d\'exporter le journal : $error';
+  }
+
+  @override
+  String get auditTitle => 'Journal d\'audit';
+
+  @override
+  String get auditFilters => 'Filtres';
+
+  @override
+  String get auditExportCsv => 'Exporter en CSV';
+
+  @override
+  String auditFilterAdmin(String value) {
+    return 'Administrateur : $value';
+  }
+
+  @override
+  String auditFilterAction(String value) {
+    return 'Action : $value';
+  }
+
+  @override
+  String auditFilterResource(String value) {
+    return 'Ressource : $value';
+  }
+
+  @override
+  String auditFilterAffectedUser(String value) {
+    return 'Utilisateur visé : $value';
+  }
+
+  @override
+  String auditFilterFrom(String date) {
+    return 'Du : $date';
+  }
+
+  @override
+  String auditFilterTo(String date) {
+    return 'Au : $date';
+  }
+
+  @override
+  String auditFilterSeverity(String value) {
+    return 'Gravité : $value';
+  }
+
+  @override
+  String get auditTimestamp => 'Horodatage';
+
+  @override
+  String get auditAction => 'Action';
+
+  @override
+  String get auditResource => 'Ressource';
+
+  @override
+  String get auditAdmin => 'Administrateur';
+
+  @override
+  String get auditAffectedUser => 'Utilisateur visé';
+
+  @override
+  String get auditSeverity => 'Gravité';
+
+  @override
+  String auditShowing(int from, int to, int total) {
+    return 'Entrées $from à $to sur $total';
+  }
+
+  @override
+  String auditError(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String get auditNone => 'Aucune entrée trouvée dans le journal';
+
+  @override
+  String get auditClearFilters => 'Effacer les filtres';
+
+  @override
+  String get auditFilterTitle => 'Filtrer le journal d\'audit';
+
+  @override
+  String get auditAdminUserId => 'Identifiant de l\'administrateur';
+
+  @override
+  String get auditAdminUserIdHint =>
+      'Filtrer par identifiant d\'administrateur';
+
+  @override
+  String get auditActionHint => 'ex. : user_suspended, refund_processed';
+
+  @override
+  String get auditResourceType => 'Type de ressource';
+
+  @override
+  String get auditResourceTypeHint => 'ex. : user, subscription, transaction';
+
+  @override
+  String get auditAffectedUserId => 'Identifiant de l\'utilisateur visé';
+
+  @override
+  String get auditAffectedUserIdHint =>
+      'Filtrer par identifiant de l\'utilisateur visé';
+
+  @override
+  String get auditDateRange => 'Période';
+
+  @override
+  String get auditStartDate => 'Date de début';
+
+  @override
+  String get auditEndDate => 'Date de fin';
+
+  @override
+  String get auditAllSeverities => 'Toutes les gravités';
+
+  @override
+  String get auditClearAll => 'Tout effacer';
+
+  @override
+  String get auditDetailsTitle => 'Détails de l\'entrée';
+
+  @override
+  String get auditLogId => 'Identifiant de l\'entrée';
+
+  @override
+  String get auditResourceId => 'Identifiant de la ressource';
+
+  @override
+  String get auditAdminUser => 'Administrateur';
+
+  @override
+  String get auditRole => 'Rôle';
+
+  @override
+  String get auditActionDetails => 'Détails de l\'action';
+
+  @override
+  String adminsLoadFailed(String error) {
+    return 'Impossible de charger les administrateurs : $error';
+  }
+
+  @override
+  String get adminsRevokeTitle => 'Retirer le rôle d\'administrateur';
+
+  @override
+  String adminsRevokeConfirm(String role, String email) {
+    return 'Voulez-vous vraiment retirer le rôle $role à $email ?';
+  }
+
+  @override
+  String get adminsRevoke => 'Retirer';
+
+  @override
+  String get adminsRevoked => 'Rôle d\'administrateur retiré';
+
+  @override
+  String adminsRevokeFailed(String error) {
+    return 'Impossible de retirer le rôle : $error';
+  }
+
+  @override
+  String get adminsRoleSuper => 'Super administrateur';
+
+  @override
+  String get adminsRoleSupport => 'Administrateur du soutien';
+
+  @override
+  String get adminsRoleFinance => 'Administrateur des finances';
+
+  @override
+  String get adminsSuperRequired => 'Accès super administrateur requis';
+
+  @override
+  String get adminsSuperRequiredBody =>
+      'Seuls les super administrateurs peuvent gérer les comptes d\'administrateur.';
+
+  @override
+  String get adminsTitle => 'Gestion des administrateurs';
+
+  @override
+  String get adminsSubtitle =>
+      'Gérer les comptes et les rôles d\'administrateur';
+
+  @override
+  String get adminsAdd => 'Ajouter un administrateur';
+
+  @override
+  String get adminsNone => 'Aucun administrateur trouvé';
+
+  @override
+  String get adminsTotalActions => 'Actions au total';
+
+  @override
+  String get adminsRecent30d => 'Récentes (30 j)';
+
+  @override
+  String get adminsLastAction => 'Dernière action';
+
+  @override
+  String get adminsToday => 'Aujourd\'hui';
+
+  @override
+  String adminsWeeksAgo(int weeks) {
+    return 'il y a $weeks sem.';
+  }
+
+  @override
+  String adminsMonthsAgo(int months) {
+    return 'il y a $months mois';
+  }
+
+  @override
+  String get adminsUnknown => 'Inconnue';
+
+  @override
+  String get adminsAssigned => 'Rôle d\'administrateur attribué';
+
+  @override
+  String get adminsAddTitle => 'Ajouter un administrateur';
+
+  @override
+  String get adminsEmailAddress => 'Adresse courriel';
+
+  @override
+  String get adminsEmailRequired => 'Le courriel est obligatoire';
+
+  @override
+  String get adminsEmailInvalid => 'Adresse courriel invalide';
+
+  @override
+  String get adminsSelectRole => 'Choisir un rôle';
+
+  @override
+  String get adminsSupportDescription => 'Gestion des utilisateurs et soutien';
+
+  @override
+  String get adminsFinanceDescription =>
+      'Paiements, remboursements et rapports';
 }

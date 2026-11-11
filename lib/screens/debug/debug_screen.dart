@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/app_config.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/connection_manager_service.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
@@ -26,7 +27,10 @@ class DebugScreen extends StatefulWidget {
 
 class _DebugScreenState extends State<DebugScreen> {
   bool _isLoading = false;
-  String? _errorMessage;
+
+  /// Error raised while loading, formatted in build so the message follows
+  /// the current locale.
+  Object? _loadError;
 
   final Set<String> _expandedPanels = {};
   String _connectionLog = '';
@@ -57,7 +61,7 @@ class _DebugScreenState extends State<DebugScreen> {
   Future<void> _loadData() async {
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
+      _loadError = null;
     });
 
     try {
@@ -70,7 +74,7 @@ class _DebugScreenState extends State<DebugScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load debug data: $e';
+          _loadError = e;
           _isLoading = false;
         });
       }
@@ -208,15 +212,16 @@ class _DebugScreenState extends State<DebugScreen> {
 
   /// Send an API request using the inspector.
   Future<void> _sendApiRequest() async {
+    final l10n = AppLocalizations.of(context);
     final url = _apiUrlController.text.trim();
     if (url.isEmpty) {
-      setState(() => _apiResponse = 'Error: URL is required');
+      setState(() => _apiResponse = l10n.debugUrlRequired);
       return;
     }
 
     setState(() {
       _isSendingRequest = true;
-      _apiResponse = 'Sending $_apiMethod request...';
+      _apiResponse = l10n.debugSendingMethod(_apiMethod);
     });
 
     try {
@@ -312,55 +317,60 @@ class _DebugScreenState extends State<DebugScreen> {
   @override
   Widget build(BuildContext context) {
     final connService = context.watch<ConnectionManagerService>();
+    final l10n = AppLocalizations.of(context);
+    final errorMessage =
+        _loadError != null ? l10n.debugLoadFailed('$_loadError') : null;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Debug'),
+        title: Text(l10n.debugTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _loadData,
-            tooltip: 'Refresh',
+            tooltip: l10n.commonRefresh,
           ),
           const PopOutButton(sectionName: 'debug', branchIndex: 11),
         ],
       ),
       body: RefreshableScreen(
         onRefresh: _loadData,
-        errorMessage: _errorMessage,
+        errorMessage: errorMessage,
         child: _isLoading
             ? const LoadingSkeleton(itemCount: 3)
-            : _buildContent(connService),
+            : _buildContent(l10n, connService),
       ),
     );
   }
 
-  Widget _buildContent(ConnectionManagerService connService) {
+  Widget _buildContent(
+      AppLocalizations l10n, ConnectionManagerService connService) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Connection status banner
-          _buildConnectionBanner(connService),
+          _buildConnectionBanner(l10n, connService),
           const SizedBox(height: 16),
 
           // Connection Debugger Panel
-          _buildConnectionDebugger(),
+          _buildConnectionDebugger(l10n),
           const SizedBox(height: 8),
 
           // API Inspector Panel
-          _buildApiInspector(),
+          _buildApiInspector(l10n),
           const SizedBox(height: 8),
 
           // Service Status Panel
-          _buildServiceStatus(connService),
+          _buildServiceStatus(l10n, connService),
         ],
       ),
     );
   }
 
-  Widget _buildConnectionBanner(ConnectionManagerService connService) {
+  Widget _buildConnectionBanner(
+      AppLocalizations l10n, ConnectionManagerService connService) {
     final isConnected = connService.isConnected;
     return Container(
       padding: const EdgeInsets.all(12),
@@ -379,7 +389,9 @@ class _DebugScreenState extends State<DebugScreen> {
         children: [
           Icon(
             isConnected ? Icons.cloud_done : Icons.cloud_off,
-            color: isConnected ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
+            color: isConnected
+                ? AppTheme.colorsOf(context).success
+                : AppTheme.colorsOf(context).danger,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -387,15 +399,19 @@ class _DebugScreenState extends State<DebugScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isConnected ? 'Connected to Gateway' : 'Disconnected',
+                  isConnected
+                      ? l10n.debugConnectedToGateway
+                      : l10n.commonDisconnected,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: isConnected ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
+                        color: isConnected
+                            ? AppTheme.colorsOf(context).success
+                            : AppTheme.colorsOf(context).danger,
                         fontWeight: FontWeight.w600,
                       ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${AppConfig.defaultGatewayUrl} • ${connService.selectedModel ?? "no model"}',
+                  '${AppConfig.defaultGatewayUrl} • ${connService.selectedModel ?? l10n.debugNoModel}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).textTheme.bodySmall?.color,
                       ),
@@ -405,18 +421,18 @@ class _DebugScreenState extends State<DebugScreen> {
           ),
           StatusBadge(
             status: isConnected ? StatusType.active : StatusType.stopped,
-            label: connService.healthStatus ?? 'unknown',
+            label: connService.healthStatus ?? l10n.debugUnknown,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildConnectionDebugger() {
+  Widget _buildConnectionDebugger(AppLocalizations l10n) {
     return Card(
       child: ExpansionTile(
-        title: const Text('Connection Debugger'),
-        subtitle: const Text('Test Hermes gateway connectivity'),
+        title: Text(l10n.debugConnectionDebugger),
+        subtitle: Text(l10n.debugConnectionDebuggerSubtitle),
         leading: const Icon(Icons.wifi_tethering),
         initiallyExpanded: _expandedPanels.contains('connection'),
         onExpansionChanged: (expanded) {
@@ -443,8 +459,8 @@ class _DebugScreenState extends State<DebugScreen> {
                         )
                       : const Icon(Icons.speed),
                   label: Text(_isTestingConnection
-                      ? 'Testing...'
-                      : 'Run Connection Test'),
+                      ? l10n.debugTesting
+                      : l10n.debugRunConnectionTest),
                   onPressed: _isTestingConnection ? null : _testConnection,
                 ),
                 const SizedBox(height: 12),
@@ -459,7 +475,7 @@ class _DebugScreenState extends State<DebugScreen> {
                   constraints: const BoxConstraints(minHeight: 120),
                   child: _connectionLog.isEmpty
                       ? Text(
-                          'No tests run yet. Click "Run Connection Test" to check Hermes gateway health.',
+                          l10n.debugNoTestsYet,
                           style: Theme.of(context)
                               .textTheme
                               .bodySmall
@@ -485,11 +501,11 @@ class _DebugScreenState extends State<DebugScreen> {
     );
   }
 
-  Widget _buildApiInspector() {
+  Widget _buildApiInspector(AppLocalizations l10n) {
     return Card(
       child: ExpansionTile(
-        title: const Text('API Inspector'),
-        subtitle: const Text('Send requests to any endpoint'),
+        title: Text(l10n.debugApiInspector),
+        subtitle: Text(l10n.debugApiInspectorSubtitle),
         leading: const Icon(Icons.api),
         initiallyExpanded: _expandedPanels.contains('api'),
         onExpansionChanged: (expanded) {
@@ -535,9 +551,9 @@ class _DebugScreenState extends State<DebugScreen> {
                       width: 100,
                       child: DropdownButtonFormField<String>(
                         initialValue: _apiMethod,
-                        decoration: const InputDecoration(
-                          labelText: 'Method',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.debugMethod,
+                          border: const OutlineInputBorder(),
                           isDense: true,
                         ),
                         items: ['GET', 'POST', 'PUT', 'DELETE']
@@ -555,9 +571,9 @@ class _DebugScreenState extends State<DebugScreen> {
                     Expanded(
                       child: TextField(
                         controller: _apiUrlController,
-                        decoration: const InputDecoration(
-                          labelText: 'URL',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.debugUrl,
+                          border: const OutlineInputBorder(),
                           isDense: true,
                           hintText: 'http://localhost:8642/v1/models',
                         ),
@@ -572,9 +588,9 @@ class _DebugScreenState extends State<DebugScreen> {
                   TextField(
                     controller: _apiBodyController,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'Body (JSON)',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.debugBodyJson,
+                      border: const OutlineInputBorder(),
                       isDense: true,
                       hintText: '{"input": "hello", "model": "default"}',
                     ),
@@ -593,8 +609,9 @@ class _DebugScreenState extends State<DebugScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.send),
-                  label:
-                      Text(_isSendingRequest ? 'Sending...' : 'Send Request'),
+                  label: Text(_isSendingRequest
+                      ? l10n.debugSending
+                      : l10n.debugSendRequest),
                   onPressed: _isSendingRequest ? null : _sendApiRequest,
                 ),
                 const SizedBox(height: 12),
@@ -611,7 +628,7 @@ class _DebugScreenState extends State<DebugScreen> {
                   constraints: const BoxConstraints(minHeight: 120),
                   child: _apiResponse.isEmpty
                       ? Text(
-                          'No requests sent yet.',
+                          l10n.debugNoRequestsYet,
                           style: Theme.of(context).textTheme.bodySmall,
                         )
                       : SelectableText(
@@ -630,11 +647,12 @@ class _DebugScreenState extends State<DebugScreen> {
     );
   }
 
-  Widget _buildServiceStatus(ConnectionManagerService connService) {
+  Widget _buildServiceStatus(
+      AppLocalizations l10n, ConnectionManagerService connService) {
     return Card(
       child: ExpansionTile(
-        title: const Text('Service Status'),
-        subtitle: const Text('Health checks and diagnostics'),
+        title: Text(l10n.debugServiceStatus),
+        subtitle: Text(l10n.debugServiceStatusSubtitle),
         leading: const Icon(Icons.health_and_safety),
         initiallyExpanded: _expandedPanels.contains('services'),
         onExpansionChanged: (expanded) {
@@ -653,33 +671,39 @@ class _DebugScreenState extends State<DebugScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildServiceTile(
-                  name: 'Connection Manager',
-                  status:
-                      connService.isConnected ? 'Connected' : 'Disconnected',
+                  name: l10n.debugConnectionManager,
+                  status: connService.isConnected
+                      ? l10n.commonConnected
+                      : l10n.commonDisconnected,
                   isHealthy: connService.isConnected,
-                  details: connService.preferredConnectionType ?? 'auto',
+                  details:
+                      connService.preferredConnectionType ?? l10n.debugAuto,
                 ),
                 const Divider(),
                 _buildServiceTile(
-                  name: 'Hermes Gateway',
-                  status: connService.isConnected ? 'Active' : 'Unreachable',
+                  name: l10n.debugHermesGateway,
+                  status: connService.isConnected
+                      ? l10n.debugActive
+                      : l10n.debugUnreachable,
                   isHealthy: connService.isConnected,
                   details: AppConfig.defaultGatewayUrl,
                 ),
                 const Divider(),
                 _buildServiceTile(
-                  name: 'Active Model',
-                  status: connService.selectedModel ?? 'None selected',
+                  name: l10n.debugActiveModel,
+                  status: connService.selectedModel ?? l10n.debugNoneSelected,
                   isHealthy: connService.selectedModel != null,
-                  details:
-                      '${connService.availableModels.length} models available',
+                  details: l10n
+                      .debugModelsAvailable(connService.availableModels.length),
                 ),
                 if (connService.lastError != null) ...[
                   const Divider(),
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppTheme.colorsOf(context).danger.withValues(alpha: 0.1),
+                      color: AppTheme.colorsOf(context)
+                          .danger
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -689,11 +713,12 @@ class _DebugScreenState extends State<DebugScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Last error: ${connService.lastError}',
+                            l10n.debugLastError('${connService.lastError}'),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall
-                                ?.copyWith(color: AppTheme.colorsOf(context).danger),
+                                ?.copyWith(
+                                    color: AppTheme.colorsOf(context).danger),
                           ),
                         ),
                       ],

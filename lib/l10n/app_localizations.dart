@@ -4375,6 +4375,1944 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No changelog available'**
   String get configNoChangelog;
+
+  /// No description provided for @filesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'File Operations'**
+  String get filesTitle;
+
+  /// No description provided for @filesLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load directory: {error}'**
+  String filesLoadFailed(String error);
+
+  /// No description provided for @filesNewDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'New Directory'**
+  String get filesNewDirectory;
+
+  /// No description provided for @filesDirectoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory Name'**
+  String get filesDirectoryName;
+
+  /// No description provided for @filesDirectoryNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a directory name'**
+  String get filesDirectoryNameRequired;
+
+  /// No description provided for @filesCreateDirectoryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create directory: {error}'**
+  String filesCreateDirectoryFailed(String error);
+
+  /// No description provided for @filesNewFile.
+  ///
+  /// In en, this message translates to:
+  /// **'New File'**
+  String get filesNewFile;
+
+  /// No description provided for @filesFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'File Name'**
+  String get filesFileName;
+
+  /// No description provided for @filesFileNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a file name'**
+  String get filesFileNameRequired;
+
+  /// No description provided for @filesCreateFileFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create file: {error}'**
+  String filesCreateFileFailed(String error);
+
+  /// No description provided for @filesConfirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get filesConfirmDelete;
+
+  /// No description provided for @filesDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Are you sure you want to delete 1 item?} other{Are you sure you want to delete {count} items?}}'**
+  String filesDeleteConfirm(int count);
+
+  /// No description provided for @filesDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete items: {error}'**
+  String filesDeleteFailed(String error);
+
+  /// No description provided for @filesCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied: {name}'**
+  String filesCopied(String name);
+
+  /// No description provided for @filesCut.
+  ///
+  /// In en, this message translates to:
+  /// **'Cut: {name}'**
+  String filesCut(String name);
+
+  /// No description provided for @filesPasted.
+  ///
+  /// In en, this message translates to:
+  /// **'Pasted successfully'**
+  String get filesPasted;
+
+  /// No description provided for @filesMoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved successfully'**
+  String get filesMoved;
+
+  /// No description provided for @filesPasteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to paste: {error}'**
+  String filesPasteFailed(String error);
+
+  /// No description provided for @filesRename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get filesRename;
+
+  /// No description provided for @filesNewName.
+  ///
+  /// In en, this message translates to:
+  /// **'New Name'**
+  String get filesNewName;
+
+  /// No description provided for @filesNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
+  String get filesNameRequired;
+
+  /// No description provided for @filesRenameFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to rename: {error}'**
+  String filesRenameFailed(String error);
+
+  /// No description provided for @filesOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get filesOk;
+
+  /// No description provided for @filesSizeBytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} B'**
+  String filesSizeBytes(String size);
+
+  /// No description provided for @filesSizeKb.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String filesSizeKb(String size);
+
+  /// No description provided for @filesSizeMb.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB'**
+  String filesSizeMb(String size);
+
+  /// No description provided for @filesDirectory.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory'**
+  String get filesDirectory;
+
+  /// No description provided for @filesFile.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get filesFile;
+
+  /// No description provided for @filesSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get filesSize;
+
+  /// No description provided for @filesModified.
+  ///
+  /// In en, this message translates to:
+  /// **'Modified'**
+  String get filesModified;
+
+  /// No description provided for @filesPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Path'**
+  String get filesPath;
+
+  /// No description provided for @filesPaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get filesPaste;
+
+  /// No description provided for @filesGoHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Home'**
+  String get filesGoHome;
+
+  /// No description provided for @filesSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String filesSelected(int count);
+
+  /// No description provided for @filesCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get filesCopy;
+
+  /// No description provided for @filesMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Move'**
+  String get filesMove;
+
+  /// No description provided for @filesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This folder is empty'**
+  String get filesEmpty;
+
+  /// No description provided for @filesDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get filesDetails;
+
+  /// No description provided for @debugTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug'**
+  String get debugTitle;
+
+  /// No description provided for @debugLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load debug data: {error}'**
+  String debugLoadFailed(String error);
+
+  /// No description provided for @debugConnectedToGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to Gateway'**
+  String get debugConnectedToGateway;
+
+  /// No description provided for @debugNoModel.
+  ///
+  /// In en, this message translates to:
+  /// **'no model'**
+  String get debugNoModel;
+
+  /// No description provided for @debugUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown'**
+  String get debugUnknown;
+
+  /// No description provided for @debugConnectionDebugger.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Debugger'**
+  String get debugConnectionDebugger;
+
+  /// No description provided for @debugConnectionDebuggerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Hermes gateway connectivity'**
+  String get debugConnectionDebuggerSubtitle;
+
+  /// No description provided for @debugTesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Testing...'**
+  String get debugTesting;
+
+  /// No description provided for @debugRunConnectionTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Connection Test'**
+  String get debugRunConnectionTest;
+
+  /// No description provided for @debugNoTestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No tests run yet. Click \"Run Connection Test\" to check Hermes gateway health.'**
+  String get debugNoTestsYet;
+
+  /// No description provided for @debugApiInspector.
+  ///
+  /// In en, this message translates to:
+  /// **'API Inspector'**
+  String get debugApiInspector;
+
+  /// No description provided for @debugApiInspectorSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send requests to any endpoint'**
+  String get debugApiInspectorSubtitle;
+
+  /// No description provided for @debugMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get debugMethod;
+
+  /// No description provided for @debugUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get debugUrl;
+
+  /// No description provided for @debugBodyJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Body (JSON)'**
+  String get debugBodyJson;
+
+  /// No description provided for @debugSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get debugSending;
+
+  /// No description provided for @debugSendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get debugSendRequest;
+
+  /// No description provided for @debugNoRequestsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests sent yet.'**
+  String get debugNoRequestsYet;
+
+  /// No description provided for @debugUrlRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: URL is required'**
+  String get debugUrlRequired;
+
+  /// No description provided for @debugSendingMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending {method} request...'**
+  String debugSendingMethod(String method);
+
+  /// No description provided for @debugServiceStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Status'**
+  String get debugServiceStatus;
+
+  /// No description provided for @debugServiceStatusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Health checks and diagnostics'**
+  String get debugServiceStatusSubtitle;
+
+  /// No description provided for @debugConnectionManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Manager'**
+  String get debugConnectionManager;
+
+  /// No description provided for @debugHermesGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes Gateway'**
+  String get debugHermesGateway;
+
+  /// No description provided for @debugActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get debugActive;
+
+  /// No description provided for @debugUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unreachable'**
+  String get debugUnreachable;
+
+  /// No description provided for @debugActiveModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Model'**
+  String get debugActiveModel;
+
+  /// No description provided for @debugNoneSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'None selected'**
+  String get debugNoneSelected;
+
+  /// No description provided for @debugModelsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 model available} other{{count} models available}}'**
+  String debugModelsAvailable(int count);
+
+  /// No description provided for @debugLastError.
+  ///
+  /// In en, this message translates to:
+  /// **'Last error: {error}'**
+  String debugLastError(String error);
+
+  /// No description provided for @debugAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'auto'**
+  String get debugAuto;
+
+  /// No description provided for @wizardStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String wizardStepOf(int current, int total);
+
+  /// No description provided for @wizardSetUpLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up later'**
+  String get wizardSetUpLater;
+
+  /// No description provided for @wizardComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get wizardComplete;
+
+  /// No description provided for @wizardLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get wizardLoading;
+
+  /// No description provided for @wizardNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get wizardNext;
+
+  /// No description provided for @wizardCompletionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup could not be completed right now. Please try again.'**
+  String get wizardCompletionFailed;
+
+  /// No description provided for @welcomeStepSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your privacy-first local AI companion'**
+  String get welcomeStepSubtitle;
+
+  /// No description provided for @welcomeFeatureChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get welcomeFeatureChat;
+
+  /// No description provided for @welcomeFeatureChatDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Streaming AI responses'**
+  String get welcomeFeatureChatDescription;
+
+  /// No description provided for @welcomeFeatureRuntimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Runtimes'**
+  String get welcomeFeatureRuntimes;
+
+  /// No description provided for @welcomeFeatureRuntimesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes Agent on this device or over Tailscale'**
+  String get welcomeFeatureRuntimesDescription;
+
+  /// No description provided for @welcomeFeatureAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Evolving Avatar'**
+  String get welcomeFeatureAvatar;
+
+  /// No description provided for @welcomeFeatureAvatarDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized AI companion'**
+  String get welcomeFeatureAvatarDescription;
+
+  /// No description provided for @welcomeFeatureDesktopDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'GUI automation'**
+  String get welcomeFeatureDesktopDescription;
+
+  /// No description provided for @welcomeFeatureVisionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen understanding'**
+  String get welcomeFeatureVisionDescription;
+
+  /// No description provided for @welcomeStepInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.'**
+  String get welcomeStepInfo;
+
+  /// No description provided for @locationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where is Hermes running?'**
+  String get locationTitle;
+
+  /// No description provided for @locationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.'**
+  String get locationSubtitle;
+
+  /// No description provided for @locationThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device'**
+  String get locationThisDevice;
+
+  /// No description provided for @locationThisDeviceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes is installed and running locally'**
+  String get locationThisDeviceDescription;
+
+  /// No description provided for @locationTailscale.
+  ///
+  /// In en, this message translates to:
+  /// **'Tailscale device or VPS'**
+  String get locationTailscale;
+
+  /// No description provided for @locationTailscaleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes on a home server, VPS, or other machine on your tailnet'**
+  String get locationTailscaleDescription;
+
+  /// No description provided for @tailscaleDiscovering.
+  ///
+  /// In en, this message translates to:
+  /// **'Discovering Tailscale devices...'**
+  String get tailscaleDiscovering;
+
+  /// No description provided for @tailscaleScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning your tailnet'**
+  String get tailscaleScanning;
+
+  /// No description provided for @tailscaleNoDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No Tailscale Devices Found'**
+  String get tailscaleNoDevices;
+
+  /// No description provided for @tailscaleNoDevicesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure Tailscale is installed and logged in.'**
+  String get tailscaleNoDevicesHelp;
+
+  /// No description provided for @tailscaleChooseOtherMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose different connection method'**
+  String get tailscaleChooseOtherMethod;
+
+  /// No description provided for @tailscaleSelectServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your Hermes server'**
+  String get tailscaleSelectServer;
+
+  /// No description provided for @tailscaleSelectServerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the VPS or machine running Hermes on your tailnet (port {port})'**
+  String tailscaleSelectServerHelp(String port);
+
+  /// No description provided for @tailscaleNoIp.
+  ///
+  /// In en, this message translates to:
+  /// **'No IP'**
+  String get tailscaleNoIp;
+
+  /// No description provided for @tailscaleOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get tailscaleOnline;
+
+  /// No description provided for @urlRemoteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the Tailscale URL, then paste the API key from your server.'**
+  String get urlRemoteSubtitle;
+
+  /// No description provided for @urlLooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for Hermes on this device...'**
+  String get urlLooking;
+
+  /// No description provided for @urlDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes is running on this device. We auto-detected the connection details below.'**
+  String get urlDetected;
+
+  /// No description provided for @urlEnterLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the Hermes Agent URL for this device. The default port is {port}.'**
+  String urlEnterLocal(String port);
+
+  /// No description provided for @urlConnectRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to remote Hermes'**
+  String get urlConnectRemote;
+
+  /// No description provided for @urlConnectLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Hermes Agent'**
+  String get urlConnectLocal;
+
+  /// No description provided for @urlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes Agent URL'**
+  String get urlLabel;
+
+  /// No description provided for @urlAutoDetectingKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-detecting API key...'**
+  String get urlAutoDetectingKey;
+
+  /// No description provided for @urlApiKeyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes API Key (required)'**
+  String get urlApiKeyRequired;
+
+  /// No description provided for @urlApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes API Key'**
+  String get urlApiKey;
+
+  /// No description provided for @urlApiKeyRemoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'From API_SERVER_KEY on the remote server'**
+  String get urlApiKeyRemoteHint;
+
+  /// No description provided for @urlApiKeyLocalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-discovered from Hermes config'**
+  String get urlApiKeyLocalHint;
+
+  /// No description provided for @urlAutoDiscovered.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-discovered from Hermes configuration'**
+  String get urlAutoDiscovered;
+
+  /// No description provided for @urlSaveContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and Continue'**
+  String get urlSaveContinue;
+
+  /// No description provided for @urlCommandCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Command copied — run it on your VPS'**
+  String get urlCommandCopied;
+
+  /// No description provided for @urlRemoteHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'On your VPS, run this command and paste the output into the API key field above.'**
+  String get urlRemoteHelp;
+
+  /// No description provided for @urlCopyCommand.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy command'**
+  String get urlCopyCommand;
+
+  /// No description provided for @connTesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Testing connection...'**
+  String get connTesting;
+
+  /// No description provided for @connDns.
+  ///
+  /// In en, this message translates to:
+  /// **'DNS resolution'**
+  String get connDns;
+
+  /// No description provided for @connTcp.
+  ///
+  /// In en, this message translates to:
+  /// **'TCP connection'**
+  String get connTcp;
+
+  /// No description provided for @connNotTestedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection not tested yet'**
+  String get connNotTestedYet;
+
+  /// No description provided for @connTestAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Test connection'**
+  String get connTestAction;
+
+  /// No description provided for @connRuntimeApi.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime API'**
+  String get connRuntimeApi;
+
+  /// No description provided for @connUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get connUnknown;
+
+  /// No description provided for @connFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Failed'**
+  String get connFailed;
+
+  /// No description provided for @connRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry Test'**
+  String get connRetry;
+
+  /// No description provided for @connCheckSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Check connection settings'**
+  String get connCheckSettings;
+
+  /// No description provided for @connConnectingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to: {url}'**
+  String connConnectingTo(String url);
+
+  /// No description provided for @connSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Successful!'**
+  String get connSuccess;
+
+  /// No description provided for @connConnectedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to:'**
+  String get connConnectedTo;
+
+  /// No description provided for @completionAllSet.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re All Set!'**
+  String get completionAllSet;
+
+  /// No description provided for @completionConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Your agent runtime is configured and ready to use.'**
+  String get completionConfigured;
+
+  /// No description provided for @completionSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving configuration...'**
+  String get completionSaving;
+
+  /// No description provided for @completionConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration:'**
+  String get completionConfiguration;
+
+  /// No description provided for @completionRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime'**
+  String get completionRuntime;
+
+  /// No description provided for @completionLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get completionLocation;
+
+  /// No description provided for @completionLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Local'**
+  String get completionLocal;
+
+  /// No description provided for @completionRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote'**
+  String get completionRemote;
+
+  /// No description provided for @completionReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to start chatting!'**
+  String get completionReady;
+
+  /// No description provided for @completionDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your setup is complete. You can start chatting now!'**
+  String get completionDone;
+
+  /// No description provided for @installStatusInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed'**
+  String get installStatusInstalled;
+
+  /// No description provided for @installStatusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get installStatusSkipped;
+
+  /// No description provided for @installStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get installStatusFailed;
+
+  /// No description provided for @providerCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get providerCustom;
+
+  /// No description provided for @botInstallComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Install complete. All steps succeeded or were skipped.'**
+  String get botInstallComplete;
+
+  /// No description provided for @botInstallFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Install failed: {steps}'**
+  String botInstallFailed(String steps);
+
+  /// No description provided for @eventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Stream'**
+  String get eventsTitle;
+
+  /// No description provided for @eventsRunFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Run finished'**
+  String get eventsRunFinished;
+
+  /// No description provided for @eventsNoRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent runtime connected'**
+  String get eventsNoRuntime;
+
+  /// No description provided for @eventsConnectHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to a Hermes runtime to see live events.'**
+  String get eventsConnectHelp;
+
+  /// No description provided for @eventsResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get eventsResume;
+
+  /// No description provided for @eventsPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get eventsPause;
+
+  /// No description provided for @eventsWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for agent events…'**
+  String get eventsWaiting;
+
+  /// No description provided for @guiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GUI Automation'**
+  String get guiTitle;
+
+  /// No description provided for @guiScreenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot'**
+  String get guiScreenshot;
+
+  /// No description provided for @guiAnalyze.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze'**
+  String get guiAnalyze;
+
+  /// No description provided for @guiPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to do?'**
+  String get guiPrompt;
+
+  /// No description provided for @guiHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Click the search button, Type in the box'**
+  String get guiHint;
+
+  /// No description provided for @guiExecute.
+  ///
+  /// In en, this message translates to:
+  /// **'Execute'**
+  String get guiExecute;
+
+  /// No description provided for @guiResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Result'**
+  String get guiResult;
+
+  /// No description provided for @guiLocalRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'GUI Automation uses the local agent runtime.'**
+  String get guiLocalRuntime;
+
+  /// No description provided for @guiScreenshotSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot saved: {path}'**
+  String guiScreenshotSaved(String path);
+
+  /// No description provided for @adminUsersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get adminUsersTitle;
+
+  /// No description provided for @adminUsersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View and manage user accounts, subscriptions, and permissions'**
+  String get adminUsersSubtitle;
+
+  /// No description provided for @adminUsersSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by email, username, or user ID...'**
+  String get adminUsersSearchHint;
+
+  /// No description provided for @adminUsersTierFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Tier'**
+  String get adminUsersTierFilter;
+
+  /// No description provided for @adminUsersAllTiers.
+  ///
+  /// In en, this message translates to:
+  /// **'All Tiers'**
+  String get adminUsersAllTiers;
+
+  /// No description provided for @adminUsersStatusFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Status'**
+  String get adminUsersStatusFilter;
+
+  /// No description provided for @adminUsersAllStatuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get adminUsersAllStatuses;
+
+  /// No description provided for @adminStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get adminStatusActive;
+
+  /// No description provided for @adminStatusSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get adminStatusSuspended;
+
+  /// No description provided for @adminStatusDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get adminStatusDeleted;
+
+  /// No description provided for @adminUsersSortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get adminUsersSortBy;
+
+  /// No description provided for @adminUsersSortRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Date'**
+  String get adminUsersSortRegistration;
+
+  /// No description provided for @adminUsersLastLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Login'**
+  String get adminUsersLastLogin;
+
+  /// No description provided for @adminEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get adminEmail;
+
+  /// No description provided for @adminUsersAscending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get adminUsersAscending;
+
+  /// No description provided for @adminUsersDescending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get adminUsersDescending;
+
+  /// No description provided for @adminUsersNoPermissionView.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to view users'**
+  String get adminUsersNoPermissionView;
+
+  /// No description provided for @adminUsersLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load users: {error}'**
+  String adminUsersLoadFailed(String error);
+
+  /// No description provided for @adminUsersNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get adminUsersNone;
+
+  /// No description provided for @adminUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get adminUsername;
+
+  /// No description provided for @adminSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get adminSubscription;
+
+  /// No description provided for @adminRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered'**
+  String get adminRegistered;
+
+  /// No description provided for @adminNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get adminNotAvailable;
+
+  /// No description provided for @adminViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get adminViewDetails;
+
+  /// No description provided for @adminSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend'**
+  String get adminSuspend;
+
+  /// No description provided for @adminReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate'**
+  String get adminReactivate;
+
+  /// No description provided for @adminUsersShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {from}-{to} of {total} users'**
+  String adminUsersShowing(int from, int to, int total);
+
+  /// No description provided for @adminPageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {total}'**
+  String adminPageOf(int page, int total);
+
+  /// No description provided for @adminUserDetailsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load user details: {error}'**
+  String adminUserDetailsLoadFailed(String error);
+
+  /// No description provided for @adminUserDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'User Details'**
+  String get adminUserDetails;
+
+  /// No description provided for @adminNoUserDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'No user details available'**
+  String get adminNoUserDetails;
+
+  /// No description provided for @adminProfileInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Information'**
+  String get adminProfileInfo;
+
+  /// No description provided for @adminUserId.
+  ///
+  /// In en, this message translates to:
+  /// **'User ID'**
+  String get adminUserId;
+
+  /// No description provided for @adminSubscriptionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Information'**
+  String get adminSubscriptionInfo;
+
+  /// No description provided for @adminTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Tier'**
+  String get adminTier;
+
+  /// No description provided for @adminPeriodStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Period Start'**
+  String get adminPeriodStart;
+
+  /// No description provided for @adminPeriodEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Period End'**
+  String get adminPeriodEnd;
+
+  /// No description provided for @adminCancellation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation'**
+  String get adminCancellation;
+
+  /// No description provided for @adminCancelAtPeriodEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled at period end'**
+  String get adminCancelAtPeriodEnd;
+
+  /// No description provided for @adminRecentPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Payment History'**
+  String get adminRecentPayments;
+
+  /// No description provided for @adminActiveSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Sessions'**
+  String get adminActiveSessions;
+
+  /// No description provided for @adminRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get adminRecentActivity;
+
+  /// No description provided for @adminDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get adminDate;
+
+  /// No description provided for @adminAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get adminAmount;
+
+  /// No description provided for @adminMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get adminMethod;
+
+  /// No description provided for @adminIpAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'IP Address'**
+  String get adminIpAddress;
+
+  /// No description provided for @adminUserAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'User Agent'**
+  String get adminUserAgent;
+
+  /// No description provided for @adminLastActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Active'**
+  String get adminLastActive;
+
+  /// No description provided for @adminUnknownAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown action'**
+  String get adminUnknownAction;
+
+  /// No description provided for @adminInvalidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid date'**
+  String get adminInvalidDate;
+
+  /// No description provided for @adminNoPermissionEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to edit users'**
+  String get adminNoPermissionEdit;
+
+  /// No description provided for @adminSubscriptionUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'User subscription updated successfully'**
+  String get adminSubscriptionUpdated;
+
+  /// No description provided for @adminUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update user: {error}'**
+  String adminUpdateFailed(String error);
+
+  /// No description provided for @adminEditSubscriptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit User Subscription'**
+  String get adminEditSubscriptionTitle;
+
+  /// No description provided for @adminUserLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'User: {email}'**
+  String adminUserLabel(String email);
+
+  /// No description provided for @adminSuspendReasonMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason for suspension'**
+  String get adminSuspendReasonMissing;
+
+  /// No description provided for @adminNoPermissionSuspend.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to suspend users'**
+  String get adminNoPermissionSuspend;
+
+  /// No description provided for @adminSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'User suspended successfully'**
+  String get adminSuspended;
+
+  /// No description provided for @adminSuspendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to suspend user: {error}'**
+  String adminSuspendFailed(String error);
+
+  /// No description provided for @adminSuspendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend User Account'**
+  String get adminSuspendTitle;
+
+  /// No description provided for @adminSuspendWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This will suspend the user account and prevent them from accessing the application.'**
+  String get adminSuspendWarning;
+
+  /// No description provided for @adminSuspendReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for suspension *'**
+  String get adminSuspendReason;
+
+  /// No description provided for @adminSuspendReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the reason for suspending this account'**
+  String get adminSuspendReasonHint;
+
+  /// No description provided for @adminNoPermissionReactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to reactivate users'**
+  String get adminNoPermissionReactivate;
+
+  /// No description provided for @adminReactivated.
+  ///
+  /// In en, this message translates to:
+  /// **'User reactivated successfully'**
+  String get adminReactivated;
+
+  /// No description provided for @adminReactivateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reactivate user: {error}'**
+  String adminReactivateFailed(String error);
+
+  /// No description provided for @adminReactivateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactivate User Account'**
+  String get adminReactivateTitle;
+
+  /// No description provided for @adminReactivateInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This will reactivate the user account and restore their access to the application.'**
+  String get adminReactivateInfo;
+
+  /// No description provided for @adminDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get adminDashboardTitle;
+
+  /// No description provided for @adminRefreshMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh metrics'**
+  String get adminRefreshMetrics;
+
+  /// No description provided for @adminTotalUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Users'**
+  String get adminTotalUsers;
+
+  /// No description provided for @adminNewThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new this month'**
+  String adminNewThisMonth(String count);
+
+  /// No description provided for @adminActiveUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Users'**
+  String get adminActiveUsers;
+
+  /// No description provided for @adminPercentOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of total'**
+  String adminPercentOfTotal(String percent);
+
+  /// No description provided for @adminMrr.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Recurring Revenue'**
+  String get adminMrr;
+
+  /// No description provided for @adminFromSubscribers.
+  ///
+  /// In en, this message translates to:
+  /// **'From {count} subscribers'**
+  String adminFromSubscribers(String count);
+
+  /// No description provided for @adminCurrentMonthRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Month Revenue'**
+  String get adminCurrentMonthRevenue;
+
+  /// No description provided for @adminTransactionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} transactions'**
+  String adminTransactionsCount(String count);
+
+  /// No description provided for @adminSubscriptionDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Distribution'**
+  String get adminSubscriptionDistribution;
+
+  /// No description provided for @adminConversionRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion Rate: {rate}%'**
+  String adminConversionRate(String rate);
+
+  /// No description provided for @adminTierFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get adminTierFree;
+
+  /// No description provided for @adminTierPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get adminTierPremium;
+
+  /// No description provided for @adminTierEnterprise.
+  ///
+  /// In en, this message translates to:
+  /// **'Enterprise'**
+  String get adminTierEnterprise;
+
+  /// No description provided for @adminCountPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} ({percent}%)'**
+  String adminCountPercent(int count, String percent);
+
+  /// No description provided for @adminNoRecentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent transactions'**
+  String get adminNoRecentTransactions;
+
+  /// No description provided for @adminRecentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Transactions'**
+  String get adminRecentTransactions;
+
+  /// No description provided for @adminToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today {time}'**
+  String adminToday(String time);
+
+  /// No description provided for @adminYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get adminYesterday;
+
+  /// No description provided for @adminDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days ago'**
+  String adminDaysAgo(int days);
+
+  /// No description provided for @auditLoadDetailsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load log details: {error}'**
+  String auditLoadDetailsFailed(String error);
+
+  /// No description provided for @auditExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit logs exported successfully'**
+  String get auditExported;
+
+  /// No description provided for @auditExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to export logs: {error}'**
+  String auditExportFailed(String error);
+
+  /// No description provided for @auditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Logs'**
+  String get auditTitle;
+
+  /// No description provided for @auditFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get auditFilters;
+
+  /// No description provided for @auditExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get auditExportCsv;
+
+  /// No description provided for @auditFilterAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin: {value}'**
+  String auditFilterAdmin(String value);
+
+  /// No description provided for @auditFilterAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action: {value}'**
+  String auditFilterAction(String value);
+
+  /// No description provided for @auditFilterResource.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource: {value}'**
+  String auditFilterResource(String value);
+
+  /// No description provided for @auditFilterAffectedUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected User: {value}'**
+  String auditFilterAffectedUser(String value);
+
+  /// No description provided for @auditFilterFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From: {date}'**
+  String auditFilterFrom(String date);
+
+  /// No description provided for @auditFilterTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To: {date}'**
+  String auditFilterTo(String date);
+
+  /// No description provided for @auditFilterSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity: {value}'**
+  String auditFilterSeverity(String value);
+
+  /// No description provided for @auditTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp'**
+  String get auditTimestamp;
+
+  /// No description provided for @auditAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get auditAction;
+
+  /// No description provided for @auditResource.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource'**
+  String get auditResource;
+
+  /// No description provided for @auditAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get auditAdmin;
+
+  /// No description provided for @auditAffectedUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected User'**
+  String get auditAffectedUser;
+
+  /// No description provided for @auditSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get auditSeverity;
+
+  /// No description provided for @auditShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {from}-{to} of {total} logs'**
+  String auditShowing(int from, int to, int total);
+
+  /// No description provided for @auditError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String auditError(String error);
+
+  /// No description provided for @auditNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No audit logs found'**
+  String get auditNone;
+
+  /// No description provided for @auditClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get auditClearFilters;
+
+  /// No description provided for @auditFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Audit Logs'**
+  String get auditFilterTitle;
+
+  /// No description provided for @auditAdminUserId.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin User ID'**
+  String get auditAdminUserId;
+
+  /// No description provided for @auditAdminUserIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by admin user ID'**
+  String get auditAdminUserIdHint;
+
+  /// No description provided for @auditActionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., user_suspended, refund_processed'**
+  String get auditActionHint;
+
+  /// No description provided for @auditResourceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Type'**
+  String get auditResourceType;
+
+  /// No description provided for @auditResourceTypeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., user, subscription, transaction'**
+  String get auditResourceTypeHint;
+
+  /// No description provided for @auditAffectedUserId.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected User ID'**
+  String get auditAffectedUserId;
+
+  /// No description provided for @auditAffectedUserIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by affected user ID'**
+  String get auditAffectedUserIdHint;
+
+  /// No description provided for @auditDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get auditDateRange;
+
+  /// No description provided for @auditStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get auditStartDate;
+
+  /// No description provided for @auditEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get auditEndDate;
+
+  /// No description provided for @auditAllSeverities.
+  ///
+  /// In en, this message translates to:
+  /// **'All severities'**
+  String get auditAllSeverities;
+
+  /// No description provided for @auditClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get auditClearAll;
+
+  /// No description provided for @auditDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Log Details'**
+  String get auditDetailsTitle;
+
+  /// No description provided for @auditLogId.
+  ///
+  /// In en, this message translates to:
+  /// **'Log ID'**
+  String get auditLogId;
+
+  /// No description provided for @auditResourceId.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource ID'**
+  String get auditResourceId;
+
+  /// No description provided for @auditAdminUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin User'**
+  String get auditAdminUser;
+
+  /// No description provided for @auditRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get auditRole;
+
+  /// No description provided for @auditActionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Details'**
+  String get auditActionDetails;
+
+  /// No description provided for @adminsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load administrators: {error}'**
+  String adminsLoadFailed(String error);
+
+  /// No description provided for @adminsRevokeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke Admin Role'**
+  String get adminsRevokeTitle;
+
+  /// No description provided for @adminsRevokeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to revoke the {role} role from {email}?'**
+  String adminsRevokeConfirm(String role, String email);
+
+  /// No description provided for @adminsRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke'**
+  String get adminsRevoke;
+
+  /// No description provided for @adminsRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin role revoked successfully'**
+  String get adminsRevoked;
+
+  /// No description provided for @adminsRevokeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to revoke role: {error}'**
+  String adminsRevokeFailed(String error);
+
+  /// No description provided for @adminsRoleSuper.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin'**
+  String get adminsRoleSuper;
+
+  /// No description provided for @adminsRoleSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Admin'**
+  String get adminsRoleSupport;
+
+  /// No description provided for @adminsRoleFinance.
+  ///
+  /// In en, this message translates to:
+  /// **'Finance Admin'**
+  String get adminsRoleFinance;
+
+  /// No description provided for @adminsSuperRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Admin Access Required'**
+  String get adminsSuperRequired;
+
+  /// No description provided for @adminsSuperRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Super Admins can manage administrator accounts.'**
+  String get adminsSuperRequiredBody;
+
+  /// No description provided for @adminsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Management'**
+  String get adminsTitle;
+
+  /// No description provided for @adminsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage administrator accounts and roles'**
+  String get adminsSubtitle;
+
+  /// No description provided for @adminsAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Admin'**
+  String get adminsAdd;
+
+  /// No description provided for @adminsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No administrators found'**
+  String get adminsNone;
+
+  /// No description provided for @adminsTotalActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Actions'**
+  String get adminsTotalActions;
+
+  /// No description provided for @adminsRecent30d.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent (30d)'**
+  String get adminsRecent30d;
+
+  /// No description provided for @adminsLastAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Action'**
+  String get adminsLastAction;
+
+  /// No description provided for @adminsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get adminsToday;
+
+  /// No description provided for @adminsWeeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{weeks}w ago'**
+  String adminsWeeksAgo(int weeks);
+
+  /// No description provided for @adminsMonthsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{months}mo ago'**
+  String adminsMonthsAgo(int months);
+
+  /// No description provided for @adminsUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get adminsUnknown;
+
+  /// No description provided for @adminsAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin role assigned successfully'**
+  String get adminsAssigned;
+
+  /// No description provided for @adminsAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Administrator'**
+  String get adminsAddTitle;
+
+  /// No description provided for @adminsEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address'**
+  String get adminsEmailAddress;
+
+  /// No description provided for @adminsEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get adminsEmailRequired;
+
+  /// No description provided for @adminsEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email address'**
+  String get adminsEmailInvalid;
+
+  /// No description provided for @adminsSelectRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Role'**
+  String get adminsSelectRole;
+
+  /// No description provided for @adminsSupportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'User management and support'**
+  String get adminsSupportDescription;
+
+  /// No description provided for @adminsFinanceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments, refunds, and reports'**
+  String get adminsFinanceDescription;
 }
 
 class _AppLocalizationsDelegate

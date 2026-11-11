@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
 import '../../models/subscription_model.dart';
@@ -23,7 +24,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
   // State
   List<Map<String, dynamic>> _users = [];
   bool _isLoading = false;
-  String? _error;
+
+  /// Error built at display time so it follows the current locale.
+  String Function(AppLocalizations)? _error;
   int _currentPage = 1;
   int _totalPages = 1;
   int _totalUsers = 0;
@@ -55,7 +58,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
     // Check permission
     if (!adminService.hasPermission(AdminPermission.viewUsers)) {
       setState(() {
-        _error = 'You do not have permission to view users';
+        _error = (l10n) => l10n.adminUsersNoPermissionView;
       });
       return;
     }
@@ -86,7 +89,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Failed to load users: $e';
+        _error = (l10n) => l10n.adminUsersLoadFailed('$e');
         _isLoading = false;
       });
     }
@@ -135,14 +138,14 @@ class _UserManagementTabState extends State<UserManagementTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'User Management',
+                AppLocalizations.of(context).adminUsersTitle,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               const SizedBox(height: 8),
               Text(
-                'View and manage user accounts, subscriptions, and permissions',
+                AppLocalizations.of(context).adminUsersSubtitle,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
@@ -161,7 +164,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                 controller: _searchController,
                 onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search by email, username, or user ID...',
+                  hintText: AppLocalizations.of(context).adminUsersSearchHint,
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
@@ -187,15 +190,15 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     child: DropdownButtonFormField<String>(
                       initialValue: _selectedTier,
                       decoration: InputDecoration(
-                        labelText: 'Subscription Tier',
+                        labelText: AppLocalizations.of(context).adminUsersTierFilter,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       items: [
-                        const DropdownMenuItem(
+                        DropdownMenuItem(
                           value: null,
-                          child: Text('All Tiers'),
+                          child: Text(AppLocalizations.of(context).adminUsersAllTiers),
                         ),
                         ...SubscriptionTier.values.map((tier) {
                           return DropdownMenuItem(
@@ -219,27 +222,27 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     child: DropdownButtonFormField<String>(
                       initialValue: _selectedStatus,
                       decoration: InputDecoration(
-                        labelText: 'Account Status',
+                        labelText: AppLocalizations.of(context).adminUsersStatusFilter,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      items: const [
+                      items: [
                         DropdownMenuItem(
                           value: null,
-                          child: Text('All Statuses'),
+                          child: Text(AppLocalizations.of(context).adminUsersAllStatuses),
                         ),
                         DropdownMenuItem(
                           value: 'active',
-                          child: Text('Active'),
+                          child: Text(AppLocalizations.of(context).adminStatusActive),
                         ),
                         DropdownMenuItem(
                           value: 'suspended',
-                          child: Text('Suspended'),
+                          child: Text(AppLocalizations.of(context).adminStatusSuspended),
                         ),
                         DropdownMenuItem(
                           value: 'deleted',
-                          child: Text('Deleted'),
+                          child: Text(AppLocalizations.of(context).adminStatusDeleted),
                         ),
                       ],
                       onChanged: (value) {
@@ -257,21 +260,22 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     child: DropdownButtonFormField<String>(
                       initialValue: _sortBy,
                       decoration: InputDecoration(
-                        labelText: 'Sort By',
+                        labelText: AppLocalizations.of(context).adminUsersSortBy,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      items: const [
+                      items: [
                         DropdownMenuItem(
                           value: 'created_at',
-                          child: Text('Registration Date'),
+                          child: Text(AppLocalizations.of(context).adminUsersSortRegistration),
                         ),
                         DropdownMenuItem(
                           value: 'last_login',
-                          child: Text('Last Login'),
+                          child: Text(AppLocalizations.of(context).adminUsersLastLogin),
                         ),
-                        DropdownMenuItem(value: 'email', child: Text('Email')),
+                        DropdownMenuItem(
+                            value: 'email', child: Text(AppLocalizations.of(context).adminEmail)),
                       ],
                       onChanged: (value) {
                         if (value != null) {
@@ -298,7 +302,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
                       });
                       _onFilterChanged();
                     },
-                    tooltip: _sortOrder == 'asc' ? 'Ascending' : 'Descending',
+                    tooltip: _sortOrder == 'asc'
+                        ? AppLocalizations.of(context).adminUsersAscending
+                        : AppLocalizations.of(context).adminUsersDescending,
                   ),
                 ],
               ),
@@ -329,9 +335,11 @@ class _UserManagementTabState extends State<UserManagementTab> {
           children: [
             Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
+            Text(_error!(AppLocalizations.of(context)),
+                style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadUsers, child: const Text('Retry')),
+            ElevatedButton(
+                onPressed: _loadUsers, child: Text(AppLocalizations.of(context).commonRetry)),
           ],
         ),
       );
@@ -344,7 +352,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
           children: [
             Icon(Icons.people_outline, size: 48, color: AppTheme.colorsOf(context).textColorLight),
             SizedBox(height: 16),
-            Text('No users found'),
+            Text(AppLocalizations.of(context).adminUsersNone),
           ],
         ),
       );
@@ -354,14 +362,14 @@ class _UserManagementTabState extends State<UserManagementTab> {
       scrollDirection: Axis.horizontal,
       child: SingleChildScrollView(
         child: DataTable(
-          columns: const [
-            DataColumn(label: Text('Email')),
-            DataColumn(label: Text('Username')),
-            DataColumn(label: Text('Subscription')),
-            DataColumn(label: Text('Status')),
-            DataColumn(label: Text('Registered')),
-            DataColumn(label: Text('Last Login')),
-            DataColumn(label: Text('Actions')),
+          columns: [
+            DataColumn(label: Text(AppLocalizations.of(context).adminEmail)),
+            DataColumn(label: Text(AppLocalizations.of(context).adminUsername)),
+            DataColumn(label: Text(AppLocalizations.of(context).adminSubscription)),
+            DataColumn(label: Text(AppLocalizations.of(context).commonStatus)),
+            DataColumn(label: Text(AppLocalizations.of(context).adminRegistered)),
+            DataColumn(label: Text(AppLocalizations.of(context).adminUsersLastLogin)),
+            DataColumn(label: Text(AppLocalizations.of(context).commonActions)),
           ],
           rows: _users.map(_buildUserRow).toList(),
         ),
@@ -381,8 +389,12 @@ class _UserManagementTabState extends State<UserManagementTab> {
         DataCell(Text(user['username'] ?? user['name'] ?? '')),
         DataCell(_buildTierChip(tier)),
         DataCell(_buildStatusChip(status)),
-        DataCell(Text(createdAt != null ? _formatDate(createdAt) : 'N/A')),
-        DataCell(Text(lastLogin != null ? _formatDate(lastLogin) : 'Never')),
+        DataCell(Text(createdAt != null
+            ? _formatDate(createdAt)
+            : AppLocalizations.of(context).adminNotAvailable)),
+        DataCell(Text(lastLogin != null
+            ? _formatDate(lastLogin)
+            : AppLocalizations.of(context).commonNever)),
         DataCell(
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -390,18 +402,18 @@ class _UserManagementTabState extends State<UserManagementTab> {
               IconButton(
                 icon: const Icon(Icons.visibility, size: 20),
                 onPressed: () => _showUserDetail(user),
-                tooltip: 'View Details',
+                tooltip: AppLocalizations.of(context).adminViewDetails,
               ),
               IconButton(
                 icon: const Icon(Icons.edit, size: 20),
                 onPressed: () => _showEditDialog(user),
-                tooltip: 'Edit',
+                tooltip: AppLocalizations.of(context).commonEdit,
               ),
               if (status == 'active')
                 IconButton(
                   icon: Icon(Icons.block, size: 20, color: AppTheme.colorsOf(context).danger),
                   onPressed: () => _showSuspendDialog(user),
-                  tooltip: 'Suspend',
+                  tooltip: AppLocalizations.of(context).adminSuspend,
                 )
               else if (status == 'suspended')
                 IconButton(
@@ -411,7 +423,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     color: AppTheme.colorsOf(context).success,
                   ),
                   onPressed: () => _showReactivateDialog(user),
-                  tooltip: 'Reactivate',
+                  tooltip: AppLocalizations.of(context).adminReactivate,
                 ),
             ],
           ),
@@ -482,7 +494,13 @@ class _UserManagementTabState extends State<UserManagementTab> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Showing ${(_currentPage - 1) * _pageSize + 1}-${_currentPage * _pageSize > _totalUsers ? _totalUsers : _currentPage * _pageSize} of $_totalUsers users',
+            AppLocalizations.of(context).adminUsersShowing(
+              (_currentPage - 1) * _pageSize + 1,
+              _currentPage * _pageSize > _totalUsers
+                  ? _totalUsers
+                  : _currentPage * _pageSize,
+              _totalUsers,
+            ),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Row(
@@ -493,7 +511,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                     ? () => _onPageChanged(_currentPage - 1)
                     : null,
               ),
-              Text('Page $_currentPage of $_totalPages'),
+              Text(AppLocalizations.of(context).adminPageOf(_currentPage, _totalPages)),
               IconButton(
                 icon: const Icon(Icons.chevron_right),
                 onPressed: _currentPage < _totalPages
@@ -563,7 +581,9 @@ class _UserDetailDialog extends StatefulWidget {
 
 class _UserDetailDialogState extends State<_UserDetailDialog> {
   bool _isLoading = true;
-  String? _error;
+
+  /// Error built at display time so it follows the current locale.
+  String Function(AppLocalizations)? _error;
   Map<String, dynamic>? _userDetails;
 
   @override
@@ -588,7 +608,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Failed to load user details: $e';
+        _error = (l10n) => l10n.adminUserDetailsLoadFailed('$e');
         _isLoading = false;
       });
     }
@@ -609,7 +629,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'User Details',
+                  AppLocalizations.of(context).adminUserDetails,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -633,7 +653,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Close'),
+                  child: Text(AppLocalizations.of(context).commonClose),
                 ),
               ],
             ),
@@ -655,11 +675,12 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
           children: [
             Icon(Icons.error_outline, size: 48, color: AppTheme.colorsOf(context).danger),
             const SizedBox(height: 16),
-            Text(_error!, style: TextStyle(color: AppTheme.colorsOf(context).danger)),
+            Text(_error!(AppLocalizations.of(context)),
+                style: TextStyle(color: AppTheme.colorsOf(context).danger)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadUserDetails,
-              child: const Text('Retry'),
+              child: Text(AppLocalizations.of(context).commonRetry),
             ),
           ],
         ),
@@ -667,7 +688,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
     }
 
     if (_userDetails == null) {
-      return const Center(child: Text('No user details available'));
+      return Center(child: Text(AppLocalizations.of(context).adminNoUserDetails));
     }
 
     return SingleChildScrollView(
@@ -675,20 +696,20 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Profile Information
-          _buildSection('Profile Information', [
-            _buildInfoRow('User ID', _userDetails!['id'] ?? 'N/A'),
-            _buildInfoRow('Email', _userDetails!['email'] ?? 'N/A'),
+          _buildSection(AppLocalizations.of(context).adminProfileInfo, [
+            _buildInfoRow(AppLocalizations.of(context).adminUserId, _userDetails!['id'] ?? 'N/A'),
+            _buildInfoRow(AppLocalizations.of(context).adminEmail, _userDetails!['email'] ?? 'N/A'),
             _buildInfoRow(
-              'Username',
+              AppLocalizations.of(context).adminUsername,
               _userDetails!['username'] ?? _userDetails!['name'] ?? 'N/A',
             ),
-            _buildInfoRow('Status', _userDetails!['status'] ?? 'N/A'),
+            _buildInfoRow(AppLocalizations.of(context).commonStatus, _userDetails!['status'] ?? 'N/A'),
             _buildInfoRow(
-              'Registered',
+              AppLocalizations.of(context).adminRegistered,
               _formatDateTime(_userDetails!['created_at']),
             ),
             _buildInfoRow(
-              'Last Login',
+              AppLocalizations.of(context).adminUsersLastLogin,
               _formatDateTime(_userDetails!['last_login']),
             ),
           ]),
@@ -697,31 +718,31 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
 
           // Subscription Information
           if (_userDetails!['subscription'] != null)
-            _buildSection('Subscription Information', [
+            _buildSection(AppLocalizations.of(context).adminSubscriptionInfo, [
               _buildInfoRow(
-                'Tier',
+                AppLocalizations.of(context).adminTier,
                 _userDetails!['subscription']['tier'] ?? 'N/A',
               ),
               _buildInfoRow(
-                'Status',
+                AppLocalizations.of(context).commonStatus,
                 _userDetails!['subscription']['status'] ?? 'N/A',
               ),
               _buildInfoRow(
-                'Current Period Start',
+                AppLocalizations.of(context).adminPeriodStart,
                 _formatDateTime(
                   _userDetails!['subscription']['current_period_start'],
                 ),
               ),
               _buildInfoRow(
-                'Current Period End',
+                AppLocalizations.of(context).adminPeriodEnd,
                 _formatDateTime(
                   _userDetails!['subscription']['current_period_end'],
                 ),
               ),
               if (_userDetails!['subscription']['cancel_at_period_end'] == true)
                 _buildInfoRow(
-                  'Cancellation',
-                  'Scheduled at period end',
+                  AppLocalizations.of(context).adminCancellation,
+                  AppLocalizations.of(context).adminCancelAtPeriodEnd,
                   isWarning: true,
                 ),
             ]),
@@ -731,7 +752,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
           // Payment History
           if (_userDetails!['payment_history'] != null &&
               (_userDetails!['payment_history'] as List).isNotEmpty)
-            _buildSection('Recent Payment History', [
+            _buildSection(AppLocalizations.of(context).adminRecentPayments, [
               _buildPaymentHistoryTable(_userDetails!['payment_history']),
             ]),
 
@@ -740,7 +761,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
           // Session Information
           if (_userDetails!['sessions'] != null &&
               (_userDetails!['sessions'] as List).isNotEmpty)
-            _buildSection('Active Sessions', [
+            _buildSection(AppLocalizations.of(context).adminActiveSessions, [
               _buildSessionsTable(_userDetails!['sessions']),
             ]),
 
@@ -749,7 +770,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
           // Activity Timeline
           if (_userDetails!['activity'] != null &&
               (_userDetails!['activity'] as List).isNotEmpty)
-            _buildSection('Recent Activity', [
+            _buildSection(AppLocalizations.of(context).adminRecentActivity, [
               _buildActivityTimeline(_userDetails!['activity']),
             ]),
         ],
@@ -782,7 +803,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
           SizedBox(
             width: 180,
             child: Text(
-              '$label:',
+              AppLocalizations.of(context).commonFieldLabel(label),
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: AppTheme.colorsOf(context).textColorLight,
@@ -805,11 +826,11 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
 
   Widget _buildPaymentHistoryTable(List<dynamic> payments) {
     return DataTable(
-      columns: const [
-        DataColumn(label: Text('Date')),
-        DataColumn(label: Text('Amount')),
-        DataColumn(label: Text('Status')),
-        DataColumn(label: Text('Method')),
+      columns: [
+        DataColumn(label: Text(AppLocalizations.of(context).adminDate)),
+        DataColumn(label: Text(AppLocalizations.of(context).adminAmount)),
+        DataColumn(label: Text(AppLocalizations.of(context).commonStatus)),
+        DataColumn(label: Text(AppLocalizations.of(context).adminMethod)),
       ],
       rows: payments.take(5).map((payment) {
         return DataRow(
@@ -828,10 +849,10 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
 
   Widget _buildSessionsTable(List<dynamic> sessions) {
     return DataTable(
-      columns: const [
-        DataColumn(label: Text('IP Address')),
-        DataColumn(label: Text('User Agent')),
-        DataColumn(label: Text('Last Active')),
+      columns: [
+        DataColumn(label: Text(AppLocalizations.of(context).adminIpAddress)),
+        DataColumn(label: Text(AppLocalizations.of(context).adminUserAgent)),
+        DataColumn(label: Text(AppLocalizations.of(context).adminLastActive)),
       ],
       rows: sessions.take(5).map((session) {
         return DataRow(
@@ -858,7 +879,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
       children: activities.take(10).map((activity) {
         return ListTile(
           leading: const Icon(Icons.circle, size: 12),
-          title: Text(activity['action'] ?? 'Unknown action'),
+          title: Text(activity['action'] ?? AppLocalizations.of(context).adminUnknownAction),
           subtitle: Text(_formatDateTime(activity['created_at'])),
           dense: true,
         );
@@ -872,7 +893,7 @@ class _UserDetailDialogState extends State<_UserDetailDialog> {
       final dt = DateTime.parse(dateTime.toString());
       return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
     } catch (e) {
-      return 'Invalid date';
+      return AppLocalizations.of(context).adminInvalidDate;
     }
   }
 }
@@ -900,12 +921,13 @@ class _EditUserDialogState extends State<_EditUserDialog> {
   }
 
   Future<void> _saveChanges() async {
+    final l10n = AppLocalizations.of(context);
     final adminService = di.serviceLocator.get<AdminCenterService>();
 
     // Check permission
     if (!adminService.hasPermission(AdminPermission.editUsers)) {
       setState(() {
-        _error = 'You do not have permission to edit users';
+        _error = l10n.adminNoPermissionEdit;
       });
       return;
     }
@@ -923,15 +945,15 @@ class _EditUserDialogState extends State<_EditUserDialog> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('User subscription updated successfully'),
+          SnackBar(
+            content: Text(l10n.adminSubscriptionUpdated),
           ),
         );
         widget.onSaved();
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to update user: $e';
+        _error = l10n.adminUpdateFailed('$e');
         _isLoading = false;
       });
     }
@@ -940,19 +962,19 @@ class _EditUserDialogState extends State<_EditUserDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit User Subscription'),
+      title: Text(AppLocalizations.of(context).adminEditSubscriptionTitle),
       content: SizedBox(
         width: 400,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('User: ${widget.user['email']}'),
+            Text(AppLocalizations.of(context).adminUserLabel('${widget.user['email']}')),
             const SizedBox(height: 24),
             DropdownButtonFormField<String>(
               initialValue: _selectedTier,
-              decoration: const InputDecoration(
-                labelText: 'Subscription Tier',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).adminUsersTierFilter,
                 border: OutlineInputBorder(),
               ),
               items: SubscriptionTier.values.map((tier) {
@@ -981,7 +1003,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).commonCancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _saveChanges,
@@ -991,7 +1013,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Save'),
+              : Text(AppLocalizations.of(context).commonSave),
         ),
       ],
     );
@@ -1021,9 +1043,10 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
   }
 
   Future<void> _suspendUser() async {
+    final l10n = AppLocalizations.of(context);
     if (_reasonController.text.trim().isEmpty) {
       setState(() {
-        _error = 'Please provide a reason for suspension';
+        _error = l10n.adminSuspendReasonMissing;
       });
       return;
     }
@@ -1033,7 +1056,7 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
     // Check permission
     if (!adminService.hasPermission(AdminPermission.suspendUsers)) {
       setState(() {
-        _error = 'You do not have permission to suspend users';
+        _error = l10n.adminNoPermissionSuspend;
       });
       return;
     }
@@ -1051,13 +1074,13 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User suspended successfully')),
+          SnackBar(content: Text(l10n.adminSuspended)),
         );
         widget.onSuspended();
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to suspend user: $e';
+        _error = l10n.adminSuspendFailed('$e');
         _isLoading = false;
       });
     }
@@ -1066,25 +1089,25 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Suspend User Account'),
+      title: Text(AppLocalizations.of(context).adminSuspendTitle),
       content: SizedBox(
         width: 400,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('User: ${widget.user['email']}'),
+            Text(AppLocalizations.of(context).adminUserLabel('${widget.user['email']}')),
             const SizedBox(height: 16),
             Text(
-              'This will suspend the user account and prevent them from accessing the application.',
+              AppLocalizations.of(context).adminSuspendWarning,
               style: TextStyle(color: AppTheme.colorsOf(context).warning),
             ),
             const SizedBox(height: 24),
             TextField(
               controller: _reasonController,
-              decoration: const InputDecoration(
-                labelText: 'Reason for suspension *',
-                hintText: 'Enter the reason for suspending this account',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).adminSuspendReason,
+                hintText: AppLocalizations.of(context).adminSuspendReasonHint,
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
@@ -1100,7 +1123,7 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).commonCancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _suspendUser,
@@ -1111,7 +1134,7 @@ class _SuspendUserDialogState extends State<_SuspendUserDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Suspend'),
+              : Text(AppLocalizations.of(context).adminSuspend),
         ),
       ],
     );
@@ -1137,12 +1160,13 @@ class _ReactivateUserDialogState extends State<_ReactivateUserDialog> {
   String? _error;
 
   Future<void> _reactivateUser() async {
+    final l10n = AppLocalizations.of(context);
     final adminService = di.serviceLocator.get<AdminCenterService>();
 
     // Check permission
     if (!adminService.hasPermission(AdminPermission.suspendUsers)) {
       setState(() {
-        _error = 'You do not have permission to reactivate users';
+        _error = l10n.adminNoPermissionReactivate;
       });
       return;
     }
@@ -1157,13 +1181,13 @@ class _ReactivateUserDialogState extends State<_ReactivateUserDialog> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User reactivated successfully')),
+          SnackBar(content: Text(l10n.adminReactivated)),
         );
         widget.onReactivated();
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to reactivate user: $e';
+        _error = l10n.adminReactivateFailed('$e');
         _isLoading = false;
       });
     }
@@ -1172,17 +1196,17 @@ class _ReactivateUserDialogState extends State<_ReactivateUserDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Reactivate User Account'),
+      title: Text(AppLocalizations.of(context).adminReactivateTitle),
       content: SizedBox(
         width: 400,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('User: ${widget.user['email']}'),
+            Text(AppLocalizations.of(context).adminUserLabel('${widget.user['email']}')),
             const SizedBox(height: 16),
-            const Text(
-              'This will reactivate the user account and restore their access to the application.',
+            Text(
+              AppLocalizations.of(context).adminReactivateInfo,
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),
@@ -1194,7 +1218,7 @@ class _ReactivateUserDialogState extends State<_ReactivateUserDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context).commonCancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _reactivateUser,
@@ -1205,7 +1229,7 @@ class _ReactivateUserDialogState extends State<_ReactivateUserDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Reactivate'),
+              : Text(AppLocalizations.of(context).adminReactivate),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +40,8 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     return _buildSteps(method, hermesLocation).length;
   }
 
-  bool _stepListChanged(ConnectionMethod? method, HermesLocation? hermesLocation) {
+  bool _stepListChanged(
+      ConnectionMethod? method, HermesLocation? hermesLocation) {
     return _lastMethod != method || _lastHermesLocation != hermesLocation;
   }
 
@@ -99,7 +101,8 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                     padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
                     child: Text(
                       wizard.state.errorMessage!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      style:
+                          TextStyle(color: Theme.of(context).colorScheme.error),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -138,7 +141,8 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Step ${currentStep + 1} of $totalSteps',
+            AppLocalizations.of(context)
+                .wizardStepOf(currentStep + 1, totalSteps),
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ],
@@ -215,7 +219,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                         context.go('/chat');
                       }
                     },
-              child: const Text('Set up later'),
+              child: Text(AppLocalizations.of(context).wizardSetUpLater),
             )
           else
             Expanded(
@@ -223,7 +227,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                 onPressed: () {
                   wizard.previousStep();
                 },
-                child: const Text('Back'),
+                child: Text(AppLocalizations.of(context).commonBack),
               ),
             ),
           if (!isFirstStep) const SizedBox(width: 16),
@@ -233,12 +237,13 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                   ? null
                   : () async {
                       if (isLastStep) {
+                        final l10n = AppLocalizations.of(context);
                         _lastErrorSnackbarMessage = null;
                         final success = await wizard.completeSetup();
 
                         if (!success) {
                           final message = wizard.state.errorMessage ??
-                              'Setup could not be completed right now. Please try again.';
+                              l10n.wizardCompletionFailed;
                           _showCompletionError(message);
                           appLogger.warning(
                             '[SetupWizard] Setup completion failed at final step: $message',
@@ -261,10 +266,10 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                     },
               child: Text(
                 isLastStep
-                    ? 'Complete'
+                    ? AppLocalizations.of(context).wizardComplete
                     : wizard.state.isLoading
-                        ? 'Loading...'
-                        : 'Next',
+                        ? AppLocalizations.of(context).wizardLoading
+                        : AppLocalizations.of(context).wizardNext,
               ),
             ),
           ),
