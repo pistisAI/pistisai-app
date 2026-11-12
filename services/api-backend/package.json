@@ -68,7 +68,7 @@
     "node": ">=26.0.0 <28.0.0"
   },
   "overrides": {
-    "glob": "^11.0.0",
+    "glob": "11.1.0",
     "rimraf": "^6.0.1",
     "inflight": "npm:@zkochan/inflight@^2.0.0",
     "@npmcli/move-file": "npm:@npmcli/fs@^3.1.1",
@@ -76,8 +76,8 @@
     "gauge": "npm:are-we-there-yet@^5.0.0",
     "are-we-there-yet": "^5.0.0",
     "google-p12-pem": "npm:gcp-metadata@^6.1.0",
-    "test-exclude": "^7.0.1",
-    "minimatch": "^10.2.1"
+    "test-exclude": "7.0.2",
+    "minimatch": "10.2.6"
   },
   "keywords": [
     "Pistisai",
