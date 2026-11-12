@@ -98,3 +98,30 @@ jobs:
             exit 1
           fi
           echo "✅ Image pushed: $DIGEST"
+
+  purge_cache:
+    needs: [build_and_push]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
+      CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+    steps:
+      # Every deploy purges the whole zone, and the deploy fails if it cannot.
+      - name: Purge Cloudflare cache (full zone)
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_TOKEN:-}" ] || [ -z "${CF_ZONE_ID:-}" ]; then
+            echo "❌ CLOUDFLARE_CACHE_PURGE_TOKEN and CF_ZONE_ID must both be set"
+            exit 1
+          fi
+          RESP=$(curl -sS --max-time 30 -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          if [ "$(echo "$RESP" | jq -r '.success // false')" != "true" ]; then
+            echo "❌ Cloudflare purge failed: $(echo "$RESP" | jq -c '.errors // "no error detail"')"
+            exit 1
+          fi
+          echo "✅ Cloudflare cache purged (full zone)"
