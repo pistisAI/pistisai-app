@@ -149,7 +149,7 @@ window.Auth0Bridge = {
 
 ### Nginx Configuration
 
-The production container uses the repo-root `nginx.conf`: one server on port 80, no `server_name` split, and no `proxy_pass`. Domain routing in front of that container is Coolify and Traefik, which is outside this file. Cache rules, the CanvasKit build flag, and the healthcheck are in [Web Deploy](../operations/cicd/WEB_DEPLOY.md).
+The production container uses the repo-root `nginx.conf`: one server on port 80, no `server_name` split, and no `proxy_pass`. Domain routing in front of that container is handled on the host, which is outside this file. Cache rules, the CanvasKit build flag, and the healthcheck are in [Web Deploy](../operations/cicd/WEB_DEPLOY.md).
 
 The sample below is an earlier routing sketch. It is not what the image ships.
 

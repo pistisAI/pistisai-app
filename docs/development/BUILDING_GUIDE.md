@@ -341,7 +341,7 @@ cp -r build/web/* /var/www/html/
 
 #### **Container Deployment**
 
-The Coolify image is the repo-root `Dockerfile.web`. It compiles the web app. The compose image at `config/docker/Dockerfile.web` only serves a prebuilt `build/web/` tree and listens on port `8080`. Details and cache pitfalls are in [Web Deploy](../operations/cicd/WEB_DEPLOY.md).
+The production image is the repo-root `Dockerfile.web`. It compiles the web app. The compose image at `config/docker/Dockerfile.web` only serves a prebuilt `build/web/` tree and listens on port `8080`. Details and cache pitfalls are in [Web Deploy](../operations/cicd/WEB_DEPLOY.md).
 
 ```bash
 # Production image (what deploy-web.yml builds)

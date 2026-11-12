@@ -14,7 +14,7 @@ Web Deploy must complete successfully before the three downstream workflows proc
 | Workflow | File | What it ships |
 | --- | --- | --- |
 | Auto Version Bump | `.github/workflows/auto-version-bump.yml` | `assets/version.json` and `pubspec.yaml` |
-| Web Deploy | `.github/workflows/deploy-web.yml` | `ghcr.io/pistisai/pistisai-app-web` via Coolify |
+| Web Deploy | `.github/workflows/deploy-web.yml` | `ghcr.io/pistisai/pistisai-app-web` via Docker Compose |
 | Desktop Build | `.github/workflows/build-desktop.yml` | Linux, Windows, and macOS artifacts |
 | Mobile Build | `.github/workflows/build-mobile.yml` | Android APKs. iOS only when dispatched and the `ios/` project exists |
 | Backend Deploy | `.github/workflows/deploy-backend.yml` | Backend containers |
@@ -38,5 +38,5 @@ gh run list --workflow="deploy-web.yml" --limit 3
 
 ## Where to read next
 
-- [Web Deploy](WEB_DEPLOY.md) — image, nginx cache, Coolify, Traefik health
+- [Web Deploy](WEB_DEPLOY.md) — image, nginx cache, Docker Compose health
 - [Android Build Guide](../../development/ANDROID_BUILD_GUIDE.md) — SDK 37, signing secrets, APK job
