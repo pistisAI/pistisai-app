@@ -1,0 +1,42 @@
+name: "🎯 Dart / Flutter Analyze"
+
+# CodeQL does not support Dart, so this workflow covers Dart and Flutter
+# code on pull requests. The default CodeQL setup handles the other languages.
+
+on:
+  pull_request:
+    paths:
+      - "lib/**"
+      - "test/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - ".github/workflows/dart-analyze.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dart-analyze-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: "Dart analyze"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
