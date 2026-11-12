@@ -1,8 +1,8 @@
 # Web Deploy
 
-Production web hosting is the image built from the repo-root [`Dockerfile.web`](../../../Dockerfile.web) and published by [`.github/workflows/deploy-web.yml`](../../../.github/workflows/deploy-web.yml). Coolify pulls that image and Traefik routes to it only after the container healthcheck passes.
+Production web hosting is the image built from the repo-root [`Dockerfile.web`](../../../Dockerfile.web) and published by [`.github/workflows/deploy-web.yml`](../../../.github/workflows/deploy-web.yml). The image is run with Docker Compose on the host (`config/docker/docker-compose.web.yml`).
 
-A second Dockerfile, [`config/docker/Dockerfile.web`](../../../config/docker/Dockerfile.web), is the compose path. It does not compile Flutter. It serves an already-built `build/web/` tree on port `8080` as a non-root user. Do not use it to reproduce the Coolify image.
+A second Dockerfile, [`config/docker/Dockerfile.web`](../../../config/docker/Dockerfile.web), is the compose path. It does not compile Flutter. It serves an already-built `build/web/` tree on port `8080` as a non-root user.
 
 ## What the production image does
 
@@ -19,7 +19,7 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=5 \
   CMD wget --quiet --tries=1 --spider http://127.0.0.1/ || exit 1
 ```
 
-Use `127.0.0.1`, not `localhost`. In this image `localhost` can resolve to IPv6 while nginx is listening on IPv4, so the check fails and Traefik keeps the container out of rotation.
+Use `127.0.0.1`, not `localhost`. In this image `localhost` can resolve to IPv6 while nginx is listening on IPv4, so the check fails.
 
 `.dockerignore` drops `android/`, `docs/`, `*.md`, and `pubspec.lock` from the build context. `flutter pub get` inside the image resolves from `pubspec.yaml` constraints, not from the lockfile on the developer machine.
 
@@ -41,29 +41,17 @@ The exact `flutter_bootstrap.js` location exists because the long-cache regex wo
 
 1. **analyze** — Flutter pin from `pubspec.yaml` on `ubuntu-24.04`, `flutter pub get`, `flutter analyze lib/`. Skipped when the triggering bump workflow failed.
 2. **build_and_push** — Build `Dockerfile.web` and push `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`. `{version}` is the `version` field in `assets/version.json`. The job fails if the build action returns no digest.
-3. **deploy_coolify** — Log the Coolify host into GHCR, trigger the deploy, wait, then check the public sites.
+3. **deploy** — Pull the published image and run it with `docker compose -f config/docker/docker-compose.web.yml up -d` on the host.
 
 Desktop, mobile, and backend workflows start from a completed Web Deploy run. They do not start from the version bump directly. See [CI/CD Quick Reference](CI_CD_QUICK_REFERENCE.md).
 
-### Coolify trigger
+### Deploy with Docker Compose
 
-Required secrets: `COOLIFY_API_TOKEN`, `COOLIFY_SSH_KEY`. The host, Coolify base URL, and app UUID live in `deploy-web.yml` (`COOLIFY_URL`, `COOLIFY_APP_UUID`).
+Deployment runs on the host with `docker compose -f config/docker/docker-compose.web.yml up -d`. The host must be able to pull `ghcr.io/pistisai/pistisai-app-web` (log in with `docker login ghcr.io` using a token that has `read:packages`). The compose file restarts the container and its healthcheck reports the result.
 
-Before the deploy call, the job SSHes to the Coolify host and runs `docker login ghcr.io` with the Actions `GITHUB_TOKEN`. The image is private, so the host cannot pull it without that login. The step must set `GITHUB_TOKEN` in its own `env`. Actions does not put the token in the environment otherwise, and `set -u` fails the step.
+## Public check and cache purge
 
-The trigger is `POST {COOLIFY_URL}/api/v1/deploy?uuid={COOLIFY_APP_UUID}&force=true` with a bearer token. HTTP `200`, `201`, or `202` is accepted, and the body must include a deployment UUID (`deployments[0].deployment_uuid` or `deployment_uuid`).
-
-The job then polls `GET /api/v1/deployments/{uuid}` up to 60 times, 15 seconds apart.
-
-| Status | Result |
-| --- | --- |
-| `finished`, `success` | Deploy step succeeds |
-| `failed`, `cancelled`, `canceled` | Job fails |
-| anything else | Keep polling, then fail on timeout |
-
-### Public check and cache purge
-
-The job requests `https://example.com/` and `https://www.example.com/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `Pistisai`, and must not contain `404 page not found` (the Traefik placeholder while the container is unhealthy or unrouted).
+The job requests `https://example.com/` and `https://www.example.com/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `Pistisai`, and must not contain `404 page not found` (the placeholder served while the container is unhealthy or unrouted).
 
 Cloudflare purge runs with `if: always()`. It no-ops when `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset, and a failed purge does not fail the job. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
 
@@ -89,17 +77,17 @@ The printed query value should be `{version}.{build_number}` from `assets/versio
 
 ## Troubleshooting
 
-### Site stays on the Traefik 404
+### Site does not respond after deploy
 
-The container is not healthy, or Coolify has not attached it to the route. Check the image healthcheck uses `http://127.0.0.1/` and that the deploy job reached `finished` or `success`. A single curl during startup can still see the 404; the workflow retries for about two minutes.
+The container is not healthy or the port is not published. Check `docker compose -f config/docker/docker-compose.web.yml ps` and `docker logs` for the web container. Check the image healthcheck uses `http://127.0.0.1/`.
 
 ### Blank page after the splash
 
 The browser loaded a CanvasKit URL on `gstatic.com`, or it is still executing an old `flutter_bootstrap.js`. Rebuild with `--no-web-resources-cdn`. Confirm `index.html` references `flutter_bootstrap.js?v=` plus the current version, and that a direct request for `/flutter_bootstrap.js` returns `Cache-Control: no-cache`.
 
-### GHCR pull fails on the Coolify host
+### GHCR pull fails on the host
 
-The SSH `docker login` step did not run, `COOLIFY_SSH_KEY` cannot log in, or the step forgot to map `GITHUB_TOKEN` into `env`. The workflow passes that token on stdin to `docker login ghcr.io`. A missing `COOLIFY_API_TOKEN` fails earlier, before the SSH step.
+The host is not logged in to `ghcr.io`, or the token lacks `read:packages`. Run `docker login ghcr.io` on the host and retry `docker compose pull`.
 
 ### Web image build cannot see the lockfile or Android project
 
