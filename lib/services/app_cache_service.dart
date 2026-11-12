@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
+import 'voice/cloud_tts_service.dart';
 
 /// Files this app writes only to reuse or serve them again, which are safe
 /// to delete at any time. Today that is the generated speech audio.
@@ -13,15 +13,13 @@ class AppCacheService {
 
   final List<Directory> _directories;
 
-  /// Same location as `CloudTtsService`'s default output directory.
+  /// Same location as `CloudTtsService`'s default output directory; the
+  /// path is computed by that class so the two can never disagree.
   static Directory defaultSpeechCacheDirectory() {
-    final env = Platform.environment;
-    final home = env['HOME'] ?? env['USERPROFILE'];
-    final base = env['XDG_CACHE_HOME'] ??
-        (home != null && home.isNotEmpty
-            ? p.join(home, '.cache')
-            : Directory.systemTemp.path);
-    return Directory(p.join(base, 'pistisai', 'tts'));
+    return Directory(CloudTtsService.defaultCacheDirectory(
+      Platform.environment,
+      tempDirectory: Directory.systemTemp.path,
+    ));
   }
 
   /// Total size of the cached files, in bytes.
