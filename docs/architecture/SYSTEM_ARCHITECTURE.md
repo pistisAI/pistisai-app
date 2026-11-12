@@ -159,6 +159,23 @@ The Flutter app embeds an OpenAI-compatible HTTP router for app-owned local serv
 - Avatar traits: `POST /avatar/traits`
 - Avatar evolution request: `POST /avatar/evolution/request`
 
+### Security model of port 1337
+
+What the code does today (`RouterServer.accessDecision` in `lib/services/router_server.dart`):
+
+- **The socket listens on every network interface** (`InternetAddress.anyIPv4`), so that other devices on the network can discover the desktop hub.
+- **Three paths are public**, answered to any caller without a credential: `GET /health`, `GET /v1/models` and the hub discovery document (`AppConfig.hubPath`, `/api/pistisai/hub`). They return the list of model ids the router can serve, the product name and the ports; no conversation data.
+- **Every other path is private** (chat, speech, voices, avatar state and traits, and the rest). With no secret configured, which is the case in the app today, a private path answers **only a caller on the same machine** (Hermes, the app itself). Any other address gets `403`.
+- **A token mode exists in the router** but nothing in the app enables it. When the router is built with an `authSecret`, every private path requires `Authorization: Bearer <secret>` from any address: no header is `403`, a wrong token is `401`. Until the app sets a secret, a private path cannot be used from another machine at all.
+
+What this means:
+
+- A device on the local network can see that a Pistisai router exists and which model ids it lists, and nothing more.
+- Cloud model providers are registered only when a build supplies their key, so by default `/v1/models` lists models of the providers that are actually available.
+- Not done, tracked in pistisAI/pistisai-app#645: binding to loopback only (which would also stop hub discovery from other devices), or an app setting that supplies the token so that other devices can use private paths with authentication.
+
+Both access outcomes are covered by `test/services/router_server_test.dart`.
+
 Current provider adapter files:
 
 | Adapter | File |
