@@ -11,7 +11,6 @@ import 'dart:math';
 class _MockAuthService extends ChangeNotifier implements AuthService {
   @override
   bool get isRestoringSession => false;
-  @override
   String? get lastLoginError => null;
   @override
   Future<void> updateDisplayName(String name) async {}
