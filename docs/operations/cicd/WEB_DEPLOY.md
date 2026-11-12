@@ -51,9 +51,9 @@ Deployment runs on the host with `docker compose -f config/docker/docker-compose
 
 ## Public check and cache purge
 
-The job requests `https://example.com/` and `https://www.example.com/`, up to 24 times per host, 5 seconds apart. Each response must be HTTP 200, contain `Pistisai`, and must not contain `404 page not found` (the placeholder served while the container is unhealthy or unrouted).
+The workflow no longer runs a public check: it builds and publishes the image only. Verify the site yourself after the host has pulled the new image.
 
-Cloudflare purge runs with `if: always()`. It no-ops when `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset, and a failed purge does not fail the job. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
+The `purge_cache` job runs after the image is published and purges the whole Cloudflare zone (`purge_everything`). The job, and so the deploy, fails if `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset or Cloudflare does not answer `success`. Because the host pulls the image separately, purge again (or re-run the workflow) if the host deploys after the purge. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
 
 ## Local checks
 
