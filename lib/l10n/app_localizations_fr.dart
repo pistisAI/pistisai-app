@@ -1860,9 +1860,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Expliquez pourquoi vous voulez faire évoluer votre avatar…';
 
   @override
-  String get avatarEvolutionReasonRequired => 'Indiquez une raison';
-
-  @override
   String get avatarRequesting => 'Demande en cours…';
 
   @override
@@ -3590,4 +3587,49 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get adminsFinanceDescription =>
       'Paiements, remboursements et rapports';
+
+  @override
+  String get commonCopyMessage => 'Copier le message';
+
+  @override
+  String get crashReportingTitle => 'Envoyer les rapports de plantage';
+
+  @override
+  String get navExpandSidebar => 'Déplier la barre latérale';
+
+  @override
+  String get navCollapseSidebar => 'Replier la barre latérale';
+
+  @override
+  String get agentStatusTitle => 'État de l\'agent';
+
+  @override
+  String get agentStatusBackToChat => 'Retour au chat';
+
+  @override
+  String get constructionBackToApp => 'Retour à l\'application';
+
+  @override
+  String get voiceActionTest => 'Tester';
+
+  @override
+  String get voiceActionListen => 'Écouter';
+
+  @override
+  String get voiceActionResetVoice => 'Réinitialiser la voix';
+
+  @override
+  String get voiceStatusListening => 'À l\'écoute';
+
+  @override
+  String get voiceStatusWake => 'Réveil';
+
+  @override
+  String get voiceStatusUserLine => 'Ligne utilisateur';
+
+  @override
+  String get voiceStatusAssistantReply => 'Réponse de l\'assistant';
+
+  @override
+  String get voiceStatusDoneSpeaking => 'Fin de la parole';
 }

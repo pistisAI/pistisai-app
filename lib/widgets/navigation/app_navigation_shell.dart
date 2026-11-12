@@ -9,6 +9,7 @@ import '../../brand/brand.dart';
 import '../../config/app_config.dart';
 import '../../services/connection_manager_service.dart';
 import '../../services/theme_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 class AppNavigationShell extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -108,7 +109,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
               icon: const Icon(Icons.chevron_right),
               onPressed: () =>
                   setState(() => _sidebarCollapsed = !_sidebarCollapsed),
-              tooltip: 'Expand sidebar',
+              tooltip: AppLocalizations.of(context).navExpandSidebar,
             ),
           ],
         ),
@@ -139,7 +140,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
             icon: const Icon(Icons.chevron_left),
             onPressed: () =>
                 setState(() => _sidebarCollapsed = !_sidebarCollapsed),
-            tooltip: 'Collapse sidebar',
+            tooltip: AppLocalizations.of(context).navCollapseSidebar,
           ),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -5,8 +6,11 @@ import 'package:pistisai/services/voice/voice_conversation_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/widgets/voice/voice_conversation_status_card.dart';
 
-Widget buildWidget(VoiceConversationService service, {bool showDemoControls = false}) {
+Widget buildWidget(VoiceConversationService service,
+    {bool showDemoControls = false}) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: MultiProvider(
         providers: [
@@ -42,7 +46,8 @@ void main() {
     expect(find.text('no'), findsOneWidget);
   });
 
-  testWidgets('shows demo controls only when showDemoControls is true', (tester) async {
+  testWidgets('shows demo controls only when showDemoControls is true',
+      (tester) async {
     final service = VoiceConversationService();
     addTearDown(service.dispose);
 

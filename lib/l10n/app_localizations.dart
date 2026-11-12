@@ -3326,12 +3326,6 @@ abstract class AppLocalizations {
   /// **'Explain why you want to evolve your avatar...'**
   String get avatarEvolutionReasonHint;
 
-  /// No description provided for @avatarEvolutionReasonRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Please provide a reason'**
-  String get avatarEvolutionReasonRequired;
-
   /// No description provided for @avatarRequesting.
   ///
   /// In en, this message translates to:
@@ -6313,6 +6307,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payments, refunds, and reports'**
   String get adminsFinanceDescription;
+
+  /// No description provided for @commonCopyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy message'**
+  String get commonCopyMessage;
+
+  /// No description provided for @crashReportingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send crash reports'**
+  String get crashReportingTitle;
+
+  /// No description provided for @navExpandSidebar.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand sidebar'**
+  String get navExpandSidebar;
+
+  /// No description provided for @navCollapseSidebar.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse sidebar'**
+  String get navCollapseSidebar;
+
+  /// No description provided for @agentStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Status'**
+  String get agentStatusTitle;
+
+  /// No description provided for @agentStatusBackToChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Chat'**
+  String get agentStatusBackToChat;
+
+  /// No description provided for @constructionBackToApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to App'**
+  String get constructionBackToApp;
+
+  /// No description provided for @voiceActionTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get voiceActionTest;
+
+  /// No description provided for @voiceActionListen.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen'**
+  String get voiceActionListen;
+
+  /// No description provided for @voiceActionResetVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset voice'**
+  String get voiceActionResetVoice;
+
+  /// No description provided for @voiceStatusListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening'**
+  String get voiceStatusListening;
+
+  /// No description provided for @voiceStatusWake.
+  ///
+  /// In en, this message translates to:
+  /// **'Wake'**
+  String get voiceStatusWake;
+
+  /// No description provided for @voiceStatusUserLine.
+  ///
+  /// In en, this message translates to:
+  /// **'User line'**
+  String get voiceStatusUserLine;
+
+  /// No description provided for @voiceStatusAssistantReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant reply'**
+  String get voiceStatusAssistantReply;
+
+  /// No description provided for @voiceStatusDoneSpeaking.
+  ///
+  /// In en, this message translates to:
+  /// **'Done speaking'**
+  String get voiceStatusDoneSpeaking;
 }
 
 class _AppLocalizationsDelegate

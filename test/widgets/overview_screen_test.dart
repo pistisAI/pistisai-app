@@ -1,3 +1,4 @@
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/screens/dashboard/overview_screen.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
@@ -89,7 +90,10 @@ void main() {
       ],
     );
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.pumpWidget(MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router));
 
     await tester.pumpAndSettle();
 

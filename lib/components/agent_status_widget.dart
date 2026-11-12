@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
 import '../services/agent_status_service.dart';
+import '../l10n/app_localizations.dart';
 
 /// Widget for displaying agent status with real-time updates
 class AgentStatusWidget extends StatefulWidget {
@@ -173,7 +174,7 @@ class _AgentStatusWidgetState extends State<AgentStatusWidget> {
                 widget.service?.startPolling();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context).commonRetry),
             ),
           ],
         ),

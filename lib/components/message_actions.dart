@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../config/theme.dart';
 import '../models/chat_model.dart';
+import '../l10n/app_localizations.dart';
 
 class MessageActions extends StatelessWidget {
   final ChatMessage message;
@@ -23,14 +24,14 @@ class MessageActions extends StatelessWidget {
         _buildActionButton(
           context: context,
           icon: Icons.copy,
-          tooltip: 'Copy message',
+          tooltip: AppLocalizations.of(context).commonCopyMessage,
           onPressed: onCopy,
         ),
         if (message.hasError && onRetry != null)
           _buildActionButton(
             context: context,
             icon: Icons.refresh,
-            tooltip: 'Retry',
+            tooltip: AppLocalizations.of(context).commonRetry,
             onPressed: onRetry!,
           ),
       ],

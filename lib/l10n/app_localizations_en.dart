@@ -1830,9 +1830,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Explain why you want to evolve your avatar...';
 
   @override
-  String get avatarEvolutionReasonRequired => 'Please provide a reason';
-
-  @override
   String get avatarRequesting => 'Requesting...';
 
   @override
@@ -3532,4 +3529,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminsFinanceDescription => 'Payments, refunds, and reports';
+
+  @override
+  String get commonCopyMessage => 'Copy message';
+
+  @override
+  String get crashReportingTitle => 'Send crash reports';
+
+  @override
+  String get navExpandSidebar => 'Expand sidebar';
+
+  @override
+  String get navCollapseSidebar => 'Collapse sidebar';
+
+  @override
+  String get agentStatusTitle => 'Agent Status';
+
+  @override
+  String get agentStatusBackToChat => 'Back to Chat';
+
+  @override
+  String get constructionBackToApp => 'Back to App';
+
+  @override
+  String get voiceActionTest => 'Test';
+
+  @override
+  String get voiceActionListen => 'Listen';
+
+  @override
+  String get voiceActionResetVoice => 'Reset voice';
+
+  @override
+  String get voiceStatusListening => 'Listening';
+
+  @override
+  String get voiceStatusWake => 'Wake';
+
+  @override
+  String get voiceStatusUserLine => 'User line';
+
+  @override
+  String get voiceStatusAssistantReply => 'Assistant reply';
+
+  @override
+  String get voiceStatusDoneSpeaking => 'Done speaking';
 }

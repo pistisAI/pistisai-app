@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../brand/brand.dart';
 import '../brand/brand_copy.dart';
 import '../config/theme.dart';
+import '../l10n/app_localizations.dart';
 
 /// Construction Page - Shows current features with progress and roadmap
 class ConstructionScreen extends StatelessWidget {
@@ -216,7 +217,7 @@ class ConstructionScreen extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Back to App'),
+                label: Text(AppLocalizations.of(context).constructionBackToApp),
               ),
             ),
             const SizedBox(height: 32),

@@ -12,6 +12,7 @@ import '../../services/connection_manager_service.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../services/platform_adapter.dart';
 import 'package:pistisai/brand/brand.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Connection Status Screen
 class ConnectionStatusScreen extends StatefulWidget {
@@ -76,7 +77,7 @@ class _ConnectionStatusScreenState extends State<ConnectionStatusScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Connection Status'),
+        title: Text(AppLocalizations.of(context).connectionStatusTitle),
         backgroundColor: theme.appBarTheme.backgroundColor,
         foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0,
