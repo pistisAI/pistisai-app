@@ -6,13 +6,13 @@ void main() {
   test('isDirectHermesUrl detects the co-resident Hermes port', () {
     expect(
       ConnectionManagerService.isDirectHermesUrl(
-        'http://127.0.0.1:' + AppConfig.defaultHermesPort.toString(),
+        'http://127.0.0.1:${AppConfig.defaultHermesPort}',
       ),
       isTrue,
     );
     expect(
       ConnectionManagerService.isDirectHermesUrl(
-        'http://pc.ts.net:' + AppConfig.defaultRouterPort.toString(),
+        'http://pc.ts.net:${AppConfig.defaultRouterPort}',
       ),
       isFalse,
     );

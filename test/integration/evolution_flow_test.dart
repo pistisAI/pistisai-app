@@ -1,8 +1,10 @@
+@Timeout(Duration(minutes: 3))
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
 import 'package:pistisai/models/message.dart';
 
-@Timeout(Duration(minutes: 3))
 void main() {
   group('Avatar Evolution Flow Integration Tests', () {
     group('EvolutionTracker Depth Calculations', () {

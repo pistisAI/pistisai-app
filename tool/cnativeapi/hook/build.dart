@@ -119,6 +119,7 @@ void main(List<String> args) async {
       output: output,
       logger: Logger('')
         ..level = Level.ALL
+        // ignore: avoid_print -- build hook output channel, not app code
         ..onRecord.listen((record) => print(record.message)),
     );
   });

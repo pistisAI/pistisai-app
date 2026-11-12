@@ -67,7 +67,7 @@ void main() {
       );
 
       for (final file in <File>[plugin, hook, soul, scanner, skill]) {
-        final text = file.readAsStringSync();
+        file.readAsStringSync();
       }
 
       expect(calls, isNotEmpty);

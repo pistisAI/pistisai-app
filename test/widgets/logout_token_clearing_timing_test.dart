@@ -49,7 +49,6 @@ class MockSessionStorageService extends SessionStorageService {
 class TestableAuthService extends ChangeNotifier implements AuthService {
   @override
   bool get isRestoringSession => false;
-  @override
   String? get lastLoginError => null;
   @override
   Future<void> updateDisplayName(String name) async {}
