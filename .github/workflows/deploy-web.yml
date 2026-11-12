@@ -99,6 +99,9 @@ jobs:
           fi
           echo "✅ Image pushed: $DIGEST"
 
+  # Known gap: the host still pulls the image by hand (`docker compose up -d`),
+  # so this purge can run before the host serves the new image. Moving the pull
+  # into Actions closes it; until then, re-run this workflow if the host deploys late.
   purge_cache:
     needs: [build_and_push]
     runs-on: ubuntu-24.04
