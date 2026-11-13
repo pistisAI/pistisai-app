@@ -22,6 +22,7 @@ import logger from '../logger.js';
 
 import { authenticateJWT } from '../middleware/auth.js';
 import { validateInput } from '../utils/input-validation.js';
+import { usageEventBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 let usageService;
@@ -387,6 +388,7 @@ router.get('/users/usage/billing', authenticateJWT, async function (req, res) {
 router.post(
   '/tunnels/:tunnelId/usage/events',
   authenticateJWT,
+  validateBody(usageEventBody),
   async function (req, res) {
     try {
       const { tunnelId } = req.params;
