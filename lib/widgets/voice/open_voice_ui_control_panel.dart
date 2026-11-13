@@ -7,13 +7,15 @@ import '../../config/theme.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/voice/local_voice_input_service.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
+import '../../l10n/app_localizations.dart';
 
 class OpenVoiceUIControlPanel extends StatelessWidget {
   const OpenVoiceUIControlPanel({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<ConnectionManagerService, VoiceConversationService, LocalVoiceInputService>(
+    return Consumer3<ConnectionManagerService, VoiceConversationService,
+        LocalVoiceInputService>(
       builder: (context, connectionManager, voiceService, localVoice, child) {
         final backend = connectionManager.activeBackend;
         final gatewayStatus = connectionManager.getGatewayStatus();
@@ -38,7 +40,9 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: isConnected
-                            ? (isRunning ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).warning)
+                            ? (isRunning
+                                ? AppTheme.colorsOf(context).success
+                                : AppTheme.colorsOf(context).warning)
                             : AppTheme.colorsOf(context).danger,
                       ),
                     ),
@@ -118,7 +122,7 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                         );
                       },
                       icon: const Icon(Icons.health_and_safety),
-                      label: const Text('Test'),
+                      label: Text(AppLocalizations.of(context).voiceActionTest),
                     ),
                     OutlinedButton.icon(
                       onPressed: () {
@@ -126,7 +130,8 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                         _showFeedback(context, 'Voice state reset.', true);
                       },
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Reset voice'),
+                      label: Text(
+                          AppLocalizations.of(context).voiceActionResetVoice),
                     ),
                   ],
                 ),
@@ -175,17 +180,20 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
                           ? null
                           : () => _toggleMic(context, localVoice),
                       icon: const Icon(Icons.mic),
-                      label: const Text('Listen'),
+                      label:
+                          Text(AppLocalizations.of(context).voiceActionListen),
                     ),
                     ElevatedButton.icon(
                       onPressed: localVoice.isCapturing
                           ? () => _toggleMic(context, localVoice)
                           : null,
                       icon: const Icon(Icons.mic_off),
-                      label: const Text('Stop'),
+                      label: Text(AppLocalizations.of(context).commonStop),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                        foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.errorContainer,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onErrorContainer,
                       ),
                     ),
                     _StatusChip(
@@ -300,7 +308,9 @@ class OpenVoiceUIControlPanel extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: success ? AppTheme.colorsOf(context).success : AppTheme.colorsOf(context).danger,
+        backgroundColor: success
+            ? AppTheme.colorsOf(context).success
+            : AppTheme.colorsOf(context).danger,
       ),
     );
   }
@@ -408,17 +418,17 @@ class _RuntimeControls extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: isRunning ? null : onStart,
               icon: const Icon(Icons.play_arrow),
-              label: const Text('Start'),
+              label: Text(AppLocalizations.of(context).commonStart),
             ),
             ElevatedButton.icon(
               onPressed: isRunning ? onStop : null,
               icon: const Icon(Icons.stop),
-              label: const Text('Stop'),
+              label: Text(AppLocalizations.of(context).commonStop),
             ),
             OutlinedButton.icon(
               onPressed: onRestart,
               icon: const Icon(Icons.restart_alt),
-              label: const Text('Restart'),
+              label: Text(AppLocalizations.of(context).commonRestart),
             ),
           ],
         ),
@@ -469,7 +479,9 @@ class _TranscriptPreview extends StatelessWidget {
           child: Text(
             hasValue ? value : emptyLabel,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: hasValue ? null : AppTheme.colorsOf(context).textColorLight,
+                  color: hasValue
+                      ? null
+                      : AppTheme.colorsOf(context).textColorLight,
                   fontStyle: hasValue ? FontStyle.normal : FontStyle.italic,
                 ),
           ),

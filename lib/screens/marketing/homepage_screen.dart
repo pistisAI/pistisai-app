@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../brand/brand.dart';
 import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Marketing homepage screen - web-only
 /// Stoa Poikile design — Pistisai brand (2026-07)
@@ -732,13 +733,14 @@ class HomepageScreen extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.copy, size: 16, color: colors.textColorLight),
-                tooltip: 'Copy command',
+                tooltip: AppLocalizations.of(context).urlCopyCommand,
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: code));
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Copied to clipboard'),
+                      SnackBar(
+                        content:
+                            Text(AppLocalizations.of(context).messageCopied),
                         duration: Duration(seconds: 2),
                       ),
                     );

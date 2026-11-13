@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../config/app_config.dart';
 import '../../services/settings_preference_service.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Opt-in switch for crash reports. Off by default.
 ///
@@ -94,7 +95,7 @@ class _CrashReportingTileState extends State<CrashReportingTile> {
     return Card(
       child: SwitchListTile(
         secondary: const Icon(Icons.bug_report_outlined),
-        title: const Text('Send crash reports'),
+        title: Text(AppLocalizations.of(context).crashReportingTitle),
         subtitle: Text(_subtitle),
         value: enabled ?? false,
         onChanged: (enabled == null || !_configured) ? null : _set,

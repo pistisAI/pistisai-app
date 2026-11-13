@@ -1,3 +1,4 @@
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/voice/voice_conversation_service.dart';
@@ -58,6 +59,8 @@ void main() {
           ),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: SingleChildScrollView(
               child: OpenVoiceUIControlPanel(),

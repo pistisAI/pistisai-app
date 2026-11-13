@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../components/brain_insight_widget.dart';
 import '../components/app_logo.dart';
+import '../l10n/app_localizations.dart';
 
 /// Screen for visualizing the internal "thoughts" and relational logs of the Local Brain.
 class BrainInsightsScreen extends StatelessWidget {
@@ -15,7 +16,7 @@ class BrainInsightsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () =>
               context.canPop() ? context.pop() : context.go('/config'),
-          tooltip: 'Back',
+          tooltip: AppLocalizations.of(context).commonBack,
         ),
         title: Row(
           children: [

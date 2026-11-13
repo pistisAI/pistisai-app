@@ -1,3 +1,4 @@
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
@@ -6,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _pump(WidgetTester tester, {bool configured = true}) async {
   await tester.pumpWidget(MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: CrashReportingTile(reportingConfigured: configured),
     ),
@@ -52,8 +55,7 @@ void main() {
         await SettingsPreferenceService().isCrashReportingEnabled(), isFalse);
   });
 
-  testWidgets('is disabled when the build cannot send reports',
-      (tester) async {
+  testWidgets('is disabled when the build cannot send reports', (tester) async {
     await _pump(tester, configured: false);
 
     expect(_tile(tester).onChanged, isNull);

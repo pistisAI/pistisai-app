@@ -5,6 +5,7 @@ import '../../services/agent_status_service.dart';
 import '../../components/agent_status_widget.dart';
 import '../../components/app_logo.dart';
 import 'package:get_it/get_it.dart';
+import '../l10n/app_localizations.dart';
 
 /// Screen for monitoring agent status in real-time.
 class AgentStatusScreen extends StatefulWidget {
@@ -43,13 +44,13 @@ class _AgentStatusScreenState extends State<AgentStatusScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
-          tooltip: 'Back to Chat',
+          tooltip: AppLocalizations.of(context).agentStatusBackToChat,
         ),
         title: Row(
           children: [
             const AppLogo.small(),
             const SizedBox(width: 12),
-            const Text('Agent Status'),
+            Text(AppLocalizations.of(context).agentStatusTitle),
           ],
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,

@@ -5,6 +5,7 @@ import '../../config/theme.dart';
 
 import '../../services/voice/voice_conversation_service.dart';
 import '../../services/voice/local_voice_input_service.dart';
+import '../../l10n/app_localizations.dart';
 
 class VoiceConversationStatusCard extends StatefulWidget {
   const VoiceConversationStatusCard({
@@ -159,7 +160,8 @@ class _VoiceConversationStatusCardState
                     value: snapshot.lastAssistantReply,
                     emptyLabel: 'No reply yet',
                   ),
-                  if (widget.showDemoControls) ..._buildDemoControls(voiceService, theme),
+                  if (widget.showDemoControls)
+                    ..._buildDemoControls(voiceService, theme),
                 ],
               ),
             ),
@@ -169,7 +171,8 @@ class _VoiceConversationStatusCardState
     );
   }
 
-  List<Widget> _buildDemoControls(VoiceConversationService voiceService, ThemeData theme) {
+  List<Widget> _buildDemoControls(
+      VoiceConversationService voiceService, ThemeData theme) {
     return [
       const SizedBox(height: 16),
       const Divider(height: 1),
@@ -195,14 +198,14 @@ class _VoiceConversationStatusCardState
               voiceService.setListening();
             },
             icon: const Icon(Icons.hearing),
-            label: const Text('Listening'),
+            label: Text(AppLocalizations.of(context).voiceStatusListening),
           ),
           OutlinedButton.icon(
             onPressed: () {
               voiceService.noteWakePhrase('Hermes, are you there?');
             },
             icon: const Icon(Icons.record_voice_over),
-            label: const Text('Wake'),
+            label: Text(AppLocalizations.of(context).voiceStatusWake),
           ),
           OutlinedButton.icon(
             onPressed: () {
@@ -211,28 +214,28 @@ class _VoiceConversationStatusCardState
               );
             },
             icon: const Icon(Icons.chat_bubble_outline),
-            label: const Text('User line'),
+            label: Text(AppLocalizations.of(context).voiceStatusUserLine),
           ),
           OutlinedButton.icon(
             onPressed: () {
               voiceService.noteAssistantReply('Yeah, much better now.');
             },
             icon: const Icon(Icons.reply),
-            label: const Text('Assistant reply'),
+            label: Text(AppLocalizations.of(context).voiceStatusAssistantReply),
           ),
           OutlinedButton.icon(
             onPressed: () {
               voiceService.noteAssistantFinishedSpeaking();
             },
             icon: const Icon(Icons.volume_up),
-            label: const Text('Done speaking'),
+            label: Text(AppLocalizations.of(context).voiceStatusDoneSpeaking),
           ),
           TextButton.icon(
             onPressed: () {
               voiceService.reset();
             },
             icon: const Icon(Icons.refresh),
-            label: const Text('Reset'),
+            label: Text(AppLocalizations.of(context).commonReset),
           ),
         ],
       ),
@@ -370,7 +373,8 @@ class _InfoChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: theme.textTheme.labelSmall?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+            style: theme.textTheme.labelSmall
+                ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
           ),
           const SizedBox(height: 4),
           Text(
@@ -405,7 +409,8 @@ class _AnimatedTranscriptPanel extends StatelessWidget {
       children: [
         Text(
           title,
-          style: theme.textTheme.labelMedium?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
+          style: theme.textTheme.labelMedium
+              ?.copyWith(color: AppTheme.colorsOf(context).textColorLight),
         ),
         const SizedBox(height: 6),
         AnimatedContainer(
@@ -431,7 +436,8 @@ class _AnimatedTranscriptPanel extends StatelessWidget {
               hasValue ? value : emptyLabel,
               key: ValueKey(hasValue ? value : 'empty:$title'),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: hasValue ? null : AppTheme.colorsOf(context).textColorLight,
+                color:
+                    hasValue ? null : AppTheme.colorsOf(context).textColorLight,
                 fontStyle: hasValue ? FontStyle.normal : FontStyle.italic,
               ),
             ),
