@@ -60,25 +60,29 @@ jobs:
 
       - name: Compute new version
         id: compute
+        env:
+          BUMP: ${{ steps.bump_type.outputs.type }}
         run: |
           set -euo pipefail
           CURRENT=$(jq -r '.version' assets/version.json | cut -d+ -f1)
+          BUILD=$(jq -r '.build_number' assets/version.json)
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
-          BUMP="${{ steps.bump_type.outputs.type }}"
           case "$BUMP" in
             major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
             minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
             patch) PATCH=$((PATCH + 1)) ;;
           esac
           NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
-          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "Current: $CURRENT → New: $NEW_VERSION"
+          NEW_BUILD=$((BUILD + 1))
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "build=$NEW_BUILD" >> "$GITHUB_OUTPUT"
+          echo "Current: $CURRENT+$BUILD -> New: $NEW_VERSION+$NEW_BUILD ($BUMP)"
 
       - name: Update version.json
         run: |
           set -euo pipefail
           VERSION="${{ steps.compute.outputs.version }}"
-          BUILD_NUMBER="${{ github.run_number }}"
+          BUILD_NUMBER="${{ steps.compute.outputs.build }}"
           jq -n \
             --arg version "$VERSION" \
             --arg build_number "$BUILD_NUMBER" \
@@ -93,7 +97,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${{ steps.compute.outputs.version }}"
-          BUILD_NUMBER="${{ github.run_number }}"
+          BUILD_NUMBER="${{ steps.compute.outputs.build }}"
           sed -i "s/^version: .*/version: ${VERSION}+${BUILD_NUMBER}/" pubspec.yaml
           grep '^version:' pubspec.yaml
 
@@ -108,7 +112,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
           git add assets/version.json pubspec.yaml
-          git commit -m "chore(release): bump version to ${VERSION}+${{ github.run_number }}"
+          git commit -m "chore(release): bump version to ${VERSION}+${{ steps.compute.outputs.build }}"
           git push -f origin "$BRANCH"
           EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
           if [ -n "$EXISTING" ]; then
@@ -116,5 +120,5 @@ jobs:
           else
             gh pr create --base main --head "$BRANCH" \
               --title "chore(release): bump version to ${VERSION}" \
-              --body "Automated release version bump to ${VERSION}+${{ github.run_number }}. Merge to release; required checks must pass."
+              --body "Automated release version bump to ${VERSION}+${{ steps.compute.outputs.build }}. Merge to release; required checks must pass."
           fi
