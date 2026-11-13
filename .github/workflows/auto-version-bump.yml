@@ -1,12 +1,12 @@
 name: "🔢 Auto Version Bump"
 
-# SINGLE ENTRY POINT for all releases.
-# On every code push to main that changes a file other than assets/version.json,
-# auto-bump the patch version and commit it back.
-# Markdown, docs/, and images/ pushes do not bump.
-# An empty commit does not match this path filter.
+# RELEASE-TIME version bump. Semi-manual by design:
+# runs when a release is published (or manually via workflow_dispatch),
+# and opens a version-bump PR against main. It never pushes to main directly.
+# Merging that PR is the explicit release gate (ruleset requires PR + checks).
 #
-# All platform workflows chain: bump → web → (desktop, mobile, backend)
+# Bump type is set by the release tag/input, not commit messages:
+#   input bump=major|minor|patch (default patch)
 # Web deploys first (fastest), then desktop/mobile/backend in parallel.
 #
 # Bump type override via commit message:
@@ -15,16 +15,20 @@ name: "🔢 Auto Version Bump"
 #   (nothing) → patch bump
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "assets/version.json"
-      - "**.md"
-      - "docs/**"
-      - "images/**"
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Bump type"
+        required: true
+        default: patch
+        type: choice
+        options: [patch, minor, major]
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: auto-version-bump
@@ -41,22 +45,18 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: main
-          fetch-depth: 2
+          fetch-depth: 1
 
       - name: Determine bump type
         id: bump_type
+        env:
+          INPUT_BUMP: ${{ github.event.inputs.bump }}
         run: |
           set -euo pipefail
-          MSG=$(git log -1 --pretty=%B)
-          if echo "$MSG" | grep -qi '\[major\]'; then
-            echo "type=major" >> $GITHUB_OUTPUT
-          elif echo "$MSG" | grep -qi '\[minor\]'; then
-            echo "type=minor" >> $GITHUB_OUTPUT
-          else
-            echo "type=patch" >> $GITHUB_OUTPUT
-          fi
-          echo "Commit: $MSG"
-          echo "Bump: $(grep type $GITHUB_OUTPUT | cut -d= -f2)"
+          TYPE="${INPUT_BUMP:-patch}"
+          case "$TYPE" in major|minor|patch) ;; *) TYPE=patch ;; esac
+          echo "type=$TYPE" >> "$GITHUB_OUTPUT"
+          echo "Bump: $TYPE"
 
       - name: Compute new version
         id: compute
@@ -97,38 +97,24 @@ jobs:
           sed -i "s/^version: .*/version: ${VERSION}+${BUILD_NUMBER}/" pubspec.yaml
           grep '^version:' pubspec.yaml
 
-      - name: Setup deploy key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-
-      - name: Commit and push
+      - name: Commit to bump branch and open PR
         env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.compute.outputs.version }}
         run: |
           set -euo pipefail
-          if [ -z "${DEPLOY_KEY:-}" ]; then
-            echo "❌ DEPLOY_KEY secret is not set. This workflow requires a deploy key to push version bumps to main (bypassing branch protection)."
-            exit 1
-          fi
+          BRANCH="chore/version-bump-${VERSION}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
           git add assets/version.json pubspec.yaml
-          git commit -m "ci: bump version to ${{ steps.compute.outputs.version }}+${{ github.run_number }} [skip ci]"
-          # Use SSH to push (bypasses branch protection that blocks GITHUB_TOKEN)
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa,ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
-          git remote set-url origin git@github.com:${{ github.repository }}.git
-          GIT_SSH_COMMAND="ssh -o IdentitiesOnly=yes" git push origin main
-          echo "✅ Version bumped and committed — workflow_run will trigger all platforms"
-
-      - name: Verify push succeeded
-        run: |
-          set -euo pipefail
-          REMOTE_SHA=$(git rev-parse origin/main)
-          LOCAL_SHA=$(git rev-parse main)
-          if [ "$REMOTE_SHA" != "$LOCAL_SHA" ]; then
-            echo "❌ Push verification failed: local=$LOCAL_SHA remote=$REMOTE_SHA"
-            exit 1
+          git commit -m "chore(release): bump version to ${VERSION}+${{ github.run_number }}"
+          git push -f origin "$BRANCH"
+          EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            echo "PR #$EXISTING already open for $BRANCH"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore(release): bump version to ${VERSION}" \
+              --body "Automated release version bump to ${VERSION}+${{ github.run_number }}. Merge to release; required checks must pass."
           fi
-          echo "✅ Push verified: $REMOTE_SHA"
