@@ -105,3 +105,20 @@ export const subagentMetadataBody = z.object({
   label: text(200).nullable().optional(),
   task: text(4000).nullable().optional(),
 });
+
+// --- Tunnel usage events ---------------------------------------------------
+// Before, only `eventType` was checked: `dataBytes: "abc"` or a 1 MB
+// `errorMessage` went straight to the usage service.
+export const usageEventBody = z.object({
+  eventType: z.enum([
+    'connection_start',
+    'connection_end',
+    'data_transfer',
+    'error',
+  ]),
+  connectionId: text(128).optional(),
+  dataBytes: z.number().int().min(0).optional(),
+  durationSeconds: z.number().min(0).optional(),
+  errorMessage: text(2000).optional(),
+  ipAddress: text(64).optional(),
+});
