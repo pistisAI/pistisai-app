@@ -27,13 +27,13 @@ jobs:
       backend: ${{ steps.gate.outputs.backend }}
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           # Push to main diffs github.event.before..HEAD. A depth-1 clone
           # does not contain that parent, and GitHub will not fetch it by SHA.
           fetch-depth: 0
 
-      - uses: dorny/paths-filter@v4
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d  # v4
         id: filter
         continue-on-error: true
         with:
@@ -83,9 +83,9 @@ jobs:
     if: needs.changes.outputs.flutter == 'true'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
           flutter-version-file: pubspec.yaml
           channel: "stable"
@@ -105,9 +105,9 @@ jobs:
     if: needs.changes.outputs.flutter == 'true'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
           flutter-version-file: pubspec.yaml
           channel: "stable"
@@ -142,9 +142,9 @@ jobs:
     if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
           flutter-version-file: pubspec.yaml
           channel: "stable"
@@ -173,7 +173,7 @@ jobs:
         run: flutter build web --release --no-web-resources-cdn --dart-define=BRAND=pistisai
 
       - name: "📦 Upload web build"
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7
         with:
           name: web-build
           path: build/web/
@@ -187,9 +187,9 @@ jobs:
     if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
           flutter-version-file: pubspec.yaml
           channel: "stable"
@@ -228,9 +228,9 @@ jobs:
     if: needs.changes.outputs.flutter == 'true' && needs.flutter_analyze.result == 'success' && needs.flutter_smoke_test.result == 'success'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
           flutter-version-file: pubspec.yaml
           channel: "stable"
@@ -263,7 +263,7 @@ jobs:
           tar -czf /tmp/pistisai-linux-x64.tar.gz bundle/
 
       - name: "📦 Upload Linux build"
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7
         with:
           name: linux-build
           path: /tmp/pistisai-linux-x64.tar.gz
@@ -280,14 +280,14 @@ jobs:
         working-directory: services/api-backend
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7
         with:
           node-version: "26"
 
       - name: "📦 Cache api-backend node_modules"
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6
         with:
           path: services/api-backend/node_modules
           key: ${{ runner.os }}-api-backend-node-modules-${{ hashFiles('services/api-backend/package-lock.json') }}
