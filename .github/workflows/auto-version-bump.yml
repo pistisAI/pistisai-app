@@ -9,10 +9,8 @@ name: "🔢 Auto Version Bump"
 #   input bump=major|minor|patch (default patch)
 # Web deploys first (fastest), then desktop/mobile/backend in parallel.
 #
-# Bump type override via commit message:
-#   [major] → major bump
-#   [minor] → minor bump
-#   (nothing) → patch bump
+# Bump type: set via the manual dispatch `bump` input (patch|minor|major).
+# Automatic runs (release published) always patch-bump.
 
 on:
   release:
