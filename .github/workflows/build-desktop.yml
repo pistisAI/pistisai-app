@@ -142,6 +142,7 @@ jobs:
           retention-days: 7
 
   build_windows:
+    timeout-minutes: 60
     name: Windows Build
     needs: analyze
     if: contains(needs.analyze.outputs.platforms, 'windows')
@@ -270,6 +271,7 @@ jobs:
           retention-days: 7
 
   create_release:
+    timeout-minutes: 15
     needs: [analyze, build_linux, build_windows, build_macos]
     if: >-
       always() &&

@@ -244,6 +244,7 @@ jobs:
           retention-days: 30
 
   create_release:
+    timeout-minutes: 15
     needs: [analyze, build_android, build_ios]
     if: >-
       always() &&
