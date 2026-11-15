@@ -84,12 +84,8 @@ jobs:
           set -euo pipefail
           CURRENT=$(jq -r '.version' assets/version.json | cut -d+ -f1)
           BUILD=$(jq -r '.build_number' assets/version.json)
-          # Build on the highest version among main and any open bump PR, so
-          # back-to-back merges produce 1.1.108, 1.1.109... instead of duplicates.
-          OPEN_BUMPS=$(gh pr list --state open --limit 100 --json title -q '.[].title' 2>/dev/null | grep 'bump version' || true)
-          for V in $(echo "$OPEN_BUMPS" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true); do
-            if [ "$(printf '%s\n%s\n' "$CURRENT" "$V" | sort -V | tail -1)" = "$V" ]; then CURRENT="$V"; fi
-          done
+          # Base the bump on main only. Reading open bump PRs made each new bump
+          # wait on the previous unmerged one; main is the single source of truth.
           echo "Base version: $CURRENT"
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
           case "$BUMP" in
