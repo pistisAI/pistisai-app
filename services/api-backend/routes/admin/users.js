@@ -955,5 +955,10 @@ router.post(
  * Should be called on application shutdown
  */
 export async function closeUserDbPool() {
-  await closePool();
+  try {
+    await closePool();
+  } catch (error) {
+    logger.error('Failed to close user DB pool', { error: error.message });
+    throw error;
+  }
 }

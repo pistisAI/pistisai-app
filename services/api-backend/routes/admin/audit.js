@@ -579,5 +579,10 @@ router.get(
  * Should be called on application shutdown
  */
 export async function closeAuditDbPool() {
-  await closePool();
+  try {
+    await closePool();
+  } catch (error) {
+    logger.error('Failed to close audit DB pool', { error: error.message });
+    throw error;
+  }
 }

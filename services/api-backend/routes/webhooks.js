@@ -113,29 +113,38 @@ router.post(
  * Handle webhook event based on type
  */
 async function handleWebhookEvent(event, client) {
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      await handlePaymentIntentSucceeded(event.data.object, client);
-      break;
+  try {
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        await handlePaymentIntentSucceeded(event.data.object, client);
+        break;
 
-    case 'payment_intent.failed':
-      await handlePaymentIntentFailed(event.data.object, client);
-      break;
+      case 'payment_intent.failed':
+        await handlePaymentIntentFailed(event.data.object, client);
+        break;
 
-    case 'customer.subscription.created':
-      await handleSubscriptionCreated(event.data.object, client);
-      break;
+      case 'customer.subscription.created':
+        await handleSubscriptionCreated(event.data.object, client);
+        break;
 
-    case 'customer.subscription.updated':
-      await handleSubscriptionUpdated(event.data.object, client);
-      break;
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object, client);
+        break;
 
-    case 'customer.subscription.deleted':
-      await handleSubscriptionDeleted(event.data.object, client);
-      break;
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object, client);
+        break;
 
-    default:
-      logger.info('Unhandled webhook event type', { type: event.type });
+      default:
+        logger.info('Unhandled webhook event type', { type: event.type });
+    }
+  } catch (error) {
+    logger.error('Webhook event handler failed', {
+      type: event.type,
+      id: event.id,
+      error: error.message,
+    });
+    throw error;
   }
 }
 
@@ -143,117 +152,134 @@ async function handleWebhookEvent(event, client) {
  * Handle successful payment intent
  */
 async function handlePaymentIntentSucceeded(paymentIntent, client) {
-  logger.info('Processing payment_intent.succeeded', {
-    paymentIntentId: paymentIntent.id,
-    amount: paymentIntent.amount,
-    currency: paymentIntent.currency,
-  });
+  try {
+    logger.info('Processing payment_intent.succeeded', {
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+    });
 
-  // Update payment transaction status
-  const result = await client.query(
-    `UPDATE payment_transactions
+    // Update payment transaction status
+    const result = await client.query(
+      `UPDATE payment_transactions
      SET status = 'succeeded',
          stripe_charge_id = $1,
          receipt_url = $2,
          updated_at = NOW()
      WHERE stripe_payment_intent_id = $3
      RETURNING id, user_id`,
-    [
-      paymentIntent.latest_charge,
-      paymentIntent.charges?.data[0]?.receipt_url,
-      paymentIntent.id,
-    ],
-  );
+      [
+        paymentIntent.latest_charge,
+        paymentIntent.charges?.data[0]?.receipt_url,
+        paymentIntent.id,
+      ],
+    );
 
-  if (result.rows.length === 0) {
-    logger.warn('Payment transaction not found for payment intent', {
+    if (result.rows.length === 0) {
+      logger.warn('Payment transaction not found for payment intent', {
+        paymentIntentId: paymentIntent.id,
+      });
+      return;
+    }
+
+    const transaction = result.rows[0];
+
+    logger.info('Payment transaction updated to succeeded', {
+      transactionId: transaction.id,
+      userId: transaction.user_id,
       paymentIntentId: paymentIntent.id,
     });
-    return;
+  } catch (error) {
+    logger.error('handlePaymentIntentSucceeded failed', {
+      paymentIntentId: paymentIntent.id,
+      error: error.message,
+    });
+    throw error;
   }
-
-  const transaction = result.rows[0];
-
-  logger.info('Payment transaction updated to succeeded', {
-    transactionId: transaction.id,
-    userId: transaction.user_id,
-    paymentIntentId: paymentIntent.id,
-  });
 }
 
 /**
  * Handle failed payment intent
  */
 async function handlePaymentIntentFailed(paymentIntent, client) {
-  logger.info('Processing payment_intent.failed', {
-    paymentIntentId: paymentIntent.id,
-    failureCode: paymentIntent.last_payment_error?.code,
-    failureMessage: paymentIntent.last_payment_error?.message,
-  });
+  try {
+    logger.info('Processing payment_intent.failed', {
+      paymentIntentId: paymentIntent.id,
+      failureCode: paymentIntent.last_payment_error?.code,
+      failureMessage: paymentIntent.last_payment_error?.message,
+    });
 
-  // Update payment transaction status
-  const result = await client.query(
-    `UPDATE payment_transactions
+    // Update payment transaction status
+    const result = await client.query(
+      `UPDATE payment_transactions
      SET status = 'failed',
          failure_code = $1,
          failure_message = $2,
          updated_at = NOW()
      WHERE stripe_payment_intent_id = $3
      RETURNING id, user_id`,
-    [
-      paymentIntent.last_payment_error?.code,
-      paymentIntent.last_payment_error?.message,
-      paymentIntent.id,
-    ],
-  );
+      [
+        paymentIntent.last_payment_error?.code,
+        paymentIntent.last_payment_error?.message,
+        paymentIntent.id,
+      ],
+    );
 
-  if (result.rows.length === 0) {
-    logger.warn('Payment transaction not found for payment intent', {
+    if (result.rows.length === 0) {
+      logger.warn('Payment transaction not found for payment intent', {
+        paymentIntentId: paymentIntent.id,
+      });
+      return;
+    }
+
+    const transaction = result.rows[0];
+
+    logger.info('Payment transaction updated to failed', {
+      transactionId: transaction.id,
+      userId: transaction.user_id,
       paymentIntentId: paymentIntent.id,
+      failureCode: paymentIntent.last_payment_error?.code,
     });
-    return;
+  } catch (error) {
+    logger.error('handlePaymentIntentFailed failed', {
+      paymentIntentId: paymentIntent.id,
+      error: error.message,
+    });
+    throw error;
   }
-
-  const transaction = result.rows[0];
-
-  logger.info('Payment transaction updated to failed', {
-    transactionId: transaction.id,
-    userId: transaction.user_id,
-    paymentIntentId: paymentIntent.id,
-    failureCode: paymentIntent.last_payment_error?.code,
-  });
 }
 
 /**
  * Handle subscription created
  */
 async function handleSubscriptionCreated(subscription, client) {
-  logger.info('Processing customer.subscription.created', {
-    subscriptionId: subscription.id,
-    customerId: subscription.customer,
-    status: subscription.status,
-  });
+  try {
+    logger.info('Processing customer.subscription.created', {
+      subscriptionId: subscription.id,
+      customerId: subscription.customer,
+      status: subscription.status,
+    });
 
-  // Find user by Stripe customer ID
-  const userResult = await client.query(
-    `SELECT s.id as subscription_id, s.user_id
+    // Find user by Stripe customer ID
+    const userResult = await client.query(
+      `SELECT s.id as subscription_id, s.user_id
      FROM subscriptions s
      WHERE s.stripe_subscription_id = $1`,
-    [subscription.id],
-  );
+      [subscription.id],
+    );
 
-  if (userResult.rows.length === 0) {
-    logger.warn('Subscription not found in database', {
-      subscriptionId: subscription.id,
-    });
-    return;
-  }
+    if (userResult.rows.length === 0) {
+      logger.warn('Subscription not found in database', {
+        subscriptionId: subscription.id,
+      });
+      return;
+    }
 
-  const dbSubscription = userResult.rows[0];
+    const dbSubscription = userResult.rows[0];
 
-  // Update subscription with Stripe data
-  await client.query(
-    `UPDATE subscriptions
+    // Update subscription with Stripe data
+    await client.query(
+      `UPDATE subscriptions
      SET status = $1,
          current_period_start = to_timestamp($2),
          current_period_end = to_timestamp($3),
@@ -261,38 +287,46 @@ async function handleSubscriptionCreated(subscription, client) {
          trial_end = $5,
          updated_at = NOW()
      WHERE id = $6`,
-    [
-      subscription.status,
-      subscription.current_period_start,
-      subscription.current_period_end,
-      subscription.trial_start
-        ? new Date(subscription.trial_start * 1000)
-        : null,
-      subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-      dbSubscription.subscription_id,
-    ],
-  );
+      [
+        subscription.status,
+        subscription.current_period_start,
+        subscription.current_period_end,
+        subscription.trial_start
+          ? new Date(subscription.trial_start * 1000)
+          : null,
+        subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+        dbSubscription.subscription_id,
+      ],
+    );
 
-  logger.info('Subscription created and updated', {
-    subscriptionId: subscription.id,
-    userId: dbSubscription.user_id,
-    status: subscription.status,
-  });
+    logger.info('Subscription created and updated', {
+      subscriptionId: subscription.id,
+      userId: dbSubscription.user_id,
+      status: subscription.status,
+    });
+  } catch (error) {
+    logger.error('handleSubscriptionCreated failed', {
+      subscriptionId: subscription.id,
+      error: error.message,
+    });
+    throw error;
+  }
 }
 
 /**
  * Handle subscription updated
  */
 async function handleSubscriptionUpdated(subscription, client) {
-  logger.info('Processing customer.subscription.updated', {
-    subscriptionId: subscription.id,
-    status: subscription.status,
-    cancelAtPeriodEnd: subscription.cancel_at_period_end,
-  });
+  try {
+    logger.info('Processing customer.subscription.updated', {
+      subscriptionId: subscription.id,
+      status: subscription.status,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    });
 
-  // Update subscription in database
-  const result = await client.query(
-    `UPDATE subscriptions
+    // Update subscription in database
+    const result = await client.query(
+      `UPDATE subscriptions
      SET status = $1,
          current_period_start = to_timestamp($2),
          current_period_end = to_timestamp($3),
@@ -303,72 +337,87 @@ async function handleSubscriptionUpdated(subscription, client) {
          updated_at = NOW()
      WHERE stripe_subscription_id = $8
      RETURNING id, user_id`,
-    [
-      subscription.status,
-      subscription.current_period_start,
-      subscription.current_period_end,
-      subscription.cancel_at_period_end,
-      subscription.canceled_at
-        ? new Date(subscription.canceled_at * 1000)
-        : null,
-      subscription.trial_start
-        ? new Date(subscription.trial_start * 1000)
-        : null,
-      subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-      subscription.id,
-    ],
-  );
+      [
+        subscription.status,
+        subscription.current_period_start,
+        subscription.current_period_end,
+        subscription.cancel_at_period_end,
+        subscription.canceled_at
+          ? new Date(subscription.canceled_at * 1000)
+          : null,
+        subscription.trial_start
+          ? new Date(subscription.trial_start * 1000)
+          : null,
+        subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+        subscription.id,
+      ],
+    );
 
-  if (result.rows.length === 0) {
-    logger.warn('Subscription not found in database', {
+    if (result.rows.length === 0) {
+      logger.warn('Subscription not found in database', {
+        subscriptionId: subscription.id,
+      });
+      return;
+    }
+
+    const dbSubscription = result.rows[0];
+
+    logger.info('Subscription updated', {
       subscriptionId: subscription.id,
+      userId: dbSubscription.user_id,
+      status: subscription.status,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
     });
-    return;
+  } catch (error) {
+    logger.error('handleSubscriptionUpdated failed', {
+      subscriptionId: subscription.id,
+      error: error.message,
+    });
+    throw error;
   }
-
-  const dbSubscription = result.rows[0];
-
-  logger.info('Subscription updated', {
-    subscriptionId: subscription.id,
-    userId: dbSubscription.user_id,
-    status: subscription.status,
-    cancelAtPeriodEnd: subscription.cancel_at_period_end,
-  });
 }
 
 /**
  * Handle subscription deleted
  */
 async function handleSubscriptionDeleted(subscription, client) {
-  logger.info('Processing customer.subscription.deleted', {
-    subscriptionId: subscription.id,
-    status: subscription.status,
-  });
+  try {
+    logger.info('Processing customer.subscription.deleted', {
+      subscriptionId: subscription.id,
+      status: subscription.status,
+    });
 
-  // Update subscription status to canceled
-  const result = await client.query(
-    `UPDATE subscriptions
+    // Update subscription status to canceled
+    const result = await client.query(
+      `UPDATE subscriptions
      SET status = 'canceled',
          canceled_at = NOW(),
          updated_at = NOW()
      WHERE stripe_subscription_id = $1
      RETURNING id, user_id`,
-    [subscription.id],
-  );
+      [subscription.id],
+    );
 
-  if (result.rows.length === 0) {
-    logger.warn('Subscription not found in database', {
+    if (result.rows.length === 0) {
+      logger.warn('Subscription not found in database', {
+        subscriptionId: subscription.id,
+      });
+      return;
+    }
+
+    const dbSubscription = result.rows[0];
+
+    logger.info('Subscription deleted', {
       subscriptionId: subscription.id,
+      userId: dbSubscription.user_id,
     });
-    return;
+  } catch (error) {
+    logger.error('handleSubscriptionDeleted failed', {
+      subscriptionId: subscription.id,
+      error: error.message,
+    });
+    throw error;
   }
-
-  const dbSubscription = result.rows[0];
-
-  logger.info('Subscription deleted', {
-    subscriptionId: subscription.id,
-    userId: dbSubscription.user_id,
-  });
 }
 
 export default router;

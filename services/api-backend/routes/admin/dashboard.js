@@ -258,7 +258,12 @@ router.get('/metrics', adminReadOnlyLimiter, adminAuth(), async (req, res) => {
  * Should be called on application shutdown
  */
 export async function closeDashboardDbPool() {
-  await closePool();
+  try {
+    await closePool();
+  } catch (error) {
+    logger.error('Failed to close dashboard DB pool', { error: error.message });
+    throw error;
+  }
 }
 
 export default router;

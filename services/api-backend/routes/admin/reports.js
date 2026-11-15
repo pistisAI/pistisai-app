@@ -474,7 +474,8 @@ function convertToCSV(data, headers) {
  * Helper function to generate revenue report data for export
  */
 async function generateRevenueReportData(pool, startDate, endDate) {
-  const query = `
+  try {
+    const query = `
     SELECT 
       pt.id,
       pt.created_at,
@@ -495,15 +496,22 @@ async function generateRevenueReportData(pool, startDate, endDate) {
     ORDER BY pt.created_at DESC
   `;
 
-  const result = await pool.query(query, [startDate, endDate]);
-  return result.rows;
+    const result = await pool.query(query, [startDate, endDate]);
+    return result.rows;
+  } catch (error) {
+    logger.error('Failed to generate revenue report data', {
+      error: error.message,
+    });
+    throw error;
+  }
 }
 
 /**
  * Helper function to generate subscription report data for export
  */
 async function generateSubscriptionReportData(pool, startDate, endDate) {
-  const query = `
+  try {
+    const query = `
     SELECT 
       s.id,
       s.created_at,
@@ -522,15 +530,22 @@ async function generateSubscriptionReportData(pool, startDate, endDate) {
     ORDER BY s.created_at DESC
   `;
 
-  const result = await pool.query(query, [startDate, endDate]);
-  return result.rows;
+    const result = await pool.query(query, [startDate, endDate]);
+    return result.rows;
+  } catch (error) {
+    logger.error('Failed to generate subscription report data', {
+      error: error.message,
+    });
+    throw error;
+  }
 }
 
 /**
  * Helper function to generate transaction report data for export
  */
 async function generateTransactionReportData(pool, startDate, endDate) {
-  const query = `
+  try {
+    const query = `
     SELECT 
       pt.id,
       pt.created_at,
@@ -551,8 +566,14 @@ async function generateTransactionReportData(pool, startDate, endDate) {
     ORDER BY pt.created_at DESC
   `;
 
-  const result = await pool.query(query, [startDate, endDate]);
-  return result.rows;
+    const result = await pool.query(query, [startDate, endDate]);
+    return result.rows;
+  } catch (error) {
+    logger.error('Failed to generate transaction report data', {
+      error: error.message,
+    });
+    throw error;
+  }
 }
 
 /**
