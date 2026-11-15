@@ -746,6 +746,19 @@ User: "Click the Firefox icon"
 - Screenshot data stays local
 - All desktop actions logged
 
+#### Wayland / AT-SPI known gaps (#616)
+
+On Linux Wayland (especially KDE Plasma):
+
+- **Targeted screenshots** with `raise_window=false` fail unless the window is
+  already focused (`raise_window=false requires the requested window to already
+  be focused`). Call `activate_window` (or pass `raise_window=true`) before
+  `get_app_state` / window screenshots after any interaction that may steal focus.
+- **AT-SPI trees** may be empty until Flutter publishes semantics. Pistisai calls
+  `SemanticsBinding.ensureSemantics()` on Linux startup so computer-use-linux can
+  read the accessibility tree; prefer `activate_window` before relying on the tree.
+- Shared policy helper: `lib/services/desktop_control/computer_use_linux_wayland.dart`.
+
 ---
 
 ## Safety Boundaries
