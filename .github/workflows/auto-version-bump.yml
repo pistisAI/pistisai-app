@@ -14,6 +14,10 @@ name: "🔢 Auto Version Bump"
 # Release PRs (chore(release): bump version ...) are skipped to avoid a loop.
 # Web deploys first (fastest), then desktop/mobile/backend in parallel.
 
+concurrency:
+  group: auto-version-bump
+  cancel-in-progress: false
+
 on:
   push:
     branches: [main]
@@ -31,10 +35,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-
-concurrency:
-  group: auto-version-bump
-  cancel-in-progress: false
 
 jobs:
   bump:
@@ -128,25 +128,15 @@ jobs:
           sed -i "s/^version: .*/version: ${VERSION}+${BUILD_NUMBER}/" pubspec.yaml
           grep '^version:' pubspec.yaml
 
-      - name: Commit to bump branch and open PR
+      - name: Commit and push version bump to main
         if: steps.bump_type.outputs.type != 'skip'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
           VERSION: ${{ steps.compute.outputs.version }}
         run: |
           set -euo pipefail
-          BRANCH="chore/version-bump-${VERSION}-${GITHUB_SHA:0:7}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B "$BRANCH"
           git add assets/version.json pubspec.yaml
           git commit -m "chore(release): bump version to ${VERSION}+${{ steps.compute.outputs.build }}"
-          git push -f origin "$BRANCH"
-          EXISTING=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
-          if [ -n "$EXISTING" ]; then
-            echo "PR #$EXISTING already open for $BRANCH"
-          else
-            gh pr create --base main --head "$BRANCH" \
-              --title "chore(release): bump version to ${VERSION}" \
-              --body "Automated release version bump to ${VERSION}+${{ steps.compute.outputs.build }}. Merge to release; required checks must pass."
-          fi
+          git push origin HEAD:main
