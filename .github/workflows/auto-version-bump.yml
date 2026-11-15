@@ -157,3 +157,27 @@ jobs:
           else
             gh pr merge "$PR_URL" --auto --squash
           fi
+          echo "BUMP_PR_URL=$PR_URL" >> "$GITHUB_ENV"
+
+      - name: Watch bump PR; close and report if it fails
+        if: steps.bump_type.outputs.type != 'skip' && env.BUMP_PR_URL != ''
+        env:
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+        run: |
+          set -uo pipefail
+          # Wait up to ~25 min for the bump PR to merge. Bumps are queued by the
+          # concurrency group, so each one has its own check window.
+          for i in $(seq 1 50); do
+            STATE=$(gh pr view "$BUMP_PR_URL" --json state -q .state)
+            [ "$STATE" = "MERGED" ] && { echo "Bump merged: $BUMP_PR_URL"; exit 0; }
+            [ "$STATE" = "CLOSED" ] && { echo "::error::Bump PR closed without merge: $BUMP_PR_URL"; exit 1; }
+            FAILED=$(gh pr view "$BUMP_PR_URL" --json statusCheckRollup -q '[.statusCheckRollup[]?|select(.conclusion=="FAILURE")]|length')
+            if [ "${FAILED:-0}" -gt 0 ]; then
+              echo "::error::Bump checks failed; closing $BUMP_PR_URL so the next run recomputes cleanly"
+              gh pr close "$BUMP_PR_URL" --delete-branch --comment "Auto-closed: checks failed. The next merge will recompute the version."
+              exit 1
+            fi
+            sleep 30
+          done
+          echo "::warning::Bump PR still open after 25 min: $BUMP_PR_URL"
+          exit 1
