@@ -121,7 +121,19 @@
       audio. Turn spoken replies off if you do not want this.
     </p>
 
-    <h3>2.5 Camera, microphone, screen, and desktop control</h3>
+    <h3>2.5 Optional cloud model providers</h3>
+    <p>
+      By default Pistisai does not call third-party cloud LLMs. Optional cloud model adapters
+      (Zhipu/GLM, Moonshot/Kimi, and Google Gemini) exist only when a build supplies the matching
+      API key (<code>GLM_API_KEY</code>, <code>KIMI_API_KEY</code>, or <code>GEMINI_API_KEY</code>).
+      Without that key the adapter is not registered, so prompts are not forwarded to those
+      providers. When a key is present and you select that provider, the prompt and conversation
+      content you send are transmitted to that provider under their own terms. Local agent runtimes
+      (for example Hermes) and local support model providers (Ollama, LM Studio) stay on your
+      machine unless you point them elsewhere.
+    </p>
+
+    <h3>2.6 Camera, microphone, screen, and desktop control</h3>
     <p>
       Optional vision (camera/OCR), voice, and desktop-control features operate under your explicit,
       device-scoped permission. Media and screen data captured by these features are processed locally
@@ -170,6 +182,7 @@
       <li><strong>Google or GitHub</strong> — only if you choose to sign in with that account;</li>
       <li><strong>Error diagnostics (Sentry)</strong> — crash reports, only if you turn crash reporting on;</li>
       <li><strong>Microsoft speech service</strong> — the text of replies read aloud with the default online voice;</li>
+      <li><strong>Optional cloud model providers (Zhipu, Moonshot, Google Gemini)</strong> — only when a build includes their API key and you use that provider;</li>
       <li><strong>Runtimes and providers you choose</strong> — only the data you direct Pistisai to send to them.</li>
     </ul>
     <p>We do not sell, rent, or trade your personal information.</p>
