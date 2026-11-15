@@ -292,7 +292,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               size: 20),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Connect to Cloud Relay',
+                                            BrandCopy.syncDevicesCta,
                                             style: TextStyle(
                                               fontSize: isMobile ? 16.0 : 18.0,
                                               fontWeight: FontWeight.w600,
@@ -304,11 +304,22 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
+                          SizedBox(height: 12.0),
+
+                          Text(
+                            BrandCopy.syncDevicesHint,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.7),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
                           SizedBox(height: 16.0),
 
                           TextButton(
                             onPressed: () => context.go('/'),
-                            child: const Text('Continue in Local Mode'),
+                            child: Text(BrandCopy.continueLocalMode),
                           ),
 
                           if (!kReleaseMode) const SizedBox(height: 8.0),

@@ -14,7 +14,7 @@ async function main() {
   });
 
   try {
-    // In a real application, you would get these tokens from Supabase
+    // In a real application, you would get these tokens from Cloudflare Access
     const accessToken = 'your-access-token';
     const refreshToken = 'your-refresh-token';
 

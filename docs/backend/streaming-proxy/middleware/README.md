@@ -6,9 +6,9 @@ This directory contains the server-side authentication and authorization middlew
 
 ### 1. JWT Validation Middleware (`jwt-validation-middleware.ts`)
 
-Validates JWT tokens from Auth0 with the following features:
+Validates JWT tokens from Cloudflare Access with the following features:
 
-- Integration with Auth0 JWKS endpoint
+- Integration with Cloudflare Access JWKS endpoint
 - Token signature verification using Web Crypto API
 - Expiration checking with distinction between expired and invalid tokens
 - 5-minute validation result caching
@@ -20,9 +20,9 @@ Validates JWT tokens from Auth0 with the following features:
 import { JWTValidationMiddleware } from './middleware';
 
 const jwtMiddleware = new JWTValidationMiddleware({
-  domain: process.env.SUPABASE_AUTH_DOMAIN!,
-  audience: process.env.SUPABASE_AUTH_AUDIENCE!,
-  issuer: `https://${process.env.SUPABASE_AUTH_DOMAIN}/`,
+  domain: process.env.CF_ACCESS_TEAM_DOMAIN!,
+  audience: process.env.CF_ACCESS_AUD!,
+  issuer: `https://${process.env.CF_ACCESS_TEAM_DOMAIN}/`,
 });
 
 // Validate a token
@@ -174,9 +174,9 @@ const app = express();
 
 // Initialize middleware components
 const jwtMiddleware = new JWTValidationMiddleware({
-  domain: process.env.SUPABASE_AUTH_DOMAIN!,
-  audience: process.env.SUPABASE_AUTH_AUDIENCE!,
-  issuer: `https://${process.env.SUPABASE_AUTH_DOMAIN}/`,
+  domain: process.env.CF_ACCESS_TEAM_DOMAIN!,
+  audience: process.env.CF_ACCESS_AUD!,
+  issuer: `https://${process.env.CF_ACCESS_TEAM_DOMAIN}/`,
 });
 
 const contextManager = new UserContextManager();
@@ -296,25 +296,25 @@ app.listen(PORT, () => {
 ### Environment Variables
 
 ```bash
-# Auth0 Configuration
-SUPABASE_AUTH_DOMAIN=your-tenant.auth0.com
-SUPABASE_AUTH_AUDIENCE=https://api.Pistisai.com
-SUPABASE_AUTH_ISSUER=https://your-tenant.auth0.com/
+# Cloudflare Access Configuration
+CF_ACCESS_TEAM_DOMAIN=pistisai.cloudflareaccess.com
+CF_ACCESS_AUD=https://api.Pistisai.com
+CF_ACCESS_ISSUER=https://pistisai.cloudflareaccess.com/
 
 # Server Configuration
 PORT=3001
 LOG_LEVEL=info
 ```
 
-### Auth0 Setup
+### Cloudflare Access Setup
 
-1. Create an API in Auth0 dashboard
+1. Create an API in Cloudflare Access dashboard
 2. Configure the audience (e.g., `https://api.Pistisai.com`)
 3. Add custom claims to tokens:
    - `https://Pistisai.com/tier` - User tier (account tier)
    - `https://Pistisai.com/permissions` - Array of permissions
 
-Example Auth0 Rule:
+Example Cloudflare Access Rule:
 
 ```javascript
 function addCustomClaims(user, context, callback) {
@@ -346,7 +346,7 @@ function addCustomClaims(user, context, callback) {
 
 ### Token Validation
 
-- Verifies JWT signature using Auth0 public keys
+- Verifies JWT signature using Cloudflare Access public keys
 - Checks token expiration
 - Validates issuer and audience
 - Caches validation results for 5 minutes
@@ -410,12 +410,12 @@ const premiumUserContext = { tier: UserTier.PREMIUM, /* ... */ };
 ### Common Issues
 
 1. **"Unable to retrieve public key"**
-   - Check Auth0 domain configuration
-   - Verify network connectivity to Auth0
+   - Check Cloudflare Access domain configuration
+   - Verify network connectivity to Cloudflare Access
    - Check JWKS endpoint is accessible
 
 2. **"Invalid signature"**
-   - Token may be from wrong Auth0 tenant
+   - Token may be from wrong Cloudflare Access tenant
    - Token may be tampered with
    - Check audience and issuer configuration
 
@@ -437,5 +437,5 @@ const premiumUserContext = { tier: UserTier.PREMIUM, /* ... */ };
 4. **Monitor security alerts** - Set up real-time monitoring for brute force attacks
 5. **Regular audit reviews** - Review audit logs weekly for suspicious patterns
 6. **Rate limit by tier** - Enforce different limits based on user tier
-7. **Cache validation results** - Reduce Auth0 API calls with caching
+7. **Cache validation results** - Reduce Cloudflare Access API calls with caching
 8. **Log everything** - Comprehensive logging helps with debugging and security

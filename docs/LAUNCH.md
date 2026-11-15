@@ -24,7 +24,14 @@ The Pistisai desktop hub. It is the layer in front of an agent runtime. Hermes i
 
 The setup wizard chooses where the agent lives: this device, another private device, a Tailscale device, or a manual private URL.
 
-Sign-in is for the tunnel and for sync. The network is a tunnel behind Cloudflare Access, Tailscale, or the customer's VPN.
+Sign-in is for the tunnel and for sync. Local desktop use needs no sign-in and does not call Cloudflare or a cloud auth provider.
+
+| Plan | How devices connect |
+|------|---------------------|
+| **Free** | Cloudflare Access sign-in (Google, GitHub, and other Access IdPs), then sync through `pistisai.app` and the user's own devices |
+| **Business / Enterprise** | Customer-owned VPN or Tailscale; the `pistisai.app` tunnel is not required |
+
+Access = free `pistisai.app` tunnel auth. Customer Tailscale/VPN = paid plans.
 
 ---
 

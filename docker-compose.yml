@@ -116,7 +116,9 @@ services:
       - ./services/api-backend:/app
       - /app/node_modules
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
+      - CF_ACCESS_TEAM_DOMAIN=${CF_ACCESS_TEAM_DOMAIN}
+      - CF_ACCESS_AUD=${CF_ACCESS_AUD}
       - PORT=8080
       - DB_TYPE=postgresql
       - DB_HOST=database
@@ -129,9 +131,6 @@ services:
       - PGDATABASE=pistisai
       - PGUSER=postgres
       - PGPASSWORD=postgres
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET:-your-jwt-secret}
-      - SUPABASE_AUDIENCE=authenticated
     restart: unless-stopped
     depends_on:
       database:

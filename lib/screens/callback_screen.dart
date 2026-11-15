@@ -299,7 +299,7 @@ class _CallbackScreenState extends State<CallbackScreen> {
       );
 
       if (!isCallbackUrl) {
-        // For Supabase, we might not have route params if it uses hash fragment which Flutter router might handle differently
+        // Hash-fragment OAuth callbacks may not expose route params to the Flutter router
         // But if we are here, we should probably wait for auth state or redirect
         AppConfig.verboseLog(
             '[CallbackScreen] No explicit callback params found, checking auth state...');

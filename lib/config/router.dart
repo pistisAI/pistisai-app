@@ -140,7 +140,7 @@ bool _isMarketingPath(String location) {
       location == '/docs';
 }
 
-/// Helper to check for OAuth callback parameters (Supabase/generic)
+/// Helper to check for OAuth callback parameters (Access/generic)
 bool _hasCallbackParameters(Uri uri) {
   return uri.queryParameters.containsKey('code') ||
       uri.queryParameters.containsKey('state') ||

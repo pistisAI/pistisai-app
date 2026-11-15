@@ -104,8 +104,8 @@ Required environment variables:
 - `DB_USER=appuser`
 - `DB_PASSWORD=<your-password>`
 - `DB_HOST=/cloudsql/YOUR_GCP_PROJECT_ID:us-central1:Pistisai-db`
-- `SUPABASE_AUTH_DOMAIN=example.us.auth0.com`
-- `SUPABASE_AUTH_AUDIENCE=https://api.example.com`
+- `CF_ACCESS_TEAM_DOMAIN=example.cloudflareaccess.com`
+- `CF_ACCESS_AUD=<Access application AUD>`
 
 ### Step 3: Build and Deploy
 
@@ -120,7 +120,7 @@ gcloud run deploy Pistisai-api \
     --region us-central1 \
     --allow-unauthenticated \
     --memory 1Gi \
-    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,SUPABASE_AUTH_DOMAIN=example.us.auth0.com,SUPABASE_AUTH_AUDIENCE=https://api.example.com" \
+    --set-env-vars "NODE_ENV=production,DB_TYPE=postgresql,CF_ACCESS_TEAM_DOMAIN=example.cloudflareaccess.com,CF_ACCESS_AUD=your-access-aud" \
     --add-cloudsql-instances YOUR_GCP_PROJECT_ID:us-central1:Pistisai-db
 ```
 
@@ -218,7 +218,7 @@ gcloud logging read "resource.type=cloudsql_database"
    Error: Authentication service not available
    ```
 
-   - Verify `SUPABASE_AUTH_DOMAIN` and `SUPABASE_AUTH_AUDIENCE` environment variables
+   - Verify `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` environment variables
    - Check Auth0 JWT validation configuration
 
 ### Service Account Permissions

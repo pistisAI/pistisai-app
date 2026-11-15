@@ -9,8 +9,8 @@ No additional dependencies required - uses Node.js built-in modules and Web Cryp
 ### 1. Set Environment Variables
 
 ```bash
-export SUPABASE_AUTH_DOMAIN=your-tenant.auth0.com
-export SUPABASE_AUTH_AUDIENCE=https://api.Pistisai.com
+export CF_ACCESS_TEAM_DOMAIN=pistisai.cloudflareaccess.com
+export CF_ACCESS_AUD=https://api.Pistisai.com
 ```
 
 ### 2. Initialize Middleware
@@ -25,9 +25,9 @@ import {
 
 // Initialize
 const jwtMiddleware = new JWTValidationMiddleware({
-  domain: process.env.SUPABASE_AUTH_DOMAIN!,
-  audience: process.env.SUPABASE_AUTH_AUDIENCE!,
-  issuer: `https://${process.env.SUPABASE_AUTH_DOMAIN}/`,
+  domain: process.env.CF_ACCESS_TEAM_DOMAIN!,
+  audience: process.env.CF_ACCESS_AUD!,
+  issuer: `https://${process.env.CF_ACCESS_TEAM_DOMAIN}/`,
 });
 
 const contextManager = new UserContextManager();
@@ -133,7 +133,7 @@ auditLogger.onSecurityAlert((alert) => {
 ### Test Token Validation
 
 ```bash
-# Get a token from Auth0
+# Get a token from Cloudflare Access
 TOKEN="eyJhbGc..."
 
 # Test validation
@@ -166,14 +166,14 @@ console.log('Blocked IPs:', stats.blockedIPs);
 
 ### "Unable to retrieve public key"
 
-- Check SUPABASE_AUTH_DOMAIN is correct
-- Verify network connectivity to Auth0
+- Check CF_ACCESS_TEAM_DOMAIN is correct
+- Verify network connectivity to Cloudflare Access
 - Check firewall rules
 
 ### "Invalid signature"
 
-- Verify SUPABASE_AUTH_AUDIENCE matches your Auth0 API
-- Check token is from correct Auth0 tenant
+- Verify CF_ACCESS_AUD matches your Cloudflare Access API
+- Check token is from correct Cloudflare Access tenant
 - Ensure token hasn't been tampered with
 
 ### "Token expired"
@@ -190,8 +190,8 @@ console.log('Blocked IPs:', stats.blockedIPs);
 
 ## Production Checklist
 
-- [ ] Set SUPABASE_AUTH_DOMAIN and SUPABASE_AUTH_AUDIENCE environment variables
-- [ ] Configure Auth0 custom claims for tier and permissions
+- [ ] Set CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUD environment variables
+- [ ] Configure Cloudflare Access custom claims for tier and permissions
 - [ ] Set up security alert monitoring
 - [ ] Configure log aggregation
 - [ ] Set up Prometheus metrics
@@ -207,7 +207,7 @@ console.log('Blocked IPs:', stats.blockedIPs);
 2. Integrate with WebSocket handler
 3. Set up monitoring and alerting
 4. Deploy to production
-5. Configure Auth0 production tenant
+5. Configure Cloudflare Access production tenant
 
 ## Support
 
@@ -216,4 +216,4 @@ For issues or questions:
 - Review the full README.md
 - Check IMPLEMENTATION_SUMMARY.md
 - Review test files for examples
-- Check Auth0 documentation
+- Check Cloudflare Access documentation

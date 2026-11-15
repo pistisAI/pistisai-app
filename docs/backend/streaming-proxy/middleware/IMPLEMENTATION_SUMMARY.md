@@ -12,7 +12,7 @@ This document summarizes the implementation of server-side authentication and au
 
 **Features Implemented:**
 
-- ✅ Integration with Auth0 JWKS endpoint
+- ✅ Integration with Cloudflare Access JWKS endpoint
 - ✅ Token validation logic with signature verification
 - ✅ Token expiration handling
 - ✅ Distinction between expired and invalid tokens
@@ -149,9 +149,9 @@ import {
 
 // Initialize components
 const jwtMiddleware = new JWTValidationMiddleware({
-  domain: process.env.SUPABASE_AUTH_DOMAIN!,
-  audience: process.env.SUPABASE_AUTH_AUDIENCE!,
-  issuer: `https://${process.env.SUPABASE_AUTH_DOMAIN}/`,
+  domain: process.env.CF_ACCESS_TEAM_DOMAIN!,
+  audience: process.env.CF_ACCESS_AUD!,
+  issuer: `https://${process.env.CF_ACCESS_TEAM_DOMAIN}/`,
 });
 
 const contextManager = new UserContextManager();
@@ -171,7 +171,7 @@ app.use('/api/tunnel', createUserContextMiddleware(jwtMiddleware, contextManager
 
 ### Token Validation
 
-- ✅ Signature verification using Auth0 public keys
+- ✅ Signature verification using Cloudflare Access public keys
 - ✅ Expiration checking
 - ✅ Issuer and audience validation
 - ✅ Result caching (5 minutes)
@@ -196,11 +196,11 @@ app.use('/api/tunnel', createUserContextMiddleware(jwtMiddleware, contextManager
 
 ```bash
 # Required
-SUPABASE_AUTH_DOMAIN=your-tenant.auth0.com
-SUPABASE_AUTH_AUDIENCE=https://api.Pistisai.com
+CF_ACCESS_TEAM_DOMAIN=pistisai.cloudflareaccess.com
+CF_ACCESS_AUD=https://api.Pistisai.com
 
 # Optional
-SUPABASE_AUTH_ISSUER=https://your-tenant.auth0.com/
+CF_ACCESS_ISSUER=https://pistisai.cloudflareaccess.com/
 AUTH_CACHE_DURATION=300000
 JWKS_CACHE_DURATION=3600000
 BRUTE_FORCE_THRESHOLD=5
@@ -235,7 +235,7 @@ npm test
 - Token validation results cached for 5 minutes
 - JWKS keys cached for 1 hour
 - User context cached per user ID
-- Reduces Auth0 API calls significantly
+- Reduces Cloudflare Access API calls significantly
 
 ### Memory Management
 
@@ -270,7 +270,7 @@ To complete the authentication and authorization implementation:
    - Create Grafana dashboards
 
 4. **Production Deployment**
-   - Configure Auth0 production tenant
+   - Configure Cloudflare Access production tenant
    - Set up environment variables
    - Deploy with Kubernetes
    - Configure monitoring
@@ -279,7 +279,7 @@ To complete the authentication and authorization implementation:
 
 ```
 services/streaming-proxy/src/middleware/
-├── jwt-validation-middleware.ts      # JWT validation with Auth0
+├── jwt-validation-middleware.ts      # JWT validation with Cloudflare Access
 ├── user-context-manager.ts           # User context management
 ├── auth-audit-logger.ts              # Audit logging and security
 ├── auth-config.ts                    # Configuration management
@@ -303,7 +303,7 @@ services/streaming-proxy/src/middleware/
 
 Task 7 (Server-Side Authentication and Authorization) has been successfully completed with all three subtasks implemented:
 
-1. ✅ JWT Validation Middleware with Auth0 integration
+1. ✅ JWT Validation Middleware with Cloudflare Access integration
 2. ✅ User Context Management with tier-based permissions
 3. ✅ Authentication Audit Logging with brute force detection
 
