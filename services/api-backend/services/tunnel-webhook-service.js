@@ -370,12 +370,29 @@ export class TunnelWebhookService {
 
       const webhooks = webhooksResult.rows;
 
-      // Log event
-      for (const webhook of webhooks) {
+      // Log events in a single multi-row INSERT (avoids N+1)
+      if (webhooks.length > 0) {
+        const eventPayload = JSON.stringify(eventData);
+        const valueRows = [];
+        const params = [];
+        let paramIndex = 1;
+        for (const webhook of webhooks) {
+          valueRows.push(
+            `($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++})`,
+          );
+          params.push(
+            webhook.id,
+            tunnelId,
+            userId,
+            eventType,
+            eventPayload,
+          );
+        }
+
         await client.query(
           `INSERT INTO tunnel_webhook_events (webhook_id, tunnel_id, user_id, event_type, event_data)
-           VALUES ($1, $2, $3, $4, $5)`,
-          [webhook.id, tunnelId, userId, eventType, JSON.stringify(eventData)],
+           VALUES ${valueRows.join(', ')}`,
+          params,
         );
       }
 
