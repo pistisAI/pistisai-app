@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
+import '../../services/approval_gate_service.dart';
 import '../../services/cloud_connector_service.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -54,31 +55,31 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
     // Read the strings before any await so no BuildContext is used across
     // an async gap.
     final l10n = AppLocalizations.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.meshRevokeTitle),
-        content: Text(
-          l10n.meshRevokeBody(device.deviceName ?? device.deviceId),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.meshRevoke),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
+    final deviceLabel = device.deviceName ?? device.deviceId;
     bool ok = false;
     try {
-      ok = await di
-          .serviceLocator<CloudConnectorService>()
-          .revokeDevice(device.deviceId);
+      final approvalGate = di.serviceLocator.get<ApprovalGateService>();
+      ok = await approvalGate.runCritical<bool>(
+        action: CriticalAction(
+          category: CriticalActionCategory.integrationCall,
+          title: l10n.meshRevokeTitle,
+          summary: l10n.approvalRevokeDeviceSummary(deviceLabel),
+          details: {
+            'deviceId': device.deviceId,
+            if (device.deviceName != null) 'deviceName': device.deviceName!,
+          },
+          workflowId: 'cloud.device.revoke',
+        ),
+        execute: () => di
+            .serviceLocator<CloudConnectorService>()
+            .revokeDevice(device.deviceId),
+      );
+    } on ApprovalDeniedException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.approvalDeniedSnack)),
+      );
+      return;
     } catch (_) {
       ok = false;
     }

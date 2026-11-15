@@ -1063,5 +1063,20 @@
   "voiceStatusWake": "Réveil",
   "voiceStatusUserLine": "Ligne utilisateur",
   "voiceStatusAssistantReply": "Réponse de l'assistant",
-  "voiceStatusDoneSpeaking": "Fin de la parole"
+  "voiceStatusDoneSpeaking": "Fin de la parole",
+  "approvalTitle": "Approbation requise",
+  "approvalSubtitle": "Vérifiez ce que l'agent veut faire avant qu'il s'exécute.",
+  "approvalApprove": "Approuver",
+  "approvalDeny": "Refuser",
+  "approvalDetailsHeading": "Détails",
+  "approvalWorkflow": "Flux : {workflowId}",
+  "approvalCategoryDataExport": "Export de données",
+  "approvalCategoryIntegrationCall": "Appel d'intégration",
+  "approvalCategoryCustom": "Action critique",
+  "approvalPendingBanner": "Approbation en attente",
+  "approvalDesktopActions": "Les actions du bureau nécessitent une approbation",
+  "approvalDeniedSnack": "Action refusée",
+  "approvalExportSettingsSummary": "Exporter tous les réglages de l'application vers {filename}.",
+  "approvalExportAuditSummary": "Télécharger les journaux d'audit administrateur en CSV.",
+  "approvalRevokeDeviceSummary": "Révoquer l'accès du connecteur cloud pour l'appareil {deviceId}."
 }

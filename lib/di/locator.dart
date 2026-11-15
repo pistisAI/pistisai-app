@@ -64,6 +64,7 @@ import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
+import 'package:pistisai/services/approval_gate_service.dart';
 import 'package:pistisai/services/vision/vision_service.dart';
 import 'package:pistisai/services/vision/region_capture_service.dart';
 import 'package:pistisai/services/vision/camera_capture_service.dart';
@@ -331,6 +332,29 @@ Future<void> setupCoreServices() async {
         '[ServiceLocator] Skipping desktop-only LocalBrain/router core services on web',
       );
     }
+
+    // Human approval gate for critical agent/workflow actions (#644).
+    // Available on all platforms; persists via conscience storage when present.
+    ApprovalAuditLogger? approvalAuditLogger;
+    if (serviceLocator.isRegistered<ConscienceStorageService>()) {
+      final conscienceStorageService =
+          serviceLocator.get<ConscienceStorageService>();
+      approvalAuditLogger = (entry) async {
+        await conscienceStorageService.writeDecision(
+          action:
+              '${entry.action.category.name}: ${entry.action.title} — ${entry.action.summary}',
+          riskLevel: 'critical',
+          verdict: entry.verdict == ApprovalVerdict.approved
+              ? 'APPROVED'
+              : 'DENIED',
+          reviewer: 'user',
+          reasoning: entry.note ?? 'Human approval gate',
+        );
+      };
+    }
+    serviceLocator.registerSingleton<ApprovalGateService>(
+      ApprovalGateService(auditLogger: approvalAuditLogger),
+    );
 
     // Authentication Provider - Using platform-specific provider
     late AuthProvider authProvider;

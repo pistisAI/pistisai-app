@@ -3690,4 +3690,58 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get voiceStatusDoneSpeaking => 'Fin de la parole';
+
+  @override
+  String get approvalTitle => 'Approbation requise';
+
+  @override
+  String get approvalSubtitle =>
+      'Vérifiez ce que l\'agent veut faire avant qu\'il s\'exécute.';
+
+  @override
+  String get approvalApprove => 'Approuver';
+
+  @override
+  String get approvalDeny => 'Refuser';
+
+  @override
+  String get approvalDetailsHeading => 'Détails';
+
+  @override
+  String approvalWorkflow(String workflowId) {
+    return 'Flux : $workflowId';
+  }
+
+  @override
+  String get approvalCategoryDataExport => 'Export de données';
+
+  @override
+  String get approvalCategoryIntegrationCall => 'Appel d\'intégration';
+
+  @override
+  String get approvalCategoryCustom => 'Action critique';
+
+  @override
+  String get approvalPendingBanner => 'Approbation en attente';
+
+  @override
+  String get approvalDesktopActions =>
+      'Les actions du bureau nécessitent une approbation';
+
+  @override
+  String get approvalDeniedSnack => 'Action refusée';
+
+  @override
+  String approvalExportSettingsSummary(String filename) {
+    return 'Exporter tous les réglages de l\'application vers $filename.';
+  }
+
+  @override
+  String get approvalExportAuditSummary =>
+      'Télécharger les journaux d\'audit administrateur en CSV.';
+
+  @override
+  String approvalRevokeDeviceSummary(String deviceId) {
+    return 'Révoquer l\'accès du connecteur cloud pour l\'appareil $deviceId.';
+  }
 }
