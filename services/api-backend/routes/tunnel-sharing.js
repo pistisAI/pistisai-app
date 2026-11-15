@@ -23,7 +23,12 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { TunnelSharingService } from '../services/tunnel-sharing-service.js';
 import logger from '../logger.js';
-import { tunnelSharePermissionBody, validateBody } from './misc-body-schemas.js';
+import {
+  tunnelShareCreateBody,
+  tunnelSharePermissionBody,
+  tunnelShareTokenBody,
+  validateBody,
+} from './misc-body-schemas.js';
 
 const router = express.Router();
 let tunnelSharingService = null;
@@ -71,7 +76,12 @@ export async function initializeTunnelSharingService() {
  * Authentication: Required (JWT)
  * Rate Limit: Standard (100 req/min)
  */
-router.post('/:id/shares', authenticateJWT, validateSchema({ params: tunnelIdSchema }), async (req, res) => {
+router.post(
+  '/:id/shares',
+  authenticateJWT,
+  validateSchema({ params: tunnelIdSchema }),
+  ...validateBody(tunnelShareCreateBody),
+  async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({
@@ -405,7 +415,12 @@ router.get('/shared-with-me', authenticateJWT, async (req, res) => {
  * Authentication: Required (JWT)
  * Rate Limit: Standard (100 req/min)
  */
-router.post('/:id/share-tokens', authenticateJWT, validateSchema({ params: tunnelIdSchema }), async (req, res) => {
+router.post(
+  '/:id/share-tokens',
+  authenticateJWT,
+  validateSchema({ params: tunnelIdSchema }),
+  ...validateBody(tunnelShareTokenBody),
+  async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({

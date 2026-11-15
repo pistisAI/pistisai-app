@@ -23,6 +23,7 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { TunnelHealthService } from '../services/tunnel-health-service.js';
 import logger from '../logger.js';
+import { tunnelMetricsRecordBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 let tunnelHealthService = null;
@@ -372,7 +373,12 @@ router.get('/:id/metrics', authenticateJWT, validateSchema({ params: tunnelIdSch
  * Authentication: Required (JWT)
  * Rate Limit: Standard (100 req/min)
  */
-router.post('/:id/metrics/record', authenticateJWT, validateSchema({ params: tunnelIdSchema }), async (req, res) => {
+router.post(
+  '/:id/metrics/record',
+  authenticateJWT,
+  validateSchema({ params: tunnelIdSchema }),
+  ...validateBody(tunnelMetricsRecordBody),
+  async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({

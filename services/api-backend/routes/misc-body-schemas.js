@@ -68,9 +68,61 @@ export const emailTemplateBody = z.object({
   variables: z.array(name(100)).max(100).optional(),
 });
 
+// PUT update: every field is optional; at least the shape must be right so
+// `.trim()` is never called on a number.
+export const emailTemplateUpdateBody = z.object({
+  name: text(200).optional(),
+  subject: text(500).optional(),
+  html_body: text(200000).optional(),
+  text_body: text(200000).nullable().optional(),
+  description: text(1000).nullable().optional(),
+  variables: z.array(name(100)).max(100).optional(),
+});
+
 // --- Others ---------------------------------------------------------------
 export const tokenExpiryBody = z.object({
   token: text(8192).optional(),
+});
+
+export const dbThresholdBody = z.object({
+  thresholdMs: z.number().finite().min(0),
+});
+
+export const tunnelShareCreateBody = z.object({
+  sharedWithUserId: name(128),
+  permission: name(32).optional(),
+});
+
+export const tunnelShareTokenBody = z.object({
+  permission: name(32).optional(),
+  expiresInHours: z.number().finite().positive().max(8760).optional(),
+  maxUses: z.number().int().positive().max(1_000_000).nullable().optional(),
+});
+
+export const tunnelMetricsRecordBody = z.object({
+  latency: z.number().finite().min(0),
+  success: z.boolean(),
+  statusCode: z.number().int().min(100).max(599).optional(),
+});
+
+export const tunnelConfigUpdateBody = z.object({
+  maxConnections: z.number().int().min(1).max(10000).optional(),
+  timeout: z.number().int().min(1000).max(300000).optional(),
+  compression: z.boolean().optional(),
+});
+
+export const userProfileUpdateBody = z.object({
+  profile: z.record(z.string(), z.unknown()),
+});
+
+export const userPreferencesBody = z.object({
+  theme: z.enum(['light', 'dark']).optional(),
+  language: text(10).optional(),
+  notifications: z.boolean().optional(),
+});
+
+export const userAvatarBody = z.object({
+  avatarUrl: z.string().url().max(2048),
 });
 
 // Leaving `urls` out purges the whole zone cache (existing behaviour). A value

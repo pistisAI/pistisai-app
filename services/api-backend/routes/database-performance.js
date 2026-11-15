@@ -19,6 +19,7 @@ import {
 } from '../database/query-performance-tracker.js';
 import logger from '../logger.js';
 import { adminAuth } from '../middleware/admin-auth.js';
+import { dbThresholdBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 // Same limit as the global pipeline limiter, applied here as well so every
@@ -191,40 +192,38 @@ router.get('/analysis', adminAuth(['view_system_metrics']), (req, res) => {
  * Returns:
  * - Updated threshold configuration
  */
-router.post('/threshold', adminAuth(['manage_system']), (req, res) => {
-  try {
-    const { thresholdMs } = req.body;
+router.post(
+  '/threshold',
+  adminAuth(['manage_system']),
+  validateBody(dbThresholdBody),
+  (req, res) => {
+    try {
+      const { thresholdMs } = req.body;
 
-    if (typeof thresholdMs !== 'number' || thresholdMs < 0) {
-      return res.status(400).json({
+      const result = setSlowQueryThreshold(thresholdMs);
+
+      logger.info('🔵 [Database Performance] Slow query threshold updated', {
+        newThreshold: thresholdMs,
+      });
+
+      res.json({
+        status: 'success',
+        data: result,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      logger.error('🔴 [Database Performance] Error updating threshold', {
+        error: error.message,
+      });
+
+      res.status(500).json({
         status: 'error',
-        message: 'Invalid threshold value - must be a positive number',
+        message: 'Failed to update threshold',
+        error: error.message,
       });
     }
-
-    const result = setSlowQueryThreshold(thresholdMs);
-
-    logger.info('🔵 [Database Performance] Slow query threshold updated', {
-      newThreshold: thresholdMs,
-    });
-
-    res.json({
-      status: 'success',
-      data: result,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    logger.error('🔴 [Database Performance] Error updating threshold', {
-      error: error.message,
-    });
-
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to update threshold',
-      error: error.message,
-    });
-  }
-});
+  },
+);
 
 /**
  * POST /database/performance/reset
