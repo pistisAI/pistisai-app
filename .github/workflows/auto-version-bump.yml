@@ -127,7 +127,7 @@ jobs:
           VERSION: ${{ steps.compute.outputs.version }}
         run: |
           set -euo pipefail
-          BRANCH="chore/version-bump-${VERSION}"
+          BRANCH="chore/version-bump-${VERSION}-${GITHUB_SHA:0:7}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B "$BRANCH"
