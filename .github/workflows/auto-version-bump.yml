@@ -135,16 +135,22 @@ jobs:
           app-id: ${{ secrets.BUMP_APP_ID }}
           private-key: ${{ secrets.BUMP_APP_KEY }}
 
-      - name: Commit and push version bump to main
+      - name: Commit bump to a branch and open an automerge PR
         if: steps.bump_type.outputs.type != 'skip'
         env:
           GH_TOKEN: ${{ steps.app_token.outputs.token }}
           VERSION: ${{ steps.compute.outputs.version }}
+          BUILD: ${{ steps.compute.outputs.build }}
         run: |
           set -euo pipefail
+          BRANCH="chore/version-bump-${VERSION}-${GITHUB_SHA:0:7}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
           git add assets/version.json pubspec.yaml
-          git commit -m "chore(release): bump version to ${VERSION}+${{ steps.compute.outputs.build }}"
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push origin HEAD:main
+          git commit -m "chore(release): bump version to ${VERSION}+${BUILD}"
+          git push origin "$BRANCH"
+          PR_URL=$(gh pr create --base main --head "$BRANCH" \
+            --title "chore(release): bump version to ${VERSION}+${BUILD}" \
+            --body "Automated version bump for ${VERSION}+${BUILD}. Auto-merges once required checks pass.")
+          gh pr merge "$PR_URL" --auto --squash
