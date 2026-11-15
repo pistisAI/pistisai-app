@@ -5,12 +5,14 @@ name: "🔢 Auto Version Bump"
 # and opens a version-bump PR against main. It never pushes to main directly.
 # Merging that PR is the explicit release gate (ruleset requires PR + checks).
 #
-# Bump type is set by the release tag/input, not commit messages:
-#   input bump=major|minor|patch (default patch)
+# Every merged PR bumps. The bump SIZE comes from the merged PR's Conventional
+# Commit title (see scripts/version_bump_kind.py):
+#   type!: / BREAKING CHANGE  -> major
+#   feat                      -> minor
+#   anything else             -> patch
+# A manual workflow_dispatch `bump` input overrides the title-derived size.
+# Release PRs (chore(release): bump version ...) are skipped to avoid a loop.
 # Web deploys first (fastest), then desktop/mobile/backend in parallel.
-#
-# Bump type: set via the manual dispatch `bump` input (patch|minor|major).
-# Automatic runs (release published) always patch-bump.
 
 on:
   push:
@@ -51,14 +53,29 @@ jobs:
         id: bump_type
         env:
           INPUT_BUMP: ${{ github.event.inputs.bump }}
+          EVENT: ${{ github.event_name }}
         run: |
           set -euo pipefail
-          TYPE="${INPUT_BUMP:-patch}"
+          # Manual dispatch: honour the explicit input.
+          if [ "$EVENT" = "workflow_dispatch" ] && [ -n "${INPUT_BUMP:-}" ]; then
+            TYPE="$INPUT_BUMP"
+          else
+            # push to main: the merge commit subject is the merged PR title.
+            TITLE="$(git log -1 --format=%s HEAD)"
+            BODY="$(git log -1 --format=%b HEAD)"
+            TYPE="$(python3 scripts/version_bump_kind.py "$TITLE" "$BODY")"
+            if [ "$TYPE" = "skip" ]; then
+              echo "Release PR merge, skipping bump: $TITLE"
+              echo "type=skip" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
           case "$TYPE" in major|minor|patch) ;; *) TYPE=patch ;; esac
           echo "type=$TYPE" >> "$GITHUB_OUTPUT"
           echo "Bump: $TYPE"
 
       - name: Compute new version
+        if: steps.bump_type.outputs.type != 'skip'
         id: compute
         env:
           BUMP: ${{ steps.bump_type.outputs.type }}
@@ -79,6 +96,7 @@ jobs:
           echo "Current: $CURRENT+$BUILD -> New: $NEW_VERSION+$NEW_BUILD ($BUMP)"
 
       - name: Update version.json
+        if: steps.bump_type.outputs.type != 'skip'
         run: |
           set -euo pipefail
           VERSION="${{ steps.compute.outputs.version }}"
@@ -94,6 +112,7 @@ jobs:
           cat assets/version.json
 
       - name: Update pubspec.yaml version
+        if: steps.bump_type.outputs.type != 'skip'
         run: |
           set -euo pipefail
           VERSION="${{ steps.compute.outputs.version }}"
@@ -102,6 +121,7 @@ jobs:
           grep '^version:' pubspec.yaml
 
       - name: Commit to bump branch and open PR
+        if: steps.bump_type.outputs.type != 'skip'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.compute.outputs.version }}
