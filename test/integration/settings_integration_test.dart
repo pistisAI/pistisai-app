@@ -76,6 +76,30 @@ void main() {
         crashReportingEnabled = await settingsService.isCrashReportingEnabled();
         expect(crashReportingEnabled, false);
 
+        // Cloud LLM providers and Microsoft speech are opt-in (#647)
+        var cloudLlmEnabled =
+            await settingsService.isCloudLlmProvidersEnabled();
+        expect(cloudLlmEnabled, false, reason: 'cloud LLMs are opt-in');
+        await settingsService.setCloudLlmProvidersEnabled(true);
+        cloudLlmEnabled = await settingsService.isCloudLlmProvidersEnabled();
+        expect(cloudLlmEnabled, true);
+        await settingsService.setCloudLlmProvidersEnabled(false);
+        cloudLlmEnabled = await settingsService.isCloudLlmProvidersEnabled();
+        expect(cloudLlmEnabled, false);
+
+        var microsoftSpeechEnabled =
+            await settingsService.isMicrosoftSpeechEnabled();
+        expect(microsoftSpeechEnabled, false,
+            reason: 'Microsoft speech is opt-in');
+        await settingsService.setMicrosoftSpeechEnabled(true);
+        microsoftSpeechEnabled =
+            await settingsService.isMicrosoftSpeechEnabled();
+        expect(microsoftSpeechEnabled, true);
+        await settingsService.setMicrosoftSpeechEnabled(false);
+        microsoftSpeechEnabled =
+            await settingsService.isMicrosoftSpeechEnabled();
+        expect(microsoftSpeechEnabled, false);
+
         // Test usage stats
         var usageStatsEnabled = await settingsService.isUsageStatsEnabled();
         expect(usageStatsEnabled, true);

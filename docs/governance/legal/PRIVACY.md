@@ -62,20 +62,25 @@ servers see the IP address the report comes from.
 
 ### 2.4 Spoken replies
 
-When a reply is read aloud with the default online voice, the text being spoken is
-sent to Microsoft's online speech service (through the `edge-tts` tool) to produce
-the audio. Turn spoken replies off if you do not want this.
+Microsoft online speech (through the `edge-tts` tool) is **off by default**.
+When you enable **Allow Microsoft online speech** in Settings, the text being
+spoken for an online-voice reply is sent to Microsoft's speech service to
+produce the audio. Local TTS remains available without this setting. See
+`docs/governance/legal/CLOUD_PROVIDER_DATA_FLOW.md`.
 
 ### 2.5 Optional cloud model providers
 
 By default Pistisai does not call third-party cloud LLMs. Optional cloud model
-adapters (Zhipu/GLM, Moonshot/Kimi, and Google Gemini) exist only when a build
-supplies the matching API key (`GLM_API_KEY`, `KIMI_API_KEY`, or `GEMINI_API_KEY`).
-Without that key the adapter is not registered, so prompts are not forwarded to
-those providers. When a key is present and you select that provider, the prompt
-and conversation content you send are transmitted to that provider under their
-own terms. Local agent runtimes (for example Hermes) and local support model
-providers (Ollama, LM Studio) stay on your machine unless you point them elsewhere.
+adapters (Zhipu/GLM, Moonshot/Kimi, and Google Gemini) require **both** an
+explicit Settings opt-in (**Allow cloud LLM providers**) and a build that
+supplies the matching API key (`GLM_API_KEY`, `KIMI_API_KEY`, or
+`GEMINI_API_KEY`). Without consent the adapters are not registered; without a
+key they cannot call the provider. When both are present and you select that
+provider, the prompt and conversation content you send are transmitted to that
+provider under their own terms. Local agent runtimes (for example Hermes) and
+local support model providers (Ollama, LM Studio) stay on your machine unless
+you point them elsewhere. Client-facing data flow:
+`docs/governance/legal/CLOUD_PROVIDER_DATA_FLOW.md`.
 
 ### 2.6 Camera, microphone, screen, and desktop control
 
@@ -127,8 +132,8 @@ We share information only in these limited circumstances:
 - **Cloudflare** — to authenticate you when you sign in (Cloudflare Access);
 - **Google or GitHub** — only if you choose to sign in with that account;
 - **Error diagnostics (Sentry)** — crash reports, only if you turn crash reporting on;
-- **Microsoft speech service** — the text of replies read aloud with the default online voice;
-- **Optional cloud model providers (Zhipu, Moonshot, Google Gemini)** — only when a build includes their API key and you use that provider;
+- **Microsoft speech service** — only when you enable Microsoft online speech, the text of replies read aloud with that online voice;
+- **Optional cloud model providers (Zhipu, Moonshot, Google Gemini)** — only when you enable cloud LLM providers, a build includes their API key, and you use that provider;
 - **Runtimes and providers you choose** — only the data you direct Pistisai to send to them.
 
 We do not sell, rent, or trade your personal information.

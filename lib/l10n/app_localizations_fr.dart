@@ -3595,6 +3595,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get crashReportingTitle => 'Envoyer les rapports de plantage';
 
   @override
+  String get cloudLlmProvidersTitle =>
+      'Autoriser les fournisseurs LLM cloud';
+
+  @override
+  String get microsoftSpeechTitle =>
+      'Autoriser la synthèse vocale Microsoft en ligne';
+
+  @override
   String get navExpandSidebar => 'Déplier la barre latérale';
 
   @override

@@ -51,6 +51,7 @@ void main() {
         () async {
       final service = CloudTtsService(
         outputDirectory: tempDir,
+        isAllowed: () async => true,
         processRunner: (executable, arguments,
             {environment, runInShell = false}) async {
           expect(executable, 'edge-tts');
@@ -69,6 +70,27 @@ void main() {
       expect(result.contentType, 'audio/mpeg');
       expect(result.path.endsWith('.mp3'), isTrue);
       expect(await File(result.path).length(), 4);
+    });
+
+    test('refuses synthesis when Microsoft speech consent is off', () async {
+      var edgeTtsInvoked = false;
+      final service = CloudTtsService(
+        outputDirectory: tempDir,
+        isAllowed: () async => false,
+        processRunner: (executable, arguments,
+            {environment, runInShell = false}) async {
+          edgeTtsInvoked = true;
+          return ProcessResult(42, 0, '', '');
+        },
+      );
+
+      await expectLater(
+        service.synthesize(
+          const CloudTtsRequest(input: 'should not leave the device'),
+        ),
+        throwsA(isA<CloudTtsConsentDeniedException>()),
+      );
+      expect(edgeTtsInvoked, isFalse);
     });
   });
 

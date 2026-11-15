@@ -6320,6 +6320,18 @@ abstract class AppLocalizations {
   /// **'Send crash reports'**
   String get crashReportingTitle;
 
+  /// No description provided for @cloudLlmProvidersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow cloud LLM providers'**
+  String get cloudLlmProvidersTitle;
+
+  /// No description provided for @microsoftSpeechTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Microsoft online speech'**
+  String get microsoftSpeechTitle;
+
   /// No description provided for @navExpandSidebar.
   ///
   /// In en, this message translates to:

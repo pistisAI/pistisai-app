@@ -5,6 +5,7 @@ import 'package:pistisai/database/drift_local_brain.dart' as brain;
 import 'package:pistisai/services/providers/base_provider.dart' as provider;
 import 'package:pistisai/services/rate_limit_manager.dart';
 import 'package:pistisai/services/router_server.dart';
+import 'package:pistisai/services/voice/cloud_tts_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 
@@ -268,25 +269,101 @@ void main() {
       expect(body, containsPair('clientsMustUseHub', true));
       expect(body, containsPair('routerPort', baseUrl.port));
     });
+
+    test('refuses cloud LLM completions when consent is not granted', () async {
+      final baseUrl = await _startRouter(
+        serverRef: (value) => server = value,
+        cloudLlmAllowed: () async => false,
+      );
+
+      final response = await http.post(
+        baseUrl.replace(path: '/v1/chat/completions'),
+        headers: {
+          'Authorization': 'Bearer router-secret',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'model': 'glm-4-flash',
+          'messages': [
+            {'role': 'user', 'content': 'hello'},
+          ],
+        }),
+      );
+
+      expect(response.statusCode, HttpStatus.forbidden);
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final error = body['error'] as Map<String, dynamic>;
+      expect(error['code'], 'cloud_llm_consent_required');
+    });
+
+    test('refuses Microsoft speech when consent is not granted', () async {
+      var edgeTtsInvoked = false;
+      final baseUrl = await _startRouter(
+        serverRef: (value) => server = value,
+        microsoftSpeechAllowed: () async => false,
+        ttsService: CloudTtsService(
+          isAllowed: () async => true,
+          processRunner: (
+            executable,
+            arguments, {
+            Map<String, String>? environment,
+            bool runInShell = false,
+          }) async {
+            edgeTtsInvoked = true;
+            return ProcessResult(0, 0, '', '');
+          },
+        ),
+      );
+
+      final response = await http.post(
+        baseUrl.replace(path: '/v1/audio/speech'),
+        headers: {
+          'Authorization': 'Bearer router-secret',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'input': 'hello from the cloud'}),
+      );
+
+      expect(response.statusCode, HttpStatus.forbidden);
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final error = body['error'] as Map<String, dynamic>;
+      expect(error['code'], 'microsoft_speech_consent_required');
+      expect(edgeTtsInvoked, isFalse);
+    });
   });
 }
 
 RouterServer _buildRouter({
   required int port,
+  Future<bool> Function()? cloudLlmAllowed,
+  Future<bool> Function()? microsoftSpeechAllowed,
+  CloudTtsService? ttsService,
 }) {
   return RouterServer(
     port: port,
     rateLimitManager: _TestRateLimitManager(),
     providers: {'zhipu': _EchoProvider()},
     authSecret: 'router-secret',
+    // Existing suite exercises registered providers with consent granted.
+    cloudLlmAllowed: cloudLlmAllowed ?? () async => true,
+    microsoftSpeechAllowed: microsoftSpeechAllowed,
+    ttsService: ttsService,
   );
 }
 
 Future<Uri> _startRouter({
   required void Function(RouterServer server) serverRef,
+  Future<bool> Function()? cloudLlmAllowed,
+  Future<bool> Function()? microsoftSpeechAllowed,
+  CloudTtsService? ttsService,
 }) async {
   final port = await _availableLoopbackPort();
-  final server = _buildRouter(port: port);
+  final server = _buildRouter(
+    port: port,
+    cloudLlmAllowed: cloudLlmAllowed,
+    microsoftSpeechAllowed: microsoftSpeechAllowed,
+    ttsService: ttsService,
+  );
   serverRef(server);
   await server.start();
   return Uri.parse('http://127.0.0.1:$port');
