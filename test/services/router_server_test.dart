@@ -101,6 +101,34 @@ void main() {
       expect(jsonDecode(models.body), containsPair('object', 'list'));
     });
 
+    group('bind address (#645)', () {
+      test('defaults to loopback only', () async {
+        final port = await _availableLoopbackPort();
+        final server = _buildRouter(port: port);
+        addTearDown(server.stop);
+        await server.start();
+        // Reachable on loopback.
+        final ok = await http.get(Uri.parse('http://127.0.0.1:$port/health'));
+        expect(ok.statusCode, HttpStatus.ok);
+        // The socket is bound to loopback, not all interfaces.
+        expect(server.boundAddressForTest, InternetAddress.loopbackIPv4);
+      });
+
+      test('binds all interfaces only when remote access is enabled', () async {
+        final port = await _availableLoopbackPort();
+        final server = RouterServer(
+          port: port,
+          rateLimitManager: _TestRateLimitManager(),
+          providers: {'zhipu': _EchoProvider()},
+          authSecret: 'router-secret',
+          allowRemoteAccess: true,
+        );
+        addTearDown(server.stop);
+        await server.start();
+        expect(server.boundAddressForTest, InternetAddress.anyIPv4);
+      });
+    });
+
     group('accessDecision without a configured secret', () {
       test('lets loopback callers reach private endpoints', () {
         expect(

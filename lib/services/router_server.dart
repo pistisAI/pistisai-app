@@ -44,6 +44,12 @@ class RouterServer {
   /// When null, all endpoints are open (no auth check).
   final String? authSecret;
 
+  /// When false (default) the router listens on loopback only, so the
+  /// private API is not reachable from other hosts on the network. Set to
+  /// true only for explicit remote access (e.g. mobile over Tailscale); the
+  /// bearer token in [authSecret] still gates every private endpoint.
+  final bool allowRemoteAccess;
+
   /// Co-resident Hermes gateway. Only the primary hub dials this;
   /// remote clients must use this router instead.
   final String hermesBaseUrl;
@@ -66,6 +72,7 @@ class RouterServer {
     this.conscienceStorage,
     CloudTtsService? ttsService,
     this.authSecret,
+    this.allowRemoteAccess = false,
     String? hermesBaseUrl,
   })  : hermesBaseUrl = hermesBaseUrl ?? AppConfig.defaultHermesUrl,
         ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService());
@@ -121,9 +128,20 @@ class RouterServer {
         .addMiddleware(_authMiddleware())
         .addHandler(router.call);
 
-    _server = await io.serve(handler, InternetAddress.anyIPv4, port);
+    // Loopback unless remote access is explicitly enabled (see #645).
+    final bindAddress = allowRemoteAccess
+        ? InternetAddress.anyIPv4
+        : InternetAddress.loopbackIPv4;
+    _server = await io.serve(handler, bindAddress, port);
+    _boundAddress = bindAddress;
     debugPrint('LLM Router Server running on port ${_server!.port}');
   }
+
+  InternetAddress? _boundAddress;
+
+  /// Address the server is bound to. Exposed for tests of the bind choice.
+  @visibleForTesting
+  InternetAddress? get boundAddressForTest => _boundAddress;
 
   /// Stop the server
   Future<void> stop() async {
