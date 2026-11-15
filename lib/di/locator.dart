@@ -252,6 +252,9 @@ Future<void> setupCoreServices() async {
         evolutionTracker: evolutionTracker,
         conscienceStorage: conscienceStorageService,
         ttsService: CloudTtsService(),
+        // Remote access (LAN/Tailscale mobile) is opt-in; default is loopback (#645).
+        allowRemoteAccess:
+            const bool.fromEnvironment('ROUTER_ALLOW_REMOTE_ACCESS'),
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
