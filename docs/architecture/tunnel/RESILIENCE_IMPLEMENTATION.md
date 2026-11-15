@@ -239,8 +239,8 @@ print('Queued requests: ${stats['queuedRequests']}');
 ### Complete Integration Example
 
 ```dart
-import 'package:cloud_to_local_llm/services/tunnel/resilience.dart';
-import 'package:cloud_to_local_llm/services/tunnel/interfaces/interfaces.dart';
+import 'package:pistisai/services/tunnel/resilience.dart';
+import 'package:pistisai/services/tunnel/interfaces/interfaces.dart';
 
 class TunnelServiceImpl {
   late final ReconnectionManager _reconnectionManager;
