@@ -2058,4 +2058,109 @@ class LocalBrain extends _$LocalBrain {
           ..limit(limit))
         .get();
   }
+
+  // ==========================================================================
+  // DATA PORTABILITY (export / delete / verify)
+  // ==========================================================================
+
+  /// Tables that hold user or agent-generated content (must be empty after wipe).
+  /// System seed tables (model_capacity, agent_identities) are excluded.
+  static const Set<String> userContentTableNames = {
+    'users',
+    'conversations',
+    'messages',
+    'main_chat_timeline_records',
+    'agent_logs',
+    'agents',
+    'agent_events',
+    'sync_queue',
+    'file_index',
+    'file_content_cache',
+    'llm_providers',
+    'llm_requests',
+    'avatar_profiles',
+    'achievements',
+    'avatar_memory_entries',
+    'clipboard_history',
+    'action_history_entries',
+    'macros',
+    'avatar_personality_profiles',
+    'evolution_history_table',
+    'conversation_depth_metrics',
+    'conversation_memories',
+    'agent_thoughts',
+    'conscience_decisions',
+    'coordinator_states',
+    'coordinator_votes',
+  };
+
+  /// Export every Drift table as a map of table name → list of row maps.
+  Future<Map<String, List<Map<String, dynamic>>>> exportAllTablesAsMaps() async {
+    final result = <String, List<Map<String, dynamic>>>{};
+    for (final table in allTables) {
+      final name = table.actualTableName;
+      final rows = await customSelect(
+        'SELECT * FROM "$name"',
+        readsFrom: {table},
+      ).get();
+      result[name] = rows
+          .map((row) => Map<String, dynamic>.from(row.data))
+          .toList(growable: false);
+    }
+    return result;
+  }
+
+  /// Count rows in every Drift table.
+  Future<Map<String, int>> countAllTableRows() async {
+    final counts = <String, int>{};
+    for (final table in allTables) {
+      final name = table.actualTableName;
+      final row = await customSelect(
+        'SELECT COUNT(*) AS c FROM "$name"',
+        readsFrom: {table},
+      ).getSingle();
+      counts[name] = row.read<int>('c');
+    }
+    return counts;
+  }
+
+  /// Permanently delete all rows from every Drift table.
+  ///
+  /// When [reseedDefaults] is true, recreates non-user infrastructure seeds
+  /// (rate-limit capacity + default agent identities) so the app keeps working.
+  /// Returns the pre-delete row counts per table.
+  Future<Map<String, int>> deleteAllAgentData({
+    bool reseedDefaults = true,
+  }) async {
+    final before = await countAllTableRows();
+
+    await customStatement('PRAGMA foreign_keys = OFF');
+    try {
+      await transaction(() async {
+        for (final table in allTables) {
+          await customStatement('DELETE FROM "${table.actualTableName}"');
+        }
+      });
+    } finally {
+      await customStatement('PRAGMA foreign_keys = ON');
+    }
+
+    if (reseedDefaults) {
+      await _populateInitialRateLimits();
+      await _createDefaultAgentIdentities();
+    }
+
+    return before;
+  }
+
+  /// True when every user-content table has zero rows.
+  Future<bool> isUserContentEmpty() async {
+    final counts = await countAllTableRows();
+    for (final name in userContentTableNames) {
+      if ((counts[name] ?? 0) > 0) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

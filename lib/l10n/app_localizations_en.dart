@@ -2393,6 +2393,53 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get configLocalAgentData => 'Local agent data';
+
+  @override
+  String get configLocalAgentDataSubtitle =>
+      'Export or permanently delete on-device agent data (conversations, memories, logs). Local wipe finishes in seconds; cloud account deletion is separate.';
+
+  @override
+  String get configExportLocalAgentData => 'Export all local data';
+
+  @override
+  String get configDeleteLocalAgentData => 'Delete all local data';
+
+  @override
+  String get configDeleteLocalAgentDataTitle => 'Delete all local agent data?';
+
+  @override
+  String get configDeleteLocalAgentDataConfirm =>
+      'This permanently deletes on-device agent data (local database and encrypted conversation store). Cloud account data is not removed. This cannot be undone.';
+
+  @override
+  String get configDeleteLocalAgentDataAction => 'Delete permanently';
+
+  @override
+  String configLocalAgentDataExported(String filename) {
+    return 'Local agent data exported to $filename';
+  }
+
+  @override
+  String configLocalAgentDataExportFailed(String error) {
+    return 'Local data export failed: $error';
+  }
+
+  @override
+  String configLocalAgentDataDeleted(int durationMs) {
+    return 'Local agent data deleted and verified empty ($durationMs ms)';
+  }
+
+  @override
+  String configLocalAgentDataDeleteFailed(String error) {
+    return 'Local data deletion failed: $error';
+  }
+
+  @override
+  String get configLocalAgentDataDeleteIncomplete =>
+      'Deletion finished but verification found remaining rows. Check Storage diagnostics.';
+
+  @override
   String get configUpdateMajor =>
       'Major version - may include breaking changes';
 

@@ -4340,6 +4340,78 @@ abstract class AppLocalizations {
   /// **'Could not clear the cache: {error}'**
   String configCacheClearFailed(String error);
 
+  /// No description provided for @configLocalAgentData.
+  ///
+  /// In en, this message translates to:
+  /// **'Local agent data'**
+  String get configLocalAgentData;
+
+  /// No description provided for @configLocalAgentDataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export or permanently delete on-device agent data (conversations, memories, logs). Local wipe finishes in seconds; cloud account deletion is separate.'**
+  String get configLocalAgentDataSubtitle;
+
+  /// No description provided for @configExportLocalAgentData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export all local data'**
+  String get configExportLocalAgentData;
+
+  /// No description provided for @configDeleteLocalAgentData.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all local data'**
+  String get configDeleteLocalAgentData;
+
+  /// No description provided for @configDeleteLocalAgentDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all local agent data?'**
+  String get configDeleteLocalAgentDataTitle;
+
+  /// No description provided for @configDeleteLocalAgentDataConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes on-device agent data (local database and encrypted conversation store). Cloud account data is not removed. This cannot be undone.'**
+  String get configDeleteLocalAgentDataConfirm;
+
+  /// No description provided for @configDeleteLocalAgentDataAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get configDeleteLocalAgentDataAction;
+
+  /// No description provided for @configLocalAgentDataExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Local agent data exported to {filename}'**
+  String configLocalAgentDataExported(String filename);
+
+  /// No description provided for @configLocalAgentDataExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Local data export failed: {error}'**
+  String configLocalAgentDataExportFailed(String error);
+
+  /// No description provided for @configLocalAgentDataDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Local agent data deleted and verified empty ({durationMs} ms)'**
+  String configLocalAgentDataDeleted(int durationMs);
+
+  /// No description provided for @configLocalAgentDataDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Local data deletion failed: {error}'**
+  String configLocalAgentDataDeleteFailed(String error);
+
+  /// No description provided for @configLocalAgentDataDeleteIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletion finished but verification found remaining rows. Check Storage diagnostics.'**
+  String get configLocalAgentDataDeleteIncomplete;
+
   /// No description provided for @configUpdateMajor.
   ///
   /// In en, this message translates to:

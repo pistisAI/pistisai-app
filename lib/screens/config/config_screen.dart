@@ -24,6 +24,7 @@ import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
 import '../../services/settings_preference_service.dart';
 import '../../services/settings_import_export_service.dart';
+import '../../services/local_agent_data_portability_service.dart';
 import '../../services/theme_provider.dart';
 import '../../utils/file_download_helper.dart';
 import '../../di/locator.dart';
@@ -186,6 +187,10 @@ class _ConfigScreenState extends State<ConfigScreen>
   BackendType? _activeBackend;
   final _settingsService = serviceLocator<SettingsPreferenceService>();
   final _importExportService = serviceLocator<SettingsImportExportService>();
+  LocalAgentDataPortabilityService? get _localAgentDataService =>
+      serviceLocator.isRegistered<LocalAgentDataPortabilityService>()
+          ? serviceLocator<LocalAgentDataPortabilityService>()
+          : null;
 
   AppLocalizations get _l10n => AppLocalizations.of(context);
 
@@ -810,6 +815,44 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
         const SizedBox(height: 16),
         CardSection(
+          title: l10n.configLocalAgentData,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Text(
+                l10n.configLocalAgentDataSubtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: _localAgentDataService == null
+                        ? null
+                        : _exportLocalAgentData,
+                    icon: const Icon(Icons.download, size: 18),
+                    label: Text(l10n.configExportLocalAgentData),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _localAgentDataService == null
+                        ? null
+                        : _deleteLocalAgentData,
+                    icon: const Icon(Icons.delete_forever, size: 18),
+                    label: Text(l10n.configDeleteLocalAgentData),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        CardSection(
           title: l10n.configCacheManagement,
           children: [
             _switch(l10n.configEnableCache, _enableCache, (v) async {
@@ -1115,6 +1158,101 @@ class _ConfigScreenState extends State<ConfigScreen>
         ),
       ],
     );
+  }
+
+  Future<void> _exportLocalAgentData() async {
+    final l10n = _l10n;
+    final service = _localAgentDataService;
+    if (service == null) {
+      _showSnackBar(
+        l10n.configLocalAgentDataExportFailed('service unavailable'),
+        isError: true,
+      );
+      return;
+    }
+    try {
+      final jsonString = await service.exportAllToJson();
+      final filename = service.generateExportFilename();
+
+      if (kIsWeb) {
+        final bytes = utf8.encode(jsonString);
+        downloadFile(bytes, filename, 'application/json');
+      } else {
+        final saveLocation = await file_selector.getSaveLocation(
+          acceptedTypeGroups: [
+            file_selector.XTypeGroup(label: 'JSON', extensions: ['json']),
+          ],
+          suggestedName: filename,
+        );
+        if (saveLocation == null) return;
+        await File(saveLocation.path).writeAsString(jsonString);
+      }
+
+      if (mounted) {
+        _showSnackBar(
+          l10n.configLocalAgentDataExported(filename),
+          isError: false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(
+          l10n.configLocalAgentDataExportFailed('$e'),
+          isError: true,
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteLocalAgentData() async {
+    final l10n = _l10n;
+    final service = _localAgentDataService;
+    if (service == null) {
+      _showSnackBar(
+        l10n.configLocalAgentDataDeleteFailed('service unavailable'),
+        isError: true,
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.configDeleteLocalAgentDataTitle),
+        content: Text(l10n.configDeleteLocalAgentDataConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.configDeleteLocalAgentDataAction),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      final result = await service.deleteAllLocalAgentData();
+      if (!mounted) return;
+      if (result.verifiedEmpty) {
+        _showSnackBar(
+          l10n.configLocalAgentDataDeleted(result.duration.inMilliseconds),
+          isError: false,
+        );
+      } else {
+        _showSnackBar(l10n.configLocalAgentDataDeleteIncomplete, isError: true);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(
+          l10n.configLocalAgentDataDeleteFailed('$e'),
+          isError: true,
+        );
+      }
+    }
   }
 
   Future<void> _clearCache() async {

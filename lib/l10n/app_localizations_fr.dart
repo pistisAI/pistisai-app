@@ -2431,6 +2431,56 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get configLocalAgentData => 'Données locales de l\'agent';
+
+  @override
+  String get configLocalAgentDataSubtitle =>
+      'Exporter ou supprimer définitivement les données de l\'agent sur cet appareil (conversations, mémoires, journaux). L\'effacement local prend quelques secondes ; la suppression du compte cloud est séparée.';
+
+  @override
+  String get configExportLocalAgentData =>
+      'Exporter toutes les données locales';
+
+  @override
+  String get configDeleteLocalAgentData =>
+      'Supprimer toutes les données locales';
+
+  @override
+  String get configDeleteLocalAgentDataTitle =>
+      'Supprimer toutes les données locales de l\'agent ?';
+
+  @override
+  String get configDeleteLocalAgentDataConfirm =>
+      'Cela supprime définitivement les données de l\'agent sur cet appareil (base locale et stockage chiffré des conversations). Les données du compte cloud ne sont pas touchées. Cette action est irréversible.';
+
+  @override
+  String get configDeleteLocalAgentDataAction => 'Supprimer définitivement';
+
+  @override
+  String configLocalAgentDataExported(String filename) {
+    return 'Données locales de l\'agent exportées vers $filename';
+  }
+
+  @override
+  String configLocalAgentDataExportFailed(String error) {
+    return 'Échec de l\'exportation des données locales : $error';
+  }
+
+  @override
+  String configLocalAgentDataDeleted(int durationMs) {
+    return 'Données locales de l\'agent supprimées et vérifiées vides ($durationMs ms)';
+  }
+
+  @override
+  String configLocalAgentDataDeleteFailed(String error) {
+    return 'Échec de la suppression des données locales : $error';
+  }
+
+  @override
+  String get configLocalAgentDataDeleteIncomplete =>
+      'La suppression s\'est terminée mais la vérification a trouvé des lignes restantes. Consultez les diagnostics de stockage.';
+
+  @override
   String get configUpdateMajor =>
       'Version majeure — peut comporter des changements incompatibles';
 

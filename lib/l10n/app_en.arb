@@ -1417,6 +1417,46 @@
       }
     }
   },
+  "configLocalAgentData": "Local agent data",
+  "configLocalAgentDataSubtitle": "Export or permanently delete on-device agent data (conversations, memories, logs). Local wipe finishes in seconds; cloud account deletion is separate.",
+  "configExportLocalAgentData": "Export all local data",
+  "configDeleteLocalAgentData": "Delete all local data",
+  "configDeleteLocalAgentDataTitle": "Delete all local agent data?",
+  "configDeleteLocalAgentDataConfirm": "This permanently deletes on-device agent data (local database and encrypted conversation store). Cloud account data is not removed. This cannot be undone.",
+  "configDeleteLocalAgentDataAction": "Delete permanently",
+  "configLocalAgentDataExported": "Local agent data exported to {filename}",
+  "@configLocalAgentDataExported": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "configLocalAgentDataExportFailed": "Local data export failed: {error}",
+  "@configLocalAgentDataExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configLocalAgentDataDeleted": "Local agent data deleted and verified empty ({durationMs} ms)",
+  "@configLocalAgentDataDeleted": {
+    "placeholders": {
+      "durationMs": {
+        "type": "int"
+      }
+    }
+  },
+  "configLocalAgentDataDeleteFailed": "Local data deletion failed: {error}",
+  "@configLocalAgentDataDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "configLocalAgentDataDeleteIncomplete": "Deletion finished but verification found remaining rows. Check Storage diagnostics.",
   "configUpdateMajor": "Major version - may include breaking changes",
   "configUpdateMinor": "Minor version - new features and improvements",
   "configUpdatePatch": "Patch version - bug fixes and security updates",
