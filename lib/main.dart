@@ -50,6 +50,7 @@ import 'package:pistisai/utils/platform_file_utils.dart'
 import 'package:pistisai/utils/single_instance.dart';
 import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
+import 'package:pistisai/services/desktop_control/computer_use_linux_wayland.dart';
 
 // navigatorKey is now imported from config/navigator_key.dart
 
@@ -73,6 +74,12 @@ String? resolveCallbackUrl(List<String> args) {
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+  // Linux (#616): keep the AT-SPI semantics tree published for computer-use
+  // clients even when no screen reader has registered on the accessibility bus
+  // (common on KDE Plasma Wayland).
+  if (PlatformHelper.isLinux) {
+    ComputerUseLinuxWayland.ensureAtSpiSemantics();
+  }
   // Start reading the crash-reporting preference now so it loads in parallel
   // with the rest of startup; it is awaited only where Sentry is decided.
   final Future<bool> crashReportingAllowedFuture = _crashReportingAllowed();
