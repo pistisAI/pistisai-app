@@ -738,6 +738,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agentsTabConfig => 'Config';
 
   @override
+  String get agentsTabAudit => 'Audit';
+
+  @override
+  String get agentsAuditTitle => 'Agent action audit';
+
+  @override
+  String get agentsAuditUnavailable =>
+      'Local audit journal is unavailable on this platform';
+
+  @override
+  String get agentsAuditEmptyTitle => 'No agent actions logged yet';
+
+  @override
+  String get agentsAuditEmptyMessage =>
+      'Reads, writes, and tool calls by agents will appear here and stay on this device until you export them.';
+
+  @override
+  String agentsAuditShowing(int count) {
+    return 'Showing $count local audit entries';
+  }
+
+  @override
+  String get agentsAuditExportJson => 'Export JSON';
+
+  @override
+  String get agentsAuditExportCsv => 'Export CSV';
+
+  @override
+  String agentsAuditExported(String filename) {
+    return 'Audit trail saved as $filename';
+  }
+
+  @override
+  String agentsAuditExportFailed(String error) {
+    return 'Could not export audit trail: $error';
+  }
+
+  @override
+  String get agentsAuditDataTouched => 'Data touched';
+
+  @override
+  String get agentsAuditAuthorizedBy => 'Authorized by';
+
+  @override
+  String get agentsAuditAgent => 'Agent';
+
+  @override
   String get agentsEmptyTitle => 'No Agents Registered';
 
   @override

@@ -2395,6 +2395,485 @@ class AgentLogsCompanion extends UpdateCompanion<AgentLog> {
   }
 }
 
+class $AgentActionAuditEntriesTable extends AgentActionAuditEntries
+    with TableInfo<$AgentActionAuditEntriesTable, AgentActionAuditEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AgentActionAuditEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _timestampMeta =
+      const VerificationMeta('timestamp');
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+      'timestamp', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+      'action', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _dataTouchedMeta =
+      const VerificationMeta('dataTouched');
+  @override
+  late final GeneratedColumn<String> dataTouched = GeneratedColumn<String>(
+      'data_touched', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _authorizationStatusMeta =
+      const VerificationMeta('authorizationStatus');
+  @override
+  late final GeneratedColumn<String> authorizationStatus =
+      GeneratedColumn<String>('authorization_status', aliasedName, false,
+          type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _outcomeMeta =
+      const VerificationMeta('outcome');
+  @override
+  late final GeneratedColumn<String> outcome = GeneratedColumn<String>(
+      'outcome', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _agentIdMeta =
+      const VerificationMeta('agentId');
+  @override
+  late final GeneratedColumn<String> agentId = GeneratedColumn<String>(
+      'agent_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _authorizedByMeta =
+      const VerificationMeta('authorizedBy');
+  @override
+  late final GeneratedColumn<String> authorizedBy = GeneratedColumn<String>(
+      'authorized_by', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _detailsJsonMeta =
+      const VerificationMeta('detailsJson');
+  @override
+  late final GeneratedColumn<String> detailsJson = GeneratedColumn<String>(
+      'details_json', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        timestamp,
+        action,
+        dataTouched,
+        authorizationStatus,
+        outcome,
+        agentId,
+        authorizedBy,
+        detailsJson
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'agent_action_audit_entries';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<AgentActionAuditEntry> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(_timestampMeta,
+          timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta));
+    }
+    if (data.containsKey('action')) {
+      context.handle(_actionMeta,
+          action.isAcceptableOrUnknown(data['action']!, _actionMeta));
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('data_touched')) {
+      context.handle(
+          _dataTouchedMeta,
+          dataTouched.isAcceptableOrUnknown(
+              data['data_touched']!, _dataTouchedMeta));
+    } else if (isInserting) {
+      context.missing(_dataTouchedMeta);
+    }
+    if (data.containsKey('authorization_status')) {
+      context.handle(
+          _authorizationStatusMeta,
+          authorizationStatus.isAcceptableOrUnknown(
+              data['authorization_status']!, _authorizationStatusMeta));
+    } else if (isInserting) {
+      context.missing(_authorizationStatusMeta);
+    }
+    if (data.containsKey('outcome')) {
+      context.handle(_outcomeMeta,
+          outcome.isAcceptableOrUnknown(data['outcome']!, _outcomeMeta));
+    } else if (isInserting) {
+      context.missing(_outcomeMeta);
+    }
+    if (data.containsKey('agent_id')) {
+      context.handle(_agentIdMeta,
+          agentId.isAcceptableOrUnknown(data['agent_id']!, _agentIdMeta));
+    }
+    if (data.containsKey('authorized_by')) {
+      context.handle(
+          _authorizedByMeta,
+          authorizedBy.isAcceptableOrUnknown(
+              data['authorized_by']!, _authorizedByMeta));
+    }
+    if (data.containsKey('details_json')) {
+      context.handle(
+          _detailsJsonMeta,
+          detailsJson.isAcceptableOrUnknown(
+              data['details_json']!, _detailsJsonMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AgentActionAuditEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AgentActionAuditEntry(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      timestamp: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}timestamp'])!,
+      action: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}action'])!,
+      dataTouched: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}data_touched'])!,
+      authorizationStatus: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}authorization_status'])!,
+      outcome: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}outcome'])!,
+      agentId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}agent_id']),
+      authorizedBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}authorized_by']),
+      detailsJson: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}details_json']),
+    );
+  }
+
+  @override
+  $AgentActionAuditEntriesTable createAlias(String alias) {
+    return $AgentActionAuditEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class AgentActionAuditEntry extends DataClass
+    implements Insertable<AgentActionAuditEntry> {
+  final int id;
+  final DateTime timestamp;
+  final String action;
+  final String dataTouched;
+  final String authorizationStatus;
+  final String outcome;
+  final String? agentId;
+  final String? authorizedBy;
+  final String? detailsJson;
+  const AgentActionAuditEntry(
+      {required this.id,
+      required this.timestamp,
+      required this.action,
+      required this.dataTouched,
+      required this.authorizationStatus,
+      required this.outcome,
+      this.agentId,
+      this.authorizedBy,
+      this.detailsJson});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    map['action'] = Variable<String>(action);
+    map['data_touched'] = Variable<String>(dataTouched);
+    map['authorization_status'] = Variable<String>(authorizationStatus);
+    map['outcome'] = Variable<String>(outcome);
+    if (!nullToAbsent || agentId != null) {
+      map['agent_id'] = Variable<String>(agentId);
+    }
+    if (!nullToAbsent || authorizedBy != null) {
+      map['authorized_by'] = Variable<String>(authorizedBy);
+    }
+    if (!nullToAbsent || detailsJson != null) {
+      map['details_json'] = Variable<String>(detailsJson);
+    }
+    return map;
+  }
+
+  AgentActionAuditEntriesCompanion toCompanion(bool nullToAbsent) {
+    return AgentActionAuditEntriesCompanion(
+      id: Value(id),
+      timestamp: Value(timestamp),
+      action: Value(action),
+      dataTouched: Value(dataTouched),
+      authorizationStatus: Value(authorizationStatus),
+      outcome: Value(outcome),
+      agentId: agentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(agentId),
+      authorizedBy: authorizedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(authorizedBy),
+      detailsJson: detailsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(detailsJson),
+    );
+  }
+
+  factory AgentActionAuditEntry.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AgentActionAuditEntry(
+      id: serializer.fromJson<int>(json['id']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      action: serializer.fromJson<String>(json['action']),
+      dataTouched: serializer.fromJson<String>(json['dataTouched']),
+      authorizationStatus:
+          serializer.fromJson<String>(json['authorizationStatus']),
+      outcome: serializer.fromJson<String>(json['outcome']),
+      agentId: serializer.fromJson<String?>(json['agentId']),
+      authorizedBy: serializer.fromJson<String?>(json['authorizedBy']),
+      detailsJson: serializer.fromJson<String?>(json['detailsJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'action': serializer.toJson<String>(action),
+      'dataTouched': serializer.toJson<String>(dataTouched),
+      'authorizationStatus': serializer.toJson<String>(authorizationStatus),
+      'outcome': serializer.toJson<String>(outcome),
+      'agentId': serializer.toJson<String?>(agentId),
+      'authorizedBy': serializer.toJson<String?>(authorizedBy),
+      'detailsJson': serializer.toJson<String?>(detailsJson),
+    };
+  }
+
+  AgentActionAuditEntry copyWith(
+          {int? id,
+          DateTime? timestamp,
+          String? action,
+          String? dataTouched,
+          String? authorizationStatus,
+          String? outcome,
+          Value<String?> agentId = const Value.absent(),
+          Value<String?> authorizedBy = const Value.absent(),
+          Value<String?> detailsJson = const Value.absent()}) =>
+      AgentActionAuditEntry(
+        id: id ?? this.id,
+        timestamp: timestamp ?? this.timestamp,
+        action: action ?? this.action,
+        dataTouched: dataTouched ?? this.dataTouched,
+        authorizationStatus: authorizationStatus ?? this.authorizationStatus,
+        outcome: outcome ?? this.outcome,
+        agentId: agentId.present ? agentId.value : this.agentId,
+        authorizedBy:
+            authorizedBy.present ? authorizedBy.value : this.authorizedBy,
+        detailsJson: detailsJson.present ? detailsJson.value : this.detailsJson,
+      );
+  AgentActionAuditEntry copyWithCompanion(
+      AgentActionAuditEntriesCompanion data) {
+    return AgentActionAuditEntry(
+      id: data.id.present ? data.id.value : this.id,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      action: data.action.present ? data.action.value : this.action,
+      dataTouched:
+          data.dataTouched.present ? data.dataTouched.value : this.dataTouched,
+      authorizationStatus: data.authorizationStatus.present
+          ? data.authorizationStatus.value
+          : this.authorizationStatus,
+      outcome: data.outcome.present ? data.outcome.value : this.outcome,
+      agentId: data.agentId.present ? data.agentId.value : this.agentId,
+      authorizedBy: data.authorizedBy.present
+          ? data.authorizedBy.value
+          : this.authorizedBy,
+      detailsJson:
+          data.detailsJson.present ? data.detailsJson.value : this.detailsJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AgentActionAuditEntry(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('action: $action, ')
+          ..write('dataTouched: $dataTouched, ')
+          ..write('authorizationStatus: $authorizationStatus, ')
+          ..write('outcome: $outcome, ')
+          ..write('agentId: $agentId, ')
+          ..write('authorizedBy: $authorizedBy, ')
+          ..write('detailsJson: $detailsJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, timestamp, action, dataTouched,
+      authorizationStatus, outcome, agentId, authorizedBy, detailsJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AgentActionAuditEntry &&
+          other.id == this.id &&
+          other.timestamp == this.timestamp &&
+          other.action == this.action &&
+          other.dataTouched == this.dataTouched &&
+          other.authorizationStatus == this.authorizationStatus &&
+          other.outcome == this.outcome &&
+          other.agentId == this.agentId &&
+          other.authorizedBy == this.authorizedBy &&
+          other.detailsJson == this.detailsJson);
+}
+
+class AgentActionAuditEntriesCompanion
+    extends UpdateCompanion<AgentActionAuditEntry> {
+  final Value<int> id;
+  final Value<DateTime> timestamp;
+  final Value<String> action;
+  final Value<String> dataTouched;
+  final Value<String> authorizationStatus;
+  final Value<String> outcome;
+  final Value<String?> agentId;
+  final Value<String?> authorizedBy;
+  final Value<String?> detailsJson;
+  const AgentActionAuditEntriesCompanion({
+    this.id = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.action = const Value.absent(),
+    this.dataTouched = const Value.absent(),
+    this.authorizationStatus = const Value.absent(),
+    this.outcome = const Value.absent(),
+    this.agentId = const Value.absent(),
+    this.authorizedBy = const Value.absent(),
+    this.detailsJson = const Value.absent(),
+  });
+  AgentActionAuditEntriesCompanion.insert({
+    this.id = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    required String action,
+    required String dataTouched,
+    required String authorizationStatus,
+    required String outcome,
+    this.agentId = const Value.absent(),
+    this.authorizedBy = const Value.absent(),
+    this.detailsJson = const Value.absent(),
+  })  : action = Value(action),
+        dataTouched = Value(dataTouched),
+        authorizationStatus = Value(authorizationStatus),
+        outcome = Value(outcome);
+  static Insertable<AgentActionAuditEntry> custom({
+    Expression<int>? id,
+    Expression<DateTime>? timestamp,
+    Expression<String>? action,
+    Expression<String>? dataTouched,
+    Expression<String>? authorizationStatus,
+    Expression<String>? outcome,
+    Expression<String>? agentId,
+    Expression<String>? authorizedBy,
+    Expression<String>? detailsJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (action != null) 'action': action,
+      if (dataTouched != null) 'data_touched': dataTouched,
+      if (authorizationStatus != null)
+        'authorization_status': authorizationStatus,
+      if (outcome != null) 'outcome': outcome,
+      if (agentId != null) 'agent_id': agentId,
+      if (authorizedBy != null) 'authorized_by': authorizedBy,
+      if (detailsJson != null) 'details_json': detailsJson,
+    });
+  }
+
+  AgentActionAuditEntriesCompanion copyWith(
+      {Value<int>? id,
+      Value<DateTime>? timestamp,
+      Value<String>? action,
+      Value<String>? dataTouched,
+      Value<String>? authorizationStatus,
+      Value<String>? outcome,
+      Value<String?>? agentId,
+      Value<String?>? authorizedBy,
+      Value<String?>? detailsJson}) {
+    return AgentActionAuditEntriesCompanion(
+      id: id ?? this.id,
+      timestamp: timestamp ?? this.timestamp,
+      action: action ?? this.action,
+      dataTouched: dataTouched ?? this.dataTouched,
+      authorizationStatus: authorizationStatus ?? this.authorizationStatus,
+      outcome: outcome ?? this.outcome,
+      agentId: agentId ?? this.agentId,
+      authorizedBy: authorizedBy ?? this.authorizedBy,
+      detailsJson: detailsJson ?? this.detailsJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (dataTouched.present) {
+      map['data_touched'] = Variable<String>(dataTouched.value);
+    }
+    if (authorizationStatus.present) {
+      map['authorization_status'] = Variable<String>(authorizationStatus.value);
+    }
+    if (outcome.present) {
+      map['outcome'] = Variable<String>(outcome.value);
+    }
+    if (agentId.present) {
+      map['agent_id'] = Variable<String>(agentId.value);
+    }
+    if (authorizedBy.present) {
+      map['authorized_by'] = Variable<String>(authorizedBy.value);
+    }
+    if (detailsJson.present) {
+      map['details_json'] = Variable<String>(detailsJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AgentActionAuditEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('action: $action, ')
+          ..write('dataTouched: $dataTouched, ')
+          ..write('authorizationStatus: $authorizationStatus, ')
+          ..write('outcome: $outcome, ')
+          ..write('agentId: $agentId, ')
+          ..write('authorizedBy: $authorizedBy, ')
+          ..write('detailsJson: $detailsJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AgentsTable extends Agents with TableInfo<$AgentsTable, Agent> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -12806,6 +13285,8 @@ abstract class _$LocalBrain extends GeneratedDatabase {
   late final $MainChatTimelineRecordsTable mainChatTimelineRecords =
       $MainChatTimelineRecordsTable(this);
   late final $AgentLogsTable agentLogs = $AgentLogsTable(this);
+  late final $AgentActionAuditEntriesTable agentActionAuditEntries =
+      $AgentActionAuditEntriesTable(this);
   late final $AgentsTable agents = $AgentsTable(this);
   late final $AgentEventsTable agentEvents = $AgentEventsTable(this);
   late final $SyncQueueTable syncQueue = $SyncQueueTable(this);
@@ -12851,6 +13332,7 @@ abstract class _$LocalBrain extends GeneratedDatabase {
         messages,
         mainChatTimelineRecords,
         agentLogs,
+        agentActionAuditEntries,
         agents,
         agentEvents,
         syncQueue,
@@ -13083,8 +13565,10 @@ class $$UsersTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) =>
-                  (e.readTable(table), $$UsersTableReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$UsersTable, User>(table),
+                    $$UsersTableReferences(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: ({conversationsRefs = false}) {
             return PrefetchHooks(
@@ -13096,16 +13580,16 @@ class $$UsersTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (conversationsRefs)
-                    await $_getPrefetchedData<User, $UsersTable, Conversation>(
+                    await $_getPrefetchedDataByColumns<User, $UsersTable,
+                            Conversation, $ConversationsTable>(
                         currentTable: table,
                         referencedTable:
                             $$UsersTableReferences._conversationsRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$UsersTableReferences(db, table, p0)
                                 .conversationsRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.userId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'user_id',
                         typedResults: items)
                 ];
               },
@@ -13554,7 +14038,7 @@ class $$ConversationsTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$ConversationsTable, Conversation>(table),
                     $$ConversationsTableReferences(db, table, e)
                   ))
               .toList(),
@@ -13599,43 +14083,46 @@ class $$ConversationsTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (messagesRefs)
-                    await $_getPrefetchedData<Conversation, $ConversationsTable,
-                            Message>(
+                    await $_getPrefetchedDataByColumns<Conversation,
+                            $ConversationsTable, Message, $MessagesTable>(
                         currentTable: table,
                         referencedTable: $$ConversationsTableReferences
                             ._messagesRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$ConversationsTableReferences(db, table, p0)
                                 .messagesRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.conversationId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'conversation_id',
                         typedResults: items),
                   if (conversationDepthMetricsRefs)
-                    await $_getPrefetchedData<Conversation, $ConversationsTable,
-                            ConversationDepthMetric>(
+                    await $_getPrefetchedDataByColumns<
+                            Conversation,
+                            $ConversationsTable,
+                            ConversationDepthMetric,
+                            $ConversationDepthMetricsTable>(
                         currentTable: table,
                         referencedTable: $$ConversationsTableReferences
                             ._conversationDepthMetricsRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$ConversationsTableReferences(db, table, p0)
                                 .conversationDepthMetricsRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.conversationId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'conversation_id',
                         typedResults: items),
                   if (conversationMemoriesRefs)
-                    await $_getPrefetchedData<Conversation, $ConversationsTable,
-                            ConversationMemory>(
+                    await $_getPrefetchedDataByColumns<
+                            Conversation,
+                            $ConversationsTable,
+                            ConversationMemory,
+                            $ConversationMemoriesTable>(
                         currentTable: table,
                         referencedTable: $$ConversationsTableReferences
                             ._conversationMemoriesRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$ConversationsTableReferences(db, table, p0)
                                 .conversationMemoriesRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.conversationId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'conversation_id',
                         typedResults: items)
                 ];
               },
@@ -13887,8 +14374,10 @@ class $$MessagesTableTableManager extends RootTableManager<
             timestamp: timestamp,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) =>
-                  (e.readTable(table), $$MessagesTableReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$MessagesTable, Message>(table),
+                    $$MessagesTableReferences(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: ({conversationId = false}) {
             return PrefetchHooks(
@@ -14387,7 +14876,12 @@ class $$MainChatTimelineRecordsTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$MainChatTimelineRecordsTable,
+                        MainChatTimelineDbRecord>(table),
+                    BaseReferences<_$LocalBrain, $MainChatTimelineRecordsTable,
+                        MainChatTimelineDbRecord>(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -14551,7 +15045,11 @@ class $$AgentLogsTableTableManager extends RootTableManager<
             timestamp: timestamp,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$AgentLogsTable, AgentLog>(table),
+                    BaseReferences<_$LocalBrain, $AgentLogsTable, AgentLog>(
+                        db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -14569,6 +15067,248 @@ typedef $$AgentLogsTableProcessedTableManager = ProcessedTableManager<
     (AgentLog, BaseReferences<_$LocalBrain, $AgentLogsTable, AgentLog>),
     AgentLog,
     PrefetchHooks Function()>;
+typedef $$AgentActionAuditEntriesTableCreateCompanionBuilder
+    = AgentActionAuditEntriesCompanion Function({
+  Value<int> id,
+  Value<DateTime> timestamp,
+  required String action,
+  required String dataTouched,
+  required String authorizationStatus,
+  required String outcome,
+  Value<String?> agentId,
+  Value<String?> authorizedBy,
+  Value<String?> detailsJson,
+});
+typedef $$AgentActionAuditEntriesTableUpdateCompanionBuilder
+    = AgentActionAuditEntriesCompanion Function({
+  Value<int> id,
+  Value<DateTime> timestamp,
+  Value<String> action,
+  Value<String> dataTouched,
+  Value<String> authorizationStatus,
+  Value<String> outcome,
+  Value<String?> agentId,
+  Value<String?> authorizedBy,
+  Value<String?> detailsJson,
+});
+
+class $$AgentActionAuditEntriesTableFilterComposer
+    extends Composer<_$LocalBrain, $AgentActionAuditEntriesTable> {
+  $$AgentActionAuditEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get action => $composableBuilder(
+      column: $table.action, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dataTouched => $composableBuilder(
+      column: $table.dataTouched, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get authorizationStatus => $composableBuilder(
+      column: $table.authorizationStatus,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get outcome => $composableBuilder(
+      column: $table.outcome, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get agentId => $composableBuilder(
+      column: $table.agentId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get authorizedBy => $composableBuilder(
+      column: $table.authorizedBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get detailsJson => $composableBuilder(
+      column: $table.detailsJson, builder: (column) => ColumnFilters(column));
+}
+
+class $$AgentActionAuditEntriesTableOrderingComposer
+    extends Composer<_$LocalBrain, $AgentActionAuditEntriesTable> {
+  $$AgentActionAuditEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+      column: $table.timestamp, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get action => $composableBuilder(
+      column: $table.action, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dataTouched => $composableBuilder(
+      column: $table.dataTouched, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get authorizationStatus => $composableBuilder(
+      column: $table.authorizationStatus,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get outcome => $composableBuilder(
+      column: $table.outcome, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get agentId => $composableBuilder(
+      column: $table.agentId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get authorizedBy => $composableBuilder(
+      column: $table.authorizedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get detailsJson => $composableBuilder(
+      column: $table.detailsJson, builder: (column) => ColumnOrderings(column));
+}
+
+class $$AgentActionAuditEntriesTableAnnotationComposer
+    extends Composer<_$LocalBrain, $AgentActionAuditEntriesTable> {
+  $$AgentActionAuditEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get dataTouched => $composableBuilder(
+      column: $table.dataTouched, builder: (column) => column);
+
+  GeneratedColumn<String> get authorizationStatus => $composableBuilder(
+      column: $table.authorizationStatus, builder: (column) => column);
+
+  GeneratedColumn<String> get outcome =>
+      $composableBuilder(column: $table.outcome, builder: (column) => column);
+
+  GeneratedColumn<String> get agentId =>
+      $composableBuilder(column: $table.agentId, builder: (column) => column);
+
+  GeneratedColumn<String> get authorizedBy => $composableBuilder(
+      column: $table.authorizedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get detailsJson => $composableBuilder(
+      column: $table.detailsJson, builder: (column) => column);
+}
+
+class $$AgentActionAuditEntriesTableTableManager extends RootTableManager<
+    _$LocalBrain,
+    $AgentActionAuditEntriesTable,
+    AgentActionAuditEntry,
+    $$AgentActionAuditEntriesTableFilterComposer,
+    $$AgentActionAuditEntriesTableOrderingComposer,
+    $$AgentActionAuditEntriesTableAnnotationComposer,
+    $$AgentActionAuditEntriesTableCreateCompanionBuilder,
+    $$AgentActionAuditEntriesTableUpdateCompanionBuilder,
+    (
+      AgentActionAuditEntry,
+      BaseReferences<_$LocalBrain, $AgentActionAuditEntriesTable,
+          AgentActionAuditEntry>
+    ),
+    AgentActionAuditEntry,
+    PrefetchHooks Function()> {
+  $$AgentActionAuditEntriesTableTableManager(
+      _$LocalBrain db, $AgentActionAuditEntriesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AgentActionAuditEntriesTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AgentActionAuditEntriesTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AgentActionAuditEntriesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<DateTime> timestamp = const Value.absent(),
+            Value<String> action = const Value.absent(),
+            Value<String> dataTouched = const Value.absent(),
+            Value<String> authorizationStatus = const Value.absent(),
+            Value<String> outcome = const Value.absent(),
+            Value<String?> agentId = const Value.absent(),
+            Value<String?> authorizedBy = const Value.absent(),
+            Value<String?> detailsJson = const Value.absent(),
+          }) =>
+              AgentActionAuditEntriesCompanion(
+            id: id,
+            timestamp: timestamp,
+            action: action,
+            dataTouched: dataTouched,
+            authorizationStatus: authorizationStatus,
+            outcome: outcome,
+            agentId: agentId,
+            authorizedBy: authorizedBy,
+            detailsJson: detailsJson,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<DateTime> timestamp = const Value.absent(),
+            required String action,
+            required String dataTouched,
+            required String authorizationStatus,
+            required String outcome,
+            Value<String?> agentId = const Value.absent(),
+            Value<String?> authorizedBy = const Value.absent(),
+            Value<String?> detailsJson = const Value.absent(),
+          }) =>
+              AgentActionAuditEntriesCompanion.insert(
+            id: id,
+            timestamp: timestamp,
+            action: action,
+            dataTouched: dataTouched,
+            authorizationStatus: authorizationStatus,
+            outcome: outcome,
+            agentId: agentId,
+            authorizedBy: authorizedBy,
+            detailsJson: detailsJson,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable<$AgentActionAuditEntriesTable,
+                        AgentActionAuditEntry>(table),
+                    BaseReferences<_$LocalBrain, $AgentActionAuditEntriesTable,
+                        AgentActionAuditEntry>(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$AgentActionAuditEntriesTableProcessedTableManager
+    = ProcessedTableManager<
+        _$LocalBrain,
+        $AgentActionAuditEntriesTable,
+        AgentActionAuditEntry,
+        $$AgentActionAuditEntriesTableFilterComposer,
+        $$AgentActionAuditEntriesTableOrderingComposer,
+        $$AgentActionAuditEntriesTableAnnotationComposer,
+        $$AgentActionAuditEntriesTableCreateCompanionBuilder,
+        $$AgentActionAuditEntriesTableUpdateCompanionBuilder,
+        (
+          AgentActionAuditEntry,
+          BaseReferences<_$LocalBrain, $AgentActionAuditEntriesTable,
+              AgentActionAuditEntry>
+        ),
+        AgentActionAuditEntry,
+        PrefetchHooks Function()>;
 typedef $$AgentsTableCreateCompanionBuilder = AgentsCompanion Function({
   required String id,
   required String name,
@@ -14760,7 +15500,11 @@ class $$AgentsTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$AgentsTable, Agent>(table),
+                    BaseReferences<_$LocalBrain, $AgentsTable, Agent>(
+                        db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -14973,7 +15717,11 @@ class $$AgentEventsTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$AgentEventsTable, AgentEvent>(table),
+                    BaseReferences<_$LocalBrain, $AgentEventsTable, AgentEvent>(
+                        db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -15165,7 +15913,11 @@ class $$SyncQueueTableTableManager extends RootTableManager<
             retryCount: retryCount,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$SyncQueueTable, SyncQueueData>(table),
+                    BaseReferences<_$LocalBrain, $SyncQueueTable,
+                        SyncQueueData>(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -15481,7 +16233,7 @@ class $$FileIndexTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$FileIndexTable, FileIndexData>(table),
                     $$FileIndexTableReferences(db, table, e)
                   ))
               .toList(),
@@ -15495,17 +16247,19 @@ class $$FileIndexTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (fileContentCacheRefs)
-                    await $_getPrefetchedData<FileIndexData, $FileIndexTable,
-                            FileContentCacheData>(
+                    await $_getPrefetchedDataByColumns<
+                            FileIndexData,
+                            $FileIndexTable,
+                            FileContentCacheData,
+                            $FileContentCacheTable>(
                         currentTable: table,
                         referencedTable: $$FileIndexTableReferences
                             ._fileContentCacheRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$FileIndexTableReferences(db, table, p0)
                                 .fileContentCacheRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.filePath == item.path),
+                        currentColumn: 'path',
+                        referencedColumn: 'file_path',
                         typedResults: items)
                 ];
               },
@@ -15727,7 +16481,8 @@ class $$FileContentCacheTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$FileContentCacheTable, FileContentCacheData>(
+                        table),
                     $$FileContentCacheTableReferences(db, table, e)
                   ))
               .toList(),
@@ -16009,7 +16764,11 @@ class $$LlmProvidersTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$LlmProvidersTable, LlmProvider>(table),
+                    BaseReferences<_$LocalBrain, $LlmProvidersTable,
+                        LlmProvider>(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -16337,7 +17096,7 @@ class $$ModelCapacityTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$ModelCapacityTable, ModelCapacityData>(table),
                     $$ModelCapacityTableReferences(db, table, e)
                   ))
               .toList(),
@@ -16349,17 +17108,16 @@ class $$ModelCapacityTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (llmRequestsRefs)
-                    await $_getPrefetchedData<ModelCapacityData,
-                            $ModelCapacityTable, LlmRequest>(
+                    await $_getPrefetchedDataByColumns<ModelCapacityData,
+                            $ModelCapacityTable, LlmRequest, $LlmRequestsTable>(
                         currentTable: table,
                         referencedTable: $$ModelCapacityTableReferences
                             ._llmRequestsRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$ModelCapacityTableReferences(db, table, p0)
                                 .llmRequestsRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.modelId == item.modelId),
+                        currentColumn: 'model_id',
+                        referencedColumn: 'model_id',
                         typedResults: items)
                 ];
               },
@@ -16658,7 +17416,7 @@ class $$LlmRequestsTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$LlmRequestsTable, LlmRequest>(table),
                     $$LlmRequestsTableReferences(db, table, e)
                   ))
               .toList(),
@@ -17082,7 +17840,7 @@ class $$AvatarProfilesTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$AvatarProfilesTable, AvatarProfile>(table),
                     $$AvatarProfilesTableReferences(db, table, e)
                   ))
               .toList(),
@@ -17098,30 +17856,34 @@ class $$AvatarProfilesTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (achievementsRefs)
-                    await $_getPrefetchedData<AvatarProfile,
-                            $AvatarProfilesTable, Achievement>(
+                    await $_getPrefetchedDataByColumns<
+                            AvatarProfile,
+                            $AvatarProfilesTable,
+                            Achievement,
+                            $AchievementsTable>(
                         currentTable: table,
                         referencedTable: $$AvatarProfilesTableReferences
                             ._achievementsRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$AvatarProfilesTableReferences(db, table, p0)
                                 .achievementsRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.avatarId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'avatar_id',
                         typedResults: items),
                   if (avatarMemoryEntriesRefs)
-                    await $_getPrefetchedData<AvatarProfile,
-                            $AvatarProfilesTable, AvatarMemoryEntry>(
+                    await $_getPrefetchedDataByColumns<
+                            AvatarProfile,
+                            $AvatarProfilesTable,
+                            AvatarMemoryEntry,
+                            $AvatarMemoryEntriesTable>(
                         currentTable: table,
                         referencedTable: $$AvatarProfilesTableReferences
                             ._avatarMemoryEntriesRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$AvatarProfilesTableReferences(db, table, p0)
                                 .avatarMemoryEntriesRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.avatarId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'avatar_id',
                         typedResults: items)
                 ];
               },
@@ -17406,7 +18168,7 @@ class $$AchievementsTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$AchievementsTable, Achievement>(table),
                     $$AchievementsTableReferences(db, table, e)
                   ))
               .toList(),
@@ -17755,7 +18517,8 @@ class $$AvatarMemoryEntriesTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$AvatarMemoryEntriesTable, AvatarMemoryEntry>(
+                        table),
                     $$AvatarMemoryEntriesTableReferences(db, table, e)
                   ))
               .toList(),
@@ -17987,7 +18750,12 @@ class $$ClipboardHistoryTableTableManager extends RootTableManager<
             isPinned: isPinned,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$ClipboardHistoryTable, ClipboardHistoryData>(
+                        table),
+                    BaseReferences<_$LocalBrain, $ClipboardHistoryTable,
+                        ClipboardHistoryData>(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -18174,7 +18942,12 @@ class $$ActionHistoryEntriesTableTableManager extends RootTableManager<
             result: result,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$ActionHistoryEntriesTable, ActionHistoryEntry>(
+                        table),
+                    BaseReferences<_$LocalBrain, $ActionHistoryEntriesTable,
+                        ActionHistoryEntry>(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -18388,7 +19161,11 @@ class $$MacrosTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$MacrosTable, Macro>(table),
+                    BaseReferences<_$LocalBrain, $MacrosTable, Macro>(
+                        db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -18682,7 +19459,8 @@ class $$AvatarPersonalityProfilesTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$AvatarPersonalityProfilesTable,
+                        AvatarPersonalityProfile>(table),
                     $$AvatarPersonalityProfilesTableReferences(db, table, e)
                   ))
               .toList(),
@@ -18696,8 +19474,11 @@ class $$AvatarPersonalityProfilesTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (evolutionHistoryTableRefs)
-                    await $_getPrefetchedData<AvatarPersonalityProfile,
-                            $AvatarPersonalityProfilesTable, EvolutionHistory>(
+                    await $_getPrefetchedDataByColumns<
+                            AvatarPersonalityProfile,
+                            $AvatarPersonalityProfilesTable,
+                            EvolutionHistory,
+                            $EvolutionHistoryTableTable>(
                         currentTable: table,
                         referencedTable:
                             $$AvatarPersonalityProfilesTableReferences
@@ -18706,9 +19487,8 @@ class $$AvatarPersonalityProfilesTableTableManager extends RootTableManager<
                             $$AvatarPersonalityProfilesTableReferences(
                                     db, table, p0)
                                 .evolutionHistoryTableRefs,
-                        referencedItemsForCurrentItem: (item,
-                                referencedItems) =>
-                            referencedItems.where((e) => e.avatarId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'avatar_id',
                         typedResults: items)
                 ];
               },
@@ -19006,7 +19786,8 @@ class $$EvolutionHistoryTableTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$EvolutionHistoryTableTable, EvolutionHistory>(
+                        table),
                     $$EvolutionHistoryTableTableReferences(db, table, e)
                   ))
               .toList(),
@@ -19308,7 +20089,8 @@ class $$ConversationDepthMetricsTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$ConversationDepthMetricsTable,
+                        ConversationDepthMetric>(table),
                     $$ConversationDepthMetricsTableReferences(db, table, e)
                   ))
               .toList(),
@@ -19604,7 +20386,8 @@ class $$ConversationMemoriesTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$ConversationMemoriesTable, ConversationMemory>(
+                        table),
                     $$ConversationMemoriesTableReferences(db, table, e)
                   ))
               .toList(),
@@ -19842,7 +20625,11 @@ class $$AgentThoughtsTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$AgentThoughtsTable, AgentThought>(table),
+                    BaseReferences<_$LocalBrain, $AgentThoughtsTable,
+                        AgentThought>(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -20127,7 +20914,8 @@ class $$ConscienceDecisionsTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$ConscienceDecisionsTable, ConscienceDecision>(
+                        table),
                     $$ConscienceDecisionsTableReferences(db, table, e)
                   ))
               .toList(),
@@ -20141,17 +20929,19 @@ class $$ConscienceDecisionsTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (coordinatorStatesRefs)
-                    await $_getPrefetchedData<ConscienceDecision,
-                            $ConscienceDecisionsTable, CoordinatorState>(
+                    await $_getPrefetchedDataByColumns<
+                            ConscienceDecision,
+                            $ConscienceDecisionsTable,
+                            CoordinatorState,
+                            $CoordinatorStatesTable>(
                         currentTable: table,
                         referencedTable: $$ConscienceDecisionsTableReferences
                             ._coordinatorStatesRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$ConscienceDecisionsTableReferences(db, table, p0)
                                 .coordinatorStatesRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.decisionId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'decision_id',
                         typedResults: items)
                 ];
               },
@@ -20405,7 +21195,11 @@ class $$AgentIdentitiesTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) => (
+                    e.readTable<$AgentIdentitiesTable, AgentIdentity>(table),
+                    BaseReferences<_$LocalBrain, $AgentIdentitiesTable,
+                        AgentIdentity>(db, table, e)
+                  ))
               .toList(),
           prefetchHooksCallback: null,
         ));
@@ -20901,7 +21695,8 @@ class $$CoordinatorStatesTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$CoordinatorStatesTable, CoordinatorState>(
+                        table),
                     $$CoordinatorStatesTableReferences(db, table, e)
                   ))
               .toList(),
@@ -20942,17 +21737,19 @@ class $$CoordinatorStatesTableTableManager extends RootTableManager<
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (coordinatorVotesRefs)
-                    await $_getPrefetchedData<CoordinatorState,
-                            $CoordinatorStatesTable, CoordinatorVote>(
+                    await $_getPrefetchedDataByColumns<
+                            CoordinatorState,
+                            $CoordinatorStatesTable,
+                            CoordinatorVote,
+                            $CoordinatorVotesTable>(
                         currentTable: table,
                         referencedTable: $$CoordinatorStatesTableReferences
                             ._coordinatorVotesRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$CoordinatorStatesTableReferences(db, table, p0)
                                 .coordinatorVotesRefs,
-                        referencedItemsForCurrentItem:
-                            (item, referencedItems) => referencedItems
-                                .where((e) => e.coordinatorId == item.id),
+                        currentColumn: 'id',
+                        referencedColumn: 'coordinator_id',
                         typedResults: items)
                 ];
               },
@@ -21213,7 +22010,7 @@ class $$CoordinatorVotesTableTableManager extends RootTableManager<
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
-                    e.readTable(table),
+                    e.readTable<$CoordinatorVotesTable, CoordinatorVote>(table),
                     $$CoordinatorVotesTableReferences(db, table, e)
                   ))
               .toList(),
@@ -21283,6 +22080,9 @@ class $LocalBrainManager {
           _db, _db.mainChatTimelineRecords);
   $$AgentLogsTableTableManager get agentLogs =>
       $$AgentLogsTableTableManager(_db, _db.agentLogs);
+  $$AgentActionAuditEntriesTableTableManager get agentActionAuditEntries =>
+      $$AgentActionAuditEntriesTableTableManager(
+          _db, _db.agentActionAuditEntries);
   $$AgentsTableTableManager get agents =>
       $$AgentsTableTableManager(_db, _db.agents);
   $$AgentEventsTableTableManager get agentEvents =>

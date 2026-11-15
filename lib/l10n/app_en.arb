@@ -455,6 +455,40 @@
   "agentsTabRegistry": "Registry",
   "agentsTabMonitor": "Monitor",
   "agentsTabConfig": "Config",
+  "agentsTabAudit": "Audit",
+  "agentsAuditTitle": "Agent action audit",
+  "agentsAuditUnavailable": "Local audit journal is unavailable on this platform",
+  "agentsAuditEmptyTitle": "No agent actions logged yet",
+  "agentsAuditEmptyMessage": "Reads, writes, and tool calls by agents will appear here and stay on this device until you export them.",
+  "agentsAuditShowing": "Showing {count} local audit entries",
+  "@agentsAuditShowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agentsAuditExportJson": "Export JSON",
+  "agentsAuditExportCsv": "Export CSV",
+  "agentsAuditExported": "Audit trail saved as {filename}",
+  "@agentsAuditExported": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsAuditExportFailed": "Could not export audit trail: {error}",
+  "@agentsAuditExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsAuditDataTouched": "Data touched",
+  "agentsAuditAuthorizedBy": "Authorized by",
+  "agentsAuditAgent": "Agent",
   "agentsEmptyTitle": "No Agents Registered",
   "agentsEmptyMessage": "Agents will appear here when registered",
   "agentsNoTask": "No task assigned",

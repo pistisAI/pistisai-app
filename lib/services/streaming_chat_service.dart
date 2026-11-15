@@ -16,6 +16,7 @@ import 'conversation_storage_service.dart';
 import 'auth_service.dart';
 import '../brand/brand_copy.dart';
 import 'agent_display_name.dart';
+import 'agent_action_audit_service.dart';
 import 'avatar/avatar_state_service.dart';
 import '../di/locator.dart' as di;
 import '../utils/logger.dart';
@@ -603,13 +604,22 @@ class StreamingChatService extends ChangeNotifier {
         _activeToolCalls.add(toolCall);
         appLogger
             .info('[StreamingChat] Tool started: $tool (${preview ?? "..."})');
+        unawaited(_recordToolAudit(
+          action: 'tool.started',
+          tool: tool,
+          preview: preview,
+          outcome: AgentAuditOutcome.success,
+          authorizationStatus: AgentAuditAuthorization.autoAllowed,
+        ));
         notifyListeners();
 
       case AgentToolCompleted(:final tool, :final duration, :final isError):
         // Find the matching active tool call and complete it
+        String? preview;
         final index = _activeToolCalls.indexWhere((tc) => tc.name == tool);
         if (index != -1) {
           final active = _activeToolCalls.removeAt(index);
+          preview = active.preview;
           final completed = active.copyWith(
             isCompleted: true,
             isError: isError,
@@ -624,6 +634,16 @@ class StreamingChatService extends ChangeNotifier {
         appLogger.info(
           '[StreamingChat] Tool completed: $tool (${duration}s, error: $isError)',
         );
+        unawaited(_recordToolAudit(
+          action: 'tool.completed',
+          tool: tool,
+          preview: preview,
+          outcome: isError
+              ? AgentAuditOutcome.failure
+              : AgentAuditOutcome.success,
+          authorizationStatus: AgentAuditAuthorization.autoAllowed,
+          details: {'duration_seconds': duration, 'is_error': isError},
+        ));
         notifyListeners();
 
       case AgentRunCompleted(:final output, :final usage):
@@ -909,6 +929,37 @@ class StreamingChatService extends ChangeNotifier {
       );
     });
     notifyListeners();
+  }
+
+  Future<void> _recordToolAudit({
+    required String action,
+    required String tool,
+    String? preview,
+    required String outcome,
+    required String authorizationStatus,
+    Map<String, dynamic>? details,
+  }) async {
+    try {
+      if (!di.serviceLocator.isRegistered<AgentActionAuditService>()) return;
+      final audit = di.serviceLocator<AgentActionAuditService>();
+      await audit.record(
+        action: action,
+        dataTouched: preview == null || preview.isEmpty
+            ? 'tool:$tool'
+            : 'tool:$tool:$preview',
+        authorizationStatus: authorizationStatus,
+        outcome: outcome,
+        agentId: connectedAgentDisplayName(),
+        authorizedBy: 'user',
+        details: {
+          'tool': tool,
+          if (preview != null) 'preview': preview,
+          ...?details,
+        },
+      );
+    } catch (e) {
+      appLogger.debug('[StreamingChat] Audit record skipped: $e');
+    }
   }
 
   @override

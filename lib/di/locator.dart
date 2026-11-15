@@ -63,6 +63,7 @@ import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
+import 'package:pistisai/services/agent_action_audit_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
 import 'package:pistisai/services/approval_gate_service.dart';
 import 'package:pistisai/services/vision/vision_service.dart';
@@ -186,6 +187,14 @@ Future<void> setupCoreServices() async {
     final localBrain = LocalBrain();
     serviceLocator.registerSingleton<LocalBrain>(localBrain);
 
+    // Client-visible agent-action audit journal stays local (#643).
+    final agentActionAuditService = AgentActionAuditService(
+      database: localBrain,
+    );
+    serviceLocator.registerSingleton<AgentActionAuditService>(
+      agentActionAuditService,
+    );
+
     if (!kIsWeb) {
       // Desktop-only core graph: avatar persistence and embedded router.
       // On web these services rely on native filesystem/runtime assumptions and can
@@ -235,6 +244,7 @@ Future<void> setupCoreServices() async {
 
       final conscienceStorageService = ConscienceStorageService(
         database: localBrain,
+        audit: agentActionAuditService,
       );
       serviceLocator.registerSingleton<ConscienceStorageService>(
         conscienceStorageService,

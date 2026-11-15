@@ -12,6 +12,7 @@ import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
 import '../../widgets/navigation/popout_button.dart';
+import 'agent_action_audit_tab.dart';
 
 /// Agent model for displaying in the registry
 class Agent {
@@ -97,7 +98,7 @@ class _AgentsScreenState extends State<AgentsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _loadData();
   }
 
@@ -327,6 +328,7 @@ class _AgentsScreenState extends State<AgentsScreen>
           ],
           bottom: TabBar(
             controller: _tabController,
+            isScrollable: true,
             tabs: [
               Tab(
                   text: l10n.agentsTabRegistry,
@@ -335,6 +337,9 @@ class _AgentsScreenState extends State<AgentsScreen>
                   text: l10n.agentsTabMonitor,
                   icon: const Icon(Icons.monitor_heart)),
               Tab(text: l10n.agentsTabConfig, icon: const Icon(Icons.settings)),
+              Tab(
+                  text: l10n.agentsTabAudit,
+                  icon: const Icon(Icons.policy_outlined)),
             ],
           ),
         ),
@@ -348,6 +353,7 @@ class _AgentsScreenState extends State<AgentsScreen>
                       _buildRegistryTab(l10n),
                       _buildMonitorTab(l10n),
                       _buildConfigTab(l10n),
+                      const AgentActionAuditTab(),
                     ],
                   ),
       ),

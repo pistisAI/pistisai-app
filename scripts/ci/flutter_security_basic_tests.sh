@@ -27,6 +27,7 @@ flutter test \
   test/services/local_agent_data_portability_service_test.dart \
   test/services/approval_gate_service_test.dart \
   test/widgets/approval/ \
+  test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
   test/services/desktop_control/ \
   test/widgets/logout_token_clearing_timing_test.dart \
