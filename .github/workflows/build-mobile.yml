@@ -30,13 +30,13 @@ permissions:
 
 jobs:
   analyze:
-    if: ${{ !startsWith(github.head_ref, 'chore/version-bump-') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     if: >-
-      github.event_name == 'pull_request' ||
+      !startsWith(github.head_ref, 'chore/version-bump-') &&
+      (github.event_name == 'pull_request' ||
       github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+      github.event.workflow_run.conclusion == 'success')
     outputs:
       version: ${{ steps.read.outputs.version }}
     steps:
