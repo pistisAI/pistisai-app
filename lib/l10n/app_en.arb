@@ -2217,5 +2217,80 @@
   "voiceStatusWake": "Wake",
   "voiceStatusUserLine": "User line",
   "voiceStatusAssistantReply": "Assistant reply",
-  "voiceStatusDoneSpeaking": "Done speaking"
+  "voiceStatusDoneSpeaking": "Done speaking",
+  "approvalTitle": "Approval required",
+  "@approvalTitle": {
+    "description": "Title of the critical-action approval dialog."
+  },
+  "approvalSubtitle": "Review what the agent wants to do before it runs.",
+  "@approvalSubtitle": {
+    "description": "Subtitle explaining human-in-the-loop approval."
+  },
+  "approvalApprove": "Approve",
+  "@approvalApprove": {
+    "description": "Button to approve a critical action."
+  },
+  "approvalDeny": "Deny",
+  "@approvalDeny": {
+    "description": "Button to deny a critical action."
+  },
+  "approvalDetailsHeading": "Details",
+  "@approvalDetailsHeading": {
+    "description": "Heading for the pending action detail list."
+  },
+  "approvalWorkflow": "Workflow: {workflowId}",
+  "@approvalWorkflow": {
+    "description": "Shows which workflow requested approval.",
+    "placeholders": {
+      "workflowId": {
+        "type": "String"
+      }
+    }
+  },
+  "approvalCategoryDataExport": "Data export",
+  "@approvalCategoryDataExport": {
+    "description": "Label for data-export critical actions."
+  },
+  "approvalCategoryIntegrationCall": "Integration call",
+  "@approvalCategoryIntegrationCall": {
+    "description": "Label for outbound integration critical actions."
+  },
+  "approvalCategoryCustom": "Critical action",
+  "@approvalCategoryCustom": {
+    "description": "Label for custom workflow-marked critical actions."
+  },
+  "approvalPendingBanner": "Pending approval",
+  "@approvalPendingBanner": {
+    "description": "Banner chip when a critical action awaits approval."
+  },
+  "approvalDesktopActions": "Desktop actions require approval",
+  "@approvalDesktopActions": {
+    "description": "Banner chip reminding that desktop actions need approval."
+  },
+  "approvalDeniedSnack": "Action denied",
+  "@approvalDeniedSnack": {
+    "description": "Snack shown when the user denies a critical action."
+  },
+  "approvalExportSettingsSummary": "Export all app settings to {filename}.",
+  "@approvalExportSettingsSummary": {
+    "description": "Summary shown before approving a settings export.",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "approvalExportAuditSummary": "Download admin audit logs as a CSV file.",
+  "@approvalExportAuditSummary": {
+    "description": "Summary shown before approving an audit-log export."
+  },
+  "approvalRevokeDeviceSummary": "Revoke cloud connector access for device {deviceId}.",
+  "@approvalRevokeDeviceSummary": {
+    "description": "Summary shown before approving a device revoke integration call.",
+    "placeholders": {
+      "deviceId": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3627,4 +3627,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voiceStatusDoneSpeaking => 'Done speaking';
+
+  @override
+  String get approvalTitle => 'Approval required';
+
+  @override
+  String get approvalSubtitle =>
+      'Review what the agent wants to do before it runs.';
+
+  @override
+  String get approvalApprove => 'Approve';
+
+  @override
+  String get approvalDeny => 'Deny';
+
+  @override
+  String get approvalDetailsHeading => 'Details';
+
+  @override
+  String approvalWorkflow(String workflowId) {
+    return 'Workflow: $workflowId';
+  }
+
+  @override
+  String get approvalCategoryDataExport => 'Data export';
+
+  @override
+  String get approvalCategoryIntegrationCall => 'Integration call';
+
+  @override
+  String get approvalCategoryCustom => 'Critical action';
+
+  @override
+  String get approvalPendingBanner => 'Pending approval';
+
+  @override
+  String get approvalDesktopActions => 'Desktop actions require approval';
+
+  @override
+  String get approvalDeniedSnack => 'Action denied';
+
+  @override
+  String approvalExportSettingsSummary(String filename) {
+    return 'Export all app settings to $filename.';
+  }
+
+  @override
+  String get approvalExportAuditSummary =>
+      'Download admin audit logs as a CSV file.';
+
+  @override
+  String approvalRevokeDeviceSummary(String deviceId) {
+    return 'Revoke cloud connector access for device $deviceId.';
+  }
 }

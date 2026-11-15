@@ -7,9 +7,11 @@ import 'sidebar_section.dart';
 import 'navigation_rail_item.dart';
 import '../../brand/brand.dart';
 import '../../config/app_config.dart';
+import '../../services/approval_gate_service.dart';
 import '../../services/connection_manager_service.dart';
 import '../../services/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../approval/approval_request_panel.dart';
 
 class AppNavigationShell extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -30,12 +32,15 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
   @override
   Widget build(BuildContext context) {
     if (widget.navigationShell.currentIndex == 0) {
-      return Scaffold(
-        body: widget.navigationShell,
+      return ApprovalGateHost(
+        child: Scaffold(
+          body: widget.navigationShell,
+        ),
       );
     }
 
-    return Scaffold(
+    return ApprovalGateHost(
+      child: Scaffold(
       body: Row(
         children: [
           // Sidebar
@@ -87,6 +92,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -333,8 +339,9 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
   }
 
   Widget _buildTopBanner() {
-    return Consumer<ConnectionManagerService>(
-      builder: (context, connService, child) {
+    return Consumer2<ConnectionManagerService, ApprovalGateService>(
+      builder: (context, connService, approvalGate, child) {
+        final l10n = AppLocalizations.of(context);
         final gatewayStatus = connService.getGatewayStatus();
         final isHealthy = connService.isGatewayHealthy();
         final runtimeLabel =
@@ -346,6 +353,7 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
         final modelCount = capabilityModelCount > configuredModelCount
             ? capabilityModelCount
             : configuredModelCount;
+        final pendingCount = approvalGate.pendingRequests.length;
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -384,8 +392,12 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
               ),
               const SizedBox(width: 8),
               _BannerChip(
-                label: 'Desktop actions require approval',
-                color: Theme.of(context).colorScheme.secondary,
+                label: pendingCount > 0
+                    ? l10n.approvalPendingBanner
+                    : l10n.approvalDesktopActions,
+                color: pendingCount > 0
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.secondary,
               ),
               const SizedBox(width: 8),
               _BannerChip(

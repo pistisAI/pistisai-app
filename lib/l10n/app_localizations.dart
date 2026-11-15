@@ -6481,6 +6481,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done speaking'**
   String get voiceStatusDoneSpeaking;
+
+  /// Title of the critical-action approval dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval required'**
+  String get approvalTitle;
+
+  /// Subtitle explaining human-in-the-loop approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Review what the agent wants to do before it runs.'**
+  String get approvalSubtitle;
+
+  /// Button to approve a critical action.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approvalApprove;
+
+  /// Button to deny a critical action.
+  ///
+  /// In en, this message translates to:
+  /// **'Deny'**
+  String get approvalDeny;
+
+  /// Heading for the pending action detail list.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get approvalDetailsHeading;
+
+  /// Shows which workflow requested approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Workflow: {workflowId}'**
+  String approvalWorkflow(String workflowId);
+
+  /// Label for data-export critical actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Data export'**
+  String get approvalCategoryDataExport;
+
+  /// Label for outbound integration critical actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Integration call'**
+  String get approvalCategoryIntegrationCall;
+
+  /// Label for custom workflow-marked critical actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical action'**
+  String get approvalCategoryCustom;
+
+  /// Banner chip when a critical action awaits approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending approval'**
+  String get approvalPendingBanner;
+
+  /// Banner chip reminding that desktop actions need approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop actions require approval'**
+  String get approvalDesktopActions;
+
+  /// Snack shown when the user denies a critical action.
+  ///
+  /// In en, this message translates to:
+  /// **'Action denied'**
+  String get approvalDeniedSnack;
+
+  /// Summary shown before approving a settings export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export all app settings to {filename}.'**
+  String approvalExportSettingsSummary(String filename);
+
+  /// Summary shown before approving an audit-log export.
+  ///
+  /// In en, this message translates to:
+  /// **'Download admin audit logs as a CSV file.'**
+  String get approvalExportAuditSummary;
+
+  /// Summary shown before approving a device revoke integration call.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke cloud connector access for device {deviceId}.'**
+  String approvalRevokeDeviceSummary(String deviceId);
 }
 
 class _AppLocalizationsDelegate

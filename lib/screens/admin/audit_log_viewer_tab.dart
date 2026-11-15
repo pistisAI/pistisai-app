@@ -4,6 +4,7 @@ import '../../di/locator.dart' as di;
 import 'dart:async';
 import 'dart:convert';
 import '../../services/admin_center_service.dart';
+import '../../services/approval_gate_service.dart';
 import '../../models/admin_audit_log_model.dart';
 import '../../config/theme.dart';
 
@@ -148,13 +149,29 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
     final l10n = AppLocalizations.of(context);
     try {
       final adminService = di.serviceLocator.get<AdminCenterService>();
-      await adminService.exportAuditLogs(
-        adminUserId: _selectedAdminUserId,
-        action: _selectedAction,
-        resourceType: _selectedResourceType,
-        affectedUserId: _selectedAffectedUserId,
-        startDate: _startDate,
-        endDate: _endDate,
+      final approvalGate = di.serviceLocator.get<ApprovalGateService>();
+      await approvalGate.runCritical<void>(
+        action: CriticalAction(
+          category: CriticalActionCategory.dataExport,
+          title: l10n.auditExportCsv,
+          summary: l10n.approvalExportAuditSummary,
+          details: {
+            if (_selectedAdminUserId != null)
+              'adminUserId': _selectedAdminUserId!,
+            if (_selectedAction != null) 'action': _selectedAction!,
+            if (_selectedResourceType != null)
+              'resourceType': _selectedResourceType!,
+          },
+          workflowId: 'admin.audit.export',
+        ),
+        execute: () => adminService.exportAuditLogs(
+          adminUserId: _selectedAdminUserId,
+          action: _selectedAction,
+          resourceType: _selectedResourceType,
+          affectedUserId: _selectedAffectedUserId,
+          startDate: _startDate,
+          endDate: _endDate,
+        ),
       );
 
       if (!mounted) return;
@@ -162,6 +179,14 @@ class _AuditLogViewerTabState extends State<AuditLogViewerTab> {
         SnackBar(
           content: Text(l10n.auditExported),
           backgroundColor: AppTheme.colorsOf(context).success,
+        ),
+      );
+    } on ApprovalDeniedException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.approvalDeniedSnack),
+          backgroundColor: AppTheme.colorsOf(context).danger,
         ),
       );
     } catch (e) {

@@ -23,6 +23,7 @@ import '../../services/app_cache_service.dart';
 import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
 import '../../services/settings_preference_service.dart';
+import '../../services/approval_gate_service.dart';
 import '../../services/settings_import_export_service.dart';
 import '../../services/local_agent_data_portability_service.dart';
 import '../../services/theme_provider.dart';
@@ -426,26 +427,45 @@ class _ConfigScreenState extends State<ConfigScreen>
   Future<void> _exportSettings() async {
     final l10n = _l10n;
     try {
-      final jsonString = await _importExportService.exportSettingsToJson();
       final filename = _importExportService.generateExportFilename();
+      final approvalGate = serviceLocator.get<ApprovalGateService>();
+      final exported = await approvalGate.runCritical<bool>(
+        action: CriticalAction(
+          category: CriticalActionCategory.dataExport,
+          title: l10n.configExport,
+          summary: l10n.approvalExportSettingsSummary(filename),
+          details: {'filename': filename, 'format': 'json'},
+          workflowId: 'settings.export',
+        ),
+        execute: () async {
+          final jsonString =
+              await _importExportService.exportSettingsToJson();
 
-      if (kIsWeb) {
-        final bytes = utf8.encode(jsonString);
-        downloadFile(bytes, filename, 'application/json');
-      } else {
-        final saveLocation = await file_selector.getSaveLocation(
-          acceptedTypeGroups: [
-            file_selector.XTypeGroup(label: 'JSON', extensions: ['json']),
-          ],
-          suggestedName: filename,
-        );
-        // The user closed the dialog: nothing was written, so say nothing.
-        if (saveLocation == null) return;
-        await File(saveLocation.path).writeAsString(jsonString);
-      }
+          if (kIsWeb) {
+            final bytes = utf8.encode(jsonString);
+            downloadFile(bytes, filename, 'application/json');
+            return true;
+          }
 
-      if (mounted) {
+          final saveLocation = await file_selector.getSaveLocation(
+            acceptedTypeGroups: [
+              file_selector.XTypeGroup(label: 'JSON', extensions: ['json']),
+            ],
+            suggestedName: filename,
+          );
+          // The user closed the dialog: nothing was written, so say nothing.
+          if (saveLocation == null) return false;
+          await File(saveLocation.path).writeAsString(jsonString);
+          return true;
+        },
+      );
+
+      if (mounted && exported) {
         _showSnackBar(l10n.configExported(filename), isError: false);
+      }
+    } on ApprovalDeniedException {
+      if (mounted) {
+        _showSnackBar(l10n.approvalDeniedSnack, isError: true);
       }
     } catch (e) {
       if (mounted) {

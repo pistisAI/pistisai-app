@@ -29,6 +29,7 @@ import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/streaming_chat_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
+import 'package:pistisai/services/approval_gate_service.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/log_buffer_service.dart';
 import 'package:pistisai/services/theme_provider.dart';
@@ -405,6 +406,8 @@ class _PistisaiAppState extends State<PistisaiApp> {
           providersList, 'SetupWizardService');
       _addProviderIfAvailable<MobileConnectionService>(
           providersList, 'MobileConnectionService');
+      _addProviderIfAvailable<ApprovalGateService>(
+          providersList, 'ApprovalGateService');
 
       debugPrint(
           '[App] Returning MultiProvider with ${providersList.length} providers');
