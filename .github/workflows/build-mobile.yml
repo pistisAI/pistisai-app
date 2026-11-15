@@ -12,13 +12,6 @@ on:
         required: false
         default: "android"
         type: string
-  pull_request:
-    branches: [main]
-    paths:
-      - "android/**"
-      - "pubspec.yaml"
-      - "pubspec.lock"
-      - ".github/workflows/build-mobile.yml"
 
 concurrency:
   group: mobile-build-${{ github.ref }}
