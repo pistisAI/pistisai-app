@@ -28,6 +28,9 @@ import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/services/settings_import_export_service.dart';
+import 'package:pistisai/services/local_agent_data_portability_service.dart';
+import 'package:pistisai/services/local_conversation_storage.dart';
+import 'package:pistisai/models/conversation.dart' as models;
 import 'package:pistisai/services/provider_configuration_manager.dart';
 import 'package:pistisai/services/admin_center_service.dart';
 import 'package:pistisai/services/theme_provider.dart';
@@ -390,6 +393,34 @@ Future<void> setupCoreServices() async {
     serviceLocator.registerSingleton<SettingsImportExportService>(
       settingsImportExportService,
     );
+
+    // Local agent data export/deletion (client-facing, on-device only)
+    if (serviceLocator.isRegistered<LocalBrain>()) {
+      final portabilityBrain = serviceLocator.get<LocalBrain>();
+      Future<Map<String, dynamic>> Function()? exportConversations;
+      Future<void> Function()? clearConversations;
+      if (!kIsWeb) {
+        final localConversations = LocalConversationStorage();
+        exportConversations = () async {
+          final conversations = await localConversations.loadConversations();
+          return <String, dynamic>{
+            'export_date': DateTime.now().toIso8601String(),
+            'total_conversations': conversations.length,
+            'conversations': conversations
+                .map((models.Conversation c) => c.toJson())
+                .toList(),
+          };
+        };
+        clearConversations = localConversations.clearAll;
+      }
+      serviceLocator.registerSingleton<LocalAgentDataPortabilityService>(
+        LocalAgentDataPortabilityService(
+          brain: portabilityBrain,
+          exportConversations: exportConversations,
+          clearConversations: clearConversations,
+        ),
+      );
+    }
 
     // Platform detection service - detects current platform and provides platform info
     final platformDetectionService = PlatformDetectionService();

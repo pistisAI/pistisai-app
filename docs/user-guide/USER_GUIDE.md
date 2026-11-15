@@ -234,7 +234,7 @@ Tailscale is the preferred secure transport. Instead of maintaining a separate c
 - Offline mode
 - Local-only storage
 - Per-device desktop permissions
-- Data export and deletion
+- Data export and deletion (Settings → Storage → Local agent data; see [LOCAL_DATA_EXPORT_DELETION.md](LOCAL_DATA_EXPORT_DELETION.md))
 
 ---
 

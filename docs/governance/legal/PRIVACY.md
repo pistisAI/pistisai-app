@@ -136,10 +136,13 @@ We do not sell, rent, or trade your personal information.
 ## 7. Data retention and deletion
 
 Content stored locally remains on your device until you delete it or uninstall the
-app. You can remove local data from within the app. For account data held by our
-authentication provider, you may request deletion of your account and associated
-authentication records by contacting us at the address below; we will delete such
-data unless we are required to retain it by law.
+app. You can export or permanently delete on-device agent data from
+**Settings → Storage → Local agent data** (local wipe completes in seconds; see
+`docs/user-guide/LOCAL_DATA_EXPORT_DELETION.md` for what is removed and how to
+verify). For account data held by our authentication provider, you may request
+deletion of your account and associated authentication records by contacting us
+at the address below; we will delete such data unless we are required to retain
+it by law (provider processing target: within a few hours of a verified request).
 
 ## 8. Your rights and choices
 

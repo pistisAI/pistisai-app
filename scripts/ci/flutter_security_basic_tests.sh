@@ -23,6 +23,7 @@ flutter test \
   test/services/hermes_manager/hermes_gateway_control_service_test.dart \
   test/services/providers/hermes_adapter_test.dart \
   test/services/provider_discovery_service_test.dart \
+  test/services/local_agent_data_portability_service_test.dart \
   test/services/openclaw_manager/ \
   test/services/desktop_control/ \
   test/widgets/logout_token_clearing_timing_test.dart \
