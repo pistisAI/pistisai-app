@@ -1,129 +1,128 @@
 /**
- * Cache Metrics Routes Tests
- *
- * Tests for cache metrics API endpoints
- * Validates cache statistics, clearing, and invalidation endpoints
- *
- * Requirements: 9.8 (Query Optimization and Caching)
+ * Behavior tests for cache metrics routes.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
-import {
-  clearCache,
-  getCacheStats,
-} from "../../services/api-backend/database/cached-query-wrapper.js";
-import { getQueryCache } from "../../services/api-backend/database/query-cache.js";
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-describe("Cache Metrics Routes", () => {
+const mockGetCacheStats = jest.fn();
+const mockClearCache = jest.fn();
+const mockInvalidate = jest.fn();
+const mockInvalidateByTable = jest.fn();
+const mockResetMetrics = jest.fn();
+
+jest.unstable_mockModule(
+  '../../services/api-backend/database/cached-query-wrapper.js',
+  () => ({
+    getCacheStats: (...args) => mockGetCacheStats(...args),
+    clearCache: (...args) => mockClearCache(...args),
+  }),
+);
+
+jest.unstable_mockModule(
+  '../../services/api-backend/database/query-cache.js',
+  () => ({
+    getQueryCache: () => ({
+      invalidate: (...args) => mockInvalidate(...args),
+      invalidateByTable: (...args) => mockInvalidateByTable(...args),
+      resetMetrics: (...args) => mockResetMetrics(...args),
+    }),
+  }),
+);
+
+jest.unstable_mockModule(
+  '../../services/api-backend/middleware/admin-auth.js',
+  () => ({
+    adminAuth: () => (_req, _res, next) => next(),
+  }),
+);
+
+const request = (await import('supertest')).default;
+const express = (await import('express')).default;
+const cacheMetricsRoutes = (
+  await import('../../services/api-backend/routes/cache-metrics.js')
+).default;
+
+describe('cache-metrics routes', () => {
+  let app;
+
   beforeEach(() => {
-    clearCache();
+    jest.clearAllMocks();
+    app = express();
+    app.use(express.json());
+    app.use('/cache', cacheMetricsRoutes);
   });
 
-  afterEach(() => {
-    clearCache();
+  it('GET /stats returns cache statistics', async () => {
+    mockGetCacheStats.mockReturnValue({ hits: 10, misses: 2 });
+    const res = await request(app).get('/cache/stats').expect(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.hits).toBe(10);
   });
 
-  describe("Cache Statistics", () => {
-    it("should return cache statistics", () => {
-      const stats = getCacheStats();
-
-      expect(stats).toHaveProperty("size");
-      expect(stats).toHaveProperty("hits");
-      expect(stats).toHaveProperty("misses");
-      expect(stats).toHaveProperty("hitRate");
-      expect(stats).toHaveProperty("invalidations");
-      expect(stats).toHaveProperty("evictions");
+  it('GET /stats returns 500 when stats lookup fails', async () => {
+    mockGetCacheStats.mockImplementation(() => {
+      throw new Error('stats failed');
     });
-
-    it("should return correct cache size", () => {
-      const cache = getQueryCache();
-      cache.set("key1", { data: "test1" });
-      cache.set("key2", { data: "test2" });
-
-      const stats = getCacheStats();
-      expect(stats.size).toBe(2);
-    });
-
-    it("should return correct hit/miss counts", () => {
-      const cache = getQueryCache();
-      cache.set("key1", { data: "test1" });
-      cache.get("key1"); // hit
-      cache.get("key2"); // miss
-
-      const stats = getCacheStats();
-      expect(stats.hits).toBe(1);
-      expect(stats.misses).toBe(1);
-    });
+    const res = await request(app).get('/cache/stats').expect(500);
+    expect(res.body.success).toBe(false);
   });
 
-  describe("Cache Clearing", () => {
-    it("should clear all cache entries", () => {
-      const cache = getQueryCache();
-      cache.set("key1", { data: "test1" });
-      cache.set("key2", { data: "test2" });
-
-      expect(cache.cache.size).toBe(2);
-
-      clearCache();
-
-      expect(cache.cache.size).toBe(0);
-    });
+  it('POST /clear clears the cache', async () => {
+    const res = await request(app).post('/cache/clear').expect(200);
+    expect(mockClearCache).toHaveBeenCalled();
+    expect(res.body.success).toBe(true);
   });
 
-  describe("Cache Invalidation", () => {
-    it("should invalidate by table name", () => {
-      const cache = getQueryCache();
-      cache.set("key1", { data: "user1" }, 5000, [], ["USERS"]);
-      cache.set("key2", { data: "user2" }, 5000, [], ["USERS"]);
-      cache.set("key3", { data: "post1" }, 5000, [], ["POSTS"]);
-
-      const count = cache.invalidateByTable("USERS");
-
-      expect(count).toBe(2);
-      expect(cache.get("key1")).toBeNull();
-      expect(cache.get("key2")).toBeNull();
-      expect(cache.get("key3")).not.toBeNull();
+  it('POST /clear returns 500 when clear fails', async () => {
+    mockClearCache.mockImplementation(() => {
+      throw new Error('clear failed');
     });
-
-    it("should invalidate by regex pattern", () => {
-      const cache = getQueryCache();
-      cache.set("query:users:1", { data: "user1" });
-      cache.set("query:users:2", { data: "user2" });
-      cache.set("query:posts:1", { data: "post1" });
-
-      const count = cache.invalidate(/query:users/);
-
-      expect(count).toBe(2);
-      expect(cache.get("query:users:1")).toBeNull();
-      expect(cache.get("query:posts:1")).not.toBeNull();
-    });
-
-    it("should return invalidated count", () => {
-      const cache = getQueryCache();
-      cache.set("key1", { data: "test1" });
-      cache.set("key2", { data: "test2" });
-      cache.set("key3", { data: "test3" });
-
-      const count = cache.invalidate(/key/);
-
-      expect(count).toBe(3);
-    });
+    const res = await request(app).post('/cache/clear').expect(500);
+    expect(res.body.success).toBe(false);
   });
 
-  describe("Metrics Reset", () => {
-    it("should reset cache metrics", () => {
-      const cache = getQueryCache();
-      cache.set("key1", { data: "test1" });
-      cache.get("key1"); // hit
-      cache.get("key2"); // miss
+  it('POST /invalidate by table returns invalidated count', async () => {
+    mockInvalidateByTable.mockReturnValue(4);
+    const res = await request(app)
+      .post('/cache/invalidate')
+      .send({ table: 'users' })
+      .expect(200);
+    expect(mockInvalidateByTable).toHaveBeenCalledWith('users');
+    expect(res.body.invalidatedCount).toBe(4);
+  });
 
-      expect(cache.metrics.hits).toBeGreaterThan(0);
-      expect(cache.metrics.misses).toBeGreaterThan(0);
+  it('POST /invalidate by pattern escapes regex metacharacters', async () => {
+    mockInvalidate.mockReturnValue(2);
+    const res = await request(app)
+      .post('/cache/invalidate')
+      .send({ pattern: 'user.*id' })
+      .expect(200);
+    expect(mockInvalidate).toHaveBeenCalledTimes(1);
+    const regexArg = mockInvalidate.mock.calls[0][0];
+    expect(regexArg).toBeInstanceOf(RegExp);
+    expect(regexArg.source).toBe('user\\.\\*id');
+    expect(res.body.invalidatedCount).toBe(2);
+  });
 
-      cache.resetMetrics();
+  it('POST /invalidate rejects bodies missing pattern and table', async () => {
+    const res = await request(app)
+      .post('/cache/invalidate')
+      .send({})
+      .expect(400);
+    expect(res.body).toBeTruthy();
+  });
 
-      expect(cache.metrics.hits).toBe(0);
-      expect(cache.metrics.misses).toBe(0);
+  it('GET /reset-metrics resets cache metrics', async () => {
+    const res = await request(app).get('/cache/reset-metrics').expect(200);
+    expect(mockResetMetrics).toHaveBeenCalled();
+    expect(res.body.success).toBe(true);
+  });
+
+  it('GET /reset-metrics returns 500 when reset fails', async () => {
+    mockResetMetrics.mockImplementation(() => {
+      throw new Error('reset failed');
     });
+    const res = await request(app).get('/cache/reset-metrics').expect(500);
+    expect(res.body.success).toBe(false);
   });
 });
