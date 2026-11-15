@@ -95,7 +95,7 @@ export class SandboxService {
           jwtId: 'jwt|sandbox-test-1',
           tier: 'free',
           token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItMSIsImVtYWlsIjoidGVzdEBzYW5kYm94LmxvY2FsIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-1',
+            process.env.SANDBOX_TOKEN_USER || 'sandbox-token-user-unset',
         },
         {
           id: 'test-user-2',
@@ -103,7 +103,7 @@ export class SandboxService {
           jwtId: 'jwt|sandbox-test-2',
           tier: 'premium',
           token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItMiIsImVtYWlsIjoicHJlbWl1bUBzYW5kYm94LmxvY2FsIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-2',
+            process.env.SANDBOX_TOKEN_PREMIUM || 'sandbox-token-premium-unset',
         },
         {
           id: 'test-admin',
@@ -112,19 +112,19 @@ export class SandboxService {
           tier: 'enterprise',
           role: 'admin',
           token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LWFkbWluIiwiZW1haWwiOiJhZG1pbkBzYW5kYm94LmxvY2FsIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-admin',
+            process.env.SANDBOX_TOKEN_ADMIN || 'sandbox-token-admin-unset',
         },
       ],
       apiKeys: [
         {
-          key: 'sk_sandbox_test_1234567890abcdef',
-          secret: 'sandbox-secret-1',
+          key: process.env.SANDBOX_API_KEY_1 || 'sandbox-key-1-unset',
+          secret: process.env.SANDBOX_API_SECRET_1 || 'sandbox-secret-1-unset',
           name: 'Test API Key 1',
           tier: 'free',
         },
         {
-          key: 'sk_sandbox_premium_abcdef1234567890',
-          secret: 'sandbox-secret-2',
+          key: process.env.SANDBOX_API_KEY_2 || 'sandbox-key-2-unset',
+          secret: process.env.SANDBOX_API_SECRET_2 || 'sandbox-secret-2-unset',
           name: 'Premium API Key',
           tier: 'premium',
         },
