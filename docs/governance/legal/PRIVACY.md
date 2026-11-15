@@ -148,6 +148,9 @@ data unless we are required to retain it by law.
 - if you signed in with Google, revoke that access at any time via your
   [Google Account permissions](https://myaccount.google.com/permissions);
 - turn crash reporting on or off under Settings → General;
+- turn spoken replies off if you do not want text sent to Microsoft's speech service;
+- cloud model providers (Zhipu, Moonshot, Gemini) are absent unless a build includes
+  their API keys; when present, only prompts you route to that provider are sent;
 - choose whether to enable cloud sync or keep Pistisai fully local.
 
 ## 9. Children's privacy
