@@ -88,6 +88,21 @@ class AgentLogs extends Table {
   DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
 }
 
+/// Client-visible audit journal of agent actions (local only; #643).
+/// Distinct from [AgentLogs] (debug) and [ActionHistoryEntries] (desktop macros).
+@DataClassName('AgentActionAuditEntry')
+class AgentActionAuditEntries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get action => text()();
+  TextColumn get dataTouched => text()();
+  TextColumn get authorizationStatus => text()();
+  TextColumn get outcome => text()();
+  TextColumn get agentId => text().nullable()();
+  TextColumn get authorizedBy => text().nullable()();
+  TextColumn get detailsJson => text().nullable()();
+}
+
 // ============================================================================
 // SYNC TABLES (Local-Cloud Bridge)
 // ============================================================================
@@ -525,6 +540,7 @@ class ConversationMemories extends Table {
   Messages,
   MainChatTimelineRecords,
   AgentLogs,
+  AgentActionAuditEntries,
   Agents,
   AgentEvents,
   SyncQueue,
@@ -554,7 +570,7 @@ class LocalBrain extends _$LocalBrain {
   LocalBrain.withExecutor(super.executor);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -617,6 +633,10 @@ class LocalBrain extends _$LocalBrain {
             // Add Coordinator System tables for Phase 4 - Consensus & Conflict Resolution
             await m.createTable(coordinatorStates);
             await m.createTable(coordinatorVotes);
+          }
+          if (from < 11) {
+            // Client-visible local agent-action audit journal (#643)
+            await m.createTable(agentActionAuditEntries);
           }
         },
       );
@@ -1243,6 +1263,32 @@ class LocalBrain extends _$LocalBrain {
   Future<int> clearOldLogs(Duration age) async {
     final cutoff = DateTime.now().subtract(age);
     return (delete(agentLogs)
+          ..where((t) => t.timestamp.isSmallerThanValue(cutoff)))
+        .go();
+  }
+
+  // ==========================================================================
+  // AGENT ACTION AUDIT DAO (#643)
+  // ==========================================================================
+
+  Future<int> insertAgentActionAudit(
+          AgentActionAuditEntriesCompanion entry) =>
+      into(agentActionAuditEntries).insert(entry);
+
+  Future<List<AgentActionAuditEntry>> getAgentActionAuditEntries(
+          {int limit = 500}) =>
+      (select(agentActionAuditEntries)
+            ..orderBy([
+              (t) =>
+                  OrderingTerm(expression: t.timestamp, mode: OrderingMode.desc),
+              (t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc),
+            ])
+            ..limit(limit))
+          .get();
+
+  Future<int> clearOldAgentActionAuditEntries(Duration age) async {
+    final cutoff = DateTime.now().subtract(age);
+    return (delete(agentActionAuditEntries)
           ..where((t) => t.timestamp.isSmallerThanValue(cutoff)))
         .go();
   }

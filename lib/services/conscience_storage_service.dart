@@ -3,13 +3,18 @@ import 'package:pistisai/database/drift_local_brain.dart';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
+import 'agent_action_audit_service.dart';
+
 class ConscienceStorageService {
   final LocalBrain _database;
+  final AgentActionAuditService? _audit;
   final Uuid _uuid = const Uuid();
 
   ConscienceStorageService({
     required LocalBrain database,
-  }) : _database = database;
+    AgentActionAuditService? audit,
+  })  : _database = database,
+        _audit = audit;
 
   Future<Map<String, dynamic>> writeThought({
     required String agent,
@@ -30,6 +35,19 @@ class ConscienceStorageService {
       content: content,
       metadata: Value(metadata != null ? jsonEncode(metadata) : null),
     ));
+
+    await _audit?.record(
+      action: 'conscience.write_thought',
+      dataTouched: 'agent_thoughts:$id',
+      authorizationStatus: AgentAuditAuthorization.autoAllowed,
+      outcome: AgentAuditOutcome.success,
+      agentId: agent,
+      authorizedBy: agent,
+      details: {
+        'thought_type': thoughtType,
+        'channel': channel,
+      },
+    );
 
     return {
       'id': id,
@@ -60,6 +78,19 @@ class ConscienceStorageService {
       thoughts = await _database.getRecentThoughts(limit: limit);
     }
 
+    await _audit?.record(
+      action: 'conscience.read_thoughts',
+      dataTouched: 'agent_thoughts',
+      authorizationStatus: AgentAuditAuthorization.autoAllowed,
+      outcome: AgentAuditOutcome.success,
+      agentId: agent,
+      details: {
+        'count': thoughts.length,
+        'channel': channel,
+        'thought_type': thoughtType,
+      },
+    );
+
     return thoughts.map(_thoughtToMap).toList();
   }
 
@@ -85,6 +116,23 @@ class ConscienceStorageService {
       status: Value(status),
     ));
 
+    await _audit?.record(
+      action: 'conscience.write_decision',
+      dataTouched: 'conscience_decisions:$id',
+      authorizationStatus: verdict == null
+          ? AgentAuditAuthorization.pending
+          : _authFromVerdict(verdict),
+      outcome: AgentAuditOutcome.success,
+      agentId: reviewer,
+      authorizedBy: reviewer,
+      details: {
+        'proposed_action': action,
+        'risk_level': riskLevel,
+        'verdict': verdict,
+        'status': status,
+      },
+    );
+
     return {
       'id': id,
       'timestamp': now.toIso8601String(),
@@ -108,8 +156,31 @@ class ConscienceStorageService {
 
     final decision = await _database.getDecisionById(decisionId);
     if (decision == null) {
+      await _audit?.record(
+        action: 'conscience.submit_verdict',
+        dataTouched: 'conscience_decisions:$decisionId',
+        authorizationStatus: AgentAuditAuthorization.denied,
+        outcome: AgentAuditOutcome.failure,
+        agentId: reviewer,
+        authorizedBy: reviewer,
+        details: {'reason': 'decision_not_found'},
+      );
       throw StateError('Decision not found: $decisionId');
     }
+
+    await _audit?.record(
+      action: 'conscience.submit_verdict',
+      dataTouched: 'conscience_decisions:$decisionId',
+      authorizationStatus: _authFromVerdict(verdict),
+      outcome: AgentAuditOutcome.success,
+      agentId: reviewer,
+      authorizedBy: reviewer,
+      details: {
+        'verdict': verdict,
+        'proposed_action': decision.action,
+        'risk_level': decision.riskLevel,
+      },
+    );
 
     return _decisionToMap(decision);
   }
@@ -130,7 +201,33 @@ class ConscienceStorageService {
       decisions = await _database.getAllDecisions(limit: limit);
     }
 
+    await _audit?.record(
+      action: 'conscience.read_decisions',
+      dataTouched: 'conscience_decisions',
+      authorizationStatus: AgentAuditAuthorization.autoAllowed,
+      outcome: AgentAuditOutcome.success,
+      details: {
+        'count': decisions.length,
+        'status': status,
+        'risk_level': riskLevel,
+      },
+    );
+
     return decisions.map(_decisionToMap).toList();
+  }
+
+  String _authFromVerdict(String verdict) {
+    switch (verdict.toUpperCase()) {
+      case 'APPROVED':
+        return AgentAuditAuthorization.authorized;
+      case 'DENIED':
+        return AgentAuditAuthorization.denied;
+      case 'HOLD':
+      case 'QUESTION':
+        return AgentAuditAuthorization.pending;
+      default:
+        return AgentAuditAuthorization.pending;
+    }
   }
 
   Map<String, dynamic> _thoughtToMap(AgentThought thought) {

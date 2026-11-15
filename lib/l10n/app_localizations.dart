@@ -1400,6 +1400,84 @@ abstract class AppLocalizations {
   /// **'Config'**
   String get agentsTabConfig;
 
+  /// No description provided for @agentsTabAudit.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit'**
+  String get agentsTabAudit;
+
+  /// No description provided for @agentsAuditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent action audit'**
+  String get agentsAuditTitle;
+
+  /// No description provided for @agentsAuditUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Local audit journal is unavailable on this platform'**
+  String get agentsAuditUnavailable;
+
+  /// No description provided for @agentsAuditEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent actions logged yet'**
+  String get agentsAuditEmptyTitle;
+
+  /// No description provided for @agentsAuditEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Reads, writes, and tool calls by agents will appear here and stay on this device until you export them.'**
+  String get agentsAuditEmptyMessage;
+
+  /// No description provided for @agentsAuditShowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {count} local audit entries'**
+  String agentsAuditShowing(int count);
+
+  /// No description provided for @agentsAuditExportJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Export JSON'**
+  String get agentsAuditExportJson;
+
+  /// No description provided for @agentsAuditExportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get agentsAuditExportCsv;
+
+  /// No description provided for @agentsAuditExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit trail saved as {filename}'**
+  String agentsAuditExported(String filename);
+
+  /// No description provided for @agentsAuditExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export audit trail: {error}'**
+  String agentsAuditExportFailed(String error);
+
+  /// No description provided for @agentsAuditDataTouched.
+  ///
+  /// In en, this message translates to:
+  /// **'Data touched'**
+  String get agentsAuditDataTouched;
+
+  /// No description provided for @agentsAuditAuthorizedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized by'**
+  String get agentsAuditAuthorizedBy;
+
+  /// No description provided for @agentsAuditAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent'**
+  String get agentsAuditAgent;
+
   /// No description provided for @agentsEmptyTitle.
   ///
   /// In en, this message translates to:

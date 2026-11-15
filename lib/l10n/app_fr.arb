@@ -217,6 +217,40 @@
   "agentsTabRegistry": "Registre",
   "agentsTabMonitor": "Suivi",
   "agentsTabConfig": "Configuration",
+  "agentsTabAudit": "Audit",
+  "agentsAuditTitle": "Journal d'audit des actions d'agent",
+  "agentsAuditUnavailable": "Le journal d'audit local n'est pas disponible sur cette plateforme",
+  "agentsAuditEmptyTitle": "Aucune action d'agent enregistrée",
+  "agentsAuditEmptyMessage": "Les lectures, écritures et appels d'outils des agents apparaîtront ici et resteront sur cet appareil jusqu'à exportation.",
+  "agentsAuditShowing": "Affichage de {count} entrées d'audit locales",
+  "@agentsAuditShowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "agentsAuditExportJson": "Exporter JSON",
+  "agentsAuditExportCsv": "Exporter CSV",
+  "agentsAuditExported": "Journal d'audit enregistré sous {filename}",
+  "@agentsAuditExported": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsAuditExportFailed": "Impossible d'exporter le journal d'audit : {error}",
+  "@agentsAuditExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "agentsAuditDataTouched": "Données touchées",
+  "agentsAuditAuthorizedBy": "Autorisé par",
+  "agentsAuditAgent": "Agent",
   "agentsEmptyTitle": "Aucun agent enregistré",
   "agentsEmptyMessage": "Les agents apparaîtront ici une fois enregistrés",
   "agentsNoTask": "Aucune tâche assignée",
