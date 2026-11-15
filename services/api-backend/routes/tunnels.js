@@ -27,6 +27,7 @@ import { authenticateJWT } from '../middleware/auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { TunnelService } from '../services/tunnel-service.js';
 import logger from '../logger.js';
+import { tunnelConfigUpdateBody, validateBody } from './misc-body-schemas.js';
 
 const router = express.Router();
 let tunnelService = null;
@@ -867,6 +868,7 @@ router.put(
   '/:id/config',
   authenticateJWT,
   validateSchema({ params: tunnelIdSchema }),
+  ...validateBody(tunnelConfigUpdateBody),
   async (req, res) => {
     try {
       if (!req.user) {

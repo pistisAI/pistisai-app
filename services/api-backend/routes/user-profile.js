@@ -27,6 +27,12 @@ import {
   validateAndSanitizePreferences,
 } from '../utils/input-validation.js';
 import logger from '../logger.js';
+import {
+  userAvatarBody,
+  userPreferencesBody,
+  userProfileUpdateBody,
+  validateBody,
+} from './misc-body-schemas.js';
 
 const router = express.Router();
 let userProfileService = null;
@@ -143,7 +149,7 @@ router.get('/profile', authenticateJWT, async (req, res) => {
  * Authentication: Required (JWT)
  * Rate Limit: Standard (100 req/min)
  */
-router.put('/profile', authenticateJWT, async (req, res) => {
+router.put('/profile', authenticateJWT, ...validateBody(userProfileUpdateBody), async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({
@@ -315,7 +321,7 @@ router.get('/preferences', authenticateJWT, async (req, res) => {
  * Authentication: Required (JWT)
  * Rate Limit: Standard (100 req/min)
  */
-router.put('/preferences', authenticateJWT, async (req, res) => {
+router.put('/preferences', authenticateJWT, ...validateBody(userPreferencesBody), async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({
@@ -421,7 +427,7 @@ router.put('/preferences', authenticateJWT, async (req, res) => {
  * Authentication: Required (JWT)
  * Rate Limit: Standard (100 req/min)
  */
-router.put('/avatar', authenticateJWT, async (req, res) => {
+router.put('/avatar', authenticateJWT, ...validateBody(userAvatarBody), async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({
