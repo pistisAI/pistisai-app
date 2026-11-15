@@ -172,9 +172,12 @@ jobs:
             [ "$STATE" = "MERGED" ] && { echo "Bump merged: $BUMP_PR_URL"; exit 0; }
             [ "$STATE" = "CLOSED" ] && { echo "::error::Bump PR closed without merge: $BUMP_PR_URL"; exit 1; }
             FAILED=$(gh pr view "$BUMP_PR_URL" --json statusCheckRollup -q '[.statusCheckRollup[]?|select(.conclusion=="FAILURE")]|length')
-            if [ "${FAILED:-0}" -gt 0 ]; then
-              echo "::error::Bump checks failed; closing $BUMP_PR_URL so the next run recomputes cleanly"
-              gh pr close "$BUMP_PR_URL" --delete-branch --comment "Auto-closed: checks failed. The next merge will recompute the version."
+            MERGE=$(gh pr view "$BUMP_PR_URL" --json mergeStateStatus -q .mergeStateStatus)
+            # A bump goes stale when main moves: conflicts (DIRTY) never merge, so close them too.
+            if [ "${FAILED:-0}" -gt 0 ] || [ "$MERGE" = "DIRTY" ]; then
+              REASON="checks failed"; [ "$MERGE" = "DIRTY" ] && REASON="conflicts with main (stale)"
+              echo "::error::Bump $REASON; closing $BUMP_PR_URL so the next run recomputes cleanly"
+              gh pr close "$BUMP_PR_URL" --delete-branch --comment "Auto-closed: $REASON. The next merge will recompute the version from main."
               exit 1
             fi
             sleep 30
