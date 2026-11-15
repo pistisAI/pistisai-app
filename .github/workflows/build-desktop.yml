@@ -42,6 +42,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           ref: main
+          submodules: recursive
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
           flutter-version-file: pubspec.yaml
@@ -75,6 +76,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           ref: main
+          submodules: recursive
+
+      - name: Ensure cnativeapi native sources
+        shell: bash
+        run: bash scripts/ci/ensure_cnativeapi_sources.sh
 
       - name: Set Version
         run: |
@@ -154,6 +160,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           ref: main
+          submodules: recursive
+
+      - name: Ensure cnativeapi native sources
+        shell: bash
+        run: bash scripts/ci/ensure_cnativeapi_sources.sh
 
       - name: Set Version
         run: |
@@ -233,6 +244,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           ref: main
+          submodules: recursive
+
+      - name: Ensure cnativeapi native sources
+        shell: bash
+        run: bash scripts/ci/ensure_cnativeapi_sources.sh
 
       - name: Set Version
         run: |

@@ -1,12 +1,12 @@
 # CI/CD Quick Reference
 
-Release automation starts with a push to `main`. [Auto Version Bump](../../../.github/workflows/auto-version-bump.yml) is the entry point. It ignores pushes that already change `assets/version.json`. A commit message containing `[major]` or `[minor]` selects the bump level. Anything else is a patch bump.
+Release automation starts with a push to `main`. [Web Deploy](../../../.github/workflows/deploy-web.yml) is the deploy-chain entry point (see [Deploy trigger chain](DEPLOY_TRIGGER_CHAIN.md)). [Auto Version Bump](../../../.github/workflows/auto-version-bump.yml) still runs on that push and opens a version-bump PR; it does not gate deploys.
 
 ```text
 push to main
-  -> Auto Version Bump
-    -> Web Deploy
-      -> Desktop Build, Mobile Build, Backend Deploy
+  -> Web Deploy
+    -> Desktop Build, Mobile Build, Backend Deploy
+  -> Auto Version Bump (opens version PR; merge re-triggers Web Deploy)
 ```
 
 Web Deploy must complete successfully before the three downstream workflows proceed. Each of them also accepts `workflow_dispatch`. Desktop Build additionally runs on tags matching `v*`.

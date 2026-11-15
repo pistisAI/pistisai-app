@@ -37,13 +37,13 @@ The exact `flutter_bootstrap.js` location exists because the long-cache regex wo
 
 ## Pipeline
 
-`deploy-web.yml` runs when [Auto Version Bump](../../../.github/workflows/auto-version-bump.yml) completes on `main`, or on `workflow_dispatch`.
+`deploy-web.yml` runs on push to `main` (ignoring docs/markdown/image-only changes) or on `workflow_dispatch`. See [Deploy trigger chain](DEPLOY_TRIGGER_CHAIN.md).
 
-1. **analyze** — Flutter pin from `pubspec.yaml` on `ubuntu-24.04`, `flutter pub get`, `flutter analyze lib/`. Skipped when the triggering bump workflow failed.
+1. **analyze** — Flutter pin from `pubspec.yaml` on `ubuntu-24.04`, `flutter pub get`, `flutter analyze lib/`.
 2. **build_and_push** — Build `Dockerfile.web` and push `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`. `{version}` is the `version` field in `assets/version.json`. The job fails if the build action returns no digest.
-3. **deploy** — Pull the published image and run it with `docker compose -f config/docker/docker-compose.web.yml up -d` on the host.
+3. **purge_cache** — Full-zone Cloudflare purge after the image is published (deploy fails if purge fails).
 
-Desktop, mobile, and backend workflows start from a completed Web Deploy run. They do not start from the version bump directly. See [CI/CD Quick Reference](CI_CD_QUICK_REFERENCE.md).
+Desktop, mobile, and backend workflows start from a completed Web Deploy run. See [CI/CD Quick Reference](CI_CD_QUICK_REFERENCE.md).
 
 ### Deploy with Docker Compose
 
