@@ -3,7 +3,7 @@ name: skill-micro-batching-protocol
 description: >-
   One operation per call: prevent rate-limit loops.
 version: 1.0.0
-author: Zoid Maltek
+author: pistisAI
 platforms: [linux, macos, windows]
 license: MIT
 metadata:

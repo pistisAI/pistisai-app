@@ -2,7 +2,7 @@
 name: quebec-business-research
 description: "Use for Quebec business or market research with sources."
 version: 0.1.0
-author: Zoid Maltek
+author: pistisAI
 license: MIT
 metadata:
   hermes:
@@ -17,7 +17,7 @@ Research Quebec businesses and markets from public sources only. Output is cited
 
 ## When to Use
 
-- "Research this business / prospect in Sherbrooke / Estrie / Quebec."
+- "Research this business / prospect in the target region."
 - Headcount, size, sector, location, ownership, marketing presence for a prospect.
 - Market sizing for a niche (body shops, garages, property management, legal, depanneurs).
 - Competitor scans for a local niche.
@@ -38,7 +38,7 @@ Write one line: entity (or niche and region), the fields needed (headcount, sect
 5. Google Business Profile and PagesJaunes: address, hours, category, reviews. Good for existence and activity.
 6. Statistique Canada / ISDE / Institut de la statistique du Quebec: sector-level and regional averages (market sizing, not per-business counts).
 7. AMDEQ, ACQ, OEAQ and sector associations: sector averages and member counts.
-8. Local press (La Tribune, Sherbrooke.info, Radio-Canada Estrie): dated events, openings, closures, expansions.
+8. Local press (regional outlets): dated events, openings, closures, expansions.
 
 Do not use: scraped contact-data sites, paid people-search, or any source that requires login bypass.
 

@@ -2,7 +2,7 @@
 name: operating-rules
 description: "Use when starting any task. Working rules for the agent."
 version: 1.0.0
-author: Zoid Maltek
+author: pistisAI
 ---
 
 # Operating Rules
