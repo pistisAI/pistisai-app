@@ -156,13 +156,13 @@ class DeviceAwarenessService {
         final info = await _deviceInfo.androidInfo;
         return {
           'os': 'Android',
-          'version': info.version.release ?? 'unknown',
+          'version': info.version.release,
         };
       } else if (defaultTargetPlatform == TargetPlatform.iOS) {
         final info = await _deviceInfo.iosInfo;
         return {
           'os': 'iOS',
-          'version': info.systemVersion ?? 'unknown',
+          'version': info.systemVersion,
         };
       } else if (defaultTargetPlatform == TargetPlatform.windows) {
         return {'os': 'Windows', 'version': Platform.operatingSystemVersion};
