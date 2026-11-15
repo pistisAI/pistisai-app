@@ -50,7 +50,8 @@ jest.unstable_mockModule('../../services/api-backend/auth/auth-service.js', () =
 });
 
 const { adminAuth } = await import('../../services/api-backend/middleware/admin-auth.js');
-const jwt = await import('jsonwebtoken');
+// jsonwebtoken is CommonJS: under ESM the named exports live on `.default`.
+const jwt = (await import('jsonwebtoken')).default;
 
 // Helper: create a forged JWT with arbitrary claims but INVALID signature
 function createForgedToken(claims) {
