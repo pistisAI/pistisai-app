@@ -62,6 +62,7 @@ import {
 } from './middleware/pipeline.js';
 import { setupGracefulShutdown } from './middleware/graceful-shutdown.js';
 import { standardCorsOptions } from './middleware/cors-config.js';
+import { errorHandlerMiddleware } from './middleware/error-handler.js';
 
 import adminRoutes from './routes/admin.js';
 import adminUserRoutes from './routes/admin/users.js';
@@ -530,17 +531,8 @@ function setupFinalHandlers() {
     res.status(404).json({ error: 'Not found' });
   });
 
-  // Error handling middleware
-  app.use((error, req, res, _next) => {
-    logger.error('Unhandled error:', error);
-    res.status(500).json({
-      error: 'Internal server error',
-      message:
-        process.env.NODE_ENV === 'development'
-          ? error.message
-          : 'Something went wrong',
-    });
-  });
+  // Error handling middleware (shared shape: error, statusCode, timestamp)
+  app.use(errorHandlerMiddleware);
 }
 
 // Initialize Tunnel System
