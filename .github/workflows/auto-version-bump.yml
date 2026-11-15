@@ -153,4 +153,11 @@ jobs:
           PR_URL=$(gh pr create --base main --head "$BRANCH" \
             --title "chore(release): bump version to ${VERSION}+${BUILD}" \
             --body "Automated version bump for ${VERSION}+${BUILD}. Auto-merges once required checks pass.")
-          gh pr merge "$PR_URL" --auto --squash
+          # Checks may already be green: GitHub refuses --auto on a clean PR.
+          # Merge directly when clean, otherwise queue auto-merge for pending checks.
+          STATE=$(gh pr view "$PR_URL" --json mergeStateStatus -q .mergeStateStatus)
+          if [ "$STATE" = "CLEAN" ]; then
+            gh pr merge "$PR_URL" --squash
+          else
+            gh pr merge "$PR_URL" --auto --squash
+          fi
