@@ -61,5 +61,8 @@
   "bugs": {
     "url": "https://github.com/pistisAI/pistisai-app/issues"
   },
-  "homepage": "https://pistisai.app"
+  "homepage": "https://pistisai.app",
+  "overrides": {
+    "minimatch@>=7": "11.0.1"
+  }
 }
