@@ -24,7 +24,8 @@ permissions:
   checks: write
 
 jobs:
-  changes:
+  changes::
+    if: ${{ !startsWith(github.head_ref, 'chore/version-bump-') }}
     name: "🔎 Detect changes"
     runs-on: ubuntu-24.04
     timeout-minutes: 10

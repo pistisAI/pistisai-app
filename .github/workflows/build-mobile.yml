@@ -29,7 +29,8 @@ permissions:
   packages: read
 
 jobs:
-  analyze:
+  analyze::
+    if: ${{ !startsWith(github.head_ref, 'chore/version-bump-') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     if: >-
