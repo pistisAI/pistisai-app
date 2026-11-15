@@ -21,7 +21,7 @@ The application uses three main breakpoints for responsive design:
 The `ResponsiveLayout` utility class provides helpers for building responsive UIs:
 
 ```dart
-import 'package:cloud_to_local_llm/utils/responsive_layout.dart';
+import 'package:pistisai/utils/responsive_layout.dart';
 
 // Get current screen size classification
 final screenSize = ResponsiveLayout.getScreenSize(context);
@@ -164,7 +164,7 @@ Screen readers (VoiceOver on iOS, TalkBack on Android, Narrator on Windows) rece
 Use `AccessibilityHelpers` to validate color contrast:
 
 ```dart
-import 'package:cloud_to_local_llm/utils/accessibility_helpers.dart';
+import 'package:pistisai/utils/accessibility_helpers.dart';
 
 final meetsRequirement = AccessibilityHelpers.meetsContrastRequirement(
   foregroundColor,
