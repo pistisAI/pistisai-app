@@ -29,9 +29,9 @@ dependencies:
   jwt_decoder: ^2.0.1
   shared_preferences: ^2.5.4
 
-  # Database - Local Brain
+  # Database - Local Brain (sqlite3mc hook → SQLCipher-compatible AES-256)
   drift: ^2.34.2
-  sqlite3_flutter_libs: ^0.6.0+eol
+  sqlite3: ^3.8.0
 
   # Error tracking
   url_launcher_platform_interface: ^2.3.2
@@ -187,6 +187,13 @@ flutter:
     - assets/pistisai/hermes/plugins/pistisai/desktop/
     - assets/pistisai/hermes/profiles/aigent-watch/
     - assets/pistisai/hermes/profiles/aigent-watch/skills/drift-scan/
+
+# Bundle SQLite3MultipleCiphers (SQLCipher-compatible AES-256) instead of
+# plain SQLite. Required for local_brain.sqlite encryption at rest (#642).
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
 
 sentry:
   upload_debug_symbols: true

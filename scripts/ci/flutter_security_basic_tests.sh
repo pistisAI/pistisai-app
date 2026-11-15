@@ -6,6 +6,7 @@ cd "$(dirname "$0")/../.."
 
 flutter test \
   --dart-define=BRAND=pistisai \
+  test/database/local_brain_encryption_test.dart \
   test/smoke/ \
   test/config/ \
   test/services/onboarding/mobile_connection_service_test.dart \

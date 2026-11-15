@@ -1,6 +1,6 @@
 # Privacy Policy
 
-_Last updated: 10 November 2026 · Effective: 10 November 2026_
+_Last updated: 15 November 2026 · Effective: 15 November 2026_
 
 > The public copy of this policy is at
 > [https://example.com/privacy](https://example.com/privacy) (`web/privacy.html`).
@@ -42,11 +42,15 @@ Google Drive, contacts, repositories, or other Google or GitHub services.
 ### 2.2 Content you create
 
 Conversations, avatar memory, notes, and configuration you create in Pistisai are
-stored locally in a database on your device. The app does not encrypt this
-database file itself; turn on your operating system's disk encryption
-(BitLocker, FileVault or LUKS) to protect it. This content stays on your device
-unless you explicitly enable cloud sync or connect a remote runtime, in which case
-it is transmitted only to the destination you have chosen.
+stored locally in a database on your device. On desktop and mobile, that database
+file (`local_brain.sqlite`) is encrypted at rest with SQLCipher-compatible
+AES-256; the encryption key comes from your environment
+(`PISTISAI_LOCAL_BRAIN_KEY`) or the operating system keystore, not from the app
+config. On web, data is kept in the browser's origin-scoped storage. Turn on your
+operating system's disk encryption (BitLocker, FileVault or LUKS) as well. This
+content stays on your device unless you explicitly enable cloud sync or connect a
+remote runtime, in which case it is transmitted only to the destination you have
+chosen.
 
 ### 2.3 Device and diagnostic information
 
@@ -112,7 +116,7 @@ including the Limited Use requirements. Specifically:
 
 ## 5. How we store and protect your information
 
-- **On-device:** app content is stored in a local database on your machine; protect it with your operating system's disk encryption.
+- **On-device:** app content is stored in a local database on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible); also protect the volume with your operating system's disk encryption.
 - **Authentication:** sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
