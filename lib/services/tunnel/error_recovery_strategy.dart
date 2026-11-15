@@ -173,7 +173,7 @@ class ErrorRecoveryStrategy {
   /// @return Recovery result
   Future<RecoveryResult> _recoverFromNetworkError(TunnelError error) async {
     final stopwatch = Stopwatch()..start();
-    var attempts = 0;
+    int attempts = 0;
 
     debugPrint('Recovering from network error: ${error.code}');
 
@@ -291,7 +291,7 @@ class ErrorRecoveryStrategy {
   /// Recover from server errors
   Future<RecoveryResult> _recoverFromServerError(TunnelError error) async {
     final stopwatch = Stopwatch()..start();
-    var attempts = 0;
+    int attempts = 0;
 
     debugPrint('Recovering from server error: ${error.code}');
 

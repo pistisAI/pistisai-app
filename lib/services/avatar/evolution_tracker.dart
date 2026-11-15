@@ -419,7 +419,7 @@ class EvolutionTracker {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final random = DateTime.now().millisecondsSinceEpoch;
     final sb = StringBuffer();
-    for (var i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
       sb.write(chars[(random + i) % chars.length]);
     }
     return sb.toString();

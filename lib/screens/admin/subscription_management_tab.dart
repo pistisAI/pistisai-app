@@ -80,7 +80,7 @@ class _SubscriptionManagementTabState extends State<SubscriptionManagementTab> {
       );
 
       // Filter for upcoming renewals if enabled
-      var filteredSubscriptions = subscriptions;
+      List<SubscriptionModel> filteredSubscriptions = subscriptions;
       if (_showUpcomingRenewals) {
         final now = DateTime.now();
         final thirtyDaysFromNow = now.add(const Duration(days: 30));

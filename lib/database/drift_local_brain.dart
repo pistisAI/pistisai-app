@@ -761,7 +761,7 @@ class LocalBrain extends _$LocalBrain {
     }
 
     await transaction(() async {
-      var nextSequence = await _nextMainChatTimelineSequence();
+      int nextSequence = await _nextMainChatTimelineSequence();
       for (final event in materializedEvents) {
         final record = MainChatTimelineRecord.fromTimelineEvent(
           event,
@@ -789,7 +789,7 @@ class LocalBrain extends _$LocalBrain {
 
   Future<int> _nextMainChatTimelineSequence() async {
     final rows = await select(mainChatTimelineRecords).get();
-    var maxSequence = 0;
+    int maxSequence = 0;
     for (final row in rows) {
       if (row.sourceSequence > maxSequence) {
         maxSequence = row.sourceSequence;

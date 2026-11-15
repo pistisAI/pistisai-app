@@ -84,7 +84,7 @@ class _PaymentManagementTabState extends State<PaymentManagementTab> {
       );
 
       // Apply client-side filtering for amount range
-      var filteredTransactions = transactions;
+      List<PaymentTransactionModel> filteredTransactions = transactions;
       if (_minAmount != null) {
         filteredTransactions =
             filteredTransactions.where((t) => t.amount >= _minAmount!).toList();

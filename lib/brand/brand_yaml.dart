@@ -9,13 +9,13 @@ BrandConfig parseBrandYaml(String source) {
   final colors = <String, String>{};
   String? blockKey;
   final block = StringBuffer();
-  var inColors = false;
+  bool inColors = false;
 
   void finishBlock() {
     if (blockKey == null) {
       return;
     }
-    var text = block.toString();
+    String text = block.toString();
     if (text.endsWith('\n')) {
       text = text.substring(0, text.length - 1);
     }
@@ -167,7 +167,7 @@ bool _parseBool(String value, String key) {
 }
 
 int _parseHex(String value) {
-  var hex = value.trim();
+  String hex = value.trim();
   if (hex.startsWith('#')) {
     hex = hex.substring(1);
   }

@@ -96,7 +96,7 @@ class MainChatTimelineSanitizer {
   }
 
   static String _redactSecrets(String source) {
-    var redacted = source.replaceAllMapped(
+    String redacted = source.replaceAllMapped(
       RegExp(
         r'\b(api_key|token|password)(\s*[:=]\s*)([^\s]+)',
         caseSensitive: false,

@@ -66,7 +66,18 @@ When a reply is read aloud with the default online voice, the text being spoken 
 sent to Microsoft's online speech service (through the `edge-tts` tool) to produce
 the audio. Turn spoken replies off if you do not want this.
 
-### 2.5 Camera, microphone, screen, and desktop control
+### 2.5 Optional cloud model providers
+
+By default Pistisai does not call third-party cloud LLMs. Optional cloud model
+adapters (Zhipu/GLM, Moonshot/Kimi, and Google Gemini) exist only when a build
+supplies the matching API key (`GLM_API_KEY`, `KIMI_API_KEY`, or `GEMINI_API_KEY`).
+Without that key the adapter is not registered, so prompts are not forwarded to
+those providers. When a key is present and you select that provider, the prompt
+and conversation content you send are transmitted to that provider under their
+own terms. Local agent runtimes (for example Hermes) and local support model
+providers (Ollama, LM Studio) stay on your machine unless you point them elsewhere.
+
+### 2.6 Camera, microphone, screen, and desktop control
 
 Optional vision (camera/OCR), voice, and desktop-control features operate under
 your explicit, device-scoped permission. Media and screen data captured by these
@@ -117,6 +128,7 @@ We share information only in these limited circumstances:
 - **Google or GitHub** — only if you choose to sign in with that account;
 - **Error diagnostics (Sentry)** — crash reports, only if you turn crash reporting on;
 - **Microsoft speech service** — the text of replies read aloud with the default online voice;
+- **Optional cloud model providers (Zhipu, Moonshot, Google Gemini)** — only when a build includes their API key and you use that provider;
 - **Runtimes and providers you choose** — only the data you direct Pistisai to send to them.
 
 We do not sell, rent, or trade your personal information.
@@ -136,6 +148,9 @@ data unless we are required to retain it by law.
 - if you signed in with Google, revoke that access at any time via your
   [Google Account permissions](https://myaccount.google.com/permissions);
 - turn crash reporting on or off under Settings → General;
+- turn spoken replies off if you do not want text sent to Microsoft's speech service;
+- cloud model providers (Zhipu, Moonshot, Gemini) are absent unless a build includes
+  their API keys; when present, only prompts you route to that provider are sent;
 - choose whether to enable cloud sync or keep Pistisai fully local.
 
 ## 9. Children's privacy

@@ -268,7 +268,7 @@ class MetricsExporter {
   String? _getMostCommonError(Map<String, int> errorCounts) {
     if (errorCounts.isEmpty) return null;
 
-    var maxCount = 0;
+    int maxCount = 0;
     String? mostCommon;
 
     for (final entry in errorCounts.entries) {

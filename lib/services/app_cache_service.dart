@@ -24,7 +24,7 @@ class AppCacheService {
 
   /// Total size of the cached files, in bytes.
   Future<int> sizeInBytes() async {
-    var total = 0;
+    int total = 0;
     await for (final file in _files()) {
       try {
         total += await file.length();
@@ -38,7 +38,7 @@ class AppCacheService {
   /// Deletes the cached files and returns the bytes actually freed. A file
   /// that cannot be deleted is left in place and not counted.
   Future<int> clear() async {
-    var freed = 0;
+    int freed = 0;
     await for (final file in _files()) {
       try {
         final size = await file.length();

@@ -272,7 +272,7 @@ ${e.context != null ? '- **Context**: ${e.context}' : ''}
     final directory = Directory(_markdownPath);
     if (await directory.exists()) {
       final files = directory.listSync();
-      for (var file in files) {
+      for (final file in files) {
         if (file.path.endsWith('.md')) {
           await file.delete();
         }

@@ -60,8 +60,8 @@ class HermesLocalAgentApi {
       return HermesAgentApiReady(resolution: current, apiKey: key);
     }
 
-    var latest = current;
-    for (var attempt = 0; attempt < 15; attempt++) {
+    HermesEndpointResolution latest = current;
+    for (int attempt = 0; attempt < 15; attempt++) {
       latest = await resolver.resolve();
       if (latest.isAgentApi) {
         return HermesAgentApiReady(resolution: latest, apiKey: key);
@@ -137,10 +137,10 @@ String writeHermesApiServerKey(
   final lines = existing.split(RegExp(r'\r?\n'));
   final preferred = _usableKey(preferredKey);
   String? key;
-  var keyIndex = -1;
-  var enabledIndex = -1;
+  int keyIndex = -1;
+  int enabledIndex = -1;
 
-  for (var i = 0; i < lines.length; i++) {
+  for (int i = 0; i < lines.length; i++) {
     final trimmed = lines[i].trim();
     if (trimmed.startsWith('API_SERVER_KEY=')) {
       keyIndex = i;
@@ -150,7 +150,7 @@ String writeHermesApiServerKey(
     }
   }
 
-  var changed = false;
+  bool changed = false;
   final chosen = key ?? preferred ?? generateKey();
   if (keyIndex == -1) {
     if (lines.isNotEmpty && lines.last.trim().isEmpty) {
@@ -171,7 +171,7 @@ String writeHermesApiServerKey(
     changed = true;
   }
 
-  var content = lines.join(newline);
+  String content = lines.join(newline);
   if (!content.endsWith(newline)) {
     content = '$content$newline';
     changed = true;
@@ -183,7 +183,7 @@ String? _usableKey(String? raw) {
   if (raw == null) {
     return null;
   }
-  var value = raw.trim();
+  String value = raw.trim();
   if (value.length >= 2 &&
       ((value.startsWith('"') && value.endsWith('"')) ||
           (value.startsWith("'") && value.endsWith("'")))) {
