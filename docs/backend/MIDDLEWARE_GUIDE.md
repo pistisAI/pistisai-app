@@ -58,7 +58,7 @@ Other services should match this baseline when they terminate HTTP for browsers.
 - **api-backend:** `authenticateJWT` / composite auth / API-key middleware applied
   per route group, not globally in the pipeline
 - **streaming-proxy:** JWT validation middleware under `src/middleware/`
-  (historically Supabase JWKS; Cloudflare Access migration is tracked separately)
+  (Cloudflare Access team JWKS + `CF_ACCESS_AUD`, RS256)
 - **backend/auth:** CommonJS handlers; keep `require` style inside that package
 
 ## Per-service notes

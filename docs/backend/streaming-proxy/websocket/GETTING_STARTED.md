@@ -5,7 +5,7 @@
 - Node.js 18+ installed
 - TypeScript knowledge
 - Understanding of WebSocket protocol
-- JWT authentication setup (Auth0)
+- JWT authentication setup (Cloudflare Access)
 
 ## Installation
 
@@ -23,10 +23,10 @@ npm install
 Create `.env` file in `services/streaming-proxy/`:
 
 ```bash
-# Auth0 Configuration
-SUPABASE_AUTH_DOMAIN=your-domain.auth0.com
-SUPABASE_AUTH_AUDIENCE=https://api.Pistisai.com
-SUPABASE_AUTH_ISSUER=https://your-domain.auth0.com/
+# Cloudflare Access Configuration
+CF_ACCESS_TEAM_DOMAIN=pistisai.cloudflareaccess.com
+CF_ACCESS_AUD=https://api.Pistisai.com
+CF_ACCESS_ISSUER=https://pistisai.cloudflareaccess.com/
 
 # WebSocket Configuration
 WEBSOCKET_PORT=3001
@@ -66,9 +66,9 @@ const PORT = parseInt(process.env.WEBSOCKET_PORT || '3001');
 
 // Create auth middleware
 const authMiddleware = new JWTValidationMiddleware({
-  domain: process.env.SUPABASE_AUTH_DOMAIN!,
-  audience: process.env.SUPABASE_AUTH_AUDIENCE!,
-  issuer: process.env.SUPABASE_AUTH_ISSUER!,
+  domain: process.env.CF_ACCESS_TEAM_DOMAIN!,
+  audience: process.env.CF_ACCESS_AUD!,
+  issuer: process.env.CF_ACCESS_ISSUER!,
 });
 
 // Create rate limiter
@@ -318,7 +318,7 @@ npm run dev | jq 'select(.type | endswith("error"))'
 
 1. Verify JWT token is valid: Use jwt.io to decode
 2. Check token expiration
-3. Verify Auth0 configuration (domain, audience, issuer)
+3. Verify Cloudflare Access configuration (domain, audience, issuer)
 4. Check token is passed correctly (query string or header)
 
 ### Problem: Rate Limit Exceeded

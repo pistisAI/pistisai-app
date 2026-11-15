@@ -113,7 +113,7 @@ User Authentication & Service Loading Flow
 ### Key Locations
 
 - **2a – Auth0 Init**  
-  `lib/services/supabase_auth_service.dart:43`
+  `lib/auth/providers/cloudflare_access_auth_provider.dart`
 - **2b – Auth State Listener**  
   `lib/services/auth_service.dart:47`
 - **2c – Session Handler**  

@@ -9,11 +9,13 @@ import 'package:pistisai/auth/auth_provider.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/user_model.dart';
 
-/// Cloudflare Access is the only identity path.
+/// Cloudflare Access is the only cloud identity path (free pistisai.app tunnel).
 ///
-/// The team domain and application audience come from the baked brand, and a
-/// build define can override them. Login opens the app URL so Access can challenge. The
-/// callback may carry the Access JWT as `token` or `cf_jwt`.
+/// Local desktop use never calls this provider's network path: [initialize]
+/// only reads a stored JWT from secure storage, and [login] opens the Access
+/// challenge only when the user chooses device sync. The team domain and
+/// audience come from the baked brand; `--dart-define` can override them.
+/// Callbacks may carry the Access JWT as `token` or `cf_jwt`.
 class CloudflareAccessAuthProvider extends AuthProvider {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final StreamController<bool> _authStateController =

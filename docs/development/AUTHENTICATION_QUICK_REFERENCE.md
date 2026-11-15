@@ -1,170 +1,69 @@
 # Authentication Quick Reference
 
-## Current Status
+## Product rules
 
-✅ **All authentication issues have been fixed and verified**
+- Sign-in exists only for tunnel/sync. Local desktop hub use needs no sign-in and must not call Cloudflare Access or any cloud auth provider until the user opts in.
+- **Free:** Cloudflare Access (Google, GitHub, and other Access IdPs) in front of `pistisai.app` tunnel endpoints, then sync across the user's devices.
+- **Business / Enterprise:** customer-owned VPN or Tailscale. They do not have to use the `pistisai.app` tunnel.
+- Supabase is not an auth or API provider.
 
-## Key Configuration
+## Key configuration
 
-### Frontend (web/auth0-bridge.js)
+### Frontend (Flutter)
 
-```javascript
-const AUTH0_AUDIENCE = 'https://api.example.com';
+```dart
+// lib/config/app_config.dart — brand bake + optional dart-defines
+AppConfig.cloudflareAccessTeamDomain // CF_ACCESS_TEAM_DOMAIN
+AppConfig.cloudflareAccessAud        // CF_ACCESS_AUD
 ```
 
-### Backend (services/api-backend/middleware/auth.js)
+Provider: `lib/auth/providers/cloudflare_access_auth_provider.dart`
 
-```javascript
-const DEFAULT_JWT_AUDIENCE = 'https://api.example.com';
-const JWT_AUDIENCE = process.env.JWT_AUDIENCE || DEFAULT_JWT_AUDIENCE;
+### Backend (api-backend + streaming-proxy)
+
+```bash
+CF_ACCESS_TEAM_DOMAIN=pistisai.cloudflareaccess.com
+CF_ACCESS_AUD=<Access application AUD>
+# optional:
+CF_ACCESS_JWKS_URI=https://pistisai.cloudflareaccess.com/cdn-cgi/access/certs
 ```
 
-## Authentication Flow
+## Authentication flow (free tunnel)
 
 ```
-User Login
+User chooses "Sign in to sync devices"
     ↓
-Auth0 OAuth Flow (web/auth0-bridge.js)
+Desktop opens app URL → Cloudflare Access challenge (Google/GitHub/…)
     ↓
-Auth0 Issues Token with Audience: https://api.example.com
+Access JWT returned on callback (`cf_jwt` / `token`)
     ↓
-Frontend Stores Token (flutter_secure_storage)
+Stored in flutter_secure_storage; used as Bearer for api.pistisai.app
     ↓
-API Request with Authorization Header
-    ↓
-Backend Validates Token (services/api-backend/middleware/auth.js)
-    ├─ Check HS256 (fast path)
-    └─ Check RS256 via JWKS (full path)
-    ↓
-Backend Verifies Audience Matches
-    ↓
-✅ Token Accepted → API Response
-❌ Token Rejected → 401 Unauthorized
+api-backend / streaming-proxy validate RS256 via team JWKS + AUD
 ```
 
-## Common Issues & Solutions
+Local-only path: skip sign-in → hub uses loopback services only.
 
-### 401 Unauthorized on API Calls
+## Environment variables
 
-**Cause**: Token has wrong audience or is expired
+| Variable | Purpose |
+|----------|---------|
+| `CF_ACCESS_TEAM_DOMAIN` | Access team host (no scheme) |
+| `CF_ACCESS_AUD` | Access application audience |
+| `CF_ACCESS_JWKS_URI` | Optional JWKS override |
+| `DEV_BYPASS_TOKEN` | Non-production API bypass only when explicitly set |
 
-**Solution**:
-
-1. Clear browser cache: `DevTools → Application → Clear Storage`
-2. Re-login to get new token with correct audience
-3. Verify backend is running latest code
-
-### Token Validation Fails in Backend
-
-**Cause**: JWKS endpoint not accessible or Auth0 misconfigured
-
-**Solution**:
-
-1. Test JWKS endpoint: `curl https://example.us.auth0.com/.well-known/jwks.json`
-2. Verify Auth0 application identifier is set correctly
-3. Check backend logs for detailed error messages
-
-## Testing Checklist
-
-- [ ] Clear browser cache
-- [ ] Login successfully
-- [ ] App loads after login
-- [ ] API calls return 200/201 (not 401)
-- [ ] Authorization header present in requests
-- [ ] Backend logs show successful token validation
-- [ ] User tier and other data loads correctly
-
-## Files to Know
+## Files to know
 
 | File | Purpose |
 |------|---------|
-| `web/auth0-bridge.js` | Frontend Auth0 configuration and OAuth flow |
-| `services/api-backend/middleware/auth.js` | Backend JWT validation middleware |
-| `services/api-backend/auth/auth-service.js` | Token validation and session management |
-| `lib/services/auth_service.dart` | Flutter authentication service |
+| `lib/auth/providers/cloudflare_access_auth_provider.dart` | Desktop/web Access login |
+| `lib/services/auth_service.dart` | App auth facade |
+| `services/api-backend/middleware/auth.js` | API JWT middleware |
+| `services/api-backend/auth/auth-service.js` | Token validation + session |
+| `services/streaming-proxy/src/middleware/cloudflare-access-validator.ts` | Proxy JWT validation |
 
-## Environment Variables
+## Notes
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `AUTH0_AUDIENCE` | `https://api.example.com` | Expected token audience |
-| `AUTH0_JWKS_URI` | `https://example.us.auth0.com/.well-known/jwks.json` | JWKS endpoint for token validation |
-| `SUPABASE_JWT_SECRET` | (required) | Secret for HS256 token validation |
-| `JWT_AUDIENCE` | `https://api.example.com` | Alias for AUTH0_AUDIENCE |
-
-## Debugging
-
-### Enable Debug Logging
-
-**Frontend** (browser console):
-
-```javascript
-// Already enabled - look for [Auth0 Bridge] messages
-```
-
-**Backend** (check logs):
-
-```
-[Auth] Token verification successful (Audience verified)
-[Auth] User authenticated via RS256: <user-id>
-```
-
-### Inspect Token
-
-**In Browser Console**:
-
-```javascript
-// Get token from storage
-const token = localStorage.getItem('auth0.access_token');
-
-// Decode token (without verification)
-const decoded = JSON.parse(atob(token.split('.')[1]));
-console.log(decoded);
-
-// Check audience claim
-console.log('Audience:', decoded.aud);
-console.log('Expected:', 'https://api.example.com');
-```
-
-### Test Backend Token Validation
-
-**Using curl**:
-
-```bash
-# Get token from browser first, then:
-curl -H "Authorization: Bearer <token>" \
-  https://api.example.com/user/tier
-```
-
-## Deployment
-
-### Development
-
-1. Update `web/auth0-bridge.js` with correct audience
-2. Deploy web app
-3. Test login flow
-4. Verify API calls work
-
-### Production
-
-1. Ensure backend has correct `AUTH0_AUDIENCE` environment variable
-2. Deploy web app with updated `auth0-bridge.js`
-3. Deploy backend with token validation middleware
-4. Monitor logs for successful token validation
-5. Test end-to-end login flow
-
-## Related Documentation
-
-- `AUTHENTICATION_FIX_SUMMARY.md` - What was fixed
-- `AUTHENTICATION_STATUS_REPORT.md` - Current status and verification
-- `docs/DEVELOPMENT/AUTH0_AUDIENCE_FIX.md` - Technical details
-
-## Support
-
-For authentication issues:
-
-1. Check this quick reference
-2. Review related documentation
-3. Check browser console and backend logs
-4. Verify environment variables are set correctly
-5. Contact development team with logs
+- `users.supabase_id` remains a legacy column name for the primary Access subject link; it is not a Supabase integration.
+- Paid plans that use Tailscale/VPN do not require Access on the customer network path.

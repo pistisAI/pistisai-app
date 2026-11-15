@@ -30,7 +30,7 @@ Project-specific conventions
 - GitHub issues are the work-tracking source of truth: `https://github.com/pistisAI/pistisai-app/issues`. Treat issue bodies, comments, labels, milestones, and linked PRs as canonical for active work state and priority. Do not let local notes, chat context, or stale plans override a live issue without updating the issue.
 
 Integration & cross-component notes
-- Auth: Supabase is used (web + desktop when CLOUD_ENABLED); local mode (default desktop) uses `LocalAuthProvider`. See `lib/auth/auth_provider.dart`, `lib/auth/auth_provider_factory.dart`, and the providers under `lib/auth/providers/`.
+- Auth: Cloudflare Access for free-tier tunnel/sync only (`CloudflareAccessAuthProvider`). Desktop local use works without sign-in and without calling Access. Business/Enterprise use customer VPN or Tailscale. See `lib/auth/auth_provider.dart` and `lib/auth/providers/cloudflare_access_auth_provider.dart`.
 - Local models: Ollama/LM Studio integrations are in `lib/services/` and `llm_providers/`. They use OpenAI-compatible APIs; follow provider config in `provider_configuration.dart`.
 - MCP servers: repo includes `config/mcp` and a workspace `mcp.json`. VS Code may also use a user `mcp.json`. Avoid editing user-level files in commits; add or update workspace `mcp.json` when you intend the team to share MCP server definitions.
 

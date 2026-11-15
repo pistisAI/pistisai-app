@@ -66,6 +66,10 @@ class BrandCopy {
       'Connected via ${brand.websiteDomain}';
   static String get cloudConnectedBody =>
       'Sign in and sync through the ${brand.websiteDomain} gateway.';
+  static String get syncDevicesCta => 'Sign in to sync devices';
+  static String get continueLocalMode => 'Continue without signing in';
+  static String get syncDevicesHint =>
+      'Optional. Opens Cloudflare Access so you can sync through ${brand.websiteDomain}. Local use needs no sign-in.';
   static String get installSh => 'https://${brand.websiteDomain}/install.sh';
   static String get installPs1 => 'https://${brand.websiteDomain}/install.ps1';
 
@@ -153,6 +157,9 @@ class BrandCopy {
       cloudContinue,
       cloudConnectedTitle,
       cloudConnectedBody,
+      syncDevicesCta,
+      continueLocalMode,
+      syncDevicesHint,
       installSh,
       installPs1,
       quarantineHint,

@@ -155,17 +155,17 @@ spec:
           value: "production"
         - name: WEBSOCKET_PORT
           value: "3001"
-        - name: SUPABASE_AUTH_DOMAIN
+        - name: CF_ACCESS_TEAM_DOMAIN
           valueFrom:
             secretKeyRef:
               name: Pistisai-secrets
               key: auth0-domain
-        - name: SUPABASE_AUTH_AUDIENCE
+        - name: CF_ACCESS_AUD
           valueFrom:
             secretKeyRef:
               name: Pistisai-secrets
               key: auth0-audience
-        - name: SUPABASE_AUTH_ISSUER
+        - name: CF_ACCESS_ISSUER
           valueFrom:
             secretKeyRef:
               name: Pistisai-secrets
@@ -291,10 +291,10 @@ RUN npm ci  # ← This installs ws and all dependencies
 Required environment variables for streaming-proxy:
 
 ```bash
-# Auth0 Configuration
-SUPABASE_AUTH_DOMAIN=your-domain.auth0.com
-SUPABASE_AUTH_AUDIENCE=https://api.Pistisai.com
-SUPABASE_AUTH_ISSUER=https://your-domain.auth0.com/
+# Cloudflare Access Configuration
+CF_ACCESS_TEAM_DOMAIN=pistisai.cloudflareaccess.com
+CF_ACCESS_AUD=https://api.Pistisai.com
+CF_ACCESS_ISSUER=https://pistisai.cloudflareaccess.com/
 
 # WebSocket Configuration
 WEBSOCKET_PORT=3001
@@ -338,9 +338,9 @@ metadata:
   namespace: Pistisai
 type: Opaque
 stringData:
-  auth0-domain: "your-domain.auth0.com"
+  auth0-domain: "pistisai.cloudflareaccess.com"
   auth0-audience: "https://api.Pistisai.com"
-  auth0-issuer: "https://your-domain.auth0.com/"
+  auth0-issuer: "https://pistisai.cloudflareaccess.com/"
 ```
 
 ## Deployment Steps
@@ -488,8 +488,8 @@ curl http://streaming-proxy.Pistisai.svc.cluster.local:3001/health
 # Check secrets
 kubectl get secret Pistisai-secrets -n Pistisai -o yaml
 
-# Verify Auth0 configuration
-kubectl exec -it streaming-proxy-xxxxx -n Pistisai -- env | grep SUPABASE_AUTH
+# Verify Cloudflare Access configuration
+kubectl exec -it streaming-proxy-xxxxx -n Pistisai -- env | grep CF_ACCESS
 ```
 
 ## Summary

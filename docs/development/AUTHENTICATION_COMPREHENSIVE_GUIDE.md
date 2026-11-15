@@ -94,19 +94,18 @@ Backend Validates Token
 ### Backend Environment Variables
 
 ```bash
-# Required (or uses default)
-AUTH0_AUDIENCE=https://api.example.com
-AUTH0_JWKS_URI=https://example.us.auth0.com/.well-known/jwks.json
-
-# For HS256 fallback (internal tokens)
-SUPABASE_JWT_SECRET=(configured)
+# Cloudflare Access (free pistisai.app tunnel)
+CF_ACCESS_TEAM_DOMAIN=pistisai.cloudflareaccess.com
+CF_ACCESS_AUD=<Access application AUD>
+# optional:
+CF_ACCESS_JWKS_URI=https://pistisai.cloudflareaccess.com/cdn-cgi/access/certs
 ```
 
 ### Frontend Configuration
 
-- Configured in `web/auth0-bridge.js`
-- No environment variables needed
-- Uses Auth0 SPA SDK from CDN
+- `CloudflareAccessAuthProvider` (`lib/auth/providers/cloudflare_access_auth_provider.dart`)
+- Brand bake supplies team domain and AUD; override with `--dart-define=CF_ACCESS_*`
+- Local desktop use skips sign-in and does not call Access
 
 ---
 
