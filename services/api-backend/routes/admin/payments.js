@@ -277,7 +277,12 @@ export default router;
  * Should be called on application shutdown
  */
 export async function closePaymentDbPool() {
-  await closePool();
+  try {
+    await closePool();
+  } catch (error) {
+    logger.error('Failed to close payment DB pool', { error: error.message });
+    throw error;
+  }
 }
 
 /**

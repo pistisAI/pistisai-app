@@ -87,16 +87,23 @@ function requireService(res) {
 }
 
 async function resolveUserId(req, res) {
-  const userId = await cloudConnectorService.resolveUserUuid(req.user.sub);
-  if (!userId) {
-    res.status(404).json({
-      error: 'User not found',
-      code: 'USER_NOT_FOUND',
-      message: 'No user record for authenticated identity',
+  try {
+    const userId = await cloudConnectorService.resolveUserUuid(req.user.sub);
+    if (!userId) {
+      res.status(404).json({
+        error: 'User not found',
+        code: 'USER_NOT_FOUND',
+        message: 'No user record for authenticated identity',
+      });
+      return null;
+    }
+    return userId;
+  } catch (error) {
+    logger.error('[CloudConnectorRoutes] Failed to resolve user id', {
+      error: error.message,
     });
-    return null;
+    throw error;
   }
-  return userId;
 }
 
 router.post(
