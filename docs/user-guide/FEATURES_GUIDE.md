@@ -48,7 +48,7 @@ The primary interface is a direct, secure line of communication to your active a
 *   **Thinking Artifact Previews:** Shows model "thinking" timelines and artifact states inline before output generation (for supported reasoning runtimes).
 *   **Model Selection:** Dynamic model switching based on models exposed by the active agent gateway (e.g. Hermes or OpenClaw models).
 *   **Session Management:** Create, delete, search, and toggle sessions directly from the sidebar.
-*   **Local Storage:** All conversations are persisted locally in your encrypted [LocalBrain SQLite](../../lib/database/drift_local_brain.dart) database.
+*   **Local Storage:** All conversations are persisted locally in your encrypted [LocalBrain SQLite](../../lib/database/drift_local_brain.dart) database (SQLCipher-compatible AES-256 on desktop/mobile; see [LOCAL_BRAIN_ENCRYPTION.md](../governance/security/LOCAL_BRAIN_ENCRYPTION.md)).
 
 ---
 
