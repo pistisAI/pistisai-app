@@ -3,7 +3,7 @@
 
 Rule (every merged PR bumps; the title type sets the size):
   - `type!:` or a `BREAKING CHANGE` footer  -> major
-  - `feat` (any scope)                       -> minor
+  - `feat` (any scope)                       -> patch
   - anything else (fix, ci, test, docs, ...) -> patch
 
 Release PRs (`chore(release): bump version ...`) are not bumped again: they
@@ -30,8 +30,6 @@ def bump_kind(title: str, body: str = "") -> str:
         return "patch"
     if m.group("bang") or re.search(r"^BREAKING[ -]CHANGE:", body or "", re.MULTILINE):
         return "major"
-    if m.group("type").lower() == "feat":
-        return "minor"
     return "patch"
 
 
