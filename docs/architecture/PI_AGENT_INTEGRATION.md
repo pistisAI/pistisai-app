@@ -746,7 +746,7 @@ User: "Click the Firefox icon"
 - Screenshot data stays local
 - All desktop actions logged
 
-#### Wayland / AT-SPI known gaps (#616)
+#### Wayland / AT-SPI known gaps (#616, #680)
 
 On Linux Wayland (especially KDE Plasma):
 
@@ -754,9 +754,24 @@ On Linux Wayland (especially KDE Plasma):
   already focused (`raise_window=false requires the requested window to already
   be focused`). Call `activate_window` (or pass `raise_window=true`) before
   `get_app_state` / window screenshots after any interaction that may steal focus.
+  The shared helper exposes this as
+  `ComputerUseLinuxWayland.screenshotRaiseWindowToolDescription` so agents use
+  the focus requirement in the tool description, not only the refusal error.
 - **AT-SPI trees** may be empty until Flutter publishes semantics. Pistisai calls
   `SemanticsBinding.ensureSemantics()` on Linux startup so computer-use-linux can
   read the accessibility tree; prefer `activate_window` before relying on the tree.
+- **`type_text` is dispatch-only until verified.** `ok: true` does not mean the
+  editable field received the text (KDE Wayland observed AT-SPI character count
+  0 after a successful dispatch). Pass `include_tree: true` (or re-run
+  `get_app_state`) and classify the landing with
+  `ComputerUseLinuxWayland.classifyTypeTextLanding`. Prefer `set_value` when the
+  target exposes EditableText. Until that check passes, treat editor input as
+  unreliable.
+- **Per-monitor / per-output screenshots** are not available from
+  computer-use-linux today (no `output` / monitor parameter). Full-desktop
+  captures downscale wide multi-monitor spans to the default `max_width` (1920).
+  Prefer a window-targeted PNG, or raise `max_width` toward the hard cap, rather
+  than adding an untested local capture path.
 - Shared policy helper: `lib/services/desktop_control/computer_use_linux_wayland.dart`.
 
 ---
