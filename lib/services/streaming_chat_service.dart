@@ -256,7 +256,7 @@ class StreamingChatService extends ChangeNotifier {
 
   bool _sameMessages(List<Message> left, List<Message> right) {
     if (left.length != right.length) return false;
-    for (var i = 0; i < left.length; i++) {
+    for (int i = 0; i < left.length; i++) {
       if (left[i].id != right[i].id || left[i].content != right[i].content) {
         return false;
       }
@@ -513,7 +513,7 @@ class StreamingChatService extends ChangeNotifier {
     // Convert streaming message to final assistant message.
     // Do not fall back to reasoning text — that would persist chain-of-thought
     // as the visible reply.
-    var finalContent = _streamingContentSubject.value;
+    String finalContent = _streamingContentSubject.value;
 
     // Fallback: if no deltas were emitted but run.completed had output
     if (finalContent.isEmpty && _runCompletedOutput.isNotEmpty) {
@@ -737,7 +737,7 @@ class StreamingChatService extends ChangeNotifier {
       );
 
       if (newTitle != null && newTitle.trim().isNotEmpty) {
-        var cleanTitle =
+        String cleanTitle =
             newTitle.trim().replaceAll('"', '').replaceAll("'", '');
         // Remove trailing punctuation if it's just a period
         if (cleanTitle.endsWith('.') && !cleanTitle.endsWith('...')) {

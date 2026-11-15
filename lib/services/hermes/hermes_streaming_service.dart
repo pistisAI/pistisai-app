@@ -212,7 +212,7 @@ class HermesStreamingService extends StreamingService {
   }) async* {
     final client = _client ?? http.Client();
     final messageId = DateTime.now().millisecondsSinceEpoch.toString();
-    var sequence = 0;
+    int sequence = 0;
     // The UI chat id (`pistisai`) is the platform chat_id; Hermes derives the
     // session key `agent:main:pistisai:dm:<chat_id>` itself. Never post a
     // resolved Hermes session id here — that would open a new chat/session.
@@ -302,8 +302,8 @@ class HermesStreamingService extends StreamingService {
     const pollInterval = Duration(milliseconds: 750);
     const maxWait = Duration(minutes: 10);
     final deadline = DateTime.now().add(maxWait);
-    var lastEmitted = '';
-    var sawReply = false;
+    String lastEmitted = '';
+    bool sawReply = false;
 
     while (DateTime.now().isBefore(deadline)) {
       await Future<void>.delayed(pollInterval);
@@ -465,11 +465,11 @@ class HermesStreamingService extends StreamingService {
       // addressable on /api/sessions/{id}; Hermes stores it under a generated
       // session id (e.g. `20261104_190859_119a1e2b`, source=pistisai). Resolve
       // it each poll so resets/new sessions are followed.
-      var targetId = runtimeId;
+      String targetId = runtimeId;
       if (sessionId == Conversation.pistisaiChannelId) {
         targetId = await _resolvePistisaiSessionId() ?? runtimeId;
       }
-      var response = await getMessages(targetId);
+      http.Response response = await getMessages(targetId);
       if (response.statusCode == 404 && targetId != sessionId) {
         response = await getMessages(sessionId);
       }
@@ -523,7 +523,7 @@ class HermesStreamingService extends StreamingService {
       final data = decoded is Map ? decoded['data'] : null;
       if (data is! List) return null;
       String? bestId;
-      var bestActive = double.negativeInfinity;
+      double bestActive = double.negativeInfinity;
       for (final row in data) {
         if (row is! Map) continue;
         if (row['source'] != null && row['source'] != 'pistisai') continue;

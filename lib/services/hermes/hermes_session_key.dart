@@ -81,7 +81,7 @@ Uri hermesSessionMessagesUri(String baseUrl, String sessionKey) {
 ///
 /// 2s, 4s, 8s, 16s, then 32s. A failed read must not spin.
 Duration sharedChannelFailureBackoff(int consecutiveFailures) {
-  var step = consecutiveFailures;
+  int step = consecutiveFailures;
   if (step < 1) step = 1;
   if (step > 5) step = 5;
   return Duration(seconds: 1 << step);

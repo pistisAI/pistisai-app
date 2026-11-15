@@ -175,8 +175,8 @@ class SkillService {
   Map<String, String> _parseFrontmatter(String content) {
     final result = <String, String>{};
     final lines = content.split('\n');
-    var inFrontmatter = false;
-    var foundFirst = false;
+    bool inFrontmatter = false;
+    bool foundFirst = false;
 
     for (final line in lines) {
       final trimmed = line.trim();
@@ -194,7 +194,7 @@ class SkillService {
         final colonIdx = trimmed.indexOf(':');
         if (colonIdx > 0) {
           final key = trimmed.substring(0, colonIdx).trim();
-          var value = trimmed.substring(colonIdx + 1).trim();
+          String value = trimmed.substring(colonIdx + 1).trim();
           // Strip quotes
           if ((value.startsWith('"') && value.endsWith('"')) ||
               (value.startsWith("'") && value.endsWith("'"))) {

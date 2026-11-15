@@ -219,7 +219,7 @@ class TunnelConfigManager {
     final result = <String, dynamic>{};
 
     // Remove outer braces
-    var content = jsonStr.trim();
+    String content = jsonStr.trim();
     if (content.startsWith('{')) content = content.substring(1);
     if (content.endsWith('}')) {
       content = content.substring(0, content.length - 1);
@@ -231,7 +231,7 @@ class TunnelConfigManager {
       final parts = pair.split(':');
       if (parts.length == 2) {
         final key = parts[0].trim().replaceAll('"', '');
-        var value = parts[1].trim();
+        final String value = parts[1].trim();
 
         // Parse value based on type
         if (value == 'true') {

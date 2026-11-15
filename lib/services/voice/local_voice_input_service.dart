@@ -233,7 +233,7 @@ class LocalVoiceInputService extends ChangeNotifier {
     final bytes = ByteData.sublistView(buffer);
 
     void writeAscii(int offset, String value) {
-      for (var i = 0; i < value.length; i++) {
+      for (int i = 0; i < value.length; i++) {
         buffer[offset + i] = value.codeUnitAt(i);
       }
     }

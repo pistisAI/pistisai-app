@@ -93,7 +93,7 @@ class BrandLicence {
 
   /// Base64url decode, tolerant of missing padding.
   static List<int>? _b64UrlDecode(String input) {
-    var s = input.trim();
+    String s = input.trim();
     final pad = s.length % 4;
     if (pad != 0) s += '=' * (4 - pad);
     final normalized = s.replaceAll('-', '+').replaceAll('_', '/');

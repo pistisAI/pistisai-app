@@ -182,7 +182,7 @@ class HermesBotInstallService {
     required List<String> files,
     required String home,
   }) async {
-    var wrote = 0;
+    int wrote = 0;
     final notes = <String>[];
     for (final relative in files) {
       try {
@@ -321,7 +321,7 @@ class HermesBotInstallService {
     if (left.length != right.length) {
       return false;
     }
-    for (var i = 0; i < left.length; i++) {
+    for (int i = 0; i < left.length; i++) {
       if (left[i] != right[i]) {
         return false;
       }
@@ -409,7 +409,7 @@ String? _trimHome(String? raw) {
   if (raw == null) {
     return null;
   }
-  var home = raw.trim();
+  String home = raw.trim();
   while (home.endsWith('\\') || home.endsWith('/')) {
     home = home.substring(0, home.length - 1);
   }

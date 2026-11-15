@@ -464,7 +464,7 @@ class SetupWizardService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      var providers = await _discovery.scanForAgentRuntimes();
+      List<ProviderInfo> providers = await _discovery.scanForAgentRuntimes();
 
       // Fallback: if the discovery service didn't find anything, try a
       // direct health check against the default Hermes URL.  The discovery
@@ -572,7 +572,7 @@ class SetupWizardService extends ChangeNotifier {
       return;
     }
 
-    var resolution = await _hermesResolver.resolve(
+    HermesEndpointResolution resolution = await _hermesResolver.resolve(
       savedUrl: _state.hermesUrl,
     );
     if (!resolution.isAgentApi && _localAgentApi != null) {
@@ -601,7 +601,7 @@ class SetupWizardService extends ChangeNotifier {
           : null;
       final ConnectionTestResult result;
       if (_state.selectedMethod == ConnectionMethod.hermes) {
-        var resolution = await _hermesResolver.classify(url);
+        HermesEndpointResolution resolution = await _hermesResolver.classify(url);
         if (!resolution.isAgentApi &&
             _state.hermesLocation != HermesLocation.tailscale &&
             _localAgentApi != null) {
@@ -785,7 +785,7 @@ class SetupWizardService extends ChangeNotifier {
       if (await file.exists()) {
         final content = await file.readAsString();
         final lines = content.split('\n');
-        var replaced = false;
+        bool replaced = false;
         final updated = lines.map((line) {
           if (line.trim().startsWith('API_SERVER_KEY=')) {
             replaced = true;

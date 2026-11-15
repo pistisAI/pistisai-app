@@ -37,7 +37,7 @@ String? parseHermesAgentName(String envText) {
     if (!trimmed.startsWith(prefix)) {
       continue;
     }
-    var value = trimmed.substring(prefix.length).trim();
+    String value = trimmed.substring(prefix.length).trim();
     if (value.length >= 2 &&
         ((value.startsWith('"') && value.endsWith('"')) ||
             (value.startsWith("'") && value.endsWith("'")))) {

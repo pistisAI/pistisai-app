@@ -102,11 +102,11 @@ class _EventStreamScreenState extends State<EventStreamScreen> {
 
   String _eventSummary(AgentEvent event) {
     final s = switch (event) {
-      AgentToolStarted(tool: var t, preview: var p) =>
+      AgentToolStarted(tool: final t, preview: final p) =>
         p != null ? '$t: $p' : t,
-      AgentToolCompleted(tool: var t) => t,
+      AgentToolCompleted(tool: final t) => t,
       AgentRunCompleted() => AppLocalizations.of(context).eventsRunFinished,
-      AgentRunFailed(error: var e) => e,
+      AgentRunFailed(error: final e) => e,
       _ => '',
     };
     return s.isEmpty ? event.eventTypeLabel : s;

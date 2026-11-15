@@ -376,7 +376,7 @@ class DiagnosticTestSuite {
       final latencies = <Duration>[];
       const pingCount = 10;
 
-      for (var i = 0; i < pingCount; i++) {
+      for (int i = 0; i < pingCount; i++) {
         final pingStopwatch = Stopwatch()..start();
 
         // Send ping
@@ -471,12 +471,12 @@ class DiagnosticTestSuite {
       // Send larger data chunks to measure throughput
       const chunkSize = 64 * 1024; // 64KB chunks
       const chunkCount = 10;
-      var totalBytesSent = 0;
-      var totalBytesReceived = 0;
+      int totalBytesSent = 0;
+      int totalBytesReceived = 0;
 
       final throughputStopwatch = Stopwatch()..start();
 
-      for (var i = 0; i < chunkCount; i++) {
+      for (int i = 0; i < chunkCount; i++) {
         final chunk = Uint8List.fromList(
           List.generate(chunkSize, (i) => i % 256),
         );

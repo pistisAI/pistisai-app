@@ -550,7 +550,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     // Updated as the user moves the picker, so Select returns their choice
     // and not the colour the dialog opened with.
-    var pickerColor = _customColor ?? colorScheme.primary;
+    Color pickerColor = _customColor ?? colorScheme.primary;
     final pickedColor = await showDialog<Color>(
       context: context,
       builder: (context) => AlertDialog(

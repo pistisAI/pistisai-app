@@ -24,7 +24,7 @@ class SessionService {
   List<SessionData> _parse(String output) {
     final sessions = <SessionData>[];
     final lines = output.split('\n');
-    var headerFound = false;
+    bool headerFound = false;
 
     for (final line in lines) {
       final t = line.trim();

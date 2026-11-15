@@ -74,7 +74,7 @@ class _DeviceMeshSettingsScreenState extends State<DeviceMeshSettingsScreen> {
       ),
     );
     if (confirmed != true) return;
-    var ok = false;
+    bool ok = false;
     try {
       ok = await di
           .serviceLocator<CloudConnectorService>()

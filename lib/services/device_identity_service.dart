@@ -93,11 +93,11 @@ class DeviceIdentityService {
     // Use a combination of timestamp and random values
     final timestamp = DateTime.now().microsecondsSinceEpoch;
     final seed = <int>[];
-    for (var i = 0; i < 32; i++) {
+    for (int i = 0; i < 32; i++) {
       seed.add((timestamp >> (i % 8)) & 0xFF);
     }
     // Add more entropy
-    for (var i = 0; i < 32; i++) {
+    for (int i = 0; i < 32; i++) {
       seed[i] = (seed[i] + DateTime.now().microsecond + i * 7) % 256;
     }
     return seed;

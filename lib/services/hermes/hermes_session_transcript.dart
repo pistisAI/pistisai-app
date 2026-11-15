@@ -33,7 +33,7 @@ List<Message> mergeHarnessTranscript({
 }) {
   if (harness.isEmpty) return local;
   final ids = harness.map((message) => message.id).toSet();
-  var newest = harness.first.timestamp;
+  DateTime newest = harness.first.timestamp;
   for (final message in harness) {
     if (message.timestamp.isAfter(newest)) newest = message.timestamp;
   }
@@ -59,7 +59,7 @@ Message? messageFromHermesSessionRow(Map<String, dynamic> row) {
   if (row['display_kind'] == 'hidden') return null;
   final role = _role(row['role']);
   if (role == null) return null;
-  var content = textFromHermesContent(row['content']);
+  String? content = textFromHermesContent(row['content']);
   if (role == MessageRole.user && content != null) {
     content = stripGatewayMessageOrigin(content);
   }
@@ -90,7 +90,7 @@ const gatewayMessageOriginLead =
 String stripGatewayMessageOrigin(String content) {
   final trimmed = content.trimLeft();
   if (!trimmed.startsWith(gatewayMessageOriginLead)) return content;
-  var rest = trimmed.substring(gatewayMessageOriginLead.length).trimLeft();
+  String rest = trimmed.substring(gatewayMessageOriginLead.length).trimLeft();
   if (rest.startsWith('{')) {
     final end = _jsonObjectEnd(rest);
     if (end == null) return content;
@@ -101,10 +101,10 @@ String stripGatewayMessageOrigin(String content) {
 
 /// Index just after the JSON object at the start of [source], or null.
 int? _jsonObjectEnd(String source) {
-  var depth = 0;
-  var inString = false;
-  var escape = false;
-  for (var i = 0; i < source.length; i++) {
+  int depth = 0;
+  bool inString = false;
+  bool escape = false;
+  for (int i = 0; i < source.length; i++) {
     final char = source[i];
     if (inString) {
       if (escape) {

@@ -82,7 +82,7 @@ class LoggingService {
       final bytes = await raf.read(length - startPos);
       final text = String.fromCharCodes(bytes);
 
-      var lines = text.split('\n');
+      List<String> lines = text.split('\n');
       // Remove partial first line if we started mid-file
       if (startPos > 0 && lines.isNotEmpty) {
         lines = lines.sublist(1);
