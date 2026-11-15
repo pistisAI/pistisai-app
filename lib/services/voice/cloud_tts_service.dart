@@ -78,6 +78,21 @@ typedef CloudTtsProcessRunner = Future<ProcessResult> Function(
   bool runInShell,
 });
 
+/// Consent gate for Microsoft online speech. Fail closed when omitted.
+typedef CloudTtsConsentChecker = Future<bool> Function();
+
+class CloudTtsConsentDeniedException implements Exception {
+  const CloudTtsConsentDeniedException([
+    this.message =
+        'Microsoft speech is disabled until you opt in from Settings.',
+  ]);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class CloudTtsService {
   CloudTtsService({
     CloudTtsProcessRunner? processRunner,
@@ -85,6 +100,7 @@ class CloudTtsService {
     String? ffmpegCommand,
     Directory? outputDirectory,
     Duration timeout = const Duration(seconds: 45),
+    CloudTtsConsentChecker? isAllowed,
   })  : _processRunner = processRunner ?? Process.run,
         _ttsCommand = ttsCommand ??
             Platform.environment['pistisai_TTS_COMMAND'] ??
@@ -97,15 +113,22 @@ class CloudTtsService {
               Platform.environment,
               tempDirectory: Directory.systemTemp.path,
             )),
-        _timeout = timeout;
+        _timeout = timeout,
+        // Fail closed: no outbound Microsoft speech without explicit consent.
+        _isAllowed = isAllowed ?? (() async => false);
 
   final CloudTtsProcessRunner _processRunner;
   final String _ttsCommand;
   final String _ffmpegCommand;
   final Directory _outputDirectory;
   final Duration _timeout;
+  final CloudTtsConsentChecker _isAllowed;
 
   Future<CloudTtsResult> synthesize(CloudTtsRequest request) async {
+    if (!await _isAllowed()) {
+      throw const CloudTtsConsentDeniedException();
+    }
+
     await _outputDirectory.create(recursive: true);
     final startedAt = DateTime.now().microsecondsSinceEpoch;
     final basePath = p.join(_outputDirectory.path, 'speech_$startedAt');

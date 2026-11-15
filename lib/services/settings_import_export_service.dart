@@ -119,6 +119,16 @@ class SettingsImportExportService {
             settings['crashReportingEnabled'] as bool);
       }
 
+      if (settings.containsKey('cloudLlmProvidersEnabled')) {
+        await _preferencesService.setCloudLlmProvidersEnabled(
+            settings['cloudLlmProvidersEnabled'] as bool);
+      }
+
+      if (settings.containsKey('microsoftSpeechEnabled')) {
+        await _preferencesService.setMicrosoftSpeechEnabled(
+            settings['microsoftSpeechEnabled'] as bool);
+      }
+
       if (settings.containsKey('usageStatsEnabled')) {
         await _preferencesService
             .setUsageStatsEnabled(settings['usageStatsEnabled'] as bool);
@@ -208,6 +218,10 @@ class SettingsImportExportService {
       'analyticsEnabled': await _preferencesService.isAnalyticsEnabled(),
       'crashReportingEnabled':
           await _preferencesService.isCrashReportingEnabled(),
+      'cloudLlmProvidersEnabled':
+          await _preferencesService.isCloudLlmProvidersEnabled(),
+      'microsoftSpeechEnabled':
+          await _preferencesService.isMicrosoftSpeechEnabled(),
       'usageStatsEnabled': await _preferencesService.isUsageStatsEnabled(),
 
       // Desktop Settings

@@ -2203,6 +2203,8 @@
   "adminsFinanceDescription": "Payments, refunds, and reports",
   "commonCopyMessage": "Copy message",
   "crashReportingTitle": "Send crash reports",
+  "cloudLlmProvidersTitle": "Allow cloud LLM providers",
+  "microsoftSpeechTitle": "Allow Microsoft online speech",
   "navExpandSidebar": "Expand sidebar",
   "navCollapseSidebar": "Collapse sidebar",
   "agentStatusTitle": "Agent Status",

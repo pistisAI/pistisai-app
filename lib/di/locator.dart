@@ -42,6 +42,8 @@ import 'package:pistisai/database/local_brain.dart';
 import 'package:pistisai/services/brain_sync_service.dart';
 import 'package:pistisai/services/rate_limit_manager.dart';
 import 'package:pistisai/services/router_server.dart';
+import 'package:pistisai/services/cloud_outbound_policy.dart';
+import 'package:pistisai/services/providers/base_provider.dart' as llm;
 import 'package:pistisai/services/providers/zhipu_adapter.dart';
 import 'package:pistisai/services/providers/google_adapter.dart';
 import 'package:pistisai/services/providers/moonshot_adapter.dart';
@@ -237,24 +239,44 @@ Future<void> setupCoreServices() async {
         conscienceStorageService,
       );
 
-      // Cloud model providers are registered only when a build supplies their
-      // key. Without a key the router would still forward the user's prompt
-      // to the provider (in China for Zhipu and Moonshot) before the request
-      // is refused, so an unconfigured provider must not exist at all.
+      // Cloud model providers stay in the tree but register only when the
+      // user has opted in (#647) AND the build supplies their key. Without a
+      // key the router would still forward the prompt before refusal; without
+      // consent, keys alone must not create an outbound path.
       const glmKey = String.fromEnvironment('GLM_API_KEY');
       const geminiKey = String.fromEnvironment('GEMINI_API_KEY');
       const kimiKey = String.fromEnvironment('KIMI_API_KEY');
+      final cloudLlmConsent =
+          await settingsPreferenceService.isCloudLlmProvidersEnabled();
+      final cloudKeys = CloudOutboundPolicy.selectCloudProviders(
+        consentGranted: cloudLlmConsent,
+        glmKey: glmKey,
+        geminiKey: geminiKey,
+        kimiKey: kimiKey,
+      );
+      final cloudProviders = <String, llm.LlmProvider>{
+        if (cloudKeys.containsKey('zhipu'))
+          'zhipu': ZhipuAdapter(apiKey: cloudKeys['zhipu']!),
+        if (cloudKeys.containsKey('google'))
+          'google': GoogleAdapter(apiKey: cloudKeys['google']!),
+        if (cloudKeys.containsKey('moonshot'))
+          'moonshot': MoonshotAdapter(apiKey: cloudKeys['moonshot']!),
+      };
       final routerServer = RouterServer(
         rateLimitManager: rateLimitManager,
-        providers: {
-          if (glmKey.isNotEmpty) 'zhipu': ZhipuAdapter(apiKey: glmKey),
-          if (geminiKey.isNotEmpty) 'google': GoogleAdapter(apiKey: geminiKey),
-          if (kimiKey.isNotEmpty) 'moonshot': MoonshotAdapter(apiKey: kimiKey),
-        },
+        providers: cloudProviders,
         personalityEngine: personalityEngine,
         evolutionTracker: evolutionTracker,
         conscienceStorage: conscienceStorageService,
-        ttsService: CloudTtsService(),
+        // Microsoft speech stays available but refuses work until opted in.
+        ttsService: kIsWeb
+            ? null
+            : CloudTtsService(
+                isAllowed: settingsPreferenceService.isMicrosoftSpeechEnabled,
+              ),
+        cloudLlmAllowed: settingsPreferenceService.isCloudLlmProvidersEnabled,
+        microsoftSpeechAllowed:
+            settingsPreferenceService.isMicrosoftSpeechEnabled,
         // Remote access (LAN/Tailscale mobile) is opt-in; default is loopback (#645).
         allowRemoteAccess:
             const bool.fromEnvironment('ROUTER_ALLOW_REMOTE_ACCESS'),

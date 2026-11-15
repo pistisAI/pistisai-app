@@ -1049,6 +1049,8 @@
   "adminsFinanceDescription": "Paiements, remboursements et rapports",
   "commonCopyMessage": "Copier le message",
   "crashReportingTitle": "Envoyer les rapports de plantage",
+  "cloudLlmProvidersTitle": "Autoriser les fournisseurs LLM cloud",
+  "microsoftSpeechTitle": "Autoriser la synthèse vocale Microsoft en ligne",
   "navExpandSidebar": "Déplier la barre latérale",
   "navCollapseSidebar": "Replier la barre latérale",
   "agentStatusTitle": "État de l'agent",

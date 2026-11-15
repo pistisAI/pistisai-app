@@ -16,6 +16,10 @@ class SettingsPreferenceService {
   static const String _analyticsKey = 'settings_analytics_enabled';
   static const String _crashReportingKey = 'settings_crash_reporting_enabled';
   static const String _usageStatsKey = 'settings_usage_stats_enabled';
+  static const String _cloudLlmProvidersKey =
+      'settings_cloud_llm_providers_enabled';
+  static const String _microsoftSpeechKey =
+      'settings_microsoft_speech_enabled';
 
   // Desktop Settings
   static const String _launchOnStartupKey = 'settings_launch_on_startup';
@@ -156,6 +160,35 @@ class SettingsPreferenceService {
   Future<void> setCrashReportingEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_crashReportingKey, value);
+  }
+
+  /// Whether optional cloud LLM providers (Zhipu, Moonshot, Gemini) may run.
+  ///
+  /// Off unless the user turns it on: prompts leave the device only after
+  /// explicit consent. Compile-time API keys alone are not enough.
+  Future<bool> isCloudLlmProvidersEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_cloudLlmProvidersKey) ?? false;
+  }
+
+  /// Set cloud LLM providers enabled preference.
+  Future<void> setCloudLlmProvidersEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_cloudLlmProvidersKey, value);
+  }
+
+  /// Whether Microsoft online speech (edge-tts) may leave the device.
+  ///
+  /// Off unless the user turns it on. Local TTS remains available either way.
+  Future<bool> isMicrosoftSpeechEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_microsoftSpeechKey) ?? false;
+  }
+
+  /// Set Microsoft speech enabled preference.
+  Future<void> setMicrosoftSpeechEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_microsoftSpeechKey, value);
   }
 
   /// Get usage statistics enabled preference

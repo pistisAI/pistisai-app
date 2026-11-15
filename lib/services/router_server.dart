@@ -11,12 +11,16 @@ import 'model_tiers.dart';
 import 'avatar/personality_engine.dart';
 import 'avatar/evolution_tracker.dart';
 import 'conscience_storage_service.dart';
+import 'cloud_outbound_policy.dart';
 import 'voice/cloud_tts_service.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
 import 'package:http/http.dart' as http;
 import 'package:pistisai/utils/http_constants.dart';
+
+/// Async gate for optional outbound cloud features. Fail closed when null.
+typedef CloudConsentChecker = Future<bool> Function();
 
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
 ///
@@ -39,6 +43,12 @@ class RouterServer {
   final EvolutionTracker? evolutionTracker;
   final ConscienceStorageService? conscienceStorage;
   final CloudTtsService? ttsService;
+
+  /// When false, Zhipu / Moonshot / Gemini calls are refused even if registered.
+  final CloudConsentChecker? cloudLlmAllowed;
+
+  /// When false, Microsoft online speech synthesis is refused.
+  final CloudConsentChecker? microsoftSpeechAllowed;
 
   /// Bearer token required for privileged endpoints.
   /// When null, all endpoints are open (no auth check).
@@ -70,12 +80,13 @@ class RouterServer {
     this.personalityEngine,
     this.evolutionTracker,
     this.conscienceStorage,
-    CloudTtsService? ttsService,
+    this.ttsService,
+    this.cloudLlmAllowed,
+    this.microsoftSpeechAllowed,
     this.authSecret,
     this.allowRemoteAccess = false,
     String? hermesBaseUrl,
-  })  : hermesBaseUrl = hermesBaseUrl ?? AppConfig.defaultHermesUrl,
-        ttsService = ttsService ?? (kIsWeb ? null : CloudTtsService());
+  }) : hermesBaseUrl = hermesBaseUrl ?? AppConfig.defaultHermesUrl;
 
   /// Start the server
   Future<void> start() async {
@@ -349,6 +360,27 @@ class RouterServer {
         );
       }
 
+      if (CloudOutboundPolicy.isCloudLlmProvider(config.provider)) {
+        final allowed =
+            cloudLlmAllowed == null ? false : await cloudLlmAllowed!();
+        if (!allowed) {
+          return Response.forbidden(
+            jsonEncode({
+              'error': {
+                'message':
+                    'Cloud LLM providers are off by default. Enable them in '
+                        'Settings before sending prompts to '
+                        '${config.provider}.',
+                'type': 'permission_error',
+                'param': 'model',
+                'code': 'cloud_llm_consent_required',
+              },
+            }),
+            headers: {'Content-Type': 'application/json'},
+          );
+        }
+      }
+
       // 2. Start request tracking
       await rateLimitManager.startRequest(actualModel);
 
@@ -419,6 +451,24 @@ class RouterServer {
     final service = ttsService;
     if (service == null) {
       return Response.notFound('TTS service not available');
+    }
+
+    final speechAllowed = microsoftSpeechAllowed == null
+        ? false
+        : await microsoftSpeechAllowed!();
+    if (!speechAllowed) {
+      return Response.forbidden(
+        jsonEncode({
+          'error': {
+            'message':
+                'Microsoft online speech is off by default. Enable it in '
+                    'Settings before sending spoken text to the cloud.',
+            'type': 'permission_error',
+            'code': 'microsoft_speech_consent_required',
+          },
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
     }
 
     try {
