@@ -236,21 +236,37 @@ export class TunnelService {
         [userId, limit, offset],
       );
 
-      const tunnels = await Promise.all(
-        result.rows.map(async (tunnel) => {
-          const endpointsResult = await this.pool.query(
-            'SELECT * FROM tunnel_endpoints WHERE tunnel_id = $1 ORDER BY priority DESC',
-            [tunnel.id],
-          );
+      const tunnels = result.rows.map((tunnel) => ({
+        ...tunnel,
+        config: JSON.parse(tunnel.config),
+        metrics: JSON.parse(tunnel.metrics),
+        endpoints: [],
+      }));
 
-          return {
-            ...tunnel,
-            config: JSON.parse(tunnel.config),
-            metrics: JSON.parse(tunnel.metrics),
-            endpoints: endpointsResult.rows,
-          };
-        }),
-      );
+      // Batch-load endpoints for all tunnels (avoids N+1)
+      if (tunnels.length > 0) {
+        const tunnelIds = tunnels.map((tunnel) => tunnel.id);
+        const endpointsResult = await this.pool.query(
+          `SELECT * FROM tunnel_endpoints
+           WHERE tunnel_id = ANY($1)
+           ORDER BY priority DESC`,
+          [tunnelIds],
+        );
+
+        const endpointsByTunnel = new Map();
+        for (const endpoint of endpointsResult.rows) {
+          const list = endpointsByTunnel.get(endpoint.tunnel_id);
+          if (list) {
+            list.push(endpoint);
+          } else {
+            endpointsByTunnel.set(endpoint.tunnel_id, [endpoint]);
+          }
+        }
+
+        for (const tunnel of tunnels) {
+          tunnel.endpoints = endpointsByTunnel.get(tunnel.id) || [];
+        }
+      }
 
       return {
         tunnels,

@@ -7,6 +7,7 @@ import express from 'express';
 import winston from 'winston';
 import { z } from 'zod';
 import { validateSchema } from '../middleware/schema-validation.js';
+import { insertMessagesBatched } from '../database/sql-batch.js';
 
 const messageSchema = z.object({
   role: z.string().default('user'),
@@ -251,36 +252,9 @@ VALUES($1, $2, $3, $4:: jsonb)
         const conversation = conversationRows[0];
         const conversationId = conversation.id;
 
-        // Insert messages if provided
+        // Insert messages if provided (single multi-row INSERT)
         if (messages && Array.isArray(messages) && messages.length > 0) {
-          const messageValues = messages.map((msg) => ({
-            conversation_id: conversationId,
-            role: msg.role || 'user',
-            content: msg.content || '',
-            model: msg.model || model,
-            status: msg.status || 'sent',
-            error: msg.error || null,
-            timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date(),
-            metadata: msg.metadata ? JSON.stringify(msg.metadata) : '{}',
-          }));
-
-          for (const msg of messageValues) {
-            await client.query(
-              `INSERT INTO messages(
-  conversation_id, role, content, model, status, error, timestamp, metadata
-) VALUES($1, $2, $3, $4, $5, $6, $7, $8:: jsonb)`,
-              [
-                msg.conversation_id,
-                msg.role,
-                msg.content,
-                msg.model,
-                msg.status,
-                msg.error,
-                msg.timestamp,
-                msg.metadata,
-              ],
-            );
-          }
+          await insertMessagesBatched(client, conversationId, messages, model);
         }
 
         await client.query('COMMIT');
@@ -401,24 +375,13 @@ VALUES($1, $2, $3, $4, $5:: jsonb)`,
             [conversationId],
           );
 
-          // Insert new messages
-          for (const msg of messages) {
-            await client.query(
-              `INSERT INTO messages(
-  conversation_id, role, content, model, status, error, timestamp, metadata
-) VALUES($1, $2, $3, $4, $5, $6, $7, $8:: jsonb)`,
-              [
-                conversationId,
-                msg.role || 'user',
-                msg.content || '',
-                msg.model || model || null,
-                msg.status || 'sent',
-                msg.error || null,
-                msg.timestamp ? new Date(msg.timestamp) : new Date(),
-                msg.metadata ? JSON.stringify(msg.metadata) : '{}',
-              ],
-            );
-          }
+          // Insert new messages (single multi-row INSERT)
+          await insertMessagesBatched(
+            client,
+            conversationId,
+            messages,
+            model || null,
+          );
         }
 
         await client.query('COMMIT');
