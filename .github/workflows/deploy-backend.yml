@@ -27,6 +27,12 @@ jobs:
   build_images:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    # Job-level repeat: nested workflow_run can drop cache write unless
+    # actions: write is explicit here as well as at workflow level.
+    permissions:
+      contents: read
+      packages: write
+      actions: write
     if: >-
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'

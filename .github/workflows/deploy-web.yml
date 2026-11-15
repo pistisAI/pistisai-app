@@ -1,10 +1,14 @@
 name: "🌐 Web Deploy"
 
+# Entry point for the release/deploy chain (#681): push to main starts Web
+# Deploy; desktop, mobile, and backend listen to this workflow via workflow_run.
 on:
-  workflow_run:
-    workflows: ["🔢 Auto Version Bump"]
-    types: [completed]
+  push:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "images/**"
   workflow_dispatch:
 
 concurrency:
@@ -25,9 +29,6 @@ jobs:
   analyze:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
