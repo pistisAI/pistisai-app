@@ -1,0 +1,29 @@
+name: "🏷️ PR Title Check"
+
+# Every PR title must be Conventional Commits. The title sets the auto version
+# bump size (see scripts/version_bump_kind.py): feat=minor, type!:=major, else=patch.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  title:
+    name: "Conventional PR title"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Check title format
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+          RE='^(feat|fix|perf|refactor|docs|style|test|ci|build|chore)(\([^)]+\))?!?: .+'
+          if printf '%s' "$TITLE" | grep -Eq "$RE" || printf '%s' "$TITLE" | grep -Eq '^chore\(release\): bump version'; then
+            echo "OK: $TITLE"
+          else
+            echo "::error::PR title must be Conventional Commits, e.g. 'feat(scope): add X' (minor), 'fix(scope): Y' (patch), 'feat(scope)!: Z' (major). Got: $TITLE"
+            exit 1
+          fi
