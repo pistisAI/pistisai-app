@@ -13,6 +13,8 @@ name: "🔢 Auto Version Bump"
 # Automatic runs (release published) always patch-bump.
 
 on:
+  push:
+    branches: [main]
   release:
     types: [published]
   workflow_dispatch:
