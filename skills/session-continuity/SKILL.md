@@ -2,7 +2,7 @@
 name: session-continuity
 description: "Use when continuing or unsure where we left off."
 version: 1.0.0
-author: Zoid Maltek
+author: pistisAI
 license: MIT
 metadata:
   hermes:
