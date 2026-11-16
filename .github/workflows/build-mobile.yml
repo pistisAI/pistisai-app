@@ -292,7 +292,7 @@ jobs:
         uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd  # v1
         with:
           artifacts: "release-assets/*"
-          tag: "mobile-v${{ needs.analyze.outputs.version }}"
+          tag: "mobile-v${{ needs.analyze.outputs.version }}+${{ github.run_number }}"
           name: "Pistisai Mobile v${{ needs.analyze.outputs.version }}"
           artifactErrorsFailBuild: true
           allowUpdates: true
