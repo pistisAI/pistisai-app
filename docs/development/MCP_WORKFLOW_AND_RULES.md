@@ -178,14 +178,14 @@ In addition to MCP servers, I will leverage powerful command-line interface (CLI
 * **Semantic Versioning Rules**:
   * Follow strict semantic versioning: `MAJOR.MINOR.PATCH`
   * **PATCH (4.1.x)**: Increment for bug fixes and minor fixes → 4.1.2, 4.1.3, 4.1.4...
-  * **MINOR (4.x.0)**: Increment for feature updates and new features → 4.2.0, 4.3.0, 4.4.0...
+  * **MINOR (4.x.0)**: Planned releases only, set manually via workflow_dispatch → 4.2.0, 4.3.0, 4.4.0...
   * **MAJOR (x.0.0)**: Increment for major changes, breaking changes, or new versions → 5.0.0, 6.0.0...
   * Current version location: `pubspec.yaml` (line 6)
   * Always update version when making changes, then commit with version bump message
 
 * **Version Bump Decision Logic**:
   * Bug fix or minor correction? → Increment PATCH (4.1.2 → 4.1.3)
-  * New feature or significant update? → Increment MINOR (4.1.2 → 4.2.0)
+  * Planned feature release? → Set MINOR manually via workflow_dispatch (ordinary features merge as PATCH)
   * Breaking changes or major overhaul? → Increment MAJOR (4.1.2 → 5.0.0)
   * When user asks to "bump version", assess the scope of changes since last version
 
