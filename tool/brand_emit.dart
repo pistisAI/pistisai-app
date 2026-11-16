@@ -89,6 +89,7 @@ const BrandConfig activeBrand = BrandConfig(
   defaultLocale: ${s(brand.defaultLocale)},
   lockLocale: ${brand.lockLocale},
   logoAsset: ${s(brand.logoAsset)},
+  logoSizeVariants: ${brand.logoSizeVariants},
   iconAsset: ${s(brand.iconAsset)},
   wordmark: ${s(brand.wordmark)},
   greekWordmark: ${s(brand.greekWordmark)},
