@@ -67,20 +67,10 @@ class AppLogo extends StatelessWidget {
         borderColor ?? AppTheme.colorsOf(context).primary;
     final borderWidth = size * 0.04;
 
-    // Default brand keeps the size-specific portico assets. Other brands
-    // use the single logo path from the brand file.
-    final String assetPath;
-    if (Brand.current.id == 'pistisai') {
-      if (size >= 128) {
-        assetPath = 'assets/images/lobster_avatar_128.png';
-      } else if (size >= 64) {
-        assetPath = 'assets/images/lobster_avatar_64.png';
-      } else {
-        assetPath = 'assets/images/lobster_avatar.png';
-      }
-    } else {
-      assetPath = Brand.current.logoAsset;
-    }
+    // Brand-driven, no brand-id checks. A brand's logo_asset is the base
+    // path; upstream pistisai ships size variants next to it, so a size
+    // variant is used only when that file is bundled for the brand.
+    final String assetPath = _sizedLogoAsset(Brand.current.logoAsset, size);
 
     return Container(
       width: size,
@@ -120,4 +110,20 @@ class AppLogo extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Picks a size variant for the brand's base logo.
+///
+/// Size variants (`<stem>_64.png`, `<stem>_128.png`) exist only for logos
+/// that ship them. `logoSizeVariants` in the brand file declares that. Any
+/// brand without the declaration gets its base logo at every size, so no
+/// brand can reference a variant it does not bundle.
+String _sizedLogoAsset(String base, double size) {
+  final variants = Brand.current.logoSizeVariants;
+  if (!variants) return base;
+  if (!base.endsWith('.png')) return base;
+  final stem = base.substring(0, base.length - 4);
+  if (size >= 128) return '${stem}_128.png';
+  if (size >= 64) return '${stem}_64.png';
+  return base;
 }

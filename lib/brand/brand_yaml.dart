@@ -98,6 +98,7 @@ BrandConfig parseBrandYaml(String source) {
     accessAud: scalars['access_aud'] ?? '',
     defaultLocale: req('default_locale'),
     lockLocale: _parseBool(req('lock_locale'), 'lock_locale'),
+    logoSizeVariants: _parseBool(scalars['logo_size_variants'] ?? 'false', 'logo_size_variants'),
     logoAsset: req('logo_asset'),
     iconAsset: req('icon_asset'),
     wordmark: req('wordmark'),

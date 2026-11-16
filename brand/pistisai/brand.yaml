@@ -21,6 +21,7 @@ access_aud: b1f78e752af5c24fccb62238333da87fca981436711244f31ba6d612b92bc9fd
 default_locale: en
 lock_locale: false
 logo_asset: assets/images/lobster_avatar.png
+logo_size_variants: true
 icon_asset: assets/images/app_icon.png
 wordmark: PISTISAI
 greek_wordmark: "ΠΙΣΤΙΣΑΙ"

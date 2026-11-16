@@ -30,6 +30,7 @@ class BrandConfig {
     required this.defaultLocale,
     required this.lockLocale,
     required this.logoAsset,
+    this.logoSizeVariants = false,
     required this.iconAsset,
     required this.wordmark,
     required this.greekWordmark,
@@ -126,6 +127,8 @@ class BrandConfig {
   final String defaultLocale;
   final bool lockLocale;
   final String logoAsset;
+  /// True when the bundled logo has `_64` / `_128` siblings. Default false.
+  final bool logoSizeVariants;
   final String iconAsset;
   final String wordmark;
   final String greekWordmark;

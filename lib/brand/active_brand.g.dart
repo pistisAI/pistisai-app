@@ -24,6 +24,7 @@ const BrandConfig activeBrand = BrandConfig(
   defaultLocale: "en",
   lockLocale: false,
   logoAsset: "assets/images/lobster_avatar.png",
+  logoSizeVariants: true,
   iconAsset: "assets/images/app_icon.png",
   wordmark: "PISTISAI",
   greekWordmark: "ΠΙΣΤΙΣΑΙ",
