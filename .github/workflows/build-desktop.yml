@@ -297,7 +297,7 @@ jobs:
       always() &&
       needs.build_linux.result == 'success' &&
       needs.build_windows.result == 'success' &&
-      (needs.build_macos.result == 'success' || needs.build_macos.result == 'skipped')
+      (needs.build_macos.result == 'success' || needs.build_macos.result == 'skipped' || needs.build_macos.result == 'cancelled')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
