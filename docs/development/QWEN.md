@@ -106,7 +106,7 @@ Pistisai uses a sophisticated version management system with automated updates a
 Semantic Versioning Strategy:
 
 - **PATCH** (`0.0.X`): Hotfixes, security updates, critical bug fixes
-- **MINOR** (`0.X.0`): Feature additions, UI enhancements, planned functionality
+- **MINOR** (`0.X.0`): Planned releases only, set manually via workflow_dispatch (features merge as PATCH)
 - **MAJOR** (`X.0.0`): Breaking changes, architectural overhauls
 
 ### Code Style

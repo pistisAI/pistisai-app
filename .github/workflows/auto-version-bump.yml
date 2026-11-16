@@ -8,7 +8,7 @@ name: "🔢 Auto Version Bump"
 # Every merged PR bumps. The bump SIZE comes from the merged PR's Conventional
 # Commit title (see scripts/version_bump_kind.py):
 #   type!: / BREAKING CHANGE  -> major
-#   feat                      -> minor
+#   feat                      -> patch (minor is a manual workflow_dispatch release)
 #   anything else             -> patch
 # A manual workflow_dispatch `bump` input overrides the title-derived size.
 # Release PRs (chore(release): bump version ...) are skipped to avoid a loop.
