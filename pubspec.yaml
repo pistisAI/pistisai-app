@@ -3,7 +3,7 @@ description: Local-first agent companion for Hermes and compatible agent runtime
 publish_to: none
 homepage: https://pistisai.app
 repository: https://github.com/pistisAI/pistisai-app
-version: 1.5.1+124
+version: 1.5.2+125
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
