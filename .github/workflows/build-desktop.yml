@@ -387,24 +387,33 @@ jobs:
           } > release-notes.md
           cat release-notes.md
 
-      - name: Create Release
+      # The repository uses immutable releases: assets cannot be added once a
+      # release is published. Create it as a draft, upload, then publish.
+      - name: Create draft release with assets
         uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd  # v1
         with:
           artifacts: "release-assets/*"
           tag: "v${{ env.VERSION }}+${{ github.run_number }}"
+          commit: ${{ github.sha }}
           name: "Pistisai v${{ env.VERSION }}"
+          draft: true
           artifactErrorsFailBuild: true
           allowUpdates: true
           removeArtifacts: true
-          makeLatest: true
           bodyFile: release-notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: v${{ env.VERSION }}+${{ github.run_number }}
+        run: gh release edit "$RELEASE_TAG" --repo "${{ github.repository }}" --draft=false --latest
 
       - name: Verify GitHub release assets published
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          RELEASE_TAG: v${{ env.VERSION }}
+          RELEASE_TAG: v${{ env.VERSION }}+${{ github.run_number }}
           VERSION: ${{ env.VERSION }}
           RETRY_ATTEMPTS: 12
           RETRY_DELAY_SECONDS: 10

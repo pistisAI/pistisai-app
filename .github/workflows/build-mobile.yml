@@ -293,7 +293,10 @@ jobs:
         with:
           artifacts: "release-assets/*"
           tag: "mobile-v${{ needs.analyze.outputs.version }}+${{ github.run_number }}"
+          commit: ${{ github.sha }}
           name: "Pistisai Mobile v${{ needs.analyze.outputs.version }}"
+          # Immutable releases: upload to a draft, publish in the next step.
+          draft: true
           artifactErrorsFailBuild: true
           allowUpdates: true
           makeLatest: false
@@ -306,3 +309,9 @@ jobs:
             ### iOS
             - Runner.app zip attached (no codesign — dev build)
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: mobile-v${{ needs.analyze.outputs.version }}+${{ github.run_number }}
+        run: gh release edit "$RELEASE_TAG" --repo "${{ github.repository }}" --draft=false --latest=false
