@@ -78,7 +78,8 @@ const checkJwt = (req, res, next) => {
       name: 'Dev User',
       nickname: 'dev-user',
       [`${ns}/roles`]: ['admin'],
-      [`${ns}/app_metadata`]: { role: 'admin' },
+      // Kept as the upstream literal: rbac.js and tier-check.js read this exact key.
+      'https://Pistisai.com/app_metadata': { role: 'admin' },
       scope: 'openid profile email admin',
     };
     return next();
