@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'theme_config.dart';
 import 'theme_extensions.dart';
+import '../brand/brand.dart';
 
 /// Modern Material Design 3 theme configuration matching homepage design
 ///
@@ -8,21 +9,21 @@ import 'theme_extensions.dart';
 /// Use ThemeConfig directly for new implementations.
 class AppTheme {
   // Color scheme matching Pistisai gold-on-dark branding
-  static const Color primaryColor = Color(
-    0xFFFFD700,
+  static final Color primaryColor = Color(
+    Brand.current.primaryArgb,
   ); // Pistis Gold
-  static const Color secondaryColor = Color(
-    0xFFFFE44D,
+  static final Color secondaryColor = Color(
+    Brand.current.secondaryArgb,
   ); // Warm Gold
-  static const Color accentColor = Color(0xFFD4A017); // Deep Gold
+  static final Color accentColor = Color(Brand.current.accentArgb); // Brand accent
 
   // Background colors
-  static const Color backgroundMain = Color(0xFF181A20); // Warm dark
+  static final Color backgroundMain = Color(Brand.current.backgroundArgb); // Brand background
   static const Color backgroundCard = Color(0xFF1E2230); // Card dark
   static const Color backgroundLight = Color(0xFFf5f5f5); // --bg-light: #f5f5f5
 
   // Text colors
-  static const Color textColor = Color(0xFFF5E6C8); // Pistisai cream
+  static final Color textColor = Color(Brand.current.textArgb); // Brand text
   static const Color textColorLight = Color(
     0xFFB8A88A,
   ); // Pistisai muted gold
@@ -40,13 +41,13 @@ class AppTheme {
   static const Color borderColor = Color(0xFF3a3a3a);
 
   // Gradients matching homepage
-  static const LinearGradient headerGradient = LinearGradient(
+  static final LinearGradient headerGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [secondaryColor, primaryColor],
   );
 
-  static const LinearGradient buttonGradient = LinearGradient(
+  static final LinearGradient buttonGradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
     colors: [secondaryColor, primaryColor],
