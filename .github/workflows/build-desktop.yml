@@ -267,6 +267,10 @@ jobs:
         run: |
           flutter pub get
           bash tool/brand.sh pistisai
+          # Create Podfile.lock and sync the sandbox before the build.
+          # Without this, `flutter build` fails with "sandbox is not in sync
+          # with the Podfile.lock" (#775).
+          (cd macos && pod install --repo-update)
           flutter build macos --release --dart-define=BRAND=pistisai --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
         env:
           MACOSX_DEPLOYMENT_TARGET: 12.0
@@ -387,7 +391,7 @@ jobs:
         uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd  # v1
         with:
           artifacts: "release-assets/*"
-          tag: "v${{ env.VERSION }}"
+          tag: "v${{ env.VERSION }}+${{ github.run_number }}"
           name: "Pistisai v${{ env.VERSION }}"
           artifactErrorsFailBuild: true
           allowUpdates: true
