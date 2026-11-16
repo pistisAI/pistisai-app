@@ -4,6 +4,17 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def brandProperties = new Properties()
+def brandPropertiesFile = rootProject.file('brand.properties')
+if (brandPropertiesFile.exists()) {
+    brandPropertiesFile.withReader('UTF-8') { reader ->
+        brandProperties.load(reader)
+    }
+}
+def brandAppId = brandProperties.getProperty('app_id', 'app.pistisai.app')
+def brandAuth0Domain = brandProperties.getProperty('auth0_domain', 'pistisai.app')
+def brandAuth0Scheme = brandProperties.getProperty('auth0_scheme', 'Pistisai')
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -49,7 +60,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "app.pistisai.app"
+        applicationId brandAppId
         minSdkVersion 26
         targetSdkVersion flutter.targetSdkVersion
         try {
@@ -58,7 +69,7 @@ android {
             versionCode 1
         }
         versionName flutterVersionName
-        manifestPlaceholders = [auth0Domain: "pistisai.app", auth0Scheme: "Pistisai", applicationName: "android.app.Application"]
+        manifestPlaceholders = [auth0Domain: brandAuth0Domain, auth0Scheme: brandAuth0Scheme, applicationName: "android.app.Application"]
     }
 
     signingConfigs {

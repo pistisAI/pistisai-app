@@ -56,6 +56,7 @@ jobs:
               - 'linux/**'
               - 'windows/**'
               - 'macos/**'
+              - 'android/**'
               - 'assets/**'
               - 'analysis_options.yaml'
               - '.github/workflows/test.yml'
