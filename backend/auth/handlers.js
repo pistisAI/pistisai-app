@@ -11,14 +11,21 @@ const rateLimit = require("express-rate-limit");
 
 const app = express();
 app.use(express.json());
-const allowedOrigins = [
-  "https://app.pistisai.app",
-  "https://pistisai.app",
-  "http://localhost:3000",
+// Brand-driven: whitelabel builds set AUTH_ALLOWED_ORIGINS (comma-separated)
+// and AUTH_ROLE_CLAIM_NAMESPACE. Defaults keep the upstream pistisai values.
+const allowedOrigins = (
+  process.env.AUTH_ALLOWED_ORIGINS ||
+  "https://app.pistisai.app,https://pistisai.app"
+)
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean)
+  .concat([
+    "http://localhost:3000",
   "http://localhost:8080",
   "http://127.0.0.1:3000",
   "http://127.0.0.1:8080",
-];
+  ]);
 
 app.use(
   cors({
@@ -64,12 +71,14 @@ const checkJwt = (req, res, next) => {
     devBypassToken.length > 0 &&
     token === devBypassToken
   ) {
+    const ns = process.env.AUTH_ROLE_CLAIM_NAMESPACE || "https://pistisai.app";
     req.auth = {
       sub: 'dev-user',
       email: 'dev@example.com',
       name: 'Dev User',
       nickname: 'dev-user',
-      'https://pistisai.app/roles': ['admin'],
+      [`${ns}/roles`]: ['admin'],
+      // Kept as the upstream literal: rbac.js and tier-check.js read this exact key.
       'https://Pistisai.com/app_metadata': { role: 'admin' },
       scope: 'openid profile email admin',
     };

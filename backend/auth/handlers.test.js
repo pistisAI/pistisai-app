@@ -57,3 +57,33 @@ describe('Auth Backend', () => {
     });
   });
 });
+
+describe('Brand-driven auth config (whitelabel)', () => {
+  const DEV = 'brand-test-token';
+  const saved = {};
+  const keys = ['NODE_ENV','DEV_BYPASS_TOKEN','AUTH_ALLOWED_ORIGINS','AUTH_ROLE_CLAIM_NAMESPACE'];
+
+  beforeEach(() => {
+    keys.forEach((k) => { saved[k] = process.env[k]; });
+    process.env.NODE_ENV = 'development';
+    process.env.DEV_BYPASS_TOKEN = DEV;
+    process.env.AUTH_ALLOWED_ORIGINS = 'https://iacle.app,https://www.iacle.app';
+    process.env.AUTH_ROLE_CLAIM_NAMESPACE = 'https://iacle.app';
+  });
+
+  afterEach(() => {
+    keys.forEach((k) => {
+      if (saved[k] === undefined) delete process.env[k];
+      else process.env[k] = saved[k];
+    });
+  });
+
+  it('allows the brand origin and rejects pistisai.app', async () => {
+    let app;
+    jest.isolateModules(() => { ({ app } = require('./handlers.js')); });
+    const ok = await request(app).get('/health').set('Origin', 'https://iacle.app');
+    expect(ok.headers['access-control-allow-origin']).toBe('https://iacle.app');
+    const other = await request(app).get('/health').set('Origin', 'https://pistisai.app');
+    expect(other.headers['access-control-allow-origin']).toBeUndefined();
+  });
+});
