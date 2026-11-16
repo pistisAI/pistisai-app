@@ -108,7 +108,7 @@ dependencies:
 
   # Voice System - Recording
   record: ^7.1.1
-  connectivity_plus: ^7.3.2
+  connectivity_plus: 7.0.0
 
 
 dev_dependencies:
