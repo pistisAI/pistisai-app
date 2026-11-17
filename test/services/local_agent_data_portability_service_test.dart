@@ -4,17 +4,35 @@ import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/services/agent_action_audit_service.dart';
 import 'package:pistisai/services/local_agent_data_portability_service.dart';
 
 void main() {
   late LocalBrain brain;
+  late AgentActionAuditService audit;
   late LocalAgentDataPortabilityService service;
+  late List<String> conversationFilesOnDisk;
+  var chatResetCount = 0;
 
   setUp(() async {
     brain = LocalBrain.withExecutor(NativeDatabase.memory());
     // Force schema creation.
     await brain.customSelect('SELECT 1').get();
-    service = LocalAgentDataPortabilityService(brain: brain);
+    audit = AgentActionAuditService(database: brain);
+    conversationFilesOnDisk = <String>[];
+    chatResetCount = 0;
+    service = LocalAgentDataPortabilityService(
+      brain: brain,
+      audit: audit,
+      clearConversations: () async {
+        conversationFilesOnDisk.clear();
+      },
+      listRemainingConversationFiles: () async =>
+          List<String>.from(conversationFilesOnDisk),
+      resetChatState: () async {
+        chatResetCount++;
+      },
+    );
   });
 
   tearDown(() async {
@@ -94,23 +112,55 @@ void main() {
               content: 'gone soon',
             ),
           );
+      await audit.record(
+        action: 'tool.read_file',
+        dataTouched: 'path:/tmp/example.txt',
+        authorizationStatus: AgentAuditAuthorization.authorized,
+        outcome: AgentAuditOutcome.success,
+      );
+      conversationFilesOnDisk.add('/tmp/conversations.json.enc');
 
       final result = await service.deleteAllLocalAgentData();
 
       expect(result.verifiedEmpty, isTrue);
+      expect(result.conversationsCleared, isTrue);
       expect(result.deletedRowCounts['conversations'], greaterThanOrEqualTo(1));
       expect(result.deletedRowCounts['messages'], greaterThanOrEqualTo(1));
+      expect(result.deletedRowCounts['agent_action_audit_entries'],
+          greaterThanOrEqualTo(1));
       expect(result.duration.inMilliseconds, greaterThanOrEqualTo(0));
+      expect(chatResetCount, 1);
 
       final verification = await service.verifyDeletion();
       expect(verification.isEmpty, isTrue);
       expect(verification.remainingUserContentCounts['conversations'], 0);
       expect(verification.remainingUserContentCounts['messages'], 0);
+      expect(
+        verification.remainingUserContentCounts['agent_action_audit_entries'],
+        0,
+      );
+      expect(verification.remainingConversationFiles, isEmpty);
 
       final conversations = await brain.select(brain.conversations).get();
       final messages = await brain.select(brain.messages).get();
       expect(conversations, isEmpty);
       expect(messages, isEmpty);
+
+      final audits = await audit.list(limit: 10);
+      expect(audits, hasLength(1));
+      expect(audits.single.action,
+          LocalAgentDataPortabilityService.wipeAuditAction);
+    });
+
+    test('verifyDeletion fails when conversation files remain', () async {
+      conversationFilesOnDisk.add('/legacy/chat/conversations.json.enc');
+
+      final verification = await service.verifyDeletion();
+      expect(verification.isEmpty, isFalse);
+      expect(
+        verification.remainingConversationFiles,
+        ['/legacy/chat/conversations.json.enc'],
+      );
     });
 
     test('generateExportFilename uses json extension and brand prefix', () {

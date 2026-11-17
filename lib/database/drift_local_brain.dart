@@ -2138,6 +2138,7 @@ class LocalBrain extends _$LocalBrain {
     'conscience_decisions',
     'coordinator_states',
     'coordinator_votes',
+    'agent_action_audit_entries',
   };
 
   /// Export every Drift table as a map of table name → list of row maps.

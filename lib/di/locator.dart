@@ -455,6 +455,8 @@ Future<void> setupCoreServices() async {
       final portabilityBrain = serviceLocator.get<LocalBrain>();
       Future<Map<String, dynamic>> Function()? exportConversations;
       Future<void> Function()? clearConversations;
+      Future<List<String>> Function()? listRemainingConversationFiles;
+      Future<void> Function()? resetChatState;
       if (!kIsWeb) {
         final localConversations = LocalConversationStorage();
         exportConversations = () async {
@@ -468,12 +470,26 @@ Future<void> setupCoreServices() async {
           };
         };
         clearConversations = localConversations.clearAll;
+        listRemainingConversationFiles =
+            localConversations.listExistingConversationDataPaths;
+        resetChatState = () async {
+          if (serviceLocator.isRegistered<StreamingChatService>()) {
+            serviceLocator
+                .get<StreamingChatService>()
+                .resetAfterLocalDataWipe();
+          }
+        };
       }
       serviceLocator.registerSingleton<LocalAgentDataPortabilityService>(
         LocalAgentDataPortabilityService(
           brain: portabilityBrain,
           exportConversations: exportConversations,
           clearConversations: clearConversations,
+          listRemainingConversationFiles: listRemainingConversationFiles,
+          resetChatState: resetChatState,
+          audit: serviceLocator.isRegistered<AgentActionAuditService>()
+              ? serviceLocator.get<AgentActionAuditService>()
+              : null,
         ),
       );
     }

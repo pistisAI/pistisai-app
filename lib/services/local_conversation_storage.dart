@@ -303,18 +303,60 @@ class LocalConversationStorage {
     return conversations;
   }
 
-  /// Clear all local conversations
-  Future<void> clearAll() async {
-    try {
-      final file = await _getLocalFile();
-      if (await file.exists()) {
-        await file.delete();
+  /// Every conversation data file path that must be gone after a wipe:
+  /// encrypted + plaintext under the canonical dir and all legacy dirs.
+  Future<List<File>> _conversationDataFiles() async {
+    final dirs = <Directory>[
+      await _pistisaiDir(),
+      ...await _legacyDirs(),
+    ];
+    final files = <File>[];
+    final seen = <String>{};
+    for (final dir in dirs) {
+      for (final name in [_fileName, _legacyFileName]) {
+        final file = File(p.join(dir.path, name));
+        if (seen.add(file.path)) {
+          files.add(file);
+        }
       }
-    } catch (e) {
-      appLogger.error(
-        '[LocalChatStorage] Error clearing storage',
-        error: e,
-      );
+    }
+    return files;
+  }
+
+  /// Paths of conversation data files that still exist on disk.
+  Future<List<String>> listExistingConversationDataPaths() async {
+    final remaining = <String>[];
+    for (final file in await _conversationDataFiles()) {
+      if (await file.exists()) {
+        remaining.add(file.path);
+      }
+    }
+    return remaining;
+  }
+
+  /// Clear all local conversations from the canonical and legacy locations.
+  ///
+  /// Deletes both encrypted and plaintext conversation files. Rethrows on
+  /// failure so a wipe cannot report success when files remain.
+  Future<void> clearAll() async {
+    Object? firstError;
+    StackTrace? firstStack;
+    for (final file in await _conversationDataFiles()) {
+      try {
+        if (await file.exists()) {
+          await file.delete();
+        }
+      } catch (e, stack) {
+        appLogger.error(
+          '[LocalChatStorage] Error clearing ${file.path}',
+          error: e,
+        );
+        firstError ??= e;
+        firstStack ??= stack;
+      }
+    }
+    if (firstError != null) {
+      Error.throwWithStackTrace(firstError, firstStack ?? StackTrace.current);
     }
   }
 }

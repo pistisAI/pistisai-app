@@ -3,8 +3,10 @@ library;
 
 import 'dart:convert';
 
+import 'package:drift/drift.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/database/drift_local_brain.dart';
+import 'package:pistisai/services/agent_action_audit_service.dart';
 
 /// Result of a one-shot local agent data deletion.
 class LocalAgentDataDeletionResult {
@@ -41,17 +43,20 @@ class LocalAgentDataVerification {
     required this.remainingUserContentCounts,
     required this.allTableCounts,
     required this.isEmpty,
+    this.remainingConversationFiles = const <String>[],
   });
 
   final DateTime checkedAt;
   final Map<String, int> remainingUserContentCounts;
   final Map<String, int> allTableCounts;
   final bool isEmpty;
+  final List<String> remainingConversationFiles;
 
   Map<String, dynamic> toJson() => {
         'checkedAt': checkedAt.toIso8601String(),
         'remainingUserContentCounts': remainingUserContentCounts,
         'allTableCounts': allTableCounts,
+        'remainingConversationFiles': remainingConversationFiles,
         'isEmpty': isEmpty,
       };
 }
@@ -65,13 +70,22 @@ class LocalAgentDataPortabilityService {
     required LocalBrain brain,
     Future<Map<String, dynamic>> Function()? exportConversations,
     Future<void> Function()? clearConversations,
+    Future<List<String>> Function()? listRemainingConversationFiles,
+    Future<void> Function()? resetChatState,
+    AgentActionAuditService? audit,
   })  : _brain = brain,
         _exportConversations = exportConversations,
-        _clearConversations = clearConversations;
+        _clearConversations = clearConversations,
+        _listRemainingConversationFiles = listRemainingConversationFiles,
+        _resetChatState = resetChatState,
+        _audit = audit;
 
   static const String exportVersion = '1.0';
   static const String exportFormat = 'pistisai-local-agent-data';
   static const String fileExtension = '.json';
+
+  /// Audit action written after a verified wipe (not treated as leftover content).
+  static const String wipeAuditAction = 'local_data_wipe';
 
   static String get filePrefix =>
       '${Brand.current.artifactPrefix}-local-agent-data';
@@ -79,6 +93,9 @@ class LocalAgentDataPortabilityService {
   final LocalBrain _brain;
   final Future<Map<String, dynamic>> Function()? _exportConversations;
   final Future<void> Function()? _clearConversations;
+  final Future<List<String>> Function()? _listRemainingConversationFiles;
+  final Future<void> Function()? _resetChatState;
+  final AgentActionAuditService? _audit;
 
   /// Export all local agent data as indented JSON.
   Future<String> exportAllToJson() async {
@@ -126,6 +143,26 @@ class LocalAgentDataPortabilityService {
     }
 
     final verification = await verifyDeletion();
+
+    if (verification.isEmpty && _audit != null) {
+      await _audit.record(
+        action: wipeAuditAction,
+        dataTouched: 'local_brain+conversation_files',
+        authorizationStatus: AgentAuditAuthorization.authorized,
+        outcome: AgentAuditOutcome.success,
+        authorizedBy: 'user',
+        details: {
+          'deletedRowCounts': deletedRowCounts,
+          'conversationsCleared': conversationsCleared,
+          'durationMs': DateTime.now().difference(started).inMilliseconds,
+        },
+      );
+    }
+
+    if (_resetChatState != null) {
+      await _resetChatState();
+    }
+
     final finished = DateTime.now();
 
     return LocalAgentDataDeletionResult(
@@ -138,20 +175,45 @@ class LocalAgentDataPortabilityService {
     );
   }
 
-  /// Count remaining user-content rows; [isEmpty] is true when all are zero.
+  /// Count remaining user-content rows and conversation files.
+  ///
+  /// [isEmpty] is true when every user-content table has zero rows (aside from
+  /// the post-wipe [wipeAuditAction] journal entry) and no conversation data
+  /// files remain.
   Future<LocalAgentDataVerification> verifyDeletion() async {
     final allCounts = await _brain.countAllTableRows();
     final userCounts = <String, int>{
       for (final name in LocalBrain.userContentTableNames)
         name: allCounts[name] ?? 0,
     };
-    final empty = userCounts.values.every((count) => count == 0);
+
+    if (userCounts.containsKey('agent_action_audit_entries')) {
+      userCounts['agent_action_audit_entries'] =
+          await _countNonWipeAuditEntries();
+    }
+
+    final remainingFiles = _listRemainingConversationFiles != null
+        ? await _listRemainingConversationFiles()
+        : const <String>[];
+
+    final empty = userCounts.values.every((count) => count == 0) &&
+        remainingFiles.isEmpty;
 
     return LocalAgentDataVerification(
       checkedAt: DateTime.now(),
       remainingUserContentCounts: userCounts,
       allTableCounts: allCounts,
+      remainingConversationFiles: remainingFiles,
       isEmpty: empty,
     );
+  }
+
+  Future<int> _countNonWipeAuditEntries() async {
+    final row = await _brain.customSelect(
+      'SELECT COUNT(*) AS c FROM agent_action_audit_entries WHERE action != ?',
+      variables: [Variable.withString(wipeAuditAction)],
+      readsFrom: {_brain.agentActionAuditEntries},
+    ).getSingle();
+    return row.read<int>('c');
   }
 }
