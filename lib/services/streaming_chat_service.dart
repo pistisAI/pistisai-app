@@ -931,6 +931,40 @@ class StreamingChatService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Drop in-memory chat after a verified local-data wipe.
+  ///
+  /// Does not write to disk — conversation files were already cleared. A fresh
+  /// welcome channel is held in memory only so the next message cannot rewrite
+  /// wiped history from a stale [_mainChannel].
+  void resetAfterLocalDataWipe() {
+    _cancelCurrentStream();
+    _streamingContentSubject.add('');
+    _streamingReasoningSubject.add('');
+    _runCompletedOutput = '';
+    _currentStreamingMessageId = '';
+    _activeToolCalls.clear();
+    _completedToolCalls.clear();
+    _isAgentRunning = false;
+    _isStreaming = false;
+    _isLoading = false;
+    _channelSyncError = null;
+
+    final availableModels = _connectionManager.availableModels;
+    final modelToUse = _selectedModel ??
+        (availableModels.isNotEmpty ? availableModels.first : 'default');
+    if (_selectedModel == null && availableModels.isNotEmpty) {
+      _selectedModel = availableModels.first;
+    }
+
+    _mainChannel = Conversation.mainChannel(
+      model: modelToUse,
+      agentName: configuredAgentName(),
+    ).addMessage(
+      Message.system(content: BrandCopy.chatWelcome),
+    );
+    notifyListeners();
+  }
+
   Future<void> _recordToolAudit({
     required String action,
     required String tool,

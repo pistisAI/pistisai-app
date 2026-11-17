@@ -89,6 +89,50 @@ void main() {
     );
   });
 
+  test('clearAll deletes legacy copies so reload cannot restore history',
+      () async {
+    Future<Directory> docs() async => tempDir;
+
+    final storage = LocalConversationStorage(
+      documentsDirectory: docs,
+      skipKeyring: true,
+    );
+    await storage.saveConversations([
+      Conversation.mainChannel(model: 'hermes-agent').addMessage(
+        Message.user(content: 'should-not-survive-wipe'),
+      ),
+    ]);
+
+    // Simulate an install that still has the interim chat/ copy left behind
+    // after migration (encrypted source is never deleted by migration).
+    final interim = Directory('${tempDir.path}/chat')..createSync();
+    final pistisaiDir = Directory('${tempDir.path}/Pistisai');
+    for (final name in [
+      'conversations.json.enc',
+      '.conversation_key',
+    ]) {
+      File('${pistisaiDir.path}/$name').copySync('${interim.path}/$name');
+    }
+
+    await storage.clearAll();
+
+    final afterWipe = LocalConversationStorage(
+      documentsDirectory: docs,
+      skipKeyring: true,
+    );
+    final loaded = await afterWipe.loadConversations();
+    expect(loaded, isEmpty,
+        reason: 'legacy chat/ copy must not restore wiped history');
+    expect(
+      File('${tempDir.path}/Pistisai/conversations.json.enc').existsSync(),
+      isFalse,
+    );
+    expect(
+      File('${tempDir.path}/chat/conversations.json.enc').existsSync(),
+      isFalse,
+    );
+  });
+
   test('Conversation.mainChannel always uses the stable pistisai session id', () {
     expect(Conversation.mainChannel().id, Conversation.pistisaiChannelId);
     expect(
