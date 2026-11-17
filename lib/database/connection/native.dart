@@ -19,7 +19,9 @@ QueryExecutor openConnection({
     final dbFolder =
         await (supportDirectory?.call() ?? getApplicationSupportDirectory());
     final file = File(p.join(dbFolder.path, 'local_brain.sqlite'));
-    final key = await (keyStore ?? LocalBrainKeyStore()).resolveKey();
+    final key = await (keyStore ?? LocalBrainKeyStore()).resolveKey(
+      databaseFile: file,
+    );
 
     await migratePlaintextLocalBrainToEncrypted(
       databaseFile: file,
