@@ -166,5 +166,84 @@ void main() {
         encrypted.close();
       }
     });
+
+    // Helpers for the interrupted-migration cases below.
+    Future<void> writePlain(File f, String body) async {
+      final db = sqlite3.open(f.path);
+      try {
+        db.execute('CREATE TABLE mem (body TEXT);');
+        db.execute("INSERT INTO mem VALUES ('$body');");
+      } finally {
+        db.close();
+      }
+    }
+
+    Future<void> writeEncrypted(File f, String key, String body) async {
+      final db = sqlite3.open(f.path);
+      try {
+        applyLocalBrainEncryption(db, key);
+        db.execute('CREATE TABLE mem (body TEXT);');
+        db.execute("INSERT INTO mem VALUES ('$body');");
+      } finally {
+        db.close();
+      }
+    }
+
+    String readBody(File f, String key) {
+      final db = sqlite3.open(f.path);
+      try {
+        applyLocalBrainEncryption(db, key);
+        return db.select('SELECT body FROM mem').single['body'] as String;
+      } finally {
+        db.close();
+      }
+    }
+
+    test('leaves no plaintext copy or temp file after migrating', () async {
+      final file = File('${tmpDir.path}/local_brain.sqlite');
+      await writePlain(file, 'data');
+      await migratePlaintextLocalBrainToEncrypted(databaseFile: file, key: 'k');
+      expect(File('${file.path}.plaintext-bak').existsSync(), isFalse);
+      expect(File('${file.path}.encrypt-tmp').existsSync(), isFalse);
+      expect(readBody(file, 'k'), 'data');
+    });
+
+    test('recovers when it stopped between the two renames', () async {
+      final file = File('${tmpDir.path}/local_brain.sqlite');
+      final tmp = File('${file.path}.encrypt-tmp');
+      final backup = File('${file.path}.plaintext-bak');
+      await writeEncrypted(tmp, 'k', 'kept');
+      await writePlain(backup, 'kept');
+
+      await migratePlaintextLocalBrainToEncrypted(databaseFile: file, key: 'k');
+
+      expect(readBody(file, 'k'), 'kept');
+      expect(tmp.existsSync(), isFalse);
+      expect(backup.existsSync(), isFalse,
+          reason: 'no plaintext copy may stay next to the encrypted file');
+    });
+
+    test('deletes a leftover plaintext backup', () async {
+      final file = File('${tmpDir.path}/local_brain.sqlite');
+      final backup = File('${file.path}.plaintext-bak');
+      await writeEncrypted(file, 'k', 'current');
+      await writePlain(backup, 'old');
+
+      await migratePlaintextLocalBrainToEncrypted(databaseFile: file, key: 'k');
+
+      expect(backup.existsSync(), isFalse);
+      expect(readBody(file, 'k'), 'current');
+    });
+
+    test('restores the original when the encrypted copy is missing', () async {
+      final file = File('${tmpDir.path}/local_brain.sqlite');
+      final backup = File('${file.path}.plaintext-bak');
+      await writePlain(backup, 'original');
+
+      await migratePlaintextLocalBrainToEncrypted(databaseFile: file, key: 'k');
+
+      expect(readBody(file, 'k'), 'original');
+      expect(backup.existsSync(), isFalse);
+    });
   });
 }
