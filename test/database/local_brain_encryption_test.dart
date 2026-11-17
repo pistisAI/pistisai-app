@@ -74,6 +74,45 @@ void main() {
       expect(await store.resolveKey(), key);
     });
 
+    test(
+      'refuses to generate a key when an encrypted database exists and no key is found',
+      () async {
+        final tmpDir =
+            await Directory.systemTemp.createTemp('local_brain_key_');
+        addTearDown(() async {
+          if (await tmpDir.exists()) {
+            await tmpDir.delete(recursive: true);
+          }
+        });
+
+        final file = File('${tmpDir.path}/local_brain.sqlite');
+        // Non-plaintext header = treated as an encrypted database.
+        await file.writeAsBytes(List<int>.filled(32, 0xab));
+
+        final vault = _MemoryVault();
+        final store = LocalBrainKeyStore(
+          vault: vault,
+          environment: const {},
+        );
+
+        await expectLater(
+          () => store.resolveKey(databaseFile: file),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              contains('encrypted'),
+            ),
+          ),
+        );
+        expect(
+          vault.store.containsKey(LocalBrainKeyStore.secureStorageKey),
+          isFalse,
+          reason: 'must not overwrite the vault when the old key is missing',
+        );
+      },
+    );
+
     test('never embeds a default passphrase from config', () {
       expect(LocalBrainKeyStore.envVarName, 'PISTISAI_LOCAL_BRAIN_KEY');
       expect(
