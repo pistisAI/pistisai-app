@@ -2,7 +2,7 @@
 
 This is the documentation hub for the Pistisai stack in this repository. Product description: [README](../README.md). Prefer linking here from new docs instead of adding another top-level index.
 
-For project-wide agent instructions, see [AGENTS.md](../AGENTS.md). For the product specification, see [SPEC.md](../SPEC.md).
+For project-wide agent instructions, see [AGENTS.md](../AGENTS.md).
 
 ## Start Here
 
