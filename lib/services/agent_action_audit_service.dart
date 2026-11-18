@@ -113,6 +113,11 @@ class AgentActionAuditService {
   }
 
   String _csv(String value) {
+    // Neutralise spreadsheet formula injection: cells starting with = + - @
+    // (or tab / CR) are prefixed with an apostrophe so Excel/Sheets show text.
+    if (value.isNotEmpty && '=+-@\t\r'.contains(value[0])) {
+      value = "'$value";
+    }
     if (value.contains(',') ||
         value.contains('"') ||
         value.contains('\n') ||
