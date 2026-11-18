@@ -984,7 +984,8 @@ class StreamingChatService extends ChangeNotifier {
         authorizationStatus: authorizationStatus,
         outcome: outcome,
         agentId: connectedAgentDisplayName(),
-        authorizedBy: 'user',
+        // Auto-allowed tool calls have no gate decision, so no human authorized them.
+        authorizedBy: authorizationStatus == AgentAuditAuthorization.autoAllowed ? 'none' : 'user',
         details: {
           'tool': tool,
           if (preview != null) 'preview': preview,
