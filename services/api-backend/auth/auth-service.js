@@ -173,7 +173,9 @@ export class AuthService {
   assertAccessAudience(payload) {
     const expected = this.config.CF_ACCESS_AUD;
     if (!expected) {
-      return;
+      // Fail closed: without an expected audience, any application in the
+      // same Cloudflare Access team would be accepted (#806).
+      throw new Error('Cloudflare Access audience is not configured');
     }
     const aud = payload?.aud;
     const matches = Array.isArray(aud)
@@ -277,7 +279,13 @@ export class AuthService {
           jwt.verify(
             token,
             this.getKey.bind(this),
-            { algorithms: ['RS256'] },
+            {
+            algorithms: ['RS256'],
+            issuer: this.config.CF_ACCESS_TEAM_DOMAIN
+              ? `https://${this.config.CF_ACCESS_TEAM_DOMAIN}`
+              : undefined,
+            audience: this.config.CF_ACCESS_AUD || undefined,
+          },
             (err, decodedToken) => {
               if (err) {
                 reject(err);
@@ -357,7 +365,13 @@ export class AuthService {
         jwt.verify(
           token,
           this.getKey.bind(this),
-          { algorithms: ['RS256'] },
+          {
+            algorithms: ['RS256'],
+            issuer: this.config.CF_ACCESS_TEAM_DOMAIN
+              ? `https://${this.config.CF_ACCESS_TEAM_DOMAIN}`
+              : undefined,
+            audience: this.config.CF_ACCESS_AUD || undefined,
+          },
           (err, decodedToken) => {
             if (err) {
               reject(err);
