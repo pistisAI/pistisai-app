@@ -32,7 +32,7 @@ MAJOR.MINOR.PATCH+BUILD_NUMBER
 - **MAJOR** - Breaking changes or major feature releases
 - **MINOR** - New features, backward compatible
 - **PATCH** - Bug fixes, backward compatible
-- **BUILD_NUMBER** - Timestamp-based build identifier (YYYYMMDDHHmm)
+- **BUILD_NUMBER** - Integer build number (`build_number` in `assets/version.json`, matching the `+N` suffix in `pubspec.yaml`)
 
 ### Version Sources
 
@@ -45,7 +45,7 @@ Version information is maintained in:
 ### Build Process
 
 1. **Version Extraction** - Extract version from `pubspec.yaml`
-2. **Build Number Generation** - Generate timestamp-based build number
+2. **Build Number Generation** - Increment the integer build number when releasing (see `scripts/version_manager.sh`)
 3. **Version Injection** - Inject version into build artifacts
 4. **Git Tagging** - Create version tags for releases
 5. **Release Creation** - Generate GitHub releases with artifacts
