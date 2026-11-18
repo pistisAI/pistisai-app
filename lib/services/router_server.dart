@@ -283,8 +283,13 @@ class RouterServer {
         streamed.contentLength = bodyBytes.length;
         streamed.sink.add(bodyBytes);
       }
-      await streamed.sink.close();
-      final upstreamResponse = await streamed.send().timeout(
+      final upstreamResponse = await Future<http.StreamedResponse>(() async {
+        // Close the sink only after send() has attached a listener; awaiting
+        // close() first never completes because nothing reads the sink yet.
+        final pending = streamed.send();
+        await streamed.sink.close();
+        return pending;
+      }).timeout(
         const Duration(seconds: 120),
       );
       final responseBytes = await upstreamResponse.stream.toBytes();
