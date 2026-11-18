@@ -1,12 +1,12 @@
-# Pistisai Timestamp-Based Build Numbers v3.5.5+
+# Pistisai Build Numbers
 
 ## Overview
 
-Pistisai uses timestamp-based build numbers in YYYYMMDDHHMM format to represent the actual build creation time. This ensures that build numbers are unique, chronologically ordered, and meaningful for tracking deployment history.
+Pistisai uses an integer `build_number`, the `+N` suffix in `pubspec.yaml`. It must match `build_number` in `assets/version.json` (see AGENTS.md). Build numbers are not timestamps; the timestamp scheme described earlier in this document is no longer used by the code.
 
 ## Build Number Format
 
-### YYYYMMDDHHMM Structure
+### Historical timestamp format (no longer used)
 
 - **YYYY**: 4-digit year (e.g., 2025)
 - **MM**: 2-digit month (01-12)
@@ -22,7 +22,7 @@ Pistisai uses timestamp-based build numbers in YYYYMMDDHHMM format to represent 
 
 ## Version String Format
 
-The complete version string follows the pattern: `MAJOR.MINOR.PATCH+YYYYMMDDHHMM`
+The complete version string follows the pattern: `MAJOR.MINOR.PATCH+N` where `N` is the integer build number.
 
 ### Examples
 
@@ -251,11 +251,11 @@ Use build numbers to track build performance and deployment schedules.
 
 ### Build Number Format Issues
 
-If build numbers don't match YYYYMMDDHHMM format:
+If `build_number` is not a positive integer, or does not match the `+N` suffix in `pubspec.yaml`:
 
-1. Check system date/time settings
-2. Verify `date` command availability
-3. Run version synchronization script
+1. Check `assets/version.json` and `pubspec.yaml` agree on the same `N`
+2. Do not hand-increment `build_number` locally; change both files together for a real release (AGENTS.md)
+3. Run `scripts/version_manager.sh` to synchronize
 
 ### Version Mismatch Errors
 
