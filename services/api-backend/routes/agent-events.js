@@ -6,6 +6,7 @@ import { getPool } from '../database/db-pool.js';
 import dashboardWSManager from '../websocket/dashboard-ws.js';
 import logger from '../logger.js';
 import { validateSchema } from '../middleware/schema-validation.js';
+import { resolveOpenClawWebhookSecret } from './openclaw-webhook-secret.js';
 
 const router = express.Router();
 // Same limit as the global pipeline limiter, applied here as well so every
@@ -31,8 +32,7 @@ const agentEventBodySchema = z.object({
 
 // Middleware: Verify webhook signature
 const verifyWebhookSignature = (req, res, next) => {
-  const webhookSecret =
-    process.env.OPENCLAW_WEBHOOK_SECRET || process.env.JWT_SECRET;
+  const webhookSecret = resolveOpenClawWebhookSecret();
   const signature = req.headers['x-openclaw-signature'];
 
   if (!webhookSecret) {
