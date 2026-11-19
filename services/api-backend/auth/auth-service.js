@@ -300,6 +300,30 @@ export class AuthService {
         this.logger.info('Token verification successful');
       }
 
+      // Reject suspended accounts before creating/updating a session (#847)
+      const userId = await this.resolveUserId(payload.sub, payload);
+      const userStatus = await this.runQuery(
+        'SELECT is_suspended FROM users WHERE id = $1',
+        [userId],
+        'get',
+      );
+      if (userStatus?.is_suspended) {
+        this.logger.warn('Suspended account rejected during token validation', {
+          userId,
+          ip: req.ip,
+        });
+        await this.logSecurityEvent('account_suspended_access_attempt', {
+          userId,
+          ip: req.ip,
+          userAgent: req.headers?.['user-agent'],
+        });
+        return {
+          valid: false,
+          error: 'Account is suspended',
+          code: 'ACCOUNT_SUSPENDED',
+        };
+      }
+
       const session = await this.createOrUpdateSession(payload, token, req);
 
       this.logger.info('Token validated successfully', {
@@ -327,6 +351,7 @@ export class AuthService {
       return {
         valid: false,
         error: error.message,
+        code: error.code,
       };
     }
   }

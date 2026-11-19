@@ -223,18 +223,20 @@ class BulkOperationsService {
     };
 
     for (const userId of userIds) {
+      const client = await pool.connect();
       try {
-        await pool.query('BEGIN');
+        await client.query('BEGIN');
 
         // Get current subscription
         const currentQuery = `
           SELECT id, tier FROM subscriptions 
           WHERE user_id = $1 AND status = 'active'
         `;
-        const currentResult = await pool.query(currentQuery, [userId]);
+        const currentResult = await client.query(currentQuery, [userId]);
         const currentTier = currentResult.rows[0]?.tier || 'free';
 
         if (currentTier === tier) {
+          await client.query('ROLLBACK');
           operation.processedUsers++;
           continue;
         }
@@ -248,7 +250,7 @@ class BulkOperationsService {
             WHERE user_id = $2 
             RETURNING id
           `;
-          const updateResult = await pool.query(updateQuery, [tier, userId]);
+          const updateResult = await client.query(updateQuery, [tier, userId]);
           subscriptionId = updateResult.rows[0].id;
         } else {
           const insertQuery = `
@@ -256,7 +258,7 @@ class BulkOperationsService {
             VALUES ($1, $2, 'active', NOW(), NOW())
             RETURNING id
           `;
-          const insertResult = await pool.query(insertQuery, [userId, tier]);
+          const insertResult = await client.query(insertQuery, [userId, tier]);
           subscriptionId = insertResult.rows[0].id;
         }
 
@@ -277,7 +279,7 @@ class BulkOperationsService {
           userAgent: 'bulk-operation',
         });
 
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         operation.successCount++;
         results.updatedUsers.push({
@@ -286,12 +288,14 @@ class BulkOperationsService {
           newTier: tier,
         });
       } catch (error) {
-        await pool.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => {});
         operation.failureCount++;
         results.errors.push({
           userId,
           error: error.message,
         });
+      } finally {
+        client.release();
       }
 
       operation.processedUsers++;
@@ -326,20 +330,22 @@ class BulkOperationsService {
     };
 
     for (const userId of userIds) {
+      const client = await pool.connect();
       try {
-        await pool.query('BEGIN');
+        await client.query('BEGIN');
 
         // Check if already suspended
         const checkQuery = `
           SELECT id, is_suspended FROM users WHERE id = $1
             `;
-        const checkResult = await pool.query(checkQuery, [userId]);
+        const checkResult = await client.query(checkQuery, [userId]);
 
         if (checkResult.rows.length === 0) {
           throw new Error('User not found');
         }
 
         if (checkResult.rows[0].is_suspended) {
+          await client.query('ROLLBACK');
           operation.processedUsers++;
           continue;
         }
@@ -350,10 +356,10 @@ class BulkOperationsService {
           SET is_suspended = true, suspended_at = NOW(), suspension_reason = $1
           WHERE id = $2
             `;
-        await pool.query(suspendQuery, [reason, userId]);
+        await client.query(suspendQuery, [reason, userId]);
 
         // Invalidate sessions
-        await pool.query(
+        await client.query(
           'UPDATE user_sessions SET expires_at = NOW() WHERE user_id = $1 AND expires_at > NOW()',
           [userId],
         );
@@ -374,17 +380,19 @@ class BulkOperationsService {
           userAgent: 'bulk-operation',
         });
 
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         operation.successCount++;
         results.suspendedUsers.push(userId);
       } catch (error) {
-        await pool.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => {});
         operation.failureCount++;
         results.errors.push({
           userId,
           error: error.message,
         });
+      } finally {
+        client.release();
       }
 
       operation.processedUsers++;
@@ -411,20 +419,22 @@ class BulkOperationsService {
     };
 
     for (const userId of userIds) {
+      const client = await pool.connect();
       try {
-        await pool.query('BEGIN');
+        await client.query('BEGIN');
 
         // Check if suspended
         const checkQuery = `
           SELECT id, is_suspended FROM users WHERE id = $1
             `;
-        const checkResult = await pool.query(checkQuery, [userId]);
+        const checkResult = await client.query(checkQuery, [userId]);
 
         if (checkResult.rows.length === 0) {
           throw new Error('User not found');
         }
 
         if (!checkResult.rows[0].is_suspended) {
+          await client.query('ROLLBACK');
           operation.processedUsers++;
           continue;
         }
@@ -435,7 +445,7 @@ class BulkOperationsService {
           SET is_suspended = false, suspended_at = NULL, suspension_reason = NULL
           WHERE id = $1
             `;
-        await pool.query(reactivateQuery, [userId]);
+        await client.query(reactivateQuery, [userId]);
 
         // Log action
         await logAdminAction({
@@ -452,17 +462,19 @@ class BulkOperationsService {
           userAgent: 'bulk-operation',
         });
 
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         operation.successCount++;
         results.reactivatedUsers.push(userId);
       } catch (error) {
-        await pool.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => {});
         operation.failureCount++;
         results.errors.push({
           userId,
           error: error.message,
         });
+      } finally {
+        client.release();
       }
 
       operation.processedUsers++;
@@ -497,8 +509,9 @@ class BulkOperationsService {
     };
 
     for (const userId of userIds) {
+      const client = await pool.connect();
       try {
-        await pool.query('BEGIN');
+        await client.query('BEGIN');
 
         if (softDelete) {
           // Soft delete
@@ -507,16 +520,16 @@ class BulkOperationsService {
             SET deleted_at = NOW()
             WHERE id = $1
             `;
-          await pool.query(deleteQuery, [userId]);
+          await client.query(deleteQuery, [userId]);
         } else {
           // Hard delete - cascade delete related data
-          await pool.query('DELETE FROM user_sessions WHERE user_id = $1', [
+          await client.query('DELETE FROM user_sessions WHERE user_id = $1', [
             userId,
           ]);
-          await pool.query('DELETE FROM subscriptions WHERE user_id = $1', [
+          await client.query('DELETE FROM subscriptions WHERE user_id = $1', [
             userId,
           ]);
-          await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+          await client.query('DELETE FROM users WHERE id = $1', [userId]);
         }
 
         // Log action
@@ -535,17 +548,19 @@ class BulkOperationsService {
           userAgent: 'bulk-operation',
         });
 
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         operation.successCount++;
         results.deletedUsers.push(userId);
       } catch (error) {
-        await pool.query('ROLLBACK').catch(() => {});
+        await client.query('ROLLBACK').catch(() => {});
         operation.failureCount++;
         results.errors.push({
           userId,
           error: error.message,
         });
+      } finally {
+        client.release();
       }
 
       operation.processedUsers++;

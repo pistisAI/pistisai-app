@@ -562,10 +562,11 @@ router.patch(
         }
       }
 
-      // Begin transaction
-      await pool.query('BEGIN');
-
+      // Begin transaction on a dedicated client so BEGIN/COMMIT wrap all statements (#847)
+      const client = await pool.connect();
       try {
+        await client.query('BEGIN');
+
         let subscriptionId;
 
         if (user.subscription_id) {
@@ -576,7 +577,7 @@ router.patch(
           WHERE id = $2
           RETURNING id
         `;
-          const updateResult = await pool.query(updateQuery, [
+          const updateResult = await client.query(updateQuery, [
             newTier,
             user.subscription_id,
           ]);
@@ -588,7 +589,10 @@ router.patch(
           VALUES ($1, $2, 'active', NOW(), NOW())
           RETURNING id
         `;
-          const insertResult = await pool.query(insertQuery, [userId, newTier]);
+          const insertResult = await client.query(insertQuery, [
+            userId,
+            newTier,
+          ]);
           subscriptionId = insertResult.rows[0].id;
         }
 
@@ -611,8 +615,7 @@ router.patch(
           userAgent: req.get('User-Agent'),
         });
 
-        // Commit transaction
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         logger.info('✅ [AdminUsers] User subscription tier updated', {
           adminUserId: req.adminUser.id,
@@ -635,9 +638,10 @@ router.patch(
           timestamp: new Date().toISOString(),
         });
       } catch (error) {
-        // Rollback transaction on error
-        await pool.query('ROLLBACK');
+        await client.query('ROLLBACK');
         throw error;
+      } finally {
+        client.release();
       }
     } catch (error) {
       logger.error('🔴 [AdminUsers] Failed to update user subscription', {
@@ -723,10 +727,11 @@ router.post(
         });
       }
 
-      // Begin transaction
-      await pool.query('BEGIN');
-
+      // Begin transaction on a dedicated client so BEGIN/COMMIT wrap all statements (#847)
+      const client = await pool.connect();
       try {
+        await client.query('BEGIN');
+
         // Suspend user
         const suspendQuery = `
         UPDATE users
@@ -736,7 +741,7 @@ router.post(
         WHERE id = $2
       `;
 
-        await pool.query(suspendQuery, [reason.trim(), userId]);
+        await client.query(suspendQuery, [reason.trim(), userId]);
 
         // Invalidate all active sessions
         const invalidateSessionsQuery = `
@@ -745,7 +750,7 @@ router.post(
         WHERE user_id = $1 AND expires_at > NOW()
       `;
 
-        const sessionsResult = await pool.query(invalidateSessionsQuery, [
+        const sessionsResult = await client.query(invalidateSessionsQuery, [
           userId,
         ]);
         const invalidatedSessions = sessionsResult.rowCount;
@@ -769,8 +774,7 @@ router.post(
           userAgent: req.get('User-Agent'),
         });
 
-        // Commit transaction
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         logger.warn('⚠️ [AdminUsers] User account suspended', {
           adminUserId: req.adminUser.id,
@@ -793,9 +797,10 @@ router.post(
           timestamp: new Date().toISOString(),
         });
       } catch (error) {
-        // Rollback transaction on error
-        await pool.query('ROLLBACK');
+        await client.query('ROLLBACK');
         throw error;
+      } finally {
+        client.release();
       }
     } catch (error) {
       logger.error('🔴 [AdminUsers] Failed to suspend user account', {
@@ -873,10 +878,11 @@ router.post(
         });
       }
 
-      // Begin transaction
-      await pool.query('BEGIN');
-
+      // Begin transaction on a dedicated client so BEGIN/COMMIT wrap all statements (#847)
+      const client = await pool.connect();
       try {
+        await client.query('BEGIN');
+
         // Reactivate user
         const reactivateQuery = `
         UPDATE users
@@ -886,7 +892,7 @@ router.post(
         WHERE id = $1
       `;
 
-        await pool.query(reactivateQuery, [userId]);
+        await client.query(reactivateQuery, [userId]);
 
         // Log the action in audit log
         await logAdminAction({
@@ -907,8 +913,7 @@ router.post(
           userAgent: req.get('User-Agent'),
         });
 
-        // Commit transaction
-        await pool.query('COMMIT');
+        await client.query('COMMIT');
 
         logger.info('✅ [AdminUsers] User account reactivated', {
           adminUserId: req.adminUser.id,
@@ -929,9 +934,10 @@ router.post(
           timestamp: new Date().toISOString(),
         });
       } catch (error) {
-        // Rollback transaction on error
-        await pool.query('ROLLBACK');
+        await client.query('ROLLBACK');
         throw error;
+      } finally {
+        client.release();
       }
     } catch (error) {
       logger.error('🔴 [AdminUsers] Failed to reactivate user account', {

@@ -100,6 +100,12 @@ export function adminAuth(requiredPermissions = []) {
           logger.warn('🔴 [AdminAuth] Token verification failed', {
             error: validationResult.error,
           });
+          if (validationResult.code === 'ACCOUNT_SUSPENDED') {
+            return res.status(403).json({
+              error: 'Account is suspended',
+              code: 'ACCOUNT_SUSPENDED',
+            });
+          }
           return res.status(401).json({
             error: 'Invalid token',
             code: 'INVALID_TOKEN',
