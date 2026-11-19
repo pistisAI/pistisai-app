@@ -47,7 +47,15 @@ const verifyWebhookSignature = (req, res, next) => {
     .update(JSON.stringify(req.body))
     .digest('hex');
 
-  if (!signature || signature !== expectedSignature) {
+  const signatureOk =
+    typeof signature === 'string' &&
+    signature.length === expectedSignature.length &&
+    crypto.timingSafeEqual(
+      Buffer.from(signature, 'utf8'),
+      Buffer.from(expectedSignature, 'utf8')
+    );
+
+  if (!signatureOk) {
     logger.warn('Invalid OpenClaw webhook signature', {
       hasSignature: !!signature,
       agentId: req.body?.agent_id,
