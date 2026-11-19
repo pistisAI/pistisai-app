@@ -9,8 +9,8 @@ import 'package:http/http.dart' as http;
 ///
 /// The pistisai plugin's awareness hook (`pre_llm_call`) reads the same
 /// `device-context.json` on the Hermes host and injects it into every turn,
-/// so the agent knows which PC and which session the user is on. The Hermes
-/// host also adds its own hostname, so the PC name needs no client help.
+/// so the agent knows which session and device kind the user is on. PC
+/// hostname is opt-in on the Hermes host (`AIGENT_AWARENESS_HOST=1`).
 class HermesDeviceContextService {
   HermesDeviceContextService({
     required this.baseUrl,
