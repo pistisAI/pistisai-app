@@ -63,3 +63,5 @@ Moved files:
 - operations/backend/GRACEFUL_DEGRADATION_IMPLEMENTATION.md
 - operations/backend/LOG_AGGREGATION_IMPLEMENTATION.md
 - operations/backend/PROMETHEUS_METRICS_IMPLEMENTATION.md
+- deployment/STABILIZATION_REPORT.md
+- development/NATIVE_PLATFORM_IMPLEMENTATION.md
