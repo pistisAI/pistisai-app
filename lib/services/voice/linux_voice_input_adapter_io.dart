@@ -2,9 +2,78 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:path/path.dart' as p;
 import 'package:record/record.dart';
 
 import 'voice_input_contract.dart';
+
+/// Resolve the voice transcription script to an absolute path.
+///
+/// Prefers an explicit [scriptPath] / env override, then a script next to the
+/// application executable (bundle), then walks up from the executable looking
+/// for `scripts/voice_transcribe.sh` (dev layouts). Never returns a bare
+/// CWD-relative path like `scripts/voice_transcribe.sh`.
+String resolveVoiceTranscribeScriptPath({
+  String? scriptPath,
+  String? environmentScript,
+  String? executablePath,
+  String? currentDirectory,
+}) {
+  final explicit = scriptPath?.trim();
+  if (explicit != null && explicit.isNotEmpty) {
+    return p.isAbsolute(explicit)
+        ? explicit
+        : p.normalize(p.join(
+            currentDirectory ?? Directory.current.path,
+            explicit,
+          ));
+  }
+
+  final fromEnv = (environmentScript ??
+          Platform.environment['pistisai_VOICE_TRANSCRIBE_SCRIPT'])
+      ?.trim();
+  if (fromEnv != null && fromEnv.isNotEmpty) {
+    return p.isAbsolute(fromEnv)
+        ? fromEnv
+        : p.normalize(p.join(
+            currentDirectory ?? Directory.current.path,
+            fromEnv,
+          ));
+  }
+
+  final exe = executablePath ?? Platform.resolvedExecutable;
+  final exeDir = File(exe).parent.path;
+  final scriptName = p.join('scripts', 'voice_transcribe.sh');
+
+  final candidates = <String>[
+    p.join(exeDir, scriptName),
+  ];
+
+  // Flutter Linux/Windows bundles nest the binary under build/.../bundle.
+  // Walk a few parents so a repo-checkout layout still finds scripts/.
+  var walkDir = exeDir;
+  for (var i = 0; i < 8; i++) {
+    final parent = Directory(walkDir).parent.path;
+    if (parent == walkDir) {
+      break;
+    }
+    walkDir = parent;
+    candidates.add(p.join(walkDir, scriptName));
+  }
+
+  final cwd = currentDirectory ?? Directory.current.path;
+  candidates.add(p.join(cwd, scriptName));
+
+  for (final candidate in candidates) {
+    final file = File(candidate);
+    if (file.existsSync()) {
+      return file.absolute.path;
+    }
+  }
+
+  // Fail closed to an absolute bundle-relative path (not CWD-relative).
+  return p.normalize(p.join(exeDir, scriptName));
+}
 
 VoiceInputAdapter? createLinuxVoiceInputAdapter({
   required bool isLinux,
@@ -117,13 +186,19 @@ class CommandVoiceTranscriptTranscriber implements VoiceTranscriptTranscriber {
     String? command,
     List<String>? arguments,
     String? scriptPath,
+    String? executablePath,
+    String? currentDirectory,
+    String? environmentScript,
     ProcessRunner? processRunner,
   }) {
     final resolvedCommand =
         command ?? Platform.environment['pistisai_VOICE_TRANSCRIBE_COMMAND'] ?? 'bash';
-    final resolvedScriptPath = scriptPath ??
-        Platform.environment['pistisai_VOICE_TRANSCRIBE_SCRIPT'] ??
-        'scripts/voice_transcribe.sh';
+    final resolvedScriptPath = resolveVoiceTranscribeScriptPath(
+      scriptPath: scriptPath,
+      environmentScript: environmentScript,
+      executablePath: executablePath,
+      currentDirectory: currentDirectory,
+    );
     final resolvedArguments = arguments ?? [resolvedScriptPath];
     return CommandVoiceTranscriptTranscriber(
       command: resolvedCommand,

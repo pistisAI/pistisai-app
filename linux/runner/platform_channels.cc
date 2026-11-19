@@ -5,9 +5,17 @@
 #include <fstream>
 #include <algorithm>
 #include <memory>
+#include <string>
+
+#include <fcntl.h>
+#include <spawn.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include <glib.h>
 #include <gio/gio.h>
+
+extern char** environ;
 
 #include <wayland-client.h>
 #include <wayland-cursor.h>
@@ -882,10 +890,147 @@ static FlValue* camera_capture_image(FlValue* args) {
 // OCR Engine Channel (pistisai/ocr_engine)
 // ============================================================================
 
+// Tesseract language codes are ISO 639-2/3, optionally with a script suffix
+// (e.g. eng, fra, chi_sim). Reject anything outside this charset so -l cannot
+// inject shell/metacharacters even if a future caller concatenates args.
+static bool ocr_is_allowed_language_code(const char* code) {
+  if (!code || !*code) {
+    return false;
+  }
+  size_t len = 0;
+  for (const char* p = code; *p; ++p, ++len) {
+    const unsigned char c = static_cast<unsigned char>(*p);
+    const bool ok = (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
+    if (!ok || len >= 16) {
+      return false;
+    }
+  }
+  return len >= 2;
+}
+
+static bool ocr_build_language_arg(FlValue* languages_value, std::string* out) {
+  if (!out) {
+    return false;
+  }
+  *out = "eng";
+  if (!languages_value || fl_value_get_type(languages_value) != FL_VALUE_TYPE_LIST) {
+    return true;
+  }
+
+  std::string lang;
+  for (size_t i = 0; i < fl_value_get_length(languages_value); i++) {
+    FlValue* item = fl_value_get_list_value(languages_value, i);
+    if (fl_value_get_type(item) != FL_VALUE_TYPE_STRING) {
+      continue;
+    }
+    const char* code = fl_value_get_string(item);
+    if (!ocr_is_allowed_language_code(code)) {
+      std::cerr << "[OCR] Rejected invalid language code" << std::endl;
+      return false;
+    }
+    if (!lang.empty()) {
+      lang += "+";
+    }
+    lang += code;
+  }
+  if (!lang.empty()) {
+    *out = lang;
+  }
+  return true;
+}
+
+// Run tesseract with an argv vector via posix_spawnp (no shell).
+static std::string ocr_run_tesseract(const char* image_path,
+                                     const std::string& lang) {
+  if (!image_path || !*image_path) {
+    return "";
+  }
+
+  int pipefd[2];
+  if (pipe(pipefd) != 0) {
+    std::cerr << "[OCR] Failed to create pipe" << std::endl;
+    return "";
+  }
+
+  posix_spawn_file_actions_t actions;
+  if (posix_spawn_file_actions_init(&actions) != 0) {
+    close(pipefd[0]);
+    close(pipefd[1]);
+    return "";
+  }
+  posix_spawn_file_actions_adddup2(&actions, pipefd[1], STDOUT_FILENO);
+  posix_spawn_file_actions_addopen(&actions, STDERR_FILENO, "/dev/null",
+                                   O_WRONLY, 0);
+  posix_spawn_file_actions_addclose(&actions, pipefd[0]);
+  posix_spawn_file_actions_addclose(&actions, pipefd[1]);
+
+  char* argv[] = {
+      const_cast<char*>("tesseract"),
+      const_cast<char*>(image_path),
+      const_cast<char*>("stdout"),
+      const_cast<char*>("-l"),
+      const_cast<char*>(lang.c_str()),
+      nullptr,
+  };
+
+  pid_t pid = 0;
+  const int spawn_rc =
+      posix_spawnp(&pid, "tesseract", &actions, nullptr, argv, environ);
+  posix_spawn_file_actions_destroy(&actions);
+  close(pipefd[1]);
+
+  if (spawn_rc != 0) {
+    close(pipefd[0]);
+    std::cerr << "[OCR] Failed to spawn tesseract" << std::endl;
+    return "";
+  }
+
+  std::string result;
+  char buffer[4096];
+  ssize_t nread;
+  while ((nread = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
+    result.append(buffer, static_cast<size_t>(nread));
+  }
+  close(pipefd[0]);
+
+  int status = 0;
+  waitpid(pid, &status, 0);
+
+  while (!result.empty() && (result.back() == '\n' || result.back() == '\r')) {
+    result.pop_back();
+  }
+  return result;
+}
+
 static FlValue* ocr_initialize() {
-  // Check if tesseract is available on the system
-  int ret = system("which tesseract > /dev/null 2>&1");
-  if (ret == 0) {
+  // Probe tesseract without a shell: spawn and wait.
+  posix_spawn_file_actions_t actions;
+  if (posix_spawn_file_actions_init(&actions) != 0) {
+    return fl_value_new_bool(false);
+  }
+  posix_spawn_file_actions_addopen(&actions, STDOUT_FILENO, "/dev/null",
+                                   O_WRONLY, 0);
+  posix_spawn_file_actions_addopen(&actions, STDERR_FILENO, "/dev/null",
+                                   O_WRONLY, 0);
+
+  char* argv[] = {
+      const_cast<char*>("tesseract"),
+      const_cast<char*>("--version"),
+      nullptr,
+  };
+  pid_t pid = 0;
+  const int spawn_rc =
+      posix_spawnp(&pid, "tesseract", &actions, nullptr, argv, environ);
+  posix_spawn_file_actions_destroy(&actions);
+
+  if (spawn_rc != 0) {
+    std::cerr << "[OCR] Tesseract binary not found on system" << std::endl;
+    return fl_value_new_bool(false);
+  }
+
+  int status = 0;
+  waitpid(pid, &status, 0);
+  if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
     std::cout << "[OCR] Tesseract binary found on system" << std::endl;
     return fl_value_new_bool(true);
   }
@@ -904,30 +1049,7 @@ static FlValue* ocr_extract_text(FlValue* args) {
   }
 
   const char* image_path = fl_value_get_string(path_value);
-
-  // Build and execute tesseract command
-  std::string cmd = "tesseract \"";
-  cmd += image_path;
-  cmd += "\" stdout -l eng 2>/dev/null";
-
-  FILE* pipe = popen(cmd.c_str(), "r");
-  if (!pipe) {
-    std::cerr << "[OCR] Failed to run tesseract" << std::endl;
-    return fl_value_new_string("");
-  }
-
-  std::string result;
-  char buffer[4096];
-  while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-    result += buffer;
-  }
-  pclose(pipe);
-
-  // Trim trailing newline
-  while (!result.empty() && (result.back() == '\n' || result.back() == '\r')) {
-    result.pop_back();
-  }
-
+  const std::string result = ocr_run_tesseract(image_path, "eng");
   return fl_value_new_string(result.c_str());
 }
 
@@ -943,45 +1065,13 @@ static FlValue* ocr_extract_text_multilingual(FlValue* args) {
     return fl_value_new_string("");
   }
 
-  const char* image_path = fl_value_get_string(path_value);
-
-  // Build language string
-  std::string lang = "eng";
-  if (languages_value && fl_value_get_type(languages_value) == FL_VALUE_TYPE_LIST) {
-    lang = "";
-    for (size_t i = 0; i < fl_value_get_length(languages_value); i++) {
-      FlValue* item = fl_value_get_list_value(languages_value, i);
-      if (fl_value_get_type(item) == FL_VALUE_TYPE_STRING) {
-        if (!lang.empty()) lang += "+";
-        lang += fl_value_get_string(item);
-      }
-    }
-    if (lang.empty()) lang = "eng";
-  }
-
-  std::string cmd = "tesseract \"";
-  cmd += image_path;
-  cmd += "\" stdout -l ";
-  cmd += lang;
-  cmd += " 2>/dev/null";
-
-  FILE* pipe = popen(cmd.c_str(), "r");
-  if (!pipe) {
-    std::cerr << "[OCR] Failed to run tesseract" << std::endl;
+  std::string lang;
+  if (!ocr_build_language_arg(languages_value, &lang)) {
     return fl_value_new_string("");
   }
 
-  std::string result;
-  char buffer[4096];
-  while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-    result += buffer;
-  }
-  pclose(pipe);
-
-  while (!result.empty() && (result.back() == '\n' || result.back() == '\r')) {
-    result.pop_back();
-  }
-
+  const char* image_path = fl_value_get_string(path_value);
+  const std::string result = ocr_run_tesseract(image_path, lang);
   return fl_value_new_string(result.c_str());
 }
 

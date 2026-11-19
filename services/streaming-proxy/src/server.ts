@@ -342,7 +342,7 @@ app.get('/api/tunnel/config/log-level', async (req: Request, res: Response) => {
  * Requires admin authentication
  * Request body: { "level": "DEBUG" }
  */
-app.put('/api/tunnel/config/log-level', async (req: Request, res: Response) => {
+app.put('/api/tunnel/config/log-level', requireAdminAuth, async (req: Request, res: Response) => {
   try {
     const { level } = req.body;
     
@@ -415,7 +415,7 @@ app.get('/api/tunnel/config', (req: Request, res: Response) => {
  * 
  * Requirements: 9.6, 26.2
  */
-app.put('/api/tunnel/config', (req: Request, res: Response) => {
+app.put('/api/tunnel/config', requireAdminAuth, (req: Request, res: Response) => {
   try {
     const manager = getConfigManager();
     const updates = req.body;
@@ -452,7 +452,7 @@ app.put('/api/tunnel/config', (req: Request, res: Response) => {
  * 
  * Requirements: 9.6, 26.2
  */
-app.post('/api/tunnel/config/reset', (req: Request, res: Response) => {
+app.post('/api/tunnel/config/reset', requireAdminAuth, (req: Request, res: Response) => {
   try {
     const manager = getConfigManager();
     const config = manager.resetConfig();

@@ -1,12 +1,66 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:pistisai/services/voice/linux_voice_input_adapter_io.dart';
 import 'package:pistisai/services/voice/voice_input_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  group('resolveVoiceTranscribeScriptPath', () {
+    test('returns an absolute path under the executable bundle, not a CWD-relative script',
+        () {
+      final tempDir = Directory.systemTemp.createTempSync('voice_script_resolve_');
+      addTearDown(() => tempDir.deleteSync(recursive: true));
+
+      final bundleDir = Directory(p.join(tempDir.path, 'bundle'))..createSync();
+      final exePath = p.join(bundleDir.path, 'pistisai');
+      File(exePath).writeAsStringSync('');
+      final script = File(p.join(bundleDir.path, 'scripts', 'voice_transcribe.sh'))
+        ..createSync(recursive: true)
+        ..writeAsStringSync('#!/bin/bash\n');
+
+      final resolved = resolveVoiceTranscribeScriptPath(
+        executablePath: exePath,
+        currentDirectory: p.join(tempDir.path, 'unrelated-cwd'),
+      );
+
+      expect(p.isAbsolute(resolved), isTrue);
+      expect(resolved, script.absolute.path);
+      expect(resolved, isNot(equals('scripts/voice_transcribe.sh')));
+    });
+
+    test('prefers an explicit scriptPath override', () {
+      final resolved = resolveVoiceTranscribeScriptPath(
+        scriptPath: '/opt/pistisai/scripts/voice_transcribe.sh',
+        executablePath: '/tmp/bundle/pistisai',
+        currentDirectory: '/tmp',
+      );
+      expect(resolved, '/opt/pistisai/scripts/voice_transcribe.sh');
+    });
+  });
+
   group('CommandVoiceTranscriptTranscriber', () {
+    test('fromEnvironment defaults to an absolute bundle script path', () {
+      final tempDir = Directory.systemTemp.createTempSync('voice_from_env_');
+      addTearDown(() => tempDir.deleteSync(recursive: true));
+      final bundleDir = Directory(p.join(tempDir.path, 'bundle'))..createSync();
+      final exePath = p.join(bundleDir.path, 'pistisai');
+      File(exePath).writeAsStringSync('');
+      final script = File(p.join(bundleDir.path, 'scripts', 'voice_transcribe.sh'))
+        ..createSync(recursive: true)
+        ..writeAsStringSync('#!/bin/bash\n');
+
+      final transcriber = CommandVoiceTranscriptTranscriber.fromEnvironment(
+        executablePath: exePath,
+        currentDirectory: p.join(tempDir.path, 'other'),
+        // Isolate from ambient process env in CI/dev shells.
+        environmentScript: '',
+      );
+
+      expect(transcriber.arguments, [script.absolute.path]);
+    });
+
     test('returns trimmed stdout from the command runner', () async {
       final observedCalls = <List<String>>[];
       final transcriber = CommandVoiceTranscriptTranscriber(
