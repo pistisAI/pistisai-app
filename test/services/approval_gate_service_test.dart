@@ -70,6 +70,35 @@ void main() {
       );
       expect(gate.requiresApproval(action), isTrue);
     });
+
+    test('default startup types require approval (send/invoice/payment/delete)',
+        () {
+      for (final type in const [
+        'send_email',
+        'send_invoice',
+        'payment',
+        'delete',
+      ]) {
+        expect(gate.isRegisteredCriticalActionType(type), isTrue, reason: type);
+        final action = CriticalAction(
+          category: CriticalActionCategory.custom,
+          title: type,
+          summary: 'Critical side effect.',
+          actionType: type,
+        );
+        expect(gate.requiresApproval(action), isTrue, reason: type);
+      }
+    });
+
+    test('unregistered action types fail closed (require approval)', () {
+      final action = CriticalAction(
+        category: CriticalActionCategory.custom,
+        title: 'Send email',
+        summary: 'Send a message via email integration.',
+        actionType: 'unknown.side_effect',
+      );
+      expect(gate.requiresApproval(action), isTrue);
+    });
   });
 
   group('requestApproval / resolve', () {
@@ -109,6 +138,58 @@ void main() {
 
       expect(decision.verdict, ApprovalVerdict.approved);
       expect(gate.pendingRequests, isEmpty);
+    });
+
+    test('typed custom actions do not auto-approve', () async {
+      final action = CriticalAction(
+        category: CriticalActionCategory.custom,
+        title: 'Send email',
+        summary: 'Send a message via email integration.',
+        actionType: 'send_email',
+      );
+
+      final future = gate.requestApproval(action);
+      expect(gate.pendingRequests, hasLength(1));
+
+      gate.resolve(gate.pendingRequests.single.id, ApprovalVerdict.approved);
+      final decision = await future;
+      expect(decision.verdict, ApprovalVerdict.approved);
+      expect(decision.note, isNot('auto-approved (not marked critical)'));
+    });
+
+    test('times out to denied when no decision arrives', () {
+      fakeAsync((async) {
+        final timedGate = ApprovalGateService(
+          approvalTimeout: const Duration(milliseconds: 20),
+        );
+
+        ApprovalDecision? decision;
+        timedGate.requestApproval(dataExportAction()).then((d) {
+          decision = d;
+        });
+        expect(timedGate.pendingRequests, hasLength(1));
+
+        async.elapse(const Duration(milliseconds: 20));
+        async.flushMicrotasks();
+
+        expect(decision, isNotNull);
+        expect(decision!.verdict, ApprovalVerdict.denied);
+        expect(decision!.note, contains('timed out'));
+        expect(timedGate.pendingRequests, isEmpty);
+        timedGate.dispose();
+      });
+    });
+
+    test('dispose cancels pending requests as denied', () async {
+      final disposable = ApprovalGateService();
+      final future = disposable.requestApproval(dataExportAction());
+      expect(disposable.pendingRequests, hasLength(1));
+
+      disposable.dispose();
+
+      final decision = await future;
+      expect(decision.verdict, ApprovalVerdict.denied);
+      expect(decision.note, contains('disposed'));
     });
   });
 

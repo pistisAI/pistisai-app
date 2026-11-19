@@ -30,6 +30,7 @@ import 'package:pistisai/services/streaming_chat_service.dart';
 import 'package:pistisai/services/web_download_prompt_service.dart'
     if (dart.library.io) 'package:pistisai/services/web_download_prompt_service_stub.dart';
 import 'package:pistisai/services/approval_gate_service.dart';
+import 'package:pistisai/widgets/approval/approval_request_panel.dart';
 import 'package:pistisai/services/auto_update_service.dart';
 import 'package:pistisai/services/log_buffer_service.dart';
 import 'package:pistisai/services/theme_provider.dart';
@@ -625,13 +626,17 @@ class _AppRouterHostState extends State<_AppRouterHost> {
         );
       }
       final mediaQuery = MediaQuery.of(context);
-      return MediaQuery(
-        data: mediaQuery.copyWith(
-          textScaler: TextScaler.linear(
-            mediaQuery.textScaler.scale(1.0).clamp(0.8, 1.2),
+      // ApprovalGateHost must wrap all routes (not only AppNavigationShell) so
+      // prompts appear on /settings/device-mesh and /admin-center as well.
+      return ApprovalGateHost(
+        child: MediaQuery(
+          data: mediaQuery.copyWith(
+            textScaler: TextScaler.linear(
+              mediaQuery.textScaler.scale(1.0).clamp(0.8, 1.2),
+            ),
           ),
+          child: child,
         ),
-        child: child,
       );
     }
 

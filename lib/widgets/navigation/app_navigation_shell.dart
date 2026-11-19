@@ -11,7 +11,6 @@ import '../../services/approval_gate_service.dart';
 import '../../services/connection_manager_service.dart';
 import '../../services/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
-import '../approval/approval_request_panel.dart';
 
 class AppNavigationShell extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -31,16 +30,15 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
 
   @override
   Widget build(BuildContext context) {
+    // ApprovalGateHost is mounted from MaterialApp.router's builder so prompts
+    // also appear on routes outside this shell (settings, admin-center).
     if (widget.navigationShell.currentIndex == 0) {
-      return ApprovalGateHost(
-        child: Scaffold(
-          body: widget.navigationShell,
-        ),
+      return Scaffold(
+        body: widget.navigationShell,
       );
     }
 
-    return ApprovalGateHost(
-      child: Scaffold(
+    return Scaffold(
       body: Row(
         children: [
           // Sidebar
@@ -92,7 +90,6 @@ class _AppNavigationShellState extends State<AppNavigationShell> {
             ),
           ),
         ],
-      ),
       ),
     );
   }
