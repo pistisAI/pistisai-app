@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/services/settings_import_export_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/utils/settings_error_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SettingsImportExportService', () {
@@ -9,6 +10,7 @@ void main() {
     late SettingsImportExportService service;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       preferencesService = SettingsPreferenceService();
       service = SettingsImportExportService(
         preferencesService: preferencesService,
@@ -94,10 +96,21 @@ void main() {
     });
 
     group('applyImportedSettings', () {
-      test('skipped - requires platform-specific setup', () {
-        // This test requires SharedPreferences plugin initialization
-        // which is not available in unit test environment
-        expect(true, isTrue);
+      test('does not apply cloud outbound consent flags from import (#804)',
+          () async {
+        await preferencesService.setCloudLlmProvidersEnabled(false);
+        await preferencesService.setMicrosoftSpeechEnabled(false);
+        await preferencesService.setTheme('light');
+
+        await service.applyImportedSettings({
+          'theme': 'dark',
+          'cloudLlmProvidersEnabled': true,
+          'microsoftSpeechEnabled': true,
+        });
+
+        expect(await preferencesService.getTheme(), 'dark');
+        expect(await preferencesService.isCloudLlmProvidersEnabled(), isFalse);
+        expect(await preferencesService.isMicrosoftSpeechEnabled(), isFalse);
       });
     });
 

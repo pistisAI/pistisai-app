@@ -128,6 +128,42 @@ void main() {
         await server.start();
         expect(server.boundAddressForTest, InternetAddress.anyIPv4);
       });
+
+      test('generates authSecret when remote access is on without one (#804)',
+          () async {
+        final port = await _availableLoopbackPort();
+        final remoteServer = RouterServer(
+          port: port,
+          rateLimitManager: _TestRateLimitManager(),
+          providers: {'zhipu': _EchoProvider()},
+          allowRemoteAccess: true,
+        );
+        addTearDown(remoteServer.stop);
+        expect(remoteServer.authSecret, isNotNull);
+        expect(remoteServer.authSecret, isNotEmpty);
+        await remoteServer.start();
+        expect(remoteServer.boundAddressForTest, InternetAddress.anyIPv4);
+      });
+    });
+
+    group('error responses (#804)', () {
+      test('chat completions errors do not echo exception text', () async {
+        final baseUrl = await _startRouter(serverRef: (value) => server = value);
+
+        final response = await http.post(
+          baseUrl.replace(path: '/v1/chat/completions'),
+          headers: {
+            'Authorization': 'Bearer router-secret',
+            'Content-Type': 'application/json',
+          },
+          body: '{not-json path=/home/user/secret.gguf',
+        );
+
+        expect(response.statusCode, HttpStatus.badRequest);
+        expect(response.body, isNot(contains('/home/')));
+        expect(response.body, isNot(contains('FormatException')));
+        expect(response.body, isNot(contains('not-json')));
+      });
     });
 
     group('accessDecision without a configured secret', () {
