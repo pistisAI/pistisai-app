@@ -138,6 +138,8 @@ void main() {
             fromLoopback: true,
             authorizationHeader: null,
             authSecret: null,
+            host: '127.0.0.1',
+            method: 'GET',
           ),
           isNull,
         );
@@ -156,6 +158,8 @@ void main() {
               fromLoopback: false,
               authorizationHeader: null,
               authSecret: null,
+              host: '127.0.0.1',
+              method: 'GET',
             ),
             HttpStatus.forbidden,
             reason: path,
@@ -187,6 +191,9 @@ void main() {
             fromLoopback: true,
             authorizationHeader: null,
             authSecret: 'router-secret',
+            host: '127.0.0.1',
+            method: 'POST',
+            contentType: 'application/json',
           ),
           HttpStatus.forbidden,
         );
@@ -199,6 +206,10 @@ void main() {
             fromLoopback: false,
             authorizationHeader: 'Bearer router-secret',
             authSecret: 'router-secret',
+            host: '127.0.0.1',
+            method: 'POST',
+            contentType: 'application/json',
+            allowRemoteAccess: true,
           ),
           isNull,
         );
@@ -211,8 +222,92 @@ void main() {
             fromLoopback: false,
             authorizationHeader: 'Bearer nope',
             authSecret: 'router-secret',
+            host: '127.0.0.1',
+            method: 'POST',
+            contentType: 'application/json',
+            allowRemoteAccess: true,
           ),
           HttpStatus.unauthorized,
+        );
+      });
+    });
+
+    group('accessDecision Host / Origin / Content-Type (#805)', () {
+      test('rejects a non-loopback Host (DNS rebinding)', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/v1/chat/completions',
+            fromLoopback: true,
+            authorizationHeader: null,
+            authSecret: null,
+            host: 'evil.example.com',
+            method: 'POST',
+            contentType: 'application/json',
+          ),
+          HttpStatus.forbidden,
+        );
+      });
+
+      test('rejects a non-local Origin', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/avatar/traits',
+            fromLoopback: true,
+            authorizationHeader: null,
+            authSecret: null,
+            host: '127.0.0.1',
+            origin: 'https://evil.example.com',
+            method: 'POST',
+            contentType: 'application/json',
+          ),
+          HttpStatus.forbidden,
+        );
+      });
+
+      test('rejects state-changing requests without JSON Content-Type', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/api/conscience/thoughts',
+            fromLoopback: true,
+            authorizationHeader: null,
+            authSecret: null,
+            host: '127.0.0.1',
+            method: 'POST',
+            contentType: 'text/plain',
+          ),
+          HttpStatus.unsupportedMediaType,
+        );
+      });
+
+      test('allows loopback Host, local Origin, and JSON Content-Type', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/v1/chat/completions',
+            fromLoopback: true,
+            authorizationHeader: null,
+            authSecret: null,
+            host: 'localhost:1337',
+            origin: 'http://127.0.0.1:8080',
+            method: 'POST',
+            contentType: 'application/json; charset=utf-8',
+          ),
+          isNull,
+        );
+      });
+
+      test('skips Host check when remote access is enabled', () {
+        expect(
+          RouterServer.accessDecision(
+            path: '/v1/chat/completions',
+            fromLoopback: false,
+            authorizationHeader: 'Bearer router-secret',
+            authSecret: 'router-secret',
+            host: '100.64.1.20:1337',
+            method: 'POST',
+            contentType: 'application/json',
+            allowRemoteAccess: true,
+          ),
+          isNull,
         );
       });
     });

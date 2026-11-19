@@ -17,7 +17,6 @@ import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
 import 'package:http/http.dart' as http;
-import 'package:pistisai/utils/http_constants.dart';
 
 /// Async gate for optional outbound cloud features. Fail closed when null.
 typedef CloudConsentChecker = Future<bool> Function();
@@ -165,14 +164,35 @@ class RouterServer {
   /// Pure function so the rule can be tested without opening a socket from
   /// another machine. Returns null when the request may proceed, or the
   /// HTTP status to answer with.
+  ///
+  /// Private paths also require a loopback [host] (unless [allowRemoteAccess]),
+  /// a local-or-absent [origin], and `application/json` [contentType] on
+  /// state-changing methods — defenses against DNS rebinding and CSRF (#805).
   @visibleForTesting
   static int? accessDecision({
     required String path,
     required bool fromLoopback,
     required String? authorizationHeader,
     required String? authSecret,
+    String? host,
+    String? origin,
+    String? method,
+    String? contentType,
+    bool allowRemoteAccess = false,
   }) {
     if (_publicPaths.contains(path)) return null;
+
+    if (!allowRemoteAccess && !_isAllowedLoopbackHost(host)) {
+      return HttpStatus.forbidden;
+    }
+
+    if (!_isAllowedOrigin(origin)) {
+      return HttpStatus.forbidden;
+    }
+
+    if (_isStateChangingMethod(method) && !_isJsonContentType(contentType)) {
+      return HttpStatus.unsupportedMediaType;
+    }
 
     if (authSecret == null) {
       // No secret: only callers on this machine may use private endpoints.
@@ -188,6 +208,67 @@ class RouterServer {
     return null;
   }
 
+  /// Hostnames the embedded router accepts when bound to loopback only.
+  static const _loopbackHostNames = {
+    'localhost',
+    '127.0.0.1',
+    '::1',
+    '[::1]',
+  };
+
+  static bool _isAllowedLoopbackHost(String? hostHeader) {
+    if (hostHeader == null || hostHeader.isEmpty) return false;
+    final host = _hostWithoutPort(hostHeader);
+    return _loopbackHostNames.contains(host.toLowerCase());
+  }
+
+  static String _hostWithoutPort(String hostHeader) {
+    final value = hostHeader.trim();
+    if (value.startsWith('[')) {
+      final end = value.indexOf(']');
+      if (end != -1) return value.substring(0, end + 1);
+      return value;
+    }
+    final colon = value.lastIndexOf(':');
+    if (colon == -1) return value;
+    // Raw IPv6 has more than one colon; leave it intact.
+    if (value.indexOf(':') != colon) return value;
+    return value.substring(0, colon);
+  }
+
+  /// Browsers send Origin on cross-site requests. Absent Origin (native
+  /// clients, curl) is allowed; a present Origin must target loopback.
+  static bool _isAllowedOrigin(String? origin) {
+    if (origin == null || origin.isEmpty) return true;
+    final uri = Uri.tryParse(origin);
+    if (uri == null || !uri.hasScheme || uri.host.isEmpty) return false;
+    if (uri.scheme != 'http' && uri.scheme != 'https') return false;
+    final host = uri.host.toLowerCase();
+    return host == 'localhost' ||
+        host == '127.0.0.1' ||
+        host == '::1' ||
+        host == '[::1]';
+  }
+
+  static bool _isStateChangingMethod(String? method) {
+    if (method == null) return false;
+    switch (method.toUpperCase()) {
+      case 'POST':
+      case 'PUT':
+      case 'PATCH':
+      case 'DELETE':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  static bool _isJsonContentType(String? contentType) {
+    if (contentType == null || contentType.isEmpty) return false;
+    final mediaType = contentType.split(';').first.trim().toLowerCase();
+    return mediaType == 'application/json';
+  }
+
   static bool _isLoopbackRequest(Request request) {
     final info = request.context['shelf.io.connection_info'];
     if (info is HttpConnectionInfo) {
@@ -199,7 +280,7 @@ class RouterServer {
 
   /// Auth middleware. Public paths always pass through. Private paths need
   /// the bearer token when [authSecret] is set, and a loopback caller when
-  /// it is not.
+  /// it is not. Also enforces Host / Origin / Content-Type on private paths.
   Middleware _authMiddleware() {
     return (Handler innerHandler) {
       return (Request request) {
@@ -209,6 +290,11 @@ class RouterServer {
           fromLoopback: _isLoopbackRequest(request),
           authorizationHeader: authHeader,
           authSecret: authSecret,
+          host: request.headers['host'],
+          origin: request.headers['origin'],
+          method: request.method,
+          contentType: request.headers['content-type'],
+          allowRemoteAccess: allowRemoteAccess,
         );
         if (decision == null) return innerHandler(request);
 
@@ -223,9 +309,24 @@ class RouterServer {
           );
         }
 
-        final message = authSecret == null
-            ? 'This endpoint is only available on this computer'
-            : 'Missing Authorization header';
+        if (decision == HttpStatus.unsupportedMediaType) {
+          return Response(
+            HttpStatus.unsupportedMediaType,
+            body: jsonEncode({
+              'error': 'Content-Type must be application/json',
+            }),
+            headers: {'Content-Type': 'application/json'},
+          );
+        }
+
+        final message = !_isAllowedLoopbackHost(request.headers['host']) &&
+                !allowRemoteAccess
+            ? 'Invalid Host header'
+            : !_isAllowedOrigin(request.headers['origin'])
+                ? 'Origin not allowed'
+                : authSecret == null
+                    ? 'This endpoint is only available on this computer'
+                    : 'Missing Authorization header';
         return Response.forbidden(
           jsonEncode({'error': message}),
           headers: {'Content-Type': 'application/json'},
