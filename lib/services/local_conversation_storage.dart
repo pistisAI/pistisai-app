@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../database/local_brain_key_store.dart';
 import '../models/conversation.dart';
 import '../utils/logger.dart';
 
@@ -19,17 +19,15 @@ class LocalConversationStorage {
   /// [_dirName]. Still probed so those installs do not lose history.
   static const String _interimDirName = 'chat';
   static const String _keyStorageKey = 'local_conversation_encryption_key';
-  static final FlutterSecureStorage _secureStorage =
-      const FlutterSecureStorage();
 
   LocalConversationStorage({
     Future<Directory> Function()? documentsDirectory,
-    bool skipKeyring = false,
+    LocalBrainKeyVault? keyVault,
   })  : _documentsDirectory = documentsDirectory,
-        _skipKeyring = skipKeyring;
+        _keyVault = keyVault ?? FlutterSecureLocalBrainKeyVault();
 
   final Future<Directory> Function()? _documentsDirectory;
-  final bool _skipKeyring;
+  final LocalBrainKeyVault _keyVault;
 
   encrypt.Key? _cachedKey;
 
@@ -80,39 +78,46 @@ class LocalConversationStorage {
 
   /// Get or generate the AES key for local storage encryption.
   ///
-  /// The file-backed key is the source of truth so the main channel survives
-  /// restarts when libsecret/keyring is unavailable. Keyring is a best-effort
-  /// cache only and must never block save/load.
+  /// Source of truth is the OS keystore ([LocalBrainKeyVault]), matching
+  /// [LocalBrainKeyStore]. A legacy plaintext `.conversation_key` file is
+  /// migrated into the vault once and then deleted.
   Future<encrypt.Key> _getKey() async {
     if (_cachedKey != null) return _cachedKey!;
 
-    String? keyStr = await _readFileKey();
-
-    if ((keyStr == null || keyStr.isEmpty) && !_skipKeyring) {
-      try {
-        keyStr = await _secureStorage.read(key: _keyStorageKey);
-        if (keyStr != null && keyStr.isNotEmpty) {
-          await _writeFileKey(keyStr);
-        }
-      } catch (e) {
-        appLogger.warning(
-          '[LocalChatStorage] Keyring read failed, using file-backed key: $e',
-        );
+    try {
+      final fromVault = await _keyVault.read(_keyStorageKey);
+      if (fromVault != null && fromVault.trim().isNotEmpty) {
+        await _deleteFileKeys();
+        _cachedKey = encrypt.Key.fromBase64(fromVault.trim());
+        return _cachedKey!;
       }
+    } catch (e) {
+      appLogger.warning('[LocalChatStorage] Keystore read failed: $e');
     }
 
-    if (keyStr == null || keyStr.isEmpty) {
-      keyStr = encrypt.Key.fromSecureRandom(32).base64;
-      await _writeFileKey(keyStr);
-      if (!_skipKeyring) {
-        try {
-          await _secureStorage.write(key: _keyStorageKey, value: keyStr);
-        } catch (e) {
-          appLogger.warning(
-            '[LocalChatStorage] Keyring write skipped: $e',
-          );
-        }
+    final fileKey = await _readFileKey();
+    if (fileKey != null && fileKey.isNotEmpty) {
+      try {
+        await _keyVault.write(_keyStorageKey, fileKey);
+        await _deleteFileKeys();
+      } catch (e) {
+        appLogger.warning(
+          '[LocalChatStorage] Could not migrate file key into keystore: $e',
+        );
       }
+      _cachedKey = encrypt.Key.fromBase64(fileKey);
+      return _cachedKey!;
+    }
+
+    final keyStr = encrypt.Key.fromSecureRandom(32).base64;
+    try {
+      await _keyVault.write(_keyStorageKey, keyStr);
+    } catch (e) {
+      throw StateError(
+        'Cannot persist the conversation encryption key in the OS keystore ($e). '
+        'Enable the platform keyring, then restart. Keys must not be written '
+        'to plaintext config files.',
+      );
     }
 
     _cachedKey = encrypt.Key.fromBase64(keyStr);
@@ -120,22 +125,11 @@ class LocalConversationStorage {
   }
 
   Future<String?> _readFileKey() async {
-    final candidates = <File>[
-      File(p.join((await _pistisaiDir()).path, _fileKeyName)),
-    ];
-    for (final dir in await _legacyDirs()) {
-      candidates.add(File(p.join(dir.path, _fileKeyName)));
-    }
-
-    for (final file in candidates) {
+    for (final file in await _fileKeyCandidates()) {
       try {
         if (!await file.exists()) continue;
         final value = (await file.readAsString()).trim();
         if (value.isEmpty) continue;
-        final primary = File(p.join((await _pistisaiDir()).path, _fileKeyName));
-        if (file.path != primary.path) {
-          await _writeFileKey(value);
-        }
         return value;
       } catch (e) {
         appLogger.warning('[LocalChatStorage] File key read failed: $e');
@@ -144,14 +138,26 @@ class LocalConversationStorage {
     return null;
   }
 
-  Future<void> _writeFileKey(String keyStr) async {
-    final file = File(p.join((await _pistisaiDir()).path, _fileKeyName));
-    await file.writeAsString(keyStr, flush: true);
-    if (!Platform.isWindows) {
+  Future<List<File>> _fileKeyCandidates() async {
+    final candidates = <File>[
+      File(p.join((await _pistisaiDir()).path, _fileKeyName)),
+    ];
+    for (final dir in await _legacyDirs()) {
+      candidates.add(File(p.join(dir.path, _fileKeyName)));
+    }
+    return candidates;
+  }
+
+  Future<void> _deleteFileKeys() async {
+    for (final file in await _fileKeyCandidates()) {
       try {
-        await Process.run('chmod', ['600', file.path]);
+        if (await file.exists()) {
+          await file.delete();
+        }
       } catch (e) {
-        appLogger.warning('[LocalChatStorage] chmod 600 failed: $e');
+        appLogger.warning(
+          '[LocalChatStorage] Failed to delete legacy key ${file.path}: $e',
+        );
       }
     }
   }
@@ -355,6 +361,18 @@ class LocalConversationStorage {
         firstStack ??= stack;
       }
     }
+    try {
+      await _deleteFileKeys();
+      await _keyVault.delete(_keyStorageKey);
+    } catch (e, stack) {
+      appLogger.error(
+        '[LocalChatStorage] Error clearing conversation encryption key',
+        error: e,
+      );
+      firstError ??= e;
+      firstStack ??= stack;
+    }
+    _cachedKey = null;
     if (firstError != null) {
       Error.throwWithStackTrace(firstError, firstStack ?? StackTrace.current);
     }

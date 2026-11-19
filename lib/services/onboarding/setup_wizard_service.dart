@@ -771,35 +771,20 @@ class SetupWizardService extends ChangeNotifier {
   /// Write the API key to the Hermes .env file so the Hermes API server
   /// accepts it. Creates the file if missing, updates the existing
   /// API_SERVER_KEY line if present, otherwise appends it.
+  ///
+  /// Permissions are restricted to owner-only (0600) via
+  /// [writeHermesApiServerKey].
   Future<bool> writeApiKeyToHermesEnv(String key) async {
     if (kIsWeb) return false;
     try {
-      final home = hermesHomeDirectory();
-      final envPath = home != null
-          ? '$home${Platform.pathSeparator}.env'
-          : Platform.environment['HERMES_HOME'] != null
-              ? '${Platform.environment['HERMES_HOME']}${Platform.pathSeparator}.env'
-              : '${Platform.environment['HOME']}${Platform.pathSeparator}.hermes${Platform.pathSeparator}.env';
-      final file = File(envPath);
-
-      if (await file.exists()) {
-        final content = await file.readAsString();
-        final lines = content.split('\n');
-        bool replaced = false;
-        final updated = lines.map((line) {
-          if (line.trim().startsWith('API_SERVER_KEY=')) {
-            replaced = true;
-            return 'API_SERVER_KEY=$key';
-          }
-          return line;
-        }).toList();
-        if (!replaced) updated.add('API_SERVER_KEY=$key');
-        await file.writeAsString(updated.join('\n'));
-      } else {
-        await file.parent.create(recursive: true);
-        await file.writeAsString('API_SERVER_KEY=$key\n');
-      }
-      appLogger.info('[SetupWizard] API key written to $envPath');
+      final home = hermesHomeDirectory() ??
+          (Platform.environment['HERMES_HOME']?.trim().isNotEmpty == true
+              ? Platform.environment['HERMES_HOME']!.trim()
+              : '${Platform.environment['HOME']}${Platform.pathSeparator}.hermes');
+      writeHermesApiServerKey(home, preferredKey: key);
+      appLogger.info(
+        '[SetupWizard] API key written to $home${Platform.pathSeparator}.env',
+      );
       return true;
     } catch (e) {
       appLogger.warning('[SetupWizard] Failed to write API key to .env: $e');

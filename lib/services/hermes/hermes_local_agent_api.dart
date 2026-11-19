@@ -122,9 +122,22 @@ String writeHermesApiServerKey(
   );
   if (updated.changed || !file.existsSync()) {
     file.parent.createSync(recursive: true);
-    file.writeAsStringSync(updated.content);
+    file.writeAsStringSync(updated.content, flush: true);
+  }
+  if (file.existsSync()) {
+    _restrictOwnerOnlyPermissions(file);
   }
   return updated.key;
+}
+
+/// Best-effort owner-only mode for secret files (POSIX). No-op on Windows.
+void _restrictOwnerOnlyPermissions(File file) {
+  if (Platform.isWindows) return;
+  try {
+    Process.runSync('chmod', ['600', file.path]);
+  } catch (e) {
+    debugPrint('[HermesAgentApi] chmod 600 failed for ${file.path}: $e');
+  }
 }
 
 /// `.env` text after ensuring `API_SERVER_KEY` and `API_SERVER_ENABLED=true`.

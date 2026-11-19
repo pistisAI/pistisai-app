@@ -4,10 +4,16 @@ import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/app_config.dart';
+import '../database/local_brain_key_store.dart';
 
 enum BackendType { hermes }
 
 class SettingsPreferenceService {
+  SettingsPreferenceService({LocalBrainKeyVault? secureVault})
+      : _secureVault = secureVault ?? FlutterSecureLocalBrainKeyVault();
+
+  final LocalBrainKeyVault _secureVault;
+
   static const String _proModeKey = 'settings_pro_mode';
   static const String _themeKey = 'settings_theme';
   static const String _languageKey = 'settings_language';
@@ -210,6 +216,11 @@ class SettingsPreferenceService {
   Future<void> clearAllData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    try {
+      await _secureVault.delete(_hermesApiKeyKey);
+    } catch (e) {
+      debugPrint('[SettingsPreference] Failed to clear secure Hermes API key: $e');
+    }
   }
 
   /// Clear only the runtime / display preferences that belong to the
@@ -483,13 +494,27 @@ class SettingsPreferenceService {
     }
   }
 
-  /// Hermes API key (optional — Hermes doesn't require auth by default)
+  /// Hermes API key (optional — Hermes doesn't require auth by default).
+  ///
+  /// Stored in the OS keystore, not SharedPreferences.
   Future<String?> getHermesApiKey() async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = prefs.getString(_hermesApiKeyKey);
-    if (key != null && key.isNotEmpty) {
-      return key;
+    try {
+      final secure = await _secureVault.read(_hermesApiKeyKey);
+      if (secure != null && secure.isNotEmpty) {
+        return secure;
+      }
+    } catch (e) {
+      debugPrint('[SettingsPreference] Secure Hermes API key read failed: $e');
     }
+
+    // Migrate legacy SharedPreferences value into the keystore.
+    final prefs = await SharedPreferences.getInstance();
+    final legacy = prefs.getString(_hermesApiKeyKey);
+    if (legacy != null && legacy.isNotEmpty) {
+      await setHermesApiKey(legacy);
+      return legacy;
+    }
+
     // Fallback: auto-discover the key from the Hermes .env file so the
     // wizard "just works" without manual configuration.
     return await _discoverHermesApiKeyFromEnv();
@@ -526,9 +551,7 @@ class SettingsPreferenceService {
             if (value.isNotEmpty) {
               debugPrint(
                   '[SettingsPreference] Auto-discovered Hermes API key from $envPath');
-              // Persist it so future reads don't need the file scan
-              final p = await SharedPreferences.getInstance();
-              await p.setString(_hermesApiKeyKey, value);
+              await setHermesApiKey(value);
               return value;
             }
           }
@@ -543,9 +566,12 @@ class SettingsPreferenceService {
   Future<void> setHermesApiKey(String? value) async {
     final prefs = await SharedPreferences.getInstance();
     if (value == null || value.isEmpty) {
+      await _secureVault.delete(_hermesApiKeyKey);
       await prefs.remove(_hermesApiKeyKey);
     } else {
-      await prefs.setString(_hermesApiKeyKey, value);
+      // Persist to the keystore first, then drop any plaintext prefs copy.
+      await _secureVault.write(_hermesApiKeyKey, value);
+      await prefs.remove(_hermesApiKeyKey);
     }
   }
 
