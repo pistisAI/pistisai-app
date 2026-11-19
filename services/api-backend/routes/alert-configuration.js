@@ -234,7 +234,7 @@ router.put('/channels', adminAuth(['manage_alerts']), validateSchema({ body: upd
  */
 router.get('/history', adminAuth(['view_alerts']), validateSchema({ query: alertHistoryQuerySchema }), (req, res) => {
   try {
-    const { limit, metric, severity } = req.query;
+    const { limit, metric, severity } = req.validatedQuery;
 
     const history = alertConfigService.getAlertHistory({
       limit,

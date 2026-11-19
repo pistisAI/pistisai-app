@@ -27,9 +27,10 @@ export const validateSchema = (schemas) => {
         req.body = await schemas.body.parseAsync(req.body);
       }
 
-      // Validate query
+      // Validate query. Express 5 exposes req.query as a getter, so do not
+      // reassign it — store the parsed result on req.validatedQuery instead.
       if (schemas.query && req.query) {
-        req.query = await schemas.query.parseAsync(req.query);
+        req.validatedQuery = await schemas.query.parseAsync(req.query);
       }
 
       // Validate params

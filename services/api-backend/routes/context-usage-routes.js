@@ -21,7 +21,7 @@ const contextUsageQuerySchema = z.object({
  */
 router.get('/', validateSchema({ query: contextUsageQuerySchema }), async (req, res) => {
   try {
-    const { sessionKey } = req.query;
+    const { sessionKey } = req.validatedQuery;
 
     // Get current context usage
     const result = await db.query(
@@ -52,7 +52,7 @@ router.get('/', validateSchema({ query: contextUsageQuerySchema }), async (req, 
   } catch (error) {
     logger.error('Failed to fetch context usage', {
       error: error.message,
-      sessionKey: req.query.sessionKey,
+      sessionKey: req.validatedQuery?.sessionKey,
     });
     res.status(500).json({
       success: false,

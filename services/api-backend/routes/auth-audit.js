@@ -82,7 +82,7 @@ router.get('/audit-logs/me', authenticateJWT, validateSchema(auditLogsQuerySchem
       });
     }
 
-    const { limit, offset, eventType, startDate, endDate } = req.query;
+    const { limit, offset, eventType, startDate, endDate } = req.validatedQuery;
 
     logger.info('[AuthAudit] Retrieving audit logs for user', {
       userId,
@@ -156,7 +156,7 @@ router.get('/audit-logs/failed-attempts', authenticateJWT, validateSchema(auditL
       });
     }
 
-    const { limit, offset, startDate, endDate } = req.query;
+    const { limit, offset, startDate, endDate } = req.validatedQuery;
 
     logger.info('[AuthAudit] Retrieving failed login attempts for user', {
       userId,
@@ -226,7 +226,8 @@ router.get(
   validateSchema(auditLogsQueryAdminSchema),
   async (req, res) => {
     try {
-      const { limit, offset, eventType, severity, startDate, endDate } = req.query;
+      const { limit, offset, eventType, severity, startDate, endDate } =
+        req.validatedQuery;
 
       logger.info('[AuthAudit] Admin retrieving system-wide audit logs', {
         adminUserId: req.user?.sub,
