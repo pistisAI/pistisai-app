@@ -22,7 +22,7 @@ Moved files:
 - backend/streaming-proxy/rate-limiter/IMPLEMENTATION_SUMMARY.md
 - backend/streaming-proxy/websocket/IMPLEMENTATION_SUMMARY.md
 - deployment/STABILIZATION_REPORT.md
-- development/features/backend/ADAPTIVE_RATE_LIMITING_IMPLEMENTATION.md
+- development/NATIVE_PLATFORM_IMPLEMENTATION.md
 - development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md
 - development/features/backend/ALERT_CONFIGURATION_IMPLEMENTATION.md
 - development/features/backend/API_KEY_IMPLEMENTATION.md
@@ -39,21 +39,16 @@ Moved files:
 - development/features/backend/QUOTA_MANAGEMENT_IMPLEMENTATION.md
 - development/features/backend/RATE_LIMIT_EXEMPTIONS_IMPLEMENTATION.md
 - development/features/backend/RATE_LIMIT_METRICS_IMPLEMENTATION.md
-- development/features/backend/RATE_LIMIT_VIOLATIONS_IMPLEMENTATION.md
 - development/features/backend/REQUEST_QUEUING_IMPLEMENTATION.md
 - development/features/backend/TUNNEL_CONFIG_MANAGEMENT_IMPLEMENTATION.md
 - development/features/backend/TUNNEL_FAILOVER_IMPLEMENTATION.md
-- development/features/backend/TUNNEL_HEALTH_TRACKING_IMPLEMENTATION.md
 - development/features/backend/TUNNEL_SHARING_IMPLEMENTATION.md
 - development/features/backend/TUNNEL_WEBHOOKS_IMPLEMENTATION.md
 - development/features/backend/USER_ACTIVITY_TRACKING_IMPLEMENTATION.md
-- development/features/backend/USER_DELETION_IMPLEMENTATION.md
 - development/features/backend/USER_PROFILE_IMPLEMENTATION.md
 - development/features/backend/WEBHOOK_EVENT_FILTERING_IMPLEMENTATION.md
 - development/features/backend/WEBHOOK_PAYLOAD_TRANSFORMATION_IMPLEMENTATION.md
 - development/features/backend/WEBHOOK_RATE_LIMITING_IMPLEMENTATION.md
-- development/features/backend/WEBHOOK_TESTING_IMPLEMENTATION.md
-- development/NATIVE_PLATFORM_IMPLEMENTATION.md
 - development/testing/integration/COMPREHENSIVE_REFACTOR_PROGRESS.md
 - development/testing/integration/REFACTOR_STATUS_FINAL.md
 - operations/backend/BACKUP_RECOVERY_IMPLEMENTATION.md
@@ -63,5 +58,3 @@ Moved files:
 - operations/backend/GRACEFUL_DEGRADATION_IMPLEMENTATION.md
 - operations/backend/LOG_AGGREGATION_IMPLEMENTATION.md
 - operations/backend/PROMETHEUS_METRICS_IMPLEMENTATION.md
-- deployment/STABILIZATION_REPORT.md
-- development/NATIVE_PLATFORM_IMPLEMENTATION.md
