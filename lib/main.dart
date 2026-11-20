@@ -51,6 +51,12 @@ import 'package:pistisai/utils/single_instance.dart';
 import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:pistisai/services/desktop_control/computer_use_linux_wayland.dart';
+import 'package:pistisai/services/admin_center_service.dart';
+import 'package:pistisai/services/admin_data_flush_service.dart';
+import 'package:pistisai/services/agent_lifecycle_service.dart';
+import 'package:pistisai/services/platform_adapter.dart';
+import 'package:pistisai/services/setup_status_service.dart';
+import 'package:pistisai/services/unified_connection_service.dart';
 
 // navigatorKey is now imported from config/navigator_key.dart
 
@@ -189,8 +195,8 @@ Future<void> _runAppWithSentry() async {
       options.enableAutoPerformanceTracing = false;
       // If the user turns crash reporting off during a session, Dart events
       // stop at once; native collectors stop at the next launch.
-      options.beforeSend = (event, hint) async =>
-          await _crashReportingAllowed() ? event : null;
+      options.beforeSend =
+          (event, hint) async => await _crashReportingAllowed() ? event : null;
     },
     // Start the app inside Sentry's error-tracking zone once the SDK is live.
     appRunner: _runAppCommon,
@@ -408,6 +414,23 @@ class _PistisaiAppState extends State<PistisaiApp> {
           providersList, 'MobileConnectionService');
       _addProviderIfAvailable<ApprovalGateService>(
           providersList, 'ApprovalGateService');
+
+      // Read from Provider by settings, admin and dashboard screens
+      // (connection settings/status, daemon, callback, admin management and
+      // data flush, agent detail). Without them those screens throw
+      // ProviderNotFoundException on open.
+      _addProviderIfAvailable<SetupStatusService>(
+          providersList, 'SetupStatusService');
+      _addProviderIfAvailable<UnifiedConnectionService>(
+          providersList, 'UnifiedConnectionService');
+      _addProviderIfAvailable<AgentLifecycleService>(
+          providersList, 'AgentLifecycleService');
+      _addProviderIfAvailable<AdminCenterService>(
+          providersList, 'AdminCenterService');
+      _addProviderIfAvailable<AdminDataFlushService>(
+          providersList, 'AdminDataFlushService');
+      _addValueProviderIfAvailable<PlatformAdapter>(
+          providersList, 'PlatformAdapter');
 
       debugPrint(
           '[App] Returning MultiProvider with ${providersList.length} providers');
