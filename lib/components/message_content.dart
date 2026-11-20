@@ -4,6 +4,29 @@ import 'dart:convert';
 import '../config/theme.dart';
 import '../models/chat_model.dart';
 
+/// Whether a markdown image URL may be fetched without an explicit user tap.
+///
+/// Remote hosts are blocked by default so rendering a message cannot leak the
+/// user's IP (or URL query params) without consent. `data:` and loopback hosts
+/// stay auto-loaded.
+bool shouldAutoLoadMarkdownImageUrl(String url) {
+  if (url.startsWith('data:')) {
+    return true;
+  }
+  final uri = Uri.tryParse(url);
+  if (uri == null) {
+    return false;
+  }
+  if (uri.scheme != 'http' && uri.scheme != 'https') {
+    return false;
+  }
+  final host = uri.host.toLowerCase();
+  return host == 'localhost' ||
+      host == '127.0.0.1' ||
+      host == '::1' ||
+      host == '[::1]';
+}
+
 class MessageContent extends StatelessWidget {
   final Message message;
 
@@ -293,70 +316,11 @@ class MessageContent extends StatelessWidget {
   Widget _buildImageWidget(BuildContext context, String url, String? alt) {
     if (url.startsWith('data:image')) {
       return _buildBase64Image(context, url, alt);
-    } else {
-      return _buildNetworkImage(url, alt);
     }
-  }
-
-  Widget _buildNetworkImage(String url, String? alt) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          url,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color:
-                    AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppTheme.colorsOf(context)
-                      .secondary
-                      .withValues(alpha: 0.3),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Icon(Icons.broken_image,
-                      color: AppTheme.colorsOf(context).textColorLight),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Failed to load image',
-                    style: TextStyle(
-                        color: AppTheme.colorsOf(context).textColorLight),
-                  ),
-                  if (alt != null && alt.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      alt,
-                      style: TextStyle(
-                          color: AppTheme.colorsOf(context).textColorLight),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ],
-              ),
-            );
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              padding: const EdgeInsets.all(32),
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+    return _NetworkMarkdownImage(
+      url: url,
+      alt: alt,
+      autoLoad: shouldAutoLoadMarkdownImageUrl(url),
     );
   }
 
@@ -460,6 +424,143 @@ class MessageContent extends StatelessWidget {
               ),
         ),
       ],
+    );
+  }
+}
+
+/// Network markdown image: auto-loads only when [autoLoad] is true; otherwise
+/// shows a tap-to-load placeholder so remote fetches need consent.
+class _NetworkMarkdownImage extends StatefulWidget {
+  final String url;
+  final String? alt;
+  final bool autoLoad;
+
+  const _NetworkMarkdownImage({
+    required this.url,
+    required this.alt,
+    required this.autoLoad,
+  });
+
+  @override
+  State<_NetworkMarkdownImage> createState() => _NetworkMarkdownImageState();
+}
+
+class _NetworkMarkdownImageState extends State<_NetworkMarkdownImage> {
+  late bool _loadRequested;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRequested = widget.autoLoad;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_loadRequested) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Material(
+          color: AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () => setState(() => _loadRequested = true),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppTheme.colorsOf(context)
+                      .secondary
+                      .withValues(alpha: 0.3),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.image_outlined,
+                      color: AppTheme.colorsOf(context).textColorLight),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Load image',
+                    style: TextStyle(
+                        color: AppTheme.colorsOf(context).textColor),
+                  ),
+                  if (widget.alt != null && widget.alt!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.alt!,
+                      style: TextStyle(
+                          color: AppTheme.colorsOf(context).textColorLight),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          widget.url,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color:
+                    AppTheme.colorsOf(context).secondary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppTheme.colorsOf(context)
+                      .secondary
+                      .withValues(alpha: 0.3),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.broken_image,
+                      color: AppTheme.colorsOf(context).textColorLight),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Failed to load image',
+                    style: TextStyle(
+                        color: AppTheme.colorsOf(context).textColorLight),
+                  ),
+                  if (widget.alt != null && widget.alt!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.alt!,
+                      style: TextStyle(
+                          color: AppTheme.colorsOf(context).textColorLight),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              padding: const EdgeInsets.all(32),
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

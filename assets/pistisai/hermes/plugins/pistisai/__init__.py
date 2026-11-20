@@ -370,6 +370,7 @@ def _on_pre_llm_call(**kw) -> dict | None:
 
     Warn-mode style: never blocks, only adds context the agent can use to
     adapt response length and urgency. Disable with AIGENT_AWARENESS_DISABLE=1.
+    PC hostname is opt-in via AIGENT_AWARENESS_HOST=1 (off by default — consent).
     """
     if _env_flag("AIGENT_AWARENESS_DISABLE"):
         return None
@@ -378,17 +379,18 @@ def _on_pre_llm_call(**kw) -> dict | None:
     sender = _sanitize(kw.get("sender_id") or "", 24)
     session_id = _sanitize(kw.get("session_id") or "", 80)
     device_ctx = _device_context_for(platform, sender, session_id)
-    try:
-        host = _sanitize(socket.gethostname(), 60)
-    except OSError:
-        host = ""
     parts = [
         f"[Aigent awareness — {now.strftime('%Y-%m-%d %H:%M')} {now.strftime('%A')}]",
         f"Time of day: {_time_bucket(now.hour)}",
         f"Platform: {platform or 'unknown'}",
     ]
-    if host:
-        parts.append(f"Host (PC): {host}")
+    if _env_flag("AIGENT_AWARENESS_HOST"):
+        try:
+            host = _sanitize(socket.gethostname(), 60)
+        except OSError:
+            host = ""
+        if host:
+            parts.append(f"Host (PC): {host}")
     for key in ("session", "device", "location", "connection"):
         val = _sanitize(device_ctx.get(key), 120)
         if val:
