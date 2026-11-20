@@ -16,6 +16,7 @@ import { authenticateJWT, extractUserId } from '../middleware/auth.js';
 import { logLogout, logTokenRevoke } from '../services/auth-audit-service.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { tokenExpiryBody, validateBody } from './misc-body-schemas.js';
+import db from '../database/db-pool.js';
 
 const router = express.Router();
 
@@ -88,9 +89,9 @@ router.post(
   },
 );
 
-router.post('/logout', authenticateJWT, async function (req, res) {
+router.post('/logout', authenticateJWT, extractUserId, async function (req, res) {
   try {
-    const userId = extractUserId(req);
+    const userId = req.userId;
 
     logger.info('[Auth] User logout initiated', { userId });
 
@@ -140,53 +141,71 @@ router.post('/logout', authenticateJWT, async function (req, res) {
 router.post(
   '/session/revoke',
   authenticateJWT,
+  extractUserId,
   validateSchema(revokeSessionSchema),
   async function (req, res) {
     try {
-      const userId = extractUserId(req);
+      const userId = req.userId;
       const { sessionId } = req.body;
 
       logger.info('[Auth] Session revocation initiated', { userId, sessionId });
 
-    // Log token revocation
-    logTokenRevoke({
-      userId,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('User-Agent'),
-      details: {
-        endpoint: req.path,
-        method: req.method,
-        sessionId,
-      },
-    }).catch((auditError) => {
-      logger.error('[Auth] Failed to log session revocation', {
-        error: auditError.message,
+      const result = await db.query(
+        `UPDATE user_sessions s
+         SET is_active = false
+         FROM users u
+         WHERE s.id = $1
+           AND s.user_id = u.id
+           AND u.jwt_id = $2
+           AND s.is_active = true
+         RETURNING s.id`,
+        [sessionId, userId],
+      );
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({
+          error: 'Session not found',
+          code: 'SESSION_NOT_FOUND',
+        });
+      }
+
+      logTokenRevoke({
+        userId,
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+        details: {
+          endpoint: req.path,
+          method: req.method,
+          sessionId,
+        },
+      }).catch((auditError) => {
+        logger.error('[Auth] Failed to log session revocation', {
+          error: auditError.message,
+        });
       });
-    });
 
-    // In a real implementation, this would revoke the session from the database
-    // For now, we'll just return success
-    res.json({
-      success: true,
-      message: 'Session revoked successfully',
-      sessionId,
-    });
-  } catch (error) {
-    logger.error('[Auth] Session revocation error', {
-      error: error.message,
-      userId: req.user?.sub,
-    });
+      res.json({
+        success: true,
+        message: 'Session revoked successfully',
+        sessionId,
+      });
+    } catch (error) {
+      logger.error('[Auth] Session revocation error', {
+        error: error.message,
+        userId: req.user?.sub,
+      });
 
-    res.status(500).json({
-      error: 'Session revocation failed',
-      code: 'SESSION_REVOCATION_ERROR',
-    });
-  }
-});
+      res.status(500).json({
+        error: 'Session revocation failed',
+        code: 'SESSION_REVOCATION_ERROR',
+      });
+    }
+  },
+);
 
-router.get('/me', authenticateJWT, async function (req, res) {
+router.get('/me', authenticateJWT, extractUserId, async function (req, res) {
   try {
-    const userId = extractUserId(req);
+    const userId = req.userId;
 
     logger.info('[Auth] User info requested', { userId });
 

@@ -233,7 +233,7 @@ router.post('/test/send', authenticateJWT, validateSchema(testSendSchema), async
  */
 router.get('/test/events', authenticateJWT, validateSchema(testEventsQuerySchema), (req, res) => {
   try {
-    const limit = Math.min(req.query.limit, 1000);
+    const limit = Math.min(req.validatedQuery.limit, 1000);
     const events = webhookTestingService.getAllTestEvents(limit);
 
     logger.info('[WebhookTesting] Test events retrieved', {

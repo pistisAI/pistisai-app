@@ -76,10 +76,11 @@ router.post(
   '/',
   apiKeyOpsLimiter,
   authenticateJWT,
+  extractUserId,
   validateSchema(createApiKeySchema),
   async (req, res) => {
     try {
-      const userId = extractUserId(req);
+      const userId = req.userId;
       const { name, description, scopes, rateLimit, expiresIn } = req.body;
 
       const apiKey = await generateApiKey(userId, name, {
@@ -109,9 +110,9 @@ router.post(
   }
 });
 
-router.get('/', authenticateJWT, async (req, res) => {
+router.get('/', authenticateJWT, extractUserId, async (req, res) => {
   try {
-    const userId = extractUserId(req);
+    const userId = req.userId;
 
     const keys = await listApiKeys(userId);
 
@@ -136,10 +137,11 @@ router.get('/', authenticateJWT, async (req, res) => {
 router.get(
   '/:keyId',
   authenticateJWT,
+  extractUserId,
   validateSchema(keyIdParamSchema),
   async (req, res) => {
   try {
-    const userId = extractUserId(req);
+    const userId = req.userId;
     const { keyId } = req.params;
 
     const key = await getApiKey(keyId, userId);
@@ -172,10 +174,11 @@ router.get(
 router.patch(
   '/:keyId',
   authenticateJWT,
+  extractUserId,
   validateSchema(updateApiKeySchema),
   async (req, res) => {
     try {
-      const userId = extractUserId(req);
+      const userId = req.userId;
       const { keyId } = req.params;
       const updates = req.body;
 
@@ -211,10 +214,11 @@ router.post(
   '/:keyId/rotate',
   apiKeyOpsLimiter,
   authenticateJWT,
+  extractUserId,
   validateSchema(keyIdParamSchema),
   async (req, res) => {
     try {
-      const userId = extractUserId(req);
+      const userId = req.userId;
       const { keyId } = req.params;
 
       const newKey = await rotateApiKey(keyId, userId);
@@ -249,10 +253,11 @@ router.post(
 router.post(
   '/:keyId/revoke',
   authenticateJWT,
+  extractUserId,
   validateSchema(keyIdParamSchema),
   async (req, res) => {
   try {
-    const userId = extractUserId(req);
+    const userId = req.userId;
     const { keyId } = req.params;
 
     await revokeApiKey(keyId, userId);
@@ -287,10 +292,11 @@ router.post(
 router.get(
   '/:keyId/audit-logs',
   authenticateJWT,
+  extractUserId,
   validateSchema(keyIdParamSchema),
   async (req, res) => {
   try {
-    const userId = extractUserId(req);
+    const userId = req.userId;
     const { keyId } = req.params;
 
     const logs = await getApiKeyAuditLogs(keyId, userId);
