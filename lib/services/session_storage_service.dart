@@ -6,14 +6,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../models/session_model.dart';
 import '../config/app_config.dart';
+import '../database/local_brain_key_store.dart';
 
 /// Session storage service for managing authentication sessions in PostgreSQL
 class SessionStorageService {
+  static const String _sessionTokenKey = 'session_token';
+
   final String _baseUrl = AppConfig.apiBaseUrl;
   final Dio _dio = Dio();
+  final LocalBrainKeyVault _secureVault;
   SessionModel? _currentSession;
 
-  SessionStorageService() {
+  SessionStorageService({LocalBrainKeyVault? secureVault})
+      : _secureVault = secureVault ?? FlutterSecureLocalBrainKeyVault() {
     _setupDio();
   }
 
@@ -92,8 +97,7 @@ class SessionStorageService {
   /// Get current valid session (if any)
   Future<SessionModel?> getCurrentSession() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final storedToken = prefs.getString('session_token');
+      final storedToken = await _readStoredSessionToken();
 
       if (storedToken == null || storedToken.isEmpty) {
         debugPrint(' No stored session token found');
@@ -105,7 +109,7 @@ class SessionStorageService {
 
       if (session == null) {
         debugPrint(' Stored session token is invalid, clearing...');
-        await prefs.remove('session_token');
+        await _clearStoredSessionToken();
       }
 
       return session;
@@ -115,27 +119,55 @@ class SessionStorageService {
     }
   }
 
-  /// Store session token locally
+  /// Store session token in the OS keystore (not SharedPreferences).
   Future<void> _storeSessionToken(String token) async {
     try {
+      await _secureVault.write(_sessionTokenKey, token);
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('session_token', token);
+      await prefs.remove(_sessionTokenKey);
       debugPrint(' Stored session token locally');
     } catch (e) {
       debugPrint(' Failed to store session token: $e');
     }
   }
 
+  Future<String?> _readStoredSessionToken() async {
+    try {
+      final secure = await _secureVault.read(_sessionTokenKey);
+      if (secure != null && secure.isNotEmpty) {
+        return secure;
+      }
+    } catch (e) {
+      debugPrint(' Secure session token read failed: $e');
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final legacy = prefs.getString(_sessionTokenKey);
+    if (legacy != null && legacy.isNotEmpty) {
+      await _storeSessionToken(legacy);
+      return legacy;
+    }
+    return null;
+  }
+
   /// Clear stored session token
   Future<void> _clearStoredSessionToken() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('session_token');
+      await prefs.remove(_sessionTokenKey);
+      await _secureVault.delete(_sessionTokenKey);
       debugPrint(' Cleared stored session token');
     } catch (e) {
       debugPrint(' Failed to clear session token: $e');
     }
   }
+
+  @visibleForTesting
+  Future<void> storeSessionTokenForTest(String token) =>
+      _storeSessionToken(token);
+
+  @visibleForTesting
+  Future<String?> readStoredSessionTokenForTest() => _readStoredSessionToken();
 
   /// Validate a session token
   Future<SessionModel?> validateSession(String token) async {

@@ -47,8 +47,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:pistisai/widgets/window_listener_widget.dart'
     if (dart.library.html) 'package:pistisai/widgets/window_listener_widget_stub.dart';
 import 'package:pistisai/config/navigator_key.dart';
-import 'package:pistisai/utils/platform_file_utils.dart'
-    if (dart.library.html) 'package:pistisai/utils/platform_file_utils_web.dart';
 import 'package:pistisai/utils/single_instance.dart';
 import 'package:pistisai/utils/platform_helper.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
@@ -544,15 +542,8 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
   }
 
   if (callbackUrl != null) {
-    debugPrint('[Main] Found OAuth callback URL: $callbackUrl');
-    if (!kIsWeb) {
-      try {
-        await PlatformFileUtils.writeCallbackFile(callbackUrl);
-        debugPrint('[Main] Wrote callback URL to temp file');
-      } catch (e) {
-        debugPrint('[Main] Error processing OAuth callback: $e');
-      }
-    }
+    // Do not write the callback URL (auth code included) to a temp file.
+    debugPrint('[Main] Found OAuth callback URL');
   }
   debugPrint('[Main] Command-line handler exiting');
 }

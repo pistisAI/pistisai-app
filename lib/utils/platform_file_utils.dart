@@ -1,10 +1,6 @@
 // Desktop implementation for file utilities
-import 'dart:io';
-
 class PlatformFileUtils {
-  static Future<void> writeCallbackFile(String callbackUrl) async {
-    final tempDir = Directory.systemTemp;
-    final callbackFile = File('${tempDir.path}/pistisai_callback.txt');
-    await callbackFile.writeAsString(callbackUrl);
-  }
+  /// No-op: OAuth callback URLs (including auth codes) must not be written to
+  /// a world-readable temp file. Deep-link handling uses the in-process URL.
+  static Future<void> writeCallbackFile(String callbackUrl) async {}
 }

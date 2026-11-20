@@ -9,6 +9,7 @@ import 'local_brain_encryption.dart';
 abstract class LocalBrainKeyVault {
   Future<String?> read(String key);
   Future<void> write(String key, String value);
+  Future<void> delete(String key);
 }
 
 /// [FlutterSecureStorage]-backed vault for production.
@@ -24,6 +25,9 @@ class FlutterSecureLocalBrainKeyVault implements LocalBrainKeyVault {
   @override
   Future<void> write(String key, String value) =>
       _storage.write(key: key, value: value);
+
+  @override
+  Future<void> delete(String key) => _storage.delete(key: key);
 }
 
 /// Resolves the AES-256 passphrase for `local_brain.sqlite`.

@@ -16,6 +16,11 @@ class _MemoryVault implements LocalBrainKeyVault {
   Future<void> write(String key, String value) async {
     store[key] = value;
   }
+
+  @override
+  Future<void> delete(String key) async {
+    store.remove(key);
+  }
 }
 
 void main() {
