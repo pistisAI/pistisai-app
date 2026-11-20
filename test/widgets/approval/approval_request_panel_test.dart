@@ -82,4 +82,39 @@ void main() {
     expect(decision.verdict, ApprovalVerdict.denied);
     expect(gate.auditTrail.single.verdict, ApprovalVerdict.denied);
   });
+
+  testWidgets('host dispose denies pending requests', (tester) async {
+    final gate = ApprovalGateService();
+    addTearDown(gate.dispose);
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<ApprovalGateService>.value(
+        value: gate,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ApprovalGateHost(
+            child: Scaffold(body: Text('content')),
+          ),
+        ),
+      ),
+    );
+
+    final future = gate.requestApproval(
+      CriticalAction(
+        category: CriticalActionCategory.dataExport,
+        title: 'Export settings',
+        summary: 'Write settings JSON to a local file.',
+      ),
+    );
+    await tester.pump();
+    expect(gate.pendingRequests, hasLength(1));
+
+    await tester.pumpWidget(const SizedBox.shrink());
+
+    final decision = await future;
+    expect(decision.verdict, ApprovalVerdict.denied);
+    expect(decision.note, contains('host disposed'));
+    expect(gate.pendingRequests, isEmpty);
+  });
 }

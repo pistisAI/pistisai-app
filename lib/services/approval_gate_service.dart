@@ -92,24 +92,41 @@ class ApprovalDeniedException implements Exception {
 /// resolves the pending request. Every decision is appended to [auditTrail]
 /// and optionally forwarded to [auditLogger] (e.g. conscience storage).
 class ApprovalGateService extends ChangeNotifier {
+  /// Action types that always require a human decision (AGENTS.md critical sends).
+  static const Set<String> defaultCriticalActionTypes = {
+    'send_email',
+    'send_invoice',
+    'payment',
+    'delete',
+  };
+
   ApprovalGateService({
     ApprovalAuditLogger? auditLogger,
     Uuid? uuid,
     Set<CriticalActionCategory>? defaultCriticalCategories,
+    Set<String>? defaultActionTypes,
+    Duration approvalTimeout = const Duration(minutes: 5),
   })  : _auditLogger = auditLogger,
         _uuid = uuid ?? const Uuid(),
+        _approvalTimeout = approvalTimeout,
         _criticalCategories = {
           CriticalActionCategory.dataExport,
           CriticalActionCategory.integrationCall,
           ...?defaultCriticalCategories,
+        },
+        _criticalActionTypes = {
+          ...defaultCriticalActionTypes,
+          ...?defaultActionTypes,
         };
 
   final ApprovalAuditLogger? _auditLogger;
   final Uuid _uuid;
+  final Duration _approvalTimeout;
   final Set<CriticalActionCategory> _criticalCategories;
-  final Set<String> _criticalActionTypes = <String>{};
+  final Set<String> _criticalActionTypes;
   final Map<String, _PendingApproval> _pending = <String, _PendingApproval>{};
   final List<ApprovalAuditEntry> _auditTrail = <ApprovalAuditEntry>[];
+  bool _disposed = false;
 
   List<CriticalAction> get pendingRequests =>
       List.unmodifiable(_pending.values.map((p) => p.action));
@@ -126,16 +143,39 @@ class ApprovalGateService extends ChangeNotifier {
     _criticalActionTypes.add(trimmed);
   }
 
+  /// Whether [actionType] was registered at startup or via
+  /// [registerCriticalActionType].
+  bool isRegisteredCriticalActionType(String actionType) {
+    final trimmed = actionType.trim();
+    return trimmed.isNotEmpty && _criticalActionTypes.contains(trimmed);
+  }
+
   bool requiresApproval(CriticalAction action) {
     if (action.requiresApproval) return true;
     if (_criticalCategories.contains(action.category)) return true;
-    final type = action.actionType;
-    if (type != null && _criticalActionTypes.contains(type)) return true;
+    final type = action.actionType?.trim();
+    // Fail closed: any non-empty actionType needs a human decision. Unknown
+    // types must not auto-approve (previously "not marked critical").
+    if (type != null && type.isNotEmpty) return true;
     return false;
   }
 
   /// Pause until the user approves or denies. Non-critical actions auto-approve.
+  ///
+  /// Pending requests time out to [ApprovalVerdict.denied] after
+  /// [approvalTimeout]. [dispose] also denies any still-pending requests.
   Future<ApprovalDecision> requestApproval(CriticalAction action) async {
+    if (_disposed) {
+      final decision = ApprovalDecision(
+        requestId: action.id,
+        verdict: ApprovalVerdict.denied,
+        decidedAt: DateTime.now(),
+        note: 'denied (gate disposed)',
+      );
+      _recordDecision(action, decision);
+      return decision;
+    }
+
     if (!requiresApproval(action)) {
       final decision = ApprovalDecision(
         requestId: action.id,
@@ -148,7 +188,21 @@ class ApprovalGateService extends ChangeNotifier {
     }
 
     final completer = Completer<ApprovalDecision>();
-    _pending[action.id] = _PendingApproval(action: action, completer: completer);
+    Timer? timeoutTimer;
+    if (_approvalTimeout > Duration.zero) {
+      timeoutTimer = Timer(_approvalTimeout, () {
+        resolve(
+          action.id,
+          ApprovalVerdict.denied,
+          note: 'denied (timed out)',
+        );
+      });
+    }
+    _pending[action.id] = _PendingApproval(
+      action: action,
+      completer: completer,
+      timeoutTimer: timeoutTimer,
+    );
     notifyListeners();
     return completer.future;
   }
@@ -161,6 +215,7 @@ class ApprovalGateService extends ChangeNotifier {
   }) {
     final pending = _pending.remove(requestId);
     if (pending == null) return;
+    pending.timeoutTimer?.cancel();
 
     final decision = ApprovalDecision(
       requestId: requestId,
@@ -172,6 +227,22 @@ class ApprovalGateService extends ChangeNotifier {
     if (!pending.completer.isCompleted) {
       pending.completer.complete(decision);
     }
+  }
+
+  /// Deny every pending request (used on host/service dispose).
+  void cancelAllPending({String note = 'denied (cancelled)'}) {
+    final ids = _pending.keys.toList(growable: false);
+    for (final id in ids) {
+      resolve(id, ApprovalVerdict.denied, note: note);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_disposed) return;
+    cancelAllPending(note: 'denied (gate disposed)');
+    _disposed = true;
+    super.dispose();
   }
 
   /// Run [execute] only after approval. Throws [ApprovalDeniedException] if denied.
@@ -216,7 +287,9 @@ class ApprovalGateService extends ChangeNotifier {
       note: decision.note,
     );
     _auditTrail.add(entry);
-    notifyListeners();
+    if (!_disposed) {
+      notifyListeners();
+    }
 
     final logger = _auditLogger;
     if (logger != null) {
@@ -232,8 +305,13 @@ class ApprovalGateService extends ChangeNotifier {
 }
 
 class _PendingApproval {
-  _PendingApproval({required this.action, required this.completer});
+  _PendingApproval({
+    required this.action,
+    required this.completer,
+    this.timeoutTimer,
+  });
 
   final CriticalAction action;
   final Completer<ApprovalDecision> completer;
+  final Timer? timeoutTimer;
 }

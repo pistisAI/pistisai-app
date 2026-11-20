@@ -6,12 +6,32 @@ import '../../services/approval_gate_service.dart';
 
 /// Host that surfaces pending critical-action approvals as a modal dialog.
 ///
-/// Place near the app shell so agent/workflow pauses are visible before
-/// [ApprovalGateService.runCritical] continues.
-class ApprovalGateHost extends StatelessWidget {
+/// Mount from [MaterialApp.router]'s builder so prompts show on every route
+/// (including `/settings/device-mesh` and `/admin-center`). On dispose, any
+/// still-pending requests are denied so callers do not hang.
+class ApprovalGateHost extends StatefulWidget {
   const ApprovalGateHost({required this.child, super.key});
 
   final Widget child;
+
+  @override
+  State<ApprovalGateHost> createState() => _ApprovalGateHostState();
+}
+
+class _ApprovalGateHostState extends State<ApprovalGateHost> {
+  ApprovalGateService? _gate;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _gate = Provider.of<ApprovalGateService>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    _gate?.cancelAllPending(note: 'denied (host disposed)');
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +40,7 @@ class ApprovalGateHost extends StatelessWidget {
         final pending = gate.pendingRequests;
         return Stack(
           children: [
-            child,
+            widget.child,
             if (pending.isNotEmpty)
               ModalBarrier(
                 dismissible: false,
