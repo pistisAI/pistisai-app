@@ -8,6 +8,7 @@ import 'package:sqlite3/common.dart';
 
 import '../local_brain_encryption.dart';
 import '../local_brain_key_store.dart';
+import '../local_brain_migration.dart';
 
 /// Opens a native SQLite connection (Linux, Windows, Android, iOS, macOS)
 /// with SQLCipher-compatible AES-256 encryption at rest.
