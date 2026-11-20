@@ -253,6 +253,36 @@ class DownloadScreen extends StatelessWidget {
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
               ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Windows-x64-Setup.exe',
+                  '${Brand.current.artifactPrefix}-Windows-x64-Setup.exe',
+                  context,
+                ),
+                icon: const Icon(Icons.desktop_windows),
+                label: const Text('Windows (Setup.exe)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colorsOf(context).primary,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => _downloadFile(
+                  '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Windows-x64-portable.zip',
+                  '${Brand.current.artifactPrefix}-Windows-x64-portable.zip',
+                  context,
+                ),
+                icon: const Icon(Icons.folder_zip),
+                label: const Text('Windows (portable .zip)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colorsOf(context).accent,
+                  foregroundColor: AppTheme.colorsOf(context).textColor,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                ),
+              ),
             ],
           ),
 

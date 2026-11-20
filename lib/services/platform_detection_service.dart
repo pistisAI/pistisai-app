@@ -234,7 +234,7 @@ class PlatformDetectionService extends ChangeNotifier {
           description:
               'Recommended for most users. Includes automatic updates and system integration.',
           downloadUrl:
-              '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Windows-${AppConfig.appVersion}-Setup.exe',
+              '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Windows-x64-Setup.exe',
           fileSize: '~10 MB',
           installationType: 'exe',
           isRecommended: true,
@@ -247,7 +247,7 @@ class PlatformDetectionService extends ChangeNotifier {
           name: 'Portable ZIP',
           description: 'No installation required. Extract and run directly.',
           downloadUrl:
-              '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Windows-${AppConfig.appVersion}-portable.zip',
+              '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Windows-x64-portable.zip',
           fileSize: '~12 MB',
           installationType: 'zip',
           requirements: ['Windows 10 or later'],
@@ -333,7 +333,7 @@ class PlatformDetectionService extends ChangeNotifier {
           description:
               'Native package for Ubuntu, Debian, and derivatives with proper dependency management.',
           downloadUrl:
-              '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux_${AppConfig.appVersion}_amd64.deb',
+              '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb',
           fileSize: '~44 MB',
           installationType: 'deb',
           requirements: [
@@ -394,7 +394,7 @@ class PlatformDetectionService extends ChangeNotifier {
           title: 'Install package',
           description: 'Install using dpkg or your package manager.',
           commands: [
-            'sudo dpkg -i ${Brand.current.artifactPrefix}-Linux_${AppConfig.appVersion}_amd64.deb',
+            'sudo dpkg -i ${Brand.current.artifactPrefix}_${AppConfig.appVersion}_amd64.deb',
             'sudo apt-get install -f  # Fix dependencies if needed',
           ],
           applicableTypes: ['deb'],
