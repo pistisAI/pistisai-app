@@ -119,15 +119,8 @@ class SettingsImportExportService {
             settings['crashReportingEnabled'] as bool);
       }
 
-      if (settings.containsKey('cloudLlmProvidersEnabled')) {
-        await _preferencesService.setCloudLlmProvidersEnabled(
-            settings['cloudLlmProvidersEnabled'] as bool);
-      }
-
-      if (settings.containsKey('microsoftSpeechEnabled')) {
-        await _preferencesService.setMicrosoftSpeechEnabled(
-            settings['microsoftSpeechEnabled'] as bool);
-      }
+      // Cloud outbound consent must stay opt-in via Settings UI (#804).
+      // Import never flips these even if the file contains them.
 
       if (settings.containsKey('usageStatsEnabled')) {
         await _preferencesService

@@ -289,6 +289,7 @@ Future<void> setupCoreServices() async {
         microsoftSpeechAllowed:
             settingsPreferenceService.isMicrosoftSpeechEnabled,
         // Remote access (LAN/Tailscale mobile) is opt-in; default is loopback (#645).
+        // When true, RouterServer generates an authSecret that gates private paths (#804).
         allowRemoteAccess:
             const bool.fromEnvironment('ROUTER_ALLOW_REMOTE_ACCESS'),
       );

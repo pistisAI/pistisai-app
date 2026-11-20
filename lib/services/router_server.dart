@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -23,17 +24,19 @@ typedef CloudConsentChecker = Future<bool> Function();
 
 /// Local HTTP Server that mimics OpenAI API and routes to providers.
 ///
-/// The server listens on every interface so other devices can discover the
-/// desktop hub, but only the public paths (`/health`, `/v1/models`, the hub
-/// discovery document) are reachable from another machine without a token.
+/// By default the server binds to loopback only. When [allowRemoteAccess] is
+/// true it binds to every interface so other devices can discover the desktop
+/// hub, and an [authSecret] is always present (generated if not supplied).
+/// Only the public paths (`/health`, `/v1/models`, the hub discovery document)
+/// are reachable from another machine without that token.
 ///
 /// When [authSecret] is non-null, every non-public endpoint requires a valid
 /// `Bearer <authSecret>` header, from any address. Requests without a token
 /// receive 403; requests with the wrong token receive 401.
 ///
-/// When [authSecret] is null, non-public endpoints answer only loopback
-/// callers (Hermes and the app on this machine). A request from another
-/// address receives 403.
+/// When [authSecret] is null (loopback-only mode), non-public endpoints answer
+/// only loopback callers (Hermes and the app on this machine). A request from
+/// another address receives 403.
 class RouterServer {
   final int port;
   final RateLimitManager rateLimitManager;
@@ -50,13 +53,12 @@ class RouterServer {
   final CloudConsentChecker? microsoftSpeechAllowed;
 
   /// Bearer token required for privileged endpoints.
-  /// When null, all endpoints are open (no auth check).
+  /// When null, non-public endpoints accept loopback callers only.
   final String? authSecret;
 
-  /// When false (default) the router listens on loopback only, so the
-  /// private API is not reachable from other hosts on the network. Set to
-  /// true only for explicit remote access (e.g. mobile over Tailscale); the
-  /// bearer token in [authSecret] still gates every private endpoint.
+  /// When false (default) the router listens on loopback only. When true,
+  /// binds all interfaces and always has an [authSecret] (generated if not
+  /// supplied) that gates every private endpoint.
   final bool allowRemoteAccess;
 
   /// Co-resident Hermes gateway. Only the primary hub dials this;
@@ -82,10 +84,45 @@ class RouterServer {
     this.ttsService,
     this.cloudLlmAllowed,
     this.microsoftSpeechAllowed,
-    this.authSecret,
+    String? authSecret,
     this.allowRemoteAccess = false,
     String? hermesBaseUrl,
-  }) : hermesBaseUrl = hermesBaseUrl ?? AppConfig.defaultHermesUrl;
+  })  : authSecret = _resolveAuthSecret(
+          allowRemoteAccess: allowRemoteAccess,
+          provided: authSecret,
+        ),
+        hermesBaseUrl = hermesBaseUrl ?? AppConfig.defaultHermesUrl;
+
+  static String? _resolveAuthSecret({
+    required bool allowRemoteAccess,
+    required String? provided,
+  }) {
+    if (!allowRemoteAccess) return provided;
+    if (provided != null && provided.isNotEmpty) return provided;
+    return _generateAuthSecret();
+  }
+
+  static String _generateAuthSecret() {
+    final rnd = Random.secure();
+    final bytes = List<int>.generate(32, (_) => rnd.nextInt(256));
+    return base64Url.encode(bytes).replaceAll('=', '');
+  }
+
+  /// Logs exception details locally; returns a response with no path/leak text.
+  static Response _safeErrorResponse(
+    Object error, {
+    required int statusCode,
+    bool asJson = false,
+  }) {
+    debugPrint('RouterServer error: $error');
+    final body =
+        asJson ? jsonEncode({'error': 'Request failed'}) : 'Request failed';
+    return Response(
+      statusCode,
+      body: body,
+      headers: asJson ? {'Content-Type': 'application/json'} : null,
+    );
+  }
 
   /// Start the server
   Future<void> start() async {
@@ -508,7 +545,7 @@ class RouterServer {
             provider, completionRequest, actualModel, headers);
       }
     } catch (e) {
-      return Response.badRequest(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.badRequest);
     }
   }
 
@@ -593,14 +630,16 @@ class RouterServer {
         },
       );
     } on FormatException catch (e) {
-      return Response.badRequest(
-        body: jsonEncode({'error': e.message}),
-        headers: {'Content-Type': 'application/json'},
+      return _safeErrorResponse(
+        e,
+        statusCode: HttpStatus.badRequest,
+        asJson: true,
       );
     } catch (e) {
-      return Response.internalServerError(
-        body: jsonEncode({'error': e.toString()}),
-        headers: {'Content-Type': 'application/json'},
+      return _safeErrorResponse(
+        e,
+        statusCode: HttpStatus.internalServerError,
+        asJson: true,
       );
     }
   }
@@ -650,7 +689,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.internalServerError(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
   }
 
@@ -680,7 +719,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.badRequest(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.badRequest);
     }
   }
 
@@ -719,7 +758,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.badRequest(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.badRequest);
     }
   }
 
@@ -757,7 +796,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.internalServerError(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
   }
 
@@ -786,7 +825,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.internalServerError(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
   }
 
@@ -818,7 +857,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.internalServerError(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
   }
 
@@ -845,7 +884,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.internalServerError(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
   }
 
@@ -880,7 +919,7 @@ class RouterServer {
         headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
-      return Response.internalServerError(body: 'Error: ${e.toString()}');
+      return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
   }
 }
