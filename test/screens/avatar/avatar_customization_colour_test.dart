@@ -61,4 +61,41 @@ void main() {
       chosen,
     );
   });
+
+  testWidgets('reloads a saved custom colour at full opacity', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'avatar_color_override': '#ff8800',
+    });
+    tester.view.physicalSize = const Size(1400, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    final router = GoRouter(
+      initialLocation: '/avatar/customize',
+      routes: [
+        GoRoute(
+          path: '/avatar/customize',
+          builder: (context, state) => const AvatarCustomizationScreen(),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(MaterialApp.router(
+      theme: AppTheme.darkTheme,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
+      routerConfig: router,
+    ));
+    await tester.pump(const Duration(milliseconds: 200));
+
+    await tester.ensureVisible(find.text('Pick Color'));
+    await tester.tap(find.text('Pick Color'));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(
+      tester.widget<ColorPicker>(find.byType(ColorPicker)).pickerColor,
+      const Color(0xFFFF8800),
+    );
+  });
 }

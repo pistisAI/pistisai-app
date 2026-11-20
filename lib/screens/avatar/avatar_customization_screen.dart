@@ -62,9 +62,20 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
         _glowEnabled = _prefs.getBool('avatar_glow_enabled') ?? true;
 
         final colorHex = _prefs.getString('avatar_color_override');
-        _customColor = colorHex != null
-            ? Color(int.parse(colorHex.substring(2), radix: 16))
-            : null;
+        if (colorHex != null) {
+          // Saved as #RRGGBB (see _saveSettings). Parse the RGB digits and
+          // restore full opacity; parsing from index 2 dropped a hex digit
+          // and left the colour transparent (issue #860).
+          final hex = colorHex.replaceFirst('#', '').trim();
+          try {
+            final argb = hex.length == 6 ? 'FF$hex' : hex;
+            _customColor = Color(int.parse(argb, radix: 16));
+          } catch (_) {
+            _customColor = null;
+          }
+        } else {
+          _customColor = null;
+        }
 
         _isLoading = false;
       });
