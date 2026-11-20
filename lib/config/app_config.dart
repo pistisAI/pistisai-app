@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 
@@ -6,7 +9,25 @@ import 'package:pistisai/services/settings_preference_service.dart';
 class AppConfig {
   // App Information. The visible name comes from the baked brand.
   static String get appName => Brand.current.productName;
-  static const String appVersion = '1.1.100';
+  static String _appVersion = 'unknown';
+  static String _appBuildNumber = '0';
+
+  /// Version injected from assets/version.json at startup by [loadVersionInfo].
+  static String get appVersion => _appVersion;
+  static String get appBuildNumber => _appBuildNumber;
+
+  /// Reads the real baked version so UI and download URLs never show a
+  /// hard-coded placeholder that stopped matching the shipped build.
+  static Future<void> loadVersionInfo() async {
+    try {
+      final raw = await rootBundle.loadString('assets/version.json');
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      _appVersion = data['version'] as String? ?? 'unknown';
+      _appBuildNumber = data['build_number'] as String? ?? '0';
+    } catch (_) {
+      // Leave the safe defaults; never fabricate a version number.
+    }
+  }
   static const String appDescription =
       'Local-first agent companion. Offline until you choose to connect.';
 

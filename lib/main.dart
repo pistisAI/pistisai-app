@@ -74,6 +74,7 @@ String? resolveCallbackUrl(List<String> args) {
 void main([List<String> args = const []]) async {
   // Flutter requires WidgetsFlutterBinding to be initialized first
   WidgetsFlutterBinding.ensureInitialized();
+  await AppConfig.loadVersionInfo();
   // Linux (#616): keep the AT-SPI semantics tree published for computer-use
   // clients even when no screen reader has registered on the accessibility bus
   // (common on KDE Plasma Wayland).
