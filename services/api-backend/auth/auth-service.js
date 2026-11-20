@@ -453,6 +453,18 @@ export class AuthService {
       );
 
       if (existingByEmail) {
+        // Require a verified email before linking — otherwise an attacker
+        // could claim an unverified address and take over an account.
+        if (userInfo.email_verified !== true) {
+          this.logger.warn(
+            'Refusing email-based account link: email not verified',
+            { accessSub, email: userEmail },
+          );
+          throw new Error(
+            'Cannot link account: email not verified',
+          );
+        }
+
         this.logger.info('Found existing user by email; linking Access subject', {
           userId: existingByEmail.id,
           email: userEmail,

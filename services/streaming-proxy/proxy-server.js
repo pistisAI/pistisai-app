@@ -2,6 +2,7 @@ import http from 'http';
 import https from 'https';
 import winston from 'winston';
 import * as Sentry from '@sentry/node';
+import { isProxyStatsAuthorized } from './stats-auth.js';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -279,6 +280,11 @@ const server = http.createServer(async(req, res) => {
     break;
 
   case '/stats':
+    if (!isProxyStatsAuthorized(req.headers)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      break;
+    }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({

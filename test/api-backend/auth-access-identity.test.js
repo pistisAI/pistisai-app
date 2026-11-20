@@ -87,6 +87,29 @@ describe("AuthService Access identity linking", () => {
     expect(link.params).toEqual(["google-sub-new", "user-1"]);
   });
 
+  it("refuses email-based linking when email_verified is not true", async () => {
+    auth.__byPrimarySub = {};
+    auth.__bySubject = {};
+    auth.__byEmail = {
+      "chris@example.com": {
+        id: "user-1",
+        supabase_id: "otp-sub-original",
+      },
+    };
+
+    await expect(
+      auth.resolveUserId("attacker-sub", {
+        email: "chris@example.com",
+        name: "Attacker",
+        email_verified: false,
+      }),
+    ).rejects.toThrow(/email not verified/i);
+
+    expect(
+      queries.some((q) => q.sql.includes("INSERT INTO user_auth_subjects")),
+    ).toBe(false);
+  });
+
   it("resolves via user_auth_subjects when primary supabase_id differs", async () => {
     auth.__byPrimarySub = {};
     auth.__bySubject = {

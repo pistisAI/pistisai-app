@@ -12,6 +12,10 @@ describe('Auth Backend', () => {
     originalDevBypass = process.env.DEV_BYPASS_TOKEN;
     process.env.NODE_ENV = 'development';
     process.env.DEV_BYPASS_TOKEN = DEV_TOKEN;
+    process.env.AUTH0_DOMAIN =
+      process.env.AUTH0_DOMAIN || 'test.example.auth0.com';
+    process.env.AUTH0_AUDIENCE =
+      process.env.AUTH0_AUDIENCE || 'https://api.example.com';
     ({ app } = require('./handlers.js'));
   });
 
@@ -61,7 +65,14 @@ describe('Auth Backend', () => {
 describe('Brand-driven auth config (whitelabel)', () => {
   const DEV = 'brand-test-token';
   const saved = {};
-  const keys = ['NODE_ENV','DEV_BYPASS_TOKEN','AUTH_ALLOWED_ORIGINS','AUTH_ROLE_CLAIM_NAMESPACE'];
+  const keys = [
+    'NODE_ENV',
+    'DEV_BYPASS_TOKEN',
+    'AUTH_ALLOWED_ORIGINS',
+    'AUTH_ROLE_CLAIM_NAMESPACE',
+    'AUTH0_DOMAIN',
+    'AUTH0_AUDIENCE',
+  ];
 
   beforeEach(() => {
     keys.forEach((k) => { saved[k] = process.env[k]; });
@@ -69,6 +80,8 @@ describe('Brand-driven auth config (whitelabel)', () => {
     process.env.DEV_BYPASS_TOKEN = DEV;
     process.env.AUTH_ALLOWED_ORIGINS = 'https://iacle.app,https://www.iacle.app';
     process.env.AUTH_ROLE_CLAIM_NAMESPACE = 'https://iacle.app';
+    process.env.AUTH0_DOMAIN = 'test.example.auth0.com';
+    process.env.AUTH0_AUDIENCE = 'https://api.example.com';
   });
 
   afterEach(() => {
@@ -85,5 +98,41 @@ describe('Brand-driven auth config (whitelabel)', () => {
     expect(ok.headers['access-control-allow-origin']).toBe('https://iacle.app');
     const other = await request(app).get('/health').set('Origin', 'https://pistisai.app');
     expect(other.headers['access-control-allow-origin']).toBeUndefined();
+  });
+});
+
+describe('Auth0 config fail-closed', () => {
+  const saved = {};
+  const keys = ['AUTH0_DOMAIN', 'AUTH0_AUDIENCE', 'NODE_ENV', 'DEV_BYPASS_TOKEN'];
+
+  beforeEach(() => {
+    keys.forEach((k) => { saved[k] = process.env[k]; });
+  });
+
+  afterEach(() => {
+    keys.forEach((k) => {
+      if (saved[k] === undefined) delete process.env[k];
+      else process.env[k] = saved[k];
+    });
+  });
+
+  it('throws when AUTH0_DOMAIN is missing instead of using a fake domain', () => {
+    delete process.env.AUTH0_DOMAIN;
+    process.env.AUTH0_AUDIENCE = 'https://api.example.com';
+    expect(() => {
+      jest.isolateModules(() => {
+        require('./handlers.js');
+      });
+    }).toThrow(/AUTH0_DOMAIN/);
+  });
+
+  it('throws when AUTH0_AUDIENCE is missing instead of using a fake audience', () => {
+    process.env.AUTH0_DOMAIN = 'test.example.auth0.com';
+    delete process.env.AUTH0_AUDIENCE;
+    expect(() => {
+      jest.isolateModules(() => {
+        require('./handlers.js');
+      });
+    }).toThrow(/AUTH0_AUDIENCE/);
   });
 });

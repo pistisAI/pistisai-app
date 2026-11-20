@@ -41,8 +41,18 @@ app.use(
   }),
 );
 
-const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN || "your-domain.auth0.com";
-const AUDIENCE = process.env.AUTH0_AUDIENCE || "your-audience";
+const AUTH0_DOMAIN = (process.env.AUTH0_DOMAIN || "").trim();
+const AUDIENCE = (process.env.AUTH0_AUDIENCE || "").trim();
+if (!AUTH0_DOMAIN) {
+  throw new Error(
+    "AUTH0_DOMAIN environment variable is required (no fallback domain)",
+  );
+}
+if (!AUDIENCE) {
+  throw new Error(
+    "AUTH0_AUDIENCE environment variable is required (no fallback audience)",
+  );
+}
 
 const checkJwtMiddleware = expressjwt({
   secret: jwksRsa.expressJwtSecret({
