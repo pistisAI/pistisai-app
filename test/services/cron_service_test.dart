@@ -109,4 +109,40 @@ void main() {
       expect(calls, isEmpty);
     });
   });
+
+  group('listJobs', () {
+    test('throws when hermes exits with an error, instead of returning []',
+        () async {
+      final failing = CronService(
+        processRunner: (_, __) async =>
+            ProcessResult(0, 1, '', 'hermes: unknown command'),
+      );
+      await expectLater(
+        failing.listJobs(),
+        throwsA(
+          isA<CronServiceException>().having(
+            (e) => e.message,
+            'message',
+            contains('unknown command'),
+          ),
+        ),
+      );
+    });
+
+    test('throws when the hermes command cannot be started', () async {
+      final missing = CronService(
+        processRunner: (_, __) async =>
+            throw const ProcessException('hermes', ['cron', 'list']),
+      );
+      await expectLater(
+          missing.listJobs(), throwsA(isA<CronServiceException>()));
+    });
+
+    test('goes through the injected runner', () async {
+      await service.listJobs();
+      expect(calls, [
+        ['hermes', 'cron', 'list'],
+      ]);
+    });
+  });
 }
