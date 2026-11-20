@@ -8,9 +8,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('version is read from assets/version.json, not hard-coded', () async {
-    final data =
-        jsonDecode(File('assets/version.json').readAsStringSync())
-            as Map<String, dynamic>;
+    final data = jsonDecode(File('assets/version.json').readAsStringSync())
+        as Map<String, dynamic>;
 
     await AppConfig.loadVersionInfo();
 

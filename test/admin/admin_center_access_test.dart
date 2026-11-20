@@ -14,7 +14,8 @@ void main() {
         File('lib/services/admin_center_service.dart').readAsStringSync();
     final screen =
         File('lib/screens/admin/admin_center_screen.dart').readAsStringSync();
-    final backend = File('services/api-backend/routes/admin.js').readAsStringSync();
+    final backend =
+        File('services/api-backend/routes/admin.js').readAsStringSync();
 
     expect(service, contains("'/admin/me'"));
     expect(service, isNot(contains('/admin/auth/roles')));
