@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pistisai/brand/brand.dart';
 
@@ -205,38 +206,14 @@ class AutoUpdateService extends ChangeNotifier {
     return normalized;
   }
 
-  /// Download update
-  Future<void> downloadUpdate() async {
-    if (_updateInfo == null) {
-      throw Exception('No update available to download');
+  /// Opens the releases page. There is no signature-checked in-app updater,
+  /// so the app must never claim to download or install anything itself.
+  Future<bool> openReleasePage() async {
+    final uri = Uri.parse(Brand.current.releasesUrl);
+    if (await canLaunchUrl(uri)) {
+      return launchUrl(uri, mode: LaunchMode.externalApplication);
     }
-
-    _status = UpdateStatus.downloading;
-    notifyListeners();
-
-    // Download logic will be implemented
-    // For now, mark as downloaded
-    await Future.delayed(const Duration(seconds: 2));
-
-    _status = UpdateStatus.downloaded;
-    notifyListeners();
-  }
-
-  /// Install update
-  Future<void> installUpdate() async {
-    if (_updateInfo == null) {
-      throw Exception('No update available to install');
-    }
-
-    _status = UpdateStatus.installing;
-    notifyListeners();
-
-    // Install logic will be implemented
-    // For now, mark as installed
-    await Future.delayed(const Duration(seconds: 1));
-
-    _status = UpdateStatus.installed;
-    notifyListeners();
+    return false;
   }
 
   @override
