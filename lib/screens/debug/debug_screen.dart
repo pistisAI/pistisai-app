@@ -9,6 +9,7 @@ import '../../config/app_config.dart';
 import '../../config/theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/connection_manager_service.dart';
+import '../../services/settings_preference_service.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../widgets/common/status_badge.dart';
@@ -19,6 +20,16 @@ import '../../widgets/navigation/popout_button.dart';
 /// Provides connection testing against the Hermes gateway,
 /// an API request inspector, and live service status.
 class DebugScreen extends StatefulWidget {
+  /// The Hermes API server to test: the saved URL, or the default
+  /// (127.0.0.1:8642). Never the OpenClaw gateway port.
+  @visibleForTesting
+  static String resolveHermesUrl(String? saved) {
+    if (saved == null || saved.trim().isEmpty) {
+      return AppConfig.defaultHermesUrl;
+    }
+    return AppConfig.normalizeHermesUrl(saved);
+  }
+
   const DebugScreen({super.key});
 
   @override
@@ -46,8 +57,9 @@ class _DebugScreenState extends State<DebugScreen> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill API URL with Hermes gateway
-    _apiUrlController.text = '${AppConfig.defaultGatewayUrl}/v1/models';
+    // Pre-fill API URL with the Hermes API server; updated once the saved
+    // URL is loaded.
+    _apiUrlController.text = '$_hermesUrl/v1/models';
     _loadData();
   }
 
@@ -65,7 +77,14 @@ class _DebugScreenState extends State<DebugScreen> {
     });
 
     try {
-      // Collect real service status
+      final saved = await SettingsPreferenceService().getHermesUrl();
+      final resolved = DebugScreen.resolveHermesUrl(saved);
+      if (mounted) {
+        if (_apiUrlController.text == '$_hermesUrl/v1/models') {
+          _apiUrlController.text = '$resolved/v1/models';
+        }
+        _hermesUrl = resolved;
+      }
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -81,13 +100,11 @@ class _DebugScreenState extends State<DebugScreen> {
     }
   }
 
-  String get _gatewayUrl {
-    final connService =
-        Provider.of<ConnectionManagerService>(context, listen: false);
-    return connService.isConnected
-        ? AppConfig.defaultGatewayUrl
-        : AppConfig.defaultGatewayUrl;
-  }
+  /// The Hermes API server the app talks to: the URL saved in settings, or
+  /// the default (127.0.0.1:8642). Not the OpenClaw gateway port.
+  String _hermesUrl = AppConfig.defaultHermesUrl;
+
+  String get _gatewayUrl => _hermesUrl;
 
   /// Test connectivity to the Hermes gateway.
   Future<void> _testConnection() async {
@@ -411,7 +428,7 @@ class _DebugScreenState extends State<DebugScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${AppConfig.defaultGatewayUrl} • ${connService.selectedModel ?? l10n.debugNoModel}',
+                  '$_hermesUrl • ${connService.selectedModel ?? l10n.debugNoModel}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).textTheme.bodySmall?.color,
                       ),
@@ -686,7 +703,7 @@ class _DebugScreenState extends State<DebugScreen> {
                       ? l10n.debugActive
                       : l10n.debugUnreachable,
                   isHealthy: connService.isConnected,
-                  details: AppConfig.defaultGatewayUrl,
+                  details: _hermesUrl,
                 ),
                 const Divider(),
                 _buildServiceTile(
