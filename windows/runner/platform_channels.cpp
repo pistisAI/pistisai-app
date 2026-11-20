@@ -205,10 +205,183 @@ static flutter::EncodableValue camera_capture_image(
 // OCR Engine Channel (pistisai/ocr_engine)
 // ============================================================================
 
+// Tesseract language codes are ISO 639-2/3, optionally with a script suffix
+// (e.g. eng, fra, chi_sim). Reject anything outside this charset.
+static bool ocr_is_allowed_language_code(const std::string& code) {
+  if (code.size() < 2 || code.size() > 16) {
+    return false;
+  }
+  for (unsigned char c : code) {
+    const bool ok =
+        (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
+    if (!ok) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool ocr_build_language_arg(const flutter::EncodableList* languages,
+                                   std::string* out) {
+  if (!out) {
+    return false;
+  }
+  *out = "eng";
+  if (!languages) {
+    return true;
+  }
+
+  std::string lang;
+  for (const auto& item : *languages) {
+    if (!std::holds_alternative<std::string>(item)) {
+      continue;
+    }
+    const std::string& code = std::get<std::string>(item);
+    if (!ocr_is_allowed_language_code(code)) {
+      std::cerr << "[OCR] Rejected invalid language code" << std::endl;
+      return false;
+    }
+    if (!lang.empty()) {
+      lang += "+";
+    }
+    lang += code;
+  }
+  if (!lang.empty()) {
+    *out = lang;
+  }
+  return true;
+}
+
+// Quote a single Windows process argument for CreateProcess (no cmd.exe).
+static std::string ocr_quote_windows_arg(const std::string& arg) {
+  std::string out = "\"";
+  for (size_t i = 0; i < arg.size();) {
+    if (arg[i] == '\\') {
+      size_t n = 0;
+      while (i + n < arg.size() && arg[i + n] == '\\') {
+        ++n;
+      }
+      if (i + n >= arg.size() || arg[i + n] == '"') {
+        out.append(n * 2, '\\');
+      } else {
+        out.append(n, '\\');
+      }
+      i += n;
+    } else if (arg[i] == '"') {
+      out += "\\\"";
+      ++i;
+    } else {
+      out += arg[i];
+      ++i;
+    }
+  }
+  out += "\"";
+  return out;
+}
+
+static bool ocr_find_tesseract(std::string* out_path) {
+  char buffer[MAX_PATH];
+  DWORD n =
+      SearchPathA(nullptr, "tesseract.exe", nullptr, MAX_PATH, buffer, nullptr);
+  if (n == 0 || n >= MAX_PATH) {
+    n = SearchPathA(nullptr, "tesseract", nullptr, MAX_PATH, buffer, nullptr);
+  }
+  if (n == 0 || n >= MAX_PATH) {
+    return false;
+  }
+  if (out_path) {
+    *out_path = buffer;
+  }
+  return true;
+}
+
+// Run tesseract via CreateProcess with an argument vector (no shell).
+static std::string ocr_run_tesseract(const std::string& image_path,
+                                     const std::string& lang) {
+  if (image_path.empty()) {
+    return "";
+  }
+
+  std::string tesseract_path;
+  if (!ocr_find_tesseract(&tesseract_path)) {
+    std::cerr << "[OCR] Failed to locate tesseract" << std::endl;
+    return "";
+  }
+
+  SECURITY_ATTRIBUTES sa{};
+  sa.nLength = sizeof(sa);
+  sa.bInheritHandle = TRUE;
+
+  HANDLE read_pipe = nullptr;
+  HANDLE write_pipe = nullptr;
+  if (!CreatePipe(&read_pipe, &write_pipe, &sa, 0)) {
+    std::cerr << "[OCR] Failed to create pipe" << std::endl;
+    return "";
+  }
+  SetHandleInformation(read_pipe, HANDLE_FLAG_INHERIT, 0);
+
+  HANDLE nul = CreateFileA("NUL", GENERIC_WRITE, FILE_SHARE_WRITE, &sa,
+                           OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+  STARTUPINFOA si{};
+  si.cb = sizeof(si);
+  si.dwFlags = STARTF_USESTDHANDLES;
+  si.hStdOutput = write_pipe;
+  si.hStdError = nul != INVALID_HANDLE_VALUE ? nul : write_pipe;
+  si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+
+  std::string command_line;
+  command_line += ocr_quote_windows_arg(tesseract_path);
+  command_line += " ";
+  command_line += ocr_quote_windows_arg(image_path);
+  command_line += " ";
+  command_line += ocr_quote_windows_arg("stdout");
+  command_line += " ";
+  command_line += ocr_quote_windows_arg("-l");
+  command_line += " ";
+  command_line += ocr_quote_windows_arg(lang);
+
+  std::vector<char> mutable_cmd(command_line.begin(), command_line.end());
+  mutable_cmd.push_back('\0');
+
+  PROCESS_INFORMATION pi{};
+  const BOOL created = CreateProcessA(
+      tesseract_path.c_str(), mutable_cmd.data(), nullptr, nullptr, TRUE,
+      CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi);
+
+  CloseHandle(write_pipe);
+  if (nul != INVALID_HANDLE_VALUE) {
+    CloseHandle(nul);
+  }
+
+  if (!created) {
+    CloseHandle(read_pipe);
+    std::cerr << "[OCR] Failed to run tesseract" << std::endl;
+    return "";
+  }
+
+  std::string result;
+  char buffer[4096];
+  DWORD bytes_read = 0;
+  while (ReadFile(read_pipe, buffer, sizeof(buffer), &bytes_read, nullptr) &&
+         bytes_read > 0) {
+    result.append(buffer, bytes_read);
+  }
+  CloseHandle(read_pipe);
+
+  WaitForSingleObject(pi.hProcess, INFINITE);
+  CloseHandle(pi.hThread);
+  CloseHandle(pi.hProcess);
+
+  while (!result.empty() &&
+         (result.back() == '\n' || result.back() == '\r')) {
+    result.pop_back();
+  }
+  return result;
+}
+
 static flutter::EncodableValue ocr_initialize() {
-  // Check if tesseract is available on the system
-  int ret = system("where tesseract > nul 2>&1");
-  if (ret == 0) {
+  if (ocr_find_tesseract(nullptr)) {
     std::cout << "[OCR] Tesseract binary found on system" << std::endl;
     return flutter::EncodableValue(true);
   }
@@ -233,37 +406,14 @@ static flutter::EncodableValue ocr_extract_text(
     return flutter::EncodableValue("");
   }
 
-  // Build and execute tesseract command
-  std::string cmd = "tesseract \"";
-  cmd += image_path;
-  cmd += "\" stdout -l eng 2>nul";
-
-  FILE* pipe = _popen(cmd.c_str(), "r");
-  if (!pipe) {
-    std::cerr << "[OCR] Failed to run tesseract" << std::endl;
-    return flutter::EncodableValue("");
-  }
-
-  std::string result;
-  char buffer[4096];
-  while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-    result += buffer;
-  }
-  _pclose(pipe);
-
-  // Trim trailing newline
-  while (!result.empty() &&
-         (result.back() == '\n' || result.back() == '\r')) {
-    result.pop_back();
-  }
-
-  return flutter::EncodableValue(result);
+  return flutter::EncodableValue(ocr_run_tesseract(image_path, "eng"));
 }
 
 static flutter::EncodableValue ocr_extract_text_multilingual(
     const flutter::EncodableValue* args) {
   std::string image_path;
   std::string lang = "eng";
+  flutter::EncodableList languages;
 
   if (args && std::holds_alternative<flutter::EncodableMap>(*args)) {
     auto map = std::get<flutter::EncodableMap>(*args);
@@ -276,15 +426,7 @@ static flutter::EncodableValue ocr_extract_text_multilingual(
     auto it_l = map.find(flutter::EncodableValue("languages"));
     if (it_l != map.end() &&
         std::holds_alternative<flutter::EncodableList>(it_l->second)) {
-      auto langs = std::get<flutter::EncodableList>(it_l->second);
-      lang = "";
-      for (const auto& item : langs) {
-        if (std::holds_alternative<std::string>(item)) {
-          if (!lang.empty()) lang += "+";
-          lang += std::get<std::string>(item);
-        }
-      }
-      if (lang.empty()) lang = "eng";
+      languages = std::get<flutter::EncodableList>(it_l->second);
     }
   }
 
@@ -292,31 +434,12 @@ static flutter::EncodableValue ocr_extract_text_multilingual(
     return flutter::EncodableValue("");
   }
 
-  std::string cmd = "tesseract \"";
-  cmd += image_path;
-  cmd += "\" stdout -l ";
-  cmd += lang;
-  cmd += " 2>nul";
-
-  FILE* pipe = _popen(cmd.c_str(), "r");
-  if (!pipe) {
-    std::cerr << "[OCR] Failed to run tesseract" << std::endl;
+  if (!ocr_build_language_arg(languages.empty() ? nullptr : &languages,
+                              &lang)) {
     return flutter::EncodableValue("");
   }
 
-  std::string result;
-  char buffer[4096];
-  while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-    result += buffer;
-  }
-  _pclose(pipe);
-
-  while (!result.empty() &&
-         (result.back() == '\n' || result.back() == '\r')) {
-    result.pop_back();
-  }
-
-  return flutter::EncodableValue(result);
+  return flutter::EncodableValue(ocr_run_tesseract(image_path, lang));
 }
 
 static flutter::EncodableValue ocr_dispose() {
