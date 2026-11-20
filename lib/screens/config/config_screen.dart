@@ -18,7 +18,6 @@ import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
 import '../../config/app_config.dart';
-import '../../config/theme.dart';
 import '../../services/app_cache_service.dart';
 import '../../services/auto_update_service.dart';
 import '../../services/connection_manager_service.dart' as runtime;
@@ -971,38 +970,6 @@ class _ConfigScreenState extends State<ConfigScreen>
                   );
                 }
 
-                if (status == UpdateStatus.downloading) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const CircularProgressIndicator(),
-                          const SizedBox(height: 16),
-                          Text(l10n.configDownloadingUpdate),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-                if (status == UpdateStatus.installing) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const CircularProgressIndicator(),
-                          const SizedBox(height: 16),
-                          Text(l10n.configInstallingUpdate),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
                 if (status == UpdateStatus.updateAvailable &&
                     updateInfo != null) {
                   return Padding(
@@ -1054,9 +1021,9 @@ class _ConfigScreenState extends State<ConfigScreen>
                           runSpacing: 8,
                           children: [
                             ElevatedButton.icon(
-                              onPressed: () => updateService.downloadUpdate(),
-                              icon: const Icon(Icons.download, size: 18),
-                              label: Text(l10n.configDownloadUpdate),
+                              onPressed: () => updateService.openReleasePage(),
+                              icon: const Icon(Icons.open_in_new, size: 18),
+                              label: const Text('Open release page'),
                             ),
                             TextButton.icon(
                               onPressed: () =>
@@ -1065,44 +1032,6 @@ class _ConfigScreenState extends State<ConfigScreen>
                               label: Text(l10n.configViewChangelog),
                             ),
                           ],
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (status == UpdateStatus.downloaded) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: AppTheme.colorsOf(context).success,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                l10n.configUpdateReady,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      color: AppTheme.colorsOf(context).success,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: () => updateService.installUpdate(),
-                          icon: const Icon(Icons.restart_alt, size: 18),
-                          label: Text(l10n.configInstallRestart),
                         ),
                       ],
                     ),
