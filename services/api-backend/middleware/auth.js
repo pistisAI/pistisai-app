@@ -77,6 +77,13 @@ export const authenticateJWT = async (req, res, next) => {
         path: req.path,
       });
 
+      if (result.code === 'ACCOUNT_SUSPENDED') {
+        return res.status(403).json({
+          error: 'Account is suspended',
+          code: 'ACCOUNT_SUSPENDED',
+        });
+      }
+
       // Differentiate expired vs invalid
       if (result.error?.includes('expired') || result.error?.includes('exp')) {
         return res.status(401).json({
