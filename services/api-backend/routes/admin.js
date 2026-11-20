@@ -359,6 +359,27 @@ router.post(
 );
 
 /**
+ * GET /api/admin/me
+ * Returns the caller's admin status from the verified JWT claims.
+ * The UI must never decide admin access from a compile-time define.
+ */
+router.get('/me', authenticateJWT, adminReadOnlyLimiter, (req, res) => {
+  const claims = req.auth?.payload ?? {};
+  const namespaceRoles = claims['https://pistisai.app/roles'] ?? [];
+  const appRole = claims['app_metadata']?.role;
+  const roles = [
+    ...new Set([
+      ...namespaceRoles,
+      ...(typeof appRole === 'string' ? [appRole] : []),
+      ...(typeof claims.role === 'string' ? [claims.role] : []),
+    ]),
+  ];
+  const isAdmin = roles.includes('admin');
+
+  res.json({ success: true, isAdmin, roles });
+});
+
+/**
  * GET /api/admin/health
  * Admin health check endpoint
  */

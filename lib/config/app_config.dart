@@ -257,7 +257,7 @@ class AppConfig {
   // Get admin server URL based on platform
   static String get adminServerUrl =>
       kIsWeb ? adminServerUrlWeb : adminServerUrlDesktop;
-  static String get adminApiBaseUrl => '$adminServerUrl/api/admin';
+  static String get adminApiBaseUrl => '$adminServerUrl/api';
 
   static const Duration adminApiTimeout = Duration(seconds: 45);
 

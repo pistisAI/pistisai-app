@@ -161,13 +161,9 @@ class _AdminCenterScreenState extends State<AdminCenterScreen> {
       debugPrint(
           '[AdminCenterScreen] Checking admin authorization for: $userEmail');
 
-      // The Admin Center is only available on Web, and only for the
-      // allow-list compiled in with --dart-define=PISTISAI_ADMIN_EMAIL.
-      const adminEmail = String.fromEnvironment('PISTISAI_ADMIN_EMAIL');
-      final isAuthorized = _platformAdapter.platformService.isWeb &&
-          adminEmail.isNotEmpty &&
-          userEmail != null &&
-          userEmail.toLowerCase() == adminEmail.toLowerCase();
+      // Authorization comes from the backend's verified JWT role claims.
+      // No compile-time email allow-list: it could never be set in CI builds.
+      final isAuthorized = await _adminService.checkAdminAccess();
 
       if (isAuthorized) {
         // Initialize admin service to load roles

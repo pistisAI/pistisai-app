@@ -77,18 +77,34 @@ class AdminCenterService extends ChangeNotifier {
     }
   }
 
-  /// Load admin roles for current user
-  Future<void> _loadAdminRoles() async {
+  /// Ask the backend whether the authenticated user is an admin.
+  /// Access is derived from verified JWT claims, never from a build define.
+  /// Returns false on any error so access fails closed.
+  Future<bool> checkAdminAccess() async {
     try {
-      final response = await _dio.get('/admin/auth/roles');
-      final roles = (response.data['roles'] as List)
-          .map((json) => AdminRoleModel.fromJson(json))
+      final response = await _dio.get('/admin/me');
+      final data = response.data as Map<String, dynamic>;
+      final roles = (data['roles'] as List? ?? [])
+          .map((role) => AdminRoleModel.fromJson({
+                'id': 'jwt-$role',
+                'user_id': 'current',
+                'role': role,
+                'is_active': true,
+              }))
           .toList();
       _adminRoles = roles;
+      notifyListeners();
+      return data['isAdmin'] == true;
     } catch (e) {
-      debugPrint('[AdminCenterService] Error loading admin roles: $e');
-      rethrow;
+      debugPrint('[AdminCenterService] Error checking admin access: $e');
+      _adminRoles = [];
+      return false;
     }
+  }
+
+  /// Load admin roles for current user
+  Future<void> _loadAdminRoles() async {
+    await checkAdminAccess();
   }
 
   /// Check if user has a specific role
