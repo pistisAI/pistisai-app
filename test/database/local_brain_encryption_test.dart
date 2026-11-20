@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/database/local_brain_encryption.dart';
 import 'package:pistisai/database/local_brain_key_store.dart';
+import 'package:pistisai/database/local_brain_migration.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 class _MemoryVault implements LocalBrainKeyVault {
