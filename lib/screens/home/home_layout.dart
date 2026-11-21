@@ -425,6 +425,11 @@ class _ChatPaneState extends State<_ChatPane> {
                 _buildConnectionWarning(context),
               if ((chatService.channelSyncError ?? '').isNotEmpty)
                 _buildChannelSyncError(context, chatService.channelSyncError!),
+              if (chatService.historyNotSaved)
+                _buildChannelSyncError(
+                  context,
+                  AppLocalizations.of(context).chatHistoryNotSaved,
+                ),
               Expanded(
                 child: !chatService.isStorageReady
                     ? const Center(child: CircularProgressIndicator())
