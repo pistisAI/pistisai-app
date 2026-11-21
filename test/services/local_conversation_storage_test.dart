@@ -70,7 +70,8 @@ void main() {
         reason: 'AES key must not be written as a plaintext file');
   });
 
-  test('migrates legacy plaintext .conversation_key into the vault and deletes it',
+  test(
+      'migrates legacy plaintext .conversation_key into the vault and deletes it',
       () async {
     Future<Directory> docs() async => tempDir;
     final vault = _MemoryVault();
@@ -171,7 +172,8 @@ void main() {
     );
   });
 
-  test('Conversation.mainChannel always uses the stable pistisai session id', () {
+  test('Conversation.mainChannel always uses the stable pistisai session id',
+      () {
     expect(Conversation.mainChannel().id, Conversation.pistisaiChannelId);
     expect(
       Conversation.mainChannel(model: 'hermes-agent').id,
@@ -188,4 +190,110 @@ void main() {
     );
     expect(Conversation.mainChannel(agentName: '  ').title, 'Agent');
   });
+
+  group('history is never overwritten when the key is lost (#894)', () {
+    Future<Directory> docs() async => tempDir;
+    File encFile() => File('${tempDir.path}/Pistisai/conversations.json.enc');
+    List<File> setAside() => Directory('${tempDir.path}/Pistisai')
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.contains('.unreadable-'))
+        .toList();
+
+    Future<String> saveOne(_MemoryVault vault, String text) async {
+      final storage =
+          LocalConversationStorage(documentsDirectory: docs, keyVault: vault);
+      await storage.saveConversations([
+        Conversation.mainChannel(model: 'hermes-agent')
+            .addMessage(Message.user(content: text)),
+      ]);
+      return encFile().readAsStringSync();
+    }
+
+    test('keystore entry missing: old history is kept, not overwritten',
+        () async {
+      final original = await saveOne(_MemoryVault(), 'precious history');
+
+      // Same files, but the keystore lost its entry.
+      final fresh = _MemoryVault();
+      final storage =
+          LocalConversationStorage(documentsDirectory: docs, keyVault: fresh);
+      expect(await storage.loadConversations(), isEmpty);
+      await storage.saveConversations([
+        Conversation.mainChannel(model: 'hermes-agent')
+            .addMessage(Message.user(content: 'new chat')),
+      ]);
+
+      final kept = setAside();
+      expect(kept, hasLength(1));
+      expect(kept.single.readAsStringSync(), original);
+    });
+
+    test('wrong key: unreadable history is kept before the next save',
+        () async {
+      final original = await saveOne(_MemoryVault(), 'precious history');
+
+      final other = _MemoryVault();
+      await saveOne(other, 'throwaway'); // file now under a second key
+      final secondCopy = encFile().readAsStringSync();
+      // Put the first file back, readable only with the first key.
+      encFile().writeAsStringSync(original);
+
+      final storage =
+          LocalConversationStorage(documentsDirectory: docs, keyVault: other);
+      expect(await storage.loadConversations(), isEmpty);
+      await storage.saveConversations([
+        Conversation.mainChannel(model: 'hermes-agent')
+            .addMessage(Message.user(content: 'new chat')),
+      ]);
+
+      expect(secondCopy, isNot(original));
+      expect(setAside().map((f) => f.readAsStringSync()), contains(original));
+    });
+
+    test('keystore read error: no new key is generated', () async {
+      await saveOne(_MemoryVault(), 'precious history');
+      final before = encFile().readAsStringSync();
+
+      final broken = _ThrowingVault();
+      final storage =
+          LocalConversationStorage(documentsDirectory: docs, keyVault: broken);
+      await storage.saveConversations([
+        Conversation.mainChannel(model: 'hermes-agent')
+            .addMessage(Message.user(content: 'new chat')),
+      ]);
+
+      expect(broken.writes, 0);
+      expect(encFile().readAsStringSync(), before);
+    });
+
+    test('clearAll also deletes set-aside history', () async {
+      await saveOne(_MemoryVault(), 'precious history');
+      final storage = LocalConversationStorage(
+          documentsDirectory: docs, keyVault: _MemoryVault());
+      await storage.loadConversations();
+      expect(setAside(), isNotEmpty);
+
+      await storage.clearAll();
+
+      expect(setAside(), isEmpty);
+      expect(await storage.listExistingConversationDataPaths(), isEmpty);
+    });
+  });
+}
+
+class _ThrowingVault implements LocalBrainKeyVault {
+  int writes = 0;
+
+  @override
+  Future<String?> read(String key) async =>
+      throw const FileSystemException('keyring locked');
+
+  @override
+  Future<void> write(String key, String value) async {
+    writes++;
+  }
+
+  @override
+  Future<void> delete(String key) async {}
 }

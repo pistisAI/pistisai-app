@@ -92,7 +92,18 @@ class LocalConversationStorage {
         return _cachedKey!;
       }
     } catch (e) {
-      appLogger.warning('[LocalChatStorage] Keystore read failed: $e');
+      // Do not fall through to generating a key: if the keystore is only
+      // temporarily unavailable, a new key written later would replace the
+      // real one and the existing history could never be decrypted again.
+      final fileKey = await _readFileKey();
+      if (fileKey != null && fileKey.isNotEmpty) {
+        _cachedKey = encrypt.Key.fromBase64(fileKey);
+        return _cachedKey!;
+      }
+      throw StateError(
+        'Cannot read the conversation encryption key from the OS keystore '
+        '($e). Enable the platform keyring, then restart.',
+      );
     }
 
     final fileKey = await _readFileKey();
@@ -107,6 +118,15 @@ class LocalConversationStorage {
       }
       _cachedKey = encrypt.Key.fromBase64(fileKey);
       return _cachedKey!;
+    }
+
+    // No key anywhere. Encrypted history that already exists was written
+    // with a key that is gone; keep it (renamed) instead of letting the first
+    // save with a new key overwrite it.
+    for (final file in await _conversationDataFiles()) {
+      if (file.path.endsWith(_fileName) && await file.exists()) {
+        await _setAside(file, 'no encryption key found');
+      }
     }
 
     final keyStr = encrypt.Key.fromSecureRandom(32).base64;
@@ -159,6 +179,24 @@ class LocalConversationStorage {
           '[LocalChatStorage] Failed to delete legacy key ${file.path}: $e',
         );
       }
+    }
+  }
+
+  /// Suffix of encrypted history files kept aside because the current key
+  /// cannot read them. They are included in [clearAll].
+  static const String unreadableSuffix = '.unreadable-';
+
+  Future<void> _setAside(File file, String reason) async {
+    final target = '${file.path}$unreadableSuffix'
+        '${DateTime.now().toUtc().millisecondsSinceEpoch}';
+    try {
+      await file.rename(target);
+      appLogger.warning(
+        '[LocalChatStorage] Kept unreadable history as $target ($reason)',
+      );
+    } catch (e) {
+      // If it cannot be moved, refuse to continue rather than overwrite it.
+      throw StateError('Cannot set aside unreadable history ${file.path}: $e');
     }
   }
 
@@ -220,7 +258,15 @@ class LocalConversationStorage {
       if (await file.exists()) {
         final content = await file.readAsString();
         if (content.isEmpty) return [];
-        final plaintext = _decrypt(content, key);
+        final String plaintext;
+        try {
+          plaintext = _decrypt(content, key);
+        } catch (e) {
+          // Wrong key or damaged file. Keep it, so the next save cannot
+          // overwrite history that may still be recoverable.
+          await _setAside(file, 'cannot be decrypted: $e');
+          return [];
+        }
         final List<dynamic> jsonData = jsonDecode(plaintext);
         return jsonData.map((data) => Conversation.fromJson(data)).toList();
       }
@@ -325,6 +371,19 @@ class LocalConversationStorage {
           files.add(file);
         }
       }
+      try {
+        if (await dir.exists()) {
+          await for (final entity in dir.list()) {
+            if (entity is File &&
+                p
+                    .basename(entity.path)
+                    .startsWith('$_fileName$unreadableSuffix') &&
+                seen.add(entity.path)) {
+              files.add(entity);
+            }
+          }
+        }
+      } catch (_) {}
     }
     return files;
   }
