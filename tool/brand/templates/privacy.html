@@ -97,8 +97,8 @@
     <p>
       Conversations, avatar memory, notes, and configuration you create in {{product_name}} are stored locally
       on your device. On desktop and mobile, the local database (<code>local_brain.sqlite</code>) is
-      encrypted at rest with SQLCipher-compatible AES-256; its key comes from your environment
-      (<code>PISTISAI_LOCAL_BRAIN_KEY</code>) or the operating system keystore, not from the app
+      encrypted at rest with SQLCipher-compatible AES-256; its key comes from an environment
+      variable or the operating system keystore, not from the app
       config. Chat history is kept in a separate file (<code>conversations.json.enc</code>) encrypted
       with AES-256 under its own key, stored in the operating system keystore.
     </p>
