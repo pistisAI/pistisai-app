@@ -22,4 +22,15 @@ void main() {
       reason: 'OAuth callback URLs must not be written to temp plaintext',
     );
   });
+
+  test('deleteStaleCallbackFile removes a file left by older builds', () async {
+    final stale = File(PlatformFileUtils.staleCallbackFilePath);
+    await stale.writeAsString('pistisai://auth/callback?code=old');
+
+    await PlatformFileUtils.deleteStaleCallbackFile();
+
+    expect(await stale.exists(), isFalse);
+    // Nothing to delete is not an error.
+    await PlatformFileUtils.deleteStaleCallbackFile();
+  });
 }

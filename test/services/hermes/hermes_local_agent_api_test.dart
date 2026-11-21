@@ -93,14 +93,13 @@ void main() {
       expect(ready.resolution.isAgentApi, isTrue);
       expect(ready.resolution.url, AppConfig.defaultHermesUrl);
       expect(ready.apiKey, 'test_hermes_api_key');
-      final envFile =
-          File('${home.path}${Platform.pathSeparator}.env');
+      final envFile = File('${home.path}${Platform.pathSeparator}.env');
       final env = envFile.readAsStringSync();
       expect(env, contains('API_SERVER_KEY=test_hermes_api_key'));
       expect(env, contains('API_SERVER_ENABLED=true'));
       if (!Platform.isWindows) {
         final mode = envFile.statSync().mode & 0x1FF;
-        expect(mode & 0x049, 0,
+        expect(mode & 0x3F, 0,
             reason: 'Hermes .env must not be group/world readable');
       }
     });
@@ -120,9 +119,29 @@ void main() {
       expect(envFile.existsSync(), isTrue);
       if (!Platform.isWindows) {
         final mode = envFile.statSync().mode & 0x1FF;
-        expect(mode & 0x049, 0,
+        expect(mode & 0x3F, 0,
             reason: 'Hermes .env must not be group/world readable');
       }
+    });
+  });
+
+  group('writeHermesApiServerKey on an existing world-readable .env', () {
+    test('ends owner-only and leaves no temp file', () {
+      if (Platform.isWindows) return;
+      final home = Directory.systemTemp.createTempSync('hermes-env-mode2-');
+      addTearDown(() => home.deleteSync(recursive: true));
+      final envFile = File('${home.path}${Platform.pathSeparator}.env');
+      envFile.writeAsStringSync('OTHER=1\n');
+      Process.runSync('chmod', ['644', envFile.path]);
+
+      writeHermesApiServerKey(home.path, preferredKey: 'k2');
+
+      expect(envFile.statSync().mode & 0x3F, 0);
+      expect(envFile.readAsStringSync(), contains('OTHER=1'));
+      expect(
+        home.listSync().map((e) => e.path).where((p) => p.contains('.tmp-')),
+        isEmpty,
+      );
     });
   });
 }
