@@ -122,22 +122,49 @@ String writeHermesApiServerKey(
   );
   if (updated.changed || !file.existsSync()) {
     file.parent.createSync(recursive: true);
-    file.writeAsStringSync(updated.content, flush: true);
-  }
-  if (file.existsSync()) {
+    _writeOwnerOnly(file, updated.content);
+  } else {
     _restrictOwnerOnlyPermissions(file);
   }
   return updated.key;
 }
 
-/// Best-effort owner-only mode for secret files (POSIX). No-op on Windows.
-void _restrictOwnerOnlyPermissions(File file) {
-  if (Platform.isWindows) return;
+/// Writes [content] so the secret is never readable by other users, even
+/// briefly: an empty temp file is made owner-only first, filled, then renamed
+/// over [file] (rename keeps the temp file's mode). On Windows the file
+/// inherits the ACL of the user's profile folder.
+void _writeOwnerOnly(File file, String content) {
+  if (Platform.isWindows) {
+    file.writeAsStringSync(content, flush: true);
+    return;
+  }
+  final tmp = File('${file.path}.tmp-$pid');
+  if (tmp.existsSync()) tmp.deleteSync();
+  tmp.createSync();
+  if (!_restrictOwnerOnlyPermissions(tmp)) {
+    tmp.deleteSync();
+    throw FileSystemException(
+      'Could not make the Hermes .env owner-only; key not written',
+      file.path,
+    );
+  }
+  tmp.writeAsStringSync(content, flush: true);
+  tmp.renameSync(file.path);
+}
+
+/// Owner-only mode for secret files (POSIX). Returns false when it could not
+/// be applied. No-op (true) on Windows.
+bool _restrictOwnerOnlyPermissions(File file) {
+  if (Platform.isWindows) return true;
   try {
-    Process.runSync('chmod', ['600', file.path]);
+    final result = Process.runSync('chmod', ['600', file.path]);
+    if (result.exitCode == 0) return true;
+    debugPrint('[HermesAgentApi] chmod 600 failed for ${file.path}: '
+        '${result.stderr}');
   } catch (e) {
     debugPrint('[HermesAgentApi] chmod 600 failed for ${file.path}: $e');
   }
+  return false;
 }
 
 /// `.env` text after ensuring `API_SERVER_KEY` and `API_SERVER_ENABLED=true`.

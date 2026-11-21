@@ -42,11 +42,20 @@ Google Drive, contacts, repositories, or other Google or GitHub services.
 ### 2.2 Content you create
 
 Conversations, avatar memory, notes, and configuration you create in Pistisai are
-stored locally in a database on your device. On desktop and mobile, that database
-file (`local_brain.sqlite`) is encrypted at rest with SQLCipher-compatible
-AES-256; the encryption key comes from your environment
-(`PISTISAI_LOCAL_BRAIN_KEY`) or the operating system keystore, not from the app
-config. On web, data is kept in the browser's origin-scoped storage. Turn on your
+stored locally on your device. On desktop and mobile:
+
+- the local database (`local_brain.sqlite`) is encrypted at rest with
+  SQLCipher-compatible AES-256; its key comes from your environment
+  (`PISTISAI_LOCAL_BRAIN_KEY`) or the operating system keystore, not from the app
+  config;
+- chat history is kept in a separate file (`conversations.json.enc`) encrypted
+  with AES-256 under its own key, stored in the operating system keystore.
+
+The app never writes these keys to a plain file. If the keystore is unavailable,
+chat history is not saved until it is available again. A history file the app can
+no longer decrypt (for example after the keystore was reset) is kept aside under a
+new name instead of being overwritten, and is removed when you delete your local
+data. On web, data is kept in the browser's origin-scoped storage. Turn on your
 operating system's disk encryption (BitLocker, FileVault or LUKS) as well. This
 content stays on your device unless you explicitly enable cloud sync or connect a
 remote runtime, in which case it is transmitted only to the destination you have
@@ -121,7 +130,7 @@ including the Limited Use requirements. Specifically:
 
 ## 5. How we store and protect your information
 
-- **On-device:** app content is stored in a local database on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible); also protect the volume with your operating system's disk encryption.
+- **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption.
 - **Authentication:** sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.

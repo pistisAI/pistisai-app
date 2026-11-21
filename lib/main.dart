@@ -57,6 +57,8 @@ import 'package:pistisai/services/agent_lifecycle_service.dart';
 import 'package:pistisai/services/platform_adapter.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/unified_connection_service.dart';
+import 'package:pistisai/utils/platform_file_utils.dart'
+    if (dart.library.html) 'package:pistisai/utils/platform_file_utils_web.dart';
 
 // navigatorKey is now imported from config/navigator_key.dart
 
@@ -117,6 +119,10 @@ void main([List<String> args = const []]) async {
   // Only bail out early when an actual callback URL is present; ignore
   // conventional engine/flutter flags (--enable-logging, --verbose, etc.)
   // so they cannot prevent the UI from ever starting.
+  // Remove the callback file older builds wrote to the temp folder.
+  if (!kIsWeb) {
+    await PlatformFileUtils.deleteStaleCallbackFile();
+  }
   final callbackUrl = resolveCallbackUrl(args);
   if (callbackUrl != null) {
     debugPrint('[Main] Command-line arguments received: $args');

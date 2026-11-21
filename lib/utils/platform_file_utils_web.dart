@@ -6,4 +6,6 @@ class PlatformFileUtils {
     // No-op on web - callback handling is different
     debugPrint('[PlatformFileUtils] Web platform - callback file not needed');
   }
+
+  static Future<void> deleteStaleCallbackFile() async {}
 }
