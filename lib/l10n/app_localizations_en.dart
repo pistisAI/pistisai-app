@@ -3732,4 +3732,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String approvalRevokeDeviceSummary(String deviceId) {
     return 'Revoke cloud connector access for device $deviceId.';
   }
+
+  @override
+  String get chatHistoryNotSaved =>
+      'Chat history is not being saved on this device. Check that the system keyring is available, then restart the app.';
 }

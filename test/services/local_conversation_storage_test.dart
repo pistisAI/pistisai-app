@@ -258,10 +258,13 @@ void main() {
       final broken = _ThrowingVault();
       final storage =
           LocalConversationStorage(documentsDirectory: docs, keyVault: broken);
-      await storage.saveConversations([
-        Conversation.mainChannel(model: 'hermes-agent')
-            .addMessage(Message.user(content: 'new chat')),
-      ]);
+      await expectLater(
+        storage.saveConversations([
+          Conversation.mainChannel(model: 'hermes-agent')
+              .addMessage(Message.user(content: 'new chat')),
+        ]),
+        throwsA(isA<StateError>()),
+      );
 
       expect(broken.writes, 0);
       expect(encFile().readAsStringSync(), before);
@@ -280,6 +283,42 @@ void main() {
       expect(await storage.listExistingConversationDataPaths(), isEmpty);
     });
   });
+
+  group('save failures are reported (#894)', () {
+    Future<Directory> docs() async => tempDir;
+
+    test('saveConversations throws when the key cannot be stored', () async {
+      final storage = LocalConversationStorage(
+        documentsDirectory: docs,
+        keyVault: _NoWriteVault(),
+      );
+      await expectLater(
+        storage.saveConversations([
+          Conversation.mainChannel(model: 'hermes-agent')
+              .addMessage(Message.user(content: 'hello')),
+        ]),
+        throwsA(isA<StateError>()),
+      );
+    });
+
+    test('a failed migration keeps the plaintext legacy file', () async {
+      final dir = Directory('${tempDir.path}/Pistisai')
+        ..createSync(recursive: true);
+      final legacy = File('${dir.path}/conversations.json');
+      final conv = Conversation.mainChannel(model: 'hermes-agent')
+          .addMessage(Message.user(content: 'only copy'));
+      legacy.writeAsStringSync(jsonEncode([conv.toJson()]));
+
+      final storage = LocalConversationStorage(
+        documentsDirectory: docs,
+        keyVault: _NoWriteVault(),
+      );
+      await storage.loadConversations();
+
+      expect(legacy.existsSync(), isTrue,
+          reason: 'the only copy must not be deleted when saving failed');
+    });
+  });
 }
 
 class _ThrowingVault implements LocalBrainKeyVault {
@@ -293,6 +332,18 @@ class _ThrowingVault implements LocalBrainKeyVault {
   Future<void> write(String key, String value) async {
     writes++;
   }
+
+  @override
+  Future<void> delete(String key) async {}
+}
+
+class _NoWriteVault implements LocalBrainKeyVault {
+  @override
+  Future<String?> read(String key) async => null;
+
+  @override
+  Future<void> write(String key, String value) async =>
+      throw const FileSystemException('no keyring');
 
   @override
   Future<void> delete(String key) async {}

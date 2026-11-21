@@ -246,6 +246,9 @@ class LocalConversationStorage {
         '[LocalChatStorage] Error saving conversations: $e',
         error: e,
       );
+      // Callers must know: a migration must not delete its source, and the
+      // chat screen warns that history is not being saved.
+      rethrow;
     }
   }
 
