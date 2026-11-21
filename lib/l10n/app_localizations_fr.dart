@@ -3795,4 +3795,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String approvalRevokeDeviceSummary(String deviceId) {
     return 'Révoquer l\'accès du connecteur cloud pour l\'appareil $deviceId.';
   }
+
+  @override
+  String get chatHistoryNotSaved =>
+      'L\'historique du chat n\'est pas enregistré sur cet appareil. Vérifiez que le trousseau du système est disponible, puis redémarrez l\'application.';
 }

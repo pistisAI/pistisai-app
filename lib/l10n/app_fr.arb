@@ -1113,5 +1113,6 @@
   "approvalDeniedSnack": "Action refusée",
   "approvalExportSettingsSummary": "Exporter tous les réglages de l'application vers {filename}.",
   "approvalExportAuditSummary": "Télécharger les journaux d'audit administrateur en CSV.",
-  "approvalRevokeDeviceSummary": "Révoquer l'accès du connecteur cloud pour l'appareil {deviceId}."
+  "approvalRevokeDeviceSummary": "Révoquer l'accès du connecteur cloud pour l'appareil {deviceId}.",
+  "chatHistoryNotSaved": "L'historique du chat n'est pas enregistré sur cet appareil. Vérifiez que le trousseau du système est disponible, puis redémarrez l'application."
 }
