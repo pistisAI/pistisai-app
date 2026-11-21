@@ -58,4 +58,54 @@ void main() {
       expect(await service.terminate('abc123'), isFalse);
     });
   });
+
+  group('SessionService.listSessions', () {
+    const table = '''
+Title                         Preview                 Last Active   ID
+──────────────────────────────────────────────────────────────────────
+Morning planning · Nov 20     Here is your agenda     5m ago        20261120_ab12
+Daily briefing                Summary sent            2h ago        cron_daily_1
+''';
+
+    test('parses title, preview, last active and id from the CLI table', () {
+      final sessions = SessionService.parseSessionList(table);
+      expect(sessions, hasLength(2));
+      expect(sessions[0].id, '20261120_ab12');
+      expect(sessions[0].type, 'agent');
+      expect(sessions[0].userOrAgent, 'Morning planning · Nov 20');
+      expect(sessions[0].preview, 'Here is your agenda');
+      expect(sessions[0].lastActive, '5m ago');
+      expect(sessions[1].type, 'cron');
+    });
+
+    test('does not invent values the CLI does not give', () {
+      final s = SessionService.parseSessionList(table).first;
+      expect(s.startTime, isNull);
+      expect(s.tokenUsage, isNull);
+      expect(s.messageCount, isNull);
+      expect(s.status, isNull);
+    });
+
+    test('throws when hermes fails instead of returning an empty list',
+        () async {
+      final service = SessionService(
+        processRunner: (_, __) async =>
+            ProcessResult(0, 2, '', 'no such command'),
+      );
+      await expectLater(
+        service.listSessions(),
+        throwsA(isA<SessionServiceException>()
+            .having((e) => e.message, 'message', contains('no such command'))),
+      );
+    });
+
+    test('throws when hermes cannot be started', () async {
+      final service = SessionService(
+        processRunner: (_, __) async =>
+            throw const ProcessException('hermes', ['sessions', 'list']),
+      );
+      await expectLater(
+          service.listSessions(), throwsA(isA<SessionServiceException>()));
+    });
+  });
 }

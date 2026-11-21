@@ -1898,24 +1898,6 @@ abstract class AppLocalizations {
   /// **'Sessions'**
   String get sessionsTitle;
 
-  /// No description provided for @sessionsTabWebSocket.
-  ///
-  /// In en, this message translates to:
-  /// **'WebSocket'**
-  String get sessionsTabWebSocket;
-
-  /// No description provided for @sessionsTabConversations.
-  ///
-  /// In en, this message translates to:
-  /// **'Conversations'**
-  String get sessionsTabConversations;
-
-  /// No description provided for @sessionsTabUsers.
-  ///
-  /// In en, this message translates to:
-  /// **'Users'**
-  String get sessionsTabUsers;
-
   /// No description provided for @sessionsRefresh.
   ///
   /// In en, this message translates to:
@@ -1951,24 +1933,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User/Agent'**
   String get sessionsUserOrAgent;
-
-  /// No description provided for @sessionsStarted.
-  ///
-  /// In en, this message translates to:
-  /// **'Started'**
-  String get sessionsStarted;
-
-  /// No description provided for @sessionsDuration.
-  ///
-  /// In en, this message translates to:
-  /// **'Duration'**
-  String get sessionsDuration;
-
-  /// No description provided for @sessionsTokens.
-  ///
-  /// In en, this message translates to:
-  /// **'Tokens'**
-  String get sessionsTokens;
 
   /// No description provided for @sessionsDurationHoursMinutes.
   ///
@@ -6661,6 +6625,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat history is not being saved on this device. Check that the system keyring is available, then restart the app.'**
   String get chatHistoryNotSaved;
+
+  /// No description provided for @sessionsTabAgents.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent sessions'**
+  String get sessionsTabAgents;
+
+  /// No description provided for @sessionsTabScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get sessionsTabScheduled;
+
+  /// No description provided for @sessionsPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Last message'**
+  String get sessionsPreview;
+
+  /// No description provided for @sessionsLastActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Last active'**
+  String get sessionsLastActive;
 }
 
 class _AppLocalizationsDelegate

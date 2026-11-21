@@ -1022,15 +1022,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionsTitle => 'Sessions';
 
   @override
-  String get sessionsTabWebSocket => 'WebSocket';
-
-  @override
-  String get sessionsTabConversations => 'Conversations';
-
-  @override
-  String get sessionsTabUsers => 'Users';
-
-  @override
   String get sessionsRefresh => 'Refresh sessions';
 
   @override
@@ -1047,15 +1038,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionsUserOrAgent => 'User/Agent';
-
-  @override
-  String get sessionsStarted => 'Started';
-
-  @override
-  String get sessionsDuration => 'Duration';
-
-  @override
-  String get sessionsTokens => 'Tokens';
 
   @override
   String sessionsDurationHoursMinutes(int hours, int minutes) {
@@ -3736,4 +3718,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get chatHistoryNotSaved =>
       'Chat history is not being saved on this device. Check that the system keyring is available, then restart the app.';
+
+  @override
+  String get sessionsTabAgents => 'Agent sessions';
+
+  @override
+  String get sessionsTabScheduled => 'Scheduled';
+
+  @override
+  String get sessionsPreview => 'Last message';
+
+  @override
+  String get sessionsLastActive => 'Last active';
 }
