@@ -636,18 +636,12 @@
   "agentStateError": "Error",
   "agentStateOffline": "Offline",
   "sessionsTitle": "Sessions",
-  "sessionsTabWebSocket": "WebSocket",
-  "sessionsTabConversations": "Conversations",
-  "sessionsTabUsers": "Users",
   "sessionsRefresh": "Refresh sessions",
   "sessionsEmptyTitle": "No Sessions",
   "sessionsEmptyMessage": "No active sessions for this category.",
   "sessionsDetailsTitle": "Session Details",
   "sessionsId": "Session ID",
   "sessionsUserOrAgent": "User/Agent",
-  "sessionsStarted": "Started",
-  "sessionsDuration": "Duration",
-  "sessionsTokens": "Tokens",
   "sessionsDurationHoursMinutes": "{hours}h {minutes}m",
   "@sessionsDurationHoursMinutes": {
     "placeholders": {
@@ -2339,5 +2333,9 @@
   "chatHistoryNotSaved": "Chat history is not being saved on this device. Check that the system keyring is available, then restart the app.",
   "@chatHistoryNotSaved": {
     "description": "Warning above the chat when saving the conversation history failed."
-  }
+  },
+  "sessionsTabAgents": "Agent sessions",
+  "sessionsTabScheduled": "Scheduled",
+  "sessionsPreview": "Last message",
+  "sessionsLastActive": "Last active"
 }

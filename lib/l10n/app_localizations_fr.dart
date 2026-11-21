@@ -1035,15 +1035,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sessionsTitle => 'Sessions';
 
   @override
-  String get sessionsTabWebSocket => 'WebSocket';
-
-  @override
-  String get sessionsTabConversations => 'Conversations';
-
-  @override
-  String get sessionsTabUsers => 'Utilisateurs';
-
-  @override
   String get sessionsRefresh => 'Actualiser les sessions';
 
   @override
@@ -1061,15 +1052,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sessionsUserOrAgent => 'Utilisateur ou agent';
-
-  @override
-  String get sessionsStarted => 'Début';
-
-  @override
-  String get sessionsDuration => 'Durée';
-
-  @override
-  String get sessionsTokens => 'Jetons';
 
   @override
   String sessionsDurationHoursMinutes(int hours, int minutes) {
@@ -3799,4 +3781,16 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get chatHistoryNotSaved =>
       'L\'historique du chat n\'est pas enregistré sur cet appareil. Vérifiez que le trousseau du système est disponible, puis redémarrez l\'application.';
+
+  @override
+  String get sessionsTabAgents => 'Sessions d\'agent';
+
+  @override
+  String get sessionsTabScheduled => 'Planifiées';
+
+  @override
+  String get sessionsPreview => 'Dernier message';
+
+  @override
+  String get sessionsLastActive => 'Dernière activité';
 }

@@ -21,6 +21,12 @@ class _RefreshableScreenState extends State<RefreshableScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    _error = widget.errorMessage;
+  }
+
+  @override
   void didUpdateWidget(RefreshableScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.errorMessage != oldWidget.errorMessage) {
@@ -52,7 +58,10 @@ class _RefreshableScreenState extends State<RefreshableScreen> {
     final childWithError = _error != null
         ? Column(
             children: [
-              widget.child,
+              // The child is usually scrollable (ListView, TabBarView); it
+              // needs a bounded height inside the Column or layout throws and
+              // the error banner never shows.
+              Expanded(child: widget.child),
               if (_error != null)
                 Container(
                   padding: const EdgeInsets.all(16),
