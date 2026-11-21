@@ -6655,6 +6655,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Revoke cloud connector access for device {deviceId}.'**
   String approvalRevokeDeviceSummary(String deviceId);
+
+  /// Warning above the chat when saving the conversation history failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat history is not being saved on this device. Check that the system keyring is available, then restart the app.'**
+  String get chatHistoryNotSaved;
 }
 
 class _AppLocalizationsDelegate

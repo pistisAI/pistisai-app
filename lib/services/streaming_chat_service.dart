@@ -92,6 +92,11 @@ class StreamingChatService extends ChangeNotifier {
   /// Cleared after a successful sync. Surfaced in the chat header.
   String? get channelSyncError => _channelSyncError;
 
+  /// True after a save of the chat history failed (for example the OS
+  /// keystore is unavailable), until a later save succeeds.
+  bool get historyNotSaved => _historyNotSaved;
+  bool _historyNotSaved = false;
+
   /// Stream of current streaming content for real-time UI updates
   Stream<String> get streamingContentStream => _streamingContentSubject.stream;
 
@@ -304,7 +309,20 @@ class StreamingChatService extends ChangeNotifier {
 
   Future<void> _saveConversationsAsync() async {
     if (_mainChannel == null) return;
-    await _storageService.saveConversations([_mainChannel!]);
+    try {
+      await _storageService.saveConversations([_mainChannel!]);
+    } catch (e) {
+      appLogger.error('[StreamingChat] Chat history not saved', error: e);
+      if (!_historyNotSaved) {
+        _historyNotSaved = true;
+        notifyListeners();
+      }
+      return;
+    }
+    if (_historyNotSaved) {
+      _historyNotSaved = false;
+      notifyListeners();
+    }
     appLogger.info(
       '[StreamingChat] Main channel saved (${_mainChannel!.messages.length} messages)',
     );

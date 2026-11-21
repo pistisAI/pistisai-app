@@ -2335,5 +2335,9 @@
         "type": "String"
       }
     }
+  },
+  "chatHistoryNotSaved": "Chat history is not being saved on this device. Check that the system keyring is available, then restart the app.",
+  "@chatHistoryNotSaved": {
+    "description": "Warning above the chat when saving the conversation history failed."
   }
 }
