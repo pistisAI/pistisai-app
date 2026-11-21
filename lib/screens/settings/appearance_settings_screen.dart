@@ -49,9 +49,11 @@ class AppearanceSettingsScreen extends StatelessWidget {
                         leading: const Icon(Icons.light_mode),
                         title: Text(l10n.appearanceThemeMode),
                         subtitle: Text(
-                          themeProvider.isDarkMode
-                              ? l10n.themeDark
-                              : l10n.themeLight,
+                          switch (themeProvider.themeMode) {
+                            ThemeMode.system => l10n.themeSystem,
+                            ThemeMode.light => l10n.themeLight,
+                            ThemeMode.dark => l10n.themeDark,
+                          },
                         ),
                       ),
                       OverflowBar(
