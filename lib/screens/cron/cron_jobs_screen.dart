@@ -62,6 +62,7 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
         setState(() {
           _isLoading = false;
           _jobs = [];
+          _errorMessage = '$e';
         });
       }
     }
@@ -81,10 +82,14 @@ class _CronJobsScreenState extends State<CronJobsScreen> {
     final l10n = AppLocalizations.of(context);
     final service = _cronService;
     if (service == null) return;
-    await service.runJobNow(job.id);
+    final ok = await service.runJobNow(job.id);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.cronTriggered(job.name))),
+      SnackBar(
+        content: Text(
+          ok ? l10n.cronTriggered(job.name) : l10n.cronRunFailed(job.name),
+        ),
+      ),
     );
   }
 

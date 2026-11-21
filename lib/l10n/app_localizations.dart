@@ -2420,6 +2420,12 @@ abstract class AppLocalizations {
   /// **'Triggered: {name}'**
   String cronTriggered(String name);
 
+  /// Snackbar when running a cron job now fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not run: {name}'**
+  String cronRunFailed(String name);
+
   /// No description provided for @cronDeleteTitle.
   ///
   /// In en, this message translates to:

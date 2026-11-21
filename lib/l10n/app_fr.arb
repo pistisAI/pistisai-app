@@ -408,6 +408,7 @@
   "cronEmptyTitle": "Aucune tâche planifiée",
   "cronEmptyMessage": "Créez des tâches planifiées pour automatiser l'entretien",
   "cronTriggered": "Lancée : {name}",
+  "cronRunFailed": "Impossible de lancer : {name}",
   "cronDeleteTitle": "Supprimer la tâche planifiée",
   "cronDeleteConfirm": "Voulez-vous vraiment supprimer « {name} » ? Cette action est irréversible.",
   "cronDeleted": "Tâche supprimée",

@@ -1342,6 +1342,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String cronRunFailed(String name) {
+    return 'Impossible de lancer : $name';
+  }
+
+  @override
   String get cronDeleteTitle => 'Supprimer la tâche planifiée';
 
   @override
@@ -3692,8 +3697,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get crashReportingTitle => 'Envoyer les rapports de plantage';
 
   @override
-  String get cloudLlmProvidersTitle =>
-      'Autoriser les fournisseurs LLM cloud';
+  String get cloudLlmProvidersTitle => 'Autoriser les fournisseurs LLM cloud';
 
   @override
   String get microsoftSpeechTitle =>

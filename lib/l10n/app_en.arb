@@ -826,6 +826,15 @@
   "cronEmptyTitle": "No Cron Jobs",
   "cronEmptyMessage": "Create scheduled tasks to automate maintenance",
   "cronTriggered": "Triggered: {name}",
+  "cronRunFailed": "Could not run: {name}",
+  "@cronRunFailed": {
+    "description": "Snackbar when running a cron job now fails.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "@cronTriggered": {
     "placeholders": {
       "name": {

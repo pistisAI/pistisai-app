@@ -42,6 +42,13 @@ Future<ProcessResult> _runProcess(String executable, List<String> arguments) {
   );
 }
 
+class CronServiceException implements Exception {
+  CronServiceException(this.message);
+  final String message;
+  @override
+  String toString() => message;
+}
+
 class CronService {
   final String _hermesPath;
   final CronProcessRunner _run;
@@ -50,18 +57,25 @@ class CronService {
       : _hermesPath = hermesPath ?? 'hermes',
         _run = processRunner ?? _runProcess;
 
+  /// Lists Hermes cron jobs. Throws [CronServiceException] when the
+  /// `hermes` command is missing or fails, so the screen can show an error
+  /// instead of an empty list that looks like "no jobs".
   Future<List<CronJob>> listJobs() async {
+    final ProcessResult result;
     try {
-      final result = await Process.run(
-        _hermesPath, ['cron', 'list'],
-        stdoutEncoding: utf8, stderrEncoding: utf8,
-      );
-      if (result.exitCode != 0) return [];
-      return _parse(result.stdout as String);
+      result = await _run(_hermesPath, ['cron', 'list']);
     } catch (e) {
       debugPrint('[CronService] Error: $e');
-      return [];
+      throw CronServiceException('Could not run "$_hermesPath cron list": $e');
     }
+    if (result.exitCode != 0) {
+      final stderr = '${result.stderr}'.trim();
+      throw CronServiceException(
+        '"$_hermesPath cron list" exited with code ${result.exitCode}'
+        '${stderr.isEmpty ? '' : ': $stderr'}',
+      );
+    }
+    return _parse(result.stdout as String);
   }
 
   Future<bool> toggleJob(String jobId, bool active) async {

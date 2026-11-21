@@ -1324,6 +1324,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String cronRunFailed(String name) {
+    return 'Could not run: $name';
+  }
+
+  @override
   String get cronDeleteTitle => 'Delete Scheduled Job';
 
   @override
