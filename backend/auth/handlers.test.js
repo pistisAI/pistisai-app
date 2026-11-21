@@ -78,8 +78,8 @@ describe('Brand-driven auth config (whitelabel)', () => {
     keys.forEach((k) => { saved[k] = process.env[k]; });
     process.env.NODE_ENV = 'development';
     process.env.DEV_BYPASS_TOKEN = DEV;
-    process.env.AUTH_ALLOWED_ORIGINS = 'https://iacle.app,https://www.iacle.app';
-    process.env.AUTH_ROLE_CLAIM_NAMESPACE = 'https://iacle.app';
+    process.env.AUTH_ALLOWED_ORIGINS = 'https://brand.example.com,https://www.brand.example.com';
+    process.env.AUTH_ROLE_CLAIM_NAMESPACE = 'https://brand.example.com';
     process.env.AUTH0_DOMAIN = 'test.example.auth0.com';
     process.env.AUTH0_AUDIENCE = 'https://api.example.com';
   });
@@ -94,8 +94,8 @@ describe('Brand-driven auth config (whitelabel)', () => {
   it('allows the brand origin and rejects pistisai.app', async () => {
     let app;
     jest.isolateModules(() => { ({ app } = require('./handlers.js')); });
-    const ok = await request(app).get('/health').set('Origin', 'https://iacle.app');
-    expect(ok.headers['access-control-allow-origin']).toBe('https://iacle.app');
+    const ok = await request(app).get('/health').set('Origin', 'https://brand.example.com');
+    expect(ok.headers['access-control-allow-origin']).toBe('https://brand.example.com');
     const other = await request(app).get('/health').set('Origin', 'https://pistisai.app');
     expect(other.headers['access-control-allow-origin']).toBeUndefined();
   });
