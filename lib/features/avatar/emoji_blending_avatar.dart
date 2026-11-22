@@ -27,6 +27,9 @@ class EmojiBlendingAvatar extends StatefulWidget {
   /// Whether to show a pulsing glow effect.
   final bool showGlow;
 
+  /// Colour chosen by the user; replaces the personality colour when set.
+  final Color? colorOverride;
+
   const EmojiBlendingAvatar({
     super.key,
     required this.state,
@@ -35,6 +38,7 @@ class EmojiBlendingAvatar extends StatefulWidget {
     this.transitionDuration = const Duration(milliseconds: 400),
     this.pulseDuration = const Duration(seconds: 2),
     this.showGlow = true,
+    this.colorOverride,
   });
 
   @override
@@ -81,7 +85,8 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
       _onStateChanged(widget.state);
     }
 
-    if (widget.personality != oldWidget.personality) {
+    if (widget.personality != oldWidget.personality ||
+        widget.colorOverride != oldWidget.colorOverride) {
       _updatePersonalityDerived();
     }
 
@@ -99,7 +104,7 @@ class _EmojiBlendingAvatarState extends State<EmojiBlendingAvatar>
 
   void _updatePersonalityDerived() {
     final traits = widget.personality;
-    _baseColor = _getPersonalityColor(traits);
+    _baseColor = widget.colorOverride ?? _getPersonalityColor(traits);
     _bounceScale = _getBounceScale(traits);
     _isPulsing = widget.state == AgentState.thinking ||
         widget.state == AgentState.working;

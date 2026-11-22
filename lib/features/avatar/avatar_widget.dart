@@ -29,12 +29,16 @@ class AgentAvatar extends StatelessWidget {
   /// Whether to show a pulsing glow effect.
   final bool showGlow;
 
+  /// Colour chosen by the user; replaces the personality colour when set.
+  final Color? colorOverride;
+
   const AgentAvatar({
     super.key,
     required this.state,
     this.size = 150,
     this.personality,
     this.showGlow = true,
+    this.colorOverride,
   });
 
   @override
@@ -44,6 +48,7 @@ class AgentAvatar extends StatelessWidget {
       size: size,
       personality: personality,
       showGlow: showGlow,
+      colorOverride: colorOverride,
     );
   }
 }

@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../models/chat_model.dart';
 import '../../services/streaming_chat_service.dart';
+import '../../services/avatar/avatar_appearance.dart';
+import '../../services/avatar/avatar_state_service.dart';
 import '../../services/avatar/personality_engine.dart';
 import '../../services/connection_manager_service.dart';
 import '../../features/avatar/avatar_widget.dart';
@@ -281,14 +283,27 @@ class _ChatPaneState extends State<_ChatPane> {
       state = AgentState.idle;
     }
 
-    return SizedBox(
-      width: 32,
-      height: 32,
-      child: AgentAvatar(
-        state: state,
-        size: 32,
-        showGlow: false,
-      ),
+    // Follow Settings → Avatar: size, glow, colour and personality colour.
+    PersonalityTraits? traits;
+    if (di.serviceLocator.isRegistered<AvatarStateService>()) {
+      traits = di.serviceLocator.get<AvatarStateService>().traits;
+    }
+    return ValueListenableBuilder<AvatarAppearance>(
+      valueListenable: avatarAppearance,
+      builder: (context, appearance, _) {
+        final size = 32 * appearance.sizeMultiplier;
+        return SizedBox(
+          width: size,
+          height: size,
+          child: AgentAvatar(
+            state: state,
+            size: size,
+            personality: traits,
+            showGlow: appearance.glowEnabled,
+            colorOverride: appearance.colorOverride,
+          ),
+        );
+      },
     );
   }
 

@@ -34,6 +34,7 @@ flutter test \
   test/widgets/management_screens_test.dart \
   test/services/subagent_registry_service_test.dart \
   test/services/avatar/avatar_progress_test.dart \
+  test/services/avatar/avatar_appearance_test.dart \
   test/services/avatar/avatar_personality_publish_test.dart \
   test/screens/sessions/ \
   test/screens/settings/llm_provider_settings_status_test.dart \
