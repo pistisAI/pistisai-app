@@ -1,5 +1,7 @@
 # Health Check and Diagnostics Module
 
+> **Route note:** `GET /api/tunnel/health` is defined in `services/streaming-proxy/src/server.ts`, which is not the live entry point. The live `services/streaming-proxy/proxy-server.js` exposes `/health` (`proxy-server.js:233`) on port 3001. The `/api/tunnel/health` references below are historical.
+
 ## Overview
 
 The health check and diagnostics module provides comprehensive monitoring and troubleshooting capabilities for the streaming proxy server. It enables real-time health status monitoring, detailed system diagnostics, and component-level health checks.

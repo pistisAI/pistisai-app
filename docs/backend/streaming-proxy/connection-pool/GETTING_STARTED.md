@@ -4,7 +4,7 @@ A step-by-step guide to integrate the connection pool into your streaming proxy 
 
 ## Prerequisites
 
-- Node.js 18.0.0 or higher
+- Node.js >=26.0.0 (see `services/streaming-proxy/package-lock.json` engines; `npm start` runs `proxy-server.js`, not this illustrative bootstrap)
 - TypeScript 5.0 or higher
 - Basic understanding of SSH and WebSocket protocols
 

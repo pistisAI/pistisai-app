@@ -2,6 +2,8 @@
 
 > **Status**: Legacy/fallback service deployment guide. Current product direction prefers the Tailscale secure device mesh with per-user cloud connectors and selected agent runtimes. Use this guide only for maintaining or testing the existing streaming-proxy service.
 
+> **Implementation note:** `.github/workflows/deploy-aks.yml` does not exist and there is no `Dockerfile.prod`. Live deployment is `.github/workflows/deploy-backend.yml`; the Dockerfile is `services/streaming-proxy/Dockerfile`. Port 3001 is correct.
+
 ## Overview
 
 The streaming-proxy service is a Node.js application that provides WebSocket connection management, SSH tunneling, rate limiting, circuit breaking, and authentication for the Pistisai system.
@@ -66,7 +68,7 @@ Integrate streaming-proxy code into the api-backend service.
 **Current Architecture**: The streaming-proxy is currently a **separate service** with its own:
 
 - Package.json
-- Dockerfile (Dockerfile.prod)
+- Dockerfile (`services/streaming-proxy/Dockerfile`)
 - Source code (src/)
 - Kubernetes deployment files (k8s/)
 
@@ -76,7 +78,7 @@ Integrate streaming-proxy code into the api-backend service.
 
 ### Current CI/CD Workflow
 
-The `.github/workflows/deploy-aks.yml` currently deploys:
+The `.github/workflows/deploy-aks.yml` file does not exist; live deployments use `.github/workflows/deploy-backend.yml`. The legacy AKS path below is illustrative only.
 
 1. **Web Image**: Flutter web app
 2. **API Backend**: REST API service
@@ -104,7 +106,7 @@ jobs:
         echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
         COMMIT_SHA=$(echo ${{ github.sha }} | cut -c1-8)
-        docker build -f ./services/streaming-proxy/Dockerfile.prod \
+        docker build -f ./services/streaming-proxy/Dockerfile \
           -t ${{ env.STREAMING_PROXY_IMAGE }}:$COMMIT_SHA \
           -t ${{ env.STREAMING_PROXY_IMAGE }}:latest .
         docker push ${{ env.STREAMING_PROXY_IMAGE }}:$COMMIT_SHA
@@ -266,7 +268,7 @@ The `ws` package and TypeScript types are now included in `package.json`:
 The Docker build process automatically installs dependencies:
 
 ```dockerfile
-# In Dockerfile.prod
+# In Dockerfile
 FROM node:24-alpine AS base
 WORKDIR /app
 COPY services/streaming-proxy/package*.json ./
@@ -355,7 +357,7 @@ npm install
 ### 2. Build Docker Image Locally (Optional)
 
 ```bash
-docker build -f services/streaming-proxy/Dockerfile.prod -t ghcr.io/pistisai/pistisai/streaming:latest .
+docker build -f services/streaming-proxy/Dockerfile -t ghcr.io/pistisai/pistisai/streaming:latest .
 ```
 
 ### 3. Push to Docker Hub (Optional)

@@ -1,5 +1,11 @@
 # Grafana Dashboard Setup Implementation Guide
 
+> **Implementation note:** the intent matches
+> `services/streaming-proxy/src/monitoring/grafana-dashboard-setup.ts`. The
+> `docs/OPERATIONS/TUNNEL_MONITORING_GUIDE.md` and
+> `docs/OPERATIONS/TUNNEL_ALERT_RUNBOOKS.md` files referenced below do not exist
+> in this repository.
+
 ## Task 18: Set up Grafana monitoring dashboards using MCP tools
 
 This document provides step-by-step instructions for implementing production monitoring dashboards for the SSH WebSocket tunnel system using Grafana MCP tools.
@@ -722,7 +728,7 @@ console.log('- Errors:', errorDashboardLink);
 
 #### Step 2: Create Monitoring Guide
 
-Create `docs/OPERATIONS/TUNNEL_MONITORING_GUIDE.md` with:
+The following intended runbook content is not present as a file; keep it with the dashboard script instead:
 
 - Dashboard descriptions
 - Metric meanings
@@ -731,7 +737,7 @@ Create `docs/OPERATIONS/TUNNEL_MONITORING_GUIDE.md` with:
 
 #### Step 3: Create Alert Runbooks
 
-Create `docs/OPERATIONS/TUNNEL_ALERT_RUNBOOKS.md` with:
+The following intended runbook content is not present as a file; keep it with the dashboard script instead:
 
 - Alert descriptions
 - Investigation steps

@@ -122,7 +122,7 @@ npx tsc --init
 
 For installation issues, check:
 
-1. Node.js version (18+)
+1. Node.js version (>=26.0.0 per `services/streaming-proxy/package-lock.json`)
 2. npm version (8+)
 3. Package lock file integrity
 4. Network connectivity for package downloads

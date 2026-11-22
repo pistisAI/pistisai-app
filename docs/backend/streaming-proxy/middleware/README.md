@@ -1,5 +1,7 @@
 # Authentication and Authorization Middleware
 
+> **Wiring note:** `JWTValidationMiddleware` exists in `src/middleware/jwt-validation-middleware.ts` (using `jsonwebtoken`), but the live `services/streaming-proxy/proxy-server.js` entry point does not wire it in. The integration snippets below describe `src/server.ts`, not the current runtime path.
+
 This directory contains the server-side authentication and authorization middleware for the SSH WebSocket tunnel enhancement.
 
 ## Components
@@ -9,7 +11,7 @@ This directory contains the server-side authentication and authorization middlew
 Validates JWT tokens from Cloudflare Access with the following features:
 
 - Integration with Cloudflare Access JWKS endpoint
-- Token signature verification using Web Crypto API
+- Token signature verification using the `jsonwebtoken` package (see `src/middleware/jwt-validation-middleware.ts`); not Web Crypto API
 - Expiration checking with distinction between expired and invalid tokens
 - 5-minute validation result caching
 - Automatic JWKS key caching (1 hour)
