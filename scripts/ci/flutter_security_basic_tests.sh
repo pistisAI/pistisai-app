@@ -34,6 +34,7 @@ flutter test \
   test/widgets/management_screens_test.dart \
   test/services/subagent_registry_service_test.dart \
   test/screens/sessions/ \
+  test/screens/settings/llm_provider_settings_status_test.dart \
   test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
   test/services/desktop_control/ \
