@@ -71,7 +71,7 @@ When a limit is exceeded, the server returns a `429 Too Many Requests` status co
 
 ## 🔒 Production Considerations
 
-- **Redis Storage**: For multi-instance deployments, the rate limiter uses a Redis store to maintain global counts.
+- **Redis Storage**: Not implemented. `services/api-backend/middleware/admin-rate-limiter.js` only records a recommendation to use a Redis store for multi-instance deployments; counts are currently process-local. Do not claim global counts across instances.
 - **Health Check Exemption**: Internal health checks (/health) are automatically exempted from rate limiting.
 
 ---
