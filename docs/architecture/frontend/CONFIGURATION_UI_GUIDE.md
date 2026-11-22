@@ -1,5 +1,7 @@
 # Configuration and UI Components Guide
 
+> **Implementation note:** `lib/components/enhanced_provider_status_widget.dart` and `lib/components/enhanced_error_handler.dart` do not exist. Provider status is rendered by `lib/screens/settings/llm_provider_settings_screen.dart` from `ConnectionManagerService.isConnected`. The component names below are illustrative only.
+
 This guide provides comprehensive documentation for the enhanced configuration management and UI components in Pistisai.
 
 > **Current orientation**: Provider configuration here describes support model providers for app-owned features. The primary app channel connects to an agent runtime through setup and the Agent Runtime Contract.

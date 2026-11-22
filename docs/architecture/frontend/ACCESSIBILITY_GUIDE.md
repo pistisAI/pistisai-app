@@ -1,5 +1,7 @@
 # Accessibility Implementation Guide
 
+> **Design proposal, not current code:** `lib/services/accessibility_service.dart`, `lib/widgets/accessible_screen_wrapper.dart` and `lib/utils/accessibility_helpers.dart` are not present in this repository. Implemented accessibility work uses Flutter semantics widgets; screen/vision services live under `lib/services/vision/`. The module paths below are illustrative only.
+
 ## Overview
 
 This guide explains how to implement accessibility features in Pistisai screens using the provided accessibility components and services.
@@ -441,7 +443,7 @@ if (!accessibilityService.validateContrastRatio(textColor!, backgroundColor)) {
 
 For questions or issues with accessibility implementation, please refer to:
 
-- `lib/services/accessibility_service.dart` - Accessibility service implementation
-- `lib/widgets/accessible_screen_wrapper.dart` - Screen wrapper implementation
-- `lib/utils/accessibility_helpers.dart` - Helper utilities
+- `lib/services/accessibility_service.dart` - Accessibility service implementation (**not present**)
+- `lib/widgets/accessible_screen_wrapper.dart` - Screen wrapper implementation (**not present**)
+- `lib/utils/accessibility_helpers.dart` - Helper utilities (**not present**)
 - `test/integration/TASK_19_ACCESSIBILITY_IMPLEMENTATION_SUMMARY.md` - Implementation summary

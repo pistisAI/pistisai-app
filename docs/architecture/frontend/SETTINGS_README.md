@@ -12,7 +12,7 @@ This directory contains the settings-related screens for Pistisai.
 
 ## New Settings Architecture
 
-The unified settings screen is being implemented with the following components:
+The following `UnifiedSettings*` components do **not** exist in this repository. Implemented settings screens live under `lib/screens/settings/` (for example `appearance_settings_screen.dart`, `connection_settings_screen.dart`, `general_settings_screen.dart`, `llm_provider_settings_screen.dart`, `vision_settings_screen.dart`).
 
 ### Core Components
 
