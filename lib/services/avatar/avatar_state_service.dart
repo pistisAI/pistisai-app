@@ -3,7 +3,10 @@ import 'package:pistisai/database/drift_local_brain.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/models/conversation.dart' as models;
+import 'package:pistisai/models/message.dart' as msg;
 
 /// Centralized service for managing avatar state across the application.
 ///
@@ -173,6 +176,126 @@ class AvatarStateService extends ChangeNotifier {
       debugPrint('Error requesting evolution: $e');
       rethrow;
     }
+  }
+
+  /// A pause this long between two messages starts a new conversation. The
+  /// app keeps one continuous chat channel, so "conversations" for the
+  /// avatar's progress are sessions separated by inactivity.
+  static const Duration sessionGap = Duration(minutes: 30);
+
+  String? _lastRecordedMessageId;
+
+  /// The trailing run of user/assistant messages with no pause of
+  /// [sessionGap] or more between them.
+  @visibleForTesting
+  static List<msg.Message> currentSession(List<msg.Message> messages) {
+    final chat = messages
+        .where((m) => (m.isUser || m.isAssistant) && !m.isStreaming)
+        .toList();
+    if (chat.isEmpty) return chat;
+    var start = chat.length - 1;
+    while (start > 0 &&
+        chat[start].timestamp.difference(chat[start - 1].timestamp) <
+            sessionGap) {
+      start--;
+    }
+    return chat.sublist(start);
+  }
+
+  /// Records progress after a completed exchange (a user message answered by
+  /// the agent): refreshes the depth metrics of the current session, the
+  /// conversation count and depth score, and unlocks earned achievements.
+  ///
+  /// Safe to call after every save: it does nothing until a new assistant
+  /// reply is the last message.
+  Future<void> recordExchange(models.Conversation conversation) async {
+    try {
+      final session = currentSession(conversation.messages);
+      if (session.isEmpty) return;
+      final last = session.last;
+      if (!last.isAssistant || last.hasError || last.content.trim().isEmpty) {
+        return;
+      }
+      if (!session.any((m) => m.isUser)) return;
+      if (last.id == _lastRecordedMessageId) return;
+
+      final complexity = await _evolutionTracker.calculateComplexity(session);
+      final emotional =
+          await _evolutionTracker.calculateEmotionalDepth(session);
+      final novelty = await _evolutionTracker.calculateNovelty(session);
+      final startedAt = session.first.timestamp.millisecondsSinceEpoch;
+
+      await _database.upsertConversationDepthMetrics(
+        ConversationDepthMetricsCompanion(
+          id: Value('session_${conversation.id}_$startedAt'),
+          conversationId: Value(conversation.id),
+          complexityScore: Value(complexity),
+          emotionalDepth: Value(emotional),
+          noveltyScore: Value(novelty),
+          timestamp: Value(last.timestamp.millisecondsSinceEpoch),
+        ),
+      );
+
+      final all = await _database.getAllDepthMetrics();
+      final count = all.length;
+      final depth = all
+              .map((m) =>
+                  (m.complexityScore + m.emotionalDepth + m.noveltyScore) / 3)
+              .reduce((a, b) => a + b) /
+          count;
+      final avgNovelty =
+          all.map((m) => m.noveltyScore).reduce((a, b) => a + b) / count;
+      await _database.updateAvatarProgress(
+        conversationCount: count,
+        depthScore: depth,
+      );
+
+      for (final id in earnedAchievements(
+        conversationCount: count,
+        averageNovelty: avgNovelty,
+        evolutionStage: evolutionStage,
+      )) {
+        await _database.unlockAchievementById(id);
+      }
+
+      _lastRecordedMessageId = last.id;
+      await loadProfile();
+    } catch (e) {
+      debugPrint('Error recording avatar progress: $e');
+    }
+  }
+
+  /// Average novelty across tracked sessions (0 when there are none).
+  Future<double> averageNovelty() async {
+    final all = await _database.getAllDepthMetrics();
+    if (all.isEmpty) return 0.0;
+    return all.map((m) => m.noveltyScore).reduce((a, b) => a + b) / all.length;
+  }
+
+  /// Achievement ids earned for these values. Single source of truth for the
+  /// achievements screen and for unlocking.
+  static List<String> earnedAchievements({
+    required int conversationCount,
+    required double averageNovelty,
+    required String evolutionStage,
+  }) {
+    const stages = [
+      'curious_explorer',
+      'knowledge_seeker',
+      'wise_companion',
+      'enlightened_guide',
+    ];
+    final stageIndex = stages.indexOf(evolutionStage);
+    return [
+      if (conversationCount >= 1) 'first_chat',
+      if (conversationCount >= 5) 'deep_conversations_5',
+      if (conversationCount >= 15) 'deep_conversations_15',
+      if (conversationCount >= 30) 'deep_conversations_30',
+      if (averageNovelty >= 0.6) 'high_novelty',
+      if (stageIndex >= 1) 'knowledge_seeker',
+      if (stageIndex >= 2) 'wise_companion',
+      if (stageIndex >= 3) 'enlightened_guide',
+    ];
   }
 
   /// Tracks depth metrics for a conversation
