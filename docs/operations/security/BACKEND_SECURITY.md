@@ -2,85 +2,74 @@
 
 ## Overview
 
-This guide documents the security enhancements and best practices for the Pistisai API backend. It covers input sanitization, CORS configuration, and HTTPS enforcement.
+This guide documents the middleware actually configured in
+`services/api-backend`: request/schema validation, CORS profiles from
+`cors-config.js`, and the helmet-backed security headers installed by
+`pipeline.js`. There is no `input-sanitizer.js` or `https-enforcer.js` in this
+repository; older examples that import them are not valid.
 
----
+## Security components
 
-## 🛡️ Security Components
+### 1. Input validation
 
-### 1. Input Sanitization
+- `services/api-backend/middleware/schema-validation.js` and
+  `request-validation.js` provide Zod-based validation; routes call
+  `validateSchema({ body, params, query })`.
+- Database access uses parameterized queries (`$1`, `$2`, …). Never concatenate
+  user input into SQL.
 
-**Middleware:** `input-sanitizer.js`
+### 2. CORS configuration
 
-Comprehensive sanitization prevents injection attacks (SQLi, XSS) by validating types and escaping malicious characters.
+`middleware/cors-config.js` defines an explicit origin allowlist with no
+wildcards:
 
-| Function | Purpose | Example |
-| :--- | :--- | :--- |
-| `sanitizeString` | Remove XSS, scripts | `sanitizeString('<script>alert(1)</script>')` |
-| `sanitizeEmail` | Validate/normalize email | `sanitizeEmail('User@Example.Com')` |
-| `sanitizeUUID` | Validate UUID format | `sanitizeUUID('123e4567-...')` |
-| `sanitizeLikePattern` | Escape SQL LIKE chars | `sanitizeLikePattern('user%')` |
+- `https://app.pistisai.app`
+- `https://pistisai.app`
+- `https://docs.pistisai.app`
+- `https://admin.pistisai.app`
+- `https://api.pistisai.app`
+- In development: `http(s)://localhost` and `127.0.0.1` on ports 3000, 8080, 5000
+- Extra origins via the comma-separated `ADDITIONAL_CORS_ORIGINS` variable
 
-**Usage:**
+Profiles: `standardCorsOptions`, `adminCorsOptions`, `webhookCorsOptions`, with
+ready-to-use `standardCors`, `adminCors` and `webhookCors` middleware.
 
-```javascript
-import { sanitizeAll } from './middleware/input-sanitizer.js';
-app.use(sanitizeAll); // Applied after body-parser
-```
+### 3. Security headers and pipeline
 
-### 2. CORS Configuration
+`setupMiddlewarePipeline(app, options)` in `middleware/pipeline.js` installs the
+middleware in order: CORS, helmet, request logging with correlation IDs,
+metrics, rate limiting, timeout and queuing. Helmet is configured with a
+content-security policy (`defaultSrc 'self'`, `connectSrc 'self' https:`,
+`scriptSrc`/`styleSrc` self plus inline, `imgSrc` self/data/https) and
+`crossOriginResourcePolicy: cross-origin`; helmet defaults such as HSTS remain
+in force unless explicitly overridden.
 
-**Middleware:** `cors-config.js`
-
-Strict whitelist-based CORS with no wildcards. Supports standard, admin, and webhook-specific profiles.
-
-**Allowed Origins (Production):**
-
-- `https://app.example.com`
-- `https://admin.example.com`
-
-### 3. HTTPS Enforcement
-
-**Middleware:** `https-enforcer.js`
-
-Automatic HTTP to HTTPS redirection in production, combined with HSTS and secure security headers.
-
-**Security Headers Set:**
-
-- `Strict-Transport-Security` (Force HTTPS)
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY` (Anti-clickjacking)
-
----
-
-## 🚀 Quick Start Integration
+## Integration
 
 ```javascript
+import express from 'express';
+import { setupMiddlewarePipeline } from './middleware/pipeline.js';
+import { standardCorsOptions } from './middleware/cors-config.js';
+
 const app = express();
-app.set('trust proxy', 1); // Required for HTTPS detection
-
-app.use(httpsEnforcement);
-app.use(standardCors);
-app.use(express.json());
-app.use(sanitizeAll);
-
-// Stricter rules for admin
-app.use('/api/admin', adminCors, adminHttpsEnforcement, sanitizeAdminInput);
+setupMiddlewarePipeline(app, {
+  corsOptions: standardCorsOptions,
+  rateLimitOptions: { windowMs: 15 * 60 * 1000, max: 100, bridgeMax: 500 },
+  timeoutMs: 30000,
+});
 ```
 
----
+## Best practices
 
-## 💡 Best Practices
+1. Validate every request body, params and query with a Zod schema.
+2. Always use parameterized queries.
+3. Set `NODE_ENV=production` in production and keep `ADDITIONAL_CORS_ORIGINS`
+   explicit and minimal.
+4. Do not claim redirect-based HTTPS enforcement or a sanitizer middleware that
+   does not exist; TLS termination is a deployment concern.
 
-1. **Always use parameterized queries**: Never concatenate user input into SQL strings.
-2. **Cookie Security**: Cookies are automatically set to `HttpOnly`, `Secure` (in prod), and `SameSite: Strict`.
-3. **Environment Variables**:
-    - `NODE_ENV=production` (Enables strict enforcements)
-    - `ADDITIONAL_CORS_ORIGINS` (Comma-separated list)
-
----
-
-## Related Documentation
+## Related documentation
 
 - Admin Management API
 - Audit Log API
+- [Rate Limiting](./RATE_LIMITING.md)

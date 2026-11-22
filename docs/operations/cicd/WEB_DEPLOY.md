@@ -6,7 +6,7 @@ A second Dockerfile, [`config/docker/Dockerfile.web`](../../../config/docker/Doc
 
 ## What the production image does
 
-The builder is `gmeligio/flutter-android:3.47.7` (match `environment.flutter` in `pubspec.yaml`). That image does not enable Flutter web on its own, so the Dockerfile runs `flutter config --enable-web` before `flutter build web`.
+The builder is `gmeligio/flutter-android:3.47.9` (match `environment.flutter` in `pubspec.yaml`). That image does not enable Flutter web on its own, so the Dockerfile runs `flutter config --enable-web` before `flutter build web`.
 
 The release build passes `--no-web-resources-cdn`. The site content policy blocks the Google-hosted CanvasKit script. With the CDN build, the Flutter view never paints and the splash clears to a white page. CanvasKit must be served from this origin.
 
@@ -21,7 +21,7 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=5 \
 
 Use `127.0.0.1`, not `localhost`. In this image `localhost` can resolve to IPv6 while nginx is listening on IPv4, so the check fails.
 
-`.dockerignore` drops `android/`, `docs/`, `*.md`, and `pubspec.lock` from the build context. `flutter pub get` inside the image resolves from `pubspec.yaml` constraints, not from the lockfile on the developer machine.
+`.dockerignore` drops `android/`, `docs/`, `*.md`, `test/`, `coverage/`, `.github/` and build artifacts from the build context. It does **not** drop `pubspec.lock`: the lockfile is present in the context, and `flutter pub get` inside the image resolves from `pubspec.lock` plus `pubspec.yaml`.
 
 ## Cache rules
 
@@ -89,6 +89,6 @@ The browser loaded a CanvasKit URL on `gstatic.com`, or it is still executing an
 
 The host is not logged in to `ghcr.io`, or the token lacks `read:packages`. Run `docker login ghcr.io` on the host and retry `docker compose pull`.
 
-### Web image build cannot see the lockfile or Android project
+### Web image build cannot see the Android project
 
-That is `.dockerignore`. Android sources are not part of the web image. Dependency resolution uses `pubspec.yaml` only.
+That is `.dockerignore`. Android sources are deliberately not part of the web image; `pubspec.lock` is still included and used by `flutter pub get`.
