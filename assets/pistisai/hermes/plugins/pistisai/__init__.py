@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import math
 import os
 import re
 import socket
@@ -406,7 +407,7 @@ def _clean_personality(body: dict) -> dict:
             value = traits.get(key)
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 continue
-            if value != value:  # NaN
+            if math.isnan(value):
                 continue
             clean[key] = max(0.0, min(1.0, float(value)))
         if clean:
@@ -652,6 +653,7 @@ def _api_server_route_factory(native, adapter):
         try:
             os.remove(_personality_path())
         except FileNotFoundError:
+            # No personality was ever stored; clearing is already done.
             pass
         except OSError as e:
             return web.json_response(
