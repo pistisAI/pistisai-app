@@ -1,6 +1,6 @@
 # Pistisai Setup Guide
 
-Pistisai is a privacy-first companion shell for an agent runtime you choose during setup. It can connect to Hermes, OpenClaw, or another compatible agent gateway running on this device, another device in your tailnet, or an optional hosted agent runtime.
+Pistisai is a privacy-first companion shell for an agent runtime you choose during setup. It can connect to Hermes, OpenClaw, or another compatible agent gateway running on this device, another device in your tailnet, or a manual URL. The `pistisai_hosted` value exists in the setup model, but no hosted runtime service is verified or offered by this repository.
 
 There is no universal default runtime. Hermes is the first agent runtime path used for current testing. OpenClaw remains supported as the original agent integration target.
 
@@ -20,7 +20,7 @@ Ollama, LM Studio, and similar local model servers are optional support model pr
 | Support model provider | Optional | Ollama or LM Studio for memory/background features |
 | Secure mesh | Optional | Tailscale for multi-device and remote agent runtime paths |
 
-Cloud features are optional. Local agent runtime use should work without a Pistisai-hosted agent runtime.
+Cloud features are optional. Local agent runtime use does not depend on the `pistisai_hosted` model value.
 
 ---
 
@@ -148,7 +148,7 @@ Select the agent runtime this device should use:
 - Hermes
 - OpenClaw Gateway
 - Custom compatible agent gateway
-- Optional hosted agent runtime
+- Pistisai-hosted agent runtime (model value only; no verified hosted service)
 
 ### Runtime Location
 
@@ -157,7 +157,7 @@ Choose where that runtime lives:
 - This computer
 - Another device in your Tailscale tailnet
 - A private server or VPS in your tailnet
-- Optional Pistisai-hosted agent runtime container
+- Pistisai-hosted runtime (setup-model placeholder; not a verified deployment path)
 
 ### Connection Test
 
@@ -223,9 +223,9 @@ tailscale ping <runtime-device-name>
 
 For web/mobile access or cloud coordination, Pistisai should add an isolated per-user connector container to the user's tailnet. That connector coordinates sync and reachability. It does not grant desktop permissions by itself.
 
-### Hosted Agent Runtime
+### Hosted Agent Runtime (model placeholder)
 
-Running the agent runtime in Pistisai-hosted infrastructure is an optional hosted path. It should use a per-user isolated container and join the user's tailnet only after setup approval.
+`pistisai_hosted` is a setup-model value only. No Pistisai-hosted runtime infrastructure or per-user container service is verified or offered by this repository. For a remote runtime, place the runtime device in your Tailscale tailnet or use a manual URL.
 
 ---
 
