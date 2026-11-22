@@ -964,6 +964,14 @@ Future<void> setupAuthenticatedServices() async {
     serviceLocator
         .registerSingleton<StreamingChatService>(streamingChatService);
 
+    // Avatar progress (conversation count, depth, achievements) advances
+    // after each completed exchange.
+    if (serviceLocator.isRegistered<AvatarStateService>()) {
+      final avatarState = serviceLocator.get<AvatarStateService>();
+      streamingChatService.onConversationSaved =
+          (conversation) => unawaited(avatarState.recordExchange(conversation));
+    }
+
     // Unified connection service - requires connection manager
     AppConfig.verboseLog(
         '[ServiceLocator] Initializing UnifiedConnectionService...');
