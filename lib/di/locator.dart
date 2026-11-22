@@ -59,6 +59,7 @@ import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
+import 'package:pistisai/services/avatar/avatar_appearance.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
@@ -234,6 +235,9 @@ Future<void> setupCoreServices() async {
         AppConfig.verboseLog(
             '[ServiceLocator] Avatar profile load skipped: $e');
       }
+
+      // Saved avatar size, glow and colour, used by the chat avatar.
+      unawaited(reloadAvatarAppearance());
 
       final brainSyncService = BrainSyncService(localBrain);
       serviceLocator.registerSingleton<BrainSyncService>(brainSyncService);

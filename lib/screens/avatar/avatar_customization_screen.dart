@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pistisai/features/avatar/avatar_widget.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/services/avatar/avatar_appearance.dart';
 import 'package:pistisai/widgets/navigation/breadcrumb_bar.dart';
 
 /// Screen for customizing avatar visual appearance
@@ -105,6 +106,8 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
       } else {
         await _prefs.remove('avatar_color_override');
       }
+      // The chat avatar listens to this; without it only the preview changed.
+      await reloadAvatarAppearance();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -302,6 +305,7 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
                 size: _getAvatarSize(),
                 personality: PersonalityTraits.defaultTraits,
                 showGlow: _glowEnabled,
+                colorOverride: _customColor,
               ),
             ),
             const SizedBox(height: 16),
