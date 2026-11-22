@@ -3,6 +3,8 @@
 ## 1. Overview
 The Vector Memory System is designed to provide high-performance semantic search and long-term memory retrieval for the Pistisai ecosystem. This system replaces the legacy SQLite FTS5 (Full-Text Search) implementation with a modern PostgreSQL-based solution utilizing the `pgvector` extension.
 
+> **Status: planned, not implemented.** No `pgvector` extension, `vector-db` service, or `memories` table exists in this repository. The embedding step described below calls the Gemini API (cloud); it is not a local/on-device embedding model.
+
 ## 2. Goals
 - **Semantic Retrieval**: Enable search by meaning rather than just keyword matches.
 - **Unified Storage**: Provide a shared database accessible by both the OpenClaw Agent and the Flutter Application.
