@@ -1,5 +1,12 @@
 # Pistisai PowerShell Testing Framework
 
+> **Inventory correction:** `tests/powershell/`, `Run-Tests.ps1` and
+> `Deploy-Pistisai.Tests.ps1` are not present in this repository. The implemented
+> scripts live in `scripts/powershell/` (`Deploy-Pistisai.ps1`,
+> `Run-DeploymentIntegrationTests.ps1`, `Setup-WSLLinuxRunner.ps1`,
+> `Setup-WindowsSelfHostedRunner.ps1`, etc.). The commands below that reference
+> `Run-Tests.ps1` are historical and will not run as written.
+
 This directory contains comprehensive unit and integration tests for the Pistisai automated deployment workflow PowerShell scripts.
 
 ## Overview
@@ -15,19 +22,18 @@ The testing framework provides:
 ## Directory Structure
 
 ```
-tests/powershell/
-├── README.md                           # This documentation
-├── Run-Tests.ps1                       # Main test runner script
-├── TestConfig.ps1                      # Centralized test configuration
-├── Deploy-Pistisai.Tests.ps1    # Unit tests for main deployment script
-├── BuildEnvironmentUtilities.Tests.ps1 # Unit tests for utility functions
-├── Mocks/
-│   └── WSLMocks.ps1                    # Mock objects for WSL and external dependencies
-└── Integration/
-    ├── EndToEnd.Tests.ps1              # End-to-end deployment workflow tests
-    ├── VPSConnection.Tests.ps1         # VPS connectivity and authentication tests
-    ├── GitHubRelease.Tests.ps1         # GitHub release creation and validation tests
-    └── RollbackScenarios.Tests.ps1     # Rollback scenario testing and validation
+scripts/powershell/
+├── Deploy-Pistisai.ps1
+├── Run-DeploymentIntegrationTests.ps1
+├── Setup-WSLLinuxRunner.ps1
+├── Setup-WSLRunnerAutoStart.ps1
+├── Setup-WindowsDevelopmentEnvironment.ps1
+├── Setup-WindowsSelfHostedRunner.ps1
+├── Build-GitHubReleaseAssets.ps1
+├── Upload-GitHubReleaseAssets.ps1
+├── BuildEnvironmentUtilities.ps1
+├── build_time_version_injector.ps1
+└── version_manager.ps1
 ```
 
 ## Prerequisites

@@ -6,10 +6,9 @@ This directory contains comprehensive security tests for the Pistisai simplified
 
 ## Test Files
 
-### `user-isolation.test.js` (planned)
+### `user-isolation.test.js` (not present)
 
-Dedicated user-isolation tests are documented here but the file is not in the repo yet.
-Use `authentication-authorization.test.js` and `npm run test:ci:security` until restored.
+Dedicated user-isolation tests are not implemented. Commands below that reference this file are historical and will fail. Use `test/api-backend/security/authentication-authorization.test.js` and `npm run test:ci:security` instead.
 
 ### `authentication-authorization.test.js`
 
@@ -48,13 +47,13 @@ npm run test:auth
 
 ```bash
 # Run only authentication tests
-npx jest tests/security/authentication-authorization.test.js --testNamePattern="Authentication Security Tests"
+npx jest test/api-backend/security/authentication-authorization.test.js --testNamePattern="Authentication Security Tests"
 
 # Run only rate limiting tests
-npx jest tests/security/authentication-authorization.test.js --testNamePattern="Rate Limiting Security Tests"
+npx jest test/api-backend/security/authentication-authorization.test.js --testNamePattern="Rate Limiting Security Tests"
 
 # Run only user isolation tests
-npx jest tests/security/user-isolation.test.js --testNamePattern="User Isolation Security Tests"
+npx jest test/api-backend/security/user-isolation.test.js --testNamePattern="User Isolation Security Tests"
 ```
 
 ## Test Coverage
@@ -262,10 +261,10 @@ Run security tests after any changes to:
 DEBUG=* npm run test:security
 
 # Run specific test with verbose output
-npx jest tests/security/user-isolation.test.js --verbose --no-cache
+npx jest test/api-backend/security/user-isolation.test.js --verbose --no-cache
 
 # Run tests with coverage
-npx jest tests/security/ --coverage
+npx jest test/api-backend/security/ --coverage
 ```
 
 ## Security Compliance

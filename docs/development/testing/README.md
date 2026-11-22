@@ -12,9 +12,9 @@ This directory contains comprehensive testing documentation for Pistisai.
 
 ### Test Implementation
 
-- **Implementation Complete Summary** - Testing implementation status
-- **Task 26 Completion Summary** - Specific testing milestone completion
-- **Linter and TODO Fixes** - Code quality and maintenance testing
+- **[Test README](TEST_README.md)** - Test execution quick reference
+- **[API Security Testing](API_SECURITY_TESTING.md)** - Backend security test inventory
+- **[Comprehensive Testing Guide](COMPREHENSIVE_TESTING_GUIDE.md)** - Commands and gates
 
 ### End-to-End Testing
 
