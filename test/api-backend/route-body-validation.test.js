@@ -18,9 +18,12 @@ const asUser = (req, _res, next) => {
 };
 
 // The rate limiters are not what is under test; many requests are sent here.
-jest.unstable_mockModule("express-rate-limit", () => ({
-  default: () => (_req, _res, next) => next(),
-}));
+jest.unstable_mockModule(
+  "../../services/api-backend/node_modules/express-rate-limit/dist/index.mjs",
+  () => ({
+    default: () => (_req, _res, next) => next(),
+  }),
+);
 jest.unstable_mockModule("../../services/api-backend/logger.js", () => ({
   default: log,
 }));
@@ -210,12 +213,10 @@ describe("proxy metrics and usage: the body must have the right shape", () => {
     await request(app)
       .post("/pu/usage/p1/record")
       .send({ eventType: "request", eventData: { n: 1 } });
-    await request(app)
-      .post("/pu/usage/aggregate")
-      .send({
-        periodStart: "2026-11-01T00:00:00Z",
-        periodEnd: "2026-11-30T00:00:00Z",
-      });
+    await request(app).post("/pu/usage/aggregate").send({
+      periodStart: "2026-11-01T00:00:00Z",
+      periodEnd: "2026-11-30T00:00:00Z",
+    });
 
     expect(metricsService.recordMetricsEvent).toHaveBeenCalledTimes(1);
     expect(usageService.recordUsageEvent).toHaveBeenCalledTimes(1);
