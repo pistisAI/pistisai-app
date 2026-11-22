@@ -1,9 +1,11 @@
 name: "🔢 Auto Version Bump"
 
-# RELEASE-TIME version bump. Semi-manual by design:
-# runs when a release is published (or manually via workflow_dispatch),
-# and opens a version-bump PR against main. It never pushes to main directly.
-# Merging that PR is the explicit release gate (ruleset requires PR + checks).
+# RELEASE-TIME version bump: runs on every push to main (and on release or
+# workflow_dispatch). It opens a version-bump PR, waits for CI, then merges it.
+# It never pushes to main directly; the ruleset still requires PR + checks.
+# The watcher merges when GitHub reports CLEAN. It does not rely on repo
+# auto-merge: GitHub rejects --auto while mergeStateStatus is UNKNOWN or CLEAN,
+# which stranded PR #918 when the watcher step never started.
 #
 # Every merged PR bumps. The bump SIZE comes from the merged PR's Conventional
 # Commit title (see scripts/version_bump_kind.py):
@@ -139,6 +141,15 @@ jobs:
           BUILD: ${{ steps.compute.outputs.build }}
         run: |
           set -euo pipefail
+          # Two pushes a few seconds apart compute the same version from main.
+          # Never open a second PR for a bump that already has an open PR.
+          EXISTING=$(gh pr list --state open --limit 100 --json number,title \
+            | jq -r --arg t "chore(release): bump version to ${VERSION}+${BUILD}" \
+              '.[] | select(.title == $t) | .number' | head -n 1)
+          if [ -n "$EXISTING" ]; then
+            echo "Open bump PR #$EXISTING already exists for ${VERSION}+${BUILD}; skipping duplicate."
+            exit 0
+          fi
           BRANCH="chore/version-bump-${VERSION}-${GITHUB_SHA:0:7}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -149,15 +160,22 @@ jobs:
           PR_URL=$(gh pr create --base main --head "$BRANCH" \
             --title "chore(release): bump version to ${VERSION}+${BUILD}" \
             --body "Automated version bump for ${VERSION}+${BUILD}. Auto-merges once required checks pass.")
-          # Checks may already be green: GitHub refuses --auto on a clean PR.
-          # Merge directly when clean, otherwise queue auto-merge for pending checks.
-          STATE=$(gh pr view "$PR_URL" --json mergeStateStatus -q .mergeStateStatus)
-          if [ "$STATE" = "CLEAN" ]; then
-            gh pr merge "$PR_URL" --squash
-          else
-            gh pr merge "$PR_URL" --auto --squash
-          fi
+          # Register the PR with the watcher before any merge attempt. A failed
+          # merge must never leave the PR orphaned (that is what stranded #918).
           echo "BUMP_PR_URL=$PR_URL" >> "$GITHUB_ENV"
+          # mergeStateStatus is UNKNOWN for a few seconds after creation.
+          # GitHub rejects --auto while UNKNOWN *and* while already CLEAN, so
+          # poll until known and merge directly when clean. The watcher merges
+          # later when checks finish; no dependence on repo auto-merge settings.
+          STATE=UNKNOWN
+          for i in $(seq 1 30); do
+            STATE=$(gh pr view "$PR_URL" --json mergeStateStatus -q .mergeStateStatus)
+            if [ "$STATE" != "UNKNOWN" ]; then break; fi
+            sleep 2
+          done
+          if [ "$STATE" = "CLEAN" ]; then
+            gh pr merge "$PR_URL" --squash || true
+          fi
 
       - name: Watch bump PR; close and report if it fails
         if: steps.bump_type.outputs.type != 'skip' && env.BUMP_PR_URL != ''
@@ -179,6 +197,14 @@ jobs:
               echo "::error::Bump $REASON; closing $BUMP_PR_URL so the next run recomputes cleanly"
               gh pr close "$BUMP_PR_URL" --delete-branch --comment "Auto-closed: $REASON. The next merge will recompute the version from main."
               exit 1
+            fi
+            # This is the release gate: merge as soon as GitHub reports the PR
+            # clean, without depending on the repo's auto-merge setting.
+            if [ "$MERGE" = "CLEAN" ]; then
+              echo "Bump PR is clean; merging $BUMP_PR_URL"
+              gh pr merge "$BUMP_PR_URL" --squash || true
+              STATE_NOW=$(gh pr view "$BUMP_PR_URL" --json state -q .state)
+              [ "$STATE_NOW" = "MERGED" ] && { echo "Bump merged: $BUMP_PR_URL"; exit 0; }
             fi
             sleep 30
           done
