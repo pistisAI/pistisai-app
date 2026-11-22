@@ -42,7 +42,10 @@ jobs:
   bump:
     name: "Bump version"
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    # The watcher below waits up to 25 min for CI, so the job outlives that
+    # window. A 5-minute job timeout killed run 45038423564 mid-wait and left
+    # PR #923 open (log: "Terminate orphan process: sleep").
+    timeout-minutes: 30
     outputs:
       version: ${{ steps.compute.outputs.version }}
     steps:
