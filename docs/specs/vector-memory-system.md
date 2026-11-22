@@ -40,7 +40,7 @@ services:
       - memory_pgdata:/var/lib/postgresql/data
       - ./services/postgres/init-vector.sql:/docker-entrypoint-initdb.d/01-init-vector.sql
     networks:
-      - cloudllm-network
+      - pistisai-network
 
   # pgAdmin for database management
   pgadmin:
@@ -55,7 +55,7 @@ services:
     depends_on:
       - vector-db
     networks:
-      - cloudllm-network
+      - pistisai-network
 
 volumes:
   memory_pgdata:

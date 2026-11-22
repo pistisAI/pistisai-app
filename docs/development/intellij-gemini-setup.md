@@ -230,7 +230,7 @@ The MCP settings configured for the project:
   "mcpServers": {
     "playwright": {
       "command": "node",
-      "args": ["E:/dev/Pistisai/mcp-playwright-server/build/index.js"]
+      "args": ["C:/path/to/pistisai-app/mcp-playwright-server/build/index.js"]
     }
   }
 }
@@ -248,7 +248,7 @@ The MCP settings configured for the project:
 
 3. Open the project:
    - File > Open.
-   - Select the project directory (E:/dev/Pistisai).
+   - Select the project directory (C:/path/to/pistisai-app).
 
 4. Configure Flutter SDK:
    - In the project, IntelliJ should detect Flutter.

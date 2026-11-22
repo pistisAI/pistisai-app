@@ -35,14 +35,14 @@ This will guide you through the setup process.
 1. **Open your WSL distribution:**
 
    ```powershell
-   wsl -d FedoraLinux-43
-   # Or your distribution name
+   wsl -d <distribution-name>
+   # Replace with your distribution name
    ```
 
 2. **Navigate to the project:**
 
    ```bash
-   cd /mnt/d/dev/Pistisai
+   cd /path/to/pistisai-app
    ```
 
 3. **Run the setup script:**

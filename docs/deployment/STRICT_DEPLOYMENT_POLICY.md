@@ -172,7 +172,7 @@ If a deployment fails or issues are discovered:
 ### Default Settings
 
 - **VPS Host**: example.com
-- **VPS User**: cloudllm
+- **VPS User**: deploy
 - **Project Directory**: /opt/Pistisai
 - **Resource Thresholds**: 90% for disk and memory
 - **HTTP Requirements**: 200 responses only
