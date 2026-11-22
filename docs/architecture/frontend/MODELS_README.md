@@ -1,5 +1,7 @@
 # Data Models
 
+> **Inventory note:** `ollama_connection_error.dart` is not present in this repository. Ollama is an optional support-model provider configured from `lib/screens/settings/llm_provider_settings_screen.dart`; no dedicated error model file exists.
+
 This directory contains all data models used throughout the Pistisai application.
 
 > **Current orientation**: Tunnel-related models are legacy/fallback unless a task explicitly targets old tunnel paths. Ollama-specific models describe support model provider errors, not primary agent runtime readiness.
@@ -167,9 +169,9 @@ final updated = subscription.copyWith(
 
 **Purpose:** LLM communication error details
 
-### ollama_connection_error.dart
+### ollama_connection_error.dart (not present)
 
-**Purpose:** Ollama support model provider connection errors
+**Status:** No such file in this repo; Ollama support model errors use the app's shared error handling.
 
 ## Validation Models
 

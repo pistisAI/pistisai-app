@@ -14,36 +14,35 @@ The `ThemeConfig` class provides a centralized, unified theme configuration syst
 
 ### 2. Color Definitions
 
-#### Brand Colors (Pistisai Gold)
+#### Brand Colors (active brand)
 
-- Primary: `#FFD700` (Gold)
-- Highlight: `#FFE44D` (Bright gold / glow)
-- Accent: `#D4A017` (Dark gold)
+- Primary: `Brand.current.primary` (Pistisai gold `#FFD700` by default)
+- Highlight / accent follow the active brand config in `lib/brand/brand.dart`
 
-#### Dark Mode Colors
+#### Dark Mode Colors (`lib/config/theme_config.dart`)
 
-- Background Main: `#1A1A1A`
-- Background Card: `#2A2A2A`
-- Background Elevated: `#333333`
-- Text Color: `#F5E6C8`
+- Background Main: `Brand.current.background`
+- Background Card: `#1E2230`
+- Background Elevated: no fixed value; glass surfaces use `Brand.current.primary.withAlpha(0x33)`
+- Text Color: `Brand.current.textColor` (Pistisai `#F5E6C8` by default)
 - Text Color Light (muted): `#B8A88A`
-- Border: `#3A3A3A`
+- Border: `#2A2A3E`
 
-#### Light Mode Colors
+#### Light Mode Colors (`lib/config/theme_config.dart`)
 
-- Background Main: `#FAFAFA`
-- Background Card: `#FFFFFF`
+- Background Main: `Colors.white`
+- Background Card: `#F1F2F4`
 - Background Elevated: `#F5F5F5`
 - Text Color: `#2C3E50`
-- Text Color Light (muted): `#7F8C8D`
+- Text Color Light (muted): `#6F7B8A`
 - Border: `#E0E0E0`
 
 #### Status Colors
 
-- Success: `#27AE60`
-- Warning: `#F39C12`
-- Danger: `#E74C3C`
-- Info: `#3498DB`
+- Success: `#4CAF50`
+- Warning: `#FFA726`
+- Danger: `#FF5252`
+- Info: `#2196F3`
 
 ### 3. Typography
 
