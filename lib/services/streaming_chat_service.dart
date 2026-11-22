@@ -92,6 +92,10 @@ class StreamingChatService extends ChangeNotifier {
   /// Cleared after a successful sync. Surfaced in the chat header.
   String? get channelSyncError => _channelSyncError;
 
+  /// Called after the chat history was saved. Used by the avatar to record
+  /// progress once an exchange is complete; must not throw.
+  void Function(Conversation conversation)? onConversationSaved;
+
   /// True after a save of the chat history failed (for example the OS
   /// keystore is unavailable), until a later save succeeds.
   bool get historyNotSaved => _historyNotSaved;
@@ -322,6 +326,11 @@ class StreamingChatService extends ChangeNotifier {
     if (_historyNotSaved) {
       _historyNotSaved = false;
       notifyListeners();
+    }
+    try {
+      onConversationSaved?.call(_mainChannel!);
+    } catch (e) {
+      appLogger.error('[StreamingChat] onConversationSaved failed', error: e);
     }
     appLogger.info(
       '[StreamingChat] Main channel saved (${_mainChannel!.messages.length} messages)',

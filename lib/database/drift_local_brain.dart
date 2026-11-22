@@ -1814,6 +1814,54 @@ class LocalBrain extends _$LocalBrain {
     await into(conversationDepthMetrics).insert(metric);
   }
 
+  /// Insert or replace the depth metrics row with this id. Used to keep one
+  /// row per chat session and refresh it as the session grows.
+  Future<void> upsertConversationDepthMetrics(
+      ConversationDepthMetricsCompanion metric) async {
+    await into(conversationDepthMetrics)
+        .insert(metric, mode: InsertMode.insertOrReplace);
+  }
+
+  /// Every depth metrics row (one per tracked chat session).
+  Future<List<ConversationDepthMetric>> getAllDepthMetrics() =>
+      select(conversationDepthMetrics).get();
+
+  /// Store the avatar's conversation count and overall depth score.
+  Future<void> updateAvatarProgress({
+    required int conversationCount,
+    required double depthScore,
+  }) async {
+    await getAvatarProfile(); // creates the default profile if missing
+    await (update(avatarPersonalityProfiles)
+          ..where((tbl) => tbl.id.equals('default')))
+        .write(AvatarPersonalityProfilesCompanion(
+      conversationCount: Value(conversationCount),
+      depthScore: Value(depthScore),
+      updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
+    ));
+  }
+
+  /// Mark an achievement as unlocked, creating its row when needed.
+  /// Returns true when it was newly unlocked.
+  Future<bool> unlockAchievementById(String achievementId) async {
+    final existing = await (select(achievements)
+          ..where((t) => t.achievementId.equals(achievementId)))
+        .getSingleOrNull();
+    if (existing?.unlockedAt != null) return false;
+    if (existing == null) {
+      await into(achievements).insert(AchievementsCompanion.insert(
+        avatarId: 'default',
+        achievementId: achievementId,
+        achievementType: 'progress',
+        title: achievementId,
+        unlockedAt: Value(DateTime.now()),
+      ));
+    } else {
+      await unlockAchievement(achievementId);
+    }
+    return true;
+  }
+
   /// Get recent depth metrics
   Future<List<ConversationDepthMetric>> getDepthMetrics() async {
     return await (select(conversationDepthMetrics)
@@ -2181,6 +2229,12 @@ class LocalBrain extends _$LocalBrain {
   }) async {
     final before = await countAllTableRows();
 
+    // Restore the previous setting afterwards: the app runs with foreign keys
+    // off, and turning them on here made later inserts that reference rows
+    // kept outside this database fail until the next restart.
+    final fkRows = await customSelect('PRAGMA foreign_keys').get();
+    final hadForeignKeys =
+        fkRows.isNotEmpty && fkRows.first.data.values.first == 1;
     await customStatement('PRAGMA foreign_keys = OFF');
     try {
       await transaction(() async {
@@ -2189,7 +2243,9 @@ class LocalBrain extends _$LocalBrain {
         }
       });
     } finally {
-      await customStatement('PRAGMA foreign_keys = ON');
+      if (hadForeignKeys) {
+        await customStatement('PRAGMA foreign_keys = ON');
+      }
     }
 
     if (reseedDefaults) {

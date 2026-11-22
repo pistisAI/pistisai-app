@@ -74,15 +74,17 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     }
 
     final conversationCount = avatarState.conversationCount;
-    final depthScore = avatarState.depthScore;
     final evolutionStage = avatarState.evolutionStage;
+    // "Novelty seeker" follows the average novelty of tracked sessions.
+    final depthScore = await _avatarStateService.averageNovelty();
+    if (!mounted) return;
 
     setState(() {
       _progressMap = {
         'first_chat': AchievementProgress(
-          completed: true,
-          progress: 1.0,
-          currentValue: 1,
+          completed: conversationCount >= 1,
+          progress: conversationCount >= 1 ? 1.0 : 0.0,
+          currentValue: conversationCount >= 1 ? 1 : 0,
           requiredValue: 1,
         ),
         'deep_conversations_5': AchievementProgress(
