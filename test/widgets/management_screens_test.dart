@@ -57,6 +57,14 @@ class _FakeSubagentRegistry extends SubagentRegistryService {
   }
 }
 
+class _RefusingSubagentRegistry extends SubagentRegistryService {
+  @override
+  Future<List<Subagent>> listSubagents(
+      {String? status, String? agentId}) async {
+    throw SubagentRegistryException('HTTP 401', statusCode: 401);
+  }
+}
+
 void main() {
   setUpAll(() {
     SharedPreferences.setMockInitialValues({});
@@ -83,6 +91,30 @@ void main() {
       await tester.pump();
 
       expect(find.byType(Tab), findsNWidgets(3));
+    });
+
+    testWidgets('a refused registry call shows why instead of an empty list',
+        (tester) async {
+      final registry = _RefusingSubagentRegistry();
+      if (di.serviceLocator.isRegistered<SubagentRegistryService>()) {
+        di.serviceLocator.unregister<SubagentRegistryService>();
+      }
+      di.serviceLocator.registerSingleton<SubagentRegistryService>(registry);
+      addTearDown(() {
+        if (di.serviceLocator.isRegistered<SubagentRegistryService>()) {
+          di.serviceLocator.unregister<SubagentRegistryService>();
+        }
+      });
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: AgentsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign in to see registered agents.'), findsOneWidget);
     });
 
     testWidgets('add agent opens a register dialog instead of coming soon',

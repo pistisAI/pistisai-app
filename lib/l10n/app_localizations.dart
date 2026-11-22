@@ -1394,12 +1394,6 @@ abstract class AppLocalizations {
   /// **'Monitor'**
   String get agentsTabMonitor;
 
-  /// No description provided for @agentsTabConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Config'**
-  String get agentsTabConfig;
-
   /// No description provided for @agentsTabAudit.
   ///
   /// In en, this message translates to:
@@ -1574,18 +1568,6 @@ abstract class AppLocalizations {
   /// **'{name} removed'**
   String agentsRemoved(String name);
 
-  /// No description provided for @agentsStatTasks.
-  ///
-  /// In en, this message translates to:
-  /// **'Tasks'**
-  String get agentsStatTasks;
-
-  /// No description provided for @agentsStatAvgLatency.
-  ///
-  /// In en, this message translates to:
-  /// **'Avg Latency'**
-  String get agentsStatAvgLatency;
-
   /// No description provided for @agentsStatLastActive.
   ///
   /// In en, this message translates to:
@@ -1622,12 +1604,6 @@ abstract class AppLocalizations {
   /// **'Total Agents'**
   String get agentsTotal;
 
-  /// No description provided for @agentsTasksToday.
-  ///
-  /// In en, this message translates to:
-  /// **'Tasks Today'**
-  String get agentsTasksToday;
-
   /// No description provided for @agentsErrors.
   ///
   /// In en, this message translates to:
@@ -1645,78 +1621,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Agent activity will appear here'**
   String get agentsNoActivityMessage;
-
-  /// No description provided for @agentsPoolSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Agent Pool Settings'**
-  String get agentsPoolSettings;
-
-  /// No description provided for @agentsAutoScale.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-scale agents'**
-  String get agentsAutoScale;
-
-  /// No description provided for @agentsAutoScaleSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Automatically add agents based on load'**
-  String get agentsAutoScaleSubtitle;
-
-  /// No description provided for @agentsMin.
-  ///
-  /// In en, this message translates to:
-  /// **'Min agents'**
-  String get agentsMin;
-
-  /// No description provided for @agentsMinSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Minimum number of active agents'**
-  String get agentsMinSubtitle;
-
-  /// No description provided for @agentsMax.
-  ///
-  /// In en, this message translates to:
-  /// **'Max agents'**
-  String get agentsMax;
-
-  /// No description provided for @agentsMaxSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Maximum number of concurrent agents'**
-  String get agentsMaxSubtitle;
-
-  /// No description provided for @agentsTimeoutSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Timeout Settings'**
-  String get agentsTimeoutSettings;
-
-  /// No description provided for @agentsRequestTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'Request timeout'**
-  String get agentsRequestTimeout;
-
-  /// No description provided for @agentsRequestTimeoutSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Maximum time to wait for agent response'**
-  String get agentsRequestTimeoutSubtitle;
-
-  /// No description provided for @agentsQueueTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'Queue timeout'**
-  String get agentsQueueTimeout;
-
-  /// No description provided for @agentsQueueTimeoutSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Maximum time in queue before rejection'**
-  String get agentsQueueTimeoutSubtitle;
 
   /// No description provided for @agentsPause.
   ///
@@ -6649,6 +6553,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last active'**
   String get sessionsLastActive;
+
+  /// No description provided for @agentsRegistrySignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to see registered agents.'**
+  String get agentsRegistrySignInRequired;
+
+  /// No description provided for @agentsRegistryForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is not allowed to view the agent registry.'**
+  String get agentsRegistryForbidden;
+
+  /// Error shown when the agent registry cannot be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the agent registry: {error}'**
+  String agentsRegistryLoadFailed(String error);
 }
 
 class _AppLocalizationsDelegate
