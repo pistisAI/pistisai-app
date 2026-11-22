@@ -12,7 +12,7 @@ Local wipe completes in seconds on a typical install (well under the “few hour
 | Encrypted conversation file | App docs/support `Pistisai/conversations.json.enc` (desktop) | Yes (embedded under `conversationsFile`) | Yes |
 | App settings JSON export | Settings → System → Export | Separate settings-only export | Not cleared by this wipe |
 | Auth / secure storage | Platform keychain / secure storage | Not exported (secrets) | Not cleared by this wipe |
-| Cloud / Auth0 account | Hosted identity provider | N/A | Separate account deletion request |
+| Cloudflare Access identity | Hosted identity provider | N/A (no app-held secret) | Managed by the identity provider, not this app |
 
 ### Local brain tables wiped
 

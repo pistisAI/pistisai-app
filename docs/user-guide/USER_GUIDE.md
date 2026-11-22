@@ -36,13 +36,13 @@ When you first launch Pistisai, the setup wizard guides you through the decision
    - Hermes on this machine or another device
    - OpenClaw Gateway
    - Compatible custom agent gateway
-   - Optional Pistisai-hosted agent runtime
+   - Pistisai-hosted agent runtime (setup-model placeholder; no verified hosted service)
 
 2. **Choose where the agent runtime lives**
    - This computer
    - Another device on your Tailscale tailnet
    - A private server or VPS in your tailnet
-   - Optional Pistisai-hosted agent runtime container
+   - Pistisai-hosted agent runtime (model value only; not a verified deployment path)
 
 3. **Test the agent connection**
    - The wizard checks health, sessions, tools, streaming, and exposed capabilities.
@@ -69,7 +69,7 @@ The app can discover or configure agent runtimes:
 | Hermes | `127.0.0.1:8642` (wizard-configured) | First agent runtime path for current testing |
 | OpenClaw Gateway | `localhost:18789` | Supported original integration |
 | Custom agent gateway | User supplied | Private compatible agent runtime |
-| Hosted agent runtime | Pistisai managed | Optional hosted compute |
+| Hosted agent runtime | `pistisai_hosted` model value | Placeholder only; no verified hosted service in this repo |
 
 ### Support Model Discovery
 
@@ -177,7 +177,7 @@ Tailscale is the preferred secure transport. Instead of maintaining a separate c
 - Laptop app connects to Hermes running on the same laptop.
 - Desktop app connects to Hermes or OpenClaw running on a workstation in the same tailnet.
 - Phone or web session connects through a per-user cloud connector that has joined the user's tailnet.
-- Optional hosted agent runtime runs in an isolated per-user container and joins the user's tailnet only after setup approval.
+- The `pistisai_hosted` value is a setup-model placeholder; no hosted container service is verified here.
 - Optional Ollama/LM Studio support model providers run on local hardware for memory/background features.
 
 ### What Syncs
@@ -204,7 +204,7 @@ Tailscale is the preferred secure transport. Instead of maintaining a separate c
 ### Agent Runtime Settings
 
 - Add, remove, and test agent runtime endpoints
-- Configure Hermes, OpenClaw, custom agent gateways, or hosted agent runtime compute
+- Configure Hermes, OpenClaw, custom agent gateways, or a manual URL (the hosted value is a placeholder)
 - Set preferred agent runtime per device
 - Review detected capabilities
 
@@ -227,7 +227,7 @@ Tailscale is the preferred secure transport. Instead of maintaining a separate c
 - Add the optional cloud connector to your tailnet
 - Review connected devices
 - Enable or disable conversation sync
-- Configure optional hosted agent runtime compute
+- Review the `pistisai_hosted` setup-model option (no hosted service is verified here)
 
 ### Privacy
 

@@ -84,7 +84,7 @@ Earn visual achievements based on conversation history and evolution:
 
 ### 🎙️ Voice & Audio
 *   **Speech Input:** Microphone capture with Voice Activity Detection (VAD) and push-to-talk capability.
-*   **Text-to-Speech (TTS):** Generates speech output through either the active agent runtime or local/cloud TTS providers (such as Google TTS or local OS synthesizers).
+*   **Text-to-Speech (TTS):** Local Piper TTS is the implemented path. Microsoft online speech (`edge-tts`) is an opt-in setting, off by default; it is the only cloud TTS provider wired here. No Google TTS provider is present in this repository.
 
 ---
 
@@ -109,7 +109,7 @@ Pistisai allows the agent runtime to "see" and interpret the environment on your
 *   **Full Screen Capture:** Captures complete desktop viewports for multimodal analysis.
 *   **Region Selection:** Select and crop specific screen regions.
 *   **Multilingual OCR Engine:** Extract text from screen regions using an integrated [Tesseract OCR Service](../../lib/services/vision/ocr_engine_service.dart). Supports multi-language configs (default: English `eng` + Simplified Chinese `chi_sim`).
-*   **Continuous Watch Modes:** Continuous regional screen captures to monitor specific workflows and alert the agent.
+*   **On-demand Region Capture:** Select and capture specific screen regions. Continuous screen watching is not implemented in this repository.
 
 ---
 
