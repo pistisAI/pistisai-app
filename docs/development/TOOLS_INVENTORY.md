@@ -146,10 +146,10 @@ The following MCP servers are currently configured and connected to this session
 
 | Command | Version | Primary Function | Dependencies | Common Usage |
 |---------|---------|------------------|--------------|--------------|
-| `node` | v24.12.0 | JavaScript runtime | None | `node script.js` |
-| `npm` | 11.7.0 | Node package manager | Node.js | `npm install`, `npm run dev` |
-| `npx` | 11.7.0 | Execute npm packages | Node.js, npm | `npx package-name` |
-| `python3` | 3.13.11 | Python interpreter | None | `python3 script.py` |
+| `node` | see `.nvmrc` | JavaScript runtime | None | `node script.js` |
+| `npm` | bundled with Node.js | Node package manager | Node.js | `npm install`, `npm run dev` |
+| `npx` | bundled with Node.js | Execute npm packages | Node.js, npm | `npx package-name` |
+| `python3` | 3.x (environment-specific) | Python interpreter | None | `python3 script.py` |
 | `pip3` | - | Python package manager | Python3 | `pip3 install package` |
 | `git` | 2.52.0 | Version control | None | `git commit`, `git push` |
 | `curl` | - | HTTP client | None | `curl url`, `curl -X POST` |
@@ -171,7 +171,7 @@ The following MCP servers are currently configured and connected to this session
 | Tool | Location | Version | Primary Function |
 |------|----------|---------|------------------|
 | `flutter` | `flutter` on `PATH` | - | Flutter SDK |
-| `zsh` | `/usr/bin/zsh` | - | Shell |
+| `zsh` | environment-specific | - | Shell |
 
 ### 3.4 Shell Built-ins
 
@@ -295,14 +295,14 @@ Available through `compgen -b`:
 
 **Shell Configuration:**
 
-- Current shell: `/usr/bin/zsh`
-- Configuration files: `~/.zshrc`, `~/.zshenv`
+- Shell: environment-specific
+- Configuration files: your shell profile
 - Key environment variables: `PATH` includes flutter, npm packages
 
 **Project-Specific Tools:**
 
 - Flutter SDK: `flutter` on `PATH`
-- Node.js packages: Global packages in `/usr/lib/node_modules`
+- Node.js packages: global install directory for your Node.js setup
 - Project dependencies: Listed in `package.json`
 
 ## 6. Security Considerations
@@ -374,8 +374,8 @@ Available through `compgen -b`:
    - Reference: `docs/development/MCP_TOOLS_SETUP.md`
 
 3. **Shell Configuration:**
-   - Ensure `~/.zshrc` is sourced for prompt and environment
-   - Flutter SDK is already in PATH via `~/.zshenv`
+   - Ensure your shell profile is sourced for prompt and environment
+   - Flutter SDK is on `PATH` in the documented environment
 
 ## 8. Recommendations
 

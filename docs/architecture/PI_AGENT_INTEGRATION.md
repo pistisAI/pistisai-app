@@ -364,7 +364,7 @@ case ProviderType.pi:
 echo '{"id":"1","type":"prompt","message":"hello"}' | pi --mode rpc --provider llamacpp --model google_gemma-4-E4B-it
 
 # Run Flutter tests
-cd /dev/Pistisai/pistisai-app && flutter test test/services/pi_manager/
+cd /path/to/pistisai-app && flutter test test/services/pi_manager/
 ```
 
 ---
@@ -557,11 +557,11 @@ After=network.target
 Type=simple
 User=app
 Group=app
-WorkingDirectory=/dev/Pistisai
+WorkingDirectory=/path/to/pistisai-app
 ExecStart=/var/lib/app/.local/bin/pi \
   --provider llamacpp \
   --model google_gemma-4-E4B-it \
-  --extension /dev/Pistisai/watcher/observer-extension.ts
+  --extension /path/to/pistisai-app/watcher/observer-extension.ts
 Restart=always
 RestartSec=10
 
@@ -571,7 +571,7 @@ CPUQuota=50%
 
 # Security
 ProtectSystem=strict
-ReadWritePaths=/dev/Pistisai /var/lib/app/.pi /tmp
+ReadWritePaths=/path/to/pistisai-app /var/lib/pistisai/.pi /tmp
 PrivateTmp=true
 NoNewPrivileges=true
 ProtectHome=read-only
@@ -588,8 +588,8 @@ WantedBy=multi-user.target
 set -euo pipefail
 
 # Copy extension
-mkdir -p /dev/Pistisai/watcher
-cp observer-extension.ts /dev/Pistisai/watcher/
+mkdir -p /path/to/pistisai-app/watcher
+cp observer-extension.ts /path/to/pistisai-app/watcher/
 
 # Install systemd unit
 sudo cp systemd/pi-watcher.service /etc/systemd/system/
@@ -625,7 +625,7 @@ class PiSubagent {
     final result = await Process.run(
       'pi',
       ['--print', '--provider', 'llamacpp', '--model', 'google_gemma-4-E4B-it', task],
-      workingDirectory: cwd ?? '/dev/Pistisai',
+      workingDirectory: cwd ?? '/path/to/pistisai-app',
     );
 
     return SubagentResult(
