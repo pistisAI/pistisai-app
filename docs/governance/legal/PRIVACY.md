@@ -59,7 +59,10 @@ data. On web, data is kept in the browser's origin-scoped storage. Turn on your
 operating system's disk encryption (BitLocker, FileVault or LUKS) as well. This
 content stays on your device unless you explicitly enable cloud sync or connect a
 remote runtime, in which case it is transmitted only to the destination you have
-chosen.
+chosen. The avatar personality you set (agent name, tone settings and stage) is
+sent to the agent runtime you connected, on your machine by default, which
+includes it in the instructions for each reply; it therefore reaches the same
+model provider your runtime uses for the conversation itself.
 
 ### 2.3 Device and diagnostic information
 

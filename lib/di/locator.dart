@@ -312,6 +312,20 @@ Future<void> setupCoreServices() async {
       serviceLocator
           .registerSingleton<HermesStreamingService>(hermesStreamingService);
 
+      // The avatar's personality (name, traits, stage) is applied by the
+      // user's own Hermes: send it at start and whenever it changes.
+      if (serviceLocator.isRegistered<AvatarStateService>()) {
+        final avatarState = serviceLocator.get<AvatarStateService>();
+        avatarState.onPersonalityChanged = (profile) => unawaited(
+              hermesStreamingService.reportPersonality(
+                agentName: profile.agentName,
+                traits: profile.traits.toMap(),
+                evolutionStage: profile.evolutionStage,
+              ),
+            );
+        avatarState.republishPersonality();
+      }
+
       final voiceConversationService = VoiceConversationService();
       serviceLocator.registerLazySingleton<VoiceConversationService>(
         () => voiceConversationService,
