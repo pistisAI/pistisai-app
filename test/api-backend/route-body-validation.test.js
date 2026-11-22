@@ -213,10 +213,12 @@ describe("proxy metrics and usage: the body must have the right shape", () => {
     await request(app)
       .post("/pu/usage/p1/record")
       .send({ eventType: "request", eventData: { n: 1 } });
-    await request(app).post("/pu/usage/aggregate").send({
-      periodStart: "2026-11-01T00:00:00Z",
-      periodEnd: "2026-11-30T00:00:00Z",
-    });
+    await request(app)
+      .post("/pu/usage/aggregate")
+      .send({
+        periodStart: "2026-11-01T00:00:00Z",
+        periodEnd: "2026-11-30T00:00:00Z",
+      });
 
     expect(metricsService.recordMetricsEvent).toHaveBeenCalledTimes(1);
     expect(usageService.recordUsageEvent).toHaveBeenCalledTimes(1);
