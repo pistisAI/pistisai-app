@@ -57,35 +57,35 @@ backups.forEach(backup => {
 ### Create Backup
 
 ```
-POST /backup/create
+POST /backup-recovery/backup/create
 Authorization: Bearer <admin-token>
 ```
 
 ### List Backups
 
 ```
-GET /backup/list
+GET /backup-recovery/backup/list
 Authorization: Bearer <admin-token>
 ```
 
 ### Get Backup Info
 
 ```
-GET /backup/:backupId
+GET /backup-recovery/backup/:backupId
 Authorization: Bearer <admin-token>
 ```
 
 ### Verify Backup
 
 ```
-POST /backup/:backupId/verify
+POST /backup-recovery/backup/:backupId/verify
 Authorization: Bearer <admin-token>
 ```
 
 ### Restore Backup
 
 ```
-POST /backup/:backupId/restore
+POST /backup-recovery/backup/:backupId/restore
 Authorization: Bearer <admin-token>
 Content-Type: application/json
 
@@ -97,7 +97,7 @@ Content-Type: application/json
 ### Delete Backup
 
 ```
-DELETE /backup/:backupId
+DELETE /backup-recovery/backup/:backupId
 Authorization: Bearer <admin-token>
 ```
 

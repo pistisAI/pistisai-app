@@ -4,9 +4,9 @@
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/metrics` | GET | Prometheus metrics in text format |
-| `/api/metrics` | GET | Prometheus metrics (with /api prefix) |
+| `/prometheus/metrics` | GET | Prometheus metrics in text format |
 | `/prometheus/health/metrics` | GET | Health check for metrics collection |
+| `/metrics` | GET | Rate-limit metrics — **not** Prometheus metrics |
 
 ## Key Metrics
 
@@ -48,7 +48,7 @@
 ### Get Metrics
 
 ```bash
-curl http://localhost:8080/metrics
+curl http://localhost:8080/prometheus/metrics
 ```
 
 ### Check Health
@@ -64,7 +64,7 @@ scrape_configs:
   - job_name: 'api'
     static_configs:
       - targets: ['localhost:8080']
-    metrics_path: '/metrics'
+    metrics_path: '/prometheus/metrics'
 ```
 
 ## Recording Metrics
@@ -140,7 +140,7 @@ npm test -- ../test/api-backend/prometheus-metrics.test.js
 
 1. Metrics middleware automatically collects HTTP request metrics
 2. Services can record custom metrics using metricsService
-3. Prometheus scraper accesses `/metrics` endpoint
+3. Prometheus scraper accesses `/prometheus/metrics` endpoint
 4. Grafana visualizes metrics from Prometheus
 
 ## Performance

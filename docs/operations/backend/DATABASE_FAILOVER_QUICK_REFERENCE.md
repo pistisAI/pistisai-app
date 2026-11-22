@@ -4,6 +4,8 @@
 
 The Database Failover Manager provides automatic failover and high availability for PostgreSQL databases with:
 
+> **Route availability:** `/failover/*` is registered only when `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES=true` (`services/api-backend/server.js`). It is off by default; the failover service itself exists at `services/api-backend/database/failover-manager.js`.
+
 - Automatic detection of primary database failures
 - Failover to healthy standby databases
 - Continuous health monitoring
