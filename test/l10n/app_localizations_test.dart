@@ -88,12 +88,20 @@ void main() {
 
   testWidgets('a settings screen renders in French for a locked brand',
       (tester) async {
+    final connectionManager = ConnectionManagerService(
+      hermesStreamingService: HermesStreamingService(),
+      autoDetectOnInitialize: false,
+    );
+    addTearDown(connectionManager.dispose);
     await tester.pumpWidget(
-      const MaterialApp(
-        locale: Locale('fr'),
-        localizationsDelegates: brandLocalizationsDelegates,
-        supportedLocales: [Locale('fr'), Locale('en')],
-        home: LLMProviderSettingsScreen(),
+      ChangeNotifierProvider<ConnectionManagerService>.value(
+        value: connectionManager,
+        child: const MaterialApp(
+          locale: Locale('fr'),
+          localizationsDelegates: brandLocalizationsDelegates,
+          supportedLocales: [Locale('fr'), Locale('en')],
+          home: LLMProviderSettingsScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();

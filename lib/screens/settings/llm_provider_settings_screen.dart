@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
 import '../../components/modern_card.dart';
 import '../../config/theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/connection_manager_service.dart';
 
 /// LLM Provider Settings Screen — Hermes-focused.
 class LLMProviderSettingsScreen extends StatelessWidget {
@@ -12,6 +15,7 @@ class LLMProviderSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AppTheme.colorsOf(context);
     final l10n = AppLocalizations.of(context);
+    final isConnected = context.watch<ConnectionManagerService>().isConnected;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -73,9 +77,20 @@ class LLMProviderSettingsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     ListTile(
-                      leading: Icon(Icons.check_circle, color: colors.success),
+                      leading: Icon(
+                        isConnected ? Icons.check_circle : Icons.error_outline,
+                        color: isConnected ? colors.success : colors.danger,
+                      ),
                       title: const Text('Hermes Agent'),
                       subtitle: Text(l10n.llmProviderPrimaryRuntime),
+                      trailing: Text(
+                        isConnected
+                            ? l10n.commonConnected
+                            : l10n.commonDisconnected,
+                        style: TextStyle(
+                          color: isConnected ? colors.success : colors.danger,
+                        ),
+                      ),
                     ),
                     ListTile(
                       leading: Icon(Icons.info_outline, color: colors.info),
