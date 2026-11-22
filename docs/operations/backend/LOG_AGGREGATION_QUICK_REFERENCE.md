@@ -1,5 +1,7 @@
 # Log Aggregation Quick Reference
 
+> **Implementation note:** there is no `middleware/log-routing.js` in `services/api-backend`. The implemented pieces are `utils/log-aggregation.js` (`LogRouter`, `LogBatcher`, `createStructuredLogEntry`, `getCorrelationId`, `getUserIdFromRequest`) and `middleware/request-logging.js`. Snippets importing `middleware/log-routing.js` are illustrative and do not run as written.
+
 ## Quick Start
 
 ### 1. Enable Log Aggregation
@@ -196,11 +198,10 @@ npm test -- ../test/api-backend/log-aggregation.test.js ../test/api-backend/log-
 
 | File | Purpose |
 |------|---------|
-| `utils/log-aggregation.js` | Log formatting and batching |
-| `middleware/log-routing.js` | Log routing middleware |
+| `utils/log-aggregation.js` | Formatting, batching and routing config |
+| `middleware/request-logging.js` | Request logging middleware (implemented) |
 | `test/api-backend/log-aggregation.test.js` | Unit tests |
-| `test/api-backend/log-routing-integration.test.js` | Integration tests |
-| `LOG_AGGREGATION_IMPLEMENTATION.md` | Full documentation |
+| `LOG_AGGREGATION_IMPLEMENTATION.md` | Full documentation (historical) |
 
 ## Related Requirements
 

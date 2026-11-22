@@ -1,4 +1,6 @@
-# Graceful Degradation Quick Reference
+# Graceful Degradation - Quick Reference
+
+> **Implementation note:** only `services/api-backend/services/graceful-degradation.js` exists. There is no `middleware/graceful-degradation-middleware.js` and no `/api/degradation/*` route registered in `services/api-backend/server.js`. The middleware import and HTTP endpoint snippets below are illustrative, not runnable as written.
 
 ## Quick Start
 
@@ -89,14 +91,7 @@ gracefulDegradationService.resetAll();
 
 ## API Endpoints
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/degradation/status` | Get all service statuses |
-| GET | `/api/degradation/status/:serviceName` | Get specific service status |
-| POST | `/api/degradation/mark-degraded` | Manually mark service as degraded |
-| POST | `/api/degradation/mark-recovered` | Manually mark service as recovered |
-| GET | `/api/degradation/metrics` | Get degradation metrics |
-| POST | `/api/degradation/reset` | Reset all degradation states |
+No HTTP endpoints are registered for graceful degradation. Use the in-process service API (`markDegraded`, `markRecovered`, `getStatus`, `getAllStatuses`, `getMetrics`, `getReport`, `resetAll`) from `services/graceful-degradation.js`.
 
 ## Configuration Options
 
