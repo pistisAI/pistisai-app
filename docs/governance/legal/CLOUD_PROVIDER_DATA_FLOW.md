@@ -29,7 +29,7 @@ LM Studio) are unchanged by these switches.
 - **Payload:** chat completion request — model id, message roles/content from
   the conversation turn(s) being completed, optional temperature / max tokens.
 - **Not sent by this path:** local brain contents, camera frames, desktop
-  screenshots, Auth0/Cloudflare account tokens, or unrelated settings.
+  screenshots, Cloudflare Access tokens, or unrelated settings.
 
 ### Moonshot / Kimi (`api.moonshot.cn`)
 

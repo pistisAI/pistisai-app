@@ -1,62 +1,57 @@
 # Security Documentation
 
-This directory contains security policies, procedures, and audit reports for Pistisai.
+This directory contains security policies and procedures for Pistisai. The
+statements below describe what is implemented in this repository; they do not
+claim a certification, audit, or control that has not been verified here.
 
-## 📚 Contents
+## Contents
 
-### Security Policies & Procedures
+- [Script Security](README_SCRIPT_SECURITY.md) — guidelines for deployment scripts
+- [Permissions](permissions.json) — permission and access-control configuration
 
-- **[Script Security](README_SCRIPT_SECURITY.md)** - Security guidelines for deployment scripts
-- **[Permissions](permissions.json)** - System permissions and access control configuration
+Related documentation: operations and deployment guides, and the legal/privacy
+documents under `docs/governance/legal/`.
 
-### Security Audits & Reports
+## Implementation notes (checked against this repository)
 
+- **Local-first defaults.** Cloud integrations are opt-in from
+  Settings → General; see `docs/governance/legal/CLOUD_PROVIDER_DATA_FLOW.md`
+  and `docs/governance/legal/PRIVACY.md`.
+- **Authentication.** The app's sign-in provider is Cloudflare Access
+  (`lib/auth/providers/cloudflare_access_auth_provider.dart`). There is no Auth0
+  provider in `lib/`.
+- **Credential storage.** `flutter_secure_storage` is used by
+  `lib/services/token_storage_service.dart`, `device_identity_service.dart`,
+  `setup_status_service.dart` and `admin_data_flush_service.dart`.
+- **Backend authorization.** Role-based checks and JWT validation live in
+  `services/api-backend/middleware/admin-auth.js` and `rbac.js`.
+- **Audit logging.** Admin routes record activity; see
+  `services/api-backend/routes/admin/audit.js`.
+- **Error reporting.** Sentry integration exists in `lib/config/app_config.dart`,
+  `lib/main.dart`, `lib/widgets/settings/crash_reporting_tile.dart` and
+  `services/api-backend/services/error-notification-service.js`; it is exposed
+  as a user-facing setting, not an unconditional telemetry path.
+- **CI security gates.** `scripts/ci/flutter_security_basic_tests.sh` and
+  `services/api-backend/jest.ci-security.config.js` run restricted security and
+  regression suites in CI.
+- **Transport and local services.** Public hosted endpoints are served over
+  HTTPS in the standard deployment. Local services bind to loopback by default
+  unless another device must reach them, in which case a token is required
+  (see `AGENTS.md`).
 
-## 🔗 Related Documentation
+## Not claimed here
 
-- **Operations Documentation** - Operational security procedures
-- **Deployment Documentation** - Secure deployment practices
-- **Legal Documentation** - Privacy and compliance policies
+The following are **not** evidenced by this repository and must not be presented
+as facts about the product: end-to-end encryption of all communications,
+SOC 2 Type II, GDPR certification, routine penetration testing, OWASP compliance,
+or a "zero trust" architecture. Any such claim needs its own verification and a
+recorded decision before it is added.
 
-## 📖 Security Overview
+## Incident response (guidance, not an automated feature)
 
-### Security Principles
-
-Pistisai follows security-first design principles:
-
-1. **Privacy by Design** - Sensitive data stays local when possible
-2. **Zero Trust Architecture** - Verify all connections and requests
-3. **End-to-End Encryption** - All communications are encrypted
-4. **Least Privilege Access** - Minimal required permissions
-5. **Defense in Depth** - Multiple layers of security controls
-
-### Security Features
-
-- **OAuth2 Authentication** - Secure user authentication via Auth0
-- **JWT Token Management** - Secure token storage and validation
-- **WebSocket Tunneling** - Encrypted real-time communication
-- **HTTPS/TLS** - All web traffic encrypted in transit
-- **Secure Storage** - Encrypted local credential storage
-
-### Security Monitoring
-
-- **Sentry Integration** - Error tracking and security monitoring
-- **Audit Logging** - Comprehensive activity logging
-- **Vulnerability Scanning** - Automated security assessments
-- **Penetration Testing** - Regular security testing
-
-### Compliance & Standards
-
-- **GDPR Compliance** - European data protection regulation
-- **SOC 2 Type II** - Security and availability controls
-- **OWASP Guidelines** - Web application security best practices
-- **Industry Standards** - Following established security frameworks
-
-### Incident Response
-
-1. **Detection** - Automated monitoring and alerting
-2. **Assessment** - Rapid threat evaluation
-3. **Containment** - Isolate and limit impact
-4. **Eradication** - Remove threats and vulnerabilities
-5. **Recovery** - Restore normal operations
-6. **Lessons Learned** - Post-incident analysis and improvement
+1. Detection — monitoring and user reports
+2. Assessment — evaluate scope and impact
+3. Containment — isolate the affected component
+4. Eradication — remove the cause
+5. Recovery — restore normal operation
+6. Lessons learned — record the outcome and update this guide

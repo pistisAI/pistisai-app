@@ -1,3 +1,5 @@
 # Terms of Service
 
-*(This is a placeholder for the Terms of Service. Content to be added.)*
+This repository does not contain Terms of Service. This file is a placeholder,
+not a legal agreement. A deployment's operator must supply its own terms; none
+are created by this codebase.
