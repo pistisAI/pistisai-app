@@ -1,5 +1,9 @@
 # Local PC integration test rig (emulator + Docker hub)
 
+> **Workflow status:** the rig scripts exist, but a self-hosted
+> `Integration Test Rig` workflow file is not present in this repository. Run
+> the scripts locally; do not expect a GitHub Actions workflow for this rig.
+
 Automated rig on your Linux PC — same shape as cloud CI:
 
 | Layer | What |
@@ -24,7 +28,7 @@ Creates the AVD named by that script (API 34, Pixel 6 profile — aligned with C
 bash scripts/run_pc_integration_test_rig.sh
 ```
 
-(`run_right_pc_integration_rig.sh` is the same entry point.)
+(`scripts/run_right_pc_integration_rig.sh` is a host-specific entry point, not the generic path.)
 
 This starts the emulator if needed, brings up the Docker hub, runs Linux integration tests, then Android tests on the **emulator** with hub probe host `10.0.2.2`.
 

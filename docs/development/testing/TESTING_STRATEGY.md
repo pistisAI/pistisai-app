@@ -2,7 +2,12 @@
 
 ## Overview
 
-This document outlines the strategy to improve test coverage and reliability for the Pistisai project. Currently, the project lacks comprehensive E2E tests and has minimal backend unit test coverage.
+This document describes the existing test coverage and where to extend it. The
+repository already has Playwright E2E specs under `test/e2e/` (configured by
+`playwright.config.js`), backend tests under `test/api-backend/` (including
+`test/api-backend/security/`), and automated gates in `.github/workflows/test.yml`.
+The goal is reliable coverage of core flows, not introducing a first E2E or
+backend suite.
 
 ## Goals
 

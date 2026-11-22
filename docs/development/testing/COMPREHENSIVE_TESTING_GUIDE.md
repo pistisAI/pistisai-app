@@ -12,8 +12,8 @@ Every PR to `main` runs:
 | Flutter smoke | `npm run test:ci:flutter` | Security + basic allowlist (see `scripts/ci/flutter_security_basic_tests.sh`) |
 | Backend lint | `cd services/api-backend && npm run lint` | ESLint |
 | Backend security | `cd services/api-backend && npm run test:ci:security` | Auth, RBAC, validation, rate limits, connector hardening |
-| Linux + Android integration rig | `.github/workflows/integration-test-rig.yml` | Shared Docker hub; Linux `dart test` + emulator |
-| Web E2E smoke | `.github/workflows/web-e2e.yml` | Playwright splash/smoke |
+| Linux + Android integration rig | Not present — `.github/workflows/integration-test-rig.yml` does not exist | Run `scripts/run_integration_test_rig.sh` locally |
+| Web E2E smoke | Not present — `.github/workflows/web-e2e.yml` does not exist | Web build is checked by `.github/workflows/test.yml` (`build_web`) |
 
 Workflow triggers: **push to `main`** and **pull requests to `main`** only (no duplicate runs on feature-branch push).
 
@@ -79,7 +79,7 @@ Use `dart test` (not `flutter test`) for HTTP probes — `flutter test` blocks r
 | --- | --- |
 | Streaming proxy | `cd services/streaming-proxy && npm test` |
 | SDK | `cd services/sdk && npm run build && npm test` |
-| OpenClaw skills | `cd services/openclaw-skills/Pistisai && npm test` |
+| OpenClaw skills | `cd services/openclaw-skills/pistisai && npm test` |
 
 ## Notes
 

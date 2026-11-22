@@ -1,5 +1,10 @@
 # Pistisai Privacy-First Architecture Testing Checklist
 
+> **Scope note:** this manual/tunnel-and-SSH-heavy checklist is not the CI gate.
+> The automated gates live in `.github/workflows/test.yml`: `changes`,
+> `flutter_analyze`, `flutter_smoke_test`, `build_web`, `whitelabel_leak_check`,
+> `build_linux`, `backend` and `ci_gate`.
+
 ## 🚨 **CRITICAL ISSUE VALIDATION**
 
 ### ✅ **Database Initialization Fix Testing**
