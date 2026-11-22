@@ -18,6 +18,14 @@ export default {
     '**/test/api-backend/cloud-connector.test.js',
     '**/test/api-backend/webhook-rate-limiting.test.js',
     '**/test/api-backend/sandbox-service.test.js',
+    // Regression tests added by the #846, #847 and #807 security fixes.
+    // They existed on main but were never picked up by this gate.
+    '**/test/api-backend/api-keys-routes-issue-846.test.js',
+    '**/test/api-backend/auth-routes-issue-846.test.js',
+    '**/test/api-backend/middleware/schema-validation.test.js',
+    '**/test/api-backend/admin-transaction-client.test.js',
+    '**/test/api-backend/auth-suspended-account.test.js',
+    '**/test/api-backend/agent-events-webhook-secret.test.js',
   ],
   testPathIgnorePatterns: [
     ...base.testPathIgnorePatterns,
