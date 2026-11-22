@@ -747,9 +747,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get agentsTabMonitor => 'Suivi';
 
   @override
-  String get agentsTabConfig => 'Configuration';
-
-  @override
   String get agentsTabAudit => 'Audit';
 
   @override
@@ -865,12 +862,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get agentsStatTasks => 'Tâches';
-
-  @override
-  String get agentsStatAvgLatency => 'Latence moyenne';
-
-  @override
   String get agentsStatLastActive => 'Dernière activité';
 
   @override
@@ -889,9 +880,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get agentsTotal => 'Agents au total';
 
   @override
-  String get agentsTasksToday => 'Tâches aujourd\'hui';
-
-  @override
   String get agentsErrors => 'Erreurs';
 
   @override
@@ -899,45 +887,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get agentsNoActivityMessage => 'L\'activité des agents apparaîtra ici';
-
-  @override
-  String get agentsPoolSettings => 'Réglages du groupe d\'agents';
-
-  @override
-  String get agentsAutoScale => 'Ajuster automatiquement le nombre d\'agents';
-
-  @override
-  String get agentsAutoScaleSubtitle =>
-      'Ajouter des agents automatiquement selon la charge';
-
-  @override
-  String get agentsMin => 'Agents minimum';
-
-  @override
-  String get agentsMinSubtitle => 'Nombre minimal d\'agents actifs';
-
-  @override
-  String get agentsMax => 'Agents maximum';
-
-  @override
-  String get agentsMaxSubtitle => 'Nombre maximal d\'agents simultanés';
-
-  @override
-  String get agentsTimeoutSettings => 'Délais d\'attente';
-
-  @override
-  String get agentsRequestTimeout => 'Délai de requête';
-
-  @override
-  String get agentsRequestTimeoutSubtitle =>
-      'Temps maximal d\'attente d\'une réponse de l\'agent';
-
-  @override
-  String get agentsQueueTimeout => 'Délai en file d\'attente';
-
-  @override
-  String get agentsQueueTimeoutSubtitle =>
-      'Temps maximal en file d\'attente avant le refus';
 
   @override
   String get agentsPause => 'Mettre l\'agent en pause';
@@ -3793,4 +3742,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sessionsLastActive => 'Dernière activité';
+
+  @override
+  String get agentsRegistrySignInRequired =>
+      'Connectez-vous pour voir les agents enregistrés.';
+
+  @override
+  String get agentsRegistryForbidden =>
+      'Votre compte n\'est pas autorisé à voir le registre des agents.';
+
+  @override
+  String agentsRegistryLoadFailed(String error) {
+    return 'Impossible de charger le registre des agents : $error';
+  }
 }

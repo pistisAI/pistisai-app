@@ -22,8 +22,6 @@ class Agent {
   /// Task given to the agent, or null when none is assigned.
   final String? description;
   final AgentStatus status;
-  final int taskCount;
-  final double avgLatency;
   final DateTime lastActive;
 
   const Agent({
@@ -31,8 +29,6 @@ class Agent {
     required this.name,
     this.description,
     required this.status,
-    this.taskCount = 0,
-    this.avgLatency = 0.0,
     required this.lastActive,
   });
 }
@@ -98,7 +94,7 @@ class _AgentsScreenState extends State<AgentsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _loadData();
   }
 
@@ -132,8 +128,6 @@ class _AgentsScreenState extends State<AgentsScreen>
                 name: s.label ?? s.subagentId,
                 description: s.task,
                 status: _mapStatus(s.status),
-                taskCount: 0,
-                avgLatency: 0.0,
                 lastActive: s.completedAt ?? s.startedAt ?? s.createdAt,
               ))
           .toList();
@@ -158,10 +152,17 @@ class _AgentsScreenState extends State<AgentsScreen>
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        final status = e is SubagentRegistryException ? e.statusCode : null;
         setState(() {
           _isLoading = false;
           _agents = [];
           _activityFeed = [];
+          _errorMessage = status == 401
+              ? l10n.agentsRegistrySignInRequired
+              : status == 403
+                  ? l10n.agentsRegistryForbidden
+                  : l10n.agentsRegistryLoadFailed('$e');
         });
       }
     }
@@ -336,7 +337,6 @@ class _AgentsScreenState extends State<AgentsScreen>
               Tab(
                   text: l10n.agentsTabMonitor,
                   icon: const Icon(Icons.monitor_heart)),
-              Tab(text: l10n.agentsTabConfig, icon: const Icon(Icons.settings)),
               Tab(
                   text: l10n.agentsTabAudit,
                   icon: const Icon(Icons.policy_outlined)),
@@ -352,7 +352,6 @@ class _AgentsScreenState extends State<AgentsScreen>
                     children: [
                       _buildRegistryTab(l10n),
                       _buildMonitorTab(l10n),
-                      _buildConfigTab(l10n),
                       const AgentActionAuditTab(),
                     ],
                   ),
@@ -453,10 +452,6 @@ class _AgentsScreenState extends State<AgentsScreen>
               spacing: 16,
               runSpacing: 8,
               children: [
-                _buildStat(Icons.check_circle, agent.taskCount.toString(),
-                    l10n.agentsStatTasks),
-                _buildStat(Icons.speed, '${agent.avgLatency}s',
-                    l10n.agentsStatAvgLatency),
                 _buildStat(
                     Icons.access_time,
                     _formatLastActive(l10n, agent.lastActive),
@@ -515,20 +510,6 @@ class _AgentsScreenState extends State<AgentsScreen>
                 l10n.agentsTotal,
                 '${_agents.length}',
                 AppTheme.colorsOf(context).info,
-              ),
-              _buildSummaryCard(
-                context,
-                Icons.check_circle,
-                l10n.agentsTasksToday,
-                '${_agents.fold<int>(0, (sum, a) => sum + a.taskCount)}',
-                AppTheme.colorsOf(context).success,
-              ),
-              _buildSummaryCard(
-                context,
-                Icons.speed,
-                l10n.agentsStatAvgLatency,
-                '${(_agents.fold<double>(0, (sum, a) => sum + a.avgLatency) / _agents.length).toStringAsFixed(1)}s',
-                AppTheme.colorsOf(context).warning,
               ),
               _buildSummaryCard(
                 context,
@@ -615,86 +596,6 @@ class _AgentsScreenState extends State<AgentsScreen>
             ? null
             : Icon(Icons.error_outline,
                 color: Theme.of(context).colorScheme.error),
-      ),
-    );
-  }
-
-  Widget _buildConfigTab(AppLocalizations l10n) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.settings, size: 20),
-                      const SizedBox(width: 8),
-                      Text(l10n.agentsPoolSettings,
-                          style: Theme.of(context).textTheme.titleMedium),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: Text(l10n.agentsAutoScale),
-                    subtitle: Text(l10n.agentsAutoScaleSubtitle),
-                    value: true,
-                    onChanged: (value) {},
-                  ),
-                  ListTile(
-                    title: Text(l10n.agentsMin),
-                    subtitle: Text(l10n.agentsMinSubtitle),
-                    trailing: const Text('2'),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text(l10n.agentsMax),
-                    subtitle: Text(l10n.agentsMaxSubtitle),
-                    trailing: const Text('10'),
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.timer, size: 20),
-                      const SizedBox(width: 8),
-                      Text(l10n.agentsTimeoutSettings,
-                          style: Theme.of(context).textTheme.titleMedium),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    title: Text(l10n.agentsRequestTimeout),
-                    subtitle: Text(l10n.agentsRequestTimeoutSubtitle),
-                    trailing: const Text('30s'),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text(l10n.agentsQueueTimeout),
-                    subtitle: Text(l10n.agentsQueueTimeoutSubtitle),
-                    trailing: const Text('60s'),
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -735,9 +735,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agentsTabMonitor => 'Monitor';
 
   @override
-  String get agentsTabConfig => 'Config';
-
-  @override
   String get agentsTabAudit => 'Audit';
 
   @override
@@ -852,12 +849,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get agentsStatTasks => 'Tasks';
-
-  @override
-  String get agentsStatAvgLatency => 'Avg Latency';
-
-  @override
   String get agentsStatLastActive => 'Last Active';
 
   @override
@@ -876,9 +867,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agentsTotal => 'Total Agents';
 
   @override
-  String get agentsTasksToday => 'Tasks Today';
-
-  @override
   String get agentsErrors => 'Errors';
 
   @override
@@ -886,45 +874,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agentsNoActivityMessage => 'Agent activity will appear here';
-
-  @override
-  String get agentsPoolSettings => 'Agent Pool Settings';
-
-  @override
-  String get agentsAutoScale => 'Auto-scale agents';
-
-  @override
-  String get agentsAutoScaleSubtitle =>
-      'Automatically add agents based on load';
-
-  @override
-  String get agentsMin => 'Min agents';
-
-  @override
-  String get agentsMinSubtitle => 'Minimum number of active agents';
-
-  @override
-  String get agentsMax => 'Max agents';
-
-  @override
-  String get agentsMaxSubtitle => 'Maximum number of concurrent agents';
-
-  @override
-  String get agentsTimeoutSettings => 'Timeout Settings';
-
-  @override
-  String get agentsRequestTimeout => 'Request timeout';
-
-  @override
-  String get agentsRequestTimeoutSubtitle =>
-      'Maximum time to wait for agent response';
-
-  @override
-  String get agentsQueueTimeout => 'Queue timeout';
-
-  @override
-  String get agentsQueueTimeoutSubtitle =>
-      'Maximum time in queue before rejection';
 
   @override
   String get agentsPause => 'Pause Agent';
@@ -3730,4 +3679,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionsLastActive => 'Last active';
+
+  @override
+  String get agentsRegistrySignInRequired =>
+      'Sign in to see registered agents.';
+
+  @override
+  String get agentsRegistryForbidden =>
+      'Your account is not allowed to view the agent registry.';
+
+  @override
+  String agentsRegistryLoadFailed(String error) {
+    return 'Could not load the agent registry: $error';
+  }
 }

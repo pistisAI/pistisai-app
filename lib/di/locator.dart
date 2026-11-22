@@ -1002,7 +1002,9 @@ Future<void> setupAuthenticatedServices() async {
     // Subagent Registry Service - manages subagent lifecycle via API
     AppConfig.verboseLog(
         '[ServiceLocator] Initializing SubagentRegistryService...');
-    final subagentRegistryService = SubagentRegistryService();
+    final subagentRegistryService = SubagentRegistryService(
+      accessToken: authService.getAccessToken,
+    );
     serviceLocator
         .registerSingleton<SubagentRegistryService>(subagentRegistryService);
 

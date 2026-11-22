@@ -454,7 +454,6 @@
   "agentsAdd": "Add Agent",
   "agentsTabRegistry": "Registry",
   "agentsTabMonitor": "Monitor",
-  "agentsTabConfig": "Config",
   "agentsTabAudit": "Audit",
   "agentsAuditTitle": "Agent action audit",
   "agentsAuditUnavailable": "Local audit journal is unavailable on this platform",
@@ -568,30 +567,15 @@
       }
     }
   },
-  "agentsStatTasks": "Tasks",
-  "agentsStatAvgLatency": "Avg Latency",
   "agentsStatLastActive": "Last Active",
   "agentsStatusOnline": "ONLINE",
   "agentsStatusBusy": "BUSY",
   "agentsStatusOffline": "OFFLINE",
   "agentsStatusError": "ERROR",
   "agentsTotal": "Total Agents",
-  "agentsTasksToday": "Tasks Today",
   "agentsErrors": "Errors",
   "agentsNoActivityTitle": "No Recent Activity",
   "agentsNoActivityMessage": "Agent activity will appear here",
-  "agentsPoolSettings": "Agent Pool Settings",
-  "agentsAutoScale": "Auto-scale agents",
-  "agentsAutoScaleSubtitle": "Automatically add agents based on load",
-  "agentsMin": "Min agents",
-  "agentsMinSubtitle": "Minimum number of active agents",
-  "agentsMax": "Max agents",
-  "agentsMaxSubtitle": "Maximum number of concurrent agents",
-  "agentsTimeoutSettings": "Timeout Settings",
-  "agentsRequestTimeout": "Request timeout",
-  "agentsRequestTimeoutSubtitle": "Maximum time to wait for agent response",
-  "agentsQueueTimeout": "Queue timeout",
-  "agentsQueueTimeoutSubtitle": "Maximum time in queue before rejection",
   "agentsPause": "Pause Agent",
   "agentsResume": "Resume Agent",
   "agentsRestart": "Restart Agent",
@@ -2337,5 +2321,16 @@
   "sessionsTabAgents": "Agent sessions",
   "sessionsTabScheduled": "Scheduled",
   "sessionsPreview": "Last message",
-  "sessionsLastActive": "Last active"
+  "sessionsLastActive": "Last active",
+  "agentsRegistrySignInRequired": "Sign in to see registered agents.",
+  "agentsRegistryForbidden": "Your account is not allowed to view the agent registry.",
+  "agentsRegistryLoadFailed": "Could not load the agent registry: {error}",
+  "@agentsRegistryLoadFailed": {
+    "description": "Error shown when the agent registry cannot be loaded.",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

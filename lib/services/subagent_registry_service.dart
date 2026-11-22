@@ -8,48 +8,86 @@ import 'dart:async';
 ///
 /// Manages subagent lifecycle through the database.
 /// All agents (main, subagents, etc.) can access this registry.
+/// The registry API answered with an error or could not be reached.
+class SubagentRegistryException implements Exception {
+  SubagentRegistryException(this.message, {this.statusCode});
+  final String message;
+
+  /// HTTP status, or null when the request itself failed.
+  final int? statusCode;
+
+  @override
+  String toString() => message;
+}
+
 class SubagentRegistryService {
   final String _apiBaseUrl;
   final http.Client _client;
+  final Future<String?> Function()? _accessToken;
   Timer? _refreshTimer;
 
+  /// [accessToken] supplies the signed-in user's bearer token. The registry
+  /// routes require it; without one every call is rejected with 401.
   SubagentRegistryService({
     String? apiBaseUrl,
     http.Client? client,
+    Future<String?> Function()? accessToken,
   })  : _apiBaseUrl = apiBaseUrl ?? AppConfig.adminServerUrl,
-        _client = client ?? http.Client();
+        _client = client ?? http.Client(),
+        _accessToken = accessToken;
 
-  /// List all subagents (optionally filtered by status or agentId)
+  Future<Map<String, String>> _headers() async {
+    final headers = {'Content-Type': 'application/json'};
+    String? token;
+    try {
+      token = await _accessToken?.call();
+    } catch (e) {
+      debugPrint('SubagentRegistry: could not read access token: $e');
+    }
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    return headers;
+  }
+
+  /// List all subagents (optionally filtered by status or agentId).
+  ///
+  /// Throws [SubagentRegistryException] when the API rejects the request or
+  /// cannot be reached, so the screen can show why the list is empty.
   Future<List<Subagent>> listSubagents(
       {String? status, String? agentId}) async {
+    final queryParams = <String, String>{};
+    if (status != null) queryParams['status'] = status;
+    if (agentId != null) queryParams['agentId'] = agentId;
+
+    final uri = Uri.parse('$_apiBaseUrl/api/admin/subagents')
+        .replace(queryParameters: queryParams);
+
+    final http.Response response;
     try {
-      final queryParams = <String, String>{};
-      if (status != null) queryParams['status'] = status;
-      if (agentId != null) queryParams['agentId'] = agentId;
-
-      final uri = Uri.parse('$_apiBaseUrl/api/admin/subagents')
-          .replace(queryParameters: queryParams);
-
-      final response = await _client.get(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success'] == true) {
-          return (data['subagents'] as List)
-              .map((s) => Subagent.fromJson(s))
-              .toList();
-        }
-      }
-
-      debugPrint('Failed to list subagents: ${response.statusCode}');
-      return [];
+      response = await _client
+          .get(uri, headers: await _headers())
+          .timeout(const Duration(seconds: 10));
     } catch (e) {
       debugPrint('Error listing subagents: $e');
-      return [];
+      throw SubagentRegistryException('Could not reach the agent registry: $e');
     }
+
+    if (response.statusCode != 200) {
+      debugPrint('Failed to list subagents: ${response.statusCode}');
+      throw SubagentRegistryException(
+        'Agent registry returned HTTP ${response.statusCode}',
+        statusCode: response.statusCode,
+      );
+    }
+
+    final data = json.decode(response.body);
+    if (data is Map && data['success'] == true) {
+      return (data['subagents'] as List)
+          .map((s) => Subagent.fromJson(s as Map<String, dynamic>))
+          .toList();
+    }
+    throw SubagentRegistryException('Agent registry returned an invalid reply');
   }
 
   /// Register a new subagent
@@ -63,7 +101,7 @@ class SubagentRegistryService {
       final response = await _client
           .post(
             Uri.parse('$_apiBaseUrl/api/admin/subagents'),
-            headers: {'Content-Type': 'application/json'},
+            headers: await _headers(),
             body: json.encode({
               'subagentId': subagentId,
               'agentId': agentId,
@@ -93,7 +131,7 @@ class SubagentRegistryService {
     try {
       final response = await _client.get(
         Uri.parse('$_apiBaseUrl/api/admin/subagents/$subagentId'),
-        headers: {'Content-Type': 'application/json'},
+        headers: await _headers(),
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
@@ -121,7 +159,7 @@ class SubagentRegistryService {
       final response = await _client
           .patch(
             Uri.parse('$_apiBaseUrl/api/admin/subagents/$subagentId/metadata'),
-            headers: {'Content-Type': 'application/json'},
+            headers: await _headers(),
             body: json.encode({
               if (label != null) 'label': label,
               if (task != null) 'task': task,
@@ -147,7 +185,7 @@ class SubagentRegistryService {
       final response = await _client
           .patch(
             Uri.parse('$_apiBaseUrl/api/admin/subagents/$subagentId/status'),
-            headers: {'Content-Type': 'application/json'},
+            headers: await _headers(),
             body: json.encode({
               'status': status.name,
               if (result != null) 'result': result,
@@ -196,7 +234,7 @@ class SubagentRegistryService {
     try {
       final response = await _client.delete(
         Uri.parse('$_apiBaseUrl/api/admin/subagents/$subagentId'),
-        headers: {'Content-Type': 'application/json'},
+        headers: await _headers(),
       ).timeout(const Duration(seconds: 10));
 
       return response.statusCode == 200;
