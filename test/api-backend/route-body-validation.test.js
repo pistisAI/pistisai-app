@@ -18,9 +18,12 @@ const asUser = (req, _res, next) => {
 };
 
 // The rate limiters are not what is under test; many requests are sent here.
-jest.unstable_mockModule("express-rate-limit", () => ({
-  default: () => (_req, _res, next) => next(),
-}));
+jest.unstable_mockModule(
+  "../../services/api-backend/node_modules/express-rate-limit/dist/index.mjs",
+  () => ({
+    default: () => (_req, _res, next) => next(),
+  }),
+);
 jest.unstable_mockModule("../../services/api-backend/logger.js", () => ({
   default: log,
 }));
