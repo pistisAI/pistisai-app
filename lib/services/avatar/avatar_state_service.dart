@@ -65,12 +65,41 @@ class AvatarStateService extends ChangeNotifier {
       _currentProfile = profile;
       _isLoading = false;
       notifyListeners();
+      _publishPersonality(profile);
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
       debugPrint('Error loading avatar profile: $e');
     }
+  }
+
+  /// Called when the name, traits or evolution stage change (and once at
+  /// load), so the agent runtime can apply the personality. Must not throw.
+  void Function(ExtendedAvatarProfile profile)? onPersonalityChanged;
+
+  String? _publishedPersonality;
+
+  void _publishPersonality(ExtendedAvatarProfile profile) {
+    final listener = onPersonalityChanged;
+    if (listener == null) return;
+    final signature =
+        '${profile.agentName}|${profile.traits.toMap()}|${profile.evolutionStage}';
+    if (signature == _publishedPersonality) return;
+    _publishedPersonality = signature;
+    try {
+      listener(profile);
+    } catch (e) {
+      debugPrint('Error publishing personality: $e');
+    }
+  }
+
+  /// Publishes the current personality again, for example after the runtime
+  /// connects.
+  void republishPersonality() {
+    _publishedPersonality = null;
+    final profile = _currentProfile;
+    if (profile != null) _publishPersonality(profile);
   }
 
   /// Updates the personality traits

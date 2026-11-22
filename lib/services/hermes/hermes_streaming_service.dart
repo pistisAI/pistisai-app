@@ -237,6 +237,10 @@ class HermesStreamingService extends StreamingService {
       appLogger.warning('[Hermes] pre-send transcript snapshot failed: $e');
     }
 
+    if (_personalityPending) {
+      await _flushPersonality();
+    }
+
     try {
       final response = await client
           .post(
@@ -554,6 +558,59 @@ class HermesStreamingService extends StreamingService {
   // ---------------------------------------------------------------------------
   // Internal helpers
   // ---------------------------------------------------------------------------
+
+  Map<String, dynamic>? _personalityPayload;
+  bool _personalityPending = false;
+
+  /// Sends the personality set in the app (name, four traits, evolution
+  /// stage) to the pistisai plugin on the user's Hermes, which adds it to each
+  /// turn so the sliders change how the agent talks.
+  ///
+  /// Best-effort. When Hermes is not reachable yet, the personality is kept
+  /// and sent again before the next chat message. Returns true once applied.
+  Future<bool> reportPersonality({
+    required String agentName,
+    required Map<String, double> traits,
+    required String evolutionStage,
+  }) {
+    _personalityPayload = {
+      'agent_name': agentName,
+      'traits': traits,
+      'evolution_stage': evolutionStage,
+    };
+    _personalityPending = true;
+    return _flushPersonality();
+  }
+
+  Future<bool> _flushPersonality() async {
+    final payload = _personalityPayload;
+    if (payload == null || !_personalityPending) return false;
+    try {
+      _client ??= http.Client();
+      final response = await _client!
+          .post(
+            Uri.parse('$_baseUrl/api/pistisai/personality'),
+            headers: {..._headers(), 'Accept': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 5));
+      if (response.statusCode == 200) {
+        _personalityPending = false;
+        return true;
+      }
+      if (response.statusCode == 404) {
+        // Hermes runs a plugin version without this route: stop retrying.
+        _personalityPending = false;
+      }
+      appLogger.warning(
+        '[Hermes] personality not applied (HTTP ${response.statusCode})',
+      );
+      return false;
+    } catch (e) {
+      appLogger.warning('[Hermes] personality not applied yet: $e');
+      return false;
+    }
+  }
 
   Map<String, String> _headers() {
     final headers = {

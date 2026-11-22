@@ -365,6 +365,130 @@ def _device_context_for(platform: str, sender_id: str, session_id: str) -> dict:
     return {}
 
 
+def _personality_path() -> str:
+    """Where the app-reported agent personality lives."""
+    home = _env("HERMES_HOME", os.path.join(os.path.expanduser("~"), ".hermes"))
+    return os.path.join(home, "personality.json")
+
+
+_PERSONALITY_TRAITS = ("formality", "humor", "enthusiasm", "empathy")
+
+_PERSONALITY_STAGES = {
+    "curious_explorer": (
+        "You are in the early stages of development. Be helpful but "
+        "acknowledge when you are learning."
+    ),
+    "knowledge_seeker": (
+        "You have begun to develop your own voice. Show growing confidence "
+        "in your interactions."
+    ),
+    "wise_companion": (
+        "You have developed a mature personality. Engage deeply and show "
+        "nuanced understanding."
+    ),
+    "enlightened_guide": (
+        "You have reached your full potential. Be your authentic self with "
+        "confidence and depth."
+    ),
+}
+
+
+def _clean_personality(body: dict) -> dict:
+    """Keep only known fields, with traits clamped to 0..1."""
+    out: dict = {}
+    name = _sanitize(body.get("agent_name"), 60)
+    if name:
+        out["agent_name"] = name
+    traits = body.get("traits")
+    if isinstance(traits, dict):
+        clean = {}
+        for key in _PERSONALITY_TRAITS:
+            value = traits.get(key)
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                continue
+            if value != value:  # NaN
+                continue
+            clean[key] = max(0.0, min(1.0, float(value)))
+        if clean:
+            out["traits"] = clean
+    stage = body.get("evolution_stage")
+    if isinstance(stage, str) and stage in _PERSONALITY_STAGES:
+        out["evolution_stage"] = stage
+    return out
+
+
+def _read_personality() -> dict:
+    try:
+        with open(_personality_path(), encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return {}
+    return _clean_personality(data) if isinstance(data, dict) else {}
+
+
+def _write_personality(personality: dict) -> None:
+    path = _personality_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(personality, f, indent=2, sort_keys=True)
+    os.replace(tmp, path)
+
+
+def _personality_context(personality: dict) -> str:
+    """Tone guidance for the turn, from the traits set in the app.
+
+    Mirrors services/openclaw-skills/pistisai/prompt.ts so both runtimes
+    describe the same personality the same way.
+    """
+    traits = personality.get("traits") or {}
+    tone = []
+    formality = traits.get("formality")
+    if formality is not None:
+        if formality < 0.3:
+            tone.append("casual and relaxed")
+        elif formality < 0.7:
+            tone.append("balanced between casual and professional")
+        else:
+            tone.append("professional and formal")
+    humor = traits.get("humor")
+    if humor is not None:
+        if humor > 0.6:
+            tone.append("playful with occasional wit")
+        elif humor < 0.3:
+            tone.append("serious and focused")
+    enthusiasm = traits.get("enthusiasm")
+    if enthusiasm is not None:
+        if enthusiasm > 0.7:
+            tone.append("energetic and expressive")
+        elif enthusiasm < 0.3:
+            tone.append("calm and composed")
+    empathy = traits.get("empathy")
+    if empathy is not None:
+        if empathy > 0.7:
+            tone.append("warm and emotionally attuned")
+        elif empathy < 0.3:
+            tone.append("direct and pragmatic")
+
+    lines = []
+    name = personality.get("agent_name")
+    if name:
+        lines.append(f"Your name: {name}")
+    if tone:
+        lines.append("Your tone: " + ", ".join(tone))
+    stage = personality.get("evolution_stage")
+    if stage in _PERSONALITY_STAGES:
+        lines.append(_PERSONALITY_STAGES[stage])
+    if not lines:
+        return ""
+    lines.insert(0, "[Aigent personality — set by the user in the app]")
+    lines.append(
+        "Let this personality shape how you phrase replies; stay helpful and "
+        "respectful."
+    )
+    return "\n".join(lines)
+
+
 def _on_pre_llm_call(**kw) -> dict | None:
     """Inject device/location/time awareness into the turn context.
 
@@ -372,8 +496,13 @@ def _on_pre_llm_call(**kw) -> dict | None:
     adapt response length and urgency. Disable with AIGENT_AWARENESS_DISABLE=1.
     PC hostname is opt-in via AIGENT_AWARENESS_HOST=1 (off by default — consent).
     """
+    personality = (
+        ""
+        if _env_flag("AIGENT_PERSONALITY_DISABLE")
+        else _personality_context(_read_personality())
+    )
     if _env_flag("AIGENT_AWARENESS_DISABLE"):
-        return None
+        return {"context": personality} if personality else None
     now = datetime.datetime.now()
     platform = _sanitize(kw.get("platform") or "", 60)
     sender = _sanitize(kw.get("sender_id") or "", 24)
@@ -402,7 +531,10 @@ def _on_pre_llm_call(**kw) -> dict | None:
         "on-the-go, more detail at the desk; note device/location when it affects "
         "the answer."
     )
-    return {"context": "\n".join(parts)}
+    context = "\n".join(parts)
+    if personality:
+        context = context + "\n\n" + personality
+    return {"context": context}
 
 
 def _write_device_context(source: str, ctx: dict) -> None:
@@ -490,7 +622,46 @@ def _api_server_route_factory(native, adapter):
                 {"detail": f"could not clear context: {e}"}, status=500)
         return web.json_response({"detail": "cleared"})
 
+    async def _get_personality(request):
+        if (err := _auth(request)) is not None:
+            return err
+        return web.json_response({"personality": _read_personality()})
+
+    async def _post_personality(request):
+        if (err := _auth(request)) is not None:
+            return err
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"detail": "invalid JSON"}, status=400)
+        if not isinstance(body, dict):
+            return web.json_response({"detail": "object body required"}, status=400)
+        personality = _clean_personality(body)
+        if not personality:
+            return web.json_response({"detail": "no fields provided"}, status=400)
+        try:
+            _write_personality(personality)
+        except OSError as e:
+            return web.json_response(
+                {"detail": f"could not write personality: {e}"}, status=500)
+        return web.json_response({"personality": personality})
+
+    async def _delete_personality(request):
+        if (err := _auth(request)) is not None:
+            return err
+        try:
+            os.remove(_personality_path())
+        except FileNotFoundError:
+            pass
+        except OSError as e:
+            return web.json_response(
+                {"detail": f"could not clear personality: {e}"}, status=500)
+        return web.json_response({"detail": "cleared"})
+
     router = native.router
+    router.add_get("/api/pistisai/personality", _get_personality)
+    router.add_post("/api/pistisai/personality", _post_personality)
+    router.add_delete("/api/pistisai/personality", _delete_personality)
     router.add_get("/api/pistisai/device-context", _get)
     router.add_post("/api/pistisai/device-context", _post)
     router.add_delete("/api/pistisai/device-context", _delete)
