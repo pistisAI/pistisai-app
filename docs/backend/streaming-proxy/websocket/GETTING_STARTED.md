@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js 18+ installed
+- Node.js >=26.0.0 (see `services/streaming-proxy/package-lock.json`; the live entry point is `proxy-server.js`)
 - TypeScript knowledge
 - Understanding of WebSocket protocol
 - JWT authentication setup (Cloudflare Access)
@@ -49,7 +49,7 @@ FRAME_WARN_THRESHOLD=524288
 
 ### Step 2: Create Server
 
-Create `src/server.ts`:
+Illustrative bootstrap only — the live entry point is `services/streaming-proxy/proxy-server.js`:
 
 ```typescript
 import { createServer } from 'http';

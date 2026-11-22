@@ -1,5 +1,10 @@
 # Tunnel Monitoring Setup
 
+> **Inventory note:** the Grafana setup scripts exist at
+> `services/streaming-proxy/src/monitoring/grafana-dashboard-setup.ts` and
+> `grafana-setup-script.ts`. The `docs/OPERATIONS/*` runbook links below are not
+> present in this repository.
+
 This directory contains comprehensive guides and implementations for setting up production monitoring dashboards for the SSH WebSocket tunnel system using Grafana and Prometheus.
 
 ## Overview
@@ -304,8 +309,8 @@ Generate shareable dashboard links and create monitoring documentation
 
 ## Related Documentation
 
-- **Grafana MCP Tools Usage**: `docs/OPERATIONS/GRAFANA_MCP_TOOLS_USAGE.md`
-- **Tunnel Monitoring Setup**: `docs/OPERATIONS/TUNNEL_MONITORING_SETUP.md`
+- **Grafana dashboard scripts (implemented)**: `services/streaming-proxy/src/monitoring/grafana-dashboard-setup.ts`, `grafana-setup-script.ts`
+- **Ops runbooks**: `docs/OPERATIONS/GRAFANA_MCP_TOOLS_USAGE.md` and `docs/OPERATIONS/TUNNEL_MONITORING_SETUP.md` are not present in this repo.
 - **Streaming Proxy Metrics**: `services/streaming-proxy/src/metrics/server-metrics-collector.ts`
 - **MCP Tools Configuration**: `.kiro/steering/mcp-tools.md`
 
