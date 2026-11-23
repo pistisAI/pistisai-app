@@ -12,7 +12,7 @@ This directory contains current architecture references for Pistisai.
 - [Avatar System](AVATAR_SYSTEM.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
 - [Vision System](VISION_SYSTEM.md)
-- [Tunnel System](TUNNEL_SYSTEM.md)
+- [Tunnel System](../archive/historical-reports/architecture/TUNNEL_SYSTEM.md)
 
 ## Platform Architecture
 
@@ -25,7 +25,7 @@ This directory contains current architecture references for Pistisai.
 
 - [Documentation Hub](../README.md)
 - [API Index](../api/README.md)
-- [Development Workflow](../development/DEVELOPMENT_WORKFLOW.md)
+- [Development Workflow](../archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md)
 - [Operations Index](../operations/README.md)
 
 ## Maintenance

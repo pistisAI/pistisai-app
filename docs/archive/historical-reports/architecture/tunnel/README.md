@@ -1,6 +1,6 @@
 # Tunnel Enhancement Implementation
 
-> **Status**: Legacy/fallback tunnel implementation notes. Current multi-device and cloud connector work should start from [Secure Device Mesh](../SECURE_DEVICE_MESH.md) and the selected agent runtime path. Use this directory only when maintaining or migrating the older SSH WebSocket tunnel stack.
+> **Status**: Legacy/fallback tunnel implementation notes. Current multi-device and cloud connector work should start from [Secure Device Mesh](../../../../architecture/SECURE_DEVICE_MESH.md) and the selected agent runtime path. Use this directory only when maintaining or migrating the older SSH WebSocket tunnel stack.
 
 This directory contains the enhanced SSH WebSocket tunnel implementation for Pistisai.
 

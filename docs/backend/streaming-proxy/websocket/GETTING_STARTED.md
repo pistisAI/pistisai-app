@@ -454,9 +454,9 @@ ws.onclose = (event) => {
 
 ## Next Steps
 
-1. Read the [README.md](./README.md) for detailed documentation
-2. Review [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) for architecture details
-3. Check [QUICK_START.md](./QUICK_START.md) for quick reference
+1. Read the [README.md](README.md) for detailed documentation
+2. Review [IMPLEMENTATION_SUMMARY.md](../../../archive/historical-reports/backend/streaming-proxy/websocket/IMPLEMENTATION_SUMMARY.md) for architecture details
+3. Check [QUICK_START.md](QUICK_START.md) for quick reference
 4. Integrate with ConnectionPool for SSH forwarding
 5. Add metrics collection (Task 12)
 6. Implement structured logging (Task 13)

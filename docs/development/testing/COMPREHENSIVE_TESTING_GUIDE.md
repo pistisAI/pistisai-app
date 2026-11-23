@@ -88,5 +88,5 @@ Use `dart test` (not `flutter test`) for HTTP probes — `flutter test` blocks r
 
 ## Related documentation
 
-- [API Security Testing](./API_SECURITY_TESTING.md)
-- [Development Workflow](../DEVELOPMENT_WORKFLOW.md)
+- [API Security Testing](API_SECURITY_TESTING.md)
+- [Development Workflow](../../archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md)

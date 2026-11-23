@@ -164,4 +164,4 @@ curl -X POST http://localhost:8080/api/v1/voice/transcribe \
 - `lib/services/audio_recording_service.dart` - Recording
 - `lib/services/audio_playback_service.dart` - Playback
 - `lib/widgets/voice_conversation_screen.dart` - UI
-- `docs/development/features/VOICE_INTERFACE_IMPLEMENTATION.md` - Full docs
+- `docs/archive/historical-reports/development/features/VOICE_INTERFACE_IMPLEMENTATION.md` - Full docs

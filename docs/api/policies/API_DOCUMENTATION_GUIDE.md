@@ -288,7 +288,7 @@ All errors follow a standard format with error codes and HTTP status codes.
 - `NOT_FOUND` (404) - Resource not found
 - `INTERNAL_ERROR` (500) - Server error
 
-See [API_ERROR_CODES.md](./API_ERROR_CODES.md) for complete error code reference.
+See [API_ERROR_CODES.md](API_ERROR_CODES.md) for complete error code reference.
 
 ## Rate Limiting
 

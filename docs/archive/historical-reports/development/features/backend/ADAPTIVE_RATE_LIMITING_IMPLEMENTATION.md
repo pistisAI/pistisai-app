@@ -404,7 +404,7 @@ X-RateLimit-Adaptive-Multiplier: 0.50
 
 ## Related Documentation
 
-- [Rate Limiting Overview](./RATE_LIMIT_VIOLATIONS_IMPLEMENTATION.md)
+- [Rate Limiting Overview](RATE_LIMIT_VIOLATIONS_IMPLEMENTATION.md)
 - [Request Queuing](./REQUEST_QUEUING_IMPLEMENTATION.md)
 - [Quota Management](./QUOTA_MANAGEMENT_IMPLEMENTATION.md)
 - [Rate Limit Exemptions](./RATE_LIMIT_EXEMPTIONS_IMPLEMENTATION.md)

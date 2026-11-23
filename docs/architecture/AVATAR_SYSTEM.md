@@ -145,4 +145,4 @@ npm test
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Voice Conversation System](VOICE_CONVERSATION_SYSTEM.md)
 - [Avatar User Documentation](../avatar/README.md)
-- [Product Specification](../../SPEC.md)
+- [Product Specification(SPEC.md was deleted; see decision D-005)

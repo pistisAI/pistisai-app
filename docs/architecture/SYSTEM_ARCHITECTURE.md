@@ -258,5 +258,5 @@ Match nearby file patterns when adding platform-specific code.
 - [Avatar System](AVATAR_SYSTEM.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
 - [Vision System](VISION_SYSTEM.md)
-- [Tunnel System](TUNNEL_SYSTEM.md)
+- [Tunnel System](../archive/historical-reports/architecture/TUNNEL_SYSTEM.md)
 - [Service Lifecycle](service_lifecycle.md)

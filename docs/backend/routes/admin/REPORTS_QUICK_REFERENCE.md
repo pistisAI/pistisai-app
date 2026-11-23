@@ -256,11 +256,11 @@ a.click();
 ## Related APIs
 
 - Users API - User management
-- [Payments API](./PAYMENTS_API.md) - Payment transactions
-- [Subscriptions API](./SUBSCRIPTIONS_API.md) - Subscription management
+- [Payments API](PAYMENTS_API.md) - Payment transactions
+- [Subscriptions API](SUBSCRIPTIONS_API.md) - Subscription management
 
 ---
 
 ## Support
 
-For detailed documentation, see [REPORTS_API.md](./REPORTS_API.md)
+For detailed documentation, see [REPORTS_API.md](REPORTS_API.md)

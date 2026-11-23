@@ -1,6 +1,6 @@
 # Pistisai – Architecture Codemap (Reorganized)
 
-> **Status**: Historical codemap for the older Ollama/tunnel-centered implementation. The current orientation is agent-runtime-first and Tailscale-first: the setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime; Ollama and LM Studio are support model providers only unless wrapped by a compatible agent runtime; custom tunnel components are legacy/fallback. See [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md), [AGENT_RUNTIME_CONTRACT.md](AGENT_RUNTIME_CONTRACT.md), and [SECURE_DEVICE_MESH.md](SECURE_DEVICE_MESH.md) for the current architecture.
+> **Status**: Historical codemap for the older Ollama/tunnel-centered implementation. The current orientation is agent-runtime-first and Tailscale-first: the setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime; Ollama and LM Studio are support model providers only unless wrapped by a compatible agent runtime; custom tunnel components are legacy/fallback. See [SYSTEM_ARCHITECTURE.md](../../../architecture/SYSTEM_ARCHITECTURE.md), [AGENT_RUNTIME_CONTRACT.md](../../../architecture/AGENT_RUNTIME_CONTRACT.md), and [SECURE_DEVICE_MESH.md](../../../architecture/SECURE_DEVICE_MESH.md) for the current architecture.
 
 ## Trace 0: System Overview
 

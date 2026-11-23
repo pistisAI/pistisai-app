@@ -355,10 +355,10 @@ docker compose -f docker-compose.production.yml exec api-backend \
 
 ## 📚 Documentation Reference
 
-- **[DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)**: Comprehensive deployment guide
+- **[DOCKER_DEPLOYMENT.md](../../../deployment/DOCKER_DEPLOYMENT.md)**: Comprehensive deployment guide
 - **[Tunnel System](../architecture/TUNNEL_SYSTEM.md)**: Legacy/fallback tunnel architecture details
-- **[env.template](../../config/env.template)**: Configuration template
-- **[deploy.sh](../../scripts/deployment/deploy.sh)**: Deployment automation script
+- **[env.template](../../../../config/env.template)**: Configuration template
+- **[deploy.sh](../../../../scripts/deployment/deploy.sh)**: Deployment automation script
 
 ## 🎉 You're Ready
 

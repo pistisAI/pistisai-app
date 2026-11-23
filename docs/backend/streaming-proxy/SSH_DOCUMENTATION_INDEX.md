@@ -10,8 +10,8 @@ Task-summary files and the old `src/connection-pool/` sources are no longer in t
 
 ### 📚 Comprehensive Guides
 
-- **[SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md)** - Complete SSH best practices (1,500+ lines)
-- **[SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md)** - Quick reference guide (400+ lines)
+- **[SSH_LIBRARY_DOCUMENTATION.md](../../archive/historical-reports/backend/streaming-proxy/src/SSH_LIBRARY_DOCUMENTATION.md)** - Complete SSH best practices (1,500+ lines)
+- **[SSH_LIBRARY_REFERENCE.md](../../archive/historical-reports/backend/streaming-proxy/SSH_LIBRARY_REFERENCE.md)** - Quick reference guide (400+ lines)
 
 ### 🔍 Detailed Information
 
@@ -100,14 +100,14 @@ Task-summary files and the old `src/connection-pool/` sources are no longer in t
 
 ### 👨‍💻 Developers
 
-1. Start with [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) for quick overview
+1. Start with [SSH_LIBRARY_REFERENCE.md](../../archive/historical-reports/backend/streaming-proxy/SSH_LIBRARY_REFERENCE.md) for quick overview
 2. Review ssh-connection-impl.ts for implementation
-3. Reference [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) for detailed guidance
+3. Reference [SSH_LIBRARY_DOCUMENTATION.md](../../archive/historical-reports/backend/streaming-proxy/src/SSH_LIBRARY_DOCUMENTATION.md) for detailed guidance
 4. Check code examples in reference guide
 
 ### 🔒 Security Engineers
 
-1. Review [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) - Security sections
+1. Review [SSH_LIBRARY_DOCUMENTATION.md](../../archive/historical-reports/backend/streaming-proxy/src/SSH_LIBRARY_DOCUMENTATION.md) - Security sections
 2. Check authentication methods and key management
 3. Review error handling and logging
 4. Verify algorithm recommendations
@@ -121,7 +121,7 @@ Task-summary files and the old `src/connection-pool/` sources are no longer in t
 
 ### 🧪 QA/Testing
 
-1. Review [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) - Testing section
+1. Review [SSH_LIBRARY_REFERENCE.md](../../archive/historical-reports/backend/streaming-proxy/SSH_LIBRARY_REFERENCE.md) - Testing section
 2. Check troubleshooting guide
 3. Review error handling documentation
 4. Plan test scenarios
@@ -305,23 +305,23 @@ services/streaming-proxy/
 
 ### For New Developers
 
-1. Read [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) (15 min)
+1. Read [SSH_LIBRARY_REFERENCE.md](../../archive/historical-reports/backend/streaming-proxy/SSH_LIBRARY_REFERENCE.md) (15 min)
 2. Review code examples (10 min)
 3. Check ssh-connection-impl.ts (15 min)
-4. Reference [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) as needed
+4. Reference [SSH_LIBRARY_DOCUMENTATION.md](../../archive/historical-reports/backend/streaming-proxy/src/SSH_LIBRARY_DOCUMENTATION.md) as needed
 
 ### For Security Review
 
-1. Read [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) - Security sections (20 min)
+1. Read [SSH_LIBRARY_DOCUMENTATION.md](../../archive/historical-reports/backend/streaming-proxy/src/SSH_LIBRARY_DOCUMENTATION.md) - Security sections (20 min)
 2. Review authentication methods (10 min)
 3. Check algorithm recommendations (10 min)
 4. Review error handling (10 min)
 
 ### For Implementation
 
-1. Review [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) - Code Examples (15 min)
+1. Review [SSH_LIBRARY_REFERENCE.md](../../archive/historical-reports/backend/streaming-proxy/SSH_LIBRARY_REFERENCE.md) - Code Examples (15 min)
 2. Check ssh-connection-impl.ts (20 min)
-3. Reference [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) for details (30 min)
+3. Reference [SSH_LIBRARY_DOCUMENTATION.md](../../archive/historical-reports/backend/streaming-proxy/src/SSH_LIBRARY_DOCUMENTATION.md) for details (30 min)
 4. Implement and test
 
 ---
@@ -344,7 +344,7 @@ services/streaming-proxy/
 
 ### Troubleshooting
 
-- See [SSH_LIBRARY_REFERENCE.md](./SSH_LIBRARY_REFERENCE.md) - Troubleshooting section
+- See [SSH_LIBRARY_REFERENCE.md](../../archive/historical-reports/backend/streaming-proxy/SSH_LIBRARY_REFERENCE.md) - Troubleshooting section
 
 ---
 

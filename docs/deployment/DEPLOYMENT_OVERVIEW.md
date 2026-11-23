@@ -59,7 +59,7 @@ kubectl apply -f config/kubernetes/base/
 For Proxmox-hosted Kubernetes with Cloudflare Tunnel-only ingress:
 
 - [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](ARGOCD_PROXMOX_MANAGEMENT_VM.md)
+- [ArgoCD Proxmox Management VM Runbook](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
 - Template automation scripts:
   - `scripts/proxmox/create-k3s-template.sh`
   - `scripts/proxmox/clone-k3s-node.sh`
@@ -183,7 +183,7 @@ Pistisai tracks version in two synced files (see [AGENTS.md](../../AGENTS.md)):
 Example shape: `1.1.46+45` (not a timestamped `YYYYMMDDHHMM` build id).
 
 For packaging/version helper scripts, see [BUILD_SCRIPTS.md](../development/BUILD_SCRIPTS.md)
-and [docs/development/versioning/](../development/versioning/).
+and [docs/development/versioning/](../development/versioning).
 
 ---
 
@@ -193,9 +193,9 @@ and [docs/development/versioning/](../development/versioning/).
 
 - [Complete Deployment Workflow](COMPLETE_DEPLOYMENT_WORKFLOW.md)
 - [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md)
-- [Deployment Testing Guide](DEPLOYMENT_TESTING_GUIDE.md)
+- [Deployment Testing Guide](../archive/historical-reports/deployment/DEPLOYMENT_TESTING_GUIDE.md)
 - [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](ARGOCD_PROXMOX_MANAGEMENT_VM.md)
+- [ArgoCD Proxmox Management VM Runbook](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
 
 ### 🔧 **Operations**
 
@@ -210,7 +210,7 @@ and [docs/development/versioning/](../development/versioning/).
 
 - [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
 - [Secure Device Mesh](../architecture/SECURE_DEVICE_MESH.md)
-- [Tunnel System](../architecture/TUNNEL_SYSTEM.md)
+- [Tunnel System](../archive/historical-reports/architecture/TUNNEL_SYSTEM.md)
 
 ### 👨‍💻 **Development**
 

@@ -258,7 +258,7 @@ middleware.startCleanupTask(600000); // 10 minutes
 
 ## Next Steps
 
-- Read the [full documentation](./README.md)
+- Read the [full documentation](README.md)
 - Review [authentication middleware](../middleware/README.md)
 - Check requirements
 - See design document
@@ -267,6 +267,6 @@ middleware.startCleanupTask(600000); // 10 minutes
 
 For issues or questions:
 
-1. Check the [README](./README.md)
+1. Check the [README](README.md)
 2. Review the requirements
 3. Check existing tests for examples

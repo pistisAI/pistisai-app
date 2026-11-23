@@ -72,4 +72,4 @@ setupMiddlewarePipeline(app, {
 
 - Admin Management API
 - Audit Log API
-- [Rate Limiting](./RATE_LIMITING.md)
+- [Rate Limiting](RATE_LIMITING.md)

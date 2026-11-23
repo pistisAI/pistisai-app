@@ -726,4 +726,4 @@ jobs:
 
 - API Documentation Guide
 - API Versioning Guide
-- [Rate Limit Documentation](./RATE_LIMIT_DOCUMENTATION.md)
+- [Rate Limit Documentation](RATE_LIMIT_DOCUMENTATION.md)

@@ -75,5 +75,5 @@ if (hasPermission(req.userRoles, PERMISSIONS.EDIT_USERS)) {
 
 ## Related Documentation
 
-- [Backend Security Guide](./BACKEND_SECURITY.md)
+- [Backend Security Guide](BACKEND_SECURITY.md)
 - [Admin Management API](../../api/admin/ADMIN_MANAGEMENT.md)

@@ -83,9 +83,9 @@ Expected output: No errors
 ## Next Steps
 
 1. Install dependencies: `npm install ws @types/ws`
-2. Follow [GETTING_STARTED.md](./GETTING_STARTED.md) for setup
-3. Read [QUICK_START.md](./QUICK_START.md) for quick reference
-4. Review [README.md](./README.md) for detailed documentation
+2. Follow [GETTING_STARTED.md](GETTING_STARTED.md) for setup
+3. Read [QUICK_START.md](QUICK_START.md) for quick reference
+4. Review [README.md](README.md) for detailed documentation
 
 ## Troubleshooting
 

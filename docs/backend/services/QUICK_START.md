@@ -250,8 +250,8 @@ Check the transaction status. Only transactions with status `succeeded` can be r
 
 ## Resources
 
-- [Full Documentation](./README.md)
-- [Implementation Summary](./IMPLEMENTATION_SUMMARY.md)
+- [Full Documentation](README.md)
+- [Implementation Summary](../../archive/historical-reports/backend/services/IMPLEMENTATION_SUMMARY.md)
 - [Stripe Documentation](https://stripe.com/docs)
 - [Stripe Testing Guide](https://stripe.com/docs/testing)
 
@@ -259,6 +259,6 @@ Check the transaction status. Only transactions with status `succeeded` can be r
 
 For issues or questions:
 
-1. Check the [README](./README.md) for detailed documentation
+1. Check the [README](README.md) for detailed documentation
 2. Review Stripe documentation
 3. Contact the development team

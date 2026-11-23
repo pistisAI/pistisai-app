@@ -1,6 +1,6 @@
 # Unified Deployment Workflow
 
-> Historical. `.github/workflows/` has no `build-pipeline.yml` and no `deployment.yml`. Current releases chain Auto Version Bump into Web Deploy, then desktop, mobile, and backend. Use [CI/CD Quick Reference](CI_CD_QUICK_REFERENCE.md) and [Web Deploy](WEB_DEPLOY.md).
+> Historical. `.github/workflows/` has no `build-pipeline.yml` and no `deployment.yml`. Current releases chain Auto Version Bump into Web Deploy, then desktop, mobile, and backend. Use [CI/CD Quick Reference](../../../../operations/cicd/CI_CD_QUICK_REFERENCE.md) and [Web Deploy](../../../../operations/cicd/WEB_DEPLOY.md).
 
 ## Overview
 

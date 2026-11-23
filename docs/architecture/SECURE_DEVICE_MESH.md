@@ -137,8 +137,8 @@ Reasons:
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Agent Runtime Contract](AGENT_RUNTIME_CONTRACT.md)
-- [Tunnel System](TUNNEL_SYSTEM.md)
+- [Tunnel System](../archive/historical-reports/architecture/TUNNEL_SYSTEM.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
 - [Vision System](VISION_SYSTEM.md)
 - [Avatar System](AVATAR_SYSTEM.md)
-- [Product Specification](../../SPEC.md)
+- [Product Specification(SPEC.md was deleted; see decision D-005)

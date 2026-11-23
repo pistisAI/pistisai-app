@@ -10,7 +10,7 @@ For project-wide agent instructions, see [AGENTS.md](../AGENTS.md).
 | --- | --- |
 | Users | [User Guide](user-guide/USER_GUIDE.md) |
 | New developers | [Developer Onboarding](development/DEVELOPER_ONBOARDING.md) |
-| Contributors | [Development Workflow](development/DEVELOPMENT_WORKFLOW.md) |
+| Contributors | [Development Workflow](archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md) |
 | Build/release work | [Building Guide](development/BUILDING_GUIDE.md) |
 | Tests | [Comprehensive Testing Guide](development/testing/COMPREHENSIVE_TESTING_GUIDE.md) |
 | Architecture | [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
@@ -24,13 +24,13 @@ For project-wide agent instructions, see [AGENTS.md](../AGENTS.md).
 - [Avatar System](architecture/AVATAR_SYSTEM.md)
 - [Desktop Control](architecture/DESKTOP_CONTROL.md)
 - [Vision System](architecture/VISION_SYSTEM.md)
-- [Tunnel System](architecture/TUNNEL_SYSTEM.md) - legacy/fallback tunnel reference
+- [Tunnel System](archive/historical-reports/architecture/TUNNEL_SYSTEM.md) - legacy/fallback tunnel reference
 - [Service Lifecycle](architecture/service_lifecycle.md)
 
 ## Development
 
 - [Developer Onboarding](development/DEVELOPER_ONBOARDING.md)
-- [Development Workflow](development/DEVELOPMENT_WORKFLOW.md)
+- [Development Workflow](archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md)
 - [Building Guide](development/BUILDING_GUIDE.md)
 - [Build Scripts](development/BUILD_SCRIPTS.md)
 - [Testing Guide](development/testing/COMPREHENSIVE_TESTING_GUIDE.md)

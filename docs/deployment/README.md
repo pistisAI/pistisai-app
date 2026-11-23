@@ -21,8 +21,8 @@ This directory documents supported deployment paths for Pistisai.
 ## Kubernetes And GitOps
 
 - [k3s Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Integration](ARGOCD_INTEGRATION.md)
-- [ArgoCD Proxmox Management VM](ARGOCD_PROXMOX_MANAGEMENT_VM.md)
+- [ArgoCD Integration](../archive/historical-reports/deployment/ARGOCD_INTEGRATION.md)
+- [ArgoCD Proxmox Management VM](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
 
 Kubernetes manifests live under `k8s/`, `services/*/k8s/`, and `config/kubernetes/`. Not every Kubernetes path has a README, so link to specific runbooks from this directory when documenting deployment procedures.
 
@@ -36,14 +36,14 @@ Provider-specific notes are runbooks, not universal architecture. Prefer [Deploy
 
 ## Packaging And Releases
 
-- [AUR Status](AUR_STATUS.md)
+- [AUR Status](../archive/historical-reports/deployment/AUR_STATUS.md)
 - [Versioning Strategy](VERSIONING_STRATEGY.md)
-- [Deployment Testing Guide](DEPLOYMENT_TESTING_GUIDE.md)
+- [Deployment Testing Guide](../archive/historical-reports/deployment/DEPLOYMENT_TESTING_GUIDE.md)
 - [Validation Testing Guide](VALIDATION_TESTING_GUIDE.md)
 
 ## Related Documentation
 
 - [Documentation Hub](../README.md)
 - [Operations Index](../operations/README.md)
-- [Development Workflow](../development/DEVELOPMENT_WORKFLOW.md)
+- [Development Workflow](../archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md)
 - [Security Policy](../governance/security/SECURITY.md)

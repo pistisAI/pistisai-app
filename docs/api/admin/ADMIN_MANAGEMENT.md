@@ -157,5 +157,5 @@ curl -X POST https://api.example.com/api/admin/admins \
 
 ## Related Documentation
 
-- [Audit Log API](./AUDIT_LOGS.md)
+- [Audit Log API](AUDIT_LOGS.md)
 - [Backend Security Guide](../../operations/security/BACKEND_SECURITY.md)
