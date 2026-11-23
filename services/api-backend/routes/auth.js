@@ -12,11 +12,14 @@ import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 import logger from '../logger.js';
-import { authenticateJWT, extractUserId } from '../middleware/auth.js';
+import {
+  authenticateJWT,
+  extractUserId,
+  getAuthService,
+} from '../middleware/auth.js';
 import { logLogout, logTokenRevoke } from '../services/auth-audit-service.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import { tokenExpiryBody, validateBody } from './misc-body-schemas.js';
-import db from '../database/db-pool.js';
 
 const router = express.Router();
 
@@ -150,19 +153,15 @@ router.post(
 
       logger.info('[Auth] Session revocation initiated', { userId, sessionId });
 
-      const result = await db.query(
-        `UPDATE user_sessions s
-         SET is_active = false
-         FROM users u
-         WHERE s.id = $1
-           AND s.user_id = u.id
-           AND u.jwt_id = $2
-           AND s.is_active = true
-         RETURNING s.id`,
-        [sessionId, userId],
+      // Sessions live in the auth service's database and are keyed by the
+      // internal user id, not by the Access subject (#892).
+      const revoked = await getAuthService().revokeSession(
+        userId,
+        sessionId,
+        req.auth?.payload ?? {},
       );
 
-      if (result.rowCount === 0) {
+      if (!revoked) {
         return res.status(404).json({
           error: 'Session not found',
           code: 'SESSION_NOT_FOUND',

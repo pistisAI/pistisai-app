@@ -326,6 +326,20 @@ export class AuthService {
 
       const session = await this.createOrUpdateSession(payload, token, req);
 
+      // A revoked session stays revoked: the same token must not be accepted
+      // again (#892). createOrUpdateSession returns the existing row as is.
+      if (session && session.is_active === false) {
+        this.logger.warn('Revoked session rejected during token validation', {
+          userId,
+          sessionId: session.id,
+        });
+        return {
+          valid: false,
+          error: 'Session has been revoked',
+          code: 'SESSION_REVOKED',
+        };
+      }
+
       this.logger.info('Token validated successfully', {
         userId: payload.sub,
         sessionId: session.id,
@@ -556,6 +570,22 @@ export class AuthService {
   /**
    * Create or update user session
    */
+  /**
+   * Deactivate one of the caller's sessions. The caller is identified by the
+   * Access subject and resolved to the internal user id the same way sessions
+   * are created, so the lookup matches the rows createOrUpdateSession writes.
+   * Returns true when a matching active session was deactivated.
+   */
+  async revokeSession(accessSub, sessionId, userInfo = {}) {
+    const userId = await this.resolveUserId(accessSub, userInfo);
+    const result = await this.runQuery(
+      'UPDATE user_sessions SET is_active = false WHERE id = $1 AND user_id = $2 AND is_active = true',
+      [sessionId, userId],
+      'run',
+    );
+    return (result?.changes ?? 0) > 0;
+  }
+
   async createOrUpdateSession(tokenPayload, token, req) {
     this.logger.info('Creating/updating session', { tokenType: typeof token });
     const supabaseId = tokenPayload.sub;
