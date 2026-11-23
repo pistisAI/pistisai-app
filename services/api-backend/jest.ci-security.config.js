@@ -10,6 +10,7 @@ export default {
     '**/test/api-backend/rbac.test.js',
     '**/test/api-backend/input-validation.test.js',
     '**/test/api-backend/route-body-validation-2.test.js',
+    '**/test/api-backend/suspension-gaps-893.test.js',
     '**/test/api-backend/route-body-validation-3.test.js',
     '**/test/api-backend/usage-event-body-validation.test.js',
     '**/test/api-backend/admin-body-validation.test.js',

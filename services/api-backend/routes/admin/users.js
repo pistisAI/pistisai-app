@@ -598,6 +598,7 @@ router.patch(
 
         // Log the action in audit log
         await logAdminAction({
+          client,
           adminUserId: req.adminUser.id,
           adminRole: req.adminRoles[0],
           action: 'subscription_tier_changed',
@@ -757,6 +758,7 @@ router.post(
 
         // Log the action in audit log
         await logAdminAction({
+          client,
           adminUserId: req.adminUser.id,
           adminRole: req.adminRoles[0],
           action: 'user_suspended',
@@ -896,6 +898,7 @@ router.post(
 
         // Log the action in audit log
         await logAdminAction({
+          client,
           adminUserId: req.adminUser.id,
           adminRole: req.adminRoles[0],
           action: 'user_reactivated',

@@ -408,6 +408,7 @@ export class AuthService {
       });
 
       this.assertAccessAudience(verified);
+      await this.assertAccountUsable(verified, token);
       this.logger.info('WebSocket token verification successful', {
         userId: verified.sub,
         exp: verified.exp,
@@ -420,6 +421,35 @@ export class AuthService {
       });
 
       throw error;
+    }
+  }
+
+  /**
+   * Refuse a verified token when its account is suspended or its session was
+   * revoked. Used where no session row is created, such as WebSocket upgrades,
+   * so these paths apply the same rules as validateToken (#893).
+   */
+  async assertAccountUsable(payload, token) {
+    const userId = await this.resolveUserId(payload.sub, payload);
+    const status = await this.runQuery(
+      'SELECT is_suspended FROM users WHERE id = $1',
+      [userId],
+      'get',
+    );
+    if (status?.is_suspended) {
+      await this.logSecurityEvent('account_suspended_access_attempt', {
+        userId,
+        channel: 'websocket',
+      });
+      throw new Error('Account is suspended');
+    }
+    const session = await this.runQuery(
+      'SELECT is_active FROM user_sessions WHERE user_id = $1 AND jwt_token_hash = $2',
+      [userId, this.hashToken(token)],
+      'get',
+    );
+    if (session && session.is_active === false) {
+      throw new Error('Session has been revoked');
     }
   }
 
