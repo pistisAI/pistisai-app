@@ -524,7 +524,7 @@ curl -X POST https://api.example.com/api/admin/dns/setup-google \
 
 ## Related Documentation
 
-- [Email Configuration API](./EMAIL_API.md)
+- [Email Configuration API](EMAIL_API.md)
 - Cloudflare DNS Service
 - Admin Authentication
 - Audit Logging

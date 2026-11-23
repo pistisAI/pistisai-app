@@ -8,17 +8,17 @@ This directory contains comprehensive testing documentation for Pistisai.
 
 - **[Testing Strategy](TESTING_STRATEGY.md)** - Overall testing approach and methodology
 - **[Testing Checklist](TESTING_CHECKLIST.md)** - Comprehensive testing checklist for releases
-- **[Requirements Verification Matrix](REQUIREMENTS_VERIFICATION_MATRIX.md)** - Traceability matrix for requirements testing
+- **[Requirements Verification Matrix](../../archive/historical-reports/development/testing/REQUIREMENTS_VERIFICATION_MATRIX.md)** - Traceability matrix for requirements testing
 
 ### Test Implementation
 
-- **[Test README](TEST_README.md)** - Test execution quick reference
+- **[Test README](../../archive/historical-reports/development/testing/TEST_README.md)** - Test execution quick reference
 - **[API Security Testing](API_SECURITY_TESTING.md)** - Backend security test inventory
 - **[Comprehensive Testing Guide](COMPREHENSIVE_TESTING_GUIDE.md)** - Commands and gates
 
 ### End-to-End Testing
 
-- **[Tunnel E2E Test Scenarios](TUNNEL_E2E_TEST_SCENARIOS.md)** - End-to-end tunnel system testing
+- **[Tunnel E2E Test Scenarios](../../archive/historical-reports/development/testing/TUNNEL_E2E_TEST_SCENARIOS.md)** - End-to-end tunnel system testing
 
 ## 🔗 Related Documentation
 

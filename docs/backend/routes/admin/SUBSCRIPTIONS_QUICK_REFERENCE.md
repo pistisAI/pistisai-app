@@ -200,6 +200,6 @@ curl -X POST "https://api.example.com/api/admin/subscriptions/{id}/cancel" \
 
 ## See Also
 
-- [Full API Documentation](./SUBSCRIPTIONS_API.md)
-- [Implementation Summary](./IMPLEMENTATION_SUMMARY.md)
+- [Full API Documentation](SUBSCRIPTIONS_API.md)
+- [Implementation Summary](../../../archive/historical-reports/backend/routes/admin/IMPLEMENTATION_SUMMARY.md)
 - Admin API Overview

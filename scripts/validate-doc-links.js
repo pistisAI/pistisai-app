@@ -21,7 +21,7 @@ const defaultTargets = [
   'docs/operations/README.md',
   'docs/deployment/README.md',
   'docs/development/DEVELOPER_ONBOARDING.md',
-  'docs/development/DEVELOPMENT_WORKFLOW.md',
+  'docs/archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md',
   'docs/development/testing/COMPREHENSIVE_TESTING_GUIDE.md',
 ];
 

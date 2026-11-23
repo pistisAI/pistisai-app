@@ -636,8 +636,8 @@ Add these comments to error handling code:
 
 ### Related Documentation
 
-- [SSH_LIBRARY_DOCUMENTATION.md](./SSH_LIBRARY_DOCUMENTATION.md) - SSH error handling
-- [CONTEXT7_BEST_PRACTICES.md](./CONTEXT7_BEST_PRACTICES.md) - WebSocket error handling
+- [SSH_LIBRARY_DOCUMENTATION.md](SSH_LIBRARY_DOCUMENTATION.md) - SSH error handling
+- [CONTEXT7_BEST_PRACTICES.md](CONTEXT7_BEST_PRACTICES.md) - WebSocket error handling
 - error_categorization.dart - Client-side error categorization
 - error_recovery_strategy.dart - Client-side recovery strategies
 - ssh-error-handler.ts - Server-side SSH error handling

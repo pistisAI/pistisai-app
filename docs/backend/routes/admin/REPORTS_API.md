@@ -498,7 +498,7 @@ For issues or questions about the Admin Reports API:
 ## Related Documentation
 
 - Admin Users API
-- [Admin Payments API](./PAYMENTS_API.md)
-- [Admin Subscriptions API](./SUBSCRIPTIONS_API.md)
+- [Admin Payments API](PAYMENTS_API.md)
+- [Admin Subscriptions API](SUBSCRIPTIONS_API.md)
 - Admin Authentication
 - Audit Logging

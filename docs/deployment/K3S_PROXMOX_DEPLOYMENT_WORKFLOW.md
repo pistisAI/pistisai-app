@@ -45,7 +45,7 @@ kubectl get nodes
 
 ## Step 4: Provision ArgoCD Management VM/LXC
 
-Follow `docs/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md`.
+Follow `docs/archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md`.
 
 ## Step 5: Bootstrap GitOps
 

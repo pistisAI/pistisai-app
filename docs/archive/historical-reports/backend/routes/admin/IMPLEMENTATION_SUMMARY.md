@@ -110,7 +110,7 @@ This document summarizes the implementation status of all Admin Center API route
 - `view_subscriptions` - View subscription list and details
 - `edit_subscriptions` - Update and cancel subscriptions
 
-**Documentation:** See [SUBSCRIPTIONS_API.md](./SUBSCRIPTIONS_API.md) for detailed API reference
+**Documentation:** See [SUBSCRIPTIONS_API.md](../../../../../backend/routes/admin/SUBSCRIPTIONS_API.md) for detailed API reference
 
 **Task Reference:** Task 6 in `.kiro/specs/admin-center/tasks.md`
 

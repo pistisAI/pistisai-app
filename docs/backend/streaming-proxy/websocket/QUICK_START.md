@@ -301,8 +301,8 @@ Error: 1001 - Connection timeout
 
 ## Next Steps
 
-1. Read the full [README.md](./README.md) for detailed documentation
-2. Check [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) for implementation details
+1. Read the full [README.md](README.md) for detailed documentation
+2. Check [IMPLEMENTATION_SUMMARY.md](../../../archive/historical-reports/backend/streaming-proxy/websocket/IMPLEMENTATION_SUMMARY.md) for implementation details
 3. Review TASK_11_COMPLETION.md for requirements verification
 4. Integrate with ConnectionPool for SSH forwarding
 5. Add metrics collection and monitoring

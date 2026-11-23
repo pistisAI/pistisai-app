@@ -83,4 +83,4 @@ Typical GUI automation flow:
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Vision System](VISION_SYSTEM.md)
-- [Product Specification](../../SPEC.md)
+- [Product Specification(SPEC.md was deleted; see decision D-005)

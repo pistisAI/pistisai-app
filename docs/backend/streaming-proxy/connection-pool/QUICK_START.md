@@ -254,15 +254,15 @@ const shutdownManager = new GracefulShutdownManager(pool, logger, {
 
 ## Next Steps
 
-1. Read the [full README](./README.md) for detailed documentation
-2. Review the [implementation summary](./IMPLEMENTATION_SUMMARY.md)
-3. Check the [requirements mapping](./README.md#requirements-mapping)
-4. Explore the [integration examples](./README.md#integration-example)
+1. Read the [full README](README.md) for detailed documentation
+2. Review the [implementation summary](../../../archive/historical-reports/backend/streaming-proxy/connection-pool/IMPLEMENTATION_SUMMARY.md)
+3. Check the [requirements mapping](README.md#requirements-mapping)
+4. Explore the [integration examples](README.md#integration-example)
 
 ## Support
 
 For issues or questions:
 
-1. Check the [troubleshooting section](./README.md#troubleshooting)
+1. Check the [troubleshooting section](README.md#troubleshooting)
 2. Review the requirements document
 3. Check the design document

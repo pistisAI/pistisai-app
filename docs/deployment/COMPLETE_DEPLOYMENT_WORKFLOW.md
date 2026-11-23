@@ -4,14 +4,14 @@ This is the **ONE AND ONLY** deployment document for Pistisai. Follow this exact
 
 **Estimated Total Time:** 45-90 minutes
 
-**⚠️ IMPORTANT NOTICE**: AUR (Arch User Repository) support has been temporarily removed as of v3.10.3. See [AUR Status Documentation](./AUR_STATUS.md) for complete details and reintegration timeline.
+**⚠️ IMPORTANT NOTICE**: AUR (Arch User Repository) support has been temporarily removed as of v3.10.3. See [AUR Status Documentation](../archive/historical-reports/deployment/AUR_STATUS.md) for complete details and reintegration timeline.
 
 **Related Documentation:**
 
 - [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
-- [k3s on Proxmox Deployment Workflow](./K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](./ARGOCD_PROXMOX_MANAGEMENT_VM.md)
-- [Versioning Strategy](./VERSIONING_STRATEGY.md)
+- [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
+- [ArgoCD Proxmox Management VM Runbook](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
+- [Versioning Strategy](VERSIONING_STRATEGY.md)
 
 ---
 
@@ -72,7 +72,7 @@ scripts/proxmox/create-k3s-template.sh --help
 scripts/proxmox/clone-k3s-node.sh --help
 ```
 
-For full sequence, see [k3s on Proxmox Deployment Workflow](./K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md).
+For full sequence, see [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md).
 
 ### **Build and Push Images to Container Registry**
 

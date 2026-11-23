@@ -117,7 +117,7 @@ cd services/streaming-proxy && npm install && npm run dev
 
 - [Documentation Hub](../README.md)
 - [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
-- [Development Workflow](DEVELOPMENT_WORKFLOW.md)
+- [Development Workflow](../archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md)
 - [Building Guide](BUILDING_GUIDE.md)
 - [Comprehensive Testing Guide](testing/COMPREHENSIVE_TESTING_GUIDE.md)
 - [Deployment Index](../deployment/README.md)

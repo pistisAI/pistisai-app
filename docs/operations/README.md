@@ -14,7 +14,7 @@ Operational documentation covers running, monitoring, recovering, and securing P
 
 - [CI/CD Quick Reference](cicd/CI_CD_QUICK_REFERENCE.md)
 - [Web Deploy](cicd/WEB_DEPLOY.md)
-- [Unified Deployment Workflow](cicd/UNIFIED_DEPLOYMENT_WORKFLOW.md) — historical; the workflow file it names is not in the repo
+- [Unified Deployment Workflow](../archive/historical-reports/operations/cicd/UNIFIED_DEPLOYMENT_WORKFLOW.md) — historical; the workflow file it names is not in the repo
 
 ## Backend Operations
 

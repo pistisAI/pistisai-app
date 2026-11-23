@@ -3,7 +3,7 @@
 > **Status:** ✅ Research complete — ready for implementation
 > **Created:** 2026-09-06
 > **Revised:** 2026-09-07 (v8 — implementation-ready: exact files, code patterns, commands)
-> **Location:** `docs/architecture/PI_AGENT_INTEGRATION.md`
+> **Location:** `docs/archive/historical-reports/architecture/PI_AGENT_INTEGRATION.md`
 
 ---
 

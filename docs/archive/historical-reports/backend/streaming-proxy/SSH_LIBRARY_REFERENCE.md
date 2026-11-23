@@ -5,7 +5,7 @@
 **Library:** SSH2  
 **Context7 ID:** `/mscdex/ssh2`  
 **NPM Package:** `ssh2`  
-**Documentation:** [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md)
+**Documentation:** [SSH_LIBRARY_DOCUMENTATION.md](src/SSH_LIBRARY_DOCUMENTATION.md)
 
 ---
 
@@ -299,7 +299,7 @@ curl http://localhost:3001/api/tunnel/diagnostics
 
 ## Related Documentation
 
-- [SSH_LIBRARY_DOCUMENTATION.md](./src/SSH_LIBRARY_DOCUMENTATION.md) - Comprehensive SSH best practices
+- [SSH_LIBRARY_DOCUMENTATION.md](src/SSH_LIBRARY_DOCUMENTATION.md) - Comprehensive SSH best practices
 - ssh-connection-impl.ts - SSH connection implementation
 - ssh-error-handler.ts - SSH error handling
 - connection-pool-impl.ts - Connection pool management

@@ -84,4 +84,4 @@ Typical camera flow:
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
-- [Product Specification](../../SPEC.md)
+- [Product Specification(SPEC.md was deleted; see decision D-005)

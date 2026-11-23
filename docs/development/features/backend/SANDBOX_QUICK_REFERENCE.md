@@ -247,5 +247,5 @@ Sandbox errors include detailed information:
 
 ## Related Docs
 
-- [Full Sandbox Guide](./SANDBOX_ENVIRONMENT_GUIDE.md)
+- [Full Sandbox Guide](SANDBOX_ENVIRONMENT_GUIDE.md)
 - API Documentation

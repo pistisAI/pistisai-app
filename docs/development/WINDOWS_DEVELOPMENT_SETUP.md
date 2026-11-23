@@ -281,7 +281,7 @@ After setup completion:
 - **[Developer Onboarding Guide](DEVELOPER_ONBOARDING.md)** - Comprehensive development guide
 - **[Building Guide](BUILDING_GUIDE.md)** - Platform-specific build instructions
 - **[PowerShell Scripts README](scripts/powershell/README.md)** - PowerShell utilities documentation
-- **[Development Workflow](DEVELOPMENT_WORKFLOW.md)** - Daily development practices
+- **[Development Workflow](../archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md)** - Daily development practices
 
 ---
 

@@ -297,8 +297,8 @@ setInterval(() => {
 
 ## Next Steps
 
-- Read the [full README](./README.md) for detailed documentation
-- Check [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) for architecture details
+- Read the [full README](README.md) for detailed documentation
+- Check [IMPLEMENTATION_SUMMARY.md](../../../archive/historical-reports/backend/streaming-proxy/circuit-breaker/IMPLEMENTATION_SUMMARY.md) for architecture details
 - Review requirements in the design document
 - Integrate with other tunnel components (connection pool, rate limiter)
 
@@ -324,6 +324,6 @@ setInterval(() => {
 
 For issues or questions:
 
-1. Check the [README](./README.md)
+1. Check the [README](README.md)
 2. Review the design document
 3. Check existing implementations in connection-pool and rate-limiter modules

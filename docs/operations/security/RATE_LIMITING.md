@@ -78,5 +78,5 @@ When a limit is exceeded, the server returns a `429 Too Many Requests` status co
 
 ## Related Documentation
 
-- [Backend Security Guide](./BACKEND_SECURITY.md)
-- [RBAC Guide](./RBAC_GUIDE.md)
+- [Backend Security Guide](BACKEND_SECURITY.md)
+- [RBAC Guide](RBAC_GUIDE.md)

@@ -430,18 +430,18 @@ resetManager.start();  // Don't forget this!
 
 ## Next Steps
 
-1. ✅ Read [QUICK_START.md](./QUICK_START.md) for more patterns
-2. ✅ Read [README.md](./README.md) for detailed documentation
-3. ✅ Check [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) for architecture
+1. ✅ Read [QUICK_START.md](QUICK_START.md) for more patterns
+2. ✅ Read [README.md](README.md) for detailed documentation
+3. ✅ Check [IMPLEMENTATION_SUMMARY.md](../../../archive/historical-reports/backend/streaming-proxy/circuit-breaker/IMPLEMENTATION_SUMMARY.md) for architecture
 4. ✅ Integrate with your services
 5. ✅ Set up monitoring and alerts
 6. ✅ Write tests for your integration
 
 ## Need Help?
 
-- Check the [README](./README.md) for detailed documentation
-- Review [QUICK_START](./QUICK_START.md) for common patterns
-- Look at integration examples in [IMPLEMENTATION_SUMMARY](./IMPLEMENTATION_SUMMARY.md)
+- Check the [README](README.md) for detailed documentation
+- Review [QUICK_START](QUICK_START.md) for common patterns
+- Look at integration examples in [IMPLEMENTATION_SUMMARY](../../../archive/historical-reports/backend/streaming-proxy/circuit-breaker/IMPLEMENTATION_SUMMARY.md)
 - Check the design document for requirements
 
 ## Key Takeaways
