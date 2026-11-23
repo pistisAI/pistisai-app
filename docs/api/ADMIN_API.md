@@ -12,7 +12,7 @@ The Admin Center API provides secure administrative endpoints for managing Pisti
 ```
 Production: https://api.example.com/api/admin
 Staging: https://staging-api.example.com/api/admin
-Development: http://localhost:3001/api/admin
+Development: http://localhost:8080/api/admin
 ```
 
 ## Authentication
@@ -300,6 +300,20 @@ Export audit logs to CSV format for compliance and reporting.
 Process Stripe webhook events for payment and subscription updates.
 
 **Endpoint:** `POST /api/webhooks/stripe`
+
+---
+
+## Additional Admin Endpoint Groups
+
+The admin router also mounts these endpoint groups. They are implemented in `services/api-backend/routes/admin/` and follow the same JWT + admin-role authentication as the endpoints above:
+
+| Group | Base path | Example endpoints |
+| :--- | :--- | :--- |
+| Email relay | `/api/admin/email` | `POST /oauth/start`, `GET /config`, `GET /status`, `GET /quota`, `GET /metrics`, `GET /delivery-logs` |
+| DNS records | `/api/admin/dns` | `GET|POST /records`, `PUT|DELETE /records/:id`, `POST /validate`, `GET /google-records` |
+| Bulk operations | `/api/admin/bulk-operations` | `POST /create`, `POST /:operationId/execute`, `GET /:operationId/status`, `GET /history` |
+
+See the corresponding source files in `services/api-backend/routes/admin/` for the full request and response schemas.
 
 ---
 
