@@ -95,16 +95,16 @@ curl -X GET "https://api.example.com/api/admin/audit/export?startDate=2025-01-01
 
 ## Security & Compliance
 
-- **Immutability**: Audit logs are immutable and include cryptographic signatures for tamper detection.
-- **Retention**: Minimum retention period of 7 years for compliance.
+- **Immutability**: The audit API is read-only (list, detail, CSV export); there are no update or delete endpoints. The `admin_audit_logs` and `audit_logs` schemas have no signature or tamper-detection column, so entries are not cryptographically signed.
+- **Retention**: No automated retention or archival policy is implemented in the code; entries persist until removed through database administration.
 - **Privacy**: Sensitive data (passwords, API keys) is never logged.
 
 ---
 
 ## Rate Limits
 
-- **Standard**: 100 requests per 15 minutes per admin.
-- **Export**: 10 exports per hour per admin.
+- **List / read**: 200 requests per minute per admin (`adminReadOnlyLimiter`).
+- **Export**: 10 requests per minute per admin (`adminExpensiveLimiter`).
 
 ---
 
