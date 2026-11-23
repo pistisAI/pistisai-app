@@ -81,9 +81,25 @@ class CloudConnectorService {
     required AuthService authService,
     http.Client? httpClient,
     String? baseUrl,
+    Future<bool> Function()? cloudAllowed,
   })  : _authService = authService,
         _httpClient = httpClient ?? http.Client(),
-        _baseUrl = baseUrl ?? AppConfig.apiBaseUrl;
+        _baseUrl = baseUrl ?? AppConfig.apiBaseUrl,
+        _cloudAllowed = cloudAllowed;
+
+  /// Whether the user chose the cloud. When absent or false, no request is
+  /// sent: not the registration, not the heartbeat, not a device listing.
+  final Future<bool> Function()? _cloudAllowed;
+
+  Future<bool> _isCloudAllowed() async {
+    final allowed = _cloudAllowed;
+    if (allowed == null) return false;
+    try {
+      return await allowed();
+    } catch (_) {
+      return false;
+    }
+  }
 
   final AuthService _authService;
   final http.Client _httpClient;
@@ -108,6 +124,10 @@ class CloudConnectorService {
   Future<bool> registerAndStart({
     CloudRuntimeLocation runtimeLocation = CloudRuntimeLocation.local,
   }) async {
+    if (!await _isCloudAllowed()) {
+      _setStatus(CloudConnectionStatus.disconnected);
+      return false;
+    }
     _setStatus(CloudConnectionStatus.connecting);
     try {
       await DeviceIdentityService.instance.initialize();
@@ -122,6 +142,12 @@ class CloudConnectorService {
       _lastError = e.toString();
       _setStatus(CloudConnectionStatus.error);
       return false;
+    }
+  }
+
+  Future<void> _requireCloud() async {
+    if (!await _isCloudAllowed()) {
+      throw StateError('Cloud services are off; nothing was sent.');
     }
   }
 
@@ -171,6 +197,7 @@ class CloudConnectorService {
   }
 
   Future<bool> revokeDevice(String deviceId) async {
+    await _requireCloud();
     final token = await _authService.getAccessToken();
     final response = await _httpClient.delete(
       Uri.parse('$_baseUrl/cloud/devices/$deviceId'),
@@ -197,6 +224,7 @@ class CloudConnectorService {
   }
 
   Future<http.Response> _post(String path, {required Map<String, dynamic> body}) async {
+    await _requireCloud();
     final token = await _authService.getAccessToken();
     return _httpClient.post(
       Uri.parse('$_baseUrl/cloud$path'),
@@ -209,6 +237,7 @@ class CloudConnectorService {
   }
 
   Future<http.Response> _get(String path) async {
+    await _requireCloud();
     final token = await _authService.getAccessToken();
     return _httpClient.get(
       Uri.parse('$_baseUrl/cloud$path'),

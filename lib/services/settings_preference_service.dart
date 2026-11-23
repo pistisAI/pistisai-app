@@ -22,6 +22,7 @@ class SettingsPreferenceService {
   static const String _analyticsKey = 'settings_analytics_enabled';
   static const String _crashReportingKey = 'settings_crash_reporting_enabled';
   static const String _usageStatsKey = 'settings_usage_stats_enabled';
+  static const String _cloudServicesKey = 'settings_cloud_services_enabled';
   static const String _cloudLlmProvidersKey =
       'settings_cloud_llm_providers_enabled';
   static const String _microsoftSpeechKey =
@@ -166,6 +167,19 @@ class SettingsPreferenceService {
   Future<void> setCrashReportingEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_crashReportingKey, value);
+  }
+
+  /// Whether the app may talk to the hosted cloud service (device registry
+  /// and heartbeat, brain sync). Off unless the user chooses the cloud:
+  /// nothing about the device leaves it by default.
+  Future<bool> isCloudServicesEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_cloudServicesKey) ?? false;
+  }
+
+  Future<void> setCloudServicesEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_cloudServicesKey, value);
   }
 
   /// Whether optional cloud LLM providers (Zhipu, Moonshot, Gemini) may run.

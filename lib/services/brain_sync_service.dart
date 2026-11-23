@@ -16,16 +16,36 @@ class BrainSyncService {
   bool _syncStarted = false;
   final _syncController = StreamController<SyncStatus>.broadcast();
 
-  BrainSyncService(LocalBrain db, {String? backendUrl, String? authToken})
-      : _db = db,
+  BrainSyncService(
+    LocalBrain db, {
+    String? backendUrl,
+    String? authToken,
+    Future<bool> Function()? cloudAllowed,
+  })  : _db = db,
         _backendUrl = backendUrl ?? Brand.current.apiBaseUrl,
-        _authToken = authToken;
+        _authToken = authToken,
+        _cloudAllowed = cloudAllowed;
 
   @visibleForTesting
-  BrainSyncService.forTest()
+  BrainSyncService.forTest({Future<bool> Function()? cloudAllowed})
       : _db = null,
         _backendUrl = '',
-        _authToken = null;
+        _authToken = null,
+        _cloudAllowed = cloudAllowed;
+
+  /// Whether the user chose the cloud. When absent or false, sync sends
+  /// nothing.
+  final Future<bool> Function()? _cloudAllowed;
+
+  Future<bool> _isCloudAllowed() async {
+    final allowed = _cloudAllowed;
+    if (allowed == null) return false;
+    try {
+      return await allowed();
+    } catch (_) {
+      return false;
+    }
+  }
 
   /// Stream of sync status updates
   Stream<SyncStatus> get syncStatus => _syncController.stream;
@@ -59,6 +79,9 @@ class BrainSyncService {
     if (_isSyncing) {
       debugPrint('[BrainSync] Sync already in progress, skipping');
       return SyncResult.alreadyRunning();
+    }
+    if (!await _isCloudAllowed()) {
+      return SyncResult.cloudOff();
     }
 
     _isSyncing = true;
@@ -373,6 +396,15 @@ class SyncResult {
     required this.duration,
     this.error,
   });
+
+  /// The user has not chosen the cloud: nothing was sent.
+  SyncResult.cloudOff()
+      : success = false,
+        uploaded = 0,
+        downloaded = 0,
+        failed = 0,
+        duration = Duration.zero,
+        error = 'Cloud services are off';
 
   SyncResult.alreadyRunning()
       : success = false,
