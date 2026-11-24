@@ -37,7 +37,7 @@ jest.mock("../../../services/api-backend/auth/auth-service.js", () => {
     AuthService: jest.fn().mockImplementation(() => {
       const configured = process.env.DEV_BYPASS_TOKEN;
       const devBypassToken =
-        process.env.NODE_ENV !== "production" &&
+        process.env.NODE_ENV === "development" &&
         typeof configured === "string" &&
         configured.length > 0
           ? configured

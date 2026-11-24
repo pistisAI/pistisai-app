@@ -27,6 +27,9 @@ export default {
     '**/test/api-backend/admin-transaction-client.test.js',
     '**/test/api-backend/auth-suspended-account.test.js',
     '**/test/api-backend/agent-events-webhook-secret.test.js',
+    // #895: raw-body webhook HMAC and development-only dev bypass.
+    '**/test/api-backend/agent-events-raw-hmac-895.test.js',
+    '**/test/api-backend/dev-bypass-node-env-895.test.js',
   ],
   testPathIgnorePatterns: [
     ...base.testPathIgnorePatterns,

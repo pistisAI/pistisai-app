@@ -30,21 +30,33 @@ const agentEventBodySchema = z.object({
   correlation_id: z.string().optional(),
 });
 
-// Middleware: Verify webhook signature
-const verifyWebhookSignature = (req, res, next) => {
+// Middleware: Verify webhook signature over the raw request body (#895).
+// The HMAC must cover the exact bytes the sender signed: re-serializing the
+// parsed JSON changes whitespace, key order and escaping. The raw bytes come
+// from the `captureRawBody` verify callback of the JSON parser
+// (middleware/pipeline.js); without them the request is rejected.
+export const verifyWebhookSignature = (req, res, next) => {
   const webhookSecret = resolveOpenClawWebhookSecret();
   const signature = req.headers['x-openclaw-signature'];
 
   if (!webhookSecret) {
+    // Fail closed: without a configured secret no event is accepted.
     logger.error('OpenClaw webhook secret not configured', {
       agentId: req.body?.agent_id,
     });
     return res.status(500).json({ error: 'Webhook secret not configured' });
   }
 
+  if (!Buffer.isBuffer(req.rawBody)) {
+    logger.warn('OpenClaw webhook received without a raw JSON body', {
+      hasSignature: !!signature,
+    });
+    return res.status(401).json({ error: 'Invalid webhook signature' });
+  }
+
   const expectedSignature = crypto
     .createHmac('sha256', webhookSecret)
-    .update(JSON.stringify(req.body))
+    .update(req.rawBody)
     .digest('hex');
 
   const signatureOk =
