@@ -423,7 +423,7 @@ if (!connection.isHealthy()) {
 ## Next Steps
 
 1. Read the [full documentation](README.md)
-2. Review the [quick start guide](QUICK_START.md)
+2. Review the [quick start guide](README.md)
 3. Check the [implementation summary](../../../archive/historical-reports/backend/streaming-proxy/connection-pool/IMPLEMENTATION_SUMMARY.md)
 4. Explore the completion report
 

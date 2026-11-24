@@ -189,7 +189,6 @@ and [docs/development/versioning/](../development/versioning).
 
 ### 📚 **Deployment Guides**
 
-- [Complete Deployment Workflow](COMPLETE_DEPLOYMENT_WORKFLOW.md)
 - [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md)
 - [Deployment Testing Guide](../archive/historical-reports/deployment/DEPLOYMENT_TESTING_GUIDE.md)
 - [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
