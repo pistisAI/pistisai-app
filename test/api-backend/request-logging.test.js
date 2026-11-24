@@ -163,4 +163,63 @@ describe("request-logging middleware", () => {
     const durationMs = parseInt(completedCall[1], 10);
     expect(durationMs).toBeGreaterThanOrEqual(0);
   });
+
+  it("redacts a session token in the validate URL path", async () => {
+    const logger = (await import("../../services/api-backend/logger.js"))
+      .default;
+
+    mockReq.path = "/auth/sessions/validate/secret-session-token";
+    middleware(mockReq, mockRes, mockNext);
+
+    const incomingCall = logger.info.mock.calls.find(
+      (c) => c[0] === "Incoming request",
+    );
+    expect(incomingCall[1].path).toBe("/auth/sessions/validate/[REDACTED]");
+    expect(JSON.stringify(incomingCall[1])).not.toContain(
+      "secret-session-token",
+    );
+  });
+
+  it("redacts a session token in the legacy DELETE path on completion", async () => {
+    const logger = (await import("../../services/api-backend/logger.js"))
+      .default;
+
+    mockReq.path = "/auth/sessions/secret-session-token";
+    middleware(mockReq, mockRes, mockNext);
+    mockRes.send({ ok: true });
+
+    for (const call of logger.info.mock.calls) {
+      expect(JSON.stringify(call[1])).not.toContain("secret-session-token");
+    }
+  });
+
+  it("keeps static session paths readable in logs", async () => {
+    const logger = (await import("../../services/api-backend/logger.js"))
+      .default;
+
+    mockReq.path = "/auth/sessions/current";
+    middleware(mockReq, mockRes, mockNext);
+
+    const incomingCall = logger.info.mock.calls.find(
+      (c) => c[0] === "Incoming request",
+    );
+    expect(incomingCall[1].path).toBe("/auth/sessions/current");
+  });
+
+  it("redacts credential-like query values", async () => {
+    const logger = (await import("../../services/api-backend/logger.js"))
+      .default;
+
+    mockReq.query = { sessionToken: "abc123", refresh_token: "def456", page: 2 };
+    middleware(mockReq, mockRes, mockNext);
+
+    const incomingCall = logger.info.mock.calls.find(
+      (c) => c[0] === "Incoming request",
+    );
+    expect(incomingCall[1].query).toEqual({
+      sessionToken: "[REDACTED]",
+      refresh_token: "[REDACTED]",
+      page: 2,
+    });
+  });
 });
