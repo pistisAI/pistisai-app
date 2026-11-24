@@ -1202,6 +1202,12 @@ abstract class AppLocalizations {
   /// **'No logs available'**
   String get logsNoneAvailable;
 
+  /// No description provided for @logsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load logs: {error}'**
+  String logsLoadFailed(String error);
+
   /// No description provided for @logsSearchHint.
   ///
   /// In en, this message translates to:
@@ -2857,6 +2863,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test Connection'**
   String get instancesTestConnection;
+
+  /// No description provided for @instancesRuntimeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Runtime'**
+  String get instancesRuntimeSection;
+
+  /// No description provided for @instancesRuntimeEndpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Endpoint: {url}'**
+  String instancesRuntimeEndpoint(String url);
+
+  /// No description provided for @instancesRuntimeNoRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent runtime is selected. Enable Hermes Agent below to connect.'**
+  String get instancesRuntimeNoRuntime;
+
+  /// No description provided for @instancesRuntimeControlUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting and stopping the agent runtime from the app is not available yet. Start it on its host, then refresh.'**
+  String get instancesRuntimeControlUnavailable;
+
+  /// No description provided for @instancesNoModels.
+  ///
+  /// In en, this message translates to:
+  /// **'No model providers found on this device.'**
+  String get instancesNoModels;
+
+  /// No description provided for @instancesModelsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not scan model providers: {error}'**
+  String instancesModelsLoadFailed(String error);
+
+  /// No description provided for @runtimeStatusConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get runtimeStatusConnected;
+
+  /// No description provided for @runtimeStatusUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not reachable'**
+  String get runtimeStatusUnreachable;
+
+  /// No description provided for @runtimeStatusNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get runtimeStatusNotConfigured;
+
+  /// No description provided for @overviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overviewTitle;
+
+  /// No description provided for @overviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent runtime status, where the app connects, and a fast health read.'**
+  String get overviewSubtitle;
+
+  /// No description provided for @overviewVoiceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice Companion'**
+  String get overviewVoiceTitle;
+
+  /// No description provided for @overviewVoiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice conversation service is only wired on desktop builds right now.'**
+  String get overviewVoiceUnavailable;
+
+  /// No description provided for @overviewAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime Access'**
+  String get overviewAccessTitle;
+
+  /// No description provided for @overviewAccessDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the app connects and whether it sends an API key.'**
+  String get overviewAccessDescription;
+
+  /// No description provided for @overviewRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime'**
+  String get overviewRuntime;
+
+  /// No description provided for @overviewNoRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent runtime selected'**
+  String get overviewNoRuntime;
+
+  /// No description provided for @overviewRuntimeUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime URL'**
+  String get overviewRuntimeUrl;
+
+  /// No description provided for @overviewApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'API key'**
+  String get overviewApiKey;
+
+  /// No description provided for @overviewApiKeySet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get overviewApiKeySet;
+
+  /// No description provided for @overviewApiKeyNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get overviewApiKeyNotSet;
+
+  /// No description provided for @overviewCheckConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check connection'**
+  String get overviewCheckConnection;
+
+  /// No description provided for @overviewSnapshotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshot'**
+  String get overviewSnapshotTitle;
+
+  /// No description provided for @overviewSnapshotDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Result of the latest health check from this screen.'**
+  String get overviewSnapshotDescription;
+
+  /// No description provided for @overviewStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get overviewStatus;
+
+  /// No description provided for @overviewLastChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'Last checked'**
+  String get overviewLastChecked;
+
+  /// No description provided for @overviewNotCheckedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not checked yet'**
+  String get overviewNotCheckedYet;
+
+  /// No description provided for @overviewModelsReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Models reported'**
+  String get overviewModelsReported;
+
+  /// No description provided for @overviewLastError.
+  ///
+  /// In en, this message translates to:
+  /// **'Last error'**
+  String get overviewLastError;
 
   /// No description provided for @commonBack.
   ///

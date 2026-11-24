@@ -4,8 +4,7 @@ import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
-import '../../services/setup_status_service.dart';
-import '../../services/auth_service.dart';
+import '../../services/onboarding/setup_wizard_service.dart';
 
 /// Connection Settings Screen - Network and tunnel configuration
 class ConnectionSettingsScreen extends StatefulWidget {
@@ -21,8 +20,7 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final spacing = AppTheme.spacingOf(context);
-    final setupStatusService = context.watch<SetupStatusService>();
-    final authService = context.watch<AuthService>();
+    final setupWizardService = context.read<SetupWizardService>();
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
@@ -115,34 +113,25 @@ class _ConnectionSettingsScreenState extends State<ConnectionSettingsScreen> {
                         ),
                       );
 
-                      if (confirmed == true && mounted) {
-                        try {
-                          // Get user ID before async operations
-                          final userId = authService.currentUser?.id ?? 'local';
-
-                          // Clear all setup data
-                          await setupStatusService.clearAllSetupData();
-
-                          // Also reset gateway token
-                          await setupStatusService.resetSetupStatus(userId);
-
-                          if (mounted) {
-                            // Navigate to setup wizard
-                            if (!context.mounted) return;
-                            context.go('/setup');
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l10n.connectionClearFailed('$e')),
-                                backgroundColor:
-                                    AppTheme.colorsOf(context).danger,
-                              ),
-                            );
-                          }
+                      if (confirmed != true || !mounted) return;
+                      try {
+                        // Clears the deferred flag, the stored completion
+                        // record and the step state, then re-checks that the
+                        // wizard is really due before navigating to it.
+                        final wizardDue = await setupWizardService.restart();
+                        if (!context.mounted) return;
+                        if (!wizardDue) {
+                          throw StateError('setup wizard is still marked done');
                         }
+                        context.go('/setup');
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.connectionClearFailed('$e')),
+                            backgroundColor: AppTheme.colorsOf(context).danger,
+                          ),
+                        );
                       }
                     },
                   ),

@@ -53,11 +53,15 @@ void main() {
       service.dispose();
     });
 
-    test('stop returns false when not running', () async {
+    test('stop reports failure when the gateway state is unknown (#857)',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final service = GatewayControlService(SettingsPreferenceService());
+      expect(service.state, GatewayState.unknown);
       final stopped = await service.stop();
-      expect(stopped, isTrue);
+      // Nothing was stopped, so the control must not report success.
+      expect(stopped, isFalse);
+      expect(service.errorMessage, isNotNull);
       expect(service.isRunning, isFalse);
       service.dispose();
     });

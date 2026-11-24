@@ -8,6 +8,7 @@ import crypto from 'crypto';
 const mockQuery = jest.fn();
 const mockLogLogout = jest.fn(async () => ({}));
 const mockLogTokenRevoke = jest.fn(async () => ({}));
+const mockRevokeSession = jest.fn(async () => true);
 
 /** Real extractUserId middleware (same contract as middleware/auth.js). */
 const extractUserId = (req, res, next) => {
@@ -57,6 +58,7 @@ jest.unstable_mockModule('../../services/api-backend/middleware/auth.js', () => 
     next();
   },
   extractUserId,
+  getAuthService: () => ({ revokeSession: mockRevokeSession }),
 }));
 
 jest.unstable_mockModule(
@@ -90,6 +92,8 @@ describe('Auth routes (#846)', () => {
     mockQuery.mockReset();
     mockLogLogout.mockClear();
     mockLogTokenRevoke.mockClear();
+    mockRevokeSession.mockReset();
+    mockRevokeSession.mockResolvedValue(true);
     app = express();
     app.use(express.json());
     app.use('/auth', authRouter);
@@ -109,12 +113,9 @@ describe('Auth routes (#846)', () => {
     expect(res.body.userId).toBe('jwt|test-user-846');
   });
 
-  it('POST /auth/session/revoke deactivates the session', async () => {
+  it('POST /auth/session/revoke deactivates the session through the auth service', async () => {
     const sessionId = crypto.randomUUID();
-    mockQuery.mockResolvedValueOnce({
-      rows: [{ id: sessionId }],
-      rowCount: 1,
-    });
+    mockRevokeSession.mockResolvedValueOnce(true);
 
     const res = await request(app)
       .post('/auth/session/revoke')
@@ -123,18 +124,16 @@ describe('Auth routes (#846)', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.sessionId).toBe(sessionId);
-    expect(mockQuery).toHaveBeenCalled();
-    const [sql, params] = mockQuery.mock.calls[0];
-    expect(String(sql).toLowerCase()).toContain('is_active');
-    expect(String(sql).toLowerCase()).toContain('false');
-    expect(params).toEqual(
-      expect.arrayContaining([sessionId, 'jwt|test-user-846']),
+    expect(mockRevokeSession).toHaveBeenCalledWith(
+      'jwt|test-user-846',
+      sessionId,
+      expect.objectContaining({ sub: 'jwt|test-user-846' }),
     );
   });
 
   it('POST /auth/session/revoke returns 404 when session is missing', async () => {
     const sessionId = crypto.randomUUID();
-    mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 });
+    mockRevokeSession.mockResolvedValueOnce(false);
 
     const res = await request(app)
       .post('/auth/session/revoke')

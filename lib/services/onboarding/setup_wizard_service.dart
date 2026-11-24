@@ -137,6 +137,9 @@ enum _HermesStepKind {
 
 /// Service managing the setup wizard flow
 class SetupWizardService extends ChangeNotifier {
+  /// The wizard records setup completion under this id (see [completeSetup]).
+  static const String _localUserId = 'local_user';
+
   final ProviderDiscoveryService _discovery;
   final SetupStatusService _setupStatus;
   final ProviderConfigurationManager _configManager;
@@ -244,7 +247,7 @@ class SetupWizardService extends ChangeNotifier {
         return true;
       }
 
-      const userId = 'local_user';
+      const userId = _localUserId;
       final setupComplete = await _setupStatus.hasCompletedSetup(userId);
       if (setupComplete) {
         debugPrint('[SetupWizard] Setup already completed for $userId');
@@ -832,7 +835,7 @@ class SetupWizardService extends ChangeNotifier {
 
       // Mark setup as complete
       // Hardcoded local_user as auth service is not currently integrated in wizard
-      final userId = 'local_user';
+      const userId = _localUserId;
       await _setupStatus.markSetupComplete(userId);
 
       // Mark setup as completed in this session
@@ -898,6 +901,23 @@ class SetupWizardService extends ChangeNotifier {
   void reset() {
     _state = const WizardState(selectedMethod: ConnectionMethod.hermes);
     notifyListeners();
+  }
+
+  /// Run the wizard again from its first step (issue #853).
+  ///
+  /// Clears the "set up later" flag, the stored setup-complete record for
+  /// the local user, this session's completion flag and the step state.
+  /// Returns whether [shouldShowWizard] now reports the wizard as due, so
+  /// callers only navigate to it when the reset really took effect.
+  Future<bool> restart() async {
+    _testTimeoutTimer?.cancel();
+    _setupCompleted = false;
+    _hermesAgentApiConnected = false;
+    await _settings?.setSetupWizardDeferred(false);
+    await _setupStatus.resetSetupStatus(_localUserId);
+    _state = const WizardState(selectedMethod: ConnectionMethod.hermes);
+    notifyListeners();
+    return shouldShowWizard();
   }
 
   int _getTotalSteps() {
