@@ -29,6 +29,7 @@ services:
       - DB_PATH=/data/pistisai.db
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - OPENCLAW_WEBHOOK_SECRET=${OPENCLAW_WEBHOOK_SECRET}
     volumes:
       - api-data:/data
       - /etc/pistisai:/etc/pistisai:ro
@@ -80,6 +81,7 @@ services:
       - SENTRY_ENVIRONMENT=production
       - OTLP_ENDPOINT=http://jaeger:4318
       - JWT_SECRET=${JWT_SECRET}
+      - PROXY_STATS_TOKEN=${PROXY_STATS_TOKEN}
       - WS_HEARTBEAT_INTERVAL=30000
     networks:
       - backend

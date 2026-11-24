@@ -82,6 +82,7 @@ services:
       - CF_ACCESS_TEAM_DOMAIN=${CF_ACCESS_TEAM_DOMAIN}
       - CF_ACCESS_AUD=${CF_ACCESS_AUD}
       - PORT=8080
+      - OPENCLAW_WEBHOOK_SECRET=${OPENCLAW_WEBHOOK_SECRET}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket for proxy management
     networks:

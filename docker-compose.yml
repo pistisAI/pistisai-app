@@ -131,6 +131,7 @@ services:
       - PGDATABASE=pistisai
       - PGUSER=postgres
       - PGPASSWORD=postgres
+      - OPENCLAW_WEBHOOK_SECRET=${OPENCLAW_WEBHOOK_SECRET}
     restart: unless-stopped
     depends_on:
       database:
