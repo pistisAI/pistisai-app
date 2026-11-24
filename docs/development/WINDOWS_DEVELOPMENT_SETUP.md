@@ -1,5 +1,7 @@
 # Pistisai Windows Development Environment Setup
 
+> **Verified against code (2026-11-24):** the repository's default branch is `main` (`.github/workflows/` triggers on `branches: [main]`), the lowercase directory is `docs/development/` (there is no `docs/DEVELOPMENT/`), Node is pinned to `26` by `.nvmrc` (service engines `>=26 <28`), and Flutter is pinned to `3.47.9` by `environment.flutter` in `pubspec.yaml:10`.
+
 ## 🚀 Quick Start
 
 For a fresh Windows installation, run this automated setup script:
@@ -63,7 +65,7 @@ choco install git -y
 # Install Flutter SDK
 choco install flutter -y
 
-# Install Node.js (LTS version)
+# Install Node.js (CI pins 26 via .nvmrc; verify with node --version)
 choco install nodejs -y
 
 # Install Docker Desktop (optional)
@@ -224,7 +226,7 @@ After installation, ensure these are in your PATH:
 
 ```powershell
 # Get latest changes
-git pull origin master
+git pull origin main
 
 # Update Flutter dependencies
 flutter pub get
@@ -248,8 +250,8 @@ flutter build windows --debug
 # Increment version (after deployment)
 .\scripts\powershell\version_manager.ps1 increment patch -SkipDependencyCheck
 
-# Set specific version
-.\scripts\powershell\version_manager.ps1 set 4.1.0 -SkipDependencyCheck
+# Set specific version (current release: 1.5.60+182 in assets/version.json)
+.\scripts\powershell\version_manager.ps1 set 1.5.60 -SkipDependencyCheck
 ```
 
 ### Testing Framework
@@ -273,8 +275,8 @@ After setup completion:
 1. **Configure SSH Keys** for GitHub access
 2. **Test the complete workflow** with a small change
 3. **Familiarize yourself** with the project structure
-4. **Review documentation** in `docs/DEVELOPMENT/`
-5. **Join the development workflow** described in `docs/DEVELOPMENT_WORKFLOW.md`
+4. **Review documentation** in `docs/development/`
+5. **Join the development workflow** described in the archived [Development Workflow](../archive/historical-reports/development/DEVELOPMENT_WORKFLOW.md)
 
 ## 📖 Additional Resources
 

@@ -4,6 +4,8 @@
 
 This document defines the comprehensive git workflow for Pistisai development on Windows, addressing SSH authentication issues by using Git Bash for push operations while maintaining PowerShell for other development tasks.
 
+> **Verified against code:** the repository's default branch is `main` (see `.github/workflows/` triggers on `branches: [main]`). All push examples below use `main`, not the retired `master`.
+
 ## Comprehensive Commit and Push Workflow
 
 When performing git operations in the Pistisai repository, always follow this workflow:
@@ -59,7 +61,7 @@ git commit -m "Comprehensive commit message describing all changes
 **Use Git Bash for push operations to resolve SSH authentication issues:**
 
 ```powershell
-bash -c "git push origin master"
+bash -c "git push origin main"
 ```
 
 **Alternative branches:**
@@ -71,7 +73,7 @@ bash -c "git push origin <branch-name>"
 **Force push (when necessary):**
 
 ```powershell
-bash -c "git push origin master --force-with-lease"
+bash -c "git push origin main --force-with-lease"
 ```
 
 ### 6. Verify Push Success
@@ -124,7 +126,7 @@ git commit -m "Implement feature X with documentation updates
 - Version files synchronized by scripts"
 
 # 5. Push using native git command
-git push origin master
+git push origin main
 
 # 6. Verify success
 git status
@@ -152,7 +154,7 @@ git commit -m "Increment version after deployment
 - Automated version synchronization across all files"
 
 # Push using Git Bash
-bash -c "git push origin master"
+bash -c "git push origin main"
 ```
 
 ### Deployment Workflow Integration
@@ -163,7 +165,7 @@ During deployment processes:
 # After deployment completion and verification
 git add .
 git commit -m "Complete deployment with all changes"
-bash -c "git push origin master"
+bash -c "git push origin main"
 ```
 
 ## Troubleshooting
@@ -196,7 +198,7 @@ If PowerShell continues to have issues, open Git Bash directly:
 
 1. Right-click in repository folder
 2. Select "Git Bash Here"
-3. Use standard git commands: `git push origin master`
+3. Use standard git commands: `git push origin main`
 
 ## Best Practices
 
@@ -231,6 +233,6 @@ Continue using PowerShell for:
 
 Use native git commands for all operations:
 
-- Push operations: `git push origin master`
+- Push operations: `git push origin main`
 - SSH testing: `ssh -T git@github.com`
 - All git operations work natively in PowerShell

@@ -10,13 +10,13 @@ This file contains concise, project-relevant summaries for commonly used librari
 
 - **`rxdart`**: Reactive stream utilities that extend Dart Streams with Subjects, transformers, and useful operators. Use `BehaviorSubject` for current-value streams, `PublishSubject` for transient events. Useful in `StreamingMessage` patterns; remember to close subjects to avoid leaks.
 
-- **`langchain` (Python)**: Framework for building LLM-based chains and agents. Key concepts: `Chains`, `Agents`, `Tools`, `Memory` stores (InMemory, Redis, Postgres), and streaming. When using Ollama as an optional support model provider, prefer the `langchain_ollama` connector for compatibility and streaming. Use checkpointers and memory stores for long-running chains.
+- **`langchain` (Python)** *(not a dependency of this repo — no `langchain*` entry in root `pubspec.yaml` or any `package.json`; listed for reference only)*: Framework for building LLM-based chains and agents. Key concepts: `Chains`, `Agents`, `Tools`, `Memory` stores (InMemory, Redis, Postgres), and streaming. When using Ollama as an optional support model provider, prefer the `langchain_ollama` connector for compatibility and streaming. Use checkpointers and memory stores for long-running chains.
 
-- **`langchain_ollama`**: Connector enabling LangChain to talk to Ollama local models; supports streaming outputs. Pay attention to model name compatibility and Ollama server endpoints; handle timeouts and local server availability.
+- **`langchain_ollama`** *(not a declared dependency in this repo; reference only)*: Connector enabling LangChain to talk to Ollama local models; supports streaming outputs. Pay attention to model name compatibility and Ollama server endpoints; handle timeouts and local server availability.
 
 - **`sqflite_common_ffi`**: SQLite support for desktop and tests. Initialize with `sqfliteFfiInit()` and use `databaseFactoryFfi` as the factory. Packaging notes: ensure the target platform has SQLite available (libsqlite3, sqlite3.dll), and be mindful when running in isolates or CI containers.
 
-- **`flutter_secure_storage_x`**: Cross-platform secure key-value store. Use for storing tokens and secrets. Platform caveats: on web it requires HTTPS (localhost allowed in dev), on Linux it may depend on libsecret, on macOS uses Keychain; check platform options for keychain/service names. For large secrets or cross-process access, confirm platform-specific limitations.
+- **`flutter_secure_storage`**: Cross-platform secure key-value store (declared in root `pubspec.yaml:59` as `flutter_secure_storage: ^11.0.0` — there is no `flutter_secure_storage_x` package in this repo). Use for storing tokens and secrets. Platform caveats: on web it requires HTTPS (localhost allowed in dev), on Linux it may depend on libsecret, on macOS uses Keychain; check platform options for keychain/service names. For large secrets or cross-process access, confirm platform-specific limitations.
 
 - **`dio`**: Primary HTTP client in this project (preferred over legacy `http`). Features: interceptors, form-data, request cancellation, timeouts, advanced configuration. Use a shared configured `Dio` instance (inject via `get_it`) and centralize interceptors (auth, logging, retry). For streaming downloads/uploads use `onReceiveProgress`/`onSendProgress` and `ResponseType.stream`.
 

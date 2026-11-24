@@ -103,7 +103,7 @@ chmod +x Pistisai-*.AppImage
 ./Pistisai-*.AppImage
 ```
 
-**Note**: Debian (.deb) packages have been discontinued in favor of AppImage for better cross-distribution compatibility.
+**Note**: Debian (.deb) packages are still built by `scripts/packaging/build_deb.sh` (and the Linux desktop build in `.github/workflows/build-desktop.yml`). AppImage is built by `scripts/packaging/build_appimage.sh`; both live in `scripts/packaging/`.
 
 #### **3. Manual Flutter Build**
 
