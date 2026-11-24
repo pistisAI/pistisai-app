@@ -132,7 +132,12 @@ return;
       logger.error('[CloudConnectorRoutes] Device registration failed', {
         error: error.message,
       });
-      const status = error.code === 'VALIDATION_ERROR' ? 400 : 500;
+      const status =
+        error.code === 'VALIDATION_ERROR'
+          ? 400
+          : error.code === 'DEVICE_ID_CONFLICT'
+            ? 409
+            : 500;
       res.status(status).json({
         error: 'Device registration failed',
         code: error.code || 'REGISTRATION_FAILED',

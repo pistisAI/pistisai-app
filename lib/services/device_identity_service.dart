@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,7 +12,9 @@ import 'package:crypto/crypto.dart';
 /// The key pair is stored as a seed (32 bytes) for deterministic reconstruction.
 class DeviceIdentityService {
   static DeviceIdentityService? _instance;
-  static const _storageKey = 'device_identity_v2';
+  // v3 rotates away from identities seeded from the clock in v2. Those seeds
+  // were predictable, so old key material must not be reused.
+  static const _storageKey = 'device_identity_v3';
 
   final FlutterSecureStorage _storage;
   final Ed25519 _algorithm = Ed25519();
@@ -88,19 +91,14 @@ class DeviceIdentityService {
     }
   }
 
-  /// Generate a secure random seed
+  /// Generate a cryptographically secure 32-byte seed.
+  ///
+  /// The previous implementation derived all 32 bytes from the wall clock,
+  /// which yields only a few thousand distinct seeds per second and exposes
+  /// the ED25519 key pair. Use the OS CSPRNG instead.
   List<int> _generateSecureSeed() {
-    // Use a combination of timestamp and random values
-    final timestamp = DateTime.now().microsecondsSinceEpoch;
-    final seed = <int>[];
-    for (int i = 0; i < 32; i++) {
-      seed.add((timestamp >> (i % 8)) & 0xFF);
-    }
-    // Add more entropy
-    for (int i = 0; i < 32; i++) {
-      seed[i] = (seed[i] + DateTime.now().microsecond + i * 7) % 256;
-    }
-    return seed;
+    final random = Random.secure();
+    return List<int>.generate(32, (_) => random.nextInt(256));
   }
 
   /// Get the device ID (SHA256 of public key)

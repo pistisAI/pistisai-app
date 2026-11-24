@@ -61,13 +61,16 @@ export class CloudConnectorService {
         { code: 'VALIDATION_ERROR' },
       );
     }
+    // A device_id is globally unique. Re-registering must never transfer the
+    // row to a different user: the ON CONFLICT update is gated on the existing
+    // owner matching the caller, so an attacker who learns a victim's device
+    // id cannot steal that device.
     const query = `
       INSERT INTO cloud_devices (
         user_id, device_id, device_name, platform, app_version,
         runtime_location, capabilities, status
       ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'online')
       ON CONFLICT (device_id) DO UPDATE SET
-        user_id = EXCLUDED.user_id,
         device_name = EXCLUDED.device_name,
         platform = EXCLUDED.platform,
         app_version = EXCLUDED.app_version,
@@ -75,6 +78,7 @@ export class CloudConnectorService {
         capabilities = EXCLUDED.capabilities,
         status = 'online',
         updated_at = NOW()
+      WHERE cloud_devices.user_id = EXCLUDED.user_id
       RETURNING *`;
     const result = await this.pool.query(query, [
       userId,
@@ -85,6 +89,12 @@ export class CloudConnectorService {
       device.runtimeLocation || 'local',
       JSON.stringify(device.capabilities || {}),
     ]);
+    if (result.rows.length === 0) {
+      throw Object.assign(
+        new Error('Device ID is already registered to another user'),
+        { code: 'DEVICE_ID_CONFLICT' },
+      );
+    }
     await this._upsertPresence(result.rows[0].id, true);
     return result.rows[0];
   }

@@ -172,8 +172,11 @@ class SessionStorageService {
   /// Validate a session token
   Future<SessionModel?> validateSession(String token) async {
     try {
-      final response = await _dio.get(
-        '/auth/sessions/validate/$token',
+      // Keep the session token in the request body, not the URL, so it is
+      // not recorded by request/access logs.
+      final response = await _dio.post(
+        '/auth/sessions/validate',
+        data: {'sessionToken': token},
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
@@ -264,8 +267,9 @@ class SessionStorageService {
     await _clearStoredSessionToken();
 
     try {
-      final response = await _dio.delete(
-        '/auth/sessions/$token',
+      final response = await _dio.post(
+        '/auth/sessions/invalidate',
+        data: {'sessionToken': token},
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
 
