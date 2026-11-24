@@ -32,6 +32,12 @@ class HermesStreamingService extends StreamingService {
   /// HTTP client — kept alive for connection pooling.
   http.Client? _client;
 
+  /// How long the shared transcript may be unreadable before the turn fails.
+  ///
+  /// Bounds the "Thinking…" placeholder when every poll returns null (hub
+  /// unreachable / read error), instead of waiting out the full reply window.
+  final Duration _transcriptFetchTimeout;
+
   /// Cached connection state.
   StreamingConnection _connection = StreamingConnection.disconnected();
 
@@ -67,9 +73,11 @@ class HermesStreamingService extends StreamingService {
     String? baseUrl,
     String? apiKey,
     http.Client? client,
+    Duration transcriptFetchTimeout = const Duration(seconds: 30),
   })  : _baseUrl = baseUrl ?? 'http://127.0.0.1:8642',
         _apiKey = apiKey,
-        _client = client;
+        _client = client,
+        _transcriptFetchTimeout = transcriptFetchTimeout;
 
   String get baseUrl => _baseUrl;
 
@@ -306,13 +314,37 @@ class HermesStreamingService extends StreamingService {
     const pollInterval = Duration(milliseconds: 750);
     const maxWait = Duration(minutes: 10);
     final deadline = DateTime.now().add(maxWait);
+    var lastReadableFetch = DateTime.now();
     String lastEmitted = '';
     bool sawReply = false;
 
     while (DateTime.now().isBefore(deadline)) {
       await Future<void>.delayed(pollInterval);
       final harness = await fetchSessionMessages(conversationId);
-      if (harness == null) continue;
+      if (harness == null) {
+        // A null means the transcript could not be read at all. A 404 (no
+        // session yet) is an empty list and is a legitimate "still waiting"
+        // state — only real read failures count toward the fail-fast budget.
+        if (DateTime.now().difference(lastReadableFetch) >=
+            _transcriptFetchTimeout) {
+          appLogger.error(
+            '[Hermes] Transcript unreadable for '
+            '${_transcriptFetchTimeout.inSeconds}s; failing the turn',
+          );
+          final errorMsg = StreamingMessage.error(
+            id: messageId,
+            conversationId: conversationId,
+            error: '${Brand.current.productName} could not read the agent '
+                'transcript. Check the hub connection and try again.',
+            sequence: sequence++,
+          );
+          _messageController.add(errorMsg);
+          yield errorMsg;
+          return;
+        }
+        continue;
+      }
+      lastReadableFetch = DateTime.now();
 
       Message? newest;
       for (final message in harness.reversed) {

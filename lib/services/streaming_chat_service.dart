@@ -33,6 +33,13 @@ String userFacingChatError(Object error, {required bool isConnected}) {
   return 'The agent could not complete that request. Check Settings and try again.';
 }
 
+/// User-facing text for a run that completed without any assistant content.
+///
+/// Separate from [userFacingChatError] because an empty reply is a distinct
+/// outcome: the placeholder is removed, so the user must still get a row.
+String userFacingEmptyReply() =>
+    'The agent finished without a reply. Check the runtime and try again.';
+
 /// Enhanced chat service with real-time streaming support
 ///
 /// Provides progressive message streaming, real-time UI updates,
@@ -568,8 +575,16 @@ class StreamingChatService extends ChangeNotifier {
       // Auto-rename conversation if it's the first message
       _autoRenameConversation();
     } else {
+      // The placeholder is removed above, so leaving this branch silent makes
+      // the user's last message appear to vanish. Surface the empty reply.
       appLogger
           .warning('[StreamingChat] Streaming completed with empty content');
+      final errorMessage = Message.assistant(
+        content: userFacingEmptyReply(),
+        model: _selectedModel ?? 'default',
+        status: MessageStatus.error,
+      );
+      _addMessageToCurrentConversation(errorMessage);
     }
 
     // Clear streaming content and agent state
