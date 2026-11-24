@@ -101,7 +101,7 @@ Deployed on AWS EKS (when actually using Azure AKS)
 
 ### Authentication References
 
-- Specify current provider (Auth0)
+- Specify current provider (Cloudflare Access — `lib/auth/providers/cloudflare_access_auth_provider.dart`; the former Auth0 bridge is gone)
 - Indicate provider-agnostic design
 - Document alternative authentication options
 
@@ -115,8 +115,8 @@ Deployed on AWS EKS (when actually using Azure AKS)
 
 ```markdown
 # Good
-- Flutter 3.5+ required
-- Node.js 22+ recommended
+- Flutter 3.47.9 required (pinned by `environment.flutter` in `pubspec.yaml:10`)
+- Node.js 26 required (service engines `>=26 <28`, `.nvmrc`)
 
 # Avoid
 - Latest Flutter version

@@ -6,7 +6,7 @@
 
 - npm account at https://www.npmjs.com
 - npm CLI installed and authenticated
-- Node.js 18.0.0 or higher
+- Node.js `>=26 <28` (`services/sdk/package.json:54-56`; `.nvmrc` pins `26`)
 
 ### Authentication
 
@@ -116,7 +116,9 @@ git push origin v2.0.1
 
 ### GitHub Actions
 
-Add a publish-SDK workflow (not present in this repo):
+> **Verified against code (2026-11-24):** the publish-SDK workflow does **not** exist in `.github/workflows/`. The workflow below is a proposed/planned publishing pipeline, not a live one; publishing is currently a manual `npm publish` from `services/sdk` after `npm run build` (see the Build section above).
+
+Create the planned publish-SDK workflow (not present in this repo):
 
 ```yaml
 name: Publish SDK to npm
@@ -133,7 +135,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '26'
           registry-url: 'https://registry.npmjs.org'
       - run: cd services/sdk && npm install
       - run: cd services/sdk && npm run build

@@ -42,9 +42,9 @@ This guide helps you diagnose and fix common issues with Pistisai builds using G
    - Go to Actions → Failed workflow → "Re-run all jobs"
 
 2. **Check Flutter version compatibility**:
-   - Verify the Flutter pin in `pubspec.yaml` (used by `.github/workflows/build-desktop.yml` via `flutter-version-file`)
-   - Current pin: `3.47.9` (`pubspec.yaml`)
-   - Update if needed to latest stable version
+   - Flutter is pinned by `environment.flutter` in root `pubspec.yaml` (`3.47.9`, `pubspec.yaml:10`); CI reads it via `flutter-version-file: pubspec.yaml` in `.github/workflows/build-desktop.yml` and `.github/workflows/build-mobile.yml`. There is no `FLUTTER_VERSION` in a `build-release.yml` (that workflow does not exist).
+   - Current version: `3.47.9`
+   - Update if needed to latest stable version in `pubspec.yaml`, then rebuild.
 
 3. **Clear GitHub Actions cache**:
 
@@ -347,15 +347,15 @@ This guide helps you diagnose and fix common issues with Pistisai builds using G
 
 ```bash
 # Trigger workflow manually
-gh workflow run build-release.yml
+gh workflow run build-desktop.yml
 
 # Trigger with specific inputs
-gh workflow run build-release.yml \
+gh workflow run build-desktop.yml \
   --ref main \
-  -f build_type=release
+  -f platforms=linux,windows,macos
 
 # Check workflow status
-gh run list --workflow=build-release.yml
+gh run list --workflow=build-desktop.yml
 
 # View workflow logs
 gh run view <run-id> --log
@@ -385,13 +385,13 @@ git push origin v4.5.0
 
 ```bash
 # List running workflows
-gh run list --workflow=build-release.yml --status in_progress
+gh run list --workflow=build-desktop.yml --status in_progress
 
 # Cancel specific run
 gh run cancel <run-id>
 
 # Cancel all running workflows
-gh run list --workflow=build-release.yml --status in_progress \
+gh run list --workflow=build-desktop.yml --status in_progress \
   --json databaseId --jq '.[].databaseId' | xargs -I {} gh run cancel {}
 ```
 
@@ -490,7 +490,7 @@ Build times significantly longer than expected may indicate:
 1. **Verify the mobile workflow ran**:
    - Android is `.github/workflows/build-mobile.yml`, job `build_android`
    - It starts after Web Deploy succeeds, or from `workflow_dispatch`
-   - There is no `build-release.yml`
+   - The legacy combined release workflow was retired; use `build-desktop.yml` / `build-mobile.yml`
    - See [Android Build Guide](ANDROID_BUILD_GUIDE.md)
 
 2. **Check GitHub Secrets**:
@@ -695,7 +695,7 @@ Build times significantly longer than expected may indicate:
    - Should see: `app-arm64-v8a-release.apk`, `app-armeabi-v7a-release.apk`, `app-x86_64-release.apk`
 
 3. **Check Flutter version**:
-   - Ensure Flutter 3.24.0+ (supports --split-per-abi)
+   - Use the repo pin, Flutter 3.47.9 (`environment.flutter` in root `pubspec.yaml:10`)
    - Update Flutter if needed
 
 ### Android Build Resources
@@ -761,17 +761,17 @@ When reporting build issues, include:
 - **GitHub Actions Documentation**: https://docs.github.com/en/actions
 - **Flutter Build Documentation**: https://docs.flutter.dev/deployment/windows
 - **Inno Setup Documentation**: https://jrsoftware.org/ishelp/
-- **Workflow File**: `.github/workflows/build-desktop.yml`
+- **Workflow File**: `.github/workflows/build-desktop.yml` (desktop) / `.github/workflows/build-mobile.yml` (Android); no `build-release.yml` exists.
 - **CI/CD Setup Guide**: `docs/CICD_SETUP_GUIDE.md`
 
 ### Quick Reference Commands
 
 ```bash
 # Check workflow status
-gh workflow view build-release.yml
+gh workflow view build-desktop.yml
 
 # List recent runs
-gh run list --workflow=build-release.yml --limit 5
+gh run list --workflow=build-desktop.yml --limit 5
 
 # View specific run
 gh run view <run-id>
@@ -792,4 +792,4 @@ gh cache delete <cache-key>
 ---
 
 **Last Updated**: 2024-11-15  
-**Workflow Version**: build-release.yml (GitHub-hosted runners)
+**Workflow Version**: build-desktop.yml / build-mobile.yml (GitHub-hosted runners)

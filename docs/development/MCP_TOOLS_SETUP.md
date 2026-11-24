@@ -4,7 +4,9 @@ This document describes the Model Context Protocol (MCP) tools configured for ef
 
 ## Overview
 
-MCP tools provide specialized capabilities for interacting with external services, automating tasks, and enhancing development workflows. All MCP servers are configured in `.claude/settings.json` (Claude Code) and `.vscode/settings.json` (VS Code).
+> **Verified against code (2026-11-24):** there are no `.claude/settings.json` or `.vscode/settings.json` files in this repo. The committed MCP configurations are `opencode.json` (sentry, context7, playwright, postgres), `.crush-mcp-config.json` (Crush CLI), and `.cursor/mcp.json` (GitHub). See `AGENTS.md` ("MCP (OpenCode)") for the current setup.
+
+MCP tools provide specialized capabilities for interacting with external services, automating tasks, and enhancing development workflows.
 
 ## Configured MCP Servers
 
@@ -328,7 +330,7 @@ If GitHub MCP server fails to authenticate:
 
 ## Best Practices
 
-1. **Documentation-First Methodology**: Always review project documentation (`docs/`) and steering rules (`.kiro/steering/`, `.kilocode/rules-*/`) before tool execution.
+1. **Documentation-First Methodology**: Always review project documentation (`docs/`) and the standing rules in `AGENTS.md` before tool execution. (Historic references to `.kiro/steering/` and `.kilocode/rules-*/` point to directories that no longer exist in this repo.)
 
 2. **Sequential Thinking Primary**: Use the `sequentialthinking` tool as the foundation for all complex tasks to ensure systematic reasoning.
 

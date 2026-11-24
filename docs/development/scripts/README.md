@@ -1,9 +1,11 @@
 # Pistisai Scripts Documentation
 
-**Version**: 3.6.9  
-**Last Updated**: 2025-06-24
+**Version**: 1.5.60 (per `assets/version.json`; build `182`)  
+**Last Updated**: 2026-11-24 (stale-fact correction)
 
-This directory contains all automation scripts for Pistisai development, deployment, and maintenance.
+This directory contains automation scripts for Pistisai development, deployment, and maintenance.
+
+> **Verified against code (2026-11-24):** the script lists below are partly historical. There is **no** `scripts/deploy/` or `scripts/archive/` directory, and no `build_time_version_injector.sh`, `build_unified_package.sh`, `flutter_build_with_timestamp.sh`, or `Create-UnifiedPackages.ps1`. Scripts that **do** exist include `scripts/version_manager.sh`, `scripts/packaging/{build_all_packages.sh,build_deb.sh,build_appimage.sh,build_windows_installer.ps1,build_windows_portable.ps1}`, `scripts/docker/validate_dev_environment.sh`, and the `scripts/powershell/` scripts listed in `docs/development/scripts/powershell/README.md`. Image builds and publishes run only via `.github/workflows/deploy-web.yml` and `deploy-backend.yml` (the host still pulls the new image manually). Treat any entry below that is not in this list as historical.
 
 ## 📁 Directory Structure
 
@@ -111,21 +113,18 @@ This directory contains all automation scripts for Pistisai development, deploym
 # Validate Docker development environment
 ./scripts/docker/validate_dev_environment.sh
 
-# Build with timestamp injection
-./scripts/flutter_build_with_timestamp.sh web
+# Build the web release (no repo-local timestamp-injection script exists)
+flutter build web --release --no-web-resources-cdn --dart-define=BRAND=pistisai
 ```
 
 ### Deployment
 
+> **Verified against code:** image builds and publishes run only through `.github/workflows/deploy-web.yml` and `deploy-backend.yml`; the `scripts/deploy/` commands that were here do not exist.
+
 ```bash
-# Complete deployment workflow
-./scripts/deploy/complete_deployment.sh
-
-# Verify deployment
-./scripts/deploy/verify_deployment.sh
-
-# Lightweight VPS deployment
-./scripts/deploy/update_and_deploy.sh
+# Inspect the deploy workflows
+gh run list --workflow=deploy-web.yml --limit 5
+gh run list --workflow=deploy-backend.yml --limit 5
 ```
 
 ### Documentation Validation
@@ -172,8 +171,8 @@ node scripts/validate-organization.js
 # Build AppImage packages
 ./scripts/packaging/build_appimage.sh
 
-# Build unified packages (PowerShell)
-./scripts/powershell/Create-UnifiedPackages.ps1
+# Build all packages (replaces the retired Create-UnifiedPackages.ps1)
+./scripts/packaging/build_all_packages.sh
 ```
 
 **Note**: AUR package building scripts temporarily removed. See [AUR Status](../../archive/historical-reports/deployment/AUR_STATUS.md) for details.

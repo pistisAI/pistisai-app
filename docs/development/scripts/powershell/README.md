@@ -2,6 +2,8 @@
 
 This directory contains PowerShell scripts designed to work natively on Windows with limited WSL integration only for Linux application builds.
 
+> **Verified against code (2026-11-24):** the scripts actually present in `scripts/powershell/` are `BuildEnvironmentUtilities.ps1`, `Build-GitHubReleaseAssets.ps1`, `build_time_version_injector.ps1`, `Deploy-Pistisai.ps1`, `Run-DeploymentIntegrationTests.ps1`, `Setup-WindowsDevelopmentEnvironment.ps1`, `Setup-WindowsSelfHostedRunner.ps1`, `Setup-WSLLinuxRunner.ps1`, `Setup-WSLRunnerAutoStart.ps1`, `Upload-GitHubReleaseAssets.ps1` and `version_manager.ps1`. Several scripts listed below (e.g. `Create-UnifiedPackages.ps1`, `build_unified_package.ps1`, `create_unified_aur_package.ps1`, `Build-DebianPackage.ps1`, `Test-*.ps1`) are **not** in the repo and should be treated as historical/aspirational. Debian packages are built by `scripts/packaging/build_deb.sh`.
+
 ## Overview
 
 The PowerShell scripts provide Windows-native functionality while leveraging WSL only for:
@@ -14,7 +16,7 @@ WSL is **NOT used** for:
 - Version management
 - Local file operations
 - Git operations
-- **VPS deployment operations** (use PowerShell SSH instead)
+- **Deployments** (image builds and publishes run only via GitHub Actions: `deploy-web.yml` / `deploy-backend.yml`; no manual PowerShell SSH deploy)
 
 ## Scripts
 
@@ -110,15 +112,15 @@ WSL is **NOT used** for:
 
 ### Package Creation
 
+> **Verified against code:** `Create-UnifiedPackages.ps1` does not exist. Use `scripts/packaging/build_all_packages.sh`, `build_deb.sh` and `build_appimage.sh`, or the desktop build workflow `.github/workflows/build-desktop.yml`.
+
 ```powershell
-# Create comprehensive packages (AUR, AppImage, Flatpak, Windows, Portable ZIP)
-.\Create-UnifiedPackages.ps1
+# Current packaging entry point (Linux, from scripts/packaging/)
+.\scripts\packaging\build_all_packages.sh
 
-# Create specific package types
-.\Create-UnifiedPackages.ps1 -PackageTypes AUR,AppImage
-
-# Note: Debian package support has been deprecated in favor of
-# AUR, AppImage, Flatpak, and Snap packages
+# Windows packaging helpers that do exist:
+.\scripts\packaging\build_windows_installer.ps1
+.\scripts\packaging\build_windows_portable.ps1
 ```
 
 ### VPS Deployment
@@ -190,11 +192,8 @@ wsl --install -d Ubuntu-22.04
 sudo apt update
 sudo apt install -y dpkg-dev fakeroot build-essential curl git unzip xz-utils zip libglu1-mesa
 
-# Flutter will be automatically installed at /opt/flutter by the PowerShell scripts
-# Or install manually:
-# curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz -o flutter.tar.xz
-# sudo tar xf flutter.tar.xz -C /opt/
-# echo 'export PATH=$PATH:/opt/flutter/bin' >> ~/.bashrc
+# Flutter is pinned to 3.47.9 in the root pubspec.yaml (`environment.flutter`);
+# use `flutter-version-file: pubspec.yaml` in CI rather than a hardcoded tarball.
 ```
 
 ## Features

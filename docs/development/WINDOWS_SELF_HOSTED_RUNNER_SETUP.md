@@ -2,6 +2,8 @@
 
 This guide walks you through setting up a Windows machine as a self-hosted GitHub Actions runner to build the Windows app for Pistisai.
 
+> **Verified against code (2026-11-24):** `scripts/powershell/Setup-WindowsSelfHostedRunner.ps1` exists. Flutter is pinned to `3.47.9` by `environment.flutter` in root `pubspec.yaml:10`, but the setup script's `-FlutterVersion` parameter still defaults to `3.24.0` (`Setup-WindowsSelfHostedRunner.ps1:17`). Pass `-FlutterVersion 3.47.9` so the runner matches the repo pin.
+
 ## 📋 Overview
 
 A self-hosted runner allows you to run GitHub Actions workflows on your own Windows machine, which is useful for:
@@ -27,7 +29,7 @@ Run the automated setup script:
 
 ```powershell
 # Run PowerShell as Administrator (recommended)
-.\scripts\powershell\Setup-WindowsSelfHostedRunner.ps1
+.\scripts\powershell\Setup-WindowsSelfHostedRunner.ps1 -FlutterVersion 3.47.9
 ```
 
 The script will:
@@ -35,7 +37,7 @@ The script will:
 1. Install Chocolatey package manager
 2. Install Git for Windows
 3. Install Visual Studio Build Tools 2022 (C++ workload)
-4. Install Flutter SDK (version 3.24.0)
+4. Install Flutter SDK (defaults to 3.24.0 unless `-FlutterVersion` is passed; use `3.47.9` to match the repo pin)
 5. Download and configure GitHub Actions Runner
 6. Install runner as a Windows service
 7. Verify the setup
@@ -61,7 +63,7 @@ If you prefer to set up manually or the script fails, see the [Manual Setup](#ma
 cd D:\dev\Pistisai
 
 # Run as Administrator (recommended)
-.\scripts\powershell\Setup-WindowsSelfHostedRunner.ps1
+.\scripts\powershell\Setup-WindowsSelfHostedRunner.ps1 -FlutterVersion 3.47.9
 ```
 
 The script will prompt you for:
@@ -126,8 +128,8 @@ choco install visualstudio2022-workload-vctools -y
 ### 4. Install Flutter SDK
 
 ```powershell
-# Install via Chocolatey
-choco install flutter --version=3.24.0 -y
+# Install via Chocolatey (3.47.9 matches environment.flutter in pubspec.yaml)
+choco install flutter --version=3.47.9 -y
 refreshenv
 
 # Enable Windows desktop support
@@ -188,7 +190,7 @@ Remove-Item "actions-runner.zip" -Force
 
 The workflow will automatically use your self-hosted runner when it has the label `windows` and `self-hosted`. You can trigger a test build by:
 
-1. Creating a test tag: `git tag v4.1.1-test && git push origin v4.1.1-test`
+1. Creating a test tag: `git tag v1.5.60-test && git push origin v1.5.60-test`
 2. Checking the Actions tab in GitHub to see if your runner picks up the job
 
 ## 🔄 Managing the Runner
@@ -351,7 +353,7 @@ After setup, verify:
 - [ ] Chocolatey installed and working
 - [ ] Git installed and accessible
 - [ ] Visual Studio Build Tools 2022 installed
-- [ ] Flutter SDK 3.24.0 installed
+- [ ] Flutter SDK 3.47.9 installed (matching `pubspec.yaml`)
 - [ ] Flutter Windows desktop enabled
 - [ ] GitHub Actions Runner configured
 - [ ] Runner service running

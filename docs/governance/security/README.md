@@ -6,7 +6,6 @@ claim a certification, audit, or control that has not been verified here.
 
 ## Contents
 
-- [Script Security](README_SCRIPT_SECURITY.md) — guidelines for deployment scripts
 - [Permissions](permissions.json) — permission and access-control configuration
 
 Related documentation: operations and deployment guides, and the legal/privacy

@@ -27,7 +27,7 @@ Linux builds produce two package formats:
 
 ## Build Configuration
 
-The Linux build is configured in `.github/workflows/build-desktop.yml`; the equivalent build settings are:
+The Linux build is configured in `.github/workflows/build-desktop.yml` (there is no `build-release.yml` in this repo) with the following matrix entry:
 
 ```yaml
 - platform: linux

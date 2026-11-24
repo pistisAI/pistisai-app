@@ -1,31 +1,24 @@
 # Pistisai Deployment Scripts
 
-**⚠️ DEPRECATED DIRECTORY**: All VPS deployment scripts have been moved to `scripts/archive/`.
+> **Verified against code (2026-11-24):** there is no `scripts/archive/` directory, no root `k8s/` directory, and no `kubectl` usage in `.github/workflows/`. The Kubernetes/"archived VPS" description that used to be here was stale. See `docs/deployment/` for the current deployment guides.
 
-Pistisai now uses **Kubernetes** for production deployment. VPS deployment scripts are deprecated.
+## Current deployment path
 
-## Current Deployment Methods
+Image builds and publishes run **only through GitHub Actions**:
 
-### 🚀 Production Deployment (Recommended)
+- `.github/workflows/deploy-web.yml` — builds/publishes the web image to GHCR; a full-zone Cloudflare cache purge job follows the image push (`deploy-web.yml:106-131`). The host still pulls the image with `docker compose up -d` (see the "Known gap" comment at `deploy-web.yml:103-105`).
+- `.github/workflows/deploy-backend.yml` — builds/publishes the api-backend, streaming-proxy and postgres images to GHCR (`deploy-backend.yml:27-160`); it has no host-deploy or cache-purge job.
 
-- **Kubernetes Deployment**
-- Works with any Kubernetes cluster (managed or self-hosted)
-- Use: `kubectl apply -f k8s/`
+Kubernetes manifests, when used, live under `config/kubernetes/base/` and `services/*/k8s/`; there is no root `k8s/` to apply with `kubectl apply -f k8s/`.
 
-### 🧪 Development/Testing Deployment
+## Local / development
 
-- **Docker Compose**
-- Suitable for local development and testing
-- Use: `docker-compose up`
+Use the compose files in the repository root (`docker-compose.yml`, `docker-compose.multi.yml`) and `config/docker/`. Validate the local environment with `scripts/docker/validate_dev_environment.sh`.
 
-## Archived Scripts
+## Scripts that still exist
 
-All VPS deployment scripts have been moved to `scripts/archive/` with detailed migration guides:
+- `scripts/powershell/Deploy-Pistisai.ps1` — present (not archived).
+- `scripts/powershell/BuildEnvironmentUtilities.ps1` — present.
+- `scripts/version_manager.sh` — present; version bumps are also automated by `.github/workflows/auto-version-bump.yml` and `scripts/version_bump_kind.py`.
 
-- `Deploy-Pistisai.ps1` → Replaced by Kubernetes deployment
-- `BuildEnvironmentUtilities.ps1` → Replaced by GitHub Actions CI/CD
-- `sync_versions.sh` → Replaced by automated CI/CD versioning
-- `verify_deployment.sh` → Replaced by Kubernetes health checks
-- `version_manager.ps1` → Replaced by automated CI/CD versioning
-
-The archived scripts README referenced in older revisions is not present; this list is the migration record.
+Scripts such as `sync_versions.sh` and `verify_deployment.sh` are not present; their versioning/verification roles are handled by CI, not by shell scripts in this repo.
