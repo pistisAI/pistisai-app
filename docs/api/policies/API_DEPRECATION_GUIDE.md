@@ -6,37 +6,48 @@ Pistisai API implements a structured deprecation process to ensure smooth transi
 
 **Requirements: 12.5**
 
+## Current implementation (verified against code)
+
+- The discovery endpoints are live: `services/api-backend/server.js:333` registers `/deprecation`, implemented in `services/api-backend/routes/deprecation.js:22-142` (`GET /status`, `/deprecated`, `/sunset`, `/endpoint-info`, `/migration-guide/:guideId`).
+- The registry in `services/api-backend/services/deprecation-service.js:23-57` contains four deprecated `/v1/*` paths with `sunsetAt: '2027-01-01'`, not `2025-01-01`.
+- `daysUntilSunset` is calculated at request time (`deprecation-service.js:128-134`), so it is not a fixed number.
+- **There is no deprecation middleware in the request pipeline** (`services/api-backend/middleware/pipeline.js`). The `getDeprecationHeaders()` helper exists (`deprecation-service.js:225-242`) but is not wired into any request, and no middleware injects `_deprecation` into response bodies or returns `410 Gone` at sunset. The header/body/sunset-enforcement behaviour described below is the planned design, not current behaviour. See [API_VERSIONING_GUIDE.md](API_VERSIONING_GUIDE.md) for the versioning middleware that *is* in the pipeline.
+
 ## Deprecation Policy
 
 ### Timeline
 
 - **Deprecation**: Endpoint is marked as deprecated but continues to work
-- **Sunset**: Endpoint is removed and no longer available (returns 410 Gone)
+- **Sunset**: Endpoint is removed and no longer available (planned: 410 Gone — not yet enforced in code)
 - **Minimum Notice**: 12 months between deprecation and sunset
 
 ### Current Status
 
+Verified against `services/api-backend/services/deprecation-service.js:23-57`; the sunset is `2027-01-01` and the remaining-days value is computed on each request.
+
 | Version | Status | Deprecated | Sunset | Days Remaining |
 |---------|--------|-----------|--------|-----------------|
-| v1 | Deprecated | 2024-01-01 | 2025-01-01 | ~45 days |
+| v1 | Deprecated (registry) | 2024-01-01 | 2027-01-01 | computed at request time |
 | v2 | Current | N/A | N/A | N/A |
 
 ## Identifying Deprecated Endpoints
 
-### Deprecation Headers
+### Deprecation Headers (planned — not applied by the current pipeline)
 
-All responses from deprecated endpoints include these headers:
+> `getDeprecationHeaders()` builds the headers below (`services/api-backend/services/deprecation-service.js:225-242`), but no deprecation middleware is registered in `services/api-backend/middleware/pipeline.js`, so responses from `/v1/*` paths do **not** currently carry them. The separate versioning middleware does set `Deprecation`/`Sunset`/`Warning` for a `/v1/` path prefix (`middleware/api-versioning.js:76-87`) using its own `2025-01-01` date; see [API_VERSIONING_GUIDE.md](API_VERSIONING_GUIDE.md).
+
+The intended response headers:
 
 ```
 Deprecation: true
-Sunset: Wed, 01 Jan 2025 00:00:00 GMT
-Warning: 299 - "API endpoint /v1/users is deprecated and will be removed on 2025-01-01 (45 days). Use /v2/users instead."
+Sunset: Fri, 01 Jan 2027 00:00:00 GMT
+Warning: 299 - "API endpoint /v1/users is deprecated and will be removed on 2027-01-01 (days). Use /v2/users instead."
 Deprecation-Link: /v2/users
 ```
 
-### Response Body
+### Response Body (planned — no body injection in code)
 
-Deprecated endpoints include deprecation information in the response:
+> No middleware adds a `_deprecation` object to responses. The shape below is the planned design; today the `/api/deprecation/*` discovery endpoints are the source of this information.
 
 ```json
 {
@@ -46,9 +57,9 @@ Deprecated endpoints include deprecation information in the response:
   },
   "_deprecation": {
     "deprecated": true,
-    "message": "API endpoint /v1/users is deprecated and will be removed on 2025-01-01 (45 days). Use /v2/users instead.",
+    "message": "API endpoint /v1/users is deprecated and will be removed on 2027-01-01 (days, computed at request time). Use /v2/users instead.",
     "replacedBy": "/v2/users",
-    "sunsetAt": "2025-01-01",
+    "sunsetAt": "2027-01-01",
     "migrationGuide": {
       "title": "Migrating from API v1 to v2",
       "steps": [...]
@@ -58,6 +69,8 @@ Deprecated endpoints include deprecation information in the response:
 ```
 
 ## Deprecation Information Endpoints
+
+> These routes are live (`services/api-backend/server.js:333`, `routes/deprecation.js`). Numeric `daysUntilSunset` values in the examples below are illustrative: the service computes them on every request from the `2027-01-01` sunset date (`deprecation-service.js:128-134`). `totalDeprecated` is `4` for the four registered `/v1/*` paths.
 
 ### Get Deprecation Status
 
@@ -75,7 +88,7 @@ Response:
       "path": "/v1/users",
       "status": "deprecated",
       "deprecatedAt": "2024-01-01",
-      "sunsetAt": "2025-01-01",
+      "sunsetAt": "2027-01-01",
       "replacedBy": "/v2/users",
       "reason": "API v1 is deprecated. Use v2 for new integrations.",
       "daysUntilSunset": 45
@@ -102,7 +115,7 @@ Response:
       "path": "/v1/users",
       "status": "deprecated",
       "deprecatedAt": "2024-01-01",
-      "sunsetAt": "2025-01-01",
+      "sunsetAt": "2027-01-01",
       "replacedBy": "/v2/users",
       "reason": "API v1 is deprecated. Use v2 for new integrations.",
       "daysUntilSunset": 45
@@ -111,7 +124,7 @@ Response:
       "path": "/v1/tunnels",
       "status": "deprecated",
       "deprecatedAt": "2024-01-01",
-      "sunsetAt": "2025-01-01",
+      "sunsetAt": "2027-01-01",
       "replacedBy": "/v2/tunnels",
       "reason": "API v1 is deprecated. Use v2 for new integrations.",
       "daysUntilSunset": 45
@@ -134,7 +147,7 @@ Response:
   "path": "/v1/users",
   "status": "deprecated",
   "deprecatedAt": "2024-01-01",
-  "sunsetAt": "2025-01-01",
+  "sunsetAt": "2027-01-01",
   "replacedBy": "/v2/users",
   "reason": "API v1 is deprecated. Use v2 for new integrations.",
   "migrationGuide": {
@@ -195,7 +208,7 @@ Response:
   },
   "timeline": {
     "deprecatedAt": "2024-01-01",
-    "sunsetAt": "2025-01-01",
+    "sunsetAt": "2027-01-01",
     "daysUntilSunset": 45
   }
 }
@@ -302,15 +315,17 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
   https://api.example.com/v2/admin/users
 ```
 
-## Sunset Endpoints
+## Sunset Endpoints (planned)
 
-When an endpoint reaches its sunset date, it returns a 410 Gone response:
+> No sunset enforcement is implemented in the request pipeline. The response below is the planned contract; today the registry reports sunset state via `GET /api/deprecation/sunset` (`services/api-backend/routes/deprecation.js:55-71`).
+
+When an endpoint reaches its sunset date, it is intended to return a 410 Gone response:
 
 ```json
 {
   "error": {
     "code": "ENDPOINT_SUNSET",
-    "message": "This API endpoint has been removed as of 2025-01-01",
+    "message": "This API endpoint has been removed as of 2027-01-01",
     "statusCode": 410,
     "replacedBy": "/v2/users",
     "suggestion": "Please use /v2/users instead"
@@ -332,7 +347,7 @@ When an endpoint reaches its sunset date, it returns a 410 Gone response:
 
 ### Current Deprecations
 
-- **v1 API**: Deprecated 2024-01-01, Sunset 2025-01-01 (45 days remaining)
+- **v1 API**: Deprecated 2024-01-01, Sunset 2027-01-01 (per `services/api-backend/services/deprecation-service.js:23-57`)
 
 ### Future Deprecations
 
@@ -349,7 +364,7 @@ For questions about API deprecation or migration help:
 
 - **Email**: ops@example.com
 - **Documentation**: https://docs.example.com
-- **API Docs**: https://api.example.com/api/docs
+- **API Docs**: the Markdown guides in [`docs/api/`](../README.md) (no Swagger UI is mounted)
 - **GitHub Issues**: https://github.com/pistisAI/pistisai-app/issues
 
 ## Implementation Details
@@ -361,20 +376,20 @@ The deprecation service manages:
 - Deprecated endpoint registry
 - Migration guides
 - Deprecation status tracking
-- Sunset enforcement
+- Sunset date calculation (`calculateDaysUntilSunset`, `deprecation-service.js:128-134`) — not enforcement
 
-### Deprecation Middleware
+### Deprecation Middleware (planned — not in the pipeline)
 
-The deprecation middleware:
+The middleware described here does not exist in `services/api-backend/middleware/pipeline.js`. The equivalent helper functions are exported by `services/api-backend/services/deprecation-service.js` but are only used by the discovery routes. Planned behaviour:
 
-- Adds deprecation headers to responses
+- Adds deprecation headers to responses (`getDeprecationHeaders`, `deprecation-service.js:225-242`)
 - Logs deprecation warnings
 - Includes deprecation info in response body
-- Enforces sunset endpoints
+- Enforces sunset endpoints (no implementation found in code)
 
-### Deprecation Routes
+### Deprecation Routes (live)
 
-Deprecation routes provide:
+Deprecation routes are mounted by `services/api-backend/server.js:333` and provide:
 
 - `/api/deprecation/status` - Overall deprecation status
 - `/api/deprecation/deprecated` - List of deprecated endpoints
