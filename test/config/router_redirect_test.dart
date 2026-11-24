@@ -117,6 +117,29 @@ void main() {
       );
     });
 
+    test('signed-in desktop stays on the setup wizard while it is due', () {
+      // Issue #853: "Re-run setup wizard" navigates here for a signed-in
+      // desktop session; bouncing to /chat made the control a no-op.
+      expect(
+        resolveAppRedirect(_input(
+          location: '/setup',
+          isAuthenticated: true,
+          shouldShowDesktopWizard: true,
+        )),
+        isNull,
+      );
+    });
+
+    test('signed-in desktop leaves the setup wizard once it is done', () {
+      expect(
+        resolveAppRedirect(_input(
+          location: '/setup',
+          isAuthenticated: true,
+        )),
+        AppRoutePaths.chat,
+      );
+    });
+
     test('web app subdomain still sends unauthenticated shell to login', () {
       expect(
         resolveAppRedirect(_input(

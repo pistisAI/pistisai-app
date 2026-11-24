@@ -106,6 +106,11 @@ String? resolveAppRedirect(RouterRedirectInput input) {
     if (!input.isWeb && input.shouldShowDesktopWizard && !isSetup) {
       return AppRoutePaths.setup;
     }
+    // Stay on the wizard while it is due (first run or "Re-run setup
+    // wizard", issue #853); otherwise an authenticated session leaves it.
+    if (isSetup && !input.isWeb && input.shouldShowDesktopWizard) {
+      return null;
+    }
     if (isLoggingIn || isConnect || isSetup) {
       return AppRoutePaths.chat;
     }
