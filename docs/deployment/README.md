@@ -31,7 +31,6 @@ Kubernetes manifests live under `config/kubernetes/base/` (shared base) and `ser
 
 - [Provider Infrastructure Guide](PROVIDER_INFRASTRUCTURE_GUIDE.md)
 - [Cloudron Deployment](../../CloudronManifest.json)
-- [Cloudflare/Chisel Deployment](CHISEL_DEPLOYMENT.md)
 
 Provider-specific notes are runbooks, not universal architecture. Prefer [Deployment Overview](DEPLOYMENT_OVERVIEW.md) for the cross-provider model. Older tunnel/proxy runbooks are legacy or fallback material unless a deployment explicitly depends on them.
 
