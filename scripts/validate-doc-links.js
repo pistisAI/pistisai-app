@@ -9,7 +9,6 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const defaultTargets = [
   'README.md',
   'AGENTS.md',
-  'SPEC.md',
   'docs/README.md',
   'docs/DOCUMENTATION_INDEX.md',
   'docs/architecture/README.md',
