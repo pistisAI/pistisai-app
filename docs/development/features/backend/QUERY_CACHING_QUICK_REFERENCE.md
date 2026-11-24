@@ -8,33 +8,35 @@ Query caching mechanism for optimizing database performance by caching SELECT qu
 
 ## Key Components
 
-### 1. QueryCacheService (`database/query-cache.js`)
+> **Verified against code (2026-11-24):** these files exist under `services/api-backend/`, not at repo-relative `database/` / `routes/` paths — `services/api-backend/database/query-cache.js`, `services/api-backend/database/cached-query-wrapper.js`, `services/api-backend/routes/cache-metrics.js`. The router registers `/stats` (:42), `/clear` (:63), `/invalidate` (:84), `/reset-metrics` (:118) and `services/api-backend/server.js:332` mounts it at `/cache-metrics` (and `/api/cache-metrics`, via `registerRoutes` at :265-267). The live endpoints are `/api/cache-metrics/stats`, `/api/cache-metrics/clear`, etc., **not** `/cache/stats` (corrected below).
+
+### 1. QueryCacheService (`services/api-backend/database/query-cache.js`)
 
 - In-memory cache with TTL support
 - Automatic eviction when cache is full
 - Table-based invalidation tracking
 - Metrics collection (hits, misses, invalidations, evictions)
 
-### 2. Cached Query Wrapper (`database/cached-query-wrapper.js`)
+### 2. Cached Query Wrapper (`services/api-backend/database/cached-query-wrapper.js`)
 
 - Wraps database queries with caching
 - Automatically caches SELECT queries
 - Extracts table names for invalidation
 - Integrates with query performance tracking
 
-### 3. Cache Metrics Routes (`routes/cache-metrics.js`)
+### 3. Cache Metrics Routes (`services/api-backend/routes/cache-metrics.js`)
 
-- GET `/cache/stats` - Get cache statistics
-- POST `/cache/clear` - Clear all cache
-- POST `/cache/invalidate` - Invalidate by pattern or table
-- GET `/cache/reset-metrics` - Reset metrics
+- GET `/api/cache-metrics/stats` - Get cache statistics
+- POST `/api/cache-metrics/clear` - Clear all cache
+- POST `/api/cache-metrics/invalidate` - Invalidate by pattern or table
+- GET `/api/cache-metrics/reset-metrics` - Reset metrics
 
 ## Usage
 
 ### Basic Caching
 
 ```javascript
-import { executeCachedQuery } from './database/cached-query-wrapper.js';
+import { executeCachedQuery } from '../../services/api-backend/database/cached-query-wrapper.js';
 
 // Execute query with automatic caching
 const result = await executeCachedQuery(
@@ -48,7 +50,7 @@ const result = await executeCachedQuery(
 ### Wrapping Pool/Client
 
 ```javascript
-import { wrapPoolWithCache, wrapClientWithCache } from './database/cached-query-wrapper.js';
+import { wrapPoolWithCache, wrapClientWithCache } from '../../services/api-backend/database/cached-query-wrapper.js';
 
 // Wrap pool for automatic caching
 const wrappedPool = wrapPoolWithCache(pool);
@@ -60,7 +62,7 @@ const result = await wrappedPool.query('SELECT * FROM users', []);
 ### Cache Invalidation
 
 ```javascript
-import { invalidateCacheForTable, clearCache } from './database/cached-query-wrapper.js';
+import { invalidateCacheForTable, clearCache } from '../../services/api-backend/database/cached-query-wrapper.js';
 
 // Invalidate all queries for a table
 invalidateCacheForTable('users');
@@ -72,7 +74,7 @@ clearCache();
 ### Getting Cache Statistics
 
 ```javascript
-import { getCacheStats } from './database/cached-query-wrapper.js';
+import { getCacheStats } from '../../services/api-backend/database/cached-query-wrapper.js';
 
 const stats = getCacheStats();
 console.log(stats);

@@ -1,11 +1,13 @@
 # Proxy Webhooks Quick Reference
 
+> **Verified against code (2026-11-24):** the path `/api/proxy/:id/webhooks` was wrong. `services/api-backend/routes/proxy-webhooks.js` registers `router.post('/:proxyId/webhooks')` at :86 (plus GET/PUT/DELETE at :175/:324/:408 and deliveries at :485/:568), and `services/api-backend/server.js:348` mounts the router at `/proxy-webhooks` (and `/api/proxy-webhooks` via `registerRoutes` at :265-267). The live path is **`/api/proxy-webhooks/:proxyId/webhooks`** (corrected below). The router imports `ProxyWebhookService` from `services/api-backend/services/proxy-webhook-service.js` at :27 — not a root-level `services/` path. All proxy routes are **legacy-gated** by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES` (`server.js:184-185`, block :338-349); test `test/api-backend/proxy-webhooks.test.js` is present.
+
 ## API Endpoints
 
 ### Register Webhook
 
 ```bash
-POST /api/proxy/:proxyId/webhooks
+POST /api/proxy-webhooks/:proxyId/webhooks
 Content-Type: application/json
 
 {
@@ -30,7 +32,7 @@ Response: 201 Created
 ### List Webhooks
 
 ```bash
-GET /api/proxy/:proxyId/webhooks?limit=50&offset=0
+GET /api/proxy-webhooks/:proxyId/webhooks?limit=50&offset=0
 
 Response: 200 OK
 {
@@ -54,7 +56,7 @@ Response: 200 OK
 ### Get Webhook Details
 
 ```bash
-GET /api/proxy/:proxyId/webhooks/:webhookId
+GET /api/proxy-webhooks/:proxyId/webhooks/:webhookId
 
 Response: 200 OK
 {
@@ -72,7 +74,7 @@ Response: 200 OK
 ### Update Webhook
 
 ```bash
-PUT /api/proxy/:proxyId/webhooks/:webhookId
+PUT /api/proxy-webhooks/:proxyId/webhooks/:webhookId
 Content-Type: application/json
 
 {
@@ -87,7 +89,7 @@ Response: 200 OK
 ### Delete Webhook
 
 ```bash
-DELETE /api/proxy/:proxyId/webhooks/:webhookId
+DELETE /api/proxy-webhooks/:proxyId/webhooks/:webhookId
 
 Response: 200 OK
 {
@@ -99,7 +101,7 @@ Response: 200 OK
 ### Get Delivery History
 
 ```bash
-GET /api/proxy/:proxyId/webhooks/:webhookId/deliveries?limit=50&offset=0
+GET /api/proxy-webhooks/:proxyId/webhooks/:webhookId/deliveries?limit=50&offset=0
 
 Response: 200 OK
 {
@@ -126,7 +128,7 @@ Response: 200 OK
 ### Get Delivery Status
 
 ```bash
-GET /api/proxy/:proxyId/webhooks/:webhookId/deliveries/:deliveryId
+GET /api/proxy-webhooks/:proxyId/webhooks/:webhookId/deliveries/:deliveryId
 
 Response: 200 OK
 {

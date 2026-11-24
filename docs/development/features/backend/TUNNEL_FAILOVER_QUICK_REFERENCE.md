@@ -6,6 +6,8 @@ Automatic failover system for tunnel endpoints with priority-based and weighted 
 
 **Validates: Requirements 4.4**
 
+> **Verified against code:** the service is `services/api-backend/services/tunnel-failover-service.js` (not root-level `services/`), and the router `services/api-backend/routes/tunnel-failover.js` registers `/:tunnelId/failover/endpoint` (:82), `/status` (:154), `/manual` (:216), `/record-failure` (:301), `/record-success` (:372), `/reset-failures` (:433). The router is mounted at `/tunnel-failover` (and `/api/tunnel-failover`) by `services/api-backend/server.js:353`, **gated by `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES`** (`server.js:186-188`). The correct endpoint prefix is `/api/tunnel-failover/{tunnelId}/failover/…`, not `/api/tunnels/{tunnelId}/failover/…` (corrected below).
+
 ## Key Concepts
 
 ### Endpoint Selection Priority
@@ -25,7 +27,7 @@ Automatic failover system for tunnel endpoints with priority-based and weighted 
 ### Get Best Endpoint
 
 ```bash
-GET /api/tunnels/{tunnelId}/failover/endpoint
+GET /api/tunnel-failover/{tunnelId}/failover/endpoint
 ```
 
 Returns the best available endpoint for routing requests.
@@ -33,7 +35,7 @@ Returns the best available endpoint for routing requests.
 ### Get Failover Status
 
 ```bash
-GET /api/tunnels/{tunnelId}/failover/status
+GET /api/tunnel-failover/{tunnelId}/failover/status
 ```
 
 Returns detailed status of all endpoints and failover state.
@@ -41,7 +43,7 @@ Returns detailed status of all endpoints and failover state.
 ### Manual Failover
 
 ```bash
-POST /api/tunnels/{tunnelId}/failover/manual
+POST /api/tunnel-failover/{tunnelId}/failover/manual
 Body: { "endpointId": "uuid" }
 ```
 
@@ -50,7 +52,7 @@ Manually trigger failover to specific endpoint.
 ### Record Failure
 
 ```bash
-POST /api/tunnels/{tunnelId}/failover/record-failure
+POST /api/tunnel-failover/{tunnelId}/failover/record-failure
 Body: { "endpointId": "uuid", "error": "message" }
 ```
 
@@ -59,7 +61,7 @@ Record endpoint failure (internal use).
 ### Record Success
 
 ```bash
-POST /api/tunnels/{tunnelId}/failover/record-success
+POST /api/tunnel-failover/{tunnelId}/failover/record-success
 Body: { "endpointId": "uuid" }
 ```
 
@@ -68,7 +70,7 @@ Record successful request (internal use).
 ### Reset Failures
 
 ```bash
-POST /api/tunnels/{tunnelId}/failover/reset-failures
+POST /api/tunnel-failover/{tunnelId}/failover/reset-failures
 Body: { "endpointId": "uuid" }
 ```
 

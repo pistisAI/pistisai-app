@@ -4,6 +4,8 @@
 
 Webhook rate limiting prevents abuse and ensures fair resource usage by controlling the frequency of webhook deliveries. The system supports three time windows: per-minute, per-hour, and per-day limits.
 
+> **Verified against code (2026-11-24):** the service is `services/api-backend/services/webhook-rate-limiter.js` (not root-level `services/`). The router `services/api-backend/routes/webhook-rate-limiting.js` registers `/:webhookId/rate-limit` (:27 GET, :69 PUT) and `/:webhookId/rate-limit/stats` (:127), and `services/api-backend/server.js:364` mounts it at `/webhook-rate-limiting` (and `/api/webhook-rate-limiting`). The live endpoint is `/api/webhook-rate-limiting/:webhookId/rate-limit`, **not** `/api/webhooks/:webhookId/rate-limit` (corrected below).
+
 ## Default Limits
 
 - **Per Minute**: 60 deliveries
@@ -15,7 +17,7 @@ Webhook rate limiting prevents abuse and ensures fair resource usage by controll
 ### Get Rate Limit Configuration
 
 ```bash
-GET /api/webhooks/:webhookId/rate-limit
+GET /api/webhook-rate-limiting/:webhookId/rate-limit
 Authorization: Bearer <token>
 ```
 
@@ -38,7 +40,7 @@ Response:
 ### Update Rate Limit Configuration
 
 ```bash
-PUT /api/webhooks/:webhookId/rate-limit
+PUT /api/webhook-rate-limiting/:webhookId/rate-limit
 Authorization: Bearer <token>
 Content-Type: application/json
 
@@ -72,7 +74,7 @@ Response:
 ### Get Rate Limit Statistics
 
 ```bash
-GET /api/webhooks/:webhookId/rate-limit/stats
+GET /api/webhook-rate-limiting/:webhookId/rate-limit/stats
 Authorization: Bearer <token>
 ```
 
@@ -153,7 +155,7 @@ When a rate limit is exceeded, the API returns a 429 (Too Many Requests) respons
 
 ### Service: WebhookRateLimiterService
 
-Located in `services/webhook-rate-limiter.js`
+Located in `services/api-backend/services/webhook-rate-limiter.js` (not root-level `services/`).
 
 Key methods:
 
@@ -194,9 +196,9 @@ The service uses an in-memory cache for performance:
 
 ### Webhook Deliveries Being Blocked
 
-1. Check current usage: `GET /api/webhooks/:webhookId/rate-limit/stats`
+1. Check current usage: `GET /api/webhook-rate-limiting/:webhookId/rate-limit/stats`
 2. Verify limits are appropriate for your use case
-3. Update limits if needed: `PUT /api/webhooks/:webhookId/rate-limit`
+3. Update limits if needed: `PUT /api/webhook-rate-limiting/:webhookId/rate-limit`
 4. Consider disabling rate limiting if not needed
 
 ### Configuration Not Taking Effect

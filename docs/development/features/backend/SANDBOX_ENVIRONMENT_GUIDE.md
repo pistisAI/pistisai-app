@@ -50,31 +50,33 @@ services:
 
 ## Test Credentials
 
-### Pre-configured Test Users
+> **Verified against code:** `services/api-backend/services/sandbox-service.js:88-116` reads tokens from **environment variables** — `SANDBOX_TOKEN_USER`, `SANDBOX_TOKEN_PREMIUM`, `SANDBOX_TOKEN_ADMIN` (falling back to `sandbox-token-*-unset`). There are no hardcoded `eyJ…sandbox-token-*` JWTs anywhere in the service. The test users carry `jwtId: 'jwt|sandbox-test-*'`, **not** `auth0|…`. API keys likewise come from `SANDBOX_API_KEY_1/2` and `SANDBOX_API_SECRET_1/2` (`sandbox-service.js:119-131`). Routes are registered in `services/api-backend/server.js:101` and mounted at `/sandbox` by `server.js:351`.
 
-The sandbox environment includes three pre-configured test users:
+### Pre-configured Test Users (populated from env)
 
-#### Account tier User
+The sandbox environment includes three pre-configured test users. Set the env vars above before use; otherwise the `*unset` fallbacks apply.
+
+#### Free User
 
 ```json
 {
   "id": "test-user-1",
   "email": "test@sandbox.local",
-  "auth0Id": "auth0|sandbox-test-1",
+  "jwtId": "jwt|sandbox-test-1",
   "tier": "free",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItMSIsImVtYWlsIjoidGVzdEBzYW5kYm94LmxvY2FsIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-1"
+  "token": "< SANDBOX_TOKEN_USER or sandbox-token-user-unset >"
 }
 ```
 
-#### Account tier User
+#### Premium User
 
 ```json
 {
   "id": "test-user-2",
   "email": "premium@sandbox.local",
-  "auth0Id": "auth0|sandbox-test-2",
+  "jwtId": "jwt|sandbox-test-2",
   "tier": "premium",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItMiIsImVtYWlsIjoicHJlbWl1bUBzYW5kYm94LmxvY2FsIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-2"
+  "token": "< SANDBOX_TOKEN_PREMIUM or sandbox-token-premium-unset >"
 }
 ```
 
@@ -84,21 +86,21 @@ The sandbox environment includes three pre-configured test users:
 {
   "id": "test-admin",
   "email": "admin@sandbox.local",
-  "auth0Id": "auth0|sandbox-admin",
+  "jwtId": "jwt|sandbox-admin",
   "tier": "enterprise",
   "role": "admin",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LWFkbWluIiwiZW1haWwiOiJhZG1pbkBzYW5kYm94LmxvY2FsIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-admin"
+  "token": "< SANDBOX_TOKEN_ADMIN or sandbox-token-admin-unset >"
 }
 ```
 
 ### API Keys
 
-Pre-configured API keys for service-to-service communication:
+Pre-configured API keys for service-to-service communication (values from env, never checked in):
 
 ```json
 {
-  "key": "sk_sandbox_test_1234567890abcdef",
-  "secret": "sandbox-secret-1",
+  "key": "< SANDBOX_API_KEY_1 or sandbox-key-1-unset >",
+  "secret": "< SANDBOX_API_SECRET_1 or sandbox-secret-1-unset >",
   "name": "Test API Key 1",
   "tier": "free"
 }
@@ -106,8 +108,8 @@ Pre-configured API keys for service-to-service communication:
 
 ```json
 {
-  "key": "sk_sandbox_premium_abcdef1234567890",
-  "secret": "sandbox-secret-2",
+  "key": "< SANDBOX_API_KEY_2 or sandbox-key-2-unset >",
+  "secret": "< SANDBOX_API_SECRET_2 or sandbox-secret-2-unset >",
   "name": "Premium API Key",
   "tier": "premium"
 }
@@ -579,10 +581,10 @@ curl http://localhost:8080/sandbox/stats
 
 ### 1. Use Test Credentials
 
-Always use the provided test credentials when testing in sandbox mode:
+Always use the credentials from the `SANDBOX_TOKEN_*` environment variables (see "Test Credentials" above) when testing in sandbox mode:
 
 ```bash
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItMSIsImVtYWlsIjoidGVzdEBzYW5kYm94LmxvY2FsIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-1
+Authorization: Bearer <SANDBOX_TOKEN_USER>
 ```
 
 ### 2. Monitor Request Logs

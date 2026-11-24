@@ -2,10 +2,12 @@
 
 ## Alert Configuration Service
 
+> **Verified against code (2026-11-24):** the services live under `services/api-backend/services/` — `alert-configuration-service.js`, `alerting-service.js` and `alert-triggering-service.js` all exist there. The short `./services/...` imports below are stale; use `../../services/api-backend/services/...` (or the appropriate relative path). The route is `services/api-backend/routes/alert-configuration.js`, mounted at `/alert-configuration` by `services/api-backend/server.js:328`.
+
 ### Import
 
 ```javascript
-import { alertConfigService } from './services/alert-configuration-service.js';
+import { alertConfigService } from '../../services/api-backend/services/alert-configuration-service.js';
 ```
 
 ### Get Thresholds
@@ -77,7 +79,7 @@ alertConfigService.resetToDefaults();
 ### Import
 
 ```javascript
-import { alertTriggeringService } from './services/alert-triggering-service.js';
+import { alertTriggeringService } from '../../services/api-backend/services/alert-triggering-service.js';
 ```
 
 ### Start Service

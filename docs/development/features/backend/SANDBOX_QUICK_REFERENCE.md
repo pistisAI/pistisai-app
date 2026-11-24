@@ -9,20 +9,22 @@ export NODE_ENV=sandbox
 
 ## Test Credentials
 
+> **Verified against code:** `services/api-backend/services/sandbox-service.js:88-116` sources tokens from **environment variables** (`SANDBOX_TOKEN_USER`, `SANDBOX_TOKEN_PREMIUM`, `SANDBOX_TOKEN_ADMIN`, each falling back to `sandbox-token-*-unset`) — there are no hardcoded `eyJ…sandbox-token-*` JWTs. The routes are imported at `services/api-backend/server.js:101` and mounted at `/sandbox` at `server.js:351`.
+
 ### Free User
 
 - Email: `test@sandbox.local`
-- Token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItMSIsImVtYWlsIjoidGVzdEBzYW5kYm94LmxvY2FsIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-1`
+- Token: `$SANDBOX_TOKEN_USER` (fallback `sandbox-token-user-unset`)
 
 ### Premium User
 
 - Email: `premium@sandbox.local`
-- Token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LXVzZXItMiIsImVtYWlsIjoicHJlbWl1bUBzYW5kYm94LmxvY2FsIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-2`
+- Token: `$SANDBOX_TOKEN_PREMIUM` (fallback `sandbox-token-premium-unset`)
 
 ### Admin User
 
 - Email: `admin@sandbox.local`
-- Token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LWFkbWluIiwiZW1haWwiOiJhZG1pbkBzYW5kYm94LmxvY2FsIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjcwMDAwMDAwfQ.sandbox-token-admin`
+- Token: `$SANDBOX_TOKEN_ADMIN` (fallback `sandbox-token-admin-unset`)
 
 ## Common Endpoints
 

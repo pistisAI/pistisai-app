@@ -4,6 +4,8 @@
 
 Proxy scaling automatically adjusts the number of proxy instances based on system load metrics (CPU, memory, request rate, error rate).
 
+> **Verified against code (2026-11-24):** the endpoint prefix `/proxy/scaling` was wrong. The router is `services/api-backend/routes/proxy-scaling.js`, mounted by `services/api-backend/server.js:346` at `/proxy-scaling` (and `/api/proxy-scaling`, via `registerRoutes` at :265-267), **gated by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Its internal paths are `/scaling/policies/:proxyId` (:96), `/scaling/metrics/:proxyId` (:220), `/scaling/evaluate/:proxyId` (:355), `/scaling/events/:proxyId` (:485), `/scaling/summary/:proxyId` (:544) — so the live paths are `/api/proxy-scaling/scaling/…` (corrected below). **Exception:** the execute route is registered with a doubled internal prefix `/proxy/scaling/execute/:proxyId` (:407-408), so its live path is `/api/proxy-scaling/proxy/scaling/execute/:proxyId`.
+
 ## Key Concepts
 
 ### Load Score
@@ -38,7 +40,7 @@ Records of scaling operations with:
 ### Create/Update Policy
 
 ```bash
-POST /proxy/scaling/policies/:proxyId
+POST /api/proxy-scaling/scaling/policies/:proxyId
 Content-Type: application/json
 
 {
@@ -56,13 +58,13 @@ Content-Type: application/json
 ### Get Policy
 
 ```bash
-GET /proxy/scaling/policies/:proxyId
+GET /api/proxy-scaling/scaling/policies/:proxyId
 ```
 
 ### Record Metrics
 
 ```bash
-POST /proxy/scaling/metrics/:proxyId
+POST /api/proxy-scaling/scaling/metrics/:proxyId
 Content-Type: application/json
 
 {
@@ -79,13 +81,13 @@ Content-Type: application/json
 ### Get Current Metrics
 
 ```bash
-GET /proxy/scaling/metrics/:proxyId
+GET /api/proxy-scaling/scaling/metrics/:proxyId
 ```
 
 ### Evaluate Scaling
 
 ```bash
-POST /proxy/scaling/evaluate/:proxyId
+POST /api/proxy-scaling/scaling/evaluate/:proxyId
 ```
 
 Response:
@@ -109,7 +111,7 @@ Response:
 ### Execute Scaling
 
 ```bash
-POST /proxy/scaling/execute/:proxyId
+POST /api/proxy-scaling/proxy/scaling/execute/:proxyId
 Content-Type: application/json
 
 {
@@ -122,13 +124,13 @@ Content-Type: application/json
 ### Get Scaling Events
 
 ```bash
-GET /proxy/scaling/events/:proxyId?limit=50
+GET /api/proxy-scaling/scaling/events/:proxyId?limit=50
 ```
 
 ### Get Scaling Summary
 
 ```bash
-GET /proxy/scaling/summary/:proxyId?hoursBack=24
+GET /api/proxy-scaling/scaling/summary/:proxyId?hoursBack=24
 ```
 
 Response:
@@ -212,7 +214,7 @@ Response:
 
 ```javascript
 // 1. Create scaling policy
-POST /proxy/scaling/policies/proxy-123
+POST /api/proxy-scaling/scaling/policies/proxy-123
 {
   "minReplicas": 2,
   "maxReplicas": 20,
@@ -221,7 +223,7 @@ POST /proxy/scaling/policies/proxy-123
 }
 
 // 2. Record metrics periodically
-POST /proxy/scaling/metrics/proxy-123
+POST /api/proxy-scaling/scaling/metrics/proxy-123
 {
   "currentReplicas": 3,
   "cpuPercent": 65,
@@ -233,11 +235,11 @@ POST /proxy/scaling/metrics/proxy-123
 }
 
 // 3. Evaluate if scaling needed
-POST /proxy/scaling/evaluate/proxy-123
+POST /api/proxy-scaling/scaling/evaluate/proxy-123
 // Returns: shouldScale: false (load score 60 is within thresholds)
 
 // 4. When load increases
-POST /proxy/scaling/metrics/proxy-123
+POST /api/proxy-scaling/scaling/metrics/proxy-123
 {
   "currentReplicas": 3,
   "cpuPercent": 85,
@@ -249,11 +251,11 @@ POST /proxy/scaling/metrics/proxy-123
 }
 
 // 5. Evaluate again
-POST /proxy/scaling/evaluate/proxy-123
+POST /api/proxy-scaling/scaling/evaluate/proxy-123
 // Returns: shouldScale: true, scalingAction: "scale_up"
 
-// 6. Execute scaling
-POST /proxy/scaling/execute/proxy-123
+// 6. Execute scaling (doubled internal path in code — see verification note)
+POST /api/proxy-scaling/proxy/scaling/execute/proxy-123
 {
   "newReplicaCount": 5,
   "reason": "High load detected",
@@ -261,8 +263,8 @@ POST /proxy/scaling/execute/proxy-123
 }
 
 // 7. Check history
-GET /proxy/scaling/events/proxy-123
-GET /proxy/scaling/summary/proxy-123?hoursBack=24
+GET /api/proxy-scaling/scaling/events/proxy-123
+GET /api/proxy-scaling/scaling/summary/proxy-123?hoursBack=24
 ```
 
 ## Configuration
