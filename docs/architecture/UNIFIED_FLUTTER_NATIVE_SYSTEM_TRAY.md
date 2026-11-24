@@ -182,7 +182,7 @@ flutter run -d linux
 # DISABLE_SYSTEM_TRAY environment flag in the codebase.
 ```
 
-There is currently **no** `test/services/native_tray_service_test.dart` in the repository. The "Testing Scenarios" list below describes target coverage, not tests that exist today; tray coverage is therefore still planned work.
+There is currently **no native tray service test** in the repository. The "Testing Scenarios" list below describes target coverage, not tests that exist today; tray coverage is therefore still planned work.
 
 ### **Debug Information**
 

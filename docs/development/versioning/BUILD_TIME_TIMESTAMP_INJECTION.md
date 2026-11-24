@@ -193,20 +193,22 @@ version: 3.5.5+202506111430
 
 ## Integration with Deployment Scripts
 
-### Updated Deployment Scripts
+### Legacy deployment scripts (not present)
 
-#### **`scripts/deploy/update_and_deploy.sh`**
+The scripts named below are not in the repository; these notes are kept for historical context only.
 
-- Uses `./scripts/flutter_build_with_timestamp.sh` for web builds
+#### **Legacy update-and-deploy script**
+
+- Planned use of a timestamp-injecting Flutter wrapper for web builds (wrapper not present)
 - Automatic fallback to direct Flutter build if wrapper not available
 - Maintains timeout and error handling
 
-#### **`scripts/build_unified_package.sh`**
+#### **Legacy unified package script**
 
 - Uses build-time injection for Linux package builds
 - Ensures unified packages have accurate build timestamps
 
-#### **`scripts/packaging/build_aur.sh`**
+#### **Legacy AUR build script**
 
 - AUR packages built with build-time timestamp injection
 - Maintains compatibility with existing AUR build process

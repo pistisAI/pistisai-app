@@ -28,4 +28,4 @@ All VPS deployment scripts have been moved to `scripts/archive/` with detailed m
 - `verify_deployment.sh` → Replaced by Kubernetes health checks
 - `version_manager.ps1` → Replaced by automated CI/CD versioning
 
-See `scripts/archive/README.md` for complete migration information.
+The archived scripts README referenced in older revisions is not present; this list is the migration record.

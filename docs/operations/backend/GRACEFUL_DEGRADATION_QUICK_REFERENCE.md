@@ -91,7 +91,7 @@ gracefulDegradationService.resetAll();
 
 ## API Endpoints
 
-No HTTP endpoints are registered for graceful degradation. Use the in-process service API (`markDegraded`, `markRecovered`, `getStatus`, `getAllStatuses`, `getMetrics`, `getReport`, `resetAll`) from `services/graceful-degradation.js`.
+No HTTP endpoints are registered for graceful degradation. Use the in-process service API (`markDegraded`, `markRecovered`, `getStatus`, `getAllStatuses`, `getMetrics`, `getReport`, `resetAll`) from `services/api-backend/services/graceful-degradation.js`.
 
 ## Configuration Options
 
@@ -251,7 +251,7 @@ fallback: async () => ({
 
 ## Files
 
-- `services/graceful-degradation.js` - Core service
-- `middleware/graceful-degradation-middleware.js` - Express middleware
+- `services/api-backend/services/graceful-degradation.js` - Core service
+- No Express middleware module is present.
 - `test/api-backend/graceful-degradation.test.js` - Unit tests
-- `test/api-backend/graceful-degradation-integration.test.js` - Integration tests
+- No integration test file is present (only unit tests).

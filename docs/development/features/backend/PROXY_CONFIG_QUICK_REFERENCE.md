@@ -2,12 +2,12 @@
 
 ## Files Created (verified against code)
 
-> **Verified against code:** `services/proxy-config-service.js` **does not exist** — the configuration logic is implemented inline in `services/api-backend/routes/proxy-config.js` (694 lines; `router.post/get/put/delete` at :73/:163/:221/:296 etc.). The router is mounted by `services/api-backend/server.js:341` at `/proxy-config` (and `/api/proxy-config`, see `registerRoutes` at :265-267), **only when `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES` is `'true'`** (`server.js:184-185`, gating block :338-349). The migration exists at `services/api-backend/database/migrations/012_proxy_configuration_management.sql`; no `test/api-backend/proxy-config.test.js` is present (only `proxy-failover.test.js` and `proxy-webhooks.test.js`). Endpoint paths below are therefore **`/api/proxy-config/config/…`**, not `/proxy/config/…`.
+> **Verified against code:** a dedicated proxy config service **does not exist** — the configuration logic is implemented inline in `services/api-backend/routes/proxy-config.js` (694 lines; `router.post/get/put/delete` at :73/:163/:221/:296 etc.). The router is mounted by `services/api-backend/server.js:341` at `/proxy-config` (and `/api/proxy-config`, see `registerRoutes` at :265-267), **only when `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES` is `'true'`** (`server.js:184-185`, gating block :338-349). The migration exists at `services/api-backend/database/migrations/012_proxy_configuration_management.sql`; no proxy-config test file is present (only `proxy-failover.test.js` and `proxy-webhooks.test.js`). Endpoint paths below are therefore **`/api/proxy-config/config/…`**, not `/proxy/config/…`.
 
 1. **Database Migration**: `services/api-backend/database/migrations/012_proxy_configuration_management.sql` (present)
-2. **Service**: **MISSING** — `services/proxy-config-service.js` does not exist; logic is in `services/api-backend/routes/proxy-config.js`
+2. **Service**: **MISSING** — no dedicated service module; logic is in `services/api-backend/routes/proxy-config.js`
 3. **Routes**: `services/api-backend/routes/proxy-config.js` (present; legacy-gated)
-4. **Tests**: `test/api-backend/proxy-config.test.js` — **MISSING**
+4. **Tests**: **MISSING** — no proxy-config test file
 
 ## Quick API Reference
 

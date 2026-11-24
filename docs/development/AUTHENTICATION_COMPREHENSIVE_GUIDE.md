@@ -3,6 +3,8 @@
 **Last Updated**: December 15, 2025  
 **Status**: ✅ ALL AUTHENTICATION SYSTEMS OPERATIONAL
 
+> **Historical scope**: the Auth0 bridge and service-worker initializer described below were removed from `web/`; the file names in that section refer to a historical fix and are not present in the tree. Current authentication is handled in Dart (see `docs/architecture/UNIFIED_FLUTTER_WEB.md`).
+
 > **Current orientation**: This authentication guide includes older `/ollama/bridge/status` verification examples. Treat those as legacy/support-provider endpoint checks. They do not imply Ollama is the primary app runtime; the main channel must use the selected agent runtime.
 
 ---
@@ -30,7 +32,7 @@ After successful Auth0 login, all API calls failed with 401 errors because:
 
 ### Single Critical Change
 
-**File**: `web/auth0-bridge.js`
+**File (historical)**: an Auth0 bridge script under `web/` (removed)
 
 ```javascript
 // BEFORE (WRONG)
@@ -190,7 +192,7 @@ flutter build web --release
 
 If issues occur:
 
-1. Revert `web/auth0-bridge.js` to previous version
+1. Restore the historical Auth0 bridge script (removed from `web/`)
 2. Clear CDN cache
 3. Notify users to clear browser cache
 4. Investigate and fix root cause
@@ -201,8 +203,8 @@ If issues occur:
 
 | File | Change | Status |
 |------|--------|--------|
-| `web/auth0-bridge.js` | Updated audience | ✅ FIXED |
-| `web/service-worker-init.js` | Deleted | ✅ SIMPLIFIED |
+| Auth0 bridge (historical) | Audience updated before removal | ✅ REMOVED |
+| Service-worker initializer (historical) | Deleted | ✅ SIMPLIFIED |
 | `web/index.html` | Removed SW patch | ✅ CLEANED |
 
 ---

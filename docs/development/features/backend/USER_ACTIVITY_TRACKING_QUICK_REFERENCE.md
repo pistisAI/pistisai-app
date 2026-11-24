@@ -2,7 +2,7 @@
 
 ## Files Created (verified against code)
 
-> **Verified against code (2026-11-24):** the service and route are at `services/api-backend/services/user-activity-service.js` and `services/api-backend/routes/user-activity.js` (not root-level `services/`/`routes/`). The router registers `/activity` (:53), `/metrics` (:153), `/activity/summary` (:236) but is mounted by `services/api-backend/server.js:359` at `/user-activity` (and `/api/user-activity`) — **not** `/api/users` — so the live endpoints are `/api/user-activity/activity`, `/api/user-activity/metrics`, `/api/user-activity/activity/summary` (corrected below). `services/api-backend/middleware/activity-logging.js` **does not exist**. The migration is `services/api-backend/database/migrations/003-user-activity-tracking.sql`, applied at startup (`server.js:563-578`); **there is no `npm run migrate` script** in `services/api-backend/package.json`.
+> **Verified against code (2026-11-24):** the service and route are at `services/api-backend/services/user-activity-service.js` and `services/api-backend/routes/user-activity.js` (not root-level `services/`/`routes/`). The router registers `/activity` (:53), `/metrics` (:153), `/activity/summary` (:236) but is mounted by `services/api-backend/server.js:359` at `/user-activity` (and `/api/user-activity`) — **not** `/api/users` — so the live endpoints are `/api/user-activity/activity`, `/api/user-activity/metrics`, `/api/user-activity/activity/summary` (corrected below). A dedicated activity-logging middleware **does not exist**. The migration is `services/api-backend/database/migrations/003-user-activity-tracking.sql`, applied at startup (`server.js:563-578`); **there is no `npm run migrate` script** in `services/api-backend/package.json`.
 
 1. **Database Migration**
    - `services/api-backend/database/migrations/003-user-activity-tracking.sql` - Creates tables and indexes
@@ -11,7 +11,7 @@
    - `services/api-backend/services/user-activity-service.js` - Core activity tracking logic
 
 3. **Middleware**
-   - `services/api-backend/middleware/activity-logging.js` — **MISSING** (planned)
+   - An activity-logging middleware — **MISSING** (planned)
 
 4. **Routes**
    - `services/api-backend/routes/user-activity.js` - User-facing activity endpoints

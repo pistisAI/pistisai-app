@@ -165,7 +165,7 @@ Total weight = 4, so each unit = 25%
 
 ## Files
 
-- **Service**: `services/tunnel-failover-service.js`
+- **Service**: `services/api-backend/services/tunnel-failover-service.js`
 - **Routes**: `routes/tunnel-failover.js`
 - **Tests**: `test/api-backend/tunnel-failover.test.js`
 - **Docs**: `TUNNEL_FAILOVER_IMPLEMENTATION.md`
@@ -182,6 +182,6 @@ Total weight = 4, so each unit = 25%
 
 ## Related
 
-- Tunnel Service: `services/tunnel-service.js`
-- Tunnel Health Service: `services/tunnel-health-service.js`
+- Tunnel Service: `services/api-backend/services/tunnel-service.js`
+- Tunnel Health Service: `services/api-backend/services/tunnel-health-service.js`
 - Tunnel Routes: `routes/tunnels.js`

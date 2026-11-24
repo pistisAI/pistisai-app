@@ -16,7 +16,7 @@ Three conflicting brand palettes existed across code and docs. The implementatio
 | `docs/architecture/frontend/THEME_CONFIG.md` | Purple `#a777e3` / Blue / Green | Stale — conflicting palette | Synced to gold palette |
 | `lib/config/theme.dart` (`AppTheme`) | Text `#f1f1f1` / `#b0b0b0` | Doesn't match `theme_config.dart` (`#F5E6C8`/`#B8A88A`) | Flagged — needs decision |
 | `lib/config/theme_config.dart` | Gold `#FFD700` | Implementation truth — canonical | No change |
-| `lib/design_system.dart` | Indigo `#6366F1` | Dead code — never imported | Kept (may serve as future token foundation) |
+| Design-system module (removed) | Indigo `#6366F1` | Not present in the tree | Historical reference only |
 | `mkdocs.yml` | Indigo primary/accent | Independent docs-site theme | Left as-is (intentional) |
 
 ## Code-Level Note

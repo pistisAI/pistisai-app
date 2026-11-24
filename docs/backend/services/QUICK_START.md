@@ -2,7 +2,7 @@
 
 ## Setup
 
-> **Verified against code:** there is no `services/index.js` anywhere in this repo. `PaymentService`, `SubscriptionService`, and `RefundService` are default exports of `services/api-backend/services/payment-service.js:272`, `subscription-service.js:607`, and `refund-service.js:359`. The example env files are `.env.example` at the repository root and `config/docker-compose.env.example`; none exists under `services/api-backend`.
+> **Verified against code:** there is no central services barrel module in this repo. `PaymentService`, `SubscriptionService`, and `RefundService` are default exports of `services/api-backend/services/payment-service.js:272`, `subscription-service.js:607`, and `refund-service.js:359`. The example env files are `.env.example` at the repository root and `config/docker-compose.env.example`; none exists under `services/api-backend`.
 
 ### 1. Install Dependencies
 

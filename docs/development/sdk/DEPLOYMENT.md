@@ -116,7 +116,7 @@ git push origin v2.0.1
 
 ### GitHub Actions
 
-Create `.github/workflows/publish-sdk.yml`:
+Add a publish-SDK workflow (not present in this repo):
 
 ```yaml
 name: Publish SDK to npm

@@ -28,7 +28,7 @@ Handles screenshot-based GUI automation workflows. It coordinates capture, analy
 
 ### System control
 
-There is no `SystemControlService` or `lib/services/system_control_service.dart` in the codebase. Screenshot capture lives in `GuiAutomationService.takeScreenshot()` (`lib/services/gui_automation_service.dart:48-60`); shell/process control and system stats are not provided by a dedicated registered service. Do not add imports of the removed path.
+There is no `SystemControlService` in the codebase. Screenshot capture lives in `GuiAutomationService.takeScreenshot()` (`lib/services/gui_automation_service.dart:48-60`); shell/process control and system stats are not provided by a dedicated registered service. Do not add imports of a system-control service.
 
 ### `ClipboardService`
 

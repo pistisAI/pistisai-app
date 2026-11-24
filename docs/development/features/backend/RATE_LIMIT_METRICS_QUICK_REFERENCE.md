@@ -219,8 +219,8 @@ Test coverage: 87.67% statements, 100% functions
 
 1. `services/api-backend/services/rate-limit-metrics-service.js` — NEW (present; 10 metrics at :27-103)
 2. `services/api-backend/routes/rate-limit-metrics.js` — NEW (present)
-3. `services/api-backend/middleware/rate-limiter.js` — **MISSING**: no such file under `services/api-backend/middleware/` (only `admin-rate-limiter.js`, `webhook-rate-limiter.js`). The live limiter is `services/api-backend/middleware/pipeline.js:112-122`.
-4. `services/api-backend/middleware/rate-limit-exemptions.js` — **MISSING**: no matching file under `services/api-backend/middleware/`.
+3. A standalone rate-limiter module — **MISSING**: no such file under `services/api-backend/middleware/` (only `admin-rate-limiter.js`, `webhook-rate-limiter.js`). The live limiter is `services/api-backend/middleware/pipeline.js:112-122`.
+4. A rate-limit exemptions module — **MISSING**: no matching file under `services/api-backend/middleware/`.
 5. `services/api-backend/server.js` — UPDATED (import :144, mount :439).
 6. `services/api-backend/package.json` — UPDATED (`prom-client` 15.1.3 at :43).
 7. `test/api-backend/rate-limit-metrics.test.js` — NEW (present).

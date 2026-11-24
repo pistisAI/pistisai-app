@@ -12,8 +12,8 @@ Every PR to `main` runs:
 | Flutter smoke | `npm run test:ci:flutter` | Security + basic allowlist (see `scripts/ci/flutter_security_basic_tests.sh`) |
 | Backend lint | `cd services/api-backend && npm run lint` | ESLint |
 | Backend security | `cd services/api-backend && npm run test:ci:security` | Auth, RBAC, validation, rate limits, connector hardening |
-| Linux + Android integration rig | Not present — `.github/workflows/integration-test-rig.yml` does not exist | Run `scripts/run_integration_test_rig.sh` locally |
-| Web E2E smoke | Not present — `.github/workflows/web-e2e.yml` does not exist | Web build is checked by `.github/workflows/test.yml` (`build_web`) |
+| Linux + Android integration rig | Not present — no dedicated workflow | Run `scripts/run_integration_test_rig.sh` locally |
+| Web E2E smoke | Not present — no dedicated workflow | Web build is checked by `.github/workflows/test.yml` (`build_web`) |
 
 Workflow triggers: **push to `main`** and **pull requests to `main`** only (no duplicate runs on feature-branch push).
 

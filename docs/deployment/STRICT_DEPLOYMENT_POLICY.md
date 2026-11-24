@@ -103,7 +103,7 @@ Production deploys are GitHub Actions runs on `main` (or `workflow_dispatch`), n
 
 ### Verification Script
 
-There is no `scripts/deploy/verify_deployment.sh` in this repository. The zero-tolerance checks are the healthchecks and verification scripts that exist today:
+There is no dedicated verify-deployment script in this repository. The zero-tolerance checks are the healthchecks and verification scripts that exist today:
 
 - **Compose healthcheck**: `config/docker/docker-compose.web.yml` checks `http://localhost/health`; `docker compose ps` reports the result.
 - **Kubernetes tunnel path**: `bash scripts/verify-k8s-tunnel-only.sh` and `bash scripts/integration-test-deployments.sh --e2e-deployment`.
@@ -112,7 +112,7 @@ There is no `scripts/deploy/verify_deployment.sh` in this repository. The zero-t
 
 ### Deployment Script
 
-There is no `scripts/deploy/complete_deployment.sh`. Production deploys are driven by GitHub Actions:
+There is no dedicated complete-deployment script. Production deploys are driven by GitHub Actions:
 
 - **Entry point**: `.github/workflows/deploy-web.yml` (`workflow_dispatch` or push to `main`), with `.github/workflows/deploy-backend.yml` following via `workflow_run`.
 - **Mode**: Builds/pushes images to GHCR; the host pulls the image and runs `docker compose -f config/docker/docker-compose.web.yml up -d`.

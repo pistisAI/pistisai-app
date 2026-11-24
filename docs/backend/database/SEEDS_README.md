@@ -258,4 +258,4 @@ For issues or questions about seed data, refer to:
 
 - Admin Center Design Document: `.kiro/specs/admin-center/design.md`
 - Admin Center Requirements: `.kiro/specs/admin-center/requirements.md`
-- Migration reference: `services/api-backend/database/migrate-pg.js` (the runner) and the `README.md` / `MIGRATION_003_README.md` in this directory; there is no `services/api-backend/database/migrations/README.md`
+- Migration reference: `services/api-backend/database/migrate-pg.js` (the runner) and the `README.md` / `MIGRATION_003_README.md` in this directory; there is no migrations README in `services/api-backend/database/migrations/`

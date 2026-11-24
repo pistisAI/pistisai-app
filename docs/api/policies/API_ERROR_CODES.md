@@ -59,7 +59,7 @@ Statuses actually set by handlers:
 
 | Code | Status | Meaning | Source |
 |------|--------|---------|--------|
-| RATE_LIMIT_EXCEEDED | 429 | Bridge polling limit exceeded / Stripe rate-limit mapped to 429 | `services/api-backend/routes/bridge-polling-routes.js`, `services/stripe-client.js` |
+| RATE_LIMIT_EXCEEDED | 429 | Bridge polling limit exceeded / Stripe rate-limit mapped to 429 | `services/api-backend/routes/bridge-polling-routes.js`, `services/api-backend/services/stripe-client.js` |
 
 Other rate-limit handlers emit their own codes, for example `ADMIN_RATE_LIMIT_EXCEEDED`, `API_KEY_RATE_LIMIT_EXCEEDED` and `WEBHOOK_RATE_LIMIT_EXCEEDED`; see the corresponding middleware for details.
 

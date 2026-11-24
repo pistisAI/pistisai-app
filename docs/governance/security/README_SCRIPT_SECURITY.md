@@ -188,15 +188,17 @@ acquire_file_lock() {
 
 ## Security Testing
 
-### Test Suites Created
+### Planned test suites (scripts not present)
 
-1. **Security Test Suite** (`scripts/tests/security_tests.sh` & `SecurityTests.ps1`)
+The shell and PowerShell test suites named below are not present in this repository; this section describes planned coverage.
+
+1. **Security Test Suite** (planned; no shell or PowerShell script is present)
    - Input validation tests
    - Regex injection prevention
    - Concurrent access tests
    - Backup and recovery tests
 
-2. **File Integrity Test Suite** (`scripts/tests/integrity_tests.sh` & `IntegrityTests.ps1`)
+2. **File Integrity Test Suite** (planned; no shell or PowerShell script is present)
    - Character encoding preservation
    - File characteristics preservation
    - Content accuracy verification

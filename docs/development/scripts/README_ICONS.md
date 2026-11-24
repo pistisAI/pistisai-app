@@ -5,7 +5,7 @@ This directory contains scripts for generating app icons for Pistisai across dif
 ## Prerequisites
 
 1. Install ImageMagick from https://imagemagick.org/script/download.php
-2. Make sure the logo file is in `assets/images/Pistisai_logo.jpg`
+2. Provide a logo image under `assets/images/` (for example `Pistisai_logo.jpg`)
 
 ## Generating Icons
 

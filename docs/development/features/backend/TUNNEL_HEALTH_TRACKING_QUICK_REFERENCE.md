@@ -13,7 +13,7 @@ Implements comprehensive tunnel status tracking, health checking, and metrics co
 
 ### TunnelHealthService (`services/api-backend/services/tunnel-health-service.js`)
 
-Core service for health checking and metrics management. (Path corrected from `services/tunnel-health-service.js`; the file is under `services/api-backend/services/` — confirmed present.)
+Core service for health checking and metrics management. (The file is under `services/api-backend/services/` — confirmed present.)
 
 **Key Methods:**
 
