@@ -6,6 +6,20 @@ The Pistisai API supports tier-aware behavior for cloud features, per-user conne
 
 > **Status**: This document still contains older Ollama/direct-proxy endpoint examples. Current product direction is agent-runtime-first and Tailscale-first. New tier policy should apply to selected agent runtimes, optional cloud connectors, optional support model providers, and optional hosted agent runtime containers. Do not design new primary app flows around direct Ollama proxy endpoints.
 
+## Route availability (verified against code)
+
+The endpoints below are **not all enabled by default**. Verified in `services/api-backend/server.js:184-197` (flag definitions) and the guarded registrations at `server.js:254, 274-278, 323-325, 334-337, 352-358, 367-369, 378-387, 486-497`:
+
+| Path group | Default | Flag required to register |
+|---|---|---|
+| `GET /api/user/tier` | enabled | none — registered unconditionally at `server.js:389-395` |
+| `/api/direct-proxy/*`, `/api/failover`, `/api/proxy-*` | **disabled** | `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES=true` (or `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true`) |
+| `/api/tunnel*`, `/api/tunnels/*`, `/api/infrastructure/tunnel` | **disabled** | `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES=true` (or `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true`) |
+| `/api/proxy/start`, `/stop`, `/status`, `/api/streaming-proxy/provision` | **disabled** | `PISTISAI_ENABLE_LEGACY_STREAMING_PROXY_ROUTES=true` (or `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true`) |
+| `/api/ollama*` | **disabled** | `PISTISAI_ENABLE_LEGACY_OLLAMA_PROXY=true` (or `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true`) |
+
+Everything described as "Direct Proxy", "Container Proxy" or "Tunnel" below applies **only when the matching flag is set**; with the defaults these paths are not mounted and return 404.
+
 ## User Tiers
 
 ### Account tier
@@ -34,12 +48,19 @@ The Pistisai API supports tier-aware behavior for cloud features, per-user conne
 
 All API endpoints require authentication via Auth0 JWT tokens. User tier information is extracted from the token's metadata:
 
+Verified against `services/api-backend/middleware/tier-check.js:90-127` — both the plain (`user_metadata`, `app_metadata`) and namespaced (`https://Pistisai.com/user_metadata`, `https://Pistisai.com/app_metadata`) claim shapes are read. The actual lookup order is:
+
 ```javascript
 // Tier information locations (in priority order)
-user['https://Pistisai.com/user_metadata'].tier
-user['https://Pistisai.com/app_metadata'].tier
-user['https://Pistisai.com/user_metadata'].subscription
+userMetadata.tier
+appMetadata.tier
+userMetadata.subscription
+userMetadata.plan
+appMetadata.subscription
+appMetadata.plan
 ```
+
+An unrecognised or missing value falls back to `free` (`tier-check.js:129-160`).
 
 ## API Endpoints
 
@@ -49,7 +70,7 @@ user['https://Pistisai.com/user_metadata'].subscription
 
 Get current user's tier information and available features.
 
-**Response:**
+**Response** (verified against `services/api-backend/routes/user-tier.js:10-17` and the feature map at `services/api-backend/middleware/tier-check.js:27-59`):
 
 ```json
 {
@@ -59,14 +80,22 @@ Get current user's tier information and available features.
     "teamFeatures": false,
     "apiAccess": false,
     "prioritySupport": false,
+    "advancedNetworking": false,
+    "multipleInstances": false,
     "maxConnections": 1,
-    "maxModels": 5
+    "maxModels": 5,
+    "directTunnelOnly": true
   },
-  "upgradeUrl": "https://app.example.com/upgrade"
+  "upgradeUrl": "https://app.pistisai.app/upgrade",
+  "timestamp": "2024-01-15T10:30:00.000Z"
 }
 ```
 
+`upgradeUrl` comes from `UPGRADE_URL` or defaults to `https://app.pistisai.app/upgrade`. The four booleans shown in older examples were an incomplete subset of the features object.
+
 ### Direct Proxy (Legacy / Fallback)
+
+> **Only mounted when** `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES=true` (or the umbrella `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true`). See `services/api-backend/server.js:334-337`.
 
 #### GET `/api/direct-proxy/:userId/health`
 
@@ -150,6 +179,8 @@ Content-Type: application/json
 
 ### Container Proxy (Legacy / Fallback)
 
+> **Only mounted when** `PISTISAI_ENABLE_LEGACY_STREAMING_PROXY_ROUTES=true` (or the umbrella `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true`) for `/proxy/start`, and `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES=true` for `/tunnel/*`. See `services/api-backend/server.js:274-278, 486-497`.
+
 #### POST `/api/proxy/start`
 
 Start the historical container-based proxy for premium/enterprise users.
@@ -220,6 +251,8 @@ Container-based proxy with advanced features (premium/enterprise only).
 | `PROXY_ERROR` | Internal proxy error | 500 |
 
 ## Rate Limiting
+
+> **Verified against code:** the per-tier figures listed below are not enforced by a tier-specific limiter in `services/api-backend`. The generic API limiter is configured in `services/api-backend/middleware/pipeline.js:111-126` (15-minute window, `max` 100 per IP by default, `bridgeMax` 500), and the legacy admin limiters live in `middleware/admin-rate-limiter.js`. Treat the tier numbers here as planned targets, not current behaviour.
 
 ### Account tier
 

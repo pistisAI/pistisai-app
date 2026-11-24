@@ -2,30 +2,42 @@
 
 ## Overview
 
-Pistisai API implements URL-based versioning to support multiple API versions simultaneously while maintaining backward compatibility. This guide explains how versioning works and how to migrate between versions.
+Pistisai API has versioning middleware in the request pipeline, but it only tags requests and sets headers. This guide explains what the middleware actually does, and labels the URL-routed, response-transforming model that does **not** exist in code.
 
 **Requirements: 12.4**
 
+## Current implementation (verified against code)
+
+- `apiVersioningMiddleware()` is in the pipeline at `services/api-backend/middleware/pipeline.js:102-103`. It reads a `/vN/` prefix from the request path, validates it against `API_VERSIONS`, sets `req.apiVersion` / `req.versionInfo`, and sets `API-Version` and `API-Version-Status` response headers (`services/api-backend/middleware/api-versioning.js:55-99`). Requests without a prefix are tagged `v2` (the default, `api-versioning.js:32, 88-92`).
+- **No versioned routes are mounted.** `mountVersionedRoutes`, `versionRouter` and `createVersionedRouter` are exported from `api-versioning.js:109-170` but never called. All routes in `services/api-backend/server.js` are unversioned, so `/v1/users/me` is tagged as v1 but has no handler and returns 404. See [API_DOCUMENTATION_GUIDE.md](API_DOCUMENTATION_GUIDE.md) for the live unversioned paths.
+- `backwardCompatibilityMiddleware()` is also in the pipeline (`pipeline.js:105-106`), but only adds `_apiVersion: 'v1'` to object responses (`api-versioning.js:200-221`). There is no response-format transformation between v1 and v2.
+- **Conflicting sunset dates:** `API_VERSIONS.v1.sunsetAt` is `2025-01-01` in the versioning middleware (`api-versioning.js:14-21`), while the deprecation registry uses `2027-01-01` (`services/api-backend/services/deprecation-service.js:23-57`). Both are real values in code; the middleware's `Sunset` header uses 2025, the `/api/deprecation/*` endpoints report 2027. See [API_DEPRECATION_GUIDE.md](API_DEPRECATION_GUIDE.md).
+- `/api/versions` is live (`server.js:434-436`; also `/versions` on the api subdomain) and returns the `API_VERSIONS` table.
+
 ## Versioning Strategy
 
-### URL-Based Versioning
+### URL Prefix detection (tagging only — no versioned route mounts)
 
-The API uses URL path prefixes to specify the API version:
+The middleware recognises a `/vN/` prefix for tagging and header purposes:
 
 ```
-/v1/endpoint  - API version 1 (deprecated)
-/v2/endpoint  - API version 2 (current)
-/endpoint     - Defaults to v2 (current)
+/v1/endpoint  - tagged v1; no v1 handlers are mounted (404 in practice)
+/v2/endpoint  - tagged v2; no v2 handlers are mounted (404 in practice)
+/endpoint     - tagged v2 (default); this is the live unversioned route set
 ```
+
+This is verified by the absence of any call to `mountVersionedRoutes` / `versionRouter` in `services/api-backend`. The examples under "Using API Versions" below describe the planned URL-routed model, not the current app.
 
 ### Supported Versions
 
 | Version | Status | Description | Sunset Date |
 |---------|--------|-------------|------------|
-| v1 | Deprecated | Legacy API version | 2025-01-01 |
+| v1 | Deprecated | Tag-only in versioning middleware (`sunsetAt: 2025-01-01`) | 2025-01-01 in `api-versioning.js:14-21`; 2027-01-01 in the deprecation registry |
 | v2 | Current | Current stable version | N/A |
 
 ## Using API Versions
+
+> The `/v1/...` and `/v2/...` URLs below are part of the planned model. In the current code these prefixes are only read for tagging; see [API_DOCUMENTATION_GUIDE.md](API_DOCUMENTATION_GUIDE.md) for the unversioned paths that actually exist.
 
 ### Version 2 (Current)
 
@@ -43,7 +55,7 @@ curl https://api.example.com/users/me \
 
 ### Version 1 (Deprecated)
 
-v1 is deprecated and will be removed on 2025-01-01. Migrate to v2 as soon as possible.
+v1 is marked deprecated. The versioning middleware emits `Sunset: Wed, 01 Jan 2025 00:00:00 GMT` for a `/v1/` prefix (`services/api-backend/middleware/api-versioning.js:76-87`), while the deprecation service registry uses `2027-01-01` (`services/api-backend/services/deprecation-service.js:23-57`). Migrate to the unversioned (v2-default) paths for new work.
 
 ```bash
 # Using v1 (deprecated)
@@ -70,7 +82,9 @@ Sunset: Wed, 01 Jan 2025 00:00:00 GMT
 Warning: 299 - "API version v1 is deprecated. Migrate to v2 before 2025-01-01"
 ```
 
-## Response Format Differences
+## Response Format Differences (planned — not transformed in code)
+
+> No middleware rewrites response bodies by version. `backwardCompatibilityMiddleware()` only adds `_apiVersion: 'v1'` to object responses (`services/api-backend/middleware/api-versioning.js:200-221`). The two shapes below are the planned contract, not the current app's behaviour.
 
 ### Version 1 (Deprecated)
 
@@ -101,7 +115,7 @@ Warning: 299 - "API version v1 is deprecated. Migrate to v2 before 2025-01-01"
 }
 ```
 
-## Error Response Differences
+## Error Response Differences (planned — not transformed in code)
 
 ### Version 1 (Deprecated)
 
@@ -199,13 +213,7 @@ Test all API endpoints with v2 before deploying to production.
 
 ### Automatic Fallback
 
-If you don't specify a version in the URL, the API automatically uses v2:
-
-```bash
-# These are equivalent
-curl https://api.example.com/users/me
-curl https://api.example.com/v2/users/me
-```
+A request without a version prefix is tagged `v2` by the middleware (`services/api-backend/middleware/api-versioning.js:32, 88-92`). There is no separate v2 route set to fall back to: the unversioned path is the live route, while a `/v2/...` prefix is only a tag (and has no handler, so it 404s today).
 
 ### Version-Specific Behavior
 
@@ -222,7 +230,7 @@ Get information about all supported API versions:
 curl https://api.example.com/api/versions
 ```
 
-Response:
+Response (verified against `services/api-backend/middleware/api-versioning.js:178-190` and `routes/handlers.js` / `server.js:434-436`):
 
 ```json
 {
@@ -230,14 +238,14 @@ Response:
   "defaultVersion": "v2",
   "supportedVersions": [
     {
-      "version": "v1",
+      "version": "1.0.0",
       "status": "deprecated",
-      "description": "Legacy API version - use v2 for new integrations",
       "deprecatedAt": "2024-01-01",
-      "sunsetAt": "2025-01-01"
+      "sunsetAt": "2025-01-01",
+      "description": "Legacy API version - use v2 for new integrations"
     },
     {
-      "version": "v2",
+      "version": "2.0.0",
       "status": "current",
       "description": "Current stable API version"
     }
@@ -245,6 +253,8 @@ Response:
   "timestamp": "2024-11-20T10:00:00Z"
 }
 ```
+
+`currentVersion` reflects the request's own tag (`req.apiVersion`), not a fixed value — the example above is for an unversioned request. The `version` field inside each `supportedVersions` entry is the semver value from `API_VERSIONS` (`1.0.0` / `2.0.0`), because the handler spreads `...value` after setting `version: key`.
 
 ## Best Practices
 
@@ -257,7 +267,10 @@ Response:
 ## Deprecation Timeline
 
 - **2024-01-01**: v1 marked as deprecated
-- **2025-01-01**: v1 will be removed (sunset date)
+- **2025-01-01**: `API_VERSIONS.v1.sunsetAt` in the versioning middleware (`api-versioning.js:19`)
+- **2027-01-01**: `DEPRECATED_ENDPOINTS` sunset in the deprecation registry (`deprecation-service.js:28,36,44,52`)
+
+These two dates disagree in code; the middleware's `Sunset` header uses 2025, the `/api/deprecation/*` report uses 2027. Neither removes the `/v1/*` paths, because no versioned routes are mounted.
 
 ## Support
 
@@ -269,30 +282,26 @@ For questions about API versioning or migration help, contact:
 
 ## Implementation Details
 
-### Versioning Middleware
+### Versioning Middleware (live)
 
-The API uses middleware to:
+The API uses middleware in the pipeline (`services/api-backend/middleware/pipeline.js:102-106`) to:
 
-1. Extract version from URL path
-2. Validate version is supported
-3. Add version info to request object
-4. Add deprecation headers if needed
-5. Route to version-specific handlers
+1. Extract a version tag from a `/vN/` URL path (`api-versioning.js:41-47, 55-99`)
+2. Validate the tag is supported (400 `UNSUPPORTED_API_VERSION` otherwise)
+3. Add version info to the request (`req.apiVersion`, `req.versionInfo`)
+4. Add `API-Version` / `API-Version-Status` headers and `Deprecation` / `Sunset` / `Warning` headers for a deprecated tag
 
-### Version Routing
+### Version Routing (planned — not mounted)
 
-Routes are registered under version-specific paths:
+`mountVersionedRoutes`, `versionRouter` and `createVersionedRouter` exist in `api-versioning.js:109-170` but are never called. Routes in `server.js` are unversioned:
 
-- `/v1/endpoint` - v1 handler
-- `/v2/endpoint` - v2 handler
-- `/endpoint` - defaults to v2 handler
+- `/v1/endpoint` — no handler (404)
+- `/v2/endpoint` — no handler (404)
+- `/endpoint` — live unversioned handler, tagged `v2`
 
-### Response Transformation
+### Response Transformation (planned — only a tag today)
 
-Response format is automatically transformed based on the requested version:
-
-- v1 requests get v1 response format
-- v2 requests get v2 response format
+`backwardCompatibilityMiddleware()` is in the pipeline but only adds `_apiVersion: 'v1'` to object responses (`api-versioning.js:200-221`); it does not translate between v1 and v2 response formats.
 
 ## Future Versions
 
