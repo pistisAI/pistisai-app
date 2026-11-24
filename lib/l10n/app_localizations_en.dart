@@ -627,6 +627,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logsNoneAvailable => 'No logs available';
 
   @override
+  String logsLoadFailed(String error) {
+    return 'Could not load logs: $error';
+  }
+
+  @override
   String get logsSearchHint => 'Search logs...';
 
   @override
@@ -1581,6 +1586,103 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get instancesTestConnection => 'Test Connection';
+
+  @override
+  String get instancesRuntimeSection => 'Agent Runtime';
+
+  @override
+  String instancesRuntimeEndpoint(String url) {
+    return 'Endpoint: $url';
+  }
+
+  @override
+  String get instancesRuntimeNoRuntime =>
+      'No agent runtime is selected. Enable Hermes Agent below to connect.';
+
+  @override
+  String get instancesRuntimeControlUnavailable =>
+      'Starting and stopping the agent runtime from the app is not available yet. Start it on its host, then refresh.';
+
+  @override
+  String get instancesNoModels => 'No model providers found on this device.';
+
+  @override
+  String instancesModelsLoadFailed(String error) {
+    return 'Could not scan model providers: $error';
+  }
+
+  @override
+  String get runtimeStatusConnected => 'Connected';
+
+  @override
+  String get runtimeStatusUnreachable => 'Not reachable';
+
+  @override
+  String get runtimeStatusNotConfigured => 'Not configured';
+
+  @override
+  String get overviewTitle => 'Overview';
+
+  @override
+  String get overviewSubtitle =>
+      'Agent runtime status, where the app connects, and a fast health read.';
+
+  @override
+  String get overviewVoiceTitle => 'Voice Companion';
+
+  @override
+  String get overviewVoiceUnavailable =>
+      'Voice conversation service is only wired on desktop builds right now.';
+
+  @override
+  String get overviewAccessTitle => 'Runtime Access';
+
+  @override
+  String get overviewAccessDescription =>
+      'Where the app connects and whether it sends an API key.';
+
+  @override
+  String get overviewRuntime => 'Runtime';
+
+  @override
+  String get overviewNoRuntime => 'No agent runtime selected';
+
+  @override
+  String get overviewRuntimeUrl => 'Runtime URL';
+
+  @override
+  String get overviewApiKey => 'API key';
+
+  @override
+  String get overviewApiKeySet => 'Set';
+
+  @override
+  String get overviewApiKeyNotSet => 'Not set';
+
+  @override
+  String get overviewCheckConnection => 'Check connection';
+
+  @override
+  String get overviewSnapshotTitle => 'Snapshot';
+
+  @override
+  String get overviewSnapshotDescription =>
+      'Result of the latest health check from this screen.';
+
+  @override
+  String get overviewStatus => 'Status';
+
+  @override
+  String get overviewLastChecked => 'Last checked';
+
+  @override
+  String get overviewNotCheckedYet => 'Not checked yet';
+
+  @override
+  String get overviewModelsReported => 'Models reported';
+
+  @override
+  String get overviewLastError => 'Last error';
 
   @override
   String get commonBack => 'Back';
