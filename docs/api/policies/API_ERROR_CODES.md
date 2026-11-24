@@ -1,196 +1,108 @@
 # Pistisai API Error Codes and HTTP Status Codes
 
-This document provides a comprehensive reference for all error codes and HTTP status codes used in the Pistisai API Backend.
+> **Audit decision (#816, part of #812 — docs audit; recorded 2026-11-24):** keep this page but **narrow the catalog to codes verified against source**, rather than regenerating a "complete" list. Of the 39 named codes previously documented, 16 were found as emitted `code` values in `services/**`, `backend/**` and `lib/**` and are retained below with a source citation; 23 had no source match and were removed. Source emits roughly 305 distinct `code` literals across individual handlers (for example `ADMIN_RATE_LIMIT_EXCEEDED`, `PROXY_001`, `TEMPLATE_SAVE_FAILED`), so a hand-maintained catalog cannot be exhaustive — treat source as authoritative for endpoint-specific codes.
 
-## HTTP Status Codes
+This page lists the codes used by the API backend's shared authentication, authorization, validation, rate-limit and common route handlers. Each row cites where the code is emitted.
 
-### 2xx Success Codes
+## HTTP status codes
 
-| Code | Name | Description |
-|------|------|-------------|
+Statuses actually set by handlers:
+
+| Code | Name | When used |
+|------|------|-----------|
 | 200 | OK | Request succeeded |
 | 201 | Created | Resource created successfully |
-| 204 | No Content | Request succeeded with no content to return |
-
-### 4xx Client Error Codes
-
-| Code | Name | Description |
-|------|------|-------------|
-| 400 | Bad Request | Invalid request format or missing required parameters |
-| 401 | Unauthorized | Authentication required or invalid credentials |
-| 403 | Forbidden | Authenticated but insufficient permissions |
-| 404 | Not Found | Requested resource not found |
-| 429 | Too Many Requests | Rate limit exceeded |
-
-### 5xx Server Error Codes
-
-| Code | Name | Description |
-|------|------|-------------|
+| 400 | Bad Request | Invalid token payload, invalid email, failed schema validation |
+| 401 | Unauthorized | Missing/invalid/expired bearer token, authentication required |
+| 403 | Forbidden | Insufficient permissions; HTTPS required on auth endpoints |
+| 404 | Not Found | Missing resource, user, tunnel, session or webhook |
+| 429 | Too Many Requests | Rate limit exceeded (e.g. bridge polling, Stripe rate-limit mapping) |
 | 500 | Internal Server Error | Unexpected server error |
-| 503 | Service Unavailable | Service temporarily unavailable or dependencies down |
+| 503 | Service Unavailable | Dependencies or local services unavailable |
 
-## Error Categories and Codes
+## Verified error codes
 
-### Authentication Errors (401)
+### Authentication
 
-| Code | Message | Description | Resolution |
-|------|---------|-------------|-----------|
-| MISSING_TOKEN | Token required | No authentication token provided | Provide valid JWT token in Authorization header |
-| INVALID_TOKEN | Invalid token format | Token format is invalid | Ensure token is properly formatted |
-| INVALID_TOKEN_FORMAT | Invalid token format | Token cannot be decoded | Provide valid JWT token |
-| TOKEN_EXPIRED | Token expired | JWT token has expired | Refresh token using /auth/token/refresh |
-| TOKEN_REFRESH_FAILED | Token refresh failed | Unable to refresh token | Check refresh token validity |
-| TOKEN_REFRESH_ERROR | Token refresh failed | Error during token refresh | Retry or re-authenticate |
-| INVALID_REFRESH_TOKEN | Invalid refresh token format | Refresh token format is invalid | Provide valid refresh token |
-| MISSING_REFRESH_TOKEN | Refresh token required | No refresh token provided | Provide refresh token in request body or cookie |
-| AUTH_REQUIRED | Authentication required | Endpoint requires authentication | Authenticate with valid JWT token |
-| HTTPS_REQUIRED | HTTPS required | Authentication endpoints require HTTPS | Use HTTPS in production |
+| Code | Status | Meaning | Source |
+|------|--------|---------|--------|
+| MISSING_TOKEN | 400 | No bearer token supplied to the token-expiry check | `services/api-backend/routes/auth.js` |
+| INVALID_TOKEN | 401 | Token could not be decoded / is invalid | `services/api-backend/routes/auth.js`, `middleware/admin-auth.js` |
+| TOKEN_EXPIRED | 401 | JWT `exp` is in the past | `services/api-backend/middleware/auth.js` |
+| AUTH_REQUIRED | 401 | Endpoint requires authentication | `services/api-backend/middleware/composite-auth.js`, `rbac.js`, `tier-check.js` |
+| HTTPS_REQUIRED | 403 | Auth endpoint requires HTTPS | `services/api-backend/routes/auth.js` |
 
-### Authorization Errors (403)
+### Authorization
 
-| Code | Message | Description | Resolution |
-|------|---------|-------------|-----------|
-| INSUFFICIENT_PERMISSIONS | Insufficient permissions | User lacks required permissions | Request admin to grant permissions |
-| ADMIN_REQUIRED | Admin access required | Endpoint requires admin role | Use admin account |
-| TIER_FEATURE_UNAVAILABLE | Feature not available for tier | Feature not available in user's tier | Upgrade to higher tier |
-| RATE_LIMIT_EXEMPTION_DENIED | Rate limit exemption denied | User not eligible for exemption | Contact support |
+| Code | Status | Meaning | Source |
+|------|--------|---------|--------|
+| INSUFFICIENT_PERMISSIONS | 403 | Authenticated user lacks the required permission | `services/api-backend/middleware/admin-auth.js`, `rbac.js` |
 
-### Validation Errors (400)
+### Validation
 
-| Code | Message | Description | Resolution |
-|------|---------|-------------|-----------|
-| MISSING_PARAMETER | Missing required parameter | Required parameter not provided | Include all required parameters |
-| INVALID_PARAMETER | Invalid parameter value | Parameter value is invalid | Provide valid parameter value |
-| INVALID_EMAIL | Invalid email format | Email format is invalid | Provide valid email address |
-| INVALID_URL | Invalid URL format | URL format is invalid | Provide valid URL |
-| INVALID_JSON | Invalid JSON format | Request body is not valid JSON | Provide valid JSON |
-| VALIDATION_ERROR | Validation failed | Input validation failed | Check error details for specific issues |
-| MISSING_SESSION_ID | Session ID required | Session ID not provided | Provide valid session ID |
-| INVALID_TUNNEL_CONFIG | Invalid tunnel configuration | Tunnel configuration is invalid | Check configuration parameters |
+| Code | Status | Meaning | Source |
+|------|--------|---------|--------|
+| VALIDATION_ERROR | 400 | Shared schema/input validation failed | `services/api-backend/middleware/schema-validation.js`, `utils/input-validation.js` |
+| INVALID_EMAIL | 400 | Invalid email address | `services/api-backend/routes/admin/email.js` |
 
-### Resource Not Found Errors (404)
+### Not found
 
-| Code | Message | Description | Resolution |
-|------|---------|-------------|-----------|
-| NOT_FOUND | Resource not found | Requested resource does not exist | Verify resource ID |
-| USER_NOT_FOUND | User not found | User does not exist | Check user ID |
-| TUNNEL_NOT_FOUND | Tunnel not found | Tunnel does not exist | Check tunnel ID |
-| SESSION_NOT_FOUND | Session not found | Session does not exist | Create new session |
-| WEBHOOK_NOT_FOUND | Webhook not found | Webhook does not exist | Check webhook ID |
+| Code | Status | Meaning | Source |
+|------|--------|---------|--------|
+| NOT_FOUND | 404 | Generic resource not found | `services/api-backend/routes/api-keys.js`, `proxy-config.js`, `proxy-health.js` |
+| USER_NOT_FOUND | 404 (403 in admin auth) | User does not exist | `services/api-backend/routes/admin/users.js`, `middleware/admin-auth.js` |
+| TUNNEL_NOT_FOUND | 404 | Tunnel does not exist | `services/api-backend/routes/tunnel-health.js`, `tunnels.js` |
+| SESSION_NOT_FOUND | 404 | Session does not exist | `services/api-backend/routes/auth.js` |
+| WEBHOOK_NOT_FOUND | 404 | Webhook does not exist | `services/api-backend/routes/proxy-webhooks.js`, `tunnel-webhooks.js` |
 
-### Rate Limiting Errors (429)
+### Rate limiting
 
-| Code | Message | Description | Resolution |
-|------|---------|-------------|-----------|
-| RATE_LIMIT_EXCEEDED | Rate limit exceeded | Too many requests | Wait before retrying |
-| RATE_LIMIT_EXCEEDED_USER | Rate limit exceeded for user | User rate limit exceeded | Wait or upgrade tier |
-| RATE_LIMIT_EXCEEDED_IP | Rate limit exceeded for IP | IP rate limit exceeded | Wait before retrying |
-| QUOTA_EXCEEDED | Quota exceeded | Resource quota exceeded | Upgrade tier or wait for reset |
+| Code | Status | Meaning | Source |
+|------|--------|---------|--------|
+| RATE_LIMIT_EXCEEDED | 429 | Bridge polling limit exceeded / Stripe rate-limit mapped to 429 | `services/api-backend/routes/bridge-polling-routes.js`, `services/stripe-client.js` |
 
-### Server Errors (500)
+Other rate-limit handlers emit their own codes, for example `ADMIN_RATE_LIMIT_EXCEEDED`, `API_KEY_RATE_LIMIT_EXCEEDED` and `WEBHOOK_RATE_LIMIT_EXCEEDED`; see the corresponding middleware for details.
 
-| Code | Message | Description | Resolution |
-|------|---------|-------------|-----------|
-| INTERNAL_ERROR | Internal server error | Unexpected server error | Retry or contact support |
-| DATABASE_ERROR | Database error | Database operation failed | Retry or contact support |
-| SERVICE_ERROR | Service error | External service error | Retry or contact support |
-| CONFIGURATION_ERROR | Configuration error | Server configuration error | Contact support |
+### Server errors
 
-### Service Unavailable Errors (503)
+| Code | Status | Meaning | Source |
+|------|--------|---------|--------|
+| INTERNAL_ERROR | 500 | Unexpected server error | `services/api-backend/routes/proxy-webhooks.js`, `sandbox.js`, `tunnel-health.js` |
+| SERVICE_UNAVAILABLE | 503 | Dependency or service unavailable | `services/api-backend/routes/cloud-connector.js`, `proxy-config.js`, `proxy-diagnostics.js` |
 
-| Code | Message | Description | Resolution |
-|------|---------|-------------|-----------|
-| SERVICE_UNAVAILABLE | Service unavailable | Service temporarily unavailable | Retry after delay |
-| DATABASE_UNAVAILABLE | Database unavailable | Database is unavailable | Wait for database recovery |
-| CACHE_UNAVAILABLE | Cache unavailable | Cache service is unavailable | Retry or use fallback |
-| EXTERNAL_SERVICE_UNAVAILABLE | External service unavailable | External service is down | Wait for service recovery |
+## Error response format
 
-## Error Response Format
-
-All error responses follow this standard format:
+Handlers do not use a single enforced envelope. The common shape is a flat object with a human-readable `error` and a machine-readable `code`:
 
 ```json
 {
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human-readable error message",
-    "category": "error_category",
-    "statusCode": 400,
-    "correlationId": "req-12345-abcde",
-    "suggestion": "Suggested action to resolve the error",
-    "details": {
-      "field": "Additional error details"
-    }
-  }
+  "error": "Token required",
+  "code": "MISSING_TOKEN"
 }
 ```
 
-### Error Response Fields
+Some handlers add extra fields — for example `services/api-backend/services/stripe-client.js` returns `code`, `message`, `details` and `statusCode`. Clients must not assume any field other than `error`/`code` is always present.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| code | string | Machine-readable error code |
-| message | string | Human-readable error message |
-| category | string | Error category (validation, authentication, authorization, not_found, rate_limit, server, service_unavailable) |
-| statusCode | integer | HTTP status code |
-| correlationId | string | Request correlation ID for tracing |
-| suggestion | string | Suggested action to resolve the error |
-| details | object | Additional error details (optional) |
+### Error response fields
 
-## Error Categories
+| Field | When present |
+|-------|--------------|
+| error | Common: human-readable description |
+| code | Common: machine-readable code from the tables above |
+| message, statusCode, details | Handler-specific (e.g. Stripe error mapping) |
 
-### Validation Errors
+## Error categories
 
-- Invalid input format
-- Missing required parameters
-- Invalid parameter values
-- Constraint violations
+- **Validation** — failed schema/input validation (`VALIDATION_ERROR`, `INVALID_EMAIL`)
+- **Authentication** — missing, invalid or expired tokens (`MISSING_TOKEN`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `AUTH_REQUIRED`)
+- **Authorization** — insufficient permissions (`INSUFFICIENT_PERMISSIONS`)
+- **Not found** — missing resources (`NOT_FOUND`, `USER_NOT_FOUND`, `TUNNEL_NOT_FOUND`, `SESSION_NOT_FOUND`, `WEBHOOK_NOT_FOUND`)
+- **Rate limiting** — too many requests (`RATE_LIMIT_EXCEEDED`)
+- **Server/unavailable** — unexpected errors (`INTERNAL_ERROR`, `SERVICE_UNAVAILABLE`)
 
-### Authentication Errors
+## Rate limit headers
 
-- Missing or invalid tokens
-- Expired tokens
-- Invalid credentials
-- Token refresh failures
-
-### Authorization Errors
-
-- Insufficient permissions
-- Role-based access denied
-- Tier-based feature restrictions
-- Admin-only operations
-
-### Not Found Errors
-
-- Resource does not exist
-- User not found
-- Tunnel not found
-- Session not found
-
-### Rate Limit Errors
-
-- User rate limit exceeded
-- IP rate limit exceeded
-- Quota exceeded
-- Request queued
-
-### Server Errors
-
-- Unexpected exceptions
-- Database errors
-- External service errors
-- Configuration errors
-
-### Service Unavailable Errors
-
-- Service temporarily down
-- Database unavailable
-- Cache unavailable
-- External dependencies down
-
-## Rate Limit Headers
-
-All responses include rate limit information in headers:
+Rate-limit handlers set these headers; `services/api-backend/middleware/webhook-rate-limiter.js` uses minute/hour-suffixed variants.
 
 ```
 X-RateLimit-Limit: 100
@@ -198,112 +110,35 @@ X-RateLimit-Remaining: 95
 X-RateLimit-Reset: 1640000000
 ```
 
-### Rate Limit Header Fields
-
 | Header | Description |
 |--------|-------------|
 | X-RateLimit-Limit | Maximum requests per window |
 | X-RateLimit-Remaining | Remaining requests in current window |
-| X-RateLimit-Reset | Unix timestamp when limit resets |
+| X-RateLimit-Reset | Unix timestamp when the window resets |
 
-## Retry Strategy
+Sources: `services/api-backend/middleware/api-key-auth.js`, `cors-config.js`, `webhook-rate-limiter.js`.
 
-### Retryable Errors
+## Retry strategy (client guidance)
 
-The following errors should be retried with exponential backoff:
+Retryable with backoff:
 
-- 429 (Rate Limit Exceeded)
-- 503 (Service Unavailable)
-- 500 (Internal Server Error) - with caution
-- 504 (Gateway Timeout)
+- 429 (rate limited) — respect `Retry-After` when provided
+- 503 (service unavailable)
 
-### Non-Retryable Errors
+Non-retryable without a change to the request:
 
-The following errors should NOT be retried:
+- 400 (bad request)
+- 401 (unauthorized)
+- 403 (forbidden)
+- 404 (not found)
 
-- 400 (Bad Request)
-- 401 (Unauthorized)
-- 403 (Forbidden)
-- 404 (Not Found)
+## Best practices
 
-## Example Error Responses
-
-### Authentication Error
-
-```json
-{
-  "error": {
-    "code": "INVALID_TOKEN",
-    "message": "Invalid token format",
-    "category": "authentication",
-    "statusCode": 401,
-    "correlationId": "req-12345-abcde",
-    "suggestion": "Ensure token is properly formatted and not expired"
-  }
-}
-```
-
-### Validation Error
-
-```json
-{
-  "error": {
-    "code": "MISSING_PARAMETER",
-    "message": "Missing required parameter",
-    "category": "validation",
-    "statusCode": 400,
-    "correlationId": "req-12345-abcde",
-    "suggestion": "Include all required parameters in request",
-    "details": {
-      "missingFields": ["name", "email"]
-    }
-  }
-}
-```
-
-### Rate Limit Error
-
-```json
-{
-  "error": {
-    "code": "RATE_LIMIT_EXCEEDED",
-    "message": "Rate limit exceeded",
-    "category": "rate_limit",
-    "statusCode": 429,
-    "correlationId": "req-12345-abcde",
-    "suggestion": "Wait before retrying",
-    "details": {
-      "retryAfter": 60
-    }
-  }
-}
-```
-
-### Server Error
-
-```json
-{
-  "error": {
-    "code": "INTERNAL_ERROR",
-    "message": "Internal server error",
-    "category": "server",
-    "statusCode": 500,
-    "correlationId": "req-12345-abcde",
-    "suggestion": "Retry or contact support if problem persists"
-  }
-}
-```
-
-## Best Practices
-
-1. **Always include correlation IDs** in error logs for tracing
-2. **Use appropriate HTTP status codes** for error categorization
-3. **Provide actionable suggestions** in error messages
-4. **Include relevant details** for debugging
-5. **Implement exponential backoff** for retryable errors
-6. **Log all errors** with full context
-7. **Monitor error rates** for anomalies
-8. **Document custom error codes** in API documentation
+1. Include correlation IDs in server-side error logs for tracing
+2. Use appropriate HTTP status codes for error categorization
+3. Treat `code`, not the human-readable `error` text, as the stable identifier
+4. Add relevant details where the handler supplies them
+5. Apply exponential backoff to retryable responses
 
 ## Support
 

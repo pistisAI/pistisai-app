@@ -1,5 +1,7 @@
 # ArgoCD Proxmox Management VM Runbook
 
+> **Audit decision (#816, part of #812 — docs audit; recorded 2026-11-24): archive.** No ArgoCD manifests or cluster configuration exist in this repository — there is no `k8s/bootstrap/root-app.yaml` or `k8s/apps/managed/argo-apps.yaml`, and the only ArgoCD content is archived documentation. The sizing and runbook below are therefore treated as planned/external guidance, not a description of deployed infrastructure. The file was moved here from `docs/deployment/` by #949 (commit 0023a9b), which is linked to #812/#816; this note records that decision alongside the content.
+
 This runbook defines how to run ArgoCD in a dedicated Proxmox VM/LXC, separate from application workloads.
 
 ## Purpose
