@@ -6,6 +6,8 @@ Pistisai uses a Tailscale-first secure device mesh to connect the user's devices
 
 Give Hermes, OpenClaw, and other compatible agent runtimes secure, permissioned hands and eyes on the user's authorized desktops without exposing desktop-control APIs to the public internet.
 
+**Current status:** The pieces named below exist in code — `TailscaleIntegrationService` (`lib/services/tailscale_integration_service.dart`) and `CloudConnectorService` (`lib/services/cloud_connector_service.dart`, described in its own source as "best-effort platform/device descriptors for cloud registration"). The topology in this document is the **intended** target; it is not a claim that a fully isolated, per-user connector container is already running.
+
 ## Core Model
 
 The agent runtime location is chosen by setup. It can be:
@@ -141,4 +143,4 @@ Reasons:
 - [Desktop Control](DESKTOP_CONTROL.md)
 - [Vision System](VISION_SYSTEM.md)
 - [Avatar System](AVATAR_SYSTEM.md)
-- [Product Specification(SPEC.md was deleted; see decision D-005)
+- Product Specification: SPEC.md was deleted (see decision D-005).

@@ -6,12 +6,13 @@ This document describes the validation and error handling system for the Platfor
 
 The settings validation and error handling system provides:
 
-1. **SettingsValidator** - Validates all setting types with detailed error messages
-2. **SettingsError** - Typed error representation with retry capability
-3. **SettingsErrorHandler** - User-friendly error display and messaging
-4. **SettingsState** - State management for validation errors and operation status
-5. **Error Display Widgets** - Reusable UI components for showing errors
-6. **Form Helper Widgets** - Validated input widgets with inline error display
+1. **SettingsValidator** - Validates all setting types with detailed error messages (`lib/services/settings_validator.dart`, present).
+2. **SettingsError / SettingsErrorHandler** - Typed error representation and user-friendly messaging (`lib/utils/settings_error_handler.dart`, present).
+3. **SettingsState** - State management for validation errors and operation status — **planned, not present** (no `lib/models/settings_state.dart`).
+4. **Error Display Widgets** - Reusable UI components for showing errors — **planned, not present** (no `lib/widgets/settings/settings_error_widgets.dart`).
+5. **Form Helper Widgets** - Validated input widgets with inline error display — **planned, not present** (no `lib/widgets/settings/settings_form_helper.dart`).
+
+Only `SettingsValidator` and `SettingsError`/`SettingsErrorHandler` exist in the codebase today. The sections below that describe `SettingsState`, the error display widgets and the form helpers are **target designs**, retained as planned work; their file paths do not resolve and the usage examples that import them are illustrative only.
 
 ## Components
 
@@ -107,9 +108,9 @@ Future<void> showErrorDialog(BuildContext context, SettingsError error, {VoidCal
 void showSuccessMessage(BuildContext context, String message, {Duration duration});
 ```
 
-### SettingsState
+### SettingsState (Planned — file not present)
 
-Located in `lib/models/settings_state.dart`
+`lib/models/settings_state.dart` does **not** exist in the repository. The API below is a target design, not available code:
 
 Manages validation and operation state:
 
@@ -152,9 +153,9 @@ class SettingsState extends ChangeNotifier {
 }
 ```
 
-### Error Display Widgets
+### Error Display Widgets (Planned — file not present)
 
-Located in `lib/widgets/settings/settings_error_widgets.dart`
+`lib/widgets/settings/settings_error_widgets.dart` does **not** exist in the repository. The widgets below are a target design, not available code.
 
 **FieldErrorMessage** - Inline error for form fields
 
@@ -210,9 +211,9 @@ RetryButton(
 )
 ```
 
-### Form Helper Widgets
+### Form Helper Widgets (Planned — file not present)
 
-Located in `lib/widgets/settings/settings_form_helper.dart`
+`lib/widgets/settings/settings_form_helper.dart` does **not** exist in the repository. The widgets below are a target design, not available code.
 
 **ValidatedSettingsTextField** - Text input with validation
 

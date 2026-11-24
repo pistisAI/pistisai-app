@@ -50,8 +50,8 @@ The **primary Pistisai desktop install** (normally the first app installed) is t
 | Shared Flutter package | `lib/shared/pubspec.yaml`, Dart `>=3.9.0 <4.0.0` |
 | Local database | Drift/SQLite in `lib/database/drift_local_brain.dart` |
 | Embedded router | Shelf server in `lib/services/router_server.dart`, default port `1337` |
-| API backend | Express 5 ESM in `services/api-backend/`, Node `>=22 <27`, default port `8080` |
-| Streaming proxy | Express 5 ESM in `services/streaming-proxy/`, Node `>=22 <27`, default port `3001` |
+| API backend | Express 5 ESM in `services/api-backend/`, Node `>=26.0.0 <28.0.0` (`services/api-backend/package.json:67-69`), default port `8080` |
+| Streaming proxy | Express 5 ESM in `services/streaming-proxy/`, Node `>=26.0.0 <28.0.0` (`services/streaming-proxy/package.json:51-53`), default port `3001` |
 | Tailscale relay | ESM service in `services/tailscale-relay/`, default port `3002` |
 | Auth backend | CommonJS Express 5 app in `backend/auth/`, default port `3000` |
 
@@ -102,9 +102,7 @@ Use `di.serviceLocator<T>()` or `serviceLocator.get<T>()` for registered service
 | `AgentLifecycleService` | `lib/services/agent_lifecycle_service.dart` |
 | `GatewayControlService` | `lib/services/openclaw_manager/gateway_control_service.dart` |
 
-Agent runtime discovery should scan Hermes, OpenClaw Gateway on `localhost:18789`, and compatible custom agent gateways.
-
-Local model provider discovery may scan LM Studio on `localhost:1234`, Ollama on `localhost:11434`, and similar model endpoints for memory/background features only.
+`ProviderDiscoveryService.scanForAgentRuntimes()` currently auto-scans **Hermes only** (`lib/services/provider_discovery_service.dart:44-46,40-63`); OpenClaw Gateway's `localhost:18789` default is a configuration target, not an auto-discovered runtime. Support-provider scanning covers LM Studio on `localhost:1234` and Ollama on `localhost:11434` for memory/background features only (`provider_discovery_service.dart:66-89,92-117`).
 
 ### Avatar
 
@@ -131,7 +129,7 @@ Voice is part of the avatar companion experience. The main app can show compact 
 | Service | File |
 | --- | --- |
 | `GuiAutomationService` | `lib/services/gui_automation_service.dart` |
-| `SystemControlService` | `lib/services/system_control_service.dart` |
+| Screenshot capture | `lib/services/gui_automation_service.dart` (`takeScreenshot()`); no `SystemControlService` exists |
 | `ClipboardService` | `lib/services/desktop_control/clipboard_service.dart` |
 | `WindowManagerService` | `lib/services/desktop_control/window_manager_service.dart` |
 
@@ -236,7 +234,7 @@ dart run build_runner build --delete-conflicting-outputs
 | Tailscale relay | `services/tailscale-relay/` | Relay service using Express 4 |
 | Auth backend | `backend/auth/` | Lightweight CommonJS Auth0 JWT validation |
 | SDK | `services/sdk/` | TypeScript SDK published from `dist/` |
-| OpenClaw skills | `services/openclaw-skills/Pistisai/` | Avatar personality/evolution skill package |
+| OpenClaw skills | `services/openclaw-skills/pistisai/` | Avatar personality/evolution skill package |
 
 ## Platform Boundaries
 

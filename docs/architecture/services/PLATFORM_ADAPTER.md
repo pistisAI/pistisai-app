@@ -329,8 +329,8 @@ serviceLocator.registerSingleton<PlatformAdapter>(platformAdapter);
 
 Both `PlatformDetectionService` and `PlatformAdapter` have comprehensive test coverage:
 
-- `test/services/platform_detection_service_test.dart` - 42 tests
-- `test/services/platform_adapter_test.dart` - 26 tests
+- `test/services/platform_detection_service_test.dart` - 44 tests (44 `test(` calls in the file)
+- `test/services/platform_adapter_test.dart` - 7 tests (7 `testWidgets(` calls — this file uses widget tests, not `test(`)
 
 Run tests:
 

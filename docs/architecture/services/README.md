@@ -7,7 +7,7 @@ This directory contains the business logic and state management services for Pis
 Services in this directory follow these patterns:
 
 - Extend `ChangeNotifier` for reactive state management
-- Registered in `di/locator.dart` using get_it dependency injection
+- Registered in `lib/di/locator.dart` via get_it dependency injection, in two phases (`setupCoreServices()` then `setupAuthenticatedServices()`)
 - Provided to widget tree via Provider in `main.dart`
 - Core services (AuthService) always available
 - Authenticated services registered after login
@@ -48,32 +48,38 @@ Services in this directory follow these patterns:
 
 ## Service Registration
 
-Services are registered in `lib/di/locator.dart`:
+Services are registered in `lib/di/locator.dart` in **two phases** (see `SYSTEM_ARCHITECTURE.md` and `service_lifecycle.md`):
 
 ```dart
-// Core services (always available)
-locator.registerLazySingleton<AuthService>(() => AuthService());
+// Phase 1 — core/pre-auth services (lib/di/locator.dart:137)
+Future<void> setupCoreServices() async {
+  // Registers AuthProvider, AuthService, LocalBrain, ProviderDiscoveryService,
+  // PlatformDetectionService, PlatformAdapter, avatar services, ...
+  serviceLocator.registerSingleton<AuthService>(AuthService(authProvider));
+}
 
-// Admin services (registered after authentication)
-void registerAdminServices() {
-  locator.registerLazySingleton<PaymentGatewayService>(
-    () => PaymentGatewayService(authService: locator<AuthService>())
-  );
+// Phase 2 — auth-dependent services (lib/di/locator.dart:832)
+Future<void> setupAuthenticatedServices() async {
+  final authService = serviceLocator.get<AuthService>();
+  // Registers ConnectionManagerService, TunnelService, StreamingProxyService,
+  // AdminCenterService, ClipboardService, MainVisionService, ...
 }
 ```
+
+`setupServiceLocator()` still exists but is only a compatibility wrapper that delegates to `setupCoreServices()` (`lib/di/locator.dart:1260-1261`). There is **no** `registerAdminServices()` function in the codebase — that name in older copies of this doc was invented. `PaymentGatewayService` has a source file (`lib/services/payment_gateway_service.dart`) but is **not** currently registered in `lib/di/locator.dart`; `AdminCenterService` is the registered admin service (:1063).
 
 ## Service Usage
 
 ### Accessing Services
 
 ```dart
-// Via dependency injection
-final authService = locator<AuthService>();
-final paymentService = locator<PaymentGatewayService>();
+// Via dependency injection (lib/di/locator.dart)
+final authService = serviceLocator.get<AuthService>();
+final adminService = serviceLocator.get<AdminCenterService>();
 
 // Via Provider (in widgets)
 final authService = Provider.of<AuthService>(context, listen: false);
-final paymentService = context.watch<PaymentGatewayService>();
+final adminService = context.watch<AdminCenterService>();
 ```
 
 ### State Management Pattern
@@ -158,28 +164,24 @@ void _setupDio() {
 2. Callback handled by `/callback` route
 3. JWT tokens stored in flutter_secure_storage
 4. AuthService notifies listeners of auth state change
-5. Admin services registered in DI container
+5. Authenticated services registered in the DI container via `setupAuthenticatedServices()` (`lib/di/locator.dart:832`)
 6. Provider tree rebuilt with authenticated services
 
 ## Service Lifecycle
 
 ### Initialization
 
+Bootstrap is owned by `AppBootstrapper.load()` (`lib/bootstrap/bootstrapper.dart:17-25`) and `lib/di/locator.dart`:
+
 ```dart
-// In main.dart
-void main() async {
-  setupLocator(); // Register core services
-  
-  final authService = locator<AuthService>();
-  await authService.initialize();
-  
-  if (authService.isAuthenticated.value) {
-    registerAdminServices(); // Register authenticated services
-  }
-  
-  runApp(MyApp());
-}
+// Conceptual sequence — see the real functions in lib/di/locator.dart
+await setupCoreServices();            // pre-auth services (:137)
+// desktop: setupAuthenticatedServices() is auto-bootstrapped with a 30s timeout (:650)
+// web: explicit auth/session bootstrap is required first (:704)
+await setupAuthenticatedServices();   // auth-dependent services (:832)
 ```
+
+There is no `setupLocator()` / `registerAdminServices()` pair in the codebase — those names in older copies of this doc were invented. Access registered services with `serviceLocator.get<T>()` (or `di.serviceLocator<T>()`).
 
 ### Cleanup
 
@@ -237,10 +239,9 @@ Planned services for Admin Center:
 
 ## Documentation
 
-- Admin Center Design: `.kiro/specs/admin-center/design.md`
-- Admin Center Requirements: `.kiro/specs/admin-center/requirements.md`
-- Admin API Reference: `docs/API/ADMIN_API.md`
-- Models Documentation: `lib/models/README.md`
+- Admin Center Design / Requirements: the historical `.kiro/specs/admin-center/` files are **not present** in this repository; treat those references as archived, not live docs.
+- Admin API Reference: `docs/api/ADMIN_API.md` (lowercase `api` path; `docs/API/` does not exist).
+- Models: there is no `lib/models/README.md` in the tree; generated models live beside their Dart sources.
 
 ## Support
 
@@ -350,9 +351,7 @@ final metrics = adminService.dashboardMetrics;
 
 ### Documentation
 
-- Admin Center design: `.kiro/specs/admin-center/design.md`
-- Admin API reference: `docs/API/ADMIN_API.md`
-- Task completion: `.kiro/specs/admin-center/TASK_13_COMPLETION_SUMMARY.md`
+The historical `.kiro/specs/admin-center/` files (including `TASK_13_COMPLETION_SUMMARY.md`) are **not present** in this repository; treat those references as archived. Admin API reference: `docs/api/ADMIN_API.md` (lowercase `api` path).
 
 ### Lifecycle
 
