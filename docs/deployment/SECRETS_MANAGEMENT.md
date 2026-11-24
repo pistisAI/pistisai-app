@@ -1,61 +1,51 @@
 # Pistisai - Secrets Management Guide
 
-This document provides a comprehensive overview of all the required secrets for the Pistisai CI/CD pipeline and local development.
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Required Secrets](#required-secrets)
-3. [Obtaining Secrets](#obtaining-secrets)
-4. [Setting Up Secrets](#setting-up-secrets)
-5. [Security Best Practices](#security-best-practices)
+This document lists the repository secrets actually referenced by the CI/CD workflows and the local environment file used for development.
 
 ## Overview
 
-Secrets are sensitive pieces of information, such as API keys, passwords, and certificates, that are required for the application to function correctly. This guide provides a single source of truth for all the secrets used in the Pistisai project.
+Secrets are sensitive values such as tokens and keys. They belong in GitHub Actions repository secrets or in a git-ignored local `.env`, never in version control. See `AGENTS.md` for the repository-wide personal-data rule.
 
-## Required Secrets
+## Secrets used by CI/CD
+
+Verified against `secrets.*` references in `.github/workflows/`:
 
 | Secret Name | Description | Used In |
 | --- | --- | --- |
-| `GCP_PROJECT_ID` | Google Cloud Project ID | CI/CD |
-| `GCP_SA_KEY` | Service account JSON key for Google Cloud authentication | CI/CD |
-| `JWT_SECRET` | JWT secret for token signing | CI/CD |
-| `JWT_AUDIENCE` | Auth0 API Audience | CI/CD |
+| `GITHUB_TOKEN` | Built-in Actions token used to log in to GHCR (`ghcr.io`) and push images | `deploy-web.yml`, `deploy-backend.yml` |
+| `CLOUDFLARE_CACHE_PURGE_TOKEN` | Cloudflare API token with zone cache-purge permission | `deploy-web.yml` `purge_cache` job |
+| `CF_ZONE_ID` | Cloudflare zone ID for the full-zone purge request | `deploy-web.yml` `purge_cache` job |
+| `BUMP_APP_ID` | GitHub App client ID used to mint a token for the release bump PR | `auto-version-bump.yml` |
+| `BUMP_APP_KEY` | GitHub App private key for the same bump PR | `auto-version-bump.yml` |
+| `SENTRY_DSN` | Sentry DSN referenced by CI workflows | `.github/workflows/` |
+
+There are no `GCP_PROJECT_ID`, `GCP_SA_KEY`, `JWT_SECRET` or `JWT_AUDIENCE` repository secrets in these workflows. Deployments publish images to GHCR and purge Cloudflare via `CLOUDFLARE_CACHE_PURGE_TOKEN` / `CF_ZONE_ID`; sign-in uses Cloudflare Access (see [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md)), not a CI-held JWT secret.
 
 ## Obtaining Secrets
 
-### Google Cloud Platform
-
-* **`GCP_PROJECT_ID`**: Your Google Cloud Project ID.
-* **`GCP_SA_KEY`**:
-    1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-    2. Navigate to **IAM & Admin > Service Accounts**.
-    3. Create or select a service account.
-    4. Create a new JSON key and download it. The content of this file is the value for this secret.
-
-### Authentication
-
-* **`JWT_SECRET`**: A secure, randomly generated string for signing JWTs.
-* **`JWT_AUDIENCE`**: Your Auth0 API audience.
-
-## Setting Up Secrets
-
 ### GitHub Actions
 
-1. Navigate to your repository on GitHub.
-2. Go to **Settings > Secrets and variables > Actions**.
-3. Click **New repository secret**.
-4. Add each secret with the name and value as specified above.
+- `GITHUB_TOKEN` is provided automatically; no manual setup is needed.
+- `BUMP_APP_ID` / `BUMP_APP_KEY` come from a GitHub App with permission to open and merge the automated version-bump PR.
+- `CLOUDFLARE_CACHE_PURGE_TOKEN` / `CF_ZONE_ID`: create a Cloudflare API token scoped to **Zone → Cache Purge → Purge** for your zone, and copy the zone ID from the Cloudflare dashboard. The deploy fails if either is unset (see `deploy-web.yml`).
 
 ### Local Development
 
-1. Copy the `env.template` file to `.env`.
-2. Update the `.env` file with the values for your local environment.
+1. Copy the tracked template: `cp .env.example .env`
+2. Fill in the values for your local services. `.env` is git-ignored; never commit it.
+
+`config/env.template` also exists as a CI/config template, but the documented local setup in [Self-Hosting](SELF_HOSTING.md) and [Docker Deployment](DOCKER_DEPLOYMENT.md) uses `.env.example`.
+
+## Setting Up Secrets in GitHub
+
+1. Navigate to the repository on GitHub.
+2. Go to **Settings → Secrets and variables → Actions**.
+3. Click **New repository secret**.
+4. Add each secret with the exact name listed above.
 
 ## Security Best Practices
 
 * **Never commit secrets to version control.**
-* **Use the principle of least privilege when creating service accounts.**
-* **Rotate secrets periodically.**
-* **Use a secrets management tool for local development.**
+* Use least-privilege Cloudflare tokens; the purge workflow only needs cache purge.
+* Rotate credentials periodically.
+* Use a secrets manager for local development where practical.

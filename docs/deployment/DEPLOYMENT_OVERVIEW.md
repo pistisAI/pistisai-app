@@ -25,17 +25,16 @@ Deploy the full Pistisai stack to **Kubernetes** using Dockerfiles and Kubernete
 - **Self-Hosted Kubernetes**: On-premises or your own infrastructure
 
 ```bash
-# Build and push Docker images to your container registry
-docker build -f config/docker/Dockerfile.web \
-  -t your-registry.com/ghcr.io/pistisai/pistisai/web:latest .
-docker push your-registry.com/ghcr.io/pistisai/pistisai/web:latest
+# Build and push images to your container registry (production CI uses GHCR:
+# ghcr.io/pistisai/pistisai-app-web and ghcr.io/<repo>/api-backend)
+docker build -f Dockerfile.web -t your-registry.com/pistisai/web:latest .
+docker push your-registry.com/pistisai/web:latest
 
-docker build -f services/api-backend/Dockerfile.prod \
-  -t your-registry.com/Pistisai/api:latest .
-docker push your-registry.com/Pistisai/api:latest
+docker build -f config/docker/Dockerfile.api-backend -t your-registry.com/pistisai/api:latest .
+docker push your-registry.com/pistisai/api:latest
 
 # Deploy to Kubernetes (any cluster) — see config/kubernetes/ and services/*/k8s/
-kubectl apply -f config/kubernetes/namespace.yaml
+kubectl apply -f config/kubernetes/base/namespace.yaml
 kubectl apply -f config/kubernetes/base/
 ```
 
@@ -115,27 +114,26 @@ Builds the Flutter web application as a static site served by Nginx.
 docker build -f config/docker/Dockerfile.web -t Pistisai-web:latest .
 ```
 
-#### `services/api-backend/Dockerfile.prod`
+#### `config/docker/Dockerfile.api-backend`
 
-Builds the Node.js API backend service.
+Builds the Node.js API backend service. There is no `services/api-backend/Dockerfile.prod` in this repository.
 
 ```bash
-docker build -f services/api-backend/Dockerfile.prod -t Pistisai-api:latest .
+docker build -f config/docker/Dockerfile.api-backend -t pistisai-api:latest .
 ```
 
 ### ☸️ **Kubernetes Deployment**
 
 Deploy to any Kubernetes cluster (managed or self-hosted) using the manifests under
-`config/kubernetes/` and per-service `k8s/` folders (there is no root `k8s/` directory):
+`config/kubernetes/base/` and per-service `k8s/` folders (there is no root `k8s/` or `web/k8s/` directory):
 
 ```bash
 # Shared / base manifests
-kubectl apply -f config/kubernetes/namespace.yaml
+kubectl apply -f config/kubernetes/base/namespace.yaml
 kubectl apply -f config/kubernetes/base/
 
 # Service-specific examples
 kubectl apply -f services/api-backend/k8s/
-kubectl apply -f web/k8s/
 ```
 
 **Platform Options:**
@@ -145,7 +143,7 @@ kubectl apply -f web/k8s/
 
 For detailed deployment instructions, see:
 
-- Kubernetes manifests: `config/kubernetes/`, `services/*/k8s/`, `web/k8s/`
+- Kubernetes manifests: `config/kubernetes/base/`, `services/*/k8s/`
 - [Self-Hosting Guide](SELF_HOSTING.md) - For businesses deploying on-premises
 
 ---
@@ -204,7 +202,7 @@ and [docs/development/versioning/](../development/versioning).
 
 ### ☸️ **Kubernetes Deployment**
 
-- Kubernetes manifests live in `config/kubernetes/`, `services/*/k8s/`, and `web/k8s/`
+- Kubernetes manifests live in `config/kubernetes/base/` and `services/*/k8s/`
 
 ### 🏗️ **Architecture**
 

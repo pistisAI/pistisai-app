@@ -55,9 +55,11 @@ sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
 
 | Method | Best For | Notes |
 | --- | --- | --- |
-| DEB package | Ubuntu and Debian users | Best desktop integration |
+| DEB package | Ubuntu and Debian users | Built by `scripts/packaging/build_deb.sh` in the desktop CI workflow; download from releases |
 | AppImage | Most distributions | Portable and self-contained |
 | Source build | Developers | Requires Flutter and native build tooling |
+
+AUR is **not** an installation method: AUR packaging was discontinued and its status document is archived at `docs/archive/historical-reports/deployment/AUR_STATUS.md`. The DEB builder was retained and is still used by `.github/workflows/build-desktop.yml`.
 
 ---
 
@@ -87,6 +89,15 @@ Uninstall:
 
 ```bash
 sudo apt-get remove Pistisai
+```
+
+To build the DEB locally, produce the Linux bundle and run the retained script (the same one `build-desktop.yml` invokes):
+
+```bash
+flutter build linux --release
+chmod +x scripts/packaging/build_deb.sh
+./scripts/packaging/build_deb.sh
+# output: dist/linux/Pistisai_<version>_amd64.deb
 ```
 
 ---

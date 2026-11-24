@@ -5,6 +5,7 @@ This directory documents supported deployment paths for Pistisai.
 ## Start Here
 
 - [Web Deploy](../operations/cicd/WEB_DEPLOY.md) — production Flutter web image and Docker Compose health
+- Production deploy workflows: `.github/workflows/deploy-web.yml` (builds/pushes the web image to GHCR and purges the Cloudflare cache) and `.github/workflows/deploy-backend.yml` (builds/pushes the api-backend, streaming-proxy and postgres images to GHCR)
 - [Deployment Overview](DEPLOYMENT_OVERVIEW.md)
 - [Complete Deployment Workflow](COMPLETE_DEPLOYMENT_WORKFLOW.md)
 - [Self Hosting](SELF_HOSTING.md)
@@ -24,7 +25,7 @@ This directory documents supported deployment paths for Pistisai.
 - [ArgoCD Integration](../archive/historical-reports/deployment/ARGOCD_INTEGRATION.md)
 - [ArgoCD Proxmox Management VM](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
 
-Kubernetes manifests live under `k8s/`, `services/*/k8s/`, and `config/kubernetes/`. Not every Kubernetes path has a README, so link to specific runbooks from this directory when documenting deployment procedures.
+Kubernetes manifests live under `config/kubernetes/base/` (shared base) and `services/*/k8s/` (per-service examples). There is no root `k8s/` directory. Not every Kubernetes path has a README, so link to specific runbooks from this directory when documenting deployment procedures.
 
 ## Cloud And Provider Runbooks
 

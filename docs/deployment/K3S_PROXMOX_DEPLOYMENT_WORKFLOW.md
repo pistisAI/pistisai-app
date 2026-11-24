@@ -34,6 +34,8 @@ scripts/proxmox/clone-k3s-node.sh \
   --role control
 ```
 
+The IP/CIDR and gateway above are **example values** — replace them with addresses from your own network. Both `scripts/proxmox/create-k3s-template.sh` and `scripts/proxmox/clone-k3s-node.sh` exist in the repository.
+
 ## Step 3: Install k3s Control Plane
 
 On control node:
@@ -47,25 +49,26 @@ kubectl get nodes
 
 Follow `docs/archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md`.
 
-## Step 5: Bootstrap GitOps
+## Step 5: Bootstrap the cluster
 
-Apply bootstrap app:
+There is no `k8s/bootstrap/root-app.yaml` in this repository. ArgoCD bootstrap manifests belong in your own GitOps repository; the manifests available here are the shared base under `config/kubernetes/base/` (namespace, HPAs, PDBs, network policies):
 
 ```bash
-kubectl apply -f k8s/bootstrap/root-app.yaml
+kubectl apply -f config/kubernetes/base/namespace.yaml
+kubectl apply -f config/kubernetes/base/
 kubectl -n argocd get applications,applicationsets
 ```
 
 ## Step 6: Deploy Cloudflare Tunnel-Only Ingress
 
-- Managed app ingress uses `k8s/deployments/overlays/managed/cloudflared-tunnel.yaml`
-- Admin ArgoCD ingress uses `k8s/deployments/overlays/managed/cloudflared-admin-tunnel.yaml`
-
-Validate render:
+The repository contains `config/cloudflared/config.yml` as the Tunnel configuration source. The older `k8s/deployments/overlays/managed/cloudflared-tunnel.yaml`, `k8s/deployments/overlays/managed/cloudflared-admin-tunnel.yaml` and `k8s/apps/managed/ingress-cloudflared` paths are **planned, not present** — provide those overlays in your GitOps repo before applying them:
 
 ```bash
-kubectl kustomize k8s/apps/managed/ingress-cloudflared > /tmp/ingress-cloudflared-render.yaml
+# Example once you have supplied the overlay in your own repository:
+# kubectl kustomize <your-gitops-repo>/apps/managed/ingress-cloudflared > ingress-cloudflared-render.yaml
 ```
+
+For the supported production image path, see [Web Deploy](../operations/cicd/WEB_DEPLOY.md).
 
 ## Step 7: Verify Deployment Health
 
