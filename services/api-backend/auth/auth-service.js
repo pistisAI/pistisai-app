@@ -38,10 +38,11 @@ export class AuthService {
     this.authDbMigrator = config.authDbMigrator || null;
     this.mainDbMigrator = config.dbMigrator || null;
 
-    // Dev bypass token: only active when NODE_ENV !== 'production' AND
-    // DEV_BYPASS_TOKEN is explicitly set. No hardcoded fallback — a known
-    // literal in source would be a trivial auth bypass if NODE_ENV is mis-set.
-    if (process.env.NODE_ENV !== 'production') {
+    // Dev bypass token: only active when NODE_ENV is exactly 'development'
+    // AND DEV_BYPASS_TOKEN is explicitly set. An unset, 'test', 'staging' or
+    // misspelled NODE_ENV keeps it off (#895). No hardcoded fallback — a
+    // known literal in source would be a trivial auth bypass.
+    if (process.env.NODE_ENV === 'development') {
       const configured = process.env.DEV_BYPASS_TOKEN;
       this.devBypassToken =
         typeof configured === 'string' && configured.length > 0
@@ -73,7 +74,7 @@ export class AuthService {
 
   /**
    * Returns true when the provided token matches the configured dev bypass token.
-   * The bypass is only active when NODE_ENV !== 'production'.
+   * The bypass is only active when NODE_ENV === 'development'.
    */
   isDevBypassToken(token) {
     if (!this.devBypassToken || !token) {

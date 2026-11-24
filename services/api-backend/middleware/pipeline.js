@@ -29,6 +29,7 @@ import {
   backwardCompatibilityMiddleware,
 } from './api-versioning.js';
 import logger from '../logger.js';
+import { captureRawBody } from './raw-body.js';
 
 /**
  * Middleware Pipeline Order (CRITICAL - DO NOT CHANGE WITHOUT UNDERSTANDING IMPLICATIONS)
@@ -149,8 +150,9 @@ export function setupMiddlewarePipeline(app, options = {}) {
   });
   app.use(requestQueuingMiddleware);
 
-  // 11. Body Parsing - Parse request body
-  app.use(express.json({ limit: '10mb' }));
+  // 11. Body Parsing - Parse request body. Webhook routes that check an
+  // HMAC over the exact bytes sent also get the raw body (#895).
+  app.use(express.json({ limit: '10mb', verify: captureRawBody }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
   // 12. Request Timeout - Set timeout for long-running requests
