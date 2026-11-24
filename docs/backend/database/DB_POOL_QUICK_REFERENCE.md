@@ -60,10 +60,14 @@ DB_METRICS_LOG_INTERVAL=60000       # Metrics logging interval in ms (default: 6
 
 ## API Endpoints
 
-### Health Check
+> **Verified against code:** `services/api-backend/server.js:265-267` mounts every route at both `/api<path>` and `<path>`. The only registered database health route is `registerRoutes('/db/health', dbHealthHandler)` (`server.js:284`), with the handler in `services/api-backend/routes/db-health.js:8-38`; a catch-all `registerRoutes('/db', dbHealthRoutes)` at `server.js:296` uses that same handler. **No `/api/db/pool/health`, `/api/db/pool/metrics` or `/api/db/pool/status` route is registered anywhere in `services/api-backend`** (no matches for those paths in its `.js` files). Pool internals exist in code as `getPoolMetrics()` and `healthCheck()` (`services/api-backend/database/db-pool.js:688-750`) but are not exposed by those endpoints. The pool-specific request/response examples below are a **planned API, not current behavior**.
+
+### Health Check (planned pool endpoint — not implemented)
+
+> The **live** endpoint is `GET /api/db/health` (or `/db/health`), registered at `services/api-backend/server.js:284` and implemented at `services/api-backend/routes/db-health.js:8-38`. It reports schema validation via `dbMigrator.validateSchema()` with a 200 shape of `{"status": "healthy"|"degraded", "database_type", "schema_validation", "all_tables_valid", "timestamp"}` (503 returns `{"status": "error", "message", "error"?, "timestamp"}`) — **not** the `poolMetrics` shape shown below.
 
 ```bash
-# Check pool health
+# Planned, not registered: GET /api/db/pool/health
 GET /api/db/pool/health
 
 # Response (200 OK)
@@ -92,10 +96,10 @@ GET /api/db/pool/health
 }
 ```
 
-### Pool Metrics
+### Pool Metrics (planned — not implemented)
 
 ```bash
-# Get current pool metrics
+# Planned, not registered: GET /api/db/pool/metrics
 GET /api/db/pool/metrics
 
 # Response
@@ -115,10 +119,10 @@ GET /api/db/pool/metrics
 }
 ```
 
-### Monitoring Status
+### Monitoring Status (planned — not implemented)
 
 ```bash
-# Get monitoring configuration
+# Planned, not registered: GET /api/db/pool/status
 GET /api/db/pool/status
 
 # Response
@@ -316,14 +320,13 @@ try {
 
 ### Grafana Metrics
 
-Track these metrics in Grafana:
+**Verified against code:** `services/api-backend/middleware/admin-metrics.js:236-265` defines exactly three pool gauges, all with the `admin_db_pool_` prefix. They are exported by `GET /api/admin-metrics/metrics` (`services/api-backend/routes/admin-metrics.js:40`, mounted at `services/api-backend/server.js:327`):
 
-- `db_pool_active_connections` - Active connections
-- `db_pool_idle_connections` - Idle connections
-- `db_pool_waiting_clients` - Waiting clients
-- `db_pool_errors` - Error count
-- `db_pool_health_check_response_time` - Health check latency
-- `db_pool_usage_percentage` - Pool usage percentage
+- `admin_db_pool_size` - Pool size
+- `admin_db_pool_idle_connections` - Idle connections
+- `admin_db_pool_waiting_requests` - Requests waiting for a connection
+
+The old `db_pool_*` names are **not emitted by any current code (planned only)**: `db_pool_active_connections`, `db_pool_idle_connections`, `db_pool_waiting_clients`, `db_pool_errors`, `db_pool_health_check_response_time`, `db_pool_usage_percentage`. There is no gauge for error count, health-check latency or usage percentage in `admin-metrics.js`.
 
 ### Alert Rules
 
