@@ -130,52 +130,21 @@ class _ConfigScreenState extends State<ConfigScreen>
   bool _isSaving = false;
   String? _errorMessage;
 
-  // Runtime Settings
-  String _selectedSupportProvider = 'Auto';
-  int _rateLimit = 1;
+  // Only settings that something in the app reads are shown here (#854).
+  // Language, notifications, proxy, request/runtime timeouts, concurrency,
+  // support provider, history limits, cache size, security and developer
+  // switches were saved but never applied, so they are not shown until they
+  // are wired ("Controls tell the truth", AGENTS.md).
+
+  /// Read by GatewayControlService.
   bool _autoRestart = true;
-  int _runtimeTimeout = 30;
 
-  // Network Settings
-  bool _useProxy = false;
-  String _proxyHost = '';
-  int _proxyPort = 8080;
-  int _maxRetries = 3;
-  int _requestTimeout = 60;
-
-  // App Settings
-  /// Stored theme code: 'system', 'light' or 'dark'.
+  /// Stored theme code: 'system', 'light' or 'dark'. Applied through
+  /// ThemeProvider, which reads the same preference key.
   String _selectedTheme = 'system';
 
-  /// Stored language code: 'en', 'es', 'fr' or 'de'.
-  String _selectedLanguage = 'en';
-
-  /// Language names shown in their own language, so they need no translation.
-  static const _languageNames = {
-    'en': 'English',
-    'es': 'Español',
-    'fr': 'Français',
-    'de': 'Deutsch',
-  };
-  bool _notificationsEnabled = true;
-  bool _trayIconEnabled = true;
-
-  // Storage Settings
-  int _maxConversationHistory = 1000;
-  bool _enableCache = true;
-  int _cacheSizeMB = 500;
-  bool _autoCleanup = true;
-
-  // Security Settings
-  bool _encryptLocalData = true;
-  bool _biometricAuth = false;
-  int _sessionTimeoutMinutes = 30;
-  bool _rememberTokens = true;
-
-  // Developer Settings
-  bool _debugMode = false;
-  bool _verboseLogging = false;
-  bool _showDevTools = false;
+  /// Read by WindowManagerService.handleWindowClose.
+  bool _closeToTray = true;
 
   // System Info
   String get _buildNumber => AppConfig.appBuildNumber;
@@ -201,7 +170,7 @@ class _ConfigScreenState extends State<ConfigScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _loadSystemInfo();
     _loadActiveBackend();
     _loadData();
@@ -270,44 +239,9 @@ class _ConfigScreenState extends State<ConfigScreen>
         _ => 'system',
       };
 
-      final lang = await _settingsService.getLanguage();
-      _selectedLanguage = _languageNames.containsKey(lang) ? lang : 'en';
-
-      _notificationsEnabled = await _settingsService.isNotificationsEnabled();
-      _trayIconEnabled = await _settingsService.isMinimizeToTrayEnabled();
-      _biometricAuth = await _settingsService.isBiometricAuthEnabled();
+      _closeToTray = await _settingsService.isMinimizeToTrayEnabled();
       final autoRestart = await _settingsService.getGatewayAutoRestart();
       if (autoRestart != null) _autoRestart = autoRestart;
-
-      // Load Runtime Settings
-      _selectedSupportProvider = await _settingsService.getSupportProvider();
-      _rateLimit = await _settingsService.getRateLimit();
-      _runtimeTimeout = await _settingsService.getRuntimeTimeout();
-
-      // Load Network Settings
-      _useProxy = await _settingsService.isProxyEnabled();
-      _proxyHost = await _settingsService.getProxyHost();
-      _proxyPort = await _settingsService.getProxyPort();
-      _maxRetries = await _settingsService.getMaxRetries();
-      _requestTimeout = await _settingsService.getRequestTimeout();
-
-      // Load App Settings
-      _encryptLocalData = await _settingsService.isEncryptLocalDataEnabled();
-      _sessionTimeoutMinutes =
-          await _settingsService.getSessionTimeoutMinutes();
-      _rememberTokens = await _settingsService.isRememberTokensEnabled();
-
-      // Load Storage Settings
-      _maxConversationHistory =
-          await _settingsService.getMaxConversationHistory();
-      _enableCache = await _settingsService.isCacheEnabled();
-      _cacheSizeMB = await _settingsService.getCacheSizeMB();
-      _autoCleanup = await _settingsService.isAutoCleanupEnabled();
-
-      // Load Developer Settings
-      _debugMode = await _settingsService.isDebugModeEnabled();
-      _verboseLogging = await _settingsService.isVerboseLoggingEnabled();
-      _showDevTools = await _settingsService.isShowDevToolsEnabled();
 
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
@@ -319,49 +253,9 @@ class _ConfigScreenState extends State<ConfigScreen>
     final l10n = _l10n;
     setState(() => _isSaving = true);
     try {
-      final themeString = _selectedTheme;
-      await _settingsService.setTheme(themeString);
-      // Keep ThemeProvider in sync so the live UI and persistence agree.
-      if (mounted) {
-        unawaited(
-          context.read<ThemeProvider>().setThemeModeFromString(themeString),
-        );
-      }
-
-      await _settingsService.setLanguage(_selectedLanguage);
-
-      await _settingsService.setNotificationsEnabled(_notificationsEnabled);
-      await _settingsService.setMinimizeToTrayEnabled(_trayIconEnabled);
-      await _settingsService.setBiometricAuthEnabled(_biometricAuth);
+      await _applyTheme(_selectedTheme);
+      await _settingsService.setMinimizeToTrayEnabled(_closeToTray);
       await _settingsService.setGatewayAutoRestart(_autoRestart);
-
-      // Save Runtime Settings
-      await _settingsService.setSupportProvider(_selectedSupportProvider);
-      await _settingsService.setRateLimit(_rateLimit);
-      await _settingsService.setRuntimeTimeout(_runtimeTimeout);
-
-      // Save Network Settings
-      await _settingsService.setProxyEnabled(_useProxy);
-      await _settingsService.setProxyHost(_proxyHost);
-      await _settingsService.setProxyPort(_proxyPort);
-      await _settingsService.setMaxRetries(_maxRetries);
-      await _settingsService.setRequestTimeout(_requestTimeout);
-
-      // Save App Settings
-      await _settingsService.setEncryptLocalDataEnabled(_encryptLocalData);
-      await _settingsService.setSessionTimeoutMinutes(_sessionTimeoutMinutes);
-      await _settingsService.setRememberTokensEnabled(_rememberTokens);
-
-      // Save Storage Settings
-      await _settingsService.setMaxConversationHistory(_maxConversationHistory);
-      await _settingsService.setCacheEnabled(_enableCache);
-      await _settingsService.setCacheSizeMB(_cacheSizeMB);
-      await _settingsService.setAutoCleanupEnabled(_autoCleanup);
-
-      // Save Developer Settings
-      await _settingsService.setDebugModeEnabled(_debugMode);
-      await _settingsService.setVerboseLoggingEnabled(_verboseLogging);
-      await _settingsService.setShowDevToolsEnabled(_showDevTools);
 
       if (mounted) {
         setState(() => _isSaving = false);
@@ -372,6 +266,23 @@ class _ConfigScreenState extends State<ConfigScreen>
         setState(() => _isSaving = false);
         _showSnackBar(l10n.configSaveFailed('$e'), isError: true);
       }
+    }
+  }
+
+  /// Persists [theme] and applies it to the running app. ThemeProvider and
+  /// SettingsPreferenceService share one preference key, so this is the
+  /// value the app loads on the next start too.
+  Future<void> _applyTheme(String theme) async {
+    ThemeProvider? provider;
+    try {
+      provider = context.read<ThemeProvider>();
+    } catch (_) {
+      provider = null;
+    }
+    if (provider != null) {
+      await provider.setThemeModeFromString(theme);
+    } else {
+      await _settingsService.setTheme(theme);
     }
   }
 
@@ -538,7 +449,6 @@ class _ConfigScreenState extends State<ConfigScreen>
           isScrollable: true,
           tabs: [
             Tab(text: l10n.configTabRuntime, icon: const Icon(Icons.hub)),
-            Tab(text: l10n.configTabMesh, icon: const Icon(Icons.wifi)),
             Tab(text: l10n.configTabApp, icon: const Icon(Icons.smartphone)),
             Tab(text: l10n.configTabStorage, icon: const Icon(Icons.storage)),
             Tab(text: l10n.configTabSystem, icon: const Icon(Icons.info)),
@@ -556,7 +466,6 @@ class _ConfigScreenState extends State<ConfigScreen>
                     controller: _tabController,
                     children: [
                       _buildGatewayTab(l10n),
-                      _buildNetworkTab(l10n),
                       _buildAppTab(l10n),
                       _buildStorageTab(l10n),
                       _buildSystemTab(l10n),
@@ -620,21 +529,6 @@ class _ConfigScreenState extends State<ConfigScreen>
           title: l10n.configSupportProviders,
           subtitle: l10n.configSupportProvidersSubtitle,
           children: [
-            _dropdown(
-              l10n.configPreferredSupportProvider,
-              {
-                'Auto': l10n.configSupportProviderAuto,
-                'Ollama': 'Ollama',
-                'LM Studio': 'LM Studio',
-                'OpenAI-compatible': 'OpenAI-compatible',
-              },
-              _selectedSupportProvider,
-              (v) async {
-                final val = v!;
-                setState(() => _selectedSupportProvider = val);
-                await _settingsService.setSupportProvider(val);
-              },
-            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
               child: Text(l10n.configSupportProvidersNote),
@@ -645,74 +539,10 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: l10n.configRequestPolicy,
           children: [
-            _field(l10n.configConcurrentRequests, '$_rateLimit', (v) async {
-              final l = int.tryParse(v);
-              if (l != null && l > 0) {
-                setState(() => _rateLimit = l);
-                await _settingsService.setRateLimit(l);
-              }
-            }, numeric: true, hint: l10n.configConcurrentRequestsHint),
-            _field(l10n.configRuntimeTimeout, '$_runtimeTimeout', (v) async {
-              final l = int.tryParse(v);
-              if (l != null && l > 0) {
-                setState(() => _runtimeTimeout = l);
-                await _settingsService.setRuntimeTimeout(l);
-              }
-            }, numeric: true),
             _switch(l10n.configAutoRestart, _autoRestart, (v) async {
               setState(() => _autoRestart = v);
               await _settingsService.setGatewayAutoRestart(v);
             }),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNetworkTab(AppLocalizations l10n) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        CardSection(
-          title: l10n.configProxySettings,
-          children: [
-            _switch(l10n.configUseProxy, _useProxy, (v) async {
-              setState(() => _useProxy = v);
-              await _settingsService.setProxyEnabled(v);
-            }),
-            if (_useProxy) ...[
-              _field(l10n.configProxyHost, _proxyHost, (v) async {
-                setState(() => _proxyHost = v);
-                await _settingsService.setProxyHost(v);
-              }, hint: l10n.configProxyHostHint),
-              _field(l10n.configProxyPort, '$_proxyPort', (v) async {
-                final p = int.tryParse(v);
-                if (p != null && p > 0 && p < 65536) {
-                  setState(() => _proxyPort = p);
-                  await _settingsService.setProxyPort(p);
-                }
-              }, numeric: true),
-            ],
-          ],
-        ),
-        const SizedBox(height: 16),
-        CardSection(
-          title: l10n.configConnectionSettings,
-          children: [
-            _field(l10n.configRequestTimeout, '$_requestTimeout', (v) async {
-              final t = int.tryParse(v);
-              if (t != null && t > 0) {
-                setState(() => _requestTimeout = t);
-                await _settingsService.setRequestTimeout(t);
-              }
-            }, numeric: true),
-            _field(l10n.configMaxRetries, '$_maxRetries', (v) async {
-              final r = int.tryParse(v);
-              if (r != null && r >= 0) {
-                setState(() => _maxRetries = r);
-                await _settingsService.setMaxRetries(r);
-              }
-            }, numeric: true),
           ],
         ),
       ],
@@ -736,76 +566,32 @@ class _ConfigScreenState extends State<ConfigScreen>
                 _selectedTheme, (v) async {
               final val = v!;
               setState(() => _selectedTheme = val);
-              await _settingsService.setTheme(val);
-            }),
-            _dropdown(l10n.configLanguage, _languageNames, _selectedLanguage,
-                (v) async {
-              final val = v!;
-              setState(() => _selectedLanguage = val);
-              await _settingsService.setLanguage(val);
+              await _applyTheme(val);
             }),
           ],
         ),
-        const SizedBox(height: 16),
-        CardSection(
-          title: l10n.configNotifications,
-          children: [
-            _switch(l10n.configEnableNotifications, _notificationsEnabled,
-                (v) async {
-              setState(() => _notificationsEnabled = v);
-              await _settingsService.setNotificationsEnabled(v);
-            }),
-            if (!kIsWeb)
-              _switch(l10n.configShowTrayIcon, _trayIconEnabled, (v) async {
-                setState(() => _trayIconEnabled = v);
+        if (!kIsWeb) ...[
+          const SizedBox(height: 16),
+          CardSection(
+            title: l10n.configWindow,
+            children: [
+              _switch(l10n.configCloseToTray, _closeToTray, (v) async {
+                setState(() => _closeToTray = v);
                 await _settingsService.setMinimizeToTrayEnabled(v);
-              }),
-          ],
-        ),
+              }, subtitle: l10n.configCloseToTraySubtitle),
+            ],
+          ),
+        ],
         const SizedBox(height: 16),
-        CardSection(
-          title: l10n.configSecurity,
-          children: [
-            _switch(l10n.configEncryptLocalData, _encryptLocalData, (v) async {
-              setState(() => _encryptLocalData = v);
-              await _settingsService.setEncryptLocalDataEnabled(v);
-            }, subtitle: l10n.configEncryptLocalDataSubtitle),
-            if (!kIsWeb)
-              _switch(l10n.configBiometric, _biometricAuth, (v) async {
-                setState(() => _biometricAuth = v);
-                await _settingsService.setBiometricAuthEnabled(v);
-              }, subtitle: l10n.configBiometricSubtitle),
-            _field(l10n.configSessionTimeout, '$_sessionTimeoutMinutes',
-                (v) async {
-              final t = int.tryParse(v);
-              if (t != null && t > 0) {
-                setState(() => _sessionTimeoutMinutes = t);
-                await _settingsService.setSessionTimeoutMinutes(t);
-              }
-            }, numeric: true, hint: l10n.configSessionTimeoutHint),
-            _switch(l10n.configRememberTokens, _rememberTokens, (v) async {
-              setState(() => _rememberTokens = v);
-              await _settingsService.setRememberTokensEnabled(v);
-            }),
-          ],
-        ),
-        const SizedBox(height: 16),
-        CardSection(
-          title: l10n.configDeveloperOptions,
-          children: [
-            _switch(l10n.configDebugMode, _debugMode, (v) async {
-              setState(() => _debugMode = v);
-              await _settingsService.setDebugModeEnabled(v);
-            }, subtitle: l10n.configDebugModeSubtitle),
-            _switch(l10n.configVerboseLogging, _verboseLogging, (v) async {
-              setState(() => _verboseLogging = v);
-              await _settingsService.setVerboseLoggingEnabled(v);
-            }, subtitle: l10n.configVerboseLoggingSubtitle),
-            _switch(l10n.configShowDevTools, _showDevTools, (v) async {
-              setState(() => _showDevTools = v);
-              await _settingsService.setShowDevToolsEnabled(v);
-            }, subtitle: l10n.configShowDevToolsSubtitle),
-          ],
+        Padding(
+          key: const ValueKey('config-not-available-note'),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            l10n.configNotAvailableYetNote,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
         ),
       ],
     );
@@ -815,24 +601,6 @@ class _ConfigScreenState extends State<ConfigScreen>
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        CardSection(
-          title: l10n.configDataRetention,
-          children: [
-            _field(l10n.configMaxHistory, '$_maxConversationHistory',
-                (v) async {
-              final h = int.tryParse(v);
-              if (h != null && h >= 0) {
-                setState(() => _maxConversationHistory = h);
-                await _settingsService.setMaxConversationHistory(h);
-              }
-            }, numeric: true, hint: l10n.configMaxHistoryHint),
-            _switch(l10n.configAutoCleanup, _autoCleanup, (v) async {
-              setState(() => _autoCleanup = v);
-              await _settingsService.setAutoCleanupEnabled(v);
-            }),
-          ],
-        ),
-        const SizedBox(height: 16),
         CardSection(
           title: l10n.configLocalAgentData,
           children: [
@@ -874,27 +642,14 @@ class _ConfigScreenState extends State<ConfigScreen>
         CardSection(
           title: l10n.configCacheManagement,
           children: [
-            _switch(l10n.configEnableCache, _enableCache, (v) async {
-              setState(() => _enableCache = v);
-              await _settingsService.setCacheEnabled(v);
-            }),
-            if (_enableCache)
-              _field(l10n.configCacheSize, '$_cacheSizeMB', (v) async {
-                final c = int.tryParse(v);
-                if (c != null && c > 0) {
-                  setState(() => _cacheSizeMB = c);
-                  await _settingsService.setCacheSizeMB(c);
-                }
-              }, numeric: true),
-            if (_enableCache)
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: OutlinedButton.icon(
-                  onPressed: _clearCache,
-                  icon: const Icon(Icons.cleaning_services, size: 18),
-                  label: Text(l10n.configClearCacheNow),
-                ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: OutlinedButton.icon(
+                onPressed: _clearCache,
+                icon: const Icon(Icons.cleaning_services, size: 18),
+                label: Text(l10n.configClearCacheNow),
               ),
+            ),
           ],
         ),
       ],
@@ -910,10 +665,15 @@ class _ConfigScreenState extends State<ConfigScreen>
           children: [
             _readOnly(l10n.configVersion,
                 l10n.configVersionValue(AppConfig.appVersion, _buildNumber)),
-            _readOnly(l10n.configPlatform,
-                '${Platform.operatingSystem} ${Platform.operatingSystemVersion}'),
+            // dart:io Platform throws on web (#854).
             _readOnly(
-                l10n.configDartVersion, Platform.version.split(' ').first),
+                l10n.configPlatform,
+                kIsWeb
+                    ? 'web'
+                    : '${Platform.operatingSystem} ${Platform.operatingSystemVersion}'),
+            if (!kIsWeb)
+              _readOnly(
+                  l10n.configDartVersion, Platform.version.split(' ').first),
           ],
         ),
         const SizedBox(height: 16),
@@ -942,7 +702,8 @@ class _ConfigScreenState extends State<ConfigScreen>
             if (_configPath.isNotEmpty)
               _readOnly(l10n.configConfigPath, _configPath),
             if (_dataPath.isNotEmpty) _readOnly(l10n.configDataPath, _dataPath),
-            _readOnly(l10n.configWorkingDirectory, Directory.current.path),
+            if (!kIsWeb)
+              _readOnly(l10n.configWorkingDirectory, Directory.current.path),
           ],
         ),
         const SizedBox(height: 16),
@@ -1268,25 +1029,6 @@ class _ConfigScreenState extends State<ConfigScreen>
         items: items.entries
             .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
             .toList(),
-        onChanged: onChanged,
-      ),
-    );
-  }
-
-  Widget _field(String label, String value, ValueChanged<String> onChanged,
-      {bool numeric = false, String? hint}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        initialValue: value,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-          hintText: hint,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        ),
-        keyboardType: numeric ? TextInputType.number : null,
         onChanged: onChanged,
       ),
     );

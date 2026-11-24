@@ -2039,9 +2039,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configTabRuntime => 'Runtime';
 
   @override
-  String get configTabMesh => 'Mesh';
-
-  @override
   String get configTabApp => 'App';
 
   @override
@@ -2133,12 +2130,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Optional helpers for memory, summaries, OCR cleanup, and background tasks';
 
   @override
-  String get configPreferredSupportProvider => 'Preferred Support Provider';
-
-  @override
-  String get configSupportProviderAuto => 'Auto';
-
-  @override
   String get configSupportProvidersNote =>
       'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.';
 
@@ -2146,40 +2137,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configRequestPolicy => 'Runtime Request Policy';
 
   @override
-  String get configConcurrentRequests => 'Concurrent Requests';
+  String get configWindow => 'Window';
 
   @override
-  String get configConcurrentRequestsHint => 'Max concurrent runtime requests';
+  String get configCloseToTray => 'Keep running in the tray when closed';
 
   @override
-  String get configRuntimeTimeout => 'Runtime Timeout (sec)';
+  String get configCloseToTraySubtitle =>
+      'When off, closing the window quits the app.';
+
+  @override
+  String get configNotAvailableYetNote =>
+      'Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.';
 
   @override
   String get configAutoRestart => 'Auto-restart Runtime on Failure';
-
-  @override
-  String get configProxySettings => 'Proxy Settings';
-
-  @override
-  String get configUseProxy => 'Use Proxy Server';
-
-  @override
-  String get configProxyHost => 'Proxy Host';
-
-  @override
-  String get configProxyHostHint => 'e.g., proxy.example.com';
-
-  @override
-  String get configProxyPort => 'Proxy Port';
-
-  @override
-  String get configConnectionSettings => 'Connection Settings';
-
-  @override
-  String get configRequestTimeout => 'Request Timeout (sec)';
-
-  @override
-  String get configMaxRetries => 'Max Retries';
 
   @override
   String get configAppearance => 'Appearance';
@@ -2188,87 +2160,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configTheme => 'Theme';
 
   @override
-  String get configLanguage => 'Language';
-
-  @override
-  String get configNotifications => 'Notifications';
-
-  @override
-  String get configEnableNotifications => 'Enable Notifications';
-
-  @override
-  String get configShowTrayIcon => 'Show Tray Icon';
-
-  @override
-  String get configSecurity => 'Security';
-
-  @override
-  String get configEncryptLocalData => 'Encrypt Local Data';
-
-  @override
-  String get configEncryptLocalDataSubtitle =>
-      'Encrypt conversation history and settings';
-
-  @override
-  String get configBiometric => 'Require Biometric Auth';
-
-  @override
-  String get configBiometricSubtitle => 'Require fingerprint/auth to open app';
-
-  @override
-  String get configSessionTimeout => 'Session Timeout (min)';
-
-  @override
-  String get configSessionTimeoutHint => 'Auto-lock after inactivity';
-
-  @override
-  String get configRememberTokens => 'Remember Authentication Tokens';
-
-  @override
-  String get configDeveloperOptions => 'Developer Options';
-
-  @override
-  String get configDebugMode => 'Debug Mode';
-
-  @override
-  String get configDebugModeSubtitle =>
-      'Enable additional debugging information';
-
-  @override
-  String get configVerboseLogging => 'Verbose Logging';
-
-  @override
-  String get configVerboseLoggingSubtitle =>
-      'Log detailed diagnostic information';
-
-  @override
-  String get configShowDevTools => 'Show Developer Tools';
-
-  @override
-  String get configShowDevToolsSubtitle =>
-      'Enable development tools and inspectors';
-
-  @override
-  String get configDataRetention => 'Data Retention';
-
-  @override
-  String get configMaxHistory => 'Max Conversation History';
-
-  @override
-  String get configMaxHistoryHint =>
-      'Maximum number of conversations to store locally';
-
-  @override
-  String get configAutoCleanup => 'Auto-cleanup Old Data';
-
-  @override
   String get configCacheManagement => 'Cache Management';
-
-  @override
-  String get configEnableCache => 'Enable Response Cache';
-
-  @override
-  String get configCacheSize => 'Cache Size Limit (MB)';
 
   @override
   String get configClearCacheNow => 'Clear Cache Now';

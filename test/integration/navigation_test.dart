@@ -95,7 +95,8 @@ void main() {
       expect(find.text('Runtime Settings'), findsOneWidget);
       expect(find.text('Active Agent Runtime'), findsOneWidget);
       expect(find.text('Support Model Providers'), findsOneWidget);
-      expect(find.text('Preferred Support Provider'), findsOneWidget);
+      // Saved but never read, so hidden (#854).
+      expect(find.text('Preferred Support Provider'), findsNothing);
       expect(find.textContaining('Secure channel runtime: Hermes Agent'),
           findsOneWidget);
       expect(find.textContaining('Support providers cannot complete setup'),

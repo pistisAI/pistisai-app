@@ -2070,9 +2070,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get configTabRuntime => 'Environnement';
 
   @override
-  String get configTabMesh => 'Maillage';
-
-  @override
   String get configTabApp => 'Application';
 
   @override
@@ -2165,12 +2162,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aides facultatives pour la mémoire, les résumés, le nettoyage OCR et les tâches de fond';
 
   @override
-  String get configPreferredSupportProvider => 'Fournisseur d\'appoint préféré';
-
-  @override
-  String get configSupportProviderAuto => 'Automatique';
-
-  @override
   String get configSupportProvidersNote =>
       'Les fournisseurs d\'appoint ne peuvent ni terminer la configuration ni recevoir le contrôle de l\'ordinateur, sauf s\'ils passent par un environnement d\'agent.';
 
@@ -2178,42 +2169,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get configRequestPolicy => 'Règles des requêtes';
 
   @override
-  String get configConcurrentRequests => 'Requêtes simultanées';
+  String get configWindow => 'Fenêtre';
 
   @override
-  String get configConcurrentRequestsHint =>
-      'Nombre maximal de requêtes simultanées';
+  String get configCloseToTray =>
+      'Rester dans la zone de notification à la fermeture';
 
   @override
-  String get configRuntimeTimeout => 'Délai de l\'environnement (s)';
+  String get configCloseToTraySubtitle =>
+      'Si désactivé, fermer la fenêtre quitte l\'application.';
+
+  @override
+  String get configNotAvailableYetNote =>
+      'Pas encore disponible : langue, notifications, proxy, délais des requêtes, sécurité, historique et options de développement. L\'application n\'offre pas ces réglages tant qu\'elle ne peut pas les appliquer.';
 
   @override
   String get configAutoRestart =>
       'Redémarrer automatiquement l\'environnement en cas d\'échec';
-
-  @override
-  String get configProxySettings => 'Réglages du proxy';
-
-  @override
-  String get configUseProxy => 'Utiliser un serveur proxy';
-
-  @override
-  String get configProxyHost => 'Hôte du proxy';
-
-  @override
-  String get configProxyHostHint => 'ex. : proxy.example.com';
-
-  @override
-  String get configProxyPort => 'Port du proxy';
-
-  @override
-  String get configConnectionSettings => 'Réglages de connexion';
-
-  @override
-  String get configRequestTimeout => 'Délai de requête (s)';
-
-  @override
-  String get configMaxRetries => 'Nombre maximal de tentatives';
 
   @override
   String get configAppearance => 'Apparence';
@@ -2222,91 +2194,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get configTheme => 'Thème';
 
   @override
-  String get configLanguage => 'Langue';
-
-  @override
-  String get configNotifications => 'Notifications';
-
-  @override
-  String get configEnableNotifications => 'Activer les notifications';
-
-  @override
-  String get configShowTrayIcon =>
-      'Afficher l\'icône dans la zone de notification';
-
-  @override
-  String get configSecurity => 'Sécurité';
-
-  @override
-  String get configEncryptLocalData => 'Chiffrer les données locales';
-
-  @override
-  String get configEncryptLocalDataSubtitle =>
-      'Chiffrer l\'historique des conversations et les réglages';
-
-  @override
-  String get configBiometric => 'Exiger l\'authentification biométrique';
-
-  @override
-  String get configBiometricSubtitle =>
-      'Exiger l\'empreinte digitale ou une authentification pour ouvrir l\'application';
-
-  @override
-  String get configSessionTimeout => 'Délai d\'expiration de session (min)';
-
-  @override
-  String get configSessionTimeoutHint =>
-      'Verrouillage automatique après inactivité';
-
-  @override
-  String get configRememberTokens => 'Mémoriser les jetons d\'authentification';
-
-  @override
-  String get configDeveloperOptions => 'Options de développement';
-
-  @override
-  String get configDebugMode => 'Mode débogage';
-
-  @override
-  String get configDebugModeSubtitle =>
-      'Afficher des informations de débogage supplémentaires';
-
-  @override
-  String get configVerboseLogging => 'Journalisation détaillée';
-
-  @override
-  String get configVerboseLoggingSubtitle =>
-      'Consigner des informations de diagnostic détaillées';
-
-  @override
-  String get configShowDevTools => 'Afficher les outils de développement';
-
-  @override
-  String get configShowDevToolsSubtitle =>
-      'Activer les outils et inspecteurs de développement';
-
-  @override
-  String get configDataRetention => 'Conservation des données';
-
-  @override
-  String get configMaxHistory => 'Historique maximal des conversations';
-
-  @override
-  String get configMaxHistoryHint =>
-      'Nombre maximal de conversations conservées localement';
-
-  @override
-  String get configAutoCleanup =>
-      'Nettoyer automatiquement les anciennes données';
-
-  @override
   String get configCacheManagement => 'Gestion du cache';
-
-  @override
-  String get configEnableCache => 'Activer le cache des réponses';
-
-  @override
-  String get configCacheSize => 'Taille maximale du cache (Mo)';
 
   @override
   String get configClearCacheNow => 'Vider le cache maintenant';

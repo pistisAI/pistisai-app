@@ -3,6 +3,7 @@ import 'dart:ui' show Size;
 import 'package:flutter/foundation.dart';
 import 'package:window_manager/window_manager.dart';
 import '../brand/brand.dart';
+import 'settings_preference_service.dart';
 import '../utils/logger.dart';
 
 /// Service for managing window state and visibility using window_manager_plus
@@ -172,8 +173,21 @@ class WindowManagerService {
     }
   }
 
-  /// Handle window close event (should minimize to tray instead of closing)
+  /// Handle a window close event. With "close to tray" on (the default) the
+  /// window hides to the tray and this returns false; with it off the app
+  /// quits and this returns true (#854).
   Future<bool> handleWindowClose() async {
+    var closeToTray = true;
+    try {
+      closeToTray = await SettingsPreferenceService().isMinimizeToTrayEnabled();
+    } catch (e) {
+      appLogger.warning('[WindowManager] Could not read tray setting: $e');
+    }
+    if (!closeToTray) {
+      appLogger.info('[WindowManager] Close to tray is off, quitting');
+      await forceClose();
+      return true;
+    }
     try {
       await hideToTray();
       appLogger.debug(
