@@ -264,6 +264,7 @@ class BulkOperationsService {
 
         // Log action
         await logAdminAction({
+          client,
           adminUserId,
           adminRole,
           action: 'bulk_tier_update',
@@ -366,6 +367,7 @@ class BulkOperationsService {
 
         // Log action
         await logAdminAction({
+          client,
           adminUserId,
           adminRole,
           action: 'bulk_user_suspend',
@@ -449,6 +451,7 @@ class BulkOperationsService {
 
         // Log action
         await logAdminAction({
+          client,
           adminUserId,
           adminRole,
           action: 'bulk_user_reactivate',
@@ -534,6 +537,7 @@ class BulkOperationsService {
 
         // Log action
         await logAdminAction({
+          client,
           adminUserId,
           adminRole,
           action: 'bulk_user_delete',

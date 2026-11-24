@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { getPool } from '../database/db-pool.js';
-import jwt from 'jsonwebtoken';
+import { getAuthService } from '../middleware/auth.js';
 
 class DashboardWebSocketManager {
   constructor() {
@@ -53,12 +53,14 @@ class DashboardWebSocketManager {
     }
 
     try {
-      const secret = process.env.JWT_SECRET;
-      if (!secret) {
-        throw new Error('JWT_SECRET not configured');
+      // Same Cloudflare Access verification as the REST API, including the
+      // suspended-account and revoked-session checks (#893). The previous
+      // HS256 JWT_SECRET check accepted tokens no part of the system issues.
+      const decoded = await getAuthService().validateTokenForWebSocket(token);
+      if (!decoded?.sub) {
+        throw new Error('Token has no subject');
       }
-      const decoded = jwt.verify(token, secret);
-      request.userId = decoded.sub || decoded.userId || 'system';
+      request.userId = decoded.sub;
 
       this.wss.handleUpgrade(request, socket, head, (ws) => {
         this.wss.emit('connection', ws, request);

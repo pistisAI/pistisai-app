@@ -21,6 +21,9 @@ import { getPool, closePool } from '../database/db-pool.js';
  * @param {Object} [params.details] - Additional action details (optional)
  * @param {string} [params.ipAddress] - IP address of the admin (optional)
  * @param {string} [params.userAgent] - User agent of the admin (optional)
+ * @param {Object} [params.client] - Transaction client. When given, the entry
+ *   is written inside that transaction (rolled back with it) and a failure is
+ *   rethrown, so the caller cannot report success for an unaudited action.
  * @returns {Promise<Object>} The created audit log entry
  */
 export async function logAdminAction({
@@ -33,6 +36,7 @@ export async function logAdminAction({
   details = {},
   ipAddress = null,
   userAgent = null,
+  client = null,
 }) {
   try {
     // Validate required parameters
@@ -41,10 +45,10 @@ export async function logAdminAction({
     }
 
     // Initialize database pool if needed
-    const pool = getPool();
+    const db = client ?? getPool();
 
     // Insert audit log entry
-    const result = await pool.query(
+    const result = await db.query(
       `INSERT INTO admin_audit_logs (
         admin_user_id,
         admin_role,
@@ -93,8 +97,12 @@ export async function logAdminAction({
       resourceType,
       resourceId,
     });
-    // Don't throw - audit logging failure shouldn't break the main operation
-    // But we should alert on this
+    // Inside a transaction the failed insert aborts it: rethrow so the caller
+    // rolls back and reports the failure instead of a silent rollback.
+    if (client) {
+      throw error;
+    }
+    // Outside a transaction, audit failure does not break the main operation.
     return null;
   }
 }
