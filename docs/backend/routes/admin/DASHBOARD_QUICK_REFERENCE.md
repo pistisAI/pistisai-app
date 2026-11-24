@@ -56,9 +56,11 @@ Authorization: Bearer <JWT_TOKEN>
 ## Quick Test
 
 ```bash
-curl -X GET http://localhost:3001/api/admin/dashboard/metrics \
-  -H "Authorization: Bearer YOUR_TOKEN"
+curl -X GET http://localhost:8080/api/admin/dashboard/metrics \
+  -H "Authorization: Bearer ***"
 ```
+
+> **Verified against code:** the backend default port is `8080` (`services/api-backend/server.js:183`), so the local URL uses 8080, not 3001. The endpoint itself is registered at `/api/admin/dashboard/metrics` (`services/api-backend/server.js:265-266` adds the `/api` prefix, `:305` mounts `/admin`; `services/api-backend/routes/admin.js:406` mounts `/dashboard`; `services/api-backend/routes/admin/dashboard.js:42` defines `GET /metrics`).
 
 ## Common Use Cases
 

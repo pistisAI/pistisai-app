@@ -2,6 +2,8 @@
 
 ## Setup
 
+> **Verified against code:** there is no `services/index.js` anywhere in this repo. `PaymentService`, `SubscriptionService`, and `RefundService` are default exports of `services/api-backend/services/payment-service.js:272`, `subscription-service.js:607`, and `refund-service.js:359`. The example env files are `.env.example` at the repository root and `config/docker-compose.env.example`; none exists under `services/api-backend`.
+
 ### 1. Install Dependencies
 
 Dependencies are already installed. Verify with:
@@ -12,7 +14,7 @@ npm list stripe
 
 ### 2. Configure Environment Variables
 
-Copy the example file and add your Stripe keys:
+The example file is at the repository root — there is no `.env.example` inside `services/api-backend`. From the repo root, copy it and add your Stripe keys:
 
 ```bash
 cp .env.example .env
@@ -22,7 +24,7 @@ Edit `.env` and add your Stripe API keys from https://dashboard.stripe.com/apike
 
 ### 3. Validate Database Helpers
 
-There is no `npm run db:migrate` in api-backend. Use the available helpers after
+There is no `npm run db:migrate` in api-backend (`services/api-backend/package.json:7-25`); use the available helpers after
 ensuring schema/SQL for payment tables is applied via your usual DB path:
 
 ```bash
@@ -38,11 +40,9 @@ npm run db:validate
 
 ```javascript
 import { Pool } from 'pg';
-import {
-  PaymentService,
-  SubscriptionService,
-  RefundService,
-} from './services/index.js';
+import PaymentService from './services/payment-service.js';
+import SubscriptionService from './services/subscription-service.js';
+import RefundService from './services/refund-service.js';
 
 // Create database connection
 const db = new Pool({
