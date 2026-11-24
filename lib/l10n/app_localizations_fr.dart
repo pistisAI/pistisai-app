@@ -450,16 +450,8 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String nodesSelectedRuntime(String name, String version) {
-    return 'Environnement d\'agent : $name ($version)';
-  }
-
-  @override
-  String get nodesVersionUnknown => 'version inconnue';
-
-  @override
-  String get nodesNoRuntimeSelected =>
-      'Aucun environnement d\'agent sélectionné';
+  String get nodesRuntimeSwitchNotAvailable =>
+      'Les environnements découverts sont affichés à titre d\'information. Changer d\'environnement d\'agent depuis cet écran n\'est pas encore disponible.';
 
   @override
   String get channelDetailsTitle => 'Détails du canal';
@@ -542,15 +534,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get usageTitle => 'Utilisation';
 
   @override
-  String get usageToday => 'Aujourd\'hui';
-
-  @override
-  String get usageWeek => 'Semaine';
-
-  @override
-  String get usageMonth => 'Mois';
-
-  @override
   String get usageActiveConcurrency => 'Requêtes simultanées actives';
 
   @override
@@ -565,61 +548,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get usageConcurrencyUtilization => 'Utilisation de la simultanéité';
 
   @override
-  String get usageRequestRate => 'Débit de requêtes';
+  String get usageDefaultLimitsNote =>
+      'Les limites sont des valeurs par défaut intégrées pour chaque modèle, pas les limites réelles de votre fournisseur.';
 
   @override
-  String get usageRequestsPerMinuteUnit => 'req./min';
-
-  @override
-  String get usageRequestRateSubtitle =>
-      'Requêtes par minute, tous modèles confondus';
-
-  @override
-  String get usageRpmUtilization => 'Utilisation des requêtes par minute';
-
-  @override
-  String get usageTokenRate => 'Débit de jetons';
-
-  @override
-  String get usageTokensPerMinuteUnit => 'jetons/min';
-
-  @override
-  String get usageTokenRateSubtitle =>
-      'Jetons par minute, tous modèles confondus';
-
-  @override
-  String get usageTpmUtilization => 'Utilisation des jetons par minute';
-
-  @override
-  String get usageChartTokenUsage => 'Utilisation des jetons dans le temps';
-
-  @override
-  String get usageChartRequestVolume => 'Volume de requêtes';
-
-  @override
-  String get usageChartResourceTrends => 'Tendances des ressources';
-
-  @override
-  String get usageChartPlaceholder => 'Graphique à venir';
+  String get usageNotAvailableYet =>
+      'Le débit de requêtes, le débit de jetons et l\'historique d\'utilisation ne sont pas encore disponibles.';
 
   @override
   String get usageNoActiveModels => 'Aucun modèle actif';
 
   @override
   String get usagePerModelConcurrency => 'Simultanéité par modèle';
-
-  @override
-  String get usageNoRateData => 'Aucune donnée de débit';
-
-  @override
-  String get usageTopModelsByRpm =>
-      'Modèles les plus sollicités (requêtes/min)';
-
-  @override
-  String get usageNoTokenData => 'Aucune donnée de jetons';
-
-  @override
-  String get usageTopModelsByTpm => 'Modèles les plus sollicités (jetons/min)';
 
   @override
   String get logsTitle => 'Journaux';
@@ -1415,10 +1355,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get skillsTabRegistry => 'Registre';
 
   @override
-  String get skillsTabUsage => 'Utilisation';
-
-  @override
-  String get skillsTabManagement => 'Gestion';
+  String get skillsTabCategories => 'Catégories';
 
   @override
   String get skillsEmptyTitle => 'Aucune compétence enregistrée';
@@ -1442,86 +1379,34 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String skillsEnabled(String name) {
-    return '$name activée';
-  }
+  String get skillsByCategory => 'Compétences par catégorie';
 
   @override
-  String skillsDisabled(String name) {
-    return '$name désactivée';
-  }
-
-  @override
-  String get skillsStatUses => 'Utilisations';
-
-  @override
-  String get skillsStatAvgTime => 'Temps moyen';
-
-  @override
-  String get skillsStatLastUsed => 'Dernière utilisation';
-
-  @override
-  String get skillsUsageByCategory =>
-      'Utilisation des compétences par catégorie';
-
-  @override
-  String skillsUsesCount(int count) {
+  String skillsCountInCategory(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count utilisations',
-      one: '$count utilisation',
+      other: '$count compétences',
+      one: '$count compétence',
     );
     return '$_temp0';
   }
 
   @override
-  String skillsAvgSeconds(String seconds) {
-    return '$seconds s en moyenne';
+  String skillsFileCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fichiers',
+      one: '$count fichier',
+    );
+    return '$_temp0';
   }
 
   @override
-  String get skillsTopPerforming => 'Compétences les plus performantes';
-
-  @override
-  String get skillsGlobalSettings => 'Réglages généraux';
-
-  @override
-  String get skillsAutoDisable =>
-      'Désactiver automatiquement les compétences lentes';
-
-  @override
-  String get skillsAutoDisableSubtitle =>
-      'Désactiver les compétences qui prennent plus de 5 secondes';
-
-  @override
-  String get skillsCache => 'Mettre en cache les résultats';
-
-  @override
-  String get skillsCacheSubtitle =>
-      'Conserver les réponses aux requêtes identiques';
-
-  @override
-  String get skillsDefaultTimeout => 'Délai par défaut';
-
-  @override
-  String get skillsDefaultTimeoutValue => '30 secondes';
-
-  @override
-  String get skillsResourceLimits => 'Limites de ressources';
-
-  @override
-  String get skillsMaxConcurrent => 'Compétences simultanées maximum';
-
-  @override
-  String get skillsMaxConcurrentSubtitle =>
-      'Nombre maximal de compétences exécutées en même temps';
-
-  @override
-  String get skillsMemory => 'Mémoire par compétence';
-
-  @override
-  String get skillsMemorySubtitle => 'Mémoire vive maximale par compétence';
+  String skillsModified(String when) {
+    return 'Modifié $when';
+  }
 
   @override
   String get skillsNameDescriptionRequired =>

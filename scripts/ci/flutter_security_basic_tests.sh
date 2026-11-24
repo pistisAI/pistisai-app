@@ -32,6 +32,10 @@ flutter test \
   test/widgets/approval/ \
   test/widgets/common/refreshable_screen_test.dart \
   test/widgets/management_screens_test.dart \
+  test/widgets/navigation/popout_button_test.dart \
+  test/screens/usage_screen_test.dart \
+  test/screens/skills_screen_test.dart \
+  test/screens/nodes_screen_test.dart \
   test/services/subagent_registry_service_test.dart \
   test/services/cloud_zero_egress_test.dart \
   test/services/avatar/avatar_progress_test.dart \

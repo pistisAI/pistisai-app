@@ -1,12 +1,16 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../di/locator.dart' as di;
 import '../../services/popout/popout_manager.dart';
 
-/// Button widget for toggling pop-out windows
+/// Placeholder for a future "pop out this section" button.
+///
+/// Pop-out windows are not available yet: [PopOutManager] only records state
+/// in memory and no window is ever opened. Per AGENTS.md ("Controls tell the
+/// truth"), the button renders nothing until a real multi-window
+/// implementation exists (#858). Screens may keep the widget in their app bar
+/// so the control reappears in one place once it is wired.
 class PopOutButton extends StatelessWidget {
   /// Name of the section this button controls
   final String sectionName;
@@ -14,7 +18,7 @@ class PopOutButton extends StatelessWidget {
   /// Branch index for multiple instances of the same section
   final int branchIndex;
 
-  /// Optional manager override (useful for testing without GetIt registration)
+  /// Optional manager override (kept for API compatibility)
   final PopOutManager? manager;
 
   const PopOutButton({
@@ -25,37 +29,5 @@ class PopOutButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final popOutManager = manager ?? _tryResolveFromGetIt();
-    if (popOutManager == null) {
-      // GetIt not configured (e.g. in tests) — render a no-op button
-      return IconButton(
-        icon: const Icon(Icons.open_in_new),
-        tooltip: 'Toggle pop-out window',
-        onPressed: null,
-      );
-    }
-
-    return ChangeNotifierProvider<PopOutManager>.value(
-      value: popOutManager,
-      child: Consumer<PopOutManager>(
-        builder: (context, mgr, child) {
-          return IconButton(
-            icon: const Icon(Icons.open_in_new),
-            tooltip: 'Toggle pop-out window',
-            onPressed: () => mgr.togglePopOut(sectionName, branchIndex),
-          );
-        },
-      ),
-    );
-  }
-
-  /// Attempt to resolve PopOutManager from GetIt; return null if not registered.
-  PopOutManager? _tryResolveFromGetIt() {
-    try {
-      return di.serviceLocator<PopOutManager>();
-    } catch (_) {
-      return null;
-    }
-  }
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

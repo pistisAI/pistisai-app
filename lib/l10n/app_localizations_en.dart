@@ -442,15 +442,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String nodesSelectedRuntime(String name, String version) {
-    return 'Agent runtime: $name ($version)';
-  }
-
-  @override
-  String get nodesVersionUnknown => 'unknown';
-
-  @override
-  String get nodesNoRuntimeSelected => 'No agent runtime selected';
+  String get nodesRuntimeSwitchNotAvailable =>
+      'Discovered runtimes are listed for information. Switching the agent runtime from this screen is not available yet.';
 
   @override
   String get channelDetailsTitle => 'Channel Details';
@@ -532,15 +525,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usageTitle => 'Usage';
 
   @override
-  String get usageToday => 'Today';
-
-  @override
-  String get usageWeek => 'Week';
-
-  @override
-  String get usageMonth => 'Month';
-
-  @override
   String get usageActiveConcurrency => 'Active Concurrency';
 
   @override
@@ -555,58 +539,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usageConcurrencyUtilization => 'Concurrency utilization';
 
   @override
-  String get usageRequestRate => 'Request Rate';
+  String get usageDefaultLimitsNote =>
+      'Limits are built-in defaults per model, not your provider\'s actual limits.';
 
   @override
-  String get usageRequestsPerMinuteUnit => 'req/min';
-
-  @override
-  String get usageRequestRateSubtitle => 'Requests per minute across models';
-
-  @override
-  String get usageRpmUtilization => 'RPM utilization';
-
-  @override
-  String get usageTokenRate => 'Token Rate';
-
-  @override
-  String get usageTokensPerMinuteUnit => 'tok/min';
-
-  @override
-  String get usageTokenRateSubtitle => 'Tokens per minute across models';
-
-  @override
-  String get usageTpmUtilization => 'TPM utilization';
-
-  @override
-  String get usageChartTokenUsage => 'Token Usage Over Time';
-
-  @override
-  String get usageChartRequestVolume => 'Request Volume';
-
-  @override
-  String get usageChartResourceTrends => 'Resource Trends';
-
-  @override
-  String get usageChartPlaceholder => 'Chart placeholder';
+  String get usageNotAvailableYet =>
+      'Request rate, token rate and usage history are not available yet.';
 
   @override
   String get usageNoActiveModels => 'No active models';
 
   @override
   String get usagePerModelConcurrency => 'Per-model concurrency';
-
-  @override
-  String get usageNoRateData => 'No rate data';
-
-  @override
-  String get usageTopModelsByRpm => 'Top models by RPM';
-
-  @override
-  String get usageNoTokenData => 'No token data';
-
-  @override
-  String get usageTopModelsByTpm => 'Top models by TPM';
 
   @override
   String get logsTitle => 'Logs';
@@ -1395,10 +1339,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get skillsTabRegistry => 'Registry';
 
   @override
-  String get skillsTabUsage => 'Usage';
-
-  @override
-  String get skillsTabManagement => 'Management';
+  String get skillsTabCategories => 'Categories';
 
   @override
   String get skillsEmptyTitle => 'No Skills Registered';
@@ -1421,83 +1362,34 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String skillsEnabled(String name) {
-    return '$name enabled';
-  }
+  String get skillsByCategory => 'Skills by category';
 
   @override
-  String skillsDisabled(String name) {
-    return '$name disabled';
-  }
-
-  @override
-  String get skillsStatUses => 'Uses';
-
-  @override
-  String get skillsStatAvgTime => 'Avg Time';
-
-  @override
-  String get skillsStatLastUsed => 'Last Used';
-
-  @override
-  String get skillsUsageByCategory => 'Skill Usage by Category';
-
-  @override
-  String skillsUsesCount(int count) {
+  String skillsCountInCategory(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count uses',
-      one: '1 use',
+      other: '$count skills',
+      one: '1 skill',
     );
     return '$_temp0';
   }
 
   @override
-  String skillsAvgSeconds(String seconds) {
-    return '${seconds}s avg';
+  String skillsFileCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files',
+      one: '1 file',
+    );
+    return '$_temp0';
   }
 
   @override
-  String get skillsTopPerforming => 'Top Performing Skills';
-
-  @override
-  String get skillsGlobalSettings => 'Global Settings';
-
-  @override
-  String get skillsAutoDisable => 'Auto-disable slow skills';
-
-  @override
-  String get skillsAutoDisableSubtitle =>
-      'Disable skills that take longer than 5 seconds';
-
-  @override
-  String get skillsCache => 'Cache skill results';
-
-  @override
-  String get skillsCacheSubtitle => 'Store responses for identical requests';
-
-  @override
-  String get skillsDefaultTimeout => 'Default timeout';
-
-  @override
-  String get skillsDefaultTimeoutValue => '30 seconds';
-
-  @override
-  String get skillsResourceLimits => 'Resource Limits';
-
-  @override
-  String get skillsMaxConcurrent => 'Max concurrent skills';
-
-  @override
-  String get skillsMaxConcurrentSubtitle =>
-      'Maximum skills running simultaneously';
-
-  @override
-  String get skillsMemory => 'Memory per skill';
-
-  @override
-  String get skillsMemorySubtitle => 'Maximum RAM allocation per skill';
+  String skillsModified(String when) {
+    return 'Modified $when';
+  }
 
   @override
   String get skillsNameDescriptionRequired =>
