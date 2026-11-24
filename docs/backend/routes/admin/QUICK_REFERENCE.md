@@ -303,7 +303,7 @@ curl -X POST "http://localhost:8080/api/admin/payments/refunds" \
 
 ## Database Setup
 
-> **Verified against code:** `services/api-backend/database/migrations/run-migration.js` does not exist in this repo. Migrations are applied at backend startup by `DatabaseMigratorPG` (`services/api-backend/database/migrate-pg.js:14`, instantiated at `services/api-backend/server.js:563` with `migrate()` called at `:578`) from the SQL files in `services/api-backend/database/migrations/`.
+> **Verified against code:** A standalone run-migration script does not exist in this repo. Migrations are applied at backend startup by `DatabaseMigratorPG` (`services/api-backend/database/migrate-pg.js:14`, instantiated at `services/api-backend/server.js:563` with `migrate()` called at `:578`) from the SQL files in `services/api-backend/database/migrations/`.
 
 ### Apply Migration
 

@@ -116,9 +116,9 @@ git push origin v2.0.1
 
 ### GitHub Actions
 
-> **Verified against code (2026-11-24):** `.github/workflows/publish-sdk.yml` does **not** exist. The workflow below is a proposed/planned publishing pipeline, not a live one; publishing is currently a manual `npm publish` from `services/sdk` after `npm run build` (see the Build section above).
+> **Verified against code (2026-11-24):** the publish-SDK workflow does **not** exist in `.github/workflows/`. The workflow below is a proposed/planned publishing pipeline, not a live one; publishing is currently a manual `npm publish` from `services/sdk` after `npm run build` (see the Build section above).
 
-Create `.github/workflows/publish-sdk.yml` (planned):
+Create the planned publish-SDK workflow (not present in this repo):
 
 ```yaml
 name: Publish SDK to npm

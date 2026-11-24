@@ -8,11 +8,11 @@ Proxy usage tracking implementation for billing and analytics. Tracks proxy usag
 
 ## Files Created (verified against code)
 
-> **Verified against code:** `services/proxy-usage-service.js` **does not exist** — usage tracking is implemented inline in `services/api-backend/routes/proxy-usage.js` (528 lines; `router.post` at :50/:402, `router.get` at :124/:196/:274/:337/:469). The router is mounted at `/proxy-usage` (and `/api/proxy-usage`) by `services/api-backend/server.js:347`, **gated by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Effective paths are `/api/proxy-usage/usage/…`, **not** `/proxy/usage/…` (corrected below). The migration is `services/api-backend/database/migrations/016_proxy_usage_tracking.sql`; no `test/api-backend/proxy-usage.test.js` is present.
+> **Verified against code:** a dedicated proxy usage service **does not exist** — usage tracking is implemented inline in `services/api-backend/routes/proxy-usage.js` (528 lines; `router.post` at :50/:402, `router.get` at :124/:196/:274/:337/:469). The router is mounted at `/proxy-usage` (and `/api/proxy-usage`) by `services/api-backend/server.js:347`, **gated by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Effective paths are `/api/proxy-usage/usage/…`, **not** `/proxy/usage/…` (corrected below). The migration is `services/api-backend/database/migrations/016_proxy_usage_tracking.sql`; no proxy-usage test file is present.
 
 ### Service (MISSING — see above)
 
-- `services/proxy-usage-service.js` — **MISSING**; logic is in `services/api-backend/routes/proxy-usage.js`
+- A dedicated usage service — **MISSING**; logic is in `services/api-backend/routes/proxy-usage.js`
 
 ### Routes
 
@@ -24,7 +24,7 @@ Proxy usage tracking implementation for billing and analytics. Tracks proxy usag
 
 ### Tests
 
-- `test/api-backend/proxy-usage.test.js` — **MISSING**
+- No usage test file — **MISSING**
 
 ## API Endpoints
 

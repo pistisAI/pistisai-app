@@ -181,7 +181,6 @@ ollama pull mistral:7b
 Version information is maintained in multiple files:
 
 - `pubspec.yaml` - Main Flutter project version
-- `lib/shared/lib/version.dart` - Shared version constants
 - `assets/version.json` - Runtime version information
 - `README.md` - Version badge
 - `package.json` - Node.js package version

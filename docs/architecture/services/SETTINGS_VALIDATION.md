@@ -8,9 +8,9 @@ The settings validation and error handling system provides:
 
 1. **SettingsValidator** - Validates all setting types with detailed error messages (`lib/services/settings_validator.dart`, present).
 2. **SettingsError / SettingsErrorHandler** - Typed error representation and user-friendly messaging (`lib/utils/settings_error_handler.dart`, present).
-3. **SettingsState** - State management for validation errors and operation status — **planned, not present** (no `lib/models/settings_state.dart`).
-4. **Error Display Widgets** - Reusable UI components for showing errors — **planned, not present** (no `lib/widgets/settings/settings_error_widgets.dart`).
-5. **Form Helper Widgets** - Validated input widgets with inline error display — **planned, not present** (no `lib/widgets/settings/settings_form_helper.dart`).
+3. **SettingsState** - State management for validation errors and operation status — **planned, not present**.
+4. **Error Display Widgets** - Reusable UI components for showing errors — **planned, not present**.
+5. **Form Helper Widgets** - Validated input widgets with inline error display — **planned, not present**.
 
 Only `SettingsValidator` and `SettingsError`/`SettingsErrorHandler` exist in the codebase today. The sections below that describe `SettingsState`, the error display widgets and the form helpers are **target designs**, retained as planned work; their file paths do not resolve and the usage examples that import them are illustrative only.
 
@@ -110,7 +110,7 @@ void showSuccessMessage(BuildContext context, String message, {Duration duration
 
 ### SettingsState (Planned — file not present)
 
-`lib/models/settings_state.dart` does **not** exist in the repository. The API below is a target design, not available code:
+A SettingsState model does **not** exist in the repository. The API below is a target design, not available code:
 
 Manages validation and operation state:
 
@@ -155,7 +155,7 @@ class SettingsState extends ChangeNotifier {
 
 ### Error Display Widgets (Planned — file not present)
 
-`lib/widgets/settings/settings_error_widgets.dart` does **not** exist in the repository. The widgets below are a target design, not available code.
+Error display widgets do **not** exist in the repository. The widgets below are a target design, not available code.
 
 **FieldErrorMessage** - Inline error for form fields
 
@@ -213,7 +213,7 @@ RetryButton(
 
 ### Form Helper Widgets (Planned — file not present)
 
-`lib/widgets/settings/settings_form_helper.dart` does **not** exist in the repository. The widgets below are a target design, not available code.
+Form helper widgets do **not** exist in the repository. The widgets below are a target design, not available code.
 
 **ValidatedSettingsTextField** - Text input with validation
 

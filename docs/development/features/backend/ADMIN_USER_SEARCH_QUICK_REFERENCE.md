@@ -2,7 +2,7 @@
 
 ## Task 12 Implementation Summary
 
-> **Verified against code (2026-11-24):** the endpoints are live — `services/api-backend/routes/admin/users.js` is imported at `services/api-backend/server.js` and mounted at `/admin/users` (and `/api/admin/users`) at `server.js:310`. The doc path `services/api-backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` no longer exists; it is archived at `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (see "Implementation Files" below).
+> **Verified against code (2026-11-24):** the endpoints are live — `services/api-backend/routes/admin/users.js` is imported at `services/api-backend/server.js` and mounted at `/admin/users` (and `/api/admin/users`) at `server.js:310`. The original implementation write-up no longer exists at its old location; it is archived at `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (see "Implementation Files" below).
 
 **Status:** ✅ COMPLETED
 
@@ -180,7 +180,7 @@ npm test -- test/api-backend/admin-users-search.test.js
 
 - **Routes:** `services/api-backend/routes/admin/users.js`
 - **Tests:** `test/api-backend/admin-users-search.test.js`
-- **Documentation:** `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (the old `services/api-backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` was archived)
+- **Documentation:** `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (the original implementation write-up was archived)
 
 ## Authentication
 

@@ -2,7 +2,7 @@
 
 > **Status**: Legacy/fallback service deployment guide. Current product direction prefers the Tailscale secure device mesh with per-user cloud connectors and selected agent runtimes. Use this guide only for maintaining or testing the existing streaming-proxy service.
 
-> **Implementation note:** `.github/workflows/deploy-aks.yml` does not exist and there is no `Dockerfile.prod`. Live deployment is `.github/workflows/deploy-backend.yml`; the Dockerfile is `services/streaming-proxy/Dockerfile`. Port 3001 is correct.
+> **Implementation note:** No dedicated AKS deploy workflow exists and there is no `Dockerfile.prod`. Live deployment is `.github/workflows/deploy-backend.yml`; the Dockerfile is `services/streaming-proxy/Dockerfile`. Port 3001 is correct.
 
 ## Overview
 
@@ -78,7 +78,7 @@ Integrate streaming-proxy code into the api-backend service.
 
 ### Current CI/CD Workflow
 
-The `.github/workflows/deploy-aks.yml` file does not exist; live deployments use `.github/workflows/deploy-backend.yml`. The legacy AKS path below is illustrative only.
+The AKS deploy workflow described below does not exist; live deployments use `.github/workflows/deploy-backend.yml`. The legacy AKS path below is illustrative only.
 
 1. **Web Image**: Flutter web app
 2. **API Backend**: REST API service
@@ -87,7 +87,7 @@ The `.github/workflows/deploy-aks.yml` file does not exist; live deployments use
 
 #### 1. Update CI/CD Workflow
 
-Add streaming-proxy build and deployment to `.github/workflows/deploy-aks.yml`:
+The legacy AKS workflow example below is illustrative only; streaming-proxy is built and deployed by `.github/workflows/deploy-backend.yml`:
 
 ```yaml
 env:
@@ -509,7 +509,7 @@ kubectl exec -it streaming-proxy-xxxxx -n Pistisai -- env | grep CF_ACCESS
 **Next Steps**:
 
 1. Create `k8s/streaming-proxy-deployment.yaml`
-2. Update `.github/workflows/deploy-aks.yml` to build and deploy streaming-proxy
+2. Confirm `.github/workflows/deploy-backend.yml` builds and deploys streaming-proxy
 3. Update `k8s/ingress-nginx.yaml` to route WebSocket traffic
 4. Add secrets to `k8s/secrets.yaml`
 5. Deploy and test

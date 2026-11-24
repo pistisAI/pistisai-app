@@ -240,5 +240,5 @@ grep -r "SSL" scripts/ --include="*.sh"
 
 ---
 
-**Note**: This documentation is automatically updated by `scripts/update_documentation.sh`.
+**Note**: This documentation is maintained manually; the automated update script referenced in older revisions is not present.
 Last update: 2025-06-24

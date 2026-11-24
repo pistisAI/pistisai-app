@@ -6,7 +6,7 @@ Error recovery endpoints provide manual intervention capabilities for service re
 
 ## Files Created
 
-- `services/error-recovery-service.js` - Core error recovery service
+- `services/api-backend/services/error-recovery-service.js` - Core error recovery service
 - `routes/error-recovery.js` - Express routes for error recovery endpoints
 - `test/api-backend/error-recovery.test.js` - Unit tests (27 tests, all passing)
 - `test/api-backend/error-recovery-integration.test.js` - Integration tests

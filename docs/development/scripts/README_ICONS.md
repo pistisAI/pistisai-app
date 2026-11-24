@@ -4,7 +4,9 @@ This directory contains scripts for generating app icons for Pistisai across dif
 
 ## Prerequisites
 
-> **Verified against code (2026-11-24):** there is no `scripts/generate_icons.ps1` and no `assets/images/Pistisai_logo.jpg` in this repo. Icons are generated from `assets/images/app_icon.png` via `flutter_launcher_icons.yaml` (`dart run flutter_launcher_icons:main`), and `scripts/convert_icons_to_ico.py` produces the Windows `.ico`. Windows assets live in lowercase `windows/runner/resources/` (not `Resources/`).
+> **Verified against code (2026-11-24):** there is no `scripts/generate_icons.ps1` and no logo image under `assets/images/` in this repo. Icons are generated from `assets/images/app_icon.png` via `flutter_launcher_icons.yaml` (`dart run flutter_launcher_icons:main`), and `scripts/convert_icons_to_ico.py` produces the Windows `.ico`. Windows assets live in lowercase `windows/runner/resources/` (not `Resources/`).
+
+> Historical prerequisites (for the removed legacy script): install ImageMagick from https://imagemagick.org/script/download.php and provide a logo image under `assets/images/` (for example `Pistisai_logo.jpg`).
 
 ## Generating Icons
 

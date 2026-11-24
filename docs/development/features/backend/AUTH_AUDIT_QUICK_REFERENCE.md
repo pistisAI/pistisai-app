@@ -2,12 +2,12 @@
 
 ## Files Created/Modified
 
-> **Verified against code (2026-11-24):** the service and route exist at `services/api-backend/services/auth-audit-service.js` and `services/api-backend/routes/auth-audit.js` (mounted at `/auth-audit` by `services/api-backend/server.js:329`) — **not** root-level `services/` or `routes/`. `services/api-backend/middleware/auth-audit-middleware.js` **does not exist** (no such file under `services/api-backend/middleware/`); audit logging is wired in `services/api-backend/routes/auth.js` / auth flows instead. Import paths below are corrected to `services/api-backend/...`.
+> **Verified against code (2026-11-24):** the service and route exist at `services/api-backend/services/auth-audit-service.js` and `services/api-backend/routes/auth-audit.js` (mounted at `/auth-audit` by `services/api-backend/server.js:329`) — **not** root-level `services/` or `routes/`. A dedicated audit middleware **does not exist** (no such file under `services/api-backend/middleware/`); audit logging is wired in `services/api-backend/routes/auth.js` / auth flows instead. Import paths below are corrected to `services/api-backend/...`.
 
 ### New Files
 
 - `services/api-backend/services/auth-audit-service.js` - Core audit logging service
-- `services/api-backend/middleware/auth-audit-middleware.js` — **MISSING** (planned)
+- An audit middleware — **MISSING** (planned)
 - `services/api-backend/routes/auth-audit.js` - Audit log retrieval endpoints
 - `test/api-backend/auth-audit.test.js` - Comprehensive tests
 

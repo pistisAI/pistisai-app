@@ -44,7 +44,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ## Usage
 
-> **Verified against code:** there is no `services/api-backend/database/connection.js`; the PostgreSQL pool is created by `getPool()` in `services/api-backend/database/db-pool.js:676` (also listed in the default export at `:821`). The methods shown below match `services/api-backend/services/google-workspace-service.js` (e.g. `initialize()` :31, `sendEmail()` :299, `getQuotaUsage()` :399). `googleapis` is a declared dependency at `services/api-backend/package.json:36`.
+> **Verified against code:** there is no dedicated database connection module; the PostgreSQL pool is created by `getPool()` in `services/api-backend/database/db-pool.js:676` (also listed in the default export at `:821`). The methods shown below match `services/api-backend/services/google-workspace-service.js` (e.g. `initialize()` :31, `sendEmail()` :299, `getQuotaUsage()` :399). `googleapis` is a declared dependency at `services/api-backend/package.json:36`.
 
 ### Initialize the Service
 

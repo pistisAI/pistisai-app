@@ -6,7 +6,7 @@ Proxy metrics collection system for tracking and aggregating proxy performance d
 
 ## Service: ProxyMetricsService
 
-> **Verified against code:** `services/proxy-metrics-service.js` and a `ProxyMetricsService` class **do not exist**. Metrics logic is implemented inline in `services/api-backend/routes/proxy-metrics.js` (340 lines; `router.post` at :46, `router.get` at :120/:192/:270) with body validation from `routes/body-schemas.js`. The router is mounted at `/proxy-metrics` (and `/api/proxy-metrics`) by `services/api-backend/server.js:345`, **gated by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Effective endpoints are `/api/proxy-metrics/metrics/:proxyId/record`, `/api/proxy-metrics/metrics/:proxyId/daily/:date`, etc. — **not** `/proxy/metrics/…`. No `test/api-backend/proxy-metrics.test.js` is present.
+> **Verified against code:** a dedicated proxy metrics service and a `ProxyMetricsService` class **do not exist**. Metrics logic is implemented inline in `services/api-backend/routes/proxy-metrics.js` (340 lines; `router.post` at :46, `router.get` at :120/:192/:270) with body validation from `routes/body-schemas.js`. The router is mounted at `/proxy-metrics` (and `/api/proxy-metrics`) by `services/api-backend/server.js:345`, **gated by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Effective endpoints are `/api/proxy-metrics/metrics/:proxyId/record`, `/api/proxy-metrics/metrics/:proxyId/daily/:date`, etc. — **not** `/proxy/metrics/…`. No proxy-metrics test file is present.
 
 ### Initialization (planned — class not present)
 

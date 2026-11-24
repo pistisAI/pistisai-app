@@ -6,7 +6,7 @@ The Proxy Failover Service implements automatic failover and redundancy manageme
 
 **Validates: Requirements 5.8**
 
-> **Verified against code:** the service exists at `services/api-backend/services/proxy-failover-service.js` (not `services/proxy-failover-service.js`); the router is `services/api-backend/routes/proxy-failover.js`, which imports the service at :6 and uses paths such as `/proxy/failover/config` (:72), `/proxy/:proxyId/instances` (:192), `/proxy/failover/evaluate` (:263). The router is mounted at `/proxy-failover` (and `/api/proxy-failover`) by `services/api-backend/server.js:343`, **gated by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Effective paths are `/api/proxy-failover/proxy/failover/config`, **not** `/proxy/failover/config`. Test: `test/api-backend/proxy-failover.test.js` (present).
+> **Verified against code:** the service exists at `services/api-backend/services/proxy-failover-service.js` (not at the services root); the router is `services/api-backend/routes/proxy-failover.js`, which imports the service at :6 and uses paths such as `/proxy/failover/config` (:72), `/proxy/:proxyId/instances` (:192), `/proxy/failover/evaluate` (:263). The router is mounted at `/proxy-failover` (and `/api/proxy-failover`) by `services/api-backend/server.js:343`, **gated by `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Effective paths are `/api/proxy-failover/proxy/failover/config`, **not** `/proxy/failover/config`. Test: `test/api-backend/proxy-failover.test.js` (present).
 
 ## Key Features
 

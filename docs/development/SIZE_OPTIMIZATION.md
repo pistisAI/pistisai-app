@@ -80,7 +80,7 @@ This document outlines the size optimization strategies implemented for Pistisai
   - **Marketing Screens**: `lib/screens/marketing/marketing_lazy.dart` (Loaded only on web root domain)
   - **Admin Screens**: `lib/screens/admin/admin_lazy.dart` (Loaded only for admin users)
   - **Settings Screens**: `lib/screens/settings/settings_lazy.dart` (Loaded only when accessing settings)
-  - **Test Screens**: `lib/screens/ollama_test_lazy.dart` (planned — file does not exist in the repo)
+  - **Test Screens**: no dedicated lazy test screen is present (a planned `lib/screens/` module was never implemented)
 - **Impact**:
   - Reduces initial bundle size for the main application flow.
   - Improves Time to Interactive (TTI) for web users.

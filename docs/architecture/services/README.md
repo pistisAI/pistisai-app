@@ -241,7 +241,7 @@ Planned services for Admin Center:
 
 - Admin Center Design / Requirements: the historical `.kiro/specs/admin-center/` files are **not present** in this repository; treat those references as archived, not live docs.
 - Admin API Reference: `docs/api/ADMIN_API.md` (lowercase `api` path; `docs/API/` does not exist).
-- Models: there is no `lib/models/README.md` in the tree; generated models live beside their Dart sources.
+- Models: there is no README under `lib/models/` in the tree; generated models live beside their Dart sources.
 
 ## Support
 

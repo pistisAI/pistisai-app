@@ -165,7 +165,7 @@ In addition to MCP servers, I will leverage powerful command-line interface (CLI
   * Leverage `flutter pub get` caching by copying pubspec files first in Dockerfiles.
   * Always specify `--release` flag for production builds.
 
-* **Authentication** (historical section — current web sign-in is Cloudflare Access via `lib/auth/providers/cloudflare_access_auth_provider.dart`; there is no `web/auth0-bridge.js`):
+* **Authentication** (historical section — current web sign-in is Cloudflare Access via `lib/auth/providers/cloudflare_access_auth_provider.dart`; there is no Auth0 bridge script under `web/`):
   * ~~Use Auth0 for web applications (no GCIP/Google Sign-In).~~ Use Cloudflare Access for web sign-in; local desktop skips sign-in.
   * Use `dart:js_interop` for JavaScript interop (replaces deprecated `js` package).
   * Implement platform-specific auth services (current provider: `CloudflareAccessAuthProvider` for web; other platforms skip sign-in).

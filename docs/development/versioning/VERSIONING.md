@@ -199,7 +199,7 @@ Deployment:
 
 ## CI/CD Integration
 
-The versioning system is fully integrated into `.github/workflows/deploy-aks.yml`:
+The versioning system is integrated with `.github/workflows/auto-version-bump.yml` and `.github/workflows/deploy-backend.yml`:
 
 - **Automatic detection** of file changes
 - **Automatic version bumping** for web builds

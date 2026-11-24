@@ -1,6 +1,6 @@
 # Windows System Tray Icons — ICO Format Support (PLANNED — not implemented)
 
-> **Verified against code (2026-11-24):** this document describes a **planned** feature. `lib/services/native_tray_service.dart:136-146` (`_getTrayIconPath`) returns only **`.png`** paths for every status — `tray_icon_connected.png`, `tray_icon_connecting.png`, `tray_icon_disconnected.png` — with **no `Platform.isWindows` / `.ico` branch**. `git ls-files assets/images/tray*` lists exactly those three `.png` files; there are **no `.ico` assets** (no `tray_icon.ico`, `tray_icon_partial.ico`, etc.). `scripts/convert_icons_to_ico.py` exists, but nothing consumes its output. `test/services/native_tray_service_test.dart` does **not** exist. Everything below describes planned work, not current behavior.
+> **Verified against code (2026-11-24):** this document describes a **planned** feature. `lib/services/native_tray_service.dart:136-146` (`_getTrayIconPath`) returns only **`.png`** paths for every status — `tray_icon_connected.png`, `tray_icon_connecting.png`, `tray_icon_disconnected.png` — with **no `Platform.isWindows` / `.ico` branch**. `git ls-files assets/images/tray*` lists exactly those three `.png` files; there are **no `.ico` assets** (no `tray_icon.ico`, `tray_icon_partial.ico`, etc.). `scripts/convert_icons_to_ico.py` exists, but nothing consumes its output. No native tray service test exists. Everything below describes planned work, not current behavior.
 
 ## 📋 Overview
 

@@ -1,9 +1,11 @@
 # Pistisai Authentication Comprehensive Guide
 
 **Last Updated**: December 15, 2025 (historical incident report)
-**Status**: ⚠️ HISTORICAL — the `web/auth0-bridge.js` fix described below is no longer in the code
+**Status**: ⚠️ HISTORICAL — the retired Auth0 bridge script fix described below is no longer in the code
 
-> **Verified against code (2026-11-24):** `web/auth0-bridge.js` does **not** exist in this repository. The only auth provider in `lib/auth/providers/` is `cloudflare_access_auth_provider.dart`; sign-in uses Cloudflare Access, with brand-baked team domain/AUD and `CF_ACCESS_*` dart defines (see `AUTHENTICATION_QUICK_REFERENCE.md`). The Auth0-audience incident below is retained only as a historical troubleshooting record — do not follow it as current configuration.
+> **Verified against code (2026-11-24):** the Auth0 bridge script formerly under `web/` does **not** exist in this repository. The only auth provider in `lib/auth/providers/` is `cloudflare_access_auth_provider.dart`; sign-in uses Cloudflare Access, with brand-baked team domain/AUD and `CF_ACCESS_*` dart defines (see `AUTHENTICATION_QUICK_REFERENCE.md`). The Auth0-audience incident below is retained only as a historical troubleshooting record — do not follow it as current configuration.
+
+> **Historical scope**: the Auth0 bridge and service-worker initializer described below were removed from `web/`; the file names in that section refer to a historical fix and are not present in the tree. Current authentication is handled in Dart (see `docs/architecture/UNIFIED_FLUTTER_WEB.md`).
 
 > **Current orientation**: This authentication guide includes older `/ollama/bridge/status` verification examples. Treat those as legacy/support-provider endpoint checks. They do not imply Ollama is the primary app runtime; the main channel must use the selected agent runtime.
 
@@ -28,11 +30,11 @@ After successful Auth0 login, all API calls failed with 401 errors because:
 - **Backend** expected tokens with audience: `https://api.example.com` (Application API)
 - **Result**: Audience mismatch → Backend rejected tokens → 401 Unauthorized
 
-## What Was Fixed (historical; `web/auth0-bridge.js` is not in the repo)
+## What Was Fixed (historical; the retired Auth0 bridge script is not in the repo)
 
 ### Single Critical Change
 
-**File (historical; not present in repo)**: `web/auth0-bridge.js`
+**File (historical; not present in repo)**: an Auth0 bridge script under `web/` (removed)
 
 ```javascript
 // BEFORE (WRONG)
@@ -76,7 +78,7 @@ Backend Validates Token
 
 ### Components (current)
 
-> **Verified against code:** `lib/auth/providers/` contains only `cloudflare_access_auth_provider.dart` (there is no `web/auth0-bridge.js`). `services/api-backend/middleware/auth.js:14,52-54` reads `CF_ACCESS_TEAM_DOMAIN` and validates the Cloudflare Access JWT issuer. The Auth0 Domain / Client ID / audience / JWKS values in the historical sections were removed with the retired Auth0 bridge and no longer apply.
+> **Verified against code:** `lib/auth/providers/` contains only `cloudflare_access_auth_provider.dart` (there is no Auth0 bridge script under `web/`). `services/api-backend/middleware/auth.js:14,52-54` reads `CF_ACCESS_TEAM_DOMAIN` and validates the Cloudflare Access JWT issuer. The Auth0 Domain / Client ID / audience / JWKS values in the historical sections were removed with the retired Auth0 bridge and no longer apply.
 
 #### Frontend (current: `lib/auth/providers/cloudflare_access_auth_provider.dart`)
 
@@ -188,7 +190,7 @@ flutter build web --release
 
 If issues occur:
 
-1. Revert the Cloudflare Access configuration change (there is no `web/auth0-bridge.js` to revert)
+1. Revert the Cloudflare Access configuration change (the historical Auth0 bridge script under `web/` was removed, so there is nothing to restore there)
 2. Clear CDN cache
 3. Notify users to clear browser cache
 4. Investigate and fix root cause
@@ -199,8 +201,8 @@ If issues occur:
 
 | File | Change | Status |
 |------|--------|--------|
-| `web/auth0-bridge.js` | Historical Auth0 audience fix — file no longer exists | ⚠️ HISTORICAL |
-| `web/service-worker-init.js` | Deleted | ✅ SIMPLIFIED |
+| Auth0 bridge (historical; under `web/`) | Historical audience fix — file no longer exists | ⚠️ HISTORICAL |
+| Service-worker initializer (historical; under `web/`) | Deleted | ✅ SIMPLIFIED |
 | `web/index.html` | Removed SW patch | ✅ CLEANED |
 
 ---
@@ -244,7 +246,7 @@ If issues occur:
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| Frontend auth | ✅ OPERATIONAL | Cloudflare Access via `cloudflare_access_auth_provider.dart`; no `web/auth0-bridge.js` |
+| Frontend auth | ✅ OPERATIONAL | Cloudflare Access via `cloudflare_access_auth_provider.dart`; no retired Auth0 bridge script |
 | Backend Token Validation | ✅ OPERATIONAL | Cloudflare Access JWT issuer verification (`middleware/auth.js:52-54`) |
 | API Endpoints | ✅ PROTECTED | All endpoints properly secured |
 | Service Workers | ✅ SIMPLIFIED | Flutter manages automatically |

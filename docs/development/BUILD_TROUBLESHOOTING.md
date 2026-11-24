@@ -42,7 +42,7 @@ This guide helps you diagnose and fix common issues with Pistisai builds using G
    - Go to Actions → Failed workflow → "Re-run all jobs"
 
 2. **Check Flutter version compatibility**:
-   - Flutter is pinned by `environment.flutter` in root `pubspec.yaml` (`3.47.9`, `pubspec.yaml:10`); CI reads it via `flutter-version-file: pubspec.yaml` in `.github/workflows/build-desktop.yml` and `build-mobile.yml`. There is no `FLUTTER_VERSION` in a `build-release.yml` (that workflow does not exist).
+   - Flutter is pinned by `environment.flutter` in root `pubspec.yaml` (`3.47.9`, `pubspec.yaml:10`); CI reads it via `flutter-version-file: pubspec.yaml` in `.github/workflows/build-desktop.yml` and `.github/workflows/build-mobile.yml`. There is no `FLUTTER_VERSION` in a `build-release.yml` (that workflow does not exist).
    - Current version: `3.47.9`
    - Update if needed to latest stable version in `pubspec.yaml`, then rebuild.
 

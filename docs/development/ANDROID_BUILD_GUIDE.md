@@ -42,11 +42,11 @@ Artifacts are uploaded as `android-apks` with Flutter's default names (`app-arm6
 
 ### Signing secrets the workflow reads
 
-`build-mobile.yml` decodes the keystore and writes `android/key.properties`. These names are the ones CI uses:
+`build-mobile.yml` decodes the keystore and writes a local `key.properties` under `android/`. These names are the ones CI uses:
 
 | Secret | Written into |
 | --- | --- |
-| `ANDROID_KEYSTORE_B64` | `android/release-keystore.jks` |
+| `ANDROID_KEYSTORE_B64` | local `release-keystore.jks` under `android/` |
 | `ANDROID_STORE_PASSWORD` | `storePassword` |
 | `ANDROID_KEY_PASSWORD` | `keyPassword` |
 | `ANDROID_KEY_ALIAS` | `keyAlias` |
@@ -55,7 +55,7 @@ Artifacts are uploaded as `android-apks` with Flutter's default names (`app-arm6
 
 `scripts/setup-android-signing.ps1` and `scripts/verify-android-secrets.ps1` use the four names in the table above. The older names `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEYSTORE_PASSWORD` are not read by the workflow.
 
-The release `signingConfigs` block in `android/app/build.gradle` reads `android/key.properties` only. It does not read `android.injected.signing.*` properties.
+The release `signingConfigs` block in `android/app/build.gradle` reads the local `key.properties` only. It does not read `android.injected.signing.*` properties.
 
 ## Build Artifacts
 
@@ -212,7 +212,7 @@ If you prefer to configure secrets manually:
 - ✓ Keystore file is excluded from version control (.gitignore)
 - ✓ Strong, unique passwords generated automatically
 - ✓ Secrets stored securely in GitHub Secrets (encrypted at rest)
-- ✓ Backup information saved in `android/keystore-backup-info.txt`
+- ✓ Backup information saved in a local `keystore-backup-info.txt` under `android/`
 - ✓ Secrets only accessible during workflow execution
 - Rotate secrets periodically for enhanced security
 - Use GitHub's secret scanning to detect accidental exposure
@@ -222,7 +222,7 @@ If you prefer to configure secrets manually:
 
 ### Check android/app/build.gradle
 
-The checked-in release signing block reads `android/key.properties` only. The sample below includes an `android.injected.signing.*` branch that is not in the repo.
+The checked-in release signing block reads the local `key.properties` only. The sample below includes an `android.injected.signing.*` branch that is not in the repo.
 
 ```gradle
 android {
@@ -290,7 +290,7 @@ The Android job is `build_android` in `.github/workflows/build-mobile.yml`. Ther
 1. Check out `main` and rewrite `pubspec.yaml` / `assets/version.json` with the version from `version.json` and `github.run_number` as the build number.
 2. Install Flutter `3.47.9` (match `environment.flutter` in `pubspec.yaml:10`).
 3. Install `platforms;android-37.0` with `sdkmanager` resolved from `ANDROID_HOME`.
-4. Decode `ANDROID_KEYSTORE_B64` to `android/release-keystore.jks` and write `android/key.properties`.
+4. Decode `ANDROID_KEYSTORE_B64` to `release-keystore.jks` and write `key.properties` under `android/`.
 5. `flutter pub get`, then `flutter build apk --release --split-per-abi --android-skip-build-dependency-validation`.
 6. Upload `build/app/outputs/flutter-apk/*.apk` as the `android-apks` artifact (30 days).
 7. `create_release` publishes those APKs on tag `mobile-v{version}` when the Android job succeeded and the iOS job succeeded or was skipped.

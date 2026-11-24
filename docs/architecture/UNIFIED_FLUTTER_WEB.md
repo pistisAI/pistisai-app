@@ -115,7 +115,7 @@ redirect: (context, state) {
 
 ### Web Authentication
 
-There is **no** `web/auth0-bridge.js` in this repository. `web/` ships only the Flutter bootstrap and static assets: `web/index.html` loads `flutter_bootstrap.js` and contains no Auth0 or bridge script. Authentication is handled in Dart by `AuthService` (`lib/services/auth_service.dart`) through a provider-agnostic `AuthProvider`; the provider selected in `lib/di/locator.dart:392-423` is `CloudflareAccessAuthProvider` (`lib/auth/providers/cloudflare_access_auth_provider.dart:19`), not Auth0. The JS bridge snippet that appeared in older revisions of this document was aspirational and has been removed.
+There is **no Auth0/JS bridge** in this repository. `web/` ships only the Flutter bootstrap and static assets: `web/index.html` loads `flutter_bootstrap.js` and contains no Auth0 or bridge script. Authentication is handled in Dart by `AuthService` (`lib/services/auth_service.dart`) through a provider-agnostic `AuthProvider`; the provider selected in `lib/di/locator.dart:392-423` is `CloudflareAccessAuthProvider` (`lib/auth/providers/cloudflare_access_auth_provider.dart:19`), not Auth0. The JS bridge snippet that appeared in older revisions of this document was aspirational and has been removed.
 
 App routes still require authentication; the public marketing routes (`/`, `/download`) are served from `lib/screens/marketing/` and wired in `lib/config/router.dart:420`.
 

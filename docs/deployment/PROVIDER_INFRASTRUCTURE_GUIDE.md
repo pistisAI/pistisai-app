@@ -59,7 +59,7 @@ Evidence: `.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.
 Earlier revisions of this guide pointed at paths that do not exist in the repository. They are not current deployment options:
 
 - `docs/DEPLOYMENT/AKS_*.md`, `docs/ops/aws/`, `.kiro/steering/aws-infrastructure.md`, `docs/ops/kubernetes/`
-- `scripts/setup-azure-aks-infrastructure.sh`, `scripts/aws/`
+- an Azure AKS setup script and `scripts/aws/` (not present)
 - root `k8s/`, `web/k8s/`, `docs/DEPLOYMENT/` as a documentation root
 
 Azure AKS and AWS EKS remain possible *targets* for an operator applying the standard manifests; they are not provisioned or active in this repository. There is no documented migration timeline or "provisioned for evaluation" infrastructure to rely on.
