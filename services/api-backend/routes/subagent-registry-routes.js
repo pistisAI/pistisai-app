@@ -53,7 +53,9 @@ const updateSubagentStatusSchema = {
  */
 router.get('/', async (req, res) => {
   const ownerId = ownerIdFromRequest(req, res);
-  if (!ownerId) return;
+  if (!ownerId) {
+    return;
+  }
 
   try {
     const { status, agentId } = req.query;
@@ -101,7 +103,9 @@ router.get('/', async (req, res) => {
  */
 router.post('/', validateSchema(createSubagentSchema), async (req, res) => {
   const ownerId = ownerIdFromRequest(req, res);
-  if (!ownerId) return;
+  if (!ownerId) {
+    return;
+  }
 
   try {
     const { subagentId, label, agentId, task } = req.body;
@@ -155,7 +159,9 @@ router.post('/', validateSchema(createSubagentSchema), async (req, res) => {
 router.get('/:subagentId', async (req, res) => {
   const { subagentId } = req.params;
   const ownerId = ownerIdFromRequest(req, res);
-  if (!ownerId) return;
+  if (!ownerId) {
+    return;
+  }
 
   try {
     const result = await db.query(
@@ -194,7 +200,9 @@ router.get('/:subagentId', async (req, res) => {
 router.patch('/:subagentId/status', validateSchema(updateSubagentStatusSchema), async (req, res) => {
   const { subagentId } = req.params;
   const ownerId = ownerIdFromRequest(req, res);
-  if (!ownerId) return;
+  if (!ownerId) {
+    return;
+  }
 
   try {
     const { status, result, logs, error } = req.body;
@@ -265,7 +273,9 @@ router.patch('/:subagentId/metadata', validateBody(subagentMetadataBody),
   async (req, res) => {
   const { subagentId } = req.params;
   const ownerId = ownerIdFromRequest(req, res);
-  if (!ownerId) return;
+  if (!ownerId) {
+    return;
+  }
 
   const { label, task } = req.body;
 
@@ -307,7 +317,9 @@ router.patch('/:subagentId/metadata', validateBody(subagentMetadataBody),
 router.delete('/:subagentId', async (req, res) => {
   const { subagentId } = req.params;
   const ownerId = ownerIdFromRequest(req, res);
-  if (!ownerId) return;
+  if (!ownerId) {
+    return;
+  }
 
   try {
     const result = await db.query(
