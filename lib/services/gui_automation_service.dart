@@ -30,16 +30,16 @@ class GuiAutomationService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Check if Hermes Gateway is running
+      // Check if the configured agent gateway is running
       final response = await http.get(Uri.parse('$_modelEndpoint/status'));
       if (response.statusCode == 200) {
         _isInitialized = true;
-        _status = 'Ready - Hermes connected';
+        _status = 'Ready - agent gateway connected';
       } else {
-        _status = 'Warning: Hermes Gateway not running';
+        _status = 'Warning: agent gateway not running';
       }
     } catch (e) {
-      _status = 'Hermes not available - GUI features limited';
+      _status = 'Agent gateway not available - GUI features limited';
     }
 
     notifyListeners();
@@ -189,71 +189,6 @@ class GuiAutomationService extends ChangeNotifier {
     notifyListeners();
 
     return _lastResult;
-  }
-
-  /// Execute action based on vision model response
-  Future<String> executeAction(String action) async {
-    _status = 'Executing: $action';
-    notifyListeners();
-
-    try {
-      debugPrint('[GuiAutomation] Executing action: $action');
-
-      // Supported actions: click(x,y), type(text), scroll(direction), keypress(key)
-      await _channel.invokeMethod('executeAction', {
-        'action': action,
-      });
-
-      _status = 'Action completed';
-      debugPrint('[GuiAutomation] Action completed: $action');
-      notifyListeners();
-
-      return 'Executed: $action';
-    } catch (e) {
-      _status = 'Action failed: $e';
-      debugPrint('[GuiAutomation] Action failed: $e');
-      notifyListeners();
-      return 'Error: $e';
-    }
-  }
-
-  /// Full workflow: Screenshot → Analyze → Action
-  Future<String> automationWorkflow(String userInstruction) async {
-    _status = 'Starting automation workflow...';
-    notifyListeners();
-
-    // 1. Take screenshot
-    final screenshotPath = await takeScreenshot();
-    if (screenshotPath == null) {
-      return 'Failed to take screenshot';
-    }
-
-    // 2. Analyze with vision model
-    final analysis = await analyzeScreenshot(screenshotPath);
-
-    // 3. Generate action based on user instruction
-    final action = await _generateAction(analysis, userInstruction);
-
-    // 4. Execute action
-    final result = await executeAction(action);
-
-    return 'Analysis: $analysis\n\nAction: $action\n\nResult: $result';
-  }
-
-  /// Generate action from analysis and instruction
-  Future<String> _generateAction(String analysis, String instruction) async {
-    // Send to vision model to determine action
-    // Placeholder: parse instruction for action type
-
-    if (instruction.toLowerCase().contains('click')) {
-      return 'click(100, 200)'; // Placeholder coordinates
-    } else if (instruction.toLowerCase().contains('type')) {
-      return 'type(hello)';
-    } else if (instruction.toLowerCase().contains('scroll')) {
-      return 'scroll(down)';
-    }
-
-    return 'analyze'; // Just analyze, no action
   }
 
   /// Set vLLM endpoint

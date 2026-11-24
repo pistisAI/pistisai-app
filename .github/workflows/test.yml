@@ -138,6 +138,12 @@ jobs:
       - name: Bake Pistisai brand
         run: bash tool/brand.sh pistisai
 
+      # The committed tree must already be the pistisai bake (#861): if the
+      # bake changes web/ or lib/ (privacy page, generated l10n), the
+      # template and the committed output have drifted.
+      - name: Check brand bake drift
+        run: git diff --exit-code --stat -- web lib
+
       - name: "🧪 flutter test (security + basic)"
         run: bash scripts/ci/flutter_security_basic_tests.sh
 

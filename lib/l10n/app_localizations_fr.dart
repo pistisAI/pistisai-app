@@ -1108,7 +1108,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeToolsSubtitle =>
-      'Disponible hors ligne • Connectez-vous pour en débloquer davantage';
+      'Selon ce que signale votre environnement d\'agent connecté';
 
   @override
   String get homeToolDesktop => 'Contrôle de l\'ordinateur';
@@ -1147,10 +1147,69 @@ class AppLocalizationsFr extends AppLocalizations {
       'Exécuter des scripts Python, shell et Dart';
 
   @override
-  String get homeToolLocal => 'local';
+  String get homeToolAvailable => 'disponible';
 
   @override
-  String get homeToolCloud => 'nuage';
+  String get homeToolUnavailable => 'indisponible';
+
+  @override
+  String get homeToolNotReported =>
+      'Votre environnement d\'agent ne signale pas cet outil';
+
+  @override
+  String get brainInsightsTitle => 'Aperçu du cerveau';
+
+  @override
+  String get brainInsightsJournalTitle => 'Journal d\'activité de l\'agent';
+
+  @override
+  String get brainInsightsJournalSubtitle =>
+      'Actions de votre agent, enregistrées sur cet appareil.';
+
+  @override
+  String get brainInsightsEmpty =>
+      'Aucune action d\'agent enregistrée pour l\'instant. L\'utilisation d\'outils dans la discussion apparaît ici.';
+
+  @override
+  String get brainInsightsLoadError =>
+      'Impossible de lire le journal d\'activité.';
+
+  @override
+  String get brainInsightsUnavailable =>
+      'Le journal d\'activité n\'est pas disponible sur cet appareil.';
+
+  @override
+  String constructionLinkOpenFailed(String url) {
+    return 'Impossible d\'ouvrir $url';
+  }
+
+  @override
+  String get mobileConnectTitle => 'Connecter ce téléphone';
+
+  @override
+  String get mobileConnectIntro =>
+      'Votre application de bureau est le concentrateur. Ce téléphone n\'installe pas Hermes : il rejoint ce concentrateur.';
+
+  @override
+  String get mobileTailscaleTitle => 'Auto-hébergé via Tailscale';
+
+  @override
+  String get mobileTailscaleDescription =>
+      'Joignez le concentrateur de bureau sur votre tailnet. Installez d\'abord Tailscale sur ce téléphone.';
+
+  @override
+  String get mobileHubHostLabel => 'Nom MagicDNS Tailscale de l\'ordinateur';
+
+  @override
+  String get mobileHubHostHelper =>
+      'Même tailnet que l\'ordinateur. Android n\'autorise le texte en clair que vers *.ts.net.';
+
+  @override
+  String get mobileHubConnect => 'Se connecter au concentrateur de bureau';
+
+  @override
+  String get mobileHubRemoteAccessNote =>
+      'Par défaut, l\'application de bureau n\'accepte que les connexions provenant du même ordinateur. Un réglage permettant à ce téléphone de se connecter n\'est pas encore disponible : cette connexion échoue donc avec les versions de bureau standard.';
 
   @override
   String get welcomeSubtitle =>
@@ -2838,11 +2897,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get connConnectedTo => 'Connecté à :';
 
   @override
-  String get completionAllSet => 'Tout est prêt !';
+  String get completionAllSet => 'Presque terminé';
 
   @override
   String get completionConfigured =>
-      'Votre environnement d\'agent est configuré et prêt à l\'emploi.';
+      'Vérifiez votre configuration, puis sélectionnez Terminer pour l\'enregistrer.';
 
   @override
   String get completionSaving => 'Enregistrement de la configuration…';
@@ -2863,11 +2922,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get completionRemote => 'Distant';
 
   @override
-  String get completionReady => 'Prêt à discuter !';
+  String get completionReady => 'Ensuite : commencez à discuter';
 
   @override
   String get completionDone =>
-      'La configuration est terminée. Vous pouvez commencer à discuter !';
+      'Après avoir sélectionné Terminer, la discussion s\'ouvre.';
 
   @override
   String get installStatusInstalled => 'Installé';
@@ -2922,14 +2981,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get guiAnalyze => 'Analyser';
 
   @override
-  String get guiPrompt => 'Que voulez-vous faire ?';
-
-  @override
-  String get guiHint =>
-      'ex. : cliquer sur le bouton de recherche, écrire dans la zone';
-
-  @override
-  String get guiExecute => 'Exécuter';
+  String get guiActionsUnavailable =>
+      'L\'exécution d\'actions depuis cet écran n\'est pas encore disponible.';
 
   @override
   String get guiResult => 'Résultat';

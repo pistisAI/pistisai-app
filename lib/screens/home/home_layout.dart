@@ -22,6 +22,7 @@ import '../../models/avatar/personality_models.dart';
 import '../../di/locator.dart' as di;
 import '../../l10n/app_localizations.dart';
 import '../../services/agent_display_name.dart';
+import 'chat_tools_panel.dart';
 
 /// Main layout — clean chat interface, nothing else.
 class HomeLayout extends StatefulWidget {
@@ -594,9 +595,20 @@ class _ActionBar extends StatelessWidget {
   }
 
   void _showTools(BuildContext context, String agentName) {
+    ConnectionManagerService? connection;
+    try {
+      connection = context.read<ConnectionManagerService>();
+    } catch (_) {
+      // ConnectionManagerService not available on this platform.
+    }
+    final tools = deriveChatTools(
+      agentConnected: connection?.isConnected ?? false,
+      capabilities: connection?.activeRuntimeCapabilities,
+    );
     showModalBottomSheet(
       context: context,
-      builder: (ctx) => _ToolsPanel(agentName: agentName),
+      isScrollControlled: true,
+      builder: (ctx) => ChatToolsPanel(agentName: agentName, tools: tools),
     );
   }
 
@@ -762,201 +774,6 @@ class _PillarButton extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Bottom sheet showing the configured agent's available capabilities.
-class _ToolsPanel extends StatelessWidget {
-  const _ToolsPanel({required this.agentName});
-
-  final String agentName;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.handyman,
-                    size: 24, color: AppTheme.colorsOf(context).warning),
-                const SizedBox(width: 12),
-                Text(
-                  l10n.homeToolsTitle(agentName),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.homeToolsSubtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppTheme.colorsOf(context).textColorLight,
-              ),
-            ),
-            const SizedBox(height: 20),
-            _ToolRow(
-              icon: Icons.desktop_windows,
-              title: l10n.homeToolDesktop,
-              description: l10n.homeToolDesktopDescription,
-              available: true,
-            ),
-            _ToolRow(
-              icon: Icons.visibility,
-              title: l10n.homeToolVision,
-              description: l10n.homeToolVisionDescription,
-              available: true,
-            ),
-            _ToolRow(
-              icon: Icons.record_voice_over,
-              title: l10n.homeToolVoice,
-              description: l10n.homeToolVoiceDescription,
-              available: true,
-            ),
-            _ToolRow(
-              icon: Icons.language,
-              title: l10n.homeToolWebSearch,
-              description: l10n.homeToolWebSearchDescription,
-              available: false,
-              note: l10n.homeToolRequiresAgent,
-            ),
-            _ToolRow(
-              icon: Icons.code,
-              title: l10n.homeToolCode,
-              description: l10n.homeToolCodeDescription,
-              available: true,
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ToolRow extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final bool available;
-  final String? note;
-
-  const _ToolRow({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.available,
-    this.note,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: available
-                  ? AppTheme.colorsOf(context).success.withValues(alpha: 0.1)
-                  : AppTheme.colorsOf(context)
-                      .textColorLight
-                      .withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              size: 22,
-              color: available
-                  ? AppTheme.colorsOf(context).success
-                  : AppTheme.colorsOf(context).textColorLight,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: available
-                            ? AppTheme.colorsOf(context)
-                                .success
-                                .withValues(alpha: 0.15)
-                            : AppTheme.colorsOf(context)
-                                .warning
-                                .withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        available
-                            ? AppLocalizations.of(context).homeToolLocal
-                            : AppLocalizations.of(context).homeToolCloud,
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          color: available
-                              ? AppTheme.colorsOf(context).success
-                              : AppTheme.colorsOf(context).warning,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppTheme.colorsOf(context)
-                        .textColorLight
-                        .withValues(alpha: 0.6),
-                  ),
-                ),
-                if (note != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(
-                      note!,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: AppTheme.colorsOf(context)
-                            .warning
-                            .withValues(alpha: 0.6),
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          if (available)
-            Icon(
-              Icons.check_circle,
-              size: 18,
-              color: AppTheme.colorsOf(context).success.withValues(alpha: 0.8),
-            ),
-        ],
       ),
     );
   }

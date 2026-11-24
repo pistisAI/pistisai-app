@@ -1095,7 +1095,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get homeToolsSubtitle => 'Available offline • Connect to unlock more';
+  String get homeToolsSubtitle => 'As reported by your connected agent runtime';
 
   @override
   String get homeToolDesktop => 'Desktop Control';
@@ -1132,10 +1132,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeToolCodeDescription => 'Run Python, shell, and Dart scripts';
 
   @override
-  String get homeToolLocal => 'local';
+  String get homeToolAvailable => 'available';
 
   @override
-  String get homeToolCloud => 'cloud';
+  String get homeToolUnavailable => 'unavailable';
+
+  @override
+  String get homeToolNotReported =>
+      'Your agent runtime does not report this tool';
+
+  @override
+  String get brainInsightsTitle => 'Brain Insights';
+
+  @override
+  String get brainInsightsJournalTitle => 'Agent activity journal';
+
+  @override
+  String get brainInsightsJournalSubtitle =>
+      'Actions your agent took, recorded on this device.';
+
+  @override
+  String get brainInsightsEmpty =>
+      'No agent actions recorded yet. Tool use in chat appears here.';
+
+  @override
+  String get brainInsightsLoadError => 'Could not read the activity journal.';
+
+  @override
+  String get brainInsightsUnavailable =>
+      'The activity journal is not available on this device.';
+
+  @override
+  String constructionLinkOpenFailed(String url) {
+    return 'Could not open $url';
+  }
+
+  @override
+  String get mobileConnectTitle => 'Connect this phone';
+
+  @override
+  String get mobileConnectIntro =>
+      'Your desktop app is the hub. This phone does not install Hermes — it joins that hub.';
+
+  @override
+  String get mobileTailscaleTitle => 'Self-Hosted via Tailscale';
+
+  @override
+  String get mobileTailscaleDescription =>
+      'Reach the desktop hub on your tailnet. Install Tailscale on this phone first.';
+
+  @override
+  String get mobileHubHostLabel => 'Desktop Tailscale MagicDNS name';
+
+  @override
+  String get mobileHubHostHelper =>
+      'Same tailnet as the PC. Android allows cleartext only to *.ts.net.';
+
+  @override
+  String get mobileHubConnect => 'Connect to desktop hub';
+
+  @override
+  String get mobileHubRemoteAccessNote =>
+      'By default the desktop app only accepts connections from the same computer. A setting to let this phone connect is not available yet, so this connection fails with standard desktop builds.';
 
   @override
   String get welcomeSubtitle =>
@@ -2793,11 +2851,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connConnectedTo => 'Connected to:';
 
   @override
-  String get completionAllSet => 'You\'re All Set!';
+  String get completionAllSet => 'Almost done';
 
   @override
   String get completionConfigured =>
-      'Your agent runtime is configured and ready to use.';
+      'Review your setup, then select Complete to save it.';
 
   @override
   String get completionSaving => 'Saving configuration...';
@@ -2818,11 +2876,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completionRemote => 'Remote';
 
   @override
-  String get completionReady => 'Ready to start chatting!';
+  String get completionReady => 'Next: start chatting';
 
   @override
-  String get completionDone =>
-      'Your setup is complete. You can start chatting now!';
+  String get completionDone => 'After you select Complete, the chat opens.';
 
   @override
   String get installStatusInstalled => 'Installed';
@@ -2877,13 +2934,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guiAnalyze => 'Analyze';
 
   @override
-  String get guiPrompt => 'What do you want to do?';
-
-  @override
-  String get guiHint => 'e.g., Click the search button, Type in the box';
-
-  @override
-  String get guiExecute => 'Execute';
+  String get guiActionsUnavailable =>
+      'Running actions from this screen is not available yet.';
 
   @override
   String get guiResult => 'Result';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pistisai/brand/brand_copy.dart';
-import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/config/theme.dart';
 import 'package:pistisai/di/locator.dart' as di;
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/screens/onboarding/widgets/connection_method_card.dart';
 import 'package:pistisai/services/auth_service.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
@@ -31,6 +31,7 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppTheme.colorsOf(context);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Consumer<MobileConnectionService>(
@@ -52,13 +53,13 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Connect this phone',
+                          l10n.mobileConnectTitle,
                           style: Theme.of(context).textTheme.headlineSmall,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Your desktop app is the hub. This phone does not install Hermes — it joins that hub.',
+                          l10n.mobileConnectIntro,
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: colors.textColorLight,
@@ -68,9 +69,8 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
                         const SizedBox(height: 28),
                         ConnectionMethodCard(
                           icon: Icons.shield_outlined,
-                          title: 'Self-Hosted via Tailscale',
-                          description:
-                              'Reach the desktop hub on your tailnet. Install Tailscale on this phone first.',
+                          title: l10n.mobileTailscaleTitle,
+                          description: l10n.mobileTailscaleDescription,
                           selected:
                               _selected == MobileConnectionMode.tailscaleHub,
                           onTap: () => setState(() {
@@ -109,11 +109,32 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
     BuildContext context,
     MobileConnectionService connection,
   ) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // Release desktop builds keep the hub on loopback (#861, #805), so
+        // say so up front instead of letting the probe fail unexplained.
+        Container(
+          key: const Key('mobileHubRemoteAccessNote'),
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: AppTheme.colorsOf(context).warning.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.info_outline,
+                  size: 18, color: AppTheme.colorsOf(context).warning),
+              const SizedBox(width: 8),
+              Expanded(child: Text(l10n.mobileHubRemoteAccessNote)),
+            ],
+          ),
+        ),
         Text(
-          'Desktop Tailscale MagicDNS name',
+          l10n.mobileHubHostLabel,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
@@ -123,8 +144,8 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
           keyboardType: TextInputType.url,
           decoration: InputDecoration(
             hintText: 'pc-name.tailnet.ts.net',
-            helperText:
-                'Same tailnet as the PC. Android allows cleartext only to *.ts.net. Hermes stays on port ${AppConfig.defaultHermesPort}.',
+            helperText: l10n.mobileHubHostHelper,
+            helperMaxLines: 3,
           ),
         ),
         const SizedBox(height: 16),
@@ -136,7 +157,7 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Connect to desktop hub'),
+              : Text(l10n.mobileHubConnect),
         ),
         if (connection.errorMessage != null) ...[
           const SizedBox(height: 12),

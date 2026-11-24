@@ -22,7 +22,7 @@ class BrainInsightsScreen extends StatelessWidget {
           children: [
             const AppLogo.small(),
             const SizedBox(width: 12),
-            const Text('Brain Insights'),
+            Text(AppLocalizations.of(context).brainInsightsTitle),
           ],
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,

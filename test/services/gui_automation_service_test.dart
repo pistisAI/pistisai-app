@@ -35,21 +35,6 @@ void main() {
       });
     });
 
-    group('executeAction', () {
-      test('should handle action execution', () async {
-        // This test requires platform channel mocking
-        // For now, we verify the service structure is correct
-        expect(service.status, 'Ready');
-      });
-    });
-
-    group('automationWorkflow', () {
-      test('should handle workflow when screenshot fails', () async {
-        final result = await service.automationWorkflow('click button');
-        expect(result, contains('Failed to take screenshot'));
-      });
-    });
-
     group('setEndpoint', () {
       test('should update model endpoint', () {
         service.setEndpoint('http://localhost:8080');

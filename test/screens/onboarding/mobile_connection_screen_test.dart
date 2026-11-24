@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/brand/brand.dart';
+import 'package:pistisai/l10n/app_localizations.dart';
 import 'package:pistisai/screens/onboarding/mobile_connection_screen.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,8 @@ void main() {
       ChangeNotifierProvider<MobileConnectionService>.value(
         value: service,
         child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: MobileConnectionScreen(),
         ),
       ),
@@ -42,5 +45,31 @@ void main() {
     await tester.tap(find.text('Connected via $domain'));
     await tester.pump();
     expect(find.text('Continue with $domain'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Tailscale form explains that desktop builds keep the hub on loopback '
+      '(#861)', (tester) async {
+    final service = MobileConnectionService();
+    await tester.pumpWidget(
+      ChangeNotifierProvider<MobileConnectionService>.value(
+        value: service,
+        child: const MaterialApp(
+          locale: Locale('fr'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MobileConnectionScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Connecter ce téléphone'), findsOneWidget);
+    expect(find.byKey(const Key('mobileHubRemoteAccessNote')), findsNothing);
+
+    await tester.tap(find.text('Auto-hébergé via Tailscale'));
+    await tester.pump();
+    expect(find.byKey(const Key('mobileHubRemoteAccessNote')), findsOneWidget);
+    expect(find.text('Se connecter au concentrateur de bureau'), findsOneWidget);
   });
 }
