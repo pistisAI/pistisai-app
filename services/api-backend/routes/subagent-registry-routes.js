@@ -10,6 +10,24 @@ const logger = new TunnelLogger('subagent-registry-routes');
 const router = express.Router();
 router.use(authenticateJWT);
 
+/**
+ * Owner of every row on this router. The Cloudflare Access JWT `sub` is the
+ * only stable per-user identifier on these requests. Fail closed when a token
+ * has no sub instead of treating the caller as a registry administrator.
+ */
+function ownerIdFromRequest(req, res) {
+  const ownerId = req.auth?.payload?.sub || req.user?.sub;
+  if (!ownerId) {
+    res.status(401).json({
+      success: false,
+      error: 'Authenticated user identity is required',
+      code: 'USER_ID_MISSING',
+    });
+    return null;
+  }
+  return ownerId;
+}
+
 const createSubagentSchema = {
   body: z.object({
     subagentId: z.string().min(1),
@@ -31,9 +49,12 @@ const updateSubagentStatusSchema = {
 /**
  * GET /api/admin/subagents
  * List all subagents (filtered by status if provided)
- * Accessible to all agents (internal coordination)
+ * Scoped to the authenticated owner (JWT sub)
  */
 router.get('/', async (req, res) => {
+  const ownerId = ownerIdFromRequest(req, res);
+  if (!ownerId) return;
+
   try {
     const { status, agentId } = req.query;
 
@@ -42,9 +63,9 @@ router.get('/', async (req, res) => {
              created_at, started_at, completed_at,
              result_json, logs, error_message
       FROM subagent_registry
-      WHERE 1=1
+      WHERE user_id = $1
     `;
-    const params = [];
+    const params = [ownerId];
 
     if (status) {
       params.push(status);
@@ -76,15 +97,18 @@ router.get('/', async (req, res) => {
 /**
  * POST /api/admin/subagents
  * Register a new subagent
- * Accessible to all agents
+ * Scoped to the authenticated owner (JWT sub)
  */
 router.post('/', validateSchema(createSubagentSchema), async (req, res) => {
+  const ownerId = ownerIdFromRequest(req, res);
+  if (!ownerId) return;
+
   try {
     const { subagentId, label, agentId, task } = req.body;
 
     const result = await db.query(
-      `INSERT INTO subagent_registry (subagent_id, label, agent_id, task, status)
-       VALUES ($1, $2, $3, $4, 'pending')
+      `INSERT INTO subagent_registry (subagent_id, label, agent_id, task, status, user_id)
+       VALUES ($1, $2, $3, $4, 'pending', $5)
        ON CONFLICT (subagent_id) DO UPDATE SET
          label = EXCLUDED.label,
          agent_id = EXCLUDED.agent_id,
@@ -95,9 +119,20 @@ router.post('/', validateSchema(createSubagentSchema), async (req, res) => {
          completed_at = NULL,
          result_json = NULL,
          error_message = NULL
+       WHERE subagent_registry.user_id = EXCLUDED.user_id
        RETURNING *`,
-      [subagentId, label, agentId, task],
+      [subagentId, label, agentId, task, ownerId],
     );
+
+    // A conflict that fails the owner WHERE returns no row: another user owns
+    // this subagentId. Never let an upsert quietly reset their record.
+    if (result.rows.length === 0) {
+      return res.status(409).json({
+        success: false,
+        error: 'Subagent id is owned by another user',
+        code: 'SUBAGENT_ID_CONFLICT',
+      });
+    }
 
     res.json({
       success: true,
@@ -115,15 +150,17 @@ router.post('/', validateSchema(createSubagentSchema), async (req, res) => {
 /**
  * GET /api/admin/subagents/:subagentId
  * Get details of a specific subagent
- * Accessible to all agents
+ * Scoped to the authenticated owner (JWT sub)
  */
 router.get('/:subagentId', async (req, res) => {
   const { subagentId } = req.params;
+  const ownerId = ownerIdFromRequest(req, res);
+  if (!ownerId) return;
 
   try {
     const result = await db.query(
-      `SELECT * FROM subagent_registry WHERE subagent_id = $1`,
-      [subagentId],
+      `SELECT * FROM subagent_registry WHERE subagent_id = $1 AND user_id = $2`,
+      [subagentId, ownerId],
     );
 
     if (result.rows.length === 0) {
@@ -152,10 +189,13 @@ router.get('/:subagentId', async (req, res) => {
 /**
  * PATCH /api/admin/subagents/:subagentId/status
  * Update subagent status (start, complete, fail)
- * Accessible to all agents
+ * Scoped to the authenticated owner (JWT sub)
  */
 router.patch('/:subagentId/status', validateSchema(updateSubagentStatusSchema), async (req, res) => {
   const { subagentId } = req.params;
+  const ownerId = ownerIdFromRequest(req, res);
+  if (!ownerId) return;
+
   try {
     const { status, result, logs, error } = req.body;
 
@@ -186,8 +226,10 @@ router.patch('/:subagentId/status', validateSchema(updateSubagentStatusSchema), 
       params.push(error);
     }
 
+    params.push(ownerId);
+    const ownerParam = `$${params.length}`;
     const dbResult = await db.query(
-      `UPDATE subagent_registry SET ${updates.join(', ')} WHERE subagent_id = $2 RETURNING *`,
+      `UPDATE subagent_registry SET ${updates.join(', ')} WHERE subagent_id = $2 AND user_id = ${ownerParam} RETURNING *`,
       params,
     );
 
@@ -217,11 +259,14 @@ router.patch('/:subagentId/status', validateSchema(updateSubagentStatusSchema), 
 /**
  * PATCH /api/admin/subagents/:subagentId/metadata
  * Update label and/or task without touching execution state.
- * Accessible to all agents.
+ * Scoped to the authenticated owner (JWT sub).
  */
 router.patch('/:subagentId/metadata', validateBody(subagentMetadataBody),
   async (req, res) => {
   const { subagentId } = req.params;
+  const ownerId = ownerIdFromRequest(req, res);
+  if (!ownerId) return;
+
   const { label, task } = req.body;
 
   const updates = [];
@@ -238,8 +283,10 @@ router.patch('/:subagentId/metadata', validateBody(subagentMetadataBody),
   }
 
   try {
+    params.push(ownerId);
+    const ownerParam = `$${params.length}`;
     const result = await db.query(
-      `UPDATE subagent_registry SET ${updates.join(', ')} WHERE subagent_id = $1 RETURNING *`,
+      `UPDATE subagent_registry SET ${updates.join(', ')} WHERE subagent_id = $1 AND user_id = ${ownerParam} RETURNING *`,
       params,
     );
     if (result.rows.length === 0) {
@@ -255,15 +302,17 @@ router.patch('/:subagentId/metadata', validateBody(subagentMetadataBody),
 /**
  * DELETE /api/admin/subagents/:subagentId
  * Remove a subagent from registry
- * Accessible to all agents
+ * Scoped to the authenticated owner (JWT sub)
  */
 router.delete('/:subagentId', async (req, res) => {
   const { subagentId } = req.params;
+  const ownerId = ownerIdFromRequest(req, res);
+  if (!ownerId) return;
 
   try {
     const result = await db.query(
-      `DELETE FROM subagent_registry WHERE subagent_id = $1 RETURNING *`,
-      [subagentId],
+      `DELETE FROM subagent_registry WHERE subagent_id = $1 AND user_id = $2 RETURNING *`,
+      [subagentId, ownerId],
     );
 
     if (result.rows.length === 0) {
