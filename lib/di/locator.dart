@@ -239,7 +239,10 @@ Future<void> setupCoreServices() async {
       // Saved avatar size, glow and colour, used by the chat avatar.
       unawaited(reloadAvatarAppearance());
 
-      final brainSyncService = BrainSyncService(localBrain);
+      final brainSyncService = BrainSyncService(
+        localBrain,
+        cloudAllowed: settingsPreferenceService.isCloudServicesEnabled,
+      );
       serviceLocator.registerSingleton<BrainSyncService>(brainSyncService);
       brainSyncService.startSync();
 
@@ -921,6 +924,7 @@ Future<void> setupAuthenticatedServices() async {
     // Cloud connector - device registry + presence for the secure device mesh
     final cloudConnectorService = CloudConnectorService(
       authService: authService,
+      cloudAllowed: SettingsPreferenceService().isCloudServicesEnabled,
     );
     serviceLocator.registerSingleton<CloudConnectorService>(
       cloudConnectorService,
