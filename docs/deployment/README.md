@@ -41,6 +41,7 @@ Provider-specific notes are runbooks, not universal architecture. Prefer [Deploy
 - [Versioning Strategy](VERSIONING_STRATEGY.md)
 - [Deployment Testing Guide](../archive/historical-reports/deployment/DEPLOYMENT_TESTING_GUIDE.md)
 - [Validation Testing Guide](VALIDATION_TESTING_GUIDE.md)
+- [Tunnel Rollback Procedures](TUNNEL_ROLLBACK_PROCEDURES.md) — legacy/fallback tunnel runbook, kept live per #823 review
 
 ## Related Documentation
 
