@@ -65,6 +65,10 @@ For project-wide agent instructions, see [AGENTS.md](../AGENTS.md).
 - [Features Guide](user-guide/FEATURES_GUIDE.md)
 - [Troubleshooting](user-guide/TROUBLESHOOTING.md)
 
+## Archived Reports
+
+Completed point-in-time implementation and status reports are preserved in [docs/archive/historical-reports/](archive/historical-reports/README.md) (issue #823, part of #812). They are kept for provenance, not maintained; use the live docs above for current behavior. Two reports from the #823 list were kept live after review: [Validation Testing Guide](deployment/VALIDATION_TESTING_GUIDE.md) and [Tunnel Rollback Procedures](deployment/TUNNEL_ROLLBACK_PROCEDURES.md).
+
 ## Maintenance Rules
 
 - Keep this file as the single navigation source.
