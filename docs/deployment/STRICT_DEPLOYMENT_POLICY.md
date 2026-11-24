@@ -65,10 +65,12 @@ Any of the following conditions will trigger immediate deployment failure:
 ### Automated Process
 
 1. **Pre-deployment checks** - Environment validation
-2. **Application build** - Flutter web compilation
-3. **VPS deployment** - New version upload and container restart
+2. **Application build** - Flutter web compilation in `.github/workflows/deploy-web.yml`
+3. **Image publication** - GitHub Actions pushes the image to GHCR (`ghcr.io/pistisai/pistisai-app-web`); the host then pulls the new image and restarts the container with `docker compose -f config/docker/docker-compose.web.yml up -d`. There is no script that uploads a build to a VPS.
 4. **STRICT verification** - Zero-tolerance quality checks
 5. **Success/Failure decision** - Based on strict criteria
+
+Production deploys are GitHub Actions runs on `main` (or `workflow_dispatch`), not an operator-driven VPS upload. See [Web Deploy](../operations/cicd/WEB_DEPLOY.md) and `.github/workflows/deploy-web.yml`.
 
 ### Rollback Mechanism
 
@@ -101,15 +103,20 @@ Any of the following conditions will trigger immediate deployment failure:
 
 ### Verification Script
 
-- **Location**: `scripts/deploy/verify_deployment.sh`
-- **Mode**: Strict verification with zero tolerance
-- **Output**: Clear success/failure indication with detailed reasoning
+There is no `scripts/deploy/verify_deployment.sh` in this repository. The zero-tolerance checks are the healthchecks and verification scripts that exist today:
+
+- **Compose healthcheck**: `config/docker/docker-compose.web.yml` checks `http://localhost/health`; `docker compose ps` reports the result.
+- **Kubernetes tunnel path**: `bash scripts/verify-k8s-tunnel-only.sh` and `bash scripts/integration-test-deployments.sh --e2e-deployment`.
+- **Mode**: Strict verification with zero tolerance for warnings or errors.
+- **Output**: Clear success/failure indication with detailed reasoning.
 
 ### Deployment Script
 
-- **Location**: `scripts/deploy/complete_deployment.sh`
-- **Mode**: Fully automated with strict verification integration
-- **Rollback**: Use Git version control for rollback when needed
+There is no `scripts/deploy/complete_deployment.sh`. Production deploys are driven by GitHub Actions:
+
+- **Entry point**: `.github/workflows/deploy-web.yml` (`workflow_dispatch` or push to `main`), with `.github/workflows/deploy-backend.yml` following via `workflow_run`.
+- **Mode**: Builds/pushes images to GHCR; the host pulls the image and runs `docker compose -f config/docker/docker-compose.web.yml up -d`.
+- **Rollback**: Use Git version control for rollback when needed.
 
 ### Exit Codes
 
@@ -151,13 +158,16 @@ If a deployment fails or issues are discovered:
 3. **Redeploy Previous Version**:
 
    ```bash
-   ./scripts/deploy/complete_deployment.sh --force
+   gh workflow run deploy-web.yml
+   # on the host, pull the image and restart the container
+   docker compose -f config/docker/docker-compose.web.yml up -d
    ```
 
 4. **Verify Rollback Success**:
 
    ```bash
-   ./scripts/deploy/verify_deployment.sh
+   docker compose -f config/docker/docker-compose.web.yml ps
+   curl -f http://localhost/health
    ```
 
 ### Best Practices
@@ -171,11 +181,11 @@ If a deployment fails or issues are discovered:
 
 ### Default Settings
 
-- **VPS Host**: example.com
-- **VPS User**: deploy
-- **Project Directory**: /opt/Pistisai
+- **Deploy entry point**: GitHub Actions on `main` — `.github/workflows/deploy-web.yml`, then `.github/workflows/deploy-backend.yml` via `workflow_run`
+- **Image registry**: `ghcr.io` (GHCR), authenticated with `GITHUB_TOKEN`
+- **Host runtime**: `docker compose -f config/docker/docker-compose.web.yml up -d`
 - **Resource Thresholds**: 90% for disk and memory
-- **HTTP Requirements**: 200 responses only
+- **HTTP Requirements**: 200 responses or expected HTTPS redirects (301/302)
 - **SSL Requirements**: Valid certificates mandatory
 
 ### Customization

@@ -2,151 +2,89 @@
 
 ## Overview
 
-Pistisai is designed to be **provider-agnostic**, supporting deployment on multiple cloud platforms and Kubernetes providers. This document clarifies the current deployment status and available options.
+This document describes the deployment setup that exists in the repository today. The app is provider-agnostic at the manifest level, but the supported production path is GitHub Actions building images into GHCR and a host running them with Docker Compose. Claims of an active Azure AKS deployment or a Docker Hub registry in older revisions of this guide were not backed by the code and are removed here.
+
+Evidence: `.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`, `docs/operations/cicd/WEB_DEPLOY.md`, `config/kubernetes/`, `config/docker/`.
 
 ## Current Deployment Status
 
-### Primary Infrastructure: Azure AKS
-
-- **Current Provider**: Microsoft Azure
-- **Service**: Azure Kubernetes Service (AKS)
-- **Status**: ✅ **ACTIVE PRODUCTION DEPLOYMENT**
-- **Authentication**: Auth0 (provider-agnostic)
-- **Container Registry**: Docker Hub
-- **DNS/SSL**: Cloudflare
-
-### Alternative Infrastructure: AWS EKS
-
-- **Provider**: Amazon Web Services
-- **Service**: Elastic Kubernetes Service (EKS)
-- **Status**: 🔄 **MIGRATION PLANNING / ALTERNATIVE OPTION**
-- **Purpose**: Cost optimization and feature parity evaluation
+- **Build/publish**: GitHub Actions workflows on `main` (or `workflow_dispatch`). `deploy-web.yml` builds the production `Dockerfile.web` and pushes `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`; `deploy-backend.yml` follows via `workflow_run` and pushes `ghcr.io/<repo>/api-backend`, `/streaming-proxy` and `/postgres`.
+- **Registry**: GHCR (`ghcr.io`), authenticated with `GITHUB_TOKEN`. There is no Docker Hub publishing workflow.
+- **Host runtime**: the host pulls the published image and runs `docker compose -f config/docker/docker-compose.web.yml up -d`. The workflow itself notes that the host pull is still manual.
+- **Cache**: `deploy-web.yml` purges the whole Cloudflare zone with `CLOUDFLARE_CACHE_PURGE_TOKEN` and `CF_ZONE_ID`.
+- **Authentication**: Cloudflare Access for the free tunnel path; customer-owned VPN or Tailscale for business deployments. See [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md).
+- **DNS/SSL**: Cloudflare in front of the tunnel; TLS termination is handled by the host ingress / Cloudflare Tunnel, not by a cloud load balancer.
 
 ## Provider-Agnostic Architecture
 
-Pistisai is built with provider independence in mind:
+### Kubernetes-native design
 
-### Kubernetes-Native Design
+- Shared Kubernetes manifests live in `config/kubernetes/base/` (namespace, HPAs, PDBs, network policies).
+- Per-service manifests live in `services/api-backend/k8s/` (`deployment.yaml`, `service.yaml`, `ingress.yaml`).
+- There is no root `k8s/` directory and no `web/k8s/` directory; older references to those paths are stale.
+- Manifests use standard Kubernetes APIs, so they can be applied to any compatible cluster by an operator. This is a self-hosting option, not the automated production path.
 
-- Standard Kubernetes manifests in `k8s/` directory
-- Compatible with any Kubernetes provider (AKS, EKS, GKE, self-hosted)
-- No vendor-specific dependencies in core application
+### Container strategy
 
-### Authentication Flexibility
-
-- **Current**: Auth0 (cloud-agnostic)
-- **Supported**: Any OIDC-compatible provider
-- **Future Options**: Auth0, Firebase Auth, custom solutions
-
-### Container Strategy
-
-- Docker Hub registry (provider-neutral)
-- Standard container images work across all platforms
-- No platform-specific container requirements
+- Production images are built by the GHCR workflows above from `Dockerfile.web` and the Dockerfiles under `config/docker/`.
+- Compose definitions for self-hosting: `docker-compose.yml`, `docker-compose.prod.yml`, and `config/docker/docker-compose.web.yml`. There is no `docker-compose.production.yml` or `docker-compose.dev.yml`.
 
 ## Available Deployment Options
 
-### 1. Azure AKS (Current Production)
+### 1. GitHub Actions → GHCR (current production)
 
-- **Documentation**: `docs/DEPLOYMENT/AKS_*.md`
-- **Scripts**: `scripts/setup-azure-aks-infrastructure.sh`
-- **Status**: Fully operational and tested
-- **Recommended For**: Current production deployments
+- **Workflows**: [Web Deploy](../operations/cicd/WEB_DEPLOY.md), `.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`.
+- **Status**: the automated build/publish path on `main`.
+- **Recommended for**: production web and backend images.
 
-### 2. AWS EKS (Migration Option)
+### 2. Self-hosted / Kubernetes
 
-- **Documentation**: `docs/ops/aws/` and `.kiro/steering/aws-infrastructure.md`
-- **Scripts**: `scripts/aws/` directory
-- **Status**: Infrastructure provisioned, migration in planning
-- **Recommended For**: Cost optimization scenarios
+- **Manifests**: `config/kubernetes/base/`, `services/api-backend/k8s/`.
+- **Requirements**: a Kubernetes cluster (1.24+) with `kubectl` configured, or a Docker Compose host.
+- **Status**: supported as a manual/operator path. See [Self-Hosting Guide](SELF_HOSTING.md) and [Deployment Overview](DEPLOYMENT_OVERVIEW.md).
 
-### 3. Self-Hosted Kubernetes
+### 3. Proxmox + k3s
 
-- **Documentation**: `docs/ops/kubernetes/KUBERNETES_SELF_HOSTED_GUIDE.md`
-- **Requirements**: Any Kubernetes 1.24+ cluster
-- **Status**: Supported via standard manifests
-- **Recommended For**: On-premises or custom cloud deployments
+- **Runbook**: [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md).
+- **Scripts**: `scripts/proxmox/create-k3s-template.sh`, `scripts/proxmox/clone-k3s-node.sh` (these exist).
+- **Status**: operator-run alternative; not part of the GHCR deploy chain.
 
-### 4. Local Development
+### 4. Local development
 
-- **Method**: Docker Compose
-- **Files**: `docker-compose.yml`, `docker-compose.production.yml`
-- **Status**: Fully supported
-- **Recommended For**: Development and testing
+- **Method**: local Flutter SDK plus `docker compose` against `docker-compose.yml`.
+- **Status**: fully supported; see [Docker Development Environment](README_DOCKER.md).
 
-## Migration Considerations
+## Removed / stale references
 
-### Azure to AWS Migration
+Earlier revisions of this guide pointed at paths that do not exist in the repository. They are not current deployment options:
 
-The AWS documentation represents a **planned migration option**, not the current state:
+- `docs/DEPLOYMENT/AKS_*.md`, `docs/ops/aws/`, `.kiro/steering/aws-infrastructure.md`, `docs/ops/kubernetes/`
+- `scripts/setup-azure-aks-infrastructure.sh`, `scripts/aws/`
+- root `k8s/`, `web/k8s/`, `docs/DEPLOYMENT/` as a documentation root
 
-- **Current Reality**: Azure AKS is the active production environment
-- **AWS Status**: Infrastructure provisioned for evaluation
-- **Migration Timeline**: To be determined based on cost/benefit analysis
-- **Rollback Plan**: Azure remains the fallback option
-
-### Provider Selection Criteria
-
-When choosing a provider, consider:
-
-1. **Cost**: Monthly operational expenses
-2. **Features**: Required services and integrations
-3. **Compliance**: Regional and regulatory requirements
-4. **Expertise**: Team familiarity with the platform
-5. **Migration Effort**: Time and complexity to switch
-
-## Documentation Structure
-
-### Current Provider (Azure)
-
-- Primary documentation in `docs/DEPLOYMENT/`
-- Deployment scripts in `scripts/`
-- Kubernetes manifests in `k8s/`
-
-### Alternative Providers
-
-- AWS documentation in `docs/ops/aws/` and `.kiro/steering/aws-infrastructure.md`
-- Self-hosted guides in `docs/ops/kubernetes/`
-- Provider-specific scripts in respective subdirectories
+Azure AKS and AWS EKS remain possible *targets* for an operator applying the standard manifests; they are not provisioned or active in this repository. There is no documented migration timeline or "provisioned for evaluation" infrastructure to rely on.
 
 ## Best Practices
 
-### For Operators
+### For operators
 
-1. **Use Current Documentation**: Follow Azure AKS guides for production deployments
-2. **Evaluate Alternatives**: Review AWS documentation for future planning
-3. **Test Locally**: Use Docker Compose for development
-4. **Plan Migrations**: Consider provider changes carefully
+1. Use the GHCR workflows and [Web Deploy](../operations/cicd/WEB_DEPLOY.md) for production images.
+2. Keep host configuration (the `docker compose up -d` pull) in your own runbook; it is not automated by Actions.
+3. Use standard manifests for self-hosted clusters; treat provider-specific setup as local configuration.
 
-### For Developers
+### For developers
 
-1. **Avoid Vendor Lock-in**: Use standard Kubernetes APIs
-2. **Test Portability**: Ensure code works across providers
-3. **Document Dependencies**: Note any provider-specific requirements
-4. **Use Abstractions**: Prefer cloud-agnostic libraries and patterns
+1. Avoid vendor lock-in: use standard Kubernetes APIs and avoid provider-specific fields in committed manifests.
+2. Test locally with `docker-compose.yml` before publishing an image.
+3. Keep secrets in GitHub Actions secrets or `.env`, never in manifests (see [Secrets Management](SECRETS_MANAGEMENT.md)).
 
 ## Support and Troubleshooting
 
-### Current Production Issues (Azure AKS)
-
-- Use Azure-specific documentation and scripts
-- Follow established deployment procedures
-- Contact Azure support for infrastructure issues
-
-### Migration Planning (AWS EKS)
-
-- Review AWS documentation for planning purposes
-- Test in development environments first
-- Validate cost and feature assumptions
-
-### General Kubernetes Issues
-
-- Use standard Kubernetes troubleshooting
-- Check application logs and metrics
-- Verify resource quotas and limits
+- **Deploy workflow failures**: inspect `.github/workflows/deploy-web.yml` run logs, including the GHCR push digest check and the Cloudflare purge step.
+- **Site not updated after a run**: the host pulls the image separately; re-run the workflow / purge again if the host deployed late (see [Web Deploy](../operations/cicd/WEB_DEPLOY.md)).
+- **Kubernetes issues**: check `config/kubernetes/base/` and `services/api-backend/k8s/`; use standard `kubectl` diagnostics.
+- **Auth failures**: see [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md).
 
 ## Conclusion
 
-Pistisai's provider-agnostic design ensures flexibility while maintaining production stability. The current Azure AKS deployment provides a solid foundation, while AWS EKS documentation offers a viable migration path when needed.
-
-**Key Takeaway**: Azure AKS is the current production reality, AWS EKS is a future option, and the architecture supports both seamlessly.
+The supported production reality is GitHub Actions → GHCR → host Docker Compose, with Cloudflare Access for sign-in and Kubernetes manifests available for self-hosting. Azure AKS and AWS EKS are only potential targets for operators, not active deployments.
