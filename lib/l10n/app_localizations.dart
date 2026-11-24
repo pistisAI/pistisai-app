@@ -3668,12 +3668,6 @@ abstract class AppLocalizations {
   /// **'Runtime'**
   String get configTabRuntime;
 
-  /// No description provided for @configTabMesh.
-  ///
-  /// In en, this message translates to:
-  /// **'Mesh'**
-  String get configTabMesh;
-
   /// No description provided for @configTabApp.
   ///
   /// In en, this message translates to:
@@ -3818,18 +3812,6 @@ abstract class AppLocalizations {
   /// **'Optional helpers for memory, summaries, OCR cleanup, and background tasks'**
   String get configSupportProvidersSubtitle;
 
-  /// No description provided for @configPreferredSupportProvider.
-  ///
-  /// In en, this message translates to:
-  /// **'Preferred Support Provider'**
-  String get configPreferredSupportProvider;
-
-  /// No description provided for @configSupportProviderAuto.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto'**
-  String get configSupportProviderAuto;
-
   /// No description provided for @configSupportProvidersNote.
   ///
   /// In en, this message translates to:
@@ -3842,77 +3824,35 @@ abstract class AppLocalizations {
   /// **'Runtime Request Policy'**
   String get configRequestPolicy;
 
-  /// No description provided for @configConcurrentRequests.
+  /// No description provided for @configWindow.
   ///
   /// In en, this message translates to:
-  /// **'Concurrent Requests'**
-  String get configConcurrentRequests;
+  /// **'Window'**
+  String get configWindow;
 
-  /// No description provided for @configConcurrentRequestsHint.
+  /// No description provided for @configCloseToTray.
   ///
   /// In en, this message translates to:
-  /// **'Max concurrent runtime requests'**
-  String get configConcurrentRequestsHint;
+  /// **'Keep running in the tray when closed'**
+  String get configCloseToTray;
 
-  /// No description provided for @configRuntimeTimeout.
+  /// No description provided for @configCloseToTraySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Runtime Timeout (sec)'**
-  String get configRuntimeTimeout;
+  /// **'When off, closing the window quits the app.'**
+  String get configCloseToTraySubtitle;
+
+  /// No description provided for @configNotAvailableYetNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.'**
+  String get configNotAvailableYetNote;
 
   /// No description provided for @configAutoRestart.
   ///
   /// In en, this message translates to:
   /// **'Auto-restart Runtime on Failure'**
   String get configAutoRestart;
-
-  /// No description provided for @configProxySettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Proxy Settings'**
-  String get configProxySettings;
-
-  /// No description provided for @configUseProxy.
-  ///
-  /// In en, this message translates to:
-  /// **'Use Proxy Server'**
-  String get configUseProxy;
-
-  /// No description provided for @configProxyHost.
-  ///
-  /// In en, this message translates to:
-  /// **'Proxy Host'**
-  String get configProxyHost;
-
-  /// No description provided for @configProxyHostHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g., proxy.example.com'**
-  String get configProxyHostHint;
-
-  /// No description provided for @configProxyPort.
-  ///
-  /// In en, this message translates to:
-  /// **'Proxy Port'**
-  String get configProxyPort;
-
-  /// No description provided for @configConnectionSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Connection Settings'**
-  String get configConnectionSettings;
-
-  /// No description provided for @configRequestTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'Request Timeout (sec)'**
-  String get configRequestTimeout;
-
-  /// No description provided for @configMaxRetries.
-  ///
-  /// In en, this message translates to:
-  /// **'Max Retries'**
-  String get configMaxRetries;
 
   /// No description provided for @configAppearance.
   ///
@@ -3926,161 +3866,11 @@ abstract class AppLocalizations {
   /// **'Theme'**
   String get configTheme;
 
-  /// No description provided for @configLanguage.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get configLanguage;
-
-  /// No description provided for @configNotifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get configNotifications;
-
-  /// No description provided for @configEnableNotifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable Notifications'**
-  String get configEnableNotifications;
-
-  /// No description provided for @configShowTrayIcon.
-  ///
-  /// In en, this message translates to:
-  /// **'Show Tray Icon'**
-  String get configShowTrayIcon;
-
-  /// No description provided for @configSecurity.
-  ///
-  /// In en, this message translates to:
-  /// **'Security'**
-  String get configSecurity;
-
-  /// No description provided for @configEncryptLocalData.
-  ///
-  /// In en, this message translates to:
-  /// **'Encrypt Local Data'**
-  String get configEncryptLocalData;
-
-  /// No description provided for @configEncryptLocalDataSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Encrypt conversation history and settings'**
-  String get configEncryptLocalDataSubtitle;
-
-  /// No description provided for @configBiometric.
-  ///
-  /// In en, this message translates to:
-  /// **'Require Biometric Auth'**
-  String get configBiometric;
-
-  /// No description provided for @configBiometricSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Require fingerprint/auth to open app'**
-  String get configBiometricSubtitle;
-
-  /// No description provided for @configSessionTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'Session Timeout (min)'**
-  String get configSessionTimeout;
-
-  /// No description provided for @configSessionTimeoutHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-lock after inactivity'**
-  String get configSessionTimeoutHint;
-
-  /// No description provided for @configRememberTokens.
-  ///
-  /// In en, this message translates to:
-  /// **'Remember Authentication Tokens'**
-  String get configRememberTokens;
-
-  /// No description provided for @configDeveloperOptions.
-  ///
-  /// In en, this message translates to:
-  /// **'Developer Options'**
-  String get configDeveloperOptions;
-
-  /// No description provided for @configDebugMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Debug Mode'**
-  String get configDebugMode;
-
-  /// No description provided for @configDebugModeSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable additional debugging information'**
-  String get configDebugModeSubtitle;
-
-  /// No description provided for @configVerboseLogging.
-  ///
-  /// In en, this message translates to:
-  /// **'Verbose Logging'**
-  String get configVerboseLogging;
-
-  /// No description provided for @configVerboseLoggingSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Log detailed diagnostic information'**
-  String get configVerboseLoggingSubtitle;
-
-  /// No description provided for @configShowDevTools.
-  ///
-  /// In en, this message translates to:
-  /// **'Show Developer Tools'**
-  String get configShowDevTools;
-
-  /// No description provided for @configShowDevToolsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable development tools and inspectors'**
-  String get configShowDevToolsSubtitle;
-
-  /// No description provided for @configDataRetention.
-  ///
-  /// In en, this message translates to:
-  /// **'Data Retention'**
-  String get configDataRetention;
-
-  /// No description provided for @configMaxHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Max Conversation History'**
-  String get configMaxHistory;
-
-  /// No description provided for @configMaxHistoryHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Maximum number of conversations to store locally'**
-  String get configMaxHistoryHint;
-
-  /// No description provided for @configAutoCleanup.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-cleanup Old Data'**
-  String get configAutoCleanup;
-
   /// No description provided for @configCacheManagement.
   ///
   /// In en, this message translates to:
   /// **'Cache Management'**
   String get configCacheManagement;
-
-  /// No description provided for @configEnableCache.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable Response Cache'**
-  String get configEnableCache;
-
-  /// No description provided for @configCacheSize.
-  ///
-  /// In en, this message translates to:
-  /// **'Cache Size Limit (MB)'**
-  String get configCacheSize;
 
   /// No description provided for @configClearCacheNow.
   ///

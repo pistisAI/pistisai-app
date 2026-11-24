@@ -15,7 +15,9 @@ class SettingsPreferenceService {
   final LocalBrainKeyVault _secureVault;
 
   static const String _proModeKey = 'settings_pro_mode';
-  static const String _themeKey = 'settings_theme';
+  /// Same key ThemeProvider reads at startup (#854), so a theme saved here
+  /// is the theme the app shows.
+  static const String _themeKey = 'theme_mode';
   static const String _languageKey = 'settings_language';
 
   // Privacy Settings
@@ -289,10 +291,12 @@ class SettingsPreferenceService {
     await prefs.setBool(_launchOnStartupKey, value);
   }
 
-  /// Get minimize to tray preference
+  /// Whether closing the window keeps the app running in the tray.
+  /// Read by WindowManagerService.handleWindowClose. Defaults to true, which
+  /// is how closing behaved before the setting was read (#854).
   Future<bool> isMinimizeToTrayEnabled() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_minimizeToTrayKey) ?? false;
+    return prefs.getBool(_minimizeToTrayKey) ?? true;
   }
 
   /// Set minimize to tray preference

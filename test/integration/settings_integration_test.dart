@@ -119,12 +119,13 @@ void main() {
         expect(launchOnStartup, true);
 
         // Test minimize to tray
+        // Defaults to true: closing the window keeps the app in the tray.
         var minimizeToTray = await settingsService.isMinimizeToTrayEnabled();
-        expect(minimizeToTray, false);
-
-        await settingsService.setMinimizeToTrayEnabled(true);
-        minimizeToTray = await settingsService.isMinimizeToTrayEnabled();
         expect(minimizeToTray, true);
+
+        await settingsService.setMinimizeToTrayEnabled(false);
+        minimizeToTray = await settingsService.isMinimizeToTrayEnabled();
+        expect(minimizeToTray, false);
 
         // Test always on top
         var alwaysOnTop = await settingsService.isAlwaysOnTopEnabled();
