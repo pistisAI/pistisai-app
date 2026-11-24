@@ -6,11 +6,13 @@ Implements comprehensive tunnel lifecycle management endpoints for creating, ret
 
 **Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.6**
 
+> **Verified against code (2026-11-24):** the service is `services/api-backend/services/tunnel-service.js` (not root-level `services/`), the router is `services/api-backend/routes/tunnels.js` (not root-level `routes/`), and the migration is `services/api-backend/database/migrations/004_tunnel_lifecycle_management.sql`. Tunnel routes are mounted at `/tunnels` (and `/api/tunnels`) by `services/api-backend/server.js:324`, **gated by `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES`** (`server.js:186-188`). Endpoint `/api/tunnels/…` paths are therefore correct but only live when that flag is enabled. `npm run migrate` does not exist (see "Database Setup" below).
+
 ## Files Created
 
 ### 1. Database Migration
 
-- **File**: `database/migrations/004_tunnel_lifecycle_management.sql`
+- **File**: `services/api-backend/database/migrations/004_tunnel_lifecycle_management.sql`
 - **Tables**:
   - `tunnels` - Main tunnel records
   - `tunnel_endpoints` - Multiple endpoints per tunnel for failover
@@ -18,7 +20,7 @@ Implements comprehensive tunnel lifecycle management endpoints for creating, ret
 
 ### 2. Service Layer
 
-- **File**: `services/tunnel-service.js`
+- **File**: `services/api-backend/services/tunnel-service.js`
 - **Class**: `TunnelService`
 - **Methods**:
   - `createTunnel()` - Create new tunnel
@@ -33,7 +35,7 @@ Implements comprehensive tunnel lifecycle management endpoints for creating, ret
 
 ### 3. API Routes
 
-- **File**: `routes/tunnels.js`
+- **File**: `services/api-backend/routes/tunnels.js`
 - **Endpoints**:
   - `POST /api/tunnels` - Create tunnel
   - `GET /api/tunnels` - List tunnels
@@ -365,11 +367,7 @@ await initializeTunnelService();
 
 ### Database Setup
 
-Migration is applied during server startup:
-
-```bash
-npm run migrate
-```
+Migration is applied during server startup via `services/api-backend/server.js:563-578` → `dbMigrator.migrate()` (`services/api-backend/database/migrate-pg.js`). **There is no `npm run migrate` script** in `services/api-backend/package.json` (scripts: `start`, `dev`, `test`, `test:*`, `db:validate`, `db:stats`, `db:test`, …); the migration file is `services/api-backend/database/migrations/004_tunnel_lifecycle_management.sql`.
 
 ## Testing
 

@@ -4,6 +4,8 @@
 
 Request queuing automatically queues requests when the rate limit is approached (80% by default), preventing request rejection and improving user experience.
 
+> **Verified against code (2026-11-24):** request queuing is **live** in `services/api-backend/middleware/pipeline.js:146-149` (`createRequestQueuingMiddleware` with `queueThresholdPercent: rateLimitOptions.queueThresholdPercent || 80`, `queueTimeoutMs: ... || 30000`) and the queue-status middleware at :168-170. The queue endpoints are registered in `services/api-backend/server.js:448` (`/queue/status`) and :451 (`/queue/drain`) via `registerRoutes` (:265-267), so both `/api/queue/…` and `/queue/…` work. The configuration path below is corrected from `middleware/pipeline.js` to `services/api-backend/middleware/pipeline.js`.
+
 ## Key Features
 
 - **Automatic Queuing**: Requests queued when approaching rate limit
@@ -14,7 +16,7 @@ Request queuing automatically queues requests when the rate limit is approached 
 
 ## Configuration
 
-In `middleware/pipeline.js`:
+In `services/api-backend/middleware/pipeline.js` (corrected from `middleware/pipeline.js`):
 
 ```javascript
 const requestQueuingMiddleware = createRequestQueuingMiddleware({

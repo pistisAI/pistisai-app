@@ -4,12 +4,14 @@
 
 Webhook testing and debugging tools for testing webhook functionality, generating test payloads, and debugging webhook issues.
 
+> **Verified against code (2026-11-24):** the service is `services/api-backend/services/webhook-testing-service.js` (not `./services/webhook-testing-service.js`), and the router `services/api-backend/routes/webhook-testing.js` registers `/test/payload` (:133), `/test/send` (:187), `/test/events` (:234 GET, :455 DELETE), `/test/events/:testId` (:264), `/:webhookId/debug` (:303), `/deliveries/:deliveryId/details` (:343), `/test/validate` (:394), `/test/supported-types` (:426). `services/api-backend/server.js:365` mounts it at `/webhook-testing` (and `/api/webhook-testing`), so the live paths are `/api/webhook-testing/test/…` — **not** `/api/webhooks/test/…` (corrected below).
+
 ## Quick Start
 
 ### 1. Generate Test Payload
 
 ```bash
-curl -X POST http://localhost:8080/api/webhooks/test/payload \
+curl -X POST http://localhost:8080/api/webhook-testing/test/payload \
   -H "Authorization: Bearer <JWT_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -21,7 +23,7 @@ curl -X POST http://localhost:8080/api/webhooks/test/payload \
 ### 2. Send Test Webhook
 
 ```bash
-curl -X POST http://localhost:8080/api/webhooks/test/send \
+curl -X POST http://localhost:8080/api/webhook-testing/test/send \
   -H "Authorization: Bearer <JWT_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -34,28 +36,28 @@ curl -X POST http://localhost:8080/api/webhooks/test/send \
 ### 3. Get Test Event History
 
 ```bash
-curl -X GET "http://localhost:8080/api/webhooks/test/events?limit=10" \
+curl -X GET "http://localhost:8080/api/webhook-testing/test/events?limit=10" \
   -H "Authorization: Bearer <JWT_TOKEN>"
 ```
 
 ### 4. Get Specific Test Event
 
 ```bash
-curl -X GET http://localhost:8080/api/webhooks/test/events/<TEST_ID> \
+curl -X GET http://localhost:8080/api/webhook-testing/test/events/<TEST_ID> \
   -H "Authorization: Bearer <JWT_TOKEN>"
 ```
 
 ### 5. Get Webhook Debug Info
 
 ```bash
-curl -X GET http://localhost:8080/api/webhooks/<WEBHOOK_ID>/debug \
+curl -X GET http://localhost:8080/api/webhook-testing/<WEBHOOK_ID>/debug \
   -H "Authorization: Bearer <JWT_TOKEN>"
 ```
 
 ### 6. Validate Payload
 
 ```bash
-curl -X POST http://localhost:8080/api/webhooks/test/validate \
+curl -X POST http://localhost:8080/api/webhook-testing/test/validate \
   -H "Authorization: Bearer <JWT_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -71,14 +73,14 @@ curl -X POST http://localhost:8080/api/webhooks/test/validate \
 ### 7. Get Supported Event Types
 
 ```bash
-curl -X GET http://localhost:8080/api/webhooks/test/supported-types \
+curl -X GET http://localhost:8080/api/webhook-testing/test/supported-types \
   -H "Authorization: Bearer <JWT_TOKEN>"
 ```
 
 ### 8. Clear Test Event Cache
 
 ```bash
-curl -X DELETE http://localhost:8080/api/webhooks/test/events \
+curl -X DELETE http://localhost:8080/api/webhook-testing/test/events \
   -H "Authorization: Bearer <JWT_TOKEN>"
 ```
 
@@ -97,7 +99,7 @@ curl -X DELETE http://localhost:8080/api/webhooks/test/events \
 ### WebhookTestingService
 
 ```javascript
-import { webhookTestingService } from './services/webhook-testing-service.js';
+import { webhookTestingService } from '../../services/api-backend/services/webhook-testing-service.js';
 
 // Generate test payload
 const payload = webhookTestingService.generateTestPayload('tunnel.status_changed');
@@ -304,12 +306,12 @@ const validation = webhookTestingService.validatePayloadStructure(payload);
 
 ```bash
 # 1. Generate payload
-curl -X POST http://localhost:8080/api/webhooks/test/payload \
+curl -X POST http://localhost:8080/api/webhook-testing/test/payload \
   -H "Authorization: Bearer <TOKEN>" \
   -d '{"eventType": "tunnel.status_changed"}'
 
 # 2. Send to endpoint
-curl -X POST http://localhost:8080/api/webhooks/test/send \
+curl -X POST http://localhost:8080/api/webhook-testing/test/send \
   -H "Authorization: Bearer <TOKEN>" \
   -d '{
     "webhookUrl": "https://myapp.com/webhook",
@@ -317,7 +319,7 @@ curl -X POST http://localhost:8080/api/webhooks/test/send \
   }'
 
 # 3. Check result
-curl -X GET http://localhost:8080/api/webhooks/test/events \
+curl -X GET http://localhost:8080/api/webhook-testing/test/events \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
@@ -325,18 +327,18 @@ curl -X GET http://localhost:8080/api/webhooks/test/events \
 
 ```bash
 # Get webhook debug info
-curl -X GET http://localhost:8080/api/webhooks/webhook-123/debug \
+curl -X GET http://localhost:8080/api/webhook-testing/webhook-123/debug \
   -H "Authorization: Bearer <TOKEN>"
 
 # Get specific delivery details
-curl -X GET http://localhost:8080/api/webhooks/deliveries/delivery-123/details \
+curl -X GET http://localhost:8080/api/webhook-testing/deliveries/delivery-123/details \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
 ### Validate Webhook Payload
 
 ```bash
-curl -X POST http://localhost:8080/api/webhooks/test/validate \
+curl -X POST http://localhost:8080/api/webhook-testing/test/validate \
   -H "Authorization: Bearer <TOKEN>" \
   -d '{
     "payload": {

@@ -2,6 +2,8 @@
 
 ## Task 12 Implementation Summary
 
+> **Verified against code (2026-11-24):** the endpoints are live — `services/api-backend/routes/admin/users.js` is imported at `services/api-backend/server.js` and mounted at `/admin/users` (and `/api/admin/users`) at `server.js:310`. The doc path `services/api-backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` no longer exists; it is archived at `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (see "Implementation Files" below).
+
 **Status:** ✅ COMPLETED
 
 **Requirement:** 3.6 - THE API SHALL implement user search and listing for admins
@@ -178,7 +180,7 @@ npm test -- test/api-backend/admin-users-search.test.js
 
 - **Routes:** `services/api-backend/routes/admin/users.js`
 - **Tests:** `test/api-backend/admin-users-search.test.js`
-- **Documentation:** `services/api-backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md`
+- **Documentation:** `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (the old `services/api-backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` was archived)
 
 ## Authentication
 

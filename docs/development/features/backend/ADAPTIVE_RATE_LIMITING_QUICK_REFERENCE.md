@@ -6,21 +6,23 @@ Adaptive rate limiting automatically adjusts rate limits based on system load (C
 
 ## Key Components
 
-### 1. SystemLoadMonitor (`services/system-load-monitor.js`)
+> **Verified against code (2026-11-24):** only `SystemLoadMonitor` exists, at `services/api-backend/services/system-load-monitor.js` (not `services/system-load-monitor.js`); it exports `SystemLoadMonitor` at :79 with `getLoadPercentage()` (:27) and `getLoadLevel()` (:44). **`services/api-backend/middleware/adaptive-rate-limiter.js` and `services/api-backend/routes/adaptive-rate-limiting.js` do not exist** — no `adaptive-rate-limiter.js` under `services/api-backend/middleware/` and no `adaptive-rate-limiting.js` under `services/api-backend/routes/`; nothing matching `adaptive-rate-limit*` is mounted in `services/api-backend/server.js:265-370`. The only test is `test/api-backend/adaptive-rate-limiting.test.js:9`, which imports only `SystemLoadMonitor`. The limiter/routes/multiplier behavior below is **planned, not current behavior**.
+
+### 1. SystemLoadMonitor (`services/api-backend/services/system-load-monitor.js`)
 
 - Monitors CPU usage, memory usage, and request queue depth
 - Calculates overall system load percentage (0-100)
 - Determines load level: low, medium, high, critical
 - Adjusts adaptive multiplier based on load
 
-### 2. AdaptiveRateLimiter (`middleware/adaptive-rate-limiter.js`)
+### 2. AdaptiveRateLimiter (`services/api-backend/middleware/adaptive-rate-limiter.js` — planned, MISSING)
 
 - Integrates SystemLoadMonitor with rate limiting
 - Applies adaptive multiplier to rate limits
 - Tracks per-user request counts
 - Enforces adaptive limits
 
-### 3. Routes (`routes/adaptive-rate-limiting.js`)
+### 3. Routes (`services/api-backend/routes/adaptive-rate-limiting.js` — planned, MISSING)
 
 - `/adaptive-rate-limiting/metrics` - Get current system metrics
 - `/adaptive-rate-limiting/status` - Get detailed system status
@@ -235,7 +237,10 @@ Test scenarios covered:
 
 ### In Middleware Pipeline
 
+> **Verified against code:** this module is **planned, not present** — `services/api-backend/middleware/adaptive-rate-limiter.js` does not exist. The live pipeline is `services/api-backend/middleware/pipeline.js`.
+
 ```javascript
+// PLANNED — file not present in services/api-backend/middleware/
 import { createAdaptiveRateLimitMiddleware } from './middleware/adaptive-rate-limiter.js';
 
 app.use(createAdaptiveRateLimitMiddleware({

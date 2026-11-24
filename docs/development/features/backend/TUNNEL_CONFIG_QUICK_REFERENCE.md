@@ -1,5 +1,7 @@
 # Tunnel Configuration Management - Quick Reference
 
+> **Verified against code (2026-11-24):** the config endpoints are real — `GET /:id/config` at `services/api-backend/routes/tunnels.js:793`, `PUT /:id/config` at :868, backed by `getTunnelConfig`/`updateTunnelConfig`/`resetTunnelConfig` at `services/api-backend/services/tunnel-service.js:620/652/725`, with validation in `services/api-backend/utils/tunnel-config-validation.js`. They are mounted at `/tunnels` (and `/api/tunnels`) by `services/api-backend/server.js:324`, **gated by `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES`** (`server.js:186-188`). The old `services/api-backend/TUNNEL_CONFIG_MANAGEMENT_IMPLEMENTATION.md` does not exist; it was archived under `docs/archive/historical-reports/` (see "Files" below).
+
 ## Endpoints
 
 ### Get Configuration
@@ -143,7 +145,7 @@ npm test -- test/api-backend/tunnel-config-management.test.js
 - **Service Methods:** `services/api-backend/services/tunnel-service.js`
 - **Endpoints:** `services/api-backend/routes/tunnels.js`
 - **Tests:** `test/api-backend/tunnel-config-management.test.js`
-- **Documentation:** `services/api-backend/TUNNEL_CONFIG_MANAGEMENT_IMPLEMENTATION.md`
+- **Documentation:** `docs/archive/historical-reports/development/features/backend/TUNNEL_CONFIG_MANAGEMENT_IMPLEMENTATION.md` (the old `services/api-backend/TUNNEL_CONFIG_MANAGEMENT_IMPLEMENTATION.md` no longer exists — it was archived; see that file for the historical write-up)
 
 ## Validation Rules
 

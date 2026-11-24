@@ -6,6 +6,8 @@ Tunnel status webhooks enable real-time notifications when tunnel status changes
 
 **Validates: Requirements 4.10, 10.1, 10.2, 10.3, 10.4**
 
+> **Verified against code:** the path `/api/tunnels/:tunnelId/webhooks` was wrong. `services/api-backend/routes/tunnel-webhooks.js` registers `/:tunnelId/webhooks` (:86 POST, :175 GET), `/:tunnelId/webhooks/:webhookId` (:245/:323/:408) and deliveries at :484/:567. The router is mounted at `/tunnel-webhooks` (and `/api/tunnel-webhooks`) by `services/api-backend/server.js:357`, **gated by `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES`** (`server.js:186-188`). Correct prefix `/api/tunnel-webhooks/:tunnelId/webhooks` applied below; the service is `services/api-backend/services/tunnel-webhook-service.js` (not a root-level path).
+
 ## Key Features
 
 - **Webhook Registration**: Register webhooks for tunnel events
@@ -20,7 +22,7 @@ Tunnel status webhooks enable real-time notifications when tunnel status changes
 ### Register Webhook
 
 ```bash
-POST /api/tunnels/:tunnelId/webhooks
+POST /api/tunnel-webhooks/:tunnelId/webhooks
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 
@@ -51,21 +53,21 @@ Content-Type: application/json
 ### List Webhooks
 
 ```bash
-GET /api/tunnels/:tunnelId/webhooks?limit=50&offset=0
+GET /api/tunnel-webhooks/:tunnelId/webhooks?limit=50&offset=0
 Authorization: Bearer <JWT_TOKEN>
 ```
 
 ### Get Webhook
 
 ```bash
-GET /api/tunnels/:tunnelId/webhooks/:webhookId
+GET /api/tunnel-webhooks/:tunnelId/webhooks/:webhookId
 Authorization: Bearer <JWT_TOKEN>
 ```
 
 ### Update Webhook
 
 ```bash
-PUT /api/tunnels/:tunnelId/webhooks/:webhookId
+PUT /api/tunnel-webhooks/:tunnelId/webhooks/:webhookId
 Authorization: Bearer <JWT_TOKEN>
 Content-Type: application/json
 
@@ -79,21 +81,21 @@ Content-Type: application/json
 ### Delete Webhook
 
 ```bash
-DELETE /api/tunnels/:tunnelId/webhooks/:webhookId
+DELETE /api/tunnel-webhooks/:tunnelId/webhooks/:webhookId
 Authorization: Bearer <JWT_TOKEN>
 ```
 
 ### Get Delivery History
 
 ```bash
-GET /api/tunnels/:tunnelId/webhooks/:webhookId/deliveries?limit=50&offset=0
+GET /api/tunnel-webhooks/:tunnelId/webhooks/:webhookId/deliveries?limit=50&offset=0
 Authorization: Bearer <JWT_TOKEN>
 ```
 
 ### Get Delivery Status
 
 ```bash
-GET /api/tunnels/:tunnelId/webhooks/:webhookId/deliveries/:deliveryId
+GET /api/tunnel-webhooks/:tunnelId/webhooks/:webhookId/deliveries/:deliveryId
 Authorization: Bearer <JWT_TOKEN>
 ```
 
