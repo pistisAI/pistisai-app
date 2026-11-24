@@ -21,4 +21,12 @@ void main() {
     expect(message, contains('did not respond in time'));
     expect(message, isNot(contains('TimeoutException')));
   });
+
+  test('empty reply surfaces a user-facing message without exception types',
+      () {
+    final message = userFacingEmptyReply();
+    expect(message, contains('without a reply'));
+    expect(message, isNot(contains('Exception')));
+    expect(message, isNot(contains('null')));
+  });
 }

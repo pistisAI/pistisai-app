@@ -17,6 +17,7 @@ flutter test \
   test/helpers/ \
   test/services/local_conversation_storage_test.dart \
   test/services/settings_hermes_api_key_storage_test.dart \
+  test/services/streaming_chat_error_test.dart \
   test/services/session_token_secure_storage_test.dart \
   test/services/hermes_gateway_only_transport_test.dart \
   test/services/onboarding/setup_wizard_service_test.dart \
