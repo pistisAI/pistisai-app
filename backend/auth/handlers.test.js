@@ -136,3 +136,82 @@ describe('Auth0 config fail-closed', () => {
     }).toThrow(/AUTH0_AUDIENCE/);
   });
 });
+
+describe('Development-only behaviour fails closed (#895)', () => {
+  const DEV = 'fail-closed-test-token';
+  const saved = {};
+  const keys = ['NODE_ENV', 'DEV_BYPASS_TOKEN', 'AUTH0_DOMAIN', 'AUTH0_AUDIENCE'];
+
+  beforeEach(() => {
+    keys.forEach((k) => { saved[k] = process.env[k]; });
+    process.env.DEV_BYPASS_TOKEN = DEV;
+    process.env.AUTH0_DOMAIN = 'test.example.auth0.com';
+    process.env.AUTH0_AUDIENCE = 'https://api.example.com';
+  });
+
+  afterEach(() => {
+    keys.forEach((k) => {
+      if (saved[k] === undefined) delete process.env[k];
+      else process.env[k] = saved[k];
+    });
+  });
+
+  const loadHandlers = () => {
+    let mod;
+    jest.isolateModules(() => { mod = require('./handlers.js'); });
+    return mod;
+  };
+
+  const setNodeEnv = (value) => {
+    if (value === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = value;
+  };
+
+  it.each([
+    ['unset', undefined],
+    ['empty', ''],
+    ['test', 'test'],
+    ['staging', 'staging'],
+    ['production', 'production'],
+    ['Development (wrong case)', 'Development'],
+  ])('rejects DEV_BYPASS_TOKEN when NODE_ENV is %s', async (_label, value) => {
+    setNodeEnv(value);
+    const { app } = loadHandlers();
+    const res = await request(app)
+      .get('/api/protected')
+      .set('Authorization', `Bearer ${DEV}`);
+    expect(res.status).toBe(401);
+    expect(res.body.user_id).toBeUndefined();
+  });
+
+  const runErrorHandler = (errorHandler, err) => {
+    const res = {
+      statusCode: undefined,
+      body: undefined,
+      status(code) { this.statusCode = code; return this; },
+      json(payload) { this.body = payload; return this; },
+    };
+    errorHandler(err, {}, res, () => {});
+    return res;
+  };
+
+  it.each([
+    ['unset', undefined],
+    ['test', 'test'],
+    ['production', 'production'],
+  ])('hides internal error details when NODE_ENV is %s', (_label, value) => {
+    setNodeEnv(value);
+    const { errorHandler } = loadHandlers();
+    const res = runErrorHandler(errorHandler, new Error('internal detail'));
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('Internal server error');
+  });
+
+  it('shows internal error details only when NODE_ENV is exactly development', () => {
+    setNodeEnv('development');
+    const { errorHandler } = loadHandlers();
+    const res = runErrorHandler(errorHandler, new Error('detailed message'));
+    expect(res.statusCode).toBe(500);
+    expect(res.body.error).toBe('detailed message');
+  });
+});

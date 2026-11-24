@@ -70,13 +70,13 @@ const checkJwt = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-  // Dev bypass: only when NODE_ENV !== 'production' and DEV_BYPASS_TOKEN is set.
+  // Dev bypass: only when NODE_ENV is exactly 'development' and
+  // DEV_BYPASS_TOKEN is set. An unset or other NODE_ENV fails closed (#895).
   // No hardcoded token literal — must come from the environment.
-  const isNonProduction =
-    (process.env.NODE_ENV || 'development') !== 'production';
+  const isDevelopment = process.env.NODE_ENV === 'development';
   const devBypassToken = process.env.DEV_BYPASS_TOKEN;
   if (
-    isNonProduction &&
+    isDevelopment &&
     typeof devBypassToken === 'string' &&
     devBypassToken.length > 0 &&
     token === devBypassToken
@@ -114,19 +114,22 @@ app.get("/api/protected", checkJwt, (req, res) => {
 
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
-app.use((err, req, res, _next) => {
+// Internal error details are shown only when NODE_ENV is exactly
+// 'development'; an unset NODE_ENV hides them (#895).
+const errorHandler = (err, req, res, _next) => {
   if (err.name === "UnauthorizedError") {
     return res.status(401).json({ error: "Invalid token" });
   }
   const status = err.status || 500;
   const message =
-    status === 500 && (process.env.NODE_ENV || "development") !== "development"
+    status === 500 && process.env.NODE_ENV !== "development"
       ? "Internal server error"
       : err.message;
   res.status(status).json({ error: message });
-});
+};
+app.use(errorHandler);
 
-module.exports = { app };
+module.exports = { app, errorHandler };
 
 if (require.main === module) {
   const port = process.env.PORT || 3000;

@@ -51,7 +51,7 @@ Local-only path: skip sign-in → hub uses loopback services only.
 | `CF_ACCESS_TEAM_DOMAIN` | Access team host (no scheme) |
 | `CF_ACCESS_AUD` | Access application audience |
 | `CF_ACCESS_JWKS_URI` | Optional JWKS override |
-| `DEV_BYPASS_TOKEN` | Non-production API bypass only when explicitly set |
+| `DEV_BYPASS_TOKEN` | Development-only API bypass: honoured only when it is explicitly set and `NODE_ENV` is exactly `development`; an unset, empty or any other `NODE_ENV` (including `test` and `production`) disables it. Applies to `backend/auth/` and, with PR #958, to api-backend |
 
 ## Files to know
 
