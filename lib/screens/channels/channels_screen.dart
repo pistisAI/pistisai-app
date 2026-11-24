@@ -203,6 +203,14 @@ class _ChannelCard extends StatelessWidget {
     required this.getChannelIcon,
   });
 
+  String? _description(AppLocalizations l10n) {
+    if (channel.description != null) return channel.description;
+    if (channel.platform != 'gateway') return null;
+    return channel.isCurrent
+        ? l10n.channelGatewayProfileCurrent
+        : l10n.channelGatewayProfile;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -250,7 +258,7 @@ class _ChannelCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        if (channel.unreadCount > 0) ...[
+                        if ((channel.unreadCount ?? 0) > 0) ...[
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -265,7 +273,7 @@ class _ChannelCard extends StatelessWidget {
                               minWidth: 20,
                             ),
                             child: Text(
-                              channel.unreadCount > 99
+                              channel.unreadCount! > 99
                                   ? '99+'
                                   : '${channel.unreadCount}',
                               style: theme.textTheme.labelSmall?.copyWith(
@@ -281,9 +289,9 @@ class _ChannelCard extends StatelessWidget {
                     const SizedBox(height: 4),
 
                     // Description
-                    if (channel.description != null) ...[
+                    if (_description(l10n) != null) ...[
                       Text(
-                        channel.description!,
+                        _description(l10n)!,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface.withValues(
                             alpha: 0.6,
@@ -295,58 +303,64 @@ class _ChannelCard extends StatelessWidget {
                       const SizedBox(height: 4),
                     ],
 
-                    // Activity time and message count
+                    // Activity time and message count, only when reported
                     Row(
                       children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 14,
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.5,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          formatLastActivity(channel.lastActivity),
-                          style: theme.textTheme.bodySmall?.copyWith(
+                        if (channel.lastActivity != null) ...[
+                          Icon(
+                            Icons.access_time,
+                            size: 14,
                             color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.6,
+                              alpha: 0.5,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Icon(
-                          Icons.message,
-                          size: 14,
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.5,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          l10n.channelsMessageCount(channel.messageCount),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(
-                              alpha: 0.6,
+                          const SizedBox(width: 4),
+                          Text(
+                            formatLastActivity(channel.lastActivity),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                           ),
-                        ),
+                          const SizedBox(width: 16),
+                        ],
+                        if (channel.messageCount != null) ...[
+                          Icon(
+                            Icons.message,
+                            size: 14,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            l10n.channelsMessageCount(channel.messageCount!),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ],
                 ),
               ),
 
-              // Status badge
-              const SizedBox(width: 8),
-              StatusBadge(
-                status: channel.unreadCount > 0
-                    ? StatusType.active
-                    : StatusType.idle,
-                label: channel.unreadCount > 0
-                    ? l10n.channelBadgeNew
-                    : l10n.channelBadgeRead,
-              ),
+              // Connection status, only when the gateway reported it
+              if (channel.connected != null) ...[
+                const SizedBox(width: 8),
+                StatusBadge(
+                  status: channel.connected!
+                      ? StatusType.running
+                      : StatusType.stopped,
+                  label: channel.connected!
+                      ? l10n.commonConnected
+                      : l10n.commonDisconnected,
+                ),
+              ],
             ],
           ),
         ),

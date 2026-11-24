@@ -296,17 +296,13 @@
   "channelStop": "Stop Channel",
   "channelReconnect": "Reconnect",
   "channelViewLogs": "View Logs",
-  "channelActionPerformed": "Action {action} performed for channel {channelId}",
-  "@channelActionPerformed": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      },
-      "channelId": {
-        "type": "String"
-      }
-    }
+  "channelActionNotAvailable": "Not available yet",
+  "@channelActionNotAvailable": {
+    "description": "Subtitle on a channel control that is not wired to the gateway yet"
   },
+  "channelControlsNotAvailable": "Per-channel controls are not available yet. Manage the gateway from the Instances screen.",
+  "channelGatewayProfileCurrent": "Active gateway profile (current)",
+  "channelGatewayProfile": "Gateway profile",
   "channelJustNow": "Just now",
   "channelMinutesAgo": "{minutes}m ago",
   "@channelMinutesAgo": {
