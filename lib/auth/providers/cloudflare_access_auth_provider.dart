@@ -24,7 +24,8 @@ class CloudflareAccessAuthProvider extends AuthProvider {
   UserModel? _currentUser;
   String? _accessToken;
 
-  static const String _tokenKey = 'cf_access_jwt';
+  /// Storage key shared with the desktop deep-link handler in `main.dart`.
+  static const String tokenStorageKey = 'cf_access_jwt';
 
   bool get _configured =>
       AppConfig.cloudflareAccessTeamDomain.isNotEmpty &&
@@ -38,7 +39,7 @@ class CloudflareAccessAuthProvider extends AuthProvider {
 
   @override
   Future<void> initialize() async {
-    _accessToken = await _storage.read(key: _tokenKey);
+    _accessToken = await _storage.read(key: tokenStorageKey);
     if (_accessToken == null || _accessToken!.isEmpty) {
       _currentUser = null;
       _authStateController.add(false);
@@ -65,7 +66,7 @@ class CloudflareAccessAuthProvider extends AuthProvider {
     _currentUser = null;
     _authStateController.add(false);
     try {
-      await _storage.delete(key: _tokenKey);
+      await _storage.delete(key: tokenStorageKey);
     } catch (e) {
       debugPrint('[CloudflareAccessAuthProvider] Failed to clear session: $e');
     }
@@ -76,14 +77,14 @@ class CloudflareAccessAuthProvider extends AuthProvider {
     if (url == null || url.isEmpty) {
       return _accessToken != null;
     }
-    final token = _tokenFromCallback(url);
+    final token = tokenFromCallback(url);
     if (token == null || token.isEmpty) {
       return false;
     }
     _accessToken = token;
     _currentUser = _userFromJwt(token);
     try {
-      await _storage.write(key: _tokenKey, value: token);
+      await _storage.write(key: tokenStorageKey, value: token);
     } catch (e) {
       debugPrint(
           '[CloudflareAccessAuthProvider] Failed to persist session: $e');
@@ -113,12 +114,36 @@ class CloudflareAccessAuthProvider extends AuthProvider {
     return _accessToken;
   }
 
-  String? _tokenFromCallback(String url) {
+  /// Extract an Access JWT from a callback URL.
+  ///
+  /// Shared with the desktop deep-link handler in `main.dart`, which receives
+  /// `pistisai://callback?cf_jwt=...` as a command-line argument before DI is
+  /// available. `cf_jwt` wins over the generic `token` alias.
+  static String? tokenFromCallback(String url) {
     final uri = Uri.tryParse(url);
     if (uri == null) {
       return null;
     }
     return uri.queryParameters['cf_jwt'] ?? uri.queryParameters['token'];
+  }
+
+  /// Persist a JWT delivered through a desktop deep link so the next
+  /// [initialize] call restores the session. Returns false when the URL has
+  /// no usable token or secure storage is unavailable.
+  static Future<bool> persistTokenFromCallback(String url) async {
+    final token = tokenFromCallback(url);
+    if (token == null || token.isEmpty) {
+      return false;
+    }
+    try {
+      await const FlutterSecureStorage()
+          .write(key: tokenStorageKey, value: token);
+      return true;
+    } catch (e) {
+      debugPrint(
+          '[CloudflareAccessAuthProvider] Failed to persist deep-link session: $e');
+      return false;
+    }
   }
 
   UserModel? _userFromJwt(String token) {
