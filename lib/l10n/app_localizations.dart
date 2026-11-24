@@ -2069,7 +2069,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeToolsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Available offline • Connect to unlock more'**
+  /// **'As reported by your connected agent runtime'**
   String get homeToolsSubtitle;
 
   /// No description provided for @homeToolDesktop.
@@ -2138,17 +2138,113 @@ abstract class AppLocalizations {
   /// **'Run Python, shell, and Dart scripts'**
   String get homeToolCodeDescription;
 
-  /// No description provided for @homeToolLocal.
+  /// No description provided for @homeToolAvailable.
   ///
   /// In en, this message translates to:
-  /// **'local'**
-  String get homeToolLocal;
+  /// **'available'**
+  String get homeToolAvailable;
 
-  /// No description provided for @homeToolCloud.
+  /// No description provided for @homeToolUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'cloud'**
-  String get homeToolCloud;
+  /// **'unavailable'**
+  String get homeToolUnavailable;
+
+  /// No description provided for @homeToolNotReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Your agent runtime does not report this tool'**
+  String get homeToolNotReported;
+
+  /// No description provided for @brainInsightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Brain Insights'**
+  String get brainInsightsTitle;
+
+  /// No description provided for @brainInsightsJournalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent activity journal'**
+  String get brainInsightsJournalTitle;
+
+  /// No description provided for @brainInsightsJournalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions your agent took, recorded on this device.'**
+  String get brainInsightsJournalSubtitle;
+
+  /// No description provided for @brainInsightsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No agent actions recorded yet. Tool use in chat appears here.'**
+  String get brainInsightsEmpty;
+
+  /// No description provided for @brainInsightsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the activity journal.'**
+  String get brainInsightsLoadError;
+
+  /// No description provided for @brainInsightsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The activity journal is not available on this device.'**
+  String get brainInsightsUnavailable;
+
+  /// No description provided for @constructionLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open {url}'**
+  String constructionLinkOpenFailed(String url);
+
+  /// No description provided for @mobileConnectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect this phone'**
+  String get mobileConnectTitle;
+
+  /// No description provided for @mobileConnectIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your desktop app is the hub. This phone does not install Hermes — it joins that hub.'**
+  String get mobileConnectIntro;
+
+  /// No description provided for @mobileTailscaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Self-Hosted via Tailscale'**
+  String get mobileTailscaleTitle;
+
+  /// No description provided for @mobileTailscaleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach the desktop hub on your tailnet. Install Tailscale on this phone first.'**
+  String get mobileTailscaleDescription;
+
+  /// No description provided for @mobileHubHostLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop Tailscale MagicDNS name'**
+  String get mobileHubHostLabel;
+
+  /// No description provided for @mobileHubHostHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Same tailnet as the PC. Android allows cleartext only to *.ts.net.'**
+  String get mobileHubHostHelper;
+
+  /// No description provided for @mobileHubConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to desktop hub'**
+  String get mobileHubConnect;
+
+  /// No description provided for @mobileHubRemoteAccessNote.
+  ///
+  /// In en, this message translates to:
+  /// **'By default the desktop app only accepts connections from the same computer. A setting to let this phone connect is not available yet, so this connection fails with standard desktop builds.'**
+  String get mobileHubRemoteAccessNote;
 
   /// No description provided for @welcomeSubtitle.
   ///
@@ -5177,13 +5273,13 @@ abstract class AppLocalizations {
   /// No description provided for @completionAllSet.
   ///
   /// In en, this message translates to:
-  /// **'You\'re All Set!'**
+  /// **'Almost done'**
   String get completionAllSet;
 
   /// No description provided for @completionConfigured.
   ///
   /// In en, this message translates to:
-  /// **'Your agent runtime is configured and ready to use.'**
+  /// **'Review your setup, then select Complete to save it.'**
   String get completionConfigured;
 
   /// No description provided for @completionSaving.
@@ -5225,13 +5321,13 @@ abstract class AppLocalizations {
   /// No description provided for @completionReady.
   ///
   /// In en, this message translates to:
-  /// **'Ready to start chatting!'**
+  /// **'Next: start chatting'**
   String get completionReady;
 
   /// No description provided for @completionDone.
   ///
   /// In en, this message translates to:
-  /// **'Your setup is complete. You can start chatting now!'**
+  /// **'After you select Complete, the chat opens.'**
   String get completionDone;
 
   /// No description provided for @installStatusInstalled.
@@ -5330,23 +5426,11 @@ abstract class AppLocalizations {
   /// **'Analyze'**
   String get guiAnalyze;
 
-  /// No description provided for @guiPrompt.
+  /// No description provided for @guiActionsUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'What do you want to do?'**
-  String get guiPrompt;
-
-  /// No description provided for @guiHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g., Click the search button, Type in the box'**
-  String get guiHint;
-
-  /// No description provided for @guiExecute.
-  ///
-  /// In en, this message translates to:
-  /// **'Execute'**
-  String get guiExecute;
+  /// **'Running actions from this screen is not available yet.'**
+  String get guiActionsUnavailable;
 
   /// No description provided for @guiResult.
   ///

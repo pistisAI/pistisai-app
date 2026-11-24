@@ -13,7 +13,6 @@ class GuiAutomationScreen extends StatefulWidget {
 
 class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
   final _service = GuiAutomationService();
-  final _instructionController = TextEditingController();
   String _result = '';
   bool _isProcessing = false;
 
@@ -85,35 +84,12 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
 
             const SizedBox(height: 16),
 
-            // Instruction Input
+            // Running actions from this screen is not wired to the approval
+            // gate, so it is not offered (#861).
             Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context).guiPrompt,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _instructionController,
-                      decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context).guiHint,
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _isProcessing ? null : _runWorkflow,
-                        child: Text(AppLocalizations.of(context).guiExecute),
-                      ),
-                    ),
-                  ],
-                ),
+              child: ListTile(
+                leading: const Icon(Icons.block),
+                title: Text(AppLocalizations.of(context).guiActionsUnavailable),
               ),
             ),
 
@@ -185,17 +161,5 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
       setState(() => _result = result);
     }
     setState(() => _isProcessing = false);
-  }
-
-  Future<void> _runWorkflow() async {
-    if (_instructionController.text.isEmpty) return;
-
-    setState(() => _isProcessing = true);
-    final result =
-        await _service.automationWorkflow(_instructionController.text);
-    setState(() {
-      _result = result;
-      _isProcessing = false;
-    });
   }
 }

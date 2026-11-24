@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../brand/brand.dart';
 import '../brand/brand_copy.dart';
 import '../config/theme.dart';
@@ -390,6 +391,26 @@ class ConstructionScreen extends StatelessWidget {
     );
   }
 
+  /// Opens [url] in the system browser; reports a failure instead of
+  /// pretending the link opened (#861).
+  Future<void> _openLink(BuildContext context, String url) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final failedText =
+        AppLocalizations.of(context).constructionLinkOpenFailed(url);
+    var opened = false;
+    final uri = Uri.tryParse(url);
+    if (uri != null && uri.hasScheme) {
+      try {
+        opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } catch (e) {
+        debugPrint('[ConstructionScreen] Could not open $url: $e');
+      }
+    }
+    if (!opened) {
+      messenger.showSnackBar(SnackBar(content: Text(failedText)));
+    }
+  }
+
   Widget _buildLinkCard(
     BuildContext context, {
     required String title,
@@ -413,16 +434,7 @@ class ConstructionScreen extends StatelessWidget {
           Icons.chevron_right,
           color: Theme.of(context).colorScheme.outline,
         ),
-        onTap: () {
-          // Open link in new tab
-          // In Flutter web, this works; in desktop apps, it might need platform-specific code
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Opening $url...'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
+        onTap: () => _openLink(context, url),
       ),
     );
   }
