@@ -639,6 +639,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get logsNoneAvailable => 'Aucune entrée de journal disponible';
 
   @override
+  String logsLoadFailed(String error) {
+    return 'Impossible de charger les journaux : $error';
+  }
+
+  @override
   String get logsSearchHint => 'Rechercher dans les journaux…';
 
   @override
@@ -1606,6 +1611,104 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get instancesTestConnection => 'Tester la connexion';
+
+  @override
+  String get instancesRuntimeSection => 'Runtime d\'agent';
+
+  @override
+  String instancesRuntimeEndpoint(String url) {
+    return 'Point d\'accès : $url';
+  }
+
+  @override
+  String get instancesRuntimeNoRuntime =>
+      'Aucun runtime d\'agent n\'est sélectionné. Activez Hermes Agent ci-dessous pour vous connecter.';
+
+  @override
+  String get instancesRuntimeControlUnavailable =>
+      'Le démarrage et l\'arrêt du runtime d\'agent depuis l\'app ne sont pas encore disponibles. Démarrez-le sur son hôte, puis actualisez.';
+
+  @override
+  String get instancesNoModels =>
+      'Aucun fournisseur de modèles trouvé sur cet appareil.';
+
+  @override
+  String instancesModelsLoadFailed(String error) {
+    return 'Impossible d\'analyser les fournisseurs de modèles : $error';
+  }
+
+  @override
+  String get runtimeStatusConnected => 'Connecté';
+
+  @override
+  String get runtimeStatusUnreachable => 'Injoignable';
+
+  @override
+  String get runtimeStatusNotConfigured => 'Non configuré';
+
+  @override
+  String get overviewTitle => 'Vue d\'ensemble';
+
+  @override
+  String get overviewSubtitle =>
+      'État du runtime d\'agent, point de connexion de l\'app et bilan de santé rapide.';
+
+  @override
+  String get overviewVoiceTitle => 'Compagnon vocal';
+
+  @override
+  String get overviewVoiceUnavailable =>
+      'Le service de conversation vocale n\'est disponible que sur les versions bureau pour l\'instant.';
+
+  @override
+  String get overviewAccessTitle => 'Accès au runtime';
+
+  @override
+  String get overviewAccessDescription =>
+      'Où l\'app se connecte et si elle envoie une clé API.';
+
+  @override
+  String get overviewRuntime => 'Runtime';
+
+  @override
+  String get overviewNoRuntime => 'Aucun runtime d\'agent sélectionné';
+
+  @override
+  String get overviewRuntimeUrl => 'URL du runtime';
+
+  @override
+  String get overviewApiKey => 'Clé API';
+
+  @override
+  String get overviewApiKeySet => 'Définie';
+
+  @override
+  String get overviewApiKeyNotSet => 'Non définie';
+
+  @override
+  String get overviewCheckConnection => 'Vérifier la connexion';
+
+  @override
+  String get overviewSnapshotTitle => 'Instantané';
+
+  @override
+  String get overviewSnapshotDescription =>
+      'Résultat de la dernière vérification de santé depuis cet écran.';
+
+  @override
+  String get overviewStatus => 'État';
+
+  @override
+  String get overviewLastChecked => 'Dernière vérification';
+
+  @override
+  String get overviewNotCheckedYet => 'Pas encore vérifié';
+
+  @override
+  String get overviewModelsReported => 'Modèles signalés';
+
+  @override
+  String get overviewLastError => 'Dernière erreur';
 
   @override
   String get commonBack => 'Retour';

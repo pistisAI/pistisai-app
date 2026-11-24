@@ -79,9 +79,11 @@ class _LogsScreenState extends State<LogsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = null;
+          // Surface the failure instead of showing an empty list (#857).
+          _errorMessage = AppLocalizations.of(context).logsLoadFailed('$e');
           _isLoading = false;
           _logs = [];
+          _filteredLogs = [];
         });
       }
     }
@@ -202,7 +204,9 @@ class _LogsScreenState extends State<LogsScreen> {
                                         _selectedSeverity != null ||
                                         _selectedSource != null
                                     ? l10n.logsAdjustFilters
-                                    : l10n.logsNoneAvailable,
+                                    : _logService == null
+                                        ? l10n.logsServiceUnavailable
+                                        : l10n.logsNoneAvailable,
                               )
                             : _buildLogsList(),
                       ),
