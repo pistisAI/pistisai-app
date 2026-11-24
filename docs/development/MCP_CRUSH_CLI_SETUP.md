@@ -2,7 +2,9 @@
 
 This guide explains how to configure and use MCP (Model Context Protocol) servers with Crush CLI.
 
-## Available MCP Servers
+> **Verified against code (2026-11-24):** the committed Crush CLI config is `.crush-mcp-config.json`, which registers exactly six servers: `sequentialthinking`, `memory`, `context7`, `pdf`, `puppeteer`, `local-knowledge-graph`. The tables below are a broader catalogue of *possible* servers and do **not** all apply to Crush CLI here. Separately, `opencode.json` configures `sentry`, `context7`, `playwright` and `postgres` for OpenCode, and `.cursor/mcp.json` configures GitHub. GitHub operations in this repo are normally done with the `gh` CLI.
+
+## Available MCP Servers (catalogue — only the six in `.crush-mcp-config.json` are configured for Crush CLI)
 
 ### Core MCP Servers
 

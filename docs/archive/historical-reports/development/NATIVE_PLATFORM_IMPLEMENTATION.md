@@ -82,13 +82,18 @@ target_link_libraries(${BINARY_NAME} PRIVATE Imlib2)
 
 ---
 
-## Windows Implementation (🔲 Not Started)
+## Windows Implementation (✅ files present — behavior not fully verified)
 
-### Required Files (Not Created)
-- `windows/runner/platform_channels.cpp`
-- `windows/runner/platform_channels.h`
-- `windows/runner/main.cpp` (update)
-- `windows/CMakeLists.txt` (update)
+> **Verified against code (2026-11-24):** all four files below exist in this repo (`windows/runner/platform_channels.cpp`, `windows/runner/platform_channels.h`, `windows/runner/main.cpp`, `windows/CMakeLists.txt`). The earlier "Not Started / Not Created" status was stale; only runtime verification of each feature remains open.
+
+### Required Files (present in repo)
+
+| File | Status |
+|------|--------|
+| `windows/runner/platform_channels.cpp` | ✅ Present |
+| `windows/runner/platform_channels.h` | ✅ Present |
+| `windows/runner/main.cpp` | ✅ Present |
+| `windows/CMakeLists.txt` | ✅ Present |
 
 ### Planned Implementation
 
@@ -126,8 +131,8 @@ target_link_libraries(${BINARY_NAME} PRIVATE Imlib2)
 - [ ] Scroll works
 
 ### Windows
-- [ ] Files created and build compiles
-- [ ] All features work as expected
+- [x] Native channel files present in repo (`windows/runner/platform_channels.cpp` et al.)
+- [ ] Build compiles and all features work as expected (verification pending)
 
 ---
 

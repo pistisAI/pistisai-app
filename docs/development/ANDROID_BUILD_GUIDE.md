@@ -15,16 +15,16 @@ Checked in as of the SDK 37 fixes:
 | Android Gradle Plugin | `8.11.1` | `android/settings.gradle` |
 | Gradle | `8.14.3` | `android/gradle/wrapper/gradle-wrapper.properties` |
 | Kotlin Gradle Plugin | `2.4.0` | `android/settings.gradle` |
-| Kotlin Android plugin | `2.1.0` | `android/settings.gradle` |
+| Kotlin Android plugin | `2.4.0` | `android/settings.gradle` (`org.jetbrains.kotlin.android`) |
 | `compileSdk` | `37` | `android/app/build.gradle` |
 | `compileSdkMinor` | `0` | `android/app/build.gradle` |
 | Platform package | `platforms;android-37.0` | `build-mobile.yml` |
 | NDK | `flutter.ndkVersion` | `android/app/build.gradle` |
 | min / target SDK | `flutter.minSdkVersion` / `flutter.targetSdkVersion` | `android/app/build.gradle` |
-| Flutter | `3.47.7` (`pubspec.yaml` `environment.flutter`) | `build-mobile.yml` |
+| Flutter | `3.47.9` (`pubspec.yaml` `environment.flutter`, `pubspec.yaml:10`) | `build-mobile.yml` |
 | Runner | `ubuntu-24.04` | `build-mobile.yml` |
 
-API 37 is published as the minor-versioned package `platforms;android-37.0`. This repo uses AGP `8.11.1` with `compileSdk 37` and `compileSdkMinor 0`. Installing `platforms;android-37` (no minor) does not satisfy the build. Gradle `8.14.3` is paired with AGP `8.11.1` (Flutter `3.47.7` minimum; AGP 9 waits on `tesseract_ocr` removing `jcenter()`).
+API 37 is published as the minor-versioned package `platforms;android-37.0`. This repo uses AGP `8.11.1` with `compileSdk 37` and `compileSdkMinor 0`. Installing `platforms;android-37` (no minor) does not satisfy the build. Gradle `8.14.3` is paired with AGP `8.11.1` (Flutter `3.47.9` pinned; AGP 9 waits on `tesseract_ocr` removing `jcenter()`). The Kotlin Android plugin is `2.4.0` (`org.jetbrains.kotlin.android` in `android/settings.gradle:26`, not `2.1.0`); Flutter is pinned to `3.47.9` in `pubspec.yaml:10` and CI uses `flutter-version-file: pubspec.yaml`.
 
 `minSdkVersion` and `targetSdkVersion` are not numeric literals in this repo. They come from the Flutter Gradle plugin for the Flutter version that runs the build.
 
@@ -267,12 +267,12 @@ SDK levels are not declared in the manifest. `minSdkVersion` and `targetSdkVersi
 
 ### Update pubspec.yaml
 
-Ensure Flutter version constraints are compatible with Android:
+Ensure Flutter version constraints are compatible with Android. This mirrors the root `pubspec.yaml:9-10` (`sdk: ">=3.5.0 <4.0.0"`, `flutter: 3.47.9`):
 
 ```yaml
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: 3.47.9
 
 # Verify Android-compatible dependencies
 dependencies:
@@ -288,7 +288,7 @@ The Android job is `build_android` in `.github/workflows/build-mobile.yml`. Ther
 ### Build Steps
 
 1. Check out `main` and rewrite `pubspec.yaml` / `assets/version.json` with the version from `version.json` and `github.run_number` as the build number.
-2. Install Flutter `3.47.7` (match `environment.flutter` in `pubspec.yaml`).
+2. Install Flutter `3.47.9` (match `environment.flutter` in `pubspec.yaml:10`).
 3. Install `platforms;android-37.0` with `sdkmanager` resolved from `ANDROID_HOME`.
 4. Decode `ANDROID_KEYSTORE_B64` to `android/release-keystore.jks` and write `android/key.properties`.
 5. `flutter pub get`, then `flutter build apk --release --split-per-abi --android-skip-build-dependency-validation`.

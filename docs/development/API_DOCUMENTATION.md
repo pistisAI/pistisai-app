@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-Pistisai v3.6.2+ provides APIs for bridge communication, legacy streaming proxy management, and service integration. Current main-channel work should use the selected agent runtime, Tailscale secure device mesh, and per-user cloud connector model rather than assuming a streaming proxy is the default path.
+Pistisai v1.5.60+ (per `assets/version.json`, build `182`) provides APIs for bridge communication, legacy streaming proxy management, and service integration. Current main-channel work should use the selected agent runtime, Tailscale secure device mesh, and per-user cloud connector model rather than assuming a streaming proxy is the default path.
 
 **API Base URLs:**
 
@@ -13,9 +13,9 @@ Pistisai v3.6.2+ provides APIs for bridge communication, legacy streaming proxy 
 
 ## 🔐 **Authentication**
 
-### **Auth0 JWT Authentication**
+### **Cloudflare Access JWT authentication (current)**
 
-All API endpoints require valid JWT tokens obtained through Auth0 authentication.
+Protected API routes use the `authenticateJWT` middleware in `services/api-backend/middleware/auth.js`, which validates Cloudflare Access JWTs via `services/api-backend/auth/auth-service.js` (issuer `https://${CF_ACCESS_TEAM_DOMAIN}` at `auth-service.js:285-286`, audience `CF_ACCESS_AUD` at `auth-service.js:174-186`, JWKS URI derived from the team domain at `auth-service.js:30`). A dev bypass token is supported for local development (`middleware/auth.js:37-52`). The Auth0 issuer/audience values that appeared here previously are historical — the web client no longer uses an Auth0 bridge (see `docs/development/AUTHENTICATION_COMPREHENSIVE_GUIDE.md`).
 
 #### **Token Format**
 
@@ -25,10 +25,13 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 
 #### **Token Validation**
 
-- **Algorithm**: RS256
-- **Issuer**: `https://Pistisai.auth0.com/`
-- **Audience**: `Pistisai-api`
-- **Expiry**: 24 hours
+Current Cloudflare Access validation (see `services/api-backend/auth/auth-service.js`):
+
+- **Issuer**: `https://${CF_ACCESS_TEAM_DOMAIN}` (`auth-service.js:285-286`)
+- **Audience**: `CF_ACCESS_AUD` — requests without a configured audience fail closed (`auth-service.js:174-186`)
+- **Signing keys**: JWKS URI derived from the team domain (`auth-service.js:30`)
+
+Historical Auth0 example values (no longer used by the web client): `https://Pistisai.auth0.com/`, `Pistisai-api`, 24 hours.
 
 #### **Error Responses**
 
@@ -56,7 +59,7 @@ Register a desktop client with the bridge service.
 {
   "clientId": "desktop-client-uuid",
   "platform": "linux",
-  "version": "3.6.2",
+  "version": "1.5.60",
   "capabilities": ["ollama", "streaming", "tray"]
 }
 ```
@@ -88,7 +91,7 @@ Get current bridge connection status.
   "lastSeen": "2025-06-20T16:52:20.850Z",
   "client": {
     "platform": "linux",
-    "version": "3.6.2",
+    "version": "1.5.60",
     "ollamaStatus": "connected",
     "models": ["llama3.2:1b", "codellama:7b"]
   }
@@ -208,7 +211,9 @@ Terminate streaming proxy and cleanup resources.
 
 ### **Conversation Management**
 
-#### **GET /api/chat/conversations**
+> **Verified against code:** `services/api-backend/server.js:519` mounts the conversation router at `/api/conversations` (and the `/conversations` alias at `server.js:520`). There is no `/api/chat/conversations` route.
+
+#### **GET /api/conversations**
 
 List user's chat conversations.
 
@@ -237,7 +242,7 @@ List user's chat conversations.
 }
 ```
 
-#### **POST /api/chat/conversations**
+#### **POST /api/conversations**
 
 Create new chat conversation.
 
@@ -265,7 +270,7 @@ Create new chat conversation.
 }
 ```
 
-#### **POST /api/chat/conversations/{conversationId}/messages**
+#### **POST /api/conversations/{conversationId}/messages**
 
 Send message in conversation.
 
@@ -294,7 +299,9 @@ Send message in conversation.
 
 ### **System Health**
 
-#### **GET /api/health**
+> **Verified against code:** `services/api-backend/server.js:400` exposes `GET /healthz` (and `/health` via `registerRoutes` at `server.js:407`). There is no `/api/health` mount. The example response below is illustrative; the live handler returns its own payload.
+
+#### **GET /healthz**
 
 Get overall system health status.
 
@@ -318,9 +325,9 @@ Get overall system health status.
 }
 ```
 
-#### **GET /api/health/detailed**
+#### **GET /api/health/detailed** (planned — not registered)
 
-Get detailed health information for debugging.
+> **Verified against code:** no `/api/health/detailed` route is registered in `services/api-backend/server.js` (only `/healthz` at line 400 and `/health` at line 407). The response below is a proposed shape, not a live endpoint.
 
 **Response:**
 
