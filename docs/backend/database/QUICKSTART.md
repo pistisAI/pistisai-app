@@ -5,9 +5,11 @@ Quick reference for setting up the Admin Center database schema and test data.
 ## Prerequisites
 
 1. PostgreSQL 12+ installed and running
-2. Node.js 18+ installed
+2. Node.js 26 installed — the backend declares `"node": ">=26.0.0 <28.0.0"` (`services/api-backend/package.json:67-69`); the old "18+" guidance was stale
 3. Database created: `Pistisai`
 4. Environment variables configured
+
+> **Verified against code:** there is no `run-migration.js` in `services/api-backend/database/`. The runner is `database/migrate-pg.js`, and migrations are applied at backend startup (`services/api-backend/server.js:563-578` → `migrate-pg.js:328-355`); it has no `up`/`down`/`status` CLI. Rollbacks live in `services/api-backend/database/rollbacks/`, not `migrations/`. The `run-migration.js` commands shown in older docs are historical and would fail; the equivalent direct `psql` commands are shown below. `database/seeds/run-seed.js` does exist, so the seed commands are valid.
 
 ## Environment Setup
 
@@ -40,7 +42,7 @@ npm install
 psql -h localhost -U postgres -d Pistisai -f database/schema.pg.sql
 
 # 4. Apply admin center migration
-node database/migrations/run-migration.js up 001
+psql -h localhost -U postgres -d Pistisai -f database/migrations/001_admin_center_schema.sql
 
 # 5. Apply seed data (development only)
 node database/seeds/run-seed.js apply 001
@@ -55,13 +57,13 @@ node database/seeds/run-seed.js apply 001 | tail -10
 
 ```bash
 # Check migration status
-node database/migrations/run-migration.js status
+psql -h localhost -U postgres -d Pistisai -c "SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;"
 
 # Apply migration
-node database/migrations/run-migration.js up 001
+psql -h localhost -U postgres -d Pistisai -f database/migrations/001_admin_center_schema.sql
 
 # Rollback migration
-node database/migrations/run-migration.js down 001
+psql -h localhost -U postgres -d Pistisai -f database/rollbacks/001_admin_center_schema_rollback.sql
 ```
 
 ### Seed Data (Development Only)
@@ -83,8 +85,8 @@ psql -h localhost -U postgres -d Pistisai -f database/migrations/001_admin_cente
 # Apply seed data manually
 psql -h localhost -U postgres -d Pistisai -f database/seeds/001_admin_center_dev_data.sql
 
-# Rollback migration manually
-psql -h localhost -U postgres -d Pistisai -f database/migrations/001_admin_center_schema_rollback.sql
+# Rollback migration manually (rollback files are in database/rollbacks/)
+psql -h localhost -U postgres -d Pistisai -f database/rollbacks/001_admin_center_schema_rollback.sql
 ```
 
 ## Verification Queries
@@ -108,8 +110,8 @@ psql -h localhost -U postgres -d Pistisai -c "SELECT u.email, ar.role, ar.is_act
 ```bash
 # Complete reset
 node database/seeds/run-seed.js clean
-node database/migrations/run-migration.js down 001
-node database/migrations/run-migration.js up 001
+psql -h localhost -U postgres -d Pistisai -f database/rollbacks/001_admin_center_schema_rollback.sql
+psql -h localhost -U postgres -d Pistisai -f database/migrations/001_admin_center_schema.sql
 node database/seeds/run-seed.js apply 001
 ```
 
@@ -120,10 +122,12 @@ node database/seeds/run-seed.js apply 001
 pg_dump -h $PGHOST -U $PGUSER -d $PGDATABASE > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # 2. Apply migration only (NO seed data in production!)
-node database/migrations/run-migration.js up 001
+# No run-migration.js CLI exists: migrations apply at startup via migrate-pg.js,
+# or apply the SQL directly:
+psql -h $PGHOST -U $PGUSER -d $PGDATABASE -f database/migrations/001_admin_center_schema.sql
 
-# 3. Verify migration
-node database/migrations/run-migration.js status
+# 3. Verify migration (no status CLI; query the tracking table)
+psql -h $PGHOST -U $PGUSER -d $PGDATABASE -c "SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;"
 
 # 4. Verify tables
 psql -h $PGHOST -U $PGUSER -d $PGDATABASE -c "\dt"
@@ -146,11 +150,11 @@ echo $PGHOST $PGPORT $PGDATABASE $PGUSER
 
 ```bash
 # Check status
-node database/migrations/run-migration.js status
+psql -h localhost -U postgres -d Pistisai -c "SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;"
 
 # If needed, rollback and reapply
-node database/migrations/run-migration.js down 001
-node database/migrations/run-migration.js up 001
+psql -h localhost -U postgres -d Pistisai -f database/rollbacks/001_admin_center_schema_rollback.sql
+psql -h localhost -U postgres -d Pistisai -f database/migrations/001_admin_center_schema.sql
 ```
 
 ### Seed Data Already Exists
@@ -165,17 +169,22 @@ node database/seeds/run-seed.js apply 001
 
 ```
 services/api-backend/database/
-├── schema.pg.sql                           # Base schema
+├── schema.pg.sql                            # Base schema
+├── migrate-pg.js                            # Migration runner (DatabaseMigratorPG)
+├── migrate-auth-pg.js                       # Auth database migration runner
+├── db-pool.js                               # Connection pool (getPool)
 ├── migrations/
-│   ├── README.md                           # Migration documentation
-│   ├── run-migration.js                    # Migration runner
-│   ├── 001_admin_center_schema.sql         # Admin center migration
-│   └── 001_admin_center_schema_rollback.sql # Rollback script
+│   ├── 001_admin_center_schema.sql          # Admin center migration
+│   └── 003_email_relay_dns_setup.sql        # Email relay / DNS migration
+├── rollbacks/
+│   ├── 001_admin_center_schema_rollback.sql
+│   └── 003_email_relay_dns_setup_rollback.sql
 └── seeds/
-    ├── README.md                           # Seed documentation
-    ├── run-seed.js                         # Seed runner
-    └── 001_admin_center_dev_data.sql       # Test data
+    ├── run-seed.js                          # Seed runner (exists)
+    └── 001_admin_center_dev_data.sql        # Test data
 ```
+
+Verified from `services/api-backend/database/`: there is no `run-migration.js`, no `migrations/README.md` and no `seeds/README.md`.
 
 ## Next Steps
 
@@ -187,8 +196,8 @@ After setting up the database:
 
 ## Documentation
 
-- Migrations: `services/api-backend/database/migrations/README.md`
-- Seed Data: `services/api-backend/database/seeds/README.md`
+- Migrations: this guide, `services/api-backend/database/migrate-pg.js` (the runner; no `migrations/README.md` exists), SQL in `services/api-backend/database/migrations/` and rollbacks in `services/api-backend/database/rollbacks/`
+- Seed Data: `services/api-backend/database/seeds/run-seed.js` (no `seeds/README.md` exists)
 - Admin Center Design: `.kiro/specs/admin-center/design.md`
 - Admin Center Requirements: `.kiro/specs/admin-center/requirements.md`
 - Admin Center Tasks: `.kiro/specs/admin-center/tasks.md`

@@ -2,12 +2,14 @@
 
 This directory contains database migration scripts for the Admin Center feature.
 
+> **Verified against code:** there is no `run-migration.js` in `services/api-backend/database/`. The runner is `services/api-backend/database/migrate-pg.js` (`DatabaseMigratorPG`), applied at backend startup (`services/api-backend/server.js:563-578` → `migrate-pg.js:328-355`); it has no `up`/`down`/`status` CLI. Forward SQL lives in `services/api-backend/database/migrations/`, while rollback SQL lives in `services/api-backend/database/rollbacks/` (both `001_admin_center_schema_rollback.sql` and `003_email_relay_dns_setup_rollback.sql` are there). No standalone migrate-pg guide exists — `migrate-pg.js` is the source of truth.
+
 ## Overview
 
 Migrations are versioned SQL scripts that modify the database schema. Each migration has:
 
-- A forward migration file (e.g., `001_admin_center_schema.sql`)
-- A rollback file (e.g., `001_admin_center_schema_rollback.sql`)
+- A forward migration file (e.g., `001_admin_center_schema.sql`, in `services/api-backend/database/migrations/`)
+- A rollback file (e.g., `001_admin_center_schema_rollback.sql`, in `services/api-backend/database/rollbacks/`)
 - A tracking entry in the `schema_migrations` table
 
 ## Migration Files
@@ -49,22 +51,28 @@ Creates the core admin center tables:
 
 ### Running Migrations
 
+Migrations are applied automatically at backend startup by `DatabaseMigratorPG.migrate()` (`services/api-backend/server.js:563-578`, `database/migrate-pg.js:328-355`). There is no `run-migration.js` CLI; use the direct `psql` commands below.
+
 #### Apply a Migration
 
 ```bash
-node services/api-backend/database/migrations/run-migration.js up 001
+psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/migrations/001_admin_center_schema.sql
 ```
 
 #### Rollback a Migration
 
+Rollback files are in `services/api-backend/database/rollbacks/`:
+
 ```bash
-node services/api-backend/database/migrations/run-migration.js down 001
+psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/rollbacks/001_admin_center_schema_rollback.sql
 ```
 
 #### Check Migration Status
 
-```bash
-node services/api-backend/database/migrations/run-migration.js status
+`DatabaseMigratorPG.getAppliedMigrations()` (`services/api-backend/database/migrate-pg.js:169-174`) queries the tracking table internally; there is no `status` CLI:
+
+```sql
+SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;
 ```
 
 ### Manual Execution
@@ -79,8 +87,10 @@ psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/migra
 
 #### Rollback Migration
 
+Rollback SQL is in `services/api-backend/database/rollbacks/`, not `migrations/`:
+
 ```bash
-psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/migrations/001_admin_center_schema_rollback.sql
+psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/rollbacks/001_admin_center_schema_rollback.sql
 ```
 
 ## Migration Tracking
@@ -106,7 +116,7 @@ Columns:
    002_feature_name.sql
    ```
 
-2. Create a corresponding rollback file:
+2. Create a corresponding rollback file in `services/api-backend/database/rollbacks/` (not in `migrations/`):
 
    ```
    002_feature_name_rollback.sql
@@ -119,17 +129,17 @@ Columns:
    - Add triggers for `updated_at` columns
    - Include rollback logic in the rollback file
 
-4. Test the migration:
+4. Test the migration (no `run-migration.js` CLI — verified above):
 
    ```bash
    # Apply
-   node run-migration.js up 002
+   psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/migrations/002_feature_name.sql
 
    # Verify
-   node run-migration.js status
+   psql -h localhost -U postgres -d Pistisai -c "SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;"
 
-   # Rollback (if needed)
-   node run-migration.js down 002
+   # Rollback (if needed) — from database/rollbacks/
+   psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/rollbacks/002_feature_name_rollback.sql
    ```
 
 ## Best Practices
@@ -161,10 +171,10 @@ psql -h $PGHOST -U $PGUSER -d $PGDATABASE -c "SELECT version();"
 
 ### Migration tracking table not found
 
-Run the migration runner once to create the tracking table:
+The tracking table is created by the startup migrator (`DatabaseMigratorPG.createMigrationsTable()`, `services/api-backend/database/migrate-pg.js:59`, called at `services/api-backend/server.js:574`). There is no `run-migration.js status` command; to inspect it:
 
 ```bash
-node run-migration.js status
+psql -h localhost -U postgres -d Pistisai -c "SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;"
 ```
 
 ## Production Deployment
@@ -181,16 +191,16 @@ For production deployments:
 
 3. **Run migrations during maintenance window** if possible
 
-4. **Monitor the migration**:
+4. **Apply the migration** (no `run-migration.js` CLI — migrations also apply at startup; verified above):
 
    ```bash
-   node run-migration.js up 001 2>&1 | tee migration.log
+   psql -h $PGHOST -U $PGUSER -d $PGDATABASE -f services/api-backend/database/migrations/001_admin_center_schema.sql 2>&1 | tee migration.log
    ```
 
 5. **Verify the migration**:
 
    ```bash
-   node run-migration.js status
+   psql -h $PGHOST -U $PGUSER -d $PGDATABASE -c "SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;"
    psql -h $PGHOST -U $PGUSER -d $PGDATABASE -c "\dt"
    ```
 
