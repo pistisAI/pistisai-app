@@ -6,7 +6,7 @@ Pistisai uses a centralized service locator (`lib/di/locator.dart`) to ensure th
 
 1. `AppBootstrapper.load()` (see `lib/bootstrap/bootstrapper.dart`)
    - Configures SQLite FFI when running on desktop.
-   - Invokes `setupServiceLocator()` so every service registers itself with GetIt.
+   - Invokes `setupServiceLocator()`, a compatibility wrapper that delegates to `setupCoreServices()` (`lib/di/locator.dart:1260-1261`). Core services register in `setupCoreServices()` (:137) and auth-dependent services register separately in `setupAuthenticatedServices()` (:832). On desktop the authenticated phase is auto-bootstrapped with a 30s timeout (:650); on web it follows an explicit session bootstrap via `_registerWebFallbackCoreServices()` (:704).
    - Returns `AppBootstrapData` so the root widget tree can decide whether to render native shell affordances.
 2. `main.dart`
    - Wraps the app with a `FutureProvider<AppBootstrapData?>` and waits for bootstrap to finish.
@@ -17,47 +17,31 @@ Pistisai uses a centralized service locator (`lib/di/locator.dart`) to ensure th
 
 ## Service Dependencies
 
-```mermaid
-graph TD
-  Auth0 --> AuthService
-  AuthService --> TunnelService
-  AuthService --> EnhancedUserTierService
-  AuthService --> StreamingProxyService
-  AuthService --> AgentRuntimeServices
-  AuthService --> AppInitializationService
-  AuthService --> WebDownloadPromptService
-  AuthService --> UserContainerService
-  TunnelService --> ConnectionManager
-  AgentRuntimeDiscovery --> ConnectionManager
-  LocalModelProviderDiscovery --> LLMProviderManager
-  ConnectionManager --> StreamingChat
-  ConnectionManager --> UnifiedConnection
-  ConnectionManager --> AgentRuntimeStreaming
-  ConnectionManager --> LangChainRAG
-  ProviderDiscovery --> LangChainIntegration
-  LangChainIntegration --> LLMProviderManager
-  LangChainIntegration --> LLMErrorHandler
-  AgentRuntimeStreaming --> LangChainRAG
-  AuthService --> LLMAudit
-  ConnectionManager --> UnifiedConnection
-```
+`lib/di/locator.dart` registers services in **two phases**. The names below are the classes actually registered there (checked against the `registerSingleton<...>` / `registerLazySingleton<...>` calls); older revisions of this graph named helpers that do not exist (`AgentRuntimeDiscovery`, `LocalModelProviderDiscovery`, `ProviderDiscovery`, `LangChainIntegration`, `UserContainerService`, `AgentRuntimeServices`, `UnifiedConnection`).
+
+| Phase | Registration function | Representative registered services |
+| --- | --- | --- |
+| Core / pre-auth | `setupCoreServices()` (line 137) | `AuthProvider`, `AuthService`, `LocalBrain`, `AgentActionAuditService`, avatar services, `RouterServer`, `HermesStreamingService`, `ProviderDiscoveryService`, `ProviderConfigurationManager`, `PlatformDetectionService`, `PlatformAdapter`, `SetupWizardService`, `EnhancedUserTierService` |
+| Authenticated | `setupAuthenticatedServices()` (line 832) | `TunnelService`, `CloudConnectorService`, `ConnectionManagerService`, `StreamingChatService`, `UnifiedConnectionService`, `AgentStatusService`, `AgentLifecycleService`, `AdminCenterService`, `AdminService`, `ClipboardService`, `MainVisionService`, `RegionCaptureService`, `CameraCaptureService`, `OcrEngineService`, `PopOutManager` |
+
+Constructor dependencies visible in the locator include `TunnelService(authService: ...)` (:906), `AdminCenterService(authService: ...)` (:1063) and `PlatformAdapter(platformDetectionService)` (:528). `ProviderDiscoveryService.scanForAgentRuntimes()` only scans Hermes today (`lib/services/provider_discovery_service.dart:44-46`).
 
 Legend:
 
-- **Auth0Service** instances differ for web/desktop at registration time.
+- **AuthProvider** is the provider-agnostic auth interface; `setupCoreServices()` selects `CloudflareAccessAuthProvider` (`lib/di/locator.dart:392-423`) and passes it to `AuthService` (:435). The earlier "Auth0Service" name was stale.
 - **AuthService** publishes authentication state and is the primary trigger for services that depend on user session context.
-- **ConnectionManagerService** should orchestrate the selected agent runtime path. Hermes is the current first test path; OpenClaw and compatible agent gateways are primary agent runtime paths discovered or configured by setup.
+- **ConnectionManagerService** orchestrates the selected agent runtime path. Hermes is the first test path and the only runtime auto-scanned today (`lib/services/provider_discovery_service.dart:44-46`); OpenClaw and compatible gateways are configured/selected in setup.
 - **Local model providers** such as Ollama and LM Studio belong to memory/background feature support, not the main agent channel.
 - **Tailscale-first secure mesh** is the preferred multi-device transport. Custom tunnel services are legacy/fallback unless a task explicitly targets them.
 
 ## Lifecycle Contract
 
-- Every service that registers with `setupServiceLocator()` **must**:
+- Every service that registers with `setupCoreServices()` or `setupAuthenticatedServices()` **must**:
   - Accept dependencies via constructor injection only.
   - Provide an `initialize()` (or equivalent) method that completes before the service is exposed to the widget tree.
   - Remove listeners and close streams inside `dispose()` if they allocate platform resources.
 
-- The service locator pushes a single scope (`core`) during bootstrap. Future scopes (e.g., per-user) can be layered on top without refactoring consumers.
+- The service locator is populated in **two phases**, not a single scope: `setupCoreServices()` for pre-auth services and `setupAuthenticatedServices()` for auth-dependent ones (`lib/di/locator.dart:137,832`). Do not resolve an authenticated service during the core phase.
 
 ## Logging
 

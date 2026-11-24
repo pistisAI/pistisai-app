@@ -6,7 +6,7 @@ Voice belongs with the avatar companion. It should not be treated as a separate 
 
 ## Current Status
 
-The core avatar system is implemented. It uses Drift/SQLite through `LocalBrain`, service classes under `lib/services/avatar/`, UI under `lib/features/avatar/` and `lib/screens/avatar/`, and a TypeScript OpenClaw skill under `services/openclaw-skills/Pistisai/`.
+The core avatar system is implemented. It uses Drift/SQLite through `LocalBrain`, service classes under `lib/services/avatar/`, UI under `lib/features/avatar/` and `lib/screens/avatar/`, and a TypeScript OpenClaw skill under `services/openclaw-skills/pistisai/`.
 
 The voice companion foundation is implemented under `lib/services/voice/` and `lib/widgets/voice/`. It currently tracks conversation mode, Hermes bridge status, TTS output, and companion status panels. A full microphone/STT/barge-in path is still planned.
 
@@ -27,10 +27,11 @@ The old XP/achievement design is not the current implementation. Current evoluti
 | Local TTS foundation | Implemented | `lib/services/voice/cloud_tts_service.dart` |
 | Voice status/control UI | Implemented | `lib/widgets/voice/` |
 | Customization UI | Implemented | `lib/screens/avatar/avatar_customization_screen.dart` |
-| OpenClaw skill | Implemented | `services/openclaw-skills/Pistisai/SKILL.md` |
+| OpenClaw skill | Implemented | `services/openclaw-skills/pistisai/SKILL.md` |
 | Pop-out avatar/voice sidecar | Planned | Build on popout/window services |
 | Real microphone/STT path | Planned | Not present |
-| Achievement service/UI | Planned | Not present |
+| Achievement UI | Implemented | `lib/screens/avatar/achievements_screen.dart` |
+| Achievement service | Planned | Not present |
 
 ## Data Model
 
@@ -115,12 +116,12 @@ The companion should show enough state for trust: listening, engaged, speaking, 
 
 ## OpenClaw Skill
 
-The avatar skill package in `services/openclaw-skills/Pistisai/` provides OpenClaw-side personality/evolution integration.
+The avatar skill package in `services/openclaw-skills/pistisai/` provides OpenClaw-side personality/evolution integration.
 
 Useful commands:
 
 ```bash
-cd services/openclaw-skills/Pistisai
+cd services/openclaw-skills/pistisai
 npm run build
 npm test
 ```
@@ -134,7 +135,7 @@ npm test
 ## Planned Work
 
 - Real embedding generation for semantic memory search.
-- Achievement service and achievements UI if the product still needs gamified milestones.
+- Achievement service to back the existing `lib/screens/avatar/achievements_screen.dart` UI (the screen exists; a dedicated achievement service does not).
 - Richer avatar renderer beyond the current widget implementation.
 - Pop-out avatar/voice sidecar companion window.
 - Real microphone/STT/turn-taking pipeline.
@@ -145,4 +146,4 @@ npm test
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Voice Conversation System](VOICE_CONVERSATION_SYSTEM.md)
 - [Avatar User Documentation](../avatar/README.md)
-- [Product Specification(SPEC.md was deleted; see decision D-005)
+- Product Specification: SPEC.md was deleted (see decision D-005).
