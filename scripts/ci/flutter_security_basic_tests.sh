@@ -39,9 +39,14 @@ flutter test \
   test/screens/sessions/ \
   test/screens/settings/llm_provider_settings_status_test.dart \
   test/screens/config/config_screen_controls_test.dart \
+  test/screens/settings/connection_settings_rerun_wizard_test.dart \
   test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
   test/services/desktop_control/ \
+  test/services/agent_runtime/runtime_status_snapshot_test.dart \
+  test/screens/instances/instances_screen_test.dart \
+  test/screens/logs_screen_test.dart \
+  test/widgets/overview_screen_test.dart \
   test/widgets/logout_token_clearing_timing_test.dart \
   test/widgets/voice/ \
   test/integration/navigation_test.dart \

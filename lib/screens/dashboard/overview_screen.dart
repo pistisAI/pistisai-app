@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../brand/brand_copy.dart';
-import '../../config/app_config.dart';
 import '../../config/theme.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
+import '../../services/agent_runtime/runtime_status_snapshot.dart';
 import '../../services/connection_manager_service.dart';
 import '../../services/voice/voice_conversation_service.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../widgets/voice/open_voice_ui_control_panel.dart';
 import '../../widgets/voice/voice_conversation_status_card.dart';
 
+/// Overview of the active agent runtime.
+///
+/// Every value comes from [ConnectionManagerService] via
+/// [RuntimeStatusSnapshot]; nothing here is a placeholder (#857).
 class OverviewScreen extends StatefulWidget {
   const OverviewScreen({super.key});
 
@@ -19,6 +24,10 @@ class OverviewScreen extends StatefulWidget {
 }
 
 class _OverviewScreenState extends State<OverviewScreen> {
+  /// When this screen last finished a health check.
+  DateTime? _lastChecked;
+  bool _isChecking = false;
+
   @override
   void initState() {
     super.initState();
@@ -28,12 +37,24 @@ class _OverviewScreenState extends State<OverviewScreen> {
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
     final connService = context.read<ConnectionManagerService>();
-    await connService.testConnection();
+    setState(() => _isChecking = true);
+    try {
+      await connService.testConnection();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isChecking = false;
+          _lastChecked = DateTime.now();
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Column(
         children: [
@@ -45,12 +66,12 @@ class _OverviewScreenState extends State<OverviewScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Overview',
+                    l10n.overviewTitle,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Gateway status, entry points, and a fast health read.',
+                    l10n.overviewSubtitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppTheme.colorsOf(context).textColorLight,
                         ),
@@ -58,73 +79,41 @@ class _OverviewScreenState extends State<OverviewScreen> {
                   const SizedBox(height: 24),
                   Consumer<ConnectionManagerService>(
                     builder: (context, connService, child) {
-                      final gatewayStatus = connService.getGatewayStatus();
+                      final snapshot =
+                          RuntimeStatusSnapshot.fromConnectionManager(
+                              connService);
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildSection(
                             context,
-                            'Voice Companion',
+                            l10n.overviewVoiceTitle,
                             BrandCopy.voiceCompanionBody,
                             di.serviceLocator
                                     .isRegistered<VoiceConversationService>()
-                                ? Column(
+                                ? const Column(
                                     children: [
-                                      const VoiceConversationStatusCard(),
-                                      const SizedBox(height: 16),
-                                      const OpenVoiceUIControlPanel(),
+                                      VoiceConversationStatusCard(),
+                                      SizedBox(height: 16),
+                                      OpenVoiceUIControlPanel(),
                                     ],
                                   )
-                                : _buildVoiceUnavailableCard(context),
+                                : _buildVoiceUnavailableCard(context, l10n),
                           ),
-
                           const SizedBox(height: 24),
-
-                          // Gateway Access Section
                           _buildSection(
                             context,
-                            'Gateway Access',
-                            'Where the dashboard connects and how it authenticates.',
-                            _buildGatewayAccessCard(connService),
+                            l10n.overviewAccessTitle,
+                            l10n.overviewAccessDescription,
+                            _buildAccessCard(l10n, snapshot),
                           ),
-
                           const SizedBox(height: 24),
-
-                          // Snapshot Section
                           _buildSection(
                             context,
-                            'Snapshot',
-                            'Latest gateway handshake information.',
-                            _buildSnapshotCard(context, gatewayStatus),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Quick Stats
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildStatCard(
-                                  context,
-                                  'Instances',
-                                  gatewayStatus['instances']?.toString() ?? '0',
-                                  'Presence beacons in the last 5 minutes',
-                                  Icons.devices,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: _buildStatCard(
-                                  context,
-                                  'Sessions',
-                                  gatewayStatus['sessions']?.toString() ??
-                                      'n/a',
-                                  'Recent session keys tracked by the gateway',
-                                  Icons.history,
-                                ),
-                              ),
-                            ],
+                            l10n.overviewSnapshotTitle,
+                            l10n.overviewSnapshotDescription,
+                            _buildSnapshotCard(context, l10n, snapshot),
                           ),
                         ],
                       );
@@ -161,7 +150,9 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildGatewayAccessCard(ConnectionManagerService connService) {
+  Widget _buildAccessCard(
+      AppLocalizations l10n, RuntimeStatusSnapshot snapshot) {
+    final configured = snapshot.state != RuntimeLinkState.unconfigured;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -169,30 +160,36 @@ class _OverviewScreenState extends State<OverviewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildFormField(
-              'Hermes URL',
-              connService.getGatewayStatus()['endpoint'] ??
-                  AppConfig.defaultHermesUrl,
+              l10n.overviewRuntime,
+              configured
+                  ? (snapshot.runtimeName ?? l10n.runtimeStatusNotConfigured)
+                  : l10n.overviewNoRuntime,
             ),
             const SizedBox(height: 16),
             _buildFormField(
-              'API Key',
-              connService.gatewayToken != null &&
-                      connService.gatewayToken!.length >= 16
-                  ? '${connService.gatewayToken!.substring(0, 16)}...'
-                  : 'Not set',
+              l10n.overviewRuntimeUrl,
+              snapshot.endpoint ?? l10n.runtimeStatusNotConfigured,
             ),
             const SizedBox(height: 16),
             _buildFormField(
-              'Default Session Key',
-              'main',
+              l10n.overviewApiKey,
+              snapshot.apiKeySet
+                  ? l10n.overviewApiKeySet
+                  : l10n.overviewApiKeyNotSet,
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 ElevatedButton.icon(
-                  onPressed: _loadData,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Connect'),
+                  onPressed: _isChecking ? null : _loadData,
+                  icon: _isChecking
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.refresh),
+                  label: Text(l10n.overviewCheckConnection),
                 ),
               ],
             ),
@@ -202,32 +199,50 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 
-  Widget _buildSnapshotCard(
-      BuildContext context, Map<String, dynamic> gatewayStatus) {
+  Widget _buildSnapshotCard(BuildContext context, AppLocalizations l10n,
+      RuntimeStatusSnapshot snapshot) {
+    final status = switch (snapshot.state) {
+      RuntimeLinkState.connected => l10n.runtimeStatusConnected,
+      RuntimeLinkState.disconnected => l10n.runtimeStatusUnreachable,
+      RuntimeLinkState.unconfigured => l10n.runtimeStatusNotConfigured,
+    };
+    final lastChecked = _lastChecked;
+    final lastCheckedText = lastChecked == null
+        ? l10n.overviewNotCheckedYet
+        : MaterialLocalizations.of(context).formatTimeOfDay(
+            TimeOfDay.fromDateTime(lastChecked),
+            alwaysUse24HourFormat:
+                MediaQuery.maybeOf(context)?.alwaysUse24HourFormat ?? false,
+          );
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSnapshotRow(context, 'Status',
-                gatewayStatus['healthStatus']?.toString() ?? 'Unknown'),
+            _buildSnapshotRow(context, l10n.overviewStatus, status),
             _buildSnapshotRow(
-                context, 'Uptime', gatewayStatus['uptime'] ?? 'n/a'),
-            _buildSnapshotRow(context, 'Last Channels Refresh',
-                gatewayStatus['lastRefresh'] ?? 'n/a'),
+                context, l10n.overviewLastChecked, lastCheckedText),
+            if (snapshot.state == RuntimeLinkState.connected)
+              _buildSnapshotRow(context, l10n.overviewModelsReported,
+                  '${snapshot.modelCount}'),
+            if (snapshot.lastError != null)
+              _buildSnapshotRow(
+                  context, l10n.overviewLastError, snapshot.lastError!),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildVoiceUnavailableCard(BuildContext context) {
+  Widget _buildVoiceUnavailableCard(
+      BuildContext context, AppLocalizations l10n) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Text(
-          'Voice conversation service is only wired on desktop builds right now.',
+          l10n.overviewVoiceUnavailable,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppTheme.colorsOf(context).textColorLight,
               ),
@@ -265,59 +280,23 @@ class _OverviewScreenState extends State<OverviewScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.colorsOf(context).textColorLight,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatCard(BuildContext context, String title, String value,
-      String subtitle, IconData icon) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon,
-                    size: 20, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
+          const SizedBox(width: 16),
+          Flexible(
+            child: Text(
               value,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              textAlign: TextAlign.end,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppTheme.colorsOf(context).textColorLight,
                   ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

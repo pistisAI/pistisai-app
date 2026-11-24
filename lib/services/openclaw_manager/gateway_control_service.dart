@@ -112,10 +112,15 @@ class GatewayControlService extends ChangeNotifier {
   }
 
   Future<bool> stop() async {
-    if (_state == GatewayState.stopped ||
-        _state == GatewayState.stopping ||
-        _state == GatewayState.unknown) {
+    if (_state == GatewayState.stopped || _state == GatewayState.stopping) {
       return true;
+    }
+    if (_state == GatewayState.unknown) {
+      // Nothing was stopped: the gateway state was never established, so
+      // reporting success would be untrue (#857).
+      _errorMessage = 'Gateway state is unknown; nothing was stopped';
+      notifyListeners();
+      return false;
     }
 
     _state = GatewayState.stopping;

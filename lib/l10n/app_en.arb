@@ -380,6 +380,14 @@
   "logsNoneFound": "No logs found",
   "logsAdjustFilters": "Try adjusting your filters",
   "logsNoneAvailable": "No logs available",
+  "logsLoadFailed": "Could not load logs: {error}",
+  "@logsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "logsSearchHint": "Search logs...",
   "logsSeverity": "Severity",
   "logsSource": "Source",
@@ -1001,6 +1009,49 @@
   "instancesApiKeyOptional": "API Key (optional)",
   "instancesApiKeyHint": "Leave empty for local-only use",
   "instancesTestConnection": "Test Connection",
+  "instancesRuntimeSection": "Agent Runtime",
+  "instancesRuntimeEndpoint": "Endpoint: {url}",
+  "@instancesRuntimeEndpoint": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "instancesRuntimeNoRuntime": "No agent runtime is selected. Enable Hermes Agent below to connect.",
+  "instancesRuntimeControlUnavailable": "Starting and stopping the agent runtime from the app is not available yet. Start it on its host, then refresh.",
+  "instancesNoModels": "No model providers found on this device.",
+  "instancesModelsLoadFailed": "Could not scan model providers: {error}",
+  "@instancesModelsLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "runtimeStatusConnected": "Connected",
+  "runtimeStatusUnreachable": "Not reachable",
+  "runtimeStatusNotConfigured": "Not configured",
+  "overviewTitle": "Overview",
+  "overviewSubtitle": "Agent runtime status, where the app connects, and a fast health read.",
+  "overviewVoiceTitle": "Voice Companion",
+  "overviewVoiceUnavailable": "Voice conversation service is only wired on desktop builds right now.",
+  "overviewAccessTitle": "Runtime Access",
+  "overviewAccessDescription": "Where the app connects and whether it sends an API key.",
+  "overviewRuntime": "Runtime",
+  "overviewNoRuntime": "No agent runtime selected",
+  "overviewRuntimeUrl": "Runtime URL",
+  "overviewApiKey": "API key",
+  "overviewApiKeySet": "Set",
+  "overviewApiKeyNotSet": "Not set",
+  "overviewCheckConnection": "Check connection",
+  "overviewSnapshotTitle": "Snapshot",
+  "overviewSnapshotDescription": "Result of the latest health check from this screen.",
+  "overviewStatus": "Status",
+  "overviewLastChecked": "Last checked",
+  "overviewNotCheckedYet": "Not checked yet",
+  "overviewModelsReported": "Models reported",
+  "overviewLastError": "Last error",
   "commonBack": "Back",
   "commonReset": "Reset",
   "commonSelect": "Select",

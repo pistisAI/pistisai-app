@@ -28,6 +28,34 @@ void main() {
       service = SetupWizardService(discovery, setupStatus, configManager);
     });
 
+    test('restart clears deferral, completion and step state (#853)',
+        () async {
+      final status = SetupStatusService(
+        authService: _FakeAuthService(),
+        storage: InMemorySetupStatusStorage(),
+      );
+      final wizard = SetupWizardService(
+        discovery,
+        status,
+        configManager,
+        settings: SettingsPreferenceService(),
+      );
+      await status.markSetupComplete('local_user');
+      await wizard.deferSetup();
+      wizard.goToStep(2);
+      expect(await wizard.shouldShowWizard(), isFalse);
+
+      final due = await wizard.restart();
+
+      expect(due, isTrue);
+      expect(wizard.isSetupCompleted, isFalse);
+      expect(wizard.state.currentStep, 0);
+      expect(
+          await SettingsPreferenceService().isSetupWizardDeferred(), isFalse);
+      expect(await status.hasCompletedSetup('local_user'), isFalse);
+      expect(await wizard.shouldShowWizard(), isTrue);
+    });
+
     test('provider scan failure maps message and resets loading', () async {
       discovery.scanError = Exception('socket timeout details');
 
