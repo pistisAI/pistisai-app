@@ -188,7 +188,10 @@ class MobileConnectionService extends ChangeNotifier {
     );
   }
 
-  Future<MobileHubProbeResult> connectViaTailscaleHub(String rawHost) async {
+  Future<MobileHubProbeResult> connectViaTailscaleHub(
+    String rawHost, {
+    String? hubToken,
+  }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -200,6 +203,11 @@ class MobileConnectionService extends ChangeNotifier {
       }
       await _settings.setHermesEnabled(true);
       await _settings.setHermesUrl(result.hermesUrl);
+      // A remote hub gates private endpoints with its bearer token. Store the
+      // token as the Hermes API key so streaming/chat sends it as Authorization.
+      if (hubToken != null && hubToken.trim().isNotEmpty) {
+        await _settings.setHermesApiKey(hubToken.trim());
+      }
       _hermesStreamingService?.updateBaseUrl(result.hermesUrl);
       await _persist(
         mode: MobileConnectionMode.tailscaleHub,

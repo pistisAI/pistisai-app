@@ -1,10 +1,28 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:pistisai/config/app_config.dart';
+import 'package:pistisai/database/local_brain_key_store.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class _MemoryVault implements LocalBrainKeyVault {
+  final Map<String, String> store = {};
+
+  @override
+  Future<String?> read(String key) async => store[key];
+
+  @override
+  Future<void> write(String key, String value) async {
+    store[key] = value;
+  }
+
+  @override
+  Future<void> delete(String key) async {
+    store.remove(key);
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -123,6 +141,42 @@ void main() {
       expect(service.mode, MobileConnectionMode.tailscaleHub);
       expect(await service.shouldShowConnectionScreen(), isFalse);
       hermes.dispose();
+    });
+
+    test('stores the hub token as the bearer key when connecting', () async {
+      final vault = _MemoryVault();
+      final settings = SettingsPreferenceService(secureVault: vault);
+      final service = MobileConnectionService(
+        settings: settings,
+        httpGet: (uri) async {
+          if (uri.path == AppConfig.hubPath) {
+            return http.Response('{"role":"primary_hub"}', 200);
+          }
+          return http.Response('nope', 404);
+        },
+      );
+
+      final result = await service.connectViaTailscaleHub(
+        '100.64.1.20',
+        hubToken: '  hub-token-123  ',
+      );
+
+      expect(result.success, isTrue);
+      expect(vault.store['settings_hermes_api_key'], 'hub-token-123');
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('settings_hermes_api_key'), isNull);
+    });
+
+    test('hub unreachable message points at the desktop remote access setting',
+        () async {
+      final service = MobileConnectionService(
+        httpGet: (uri) async => throw Exception('unreachable'),
+      );
+
+      final result = await service.probeHub('pc.tailnet.ts.net');
+      expect(result.success, isFalse);
+      expect(result.message, contains('Remote hub access'));
+      expect(result.message, contains('restart'));
     });
 
     test('refuses direct Hermes when the desktop hub path is absent', () async {

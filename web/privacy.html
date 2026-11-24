@@ -185,6 +185,7 @@
       <li><strong>On-device:</strong> app content is stored locally on your machine. Desktop and mobile encrypt <code>local_brain.sqlite</code> with AES-256 (SQLCipher-compatible) and chat history (<code>conversations.json.enc</code>) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system&rsquo;s disk encryption.</li>
       <li><strong>Authentication:</strong> sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.</li>
       <li><strong>In transit:</strong> connections to first-party services use encrypted transport (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.</li>
+      <li><strong>Local hub access:</strong> the desktop hub listens only on this computer by default. If you turn on &ldquo;Remote hub access&rdquo; in Settings &rarr; Connections, it also accepts devices on your local network or tailnet; that access is off until you enable it and requires a bearer token for every private endpoint.</li>
     </ul>
     <p>
       No method of storage or transmission is completely secure, but we apply reasonable technical and

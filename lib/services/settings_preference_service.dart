@@ -91,7 +91,13 @@ class SettingsPreferenceService {
   static const String _hermesEnabledKey = 'settings_hermes_enabled';
   static const String _hermesUrlKey = 'settings_hermes_url';
   static const String _hermesApiKeyKey = 'settings_hermes_api_key';
-  static const String _setupWizardDeferredKey = 'settings_setup_wizard_deferred';
+  // Opt-in remote hub access for the phone (#861). The flag lives in prefs
+  // (it is a visible consent choice); the bearer token lives in the keystore.
+  static const String _remoteHubAccessKey =
+      'settings_remote_hub_access_enabled';
+  static const String _remoteHubTokenKey = 'settings_remote_hub_token';
+  static const String _setupWizardDeferredKey =
+      'settings_setup_wizard_deferred';
 
   // Mobile Settings
   static const String _biometricAuthKey = 'settings_biometric_auth_enabled';
@@ -591,6 +597,35 @@ class SettingsPreferenceService {
       await _secureVault.write(_hermesApiKeyKey, value);
       await prefs.remove(_hermesApiKeyKey);
     }
+  }
+
+  /// Opt-in remote hub access (#861, #805). Off by default: the embedded
+  /// router stays on loopback until the user explicitly allows other devices.
+  /// Changing it takes effect on the next app restart, when the router binds.
+  Future<bool> isRemoteHubAccessEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_remoteHubAccessKey) ?? false;
+  }
+
+  Future<void> setRemoteHubAccessEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_remoteHubAccessKey, value);
+  }
+
+  /// Stable bearer token for the router when remote access is enabled.
+  /// Stored in the OS keystore, never in plaintext SharedPreferences.
+  Future<String?> getRemoteHubToken() async {
+    try {
+      final secure = await _secureVault.read(_remoteHubTokenKey);
+      if (secure != null && secure.isNotEmpty) return secure;
+    } catch (e) {
+      debugPrint('[SettingsPreference] Secure router token read failed: $e');
+    }
+    return null;
+  }
+
+  Future<void> setRemoteHubToken(String value) async {
+    await _secureVault.write(_remoteHubTokenKey, value);
   }
 
   Future<bool> isSetupWizardDeferred() async {

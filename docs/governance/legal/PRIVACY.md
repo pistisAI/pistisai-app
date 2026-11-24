@@ -137,6 +137,10 @@ including the Limited Use requirements. Specifically:
 - **Authentication:** sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
+- **Local hub access:** the desktop hub listens only on this computer by default.
+  If you turn on "Remote hub access" in Settings → Connections, it also accepts
+  devices on your local network or tailnet; that access is off until you enable
+  it and requires a bearer token for every private endpoint.
 
 No method of storage or transmission is completely secure, but we apply reasonable
 technical and organizational safeguards appropriate to the data involved.

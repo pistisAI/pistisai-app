@@ -280,6 +280,21 @@ Future<void> setupCoreServices() async {
         if (cloudKeys.containsKey('moonshot'))
           'moonshot': MoonshotAdapter(apiKey: cloudKeys['moonshot']!),
       };
+      // Remote hub access is opt-in (#861, #805). The build-time flag stays
+      // for custom builds; normal desktop users get a visible setting. Both
+      // paths are token-protected by RouterServer; a toggle needs a restart
+      // because the router binds at service setup.
+      final remoteHubAccessEnabled =
+          const bool.fromEnvironment('ROUTER_ALLOW_REMOTE_ACCESS') ||
+              await settingsPreferenceService.isRemoteHubAccessEnabled();
+      String? remoteHubToken;
+      if (remoteHubAccessEnabled) {
+        remoteHubToken = await settingsPreferenceService.getRemoteHubToken();
+        if (remoteHubToken == null || remoteHubToken.isEmpty) {
+          remoteHubToken = RouterServer.generateAuthSecret();
+          await settingsPreferenceService.setRemoteHubToken(remoteHubToken);
+        }
+      }
       final routerServer = RouterServer(
         rateLimitManager: rateLimitManager,
         providers: cloudProviders,
@@ -296,9 +311,9 @@ Future<void> setupCoreServices() async {
         microsoftSpeechAllowed:
             settingsPreferenceService.isMicrosoftSpeechEnabled,
         // Remote access (LAN/Tailscale mobile) is opt-in; default is loopback (#645).
-        // When true, RouterServer generates an authSecret that gates private paths (#804).
-        allowRemoteAccess:
-            const bool.fromEnvironment('ROUTER_ALLOW_REMOTE_ACCESS'),
+        // RouterServer generates an authSecret when the setting is on (#804).
+        allowRemoteAccess: remoteHubAccessEnabled,
+        authSecret: remoteHubToken,
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 

@@ -102,6 +102,11 @@ class RouterServer {
     return _generateAuthSecret();
   }
 
+  /// Generate a URL-safe bearer token. Used by the opt-in remote hub setting
+  /// so the token is stable across restarts instead of being regenerated on
+  /// every bind (#861).
+  static String generateAuthSecret() => _generateAuthSecret();
+
   static String _generateAuthSecret() {
     final rnd = Random.secure();
     final bytes = List<int>.generate(32, (_) => rnd.nextInt(256));

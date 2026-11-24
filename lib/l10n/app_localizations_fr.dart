@@ -268,6 +268,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get connectionStatusSubtitle => 'Voir l\'état actuel de la connexion';
 
   @override
+  String get connectionRemoteHubTitle => 'Accès distant au concentrateur';
+
+  @override
+  String get connectionRemoteHubSubtitle =>
+      'Désactivé par défaut. Une fois activé, le concentrateur écoute au-delà de cet ordinateur et chaque point privé exige un jeton. Prend effet après un redémarrage.';
+
+  @override
+  String get connectionRemoteHubRestart =>
+      'Redémarrez l\'application pour appliquer cette modification.';
+
+  @override
+  String get connectionRemoteHubTokenLabel =>
+      'Jeton du concentrateur (à saisir sur votre téléphone)';
+
+  @override
+  String get connectionRemoteHubTokenPending =>
+      'Un jeton sera créé au redémarrage de l\'application.';
+
+  @override
+  String get connectionRemoteHubCopy => 'Copier le jeton';
+
+  @override
+  String get connectionRemoteHubCopied => 'Jeton du concentrateur copié.';
+
+  @override
   String get connectionRerunWizard => 'Relancer l\'assistant de configuration';
 
   @override
@@ -1208,8 +1233,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mobileHubConnect => 'Se connecter au concentrateur de bureau';
 
   @override
+  String get mobileHubTokenLabel => 'Jeton du concentrateur';
+
+  @override
+  String get mobileHubTokenHelper =>
+      'Copiez-le dans Réglages → Connexions → Accès distant au concentrateur sur l\'ordinateur. Nécessaire pour la conversation via un concentrateur distant.';
+
+  @override
   String get mobileHubRemoteAccessNote =>
-      'Par défaut, l\'application de bureau n\'accepte que les connexions provenant du même ordinateur. Un réglage permettant à ce téléphone de se connecter n\'est pas encore disponible : cette connexion échoue donc avec les versions de bureau standard.';
+      'Par défaut, le concentrateur de bureau n\'accepte que cet ordinateur. Sur le PC, ouvrez Réglages → Connexions et activez l\'accès distant au concentrateur, redémarrez l\'application de bureau, puis saisissez son jeton ici.';
 
   @override
   String get welcomeSubtitle =>

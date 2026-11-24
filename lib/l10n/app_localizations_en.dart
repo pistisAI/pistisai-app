@@ -264,6 +264,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connectionStatusSubtitle => 'View current connection status';
 
   @override
+  String get connectionRemoteHubTitle => 'Remote hub access';
+
+  @override
+  String get connectionRemoteHubSubtitle =>
+      'Off by default. When on, the hub listens beyond this computer and every private endpoint requires a token. Applies after a restart.';
+
+  @override
+  String get connectionRemoteHubRestart =>
+      'Restart the app to apply this change.';
+
+  @override
+  String get connectionRemoteHubTokenLabel =>
+      'Hub token (enter this on your phone)';
+
+  @override
+  String get connectionRemoteHubTokenPending =>
+      'A token will be created when the app restarts.';
+
+  @override
+  String get connectionRemoteHubCopy => 'Copy token';
+
+  @override
+  String get connectionRemoteHubCopied => 'Hub token copied.';
+
+  @override
   String get connectionRerunWizard => 'Re-run Setup Wizard';
 
   @override
@@ -1192,8 +1217,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mobileHubConnect => 'Connect to desktop hub';
 
   @override
+  String get mobileHubTokenLabel => 'Hub token';
+
+  @override
+  String get mobileHubTokenHelper =>
+      'Copy this from desktop Settings → Connections → Remote hub access. Needed for chat through a remote hub.';
+
+  @override
   String get mobileHubRemoteAccessNote =>
-      'By default the desktop app only accepts connections from the same computer. A setting to let this phone connect is not available yet, so this connection fails with standard desktop builds.';
+      'By default the desktop hub only accepts this computer. On the PC, open Settings → Connections and turn on Remote hub access, then restart the desktop app and enter its hub token here.';
 
   @override
   String get welcomeSubtitle =>

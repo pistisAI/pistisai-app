@@ -560,6 +560,48 @@ abstract class AppLocalizations {
   /// **'View current connection status'**
   String get connectionStatusSubtitle;
 
+  /// No description provided for @connectionRemoteHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote hub access'**
+  String get connectionRemoteHubTitle;
+
+  /// No description provided for @connectionRemoteHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. When on, the hub listens beyond this computer and every private endpoint requires a token. Applies after a restart.'**
+  String get connectionRemoteHubSubtitle;
+
+  /// No description provided for @connectionRemoteHubRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart the app to apply this change.'**
+  String get connectionRemoteHubRestart;
+
+  /// No description provided for @connectionRemoteHubTokenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hub token (enter this on your phone)'**
+  String get connectionRemoteHubTokenLabel;
+
+  /// No description provided for @connectionRemoteHubTokenPending.
+  ///
+  /// In en, this message translates to:
+  /// **'A token will be created when the app restarts.'**
+  String get connectionRemoteHubTokenPending;
+
+  /// No description provided for @connectionRemoteHubCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy token'**
+  String get connectionRemoteHubCopy;
+
+  /// No description provided for @connectionRemoteHubCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Hub token copied.'**
+  String get connectionRemoteHubCopied;
+
   /// No description provided for @connectionRerunWizard.
   ///
   /// In en, this message translates to:
@@ -2150,10 +2192,22 @@ abstract class AppLocalizations {
   /// **'Connect to desktop hub'**
   String get mobileHubConnect;
 
+  /// No description provided for @mobileHubTokenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hub token'**
+  String get mobileHubTokenLabel;
+
+  /// No description provided for @mobileHubTokenHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy this from desktop Settings → Connections → Remote hub access. Needed for chat through a remote hub.'**
+  String get mobileHubTokenHelper;
+
   /// No description provided for @mobileHubRemoteAccessNote.
   ///
   /// In en, this message translates to:
-  /// **'By default the desktop app only accepts connections from the same computer. A setting to let this phone connect is not available yet, so this connection fails with standard desktop builds.'**
+  /// **'By default the desktop hub only accepts this computer. On the PC, open Settings → Connections and turn on Remote hub access, then restart the desktop app and enter its hub token here.'**
   String get mobileHubRemoteAccessNote;
 
   /// No description provided for @welcomeSubtitle.
