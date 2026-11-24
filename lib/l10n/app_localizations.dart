@@ -968,11 +968,29 @@ abstract class AppLocalizations {
   /// **'View Logs'**
   String get channelViewLogs;
 
-  /// No description provided for @channelActionPerformed.
+  /// Subtitle on a channel control that is not wired to the gateway yet
   ///
   /// In en, this message translates to:
-  /// **'Action {action} performed for channel {channelId}'**
-  String channelActionPerformed(String action, String channelId);
+  /// **'Not available yet'**
+  String get channelActionNotAvailable;
+
+  /// No description provided for @channelControlsNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Per-channel controls are not available yet. Manage the gateway from the Instances screen.'**
+  String get channelControlsNotAvailable;
+
+  /// No description provided for @channelGatewayProfileCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Active gateway profile (current)'**
+  String get channelGatewayProfileCurrent;
+
+  /// No description provided for @channelGatewayProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway profile'**
+  String get channelGatewayProfile;
 
   /// No description provided for @channelJustNow.
   ///

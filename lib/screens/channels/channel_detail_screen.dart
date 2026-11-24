@@ -11,10 +11,37 @@ import '../../widgets/common/status_badge.dart';
 import '../../config/theme.dart';
 
 /// Screen displaying detailed information about a specific gateway channel.
-class ChannelDetailScreen extends StatelessWidget {
+///
+/// Shows only what the gateway reported for the channel. Per-channel controls
+/// are not wired to the runtime yet, so they are shown disabled and labelled
+/// "not available yet" instead of reporting a fake success (#859).
+class ChannelDetailScreen extends StatefulWidget {
   final String channelId;
 
   const ChannelDetailScreen({super.key, required this.channelId});
+
+  @override
+  State<ChannelDetailScreen> createState() => _ChannelDetailScreenState();
+}
+
+class _ChannelDetailScreenState extends State<ChannelDetailScreen> {
+  late Future<GatewayChannel?> _channelFuture;
+
+  String get channelId => widget.channelId;
+
+  @override
+  void initState() {
+    super.initState();
+    _channelFuture = _loadChannel();
+  }
+
+  Future<void> _reload() async {
+    final future = _loadChannel();
+    setState(() {
+      _channelFuture = future;
+    });
+    await future;
+  }
 
   /// Load the channel data from the service.
   Future<GatewayChannel?> _loadChannel() async {
@@ -41,7 +68,7 @@ class ChannelDetailScreen extends StatelessWidget {
         title: Text(l10n.channelDetailsTitle),
       ),
       body: FutureBuilder<GatewayChannel?>(
-        future: _loadChannel(),
+        future: _channelFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -56,8 +83,11 @@ class ChannelDetailScreen extends StatelessWidget {
                       size: 64, color: AppTheme.colorsOf(context).danger),
                   const SizedBox(height: 16),
                   Text(l10n.channelNotFound),
-                  const SizedBox(height: 8),
-                  Text('${snapshot.error}', style: theme.textTheme.bodySmall),
+                  if (snapshot.hasError) ...[
+                    const SizedBox(height: 8),
+                    Text('${snapshot.error}',
+                        style: theme.textTheme.bodySmall),
+                  ],
                 ],
               ),
             );
@@ -66,9 +96,7 @@ class ChannelDetailScreen extends StatelessWidget {
           final channel = snapshot.data!;
 
           return RefreshableScreen(
-            onRefresh: () async {
-              // In a real implementation, this would trigger a data reload.
-            },
+            onRefresh: _reload,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -105,9 +133,9 @@ class ChannelDetailScreen extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    if (channel.description != null)
+                                    if (_description(l10n, channel) != null)
                                       Text(
-                                        channel.description!,
+                                        _description(l10n, channel)!,
                                         style: theme.textTheme.bodyMedium
                                             ?.copyWith(
                                           color: theme.colorScheme.onSurface
@@ -117,14 +145,15 @@ class ChannelDetailScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              StatusBadge(
-                                status: channel.unreadCount > 0
-                                    ? StatusType.active
-                                    : StatusType.idle,
-                                label: channel.unreadCount > 0
-                                    ? l10n.channelBadgeNew
-                                    : l10n.channelBadgeRead,
-                              ),
+                              if (channel.connected != null)
+                                StatusBadge(
+                                  status: channel.connected!
+                                      ? StatusType.running
+                                      : StatusType.stopped,
+                                  label: channel.connected!
+                                      ? l10n.commonConnected
+                                      : l10n.commonDisconnected,
+                                ),
                             ],
                           ),
                         ],
@@ -143,26 +172,27 @@ class ChannelDetailScreen extends StatelessWidget {
                     spacing: 12,
                     runSpacing: 12,
                     children: [
-                      _StatCard(
-                        label: l10n.channelMessages,
-                        value: '${channel.messageCount}',
-                        icon: Icons.message,
-                        theme: theme,
-                      ),
+                      if (channel.messageCount != null)
+                        _StatCard(
+                          label: l10n.channelMessages,
+                          value: '${channel.messageCount}',
+                          icon: Icons.message,
+                          theme: theme,
+                        ),
                       _StatCard(
                         label: l10n.channelPlatform,
                         value: channel.platform ?? l10n.channelPlatformUnknown,
                         icon: Icons.language,
                         theme: theme,
                       ),
-                      _StatCard(
-                        label: l10n.channelLastActivity,
-                        value: channel.lastActivity != null
-                            ? _formatLastActivity(l10n, channel.lastActivity!)
-                            : l10n.channelNever,
-                        icon: Icons.access_time,
-                        theme: theme,
-                      ),
+                      if (channel.lastActivity != null)
+                        _StatCard(
+                          label: l10n.channelLastActivity,
+                          value:
+                              _formatLastActivity(l10n, channel.lastActivity!),
+                          icon: Icons.access_time,
+                          theme: theme,
+                        ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -174,35 +204,37 @@ class ChannelDetailScreen extends StatelessWidget {
                         ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
+                  Text(
+                    l10n.channelControlsNotAvailable,
+                    key: const Key('channel_controls_not_available'),
+                    style: theme.textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 8),
                   Card(
                     child: Column(
                       children: [
-                        ListTile(
-                          leading: const Icon(Icons.play_arrow),
-                          title: Text(l10n.channelStart),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => _handleAction(context, 'start'),
+                        _UnavailableAction(
+                          icon: Icons.play_arrow,
+                          title: l10n.channelStart,
+                          subtitle: l10n.channelActionNotAvailable,
                         ),
                         const Divider(),
-                        ListTile(
-                          leading: const Icon(Icons.stop),
-                          title: Text(l10n.channelStop),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => _handleAction(context, 'stop'),
+                        _UnavailableAction(
+                          icon: Icons.stop,
+                          title: l10n.channelStop,
+                          subtitle: l10n.channelActionNotAvailable,
                         ),
                         const Divider(),
-                        ListTile(
-                          leading: const Icon(Icons.refresh),
-                          title: Text(l10n.channelReconnect),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => _handleAction(context, 'reconnect'),
+                        _UnavailableAction(
+                          icon: Icons.refresh,
+                          title: l10n.channelReconnect,
+                          subtitle: l10n.channelActionNotAvailable,
                         ),
                         const Divider(),
-                        ListTile(
-                          leading: const Icon(Icons.description),
-                          title: Text(l10n.channelViewLogs),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => _handleAction(context, 'logs'),
+                        _UnavailableAction(
+                          icon: Icons.description,
+                          title: l10n.channelViewLogs,
+                          subtitle: l10n.channelActionNotAvailable,
                         ),
                       ],
                     ),
@@ -216,13 +248,12 @@ class ChannelDetailScreen extends StatelessWidget {
     );
   }
 
-  void _handleAction(BuildContext context, String action) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)
-            .channelActionPerformed(action, channelId)),
-      ),
-    );
+  String? _description(AppLocalizations l10n, GatewayChannel channel) {
+    if (channel.description != null) return channel.description;
+    if (channel.platform != 'gateway') return null;
+    return channel.isCurrent
+        ? l10n.channelGatewayProfileCurrent
+        : l10n.channelGatewayProfile;
   }
 
   IconData _getChannelIcon(String channelName) {
@@ -256,6 +287,30 @@ class ChannelDetailScreen extends StatelessWidget {
     } else {
       return DateFormat('MMM d, y').format(timestamp);
     }
+  }
+}
+
+/// A channel control that is not wired to the runtime yet: shown disabled
+/// with a "not available yet" subtitle so it never reports a fake success.
+class _UnavailableAction extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _UnavailableAction({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      enabled: false,
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(subtitle),
+    );
   }
 }
 

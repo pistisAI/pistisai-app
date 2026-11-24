@@ -507,9 +507,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get channelViewLogs => 'Voir les journaux';
 
   @override
-  String channelActionPerformed(String action, String channelId) {
-    return 'Action $action effectuée pour le canal $channelId';
-  }
+  String get channelActionNotAvailable => 'Pas encore disponible';
+
+  @override
+  String get channelControlsNotAvailable =>
+      'Les commandes par canal ne sont pas encore disponibles. Gérez la passerelle depuis l\'écran Instances.';
+
+  @override
+  String get channelGatewayProfileCurrent =>
+      'Profil de passerelle actif (actuel)';
+
+  @override
+  String get channelGatewayProfile => 'Profil de passerelle';
 
   @override
   String get channelJustNow => 'À l\'instant';

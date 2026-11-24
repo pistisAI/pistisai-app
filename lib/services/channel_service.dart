@@ -39,61 +39,43 @@ class ChannelService {
         stderrEncoding: utf8,
       );
       if (result.exitCode != 0) return [];
-      return _parse(result.stdout as String);
+      return parseGatewayList(result.stdout as String);
     } catch (e) {
       debugPrint('[ChannelService] Error: $e');
       return [];
     }
   }
 
-  List<GatewayChannel> _parse(String output) {
+  /// Parse `hermes gateway list` output into channels.
+  ///
+  /// Only rows the gateway actually printed become channels. When nothing
+  /// parses, the result is empty (no placeholder channel), and fields the
+  /// output does not carry (message counts, last activity) stay `null`
+  /// rather than being invented (#859).
+  @visibleForTesting
+  static List<GatewayChannel> parseGatewayList(String output) {
     final channels = <GatewayChannel>[];
-    final lines = output.split('\n');
 
-    for (final line in lines) {
+    for (final line in output.split('\n')) {
       final t = line.trim();
       if (t.isEmpty) continue;
 
       // Example gateway list line:
       //   ✓ default (current)        — PID 35213
-      // or a connected platform row. We treat each listed gateway profile as a
-      // channel and surface its connection status.
-      final nameMatch = RegExp(r'([✓✗★])\s*([\w-]+)\s*(\(current\))?')
-          .firstMatch(t);
+      final nameMatch =
+          RegExp(r'^([✓✗★])\s*([\w-]+)\s*(\(current\))?').firstMatch(t);
       if (nameMatch == null) continue;
 
       final marker = nameMatch.group(1)!;
       final name = nameMatch.group(2)!;
-      final isCurrent = nameMatch.group(3) != null;
-      final connected = marker == '✓' || marker == '★';
 
       channels.add(
         GatewayChannel(
           id: 'gw-$name',
           name: name,
           platform: 'gateway',
-          description: isCurrent
-              ? 'Active gateway profile (current)'
-              : 'Gateway profile',
-          messageCount: 0,
-          lastActivity: connected ? DateTime.now() : null,
-          unreadCount: 0,
-        ),
-      );
-    }
-
-    if (channels.isEmpty) {
-      // Fallback: if `gateway list` produced no parseable rows, report a single
-      // unknown channel so the UI can still show the gateway status line.
-      channels.add(
-        GatewayChannel(
-          id: 'gw-unknown',
-          name: 'gateway',
-          platform: 'gateway',
-          description: 'Agent messaging gateway',
-          messageCount: 0,
-          lastActivity: null,
-          unreadCount: 0,
+          connected: marker == '✓' || marker == '★',
+          isCurrent: nameMatch.group(3) != null,
         ),
       );
     }

@@ -498,9 +498,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get channelViewLogs => 'View Logs';
 
   @override
-  String channelActionPerformed(String action, String channelId) {
-    return 'Action $action performed for channel $channelId';
-  }
+  String get channelActionNotAvailable => 'Not available yet';
+
+  @override
+  String get channelControlsNotAvailable =>
+      'Per-channel controls are not available yet. Manage the gateway from the Instances screen.';
+
+  @override
+  String get channelGatewayProfileCurrent => 'Active gateway profile (current)';
+
+  @override
+  String get channelGatewayProfile => 'Gateway profile';
 
   @override
   String get channelJustNow => 'Just now';
