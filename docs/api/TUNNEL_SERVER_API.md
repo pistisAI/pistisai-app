@@ -1,6 +1,8 @@
 # Tunnel Server API Documentation
 
 > **Status**: Legacy/fallback API. Current product orientation prefers Tailscale as the secure transport for device, runtime, web, and cloud connector paths. Keep this document for existing tunnel maintenance and migration reference; new designs should start with [Secure Device Mesh](../architecture/SECURE_DEVICE_MESH.md).
+>
+> **Implementation note (verified):** the `/api/tunnel/*` paths below are served by the standalone streaming-proxy service (`services/streaming-proxy/src/server.ts:126,165,187,391,418`, default port `PORT || 3001` at `proxy-server.js:25`). The same paths in `services/api-backend` are **legacy-gated and off by default** — they are registered only with `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES=true` or `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true` (`services/api-backend/server.js:186-188, 254, 274-278`). Version values in the examples reflect the service package version `10.1.187` (`services/streaming-proxy/package.json:3`).
 
 ## Overview
 
@@ -48,7 +50,7 @@ Host: proxy.example.com
   "healthyConnections": 42,
   "unhealthyConnections": 0,
   "averageLatency": 45.2,
-  "version": "3.0.0"
+  "version": "10.1.187"
 }
 ```
 
@@ -89,7 +91,7 @@ Authorization: Bearer <JWT_TOKEN>
 {
   "timestamp": "2024-01-15T10:30:00Z",
   "service": {
-    "version": "3.0.0",
+    "version": "10.1.187",
     "uptime": 86400,
     "startTime": "2024-01-14T10:30:00Z"
   },
