@@ -172,7 +172,8 @@ void main() {
 
       await tester.pump();
 
-      expect(find.byType(Tab), findsNWidgets(3));
+      // Registry + Categories; the inert Management tab was removed (#858).
+      expect(find.byType(Tab), findsNWidgets(2));
     });
 
     testWidgets('register skill opens a form instead of coming soon',

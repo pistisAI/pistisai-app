@@ -94,9 +94,50 @@ void main() {
     expect(find.text('Hermes Agent'), findsOneWidget);
     expect(find.text('Ollama'), findsOneWidget);
     expect(find.text('builder-1'), findsOneWidget);
-    expect(find.text('No agent runtime selected'), findsOneWidget);
+    expect(
+        find.textContaining('is not available yet'), findsOneWidget);
     expect(find.byType(FloatingActionButton), findsNothing);
     expect(find.text('Add Node'), findsNothing);
+  });
+
+  testWidgets(
+      'runtime cards are read-only: tapping one claims no switch (#858)',
+      (WidgetTester tester) async {
+    discoveryService.providers = <ProviderInfo>[
+      ProviderInfo(
+        id: 'hermes-1',
+        name: 'Hermes Agent',
+        type: ProviderType.hermes,
+        url: 'http://127.0.0.1:8642',
+        isAvailable: true,
+        version: '1.2.3',
+        availableModels: const ['hermes-3'],
+        role: ProviderRole.agentRuntime,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<ConnectionManagerService>.value(
+        value: connectionManager,
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: NodesScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // No tap target on the card, and tapping it does not report a switch.
+    expect(
+        find.ancestor(
+            of: find.text('Hermes Agent'), matching: find.byType(InkWell)),
+        findsNothing);
+    await tester.tap(find.text('Hermes Agent'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Agent runtime: Hermes Agent'), findsNothing);
+    expect(find.textContaining('is not available yet'), findsOneWidget);
+    // The pop-out button is hidden: it never opened a window.
+    expect(find.byIcon(Icons.open_in_new), findsNothing);
   });
 
   testWidgets('renders empty states when discovery finds nothing',

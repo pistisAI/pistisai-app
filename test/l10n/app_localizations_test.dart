@@ -123,8 +123,7 @@ void main() {
 
   test('batch 4 messages with values read naturally in French', () {
     final fr = lookupAppLocalizations(const Locale('fr'));
-    expect(fr.nodesSelectedRuntime('Hermes', '1.2.3'),
-        'Environnement d\'agent : Hermes (1.2.3)');
+    expect(fr.skillsModified('il y a 5 min'), 'Modifié il y a 5 min');
     expect(fr.logsDetailLabel(fr.logsSource), 'Source :');
     expect(fr.commonErrorDetails('boom'), 'Erreur : boom');
     expect(fr.channelMinutesAgo(5), 'il y a 5 min');
@@ -143,8 +142,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Nœuds'), findsOneWidget);
-    expect(
-        find.text('Aucun environnement d\'agent sélectionné'), findsOneWidget);
+    expect(find.textContaining('n\'est pas encore disponible'), findsOneWidget);
     expect(find.text('Appareils Tailscale'), findsOneWidget);
     expect(find.text('Nodes'), findsNothing);
   });
@@ -208,9 +206,9 @@ void main() {
   test('batch 7 messages follow each language rules', () {
     final en = lookupAppLocalizations(const Locale('en'));
     final fr = lookupAppLocalizations(const Locale('fr'));
-    expect(en.skillsUsesCount(1), '1 use');
-    expect(fr.skillsUsesCount(1), '1 utilisation');
-    expect(fr.skillsUsesCount(3), '3 utilisations');
+    expect(en.skillsCountInCategory(1), '1 skill');
+    expect(fr.skillsCountInCategory(1), '1 compétence');
+    expect(fr.skillsCountInCategory(3), '3 compétences');
     expect(fr.cronDeleteConfirm('Sauvegarde'),
         'Voulez-vous vraiment supprimer « Sauvegarde » ? Cette action est irréversible.');
     expect(fr.instancesUtilized(80), '80 % utilisé');

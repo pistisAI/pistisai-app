@@ -1,4 +1,4 @@
-/// Screen displaying skills management with three tabs
+/// Screen displaying the local skills registry and skills per category.
 library;
 
 import 'package:flutter/material.dart';
@@ -9,36 +9,31 @@ import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
-import '../../widgets/navigation/popout_button.dart';
 
-/// Skill model for displaying in the registry
+/// Skill model for displaying in the registry.
+///
+/// Only fields read from the skill's folder on disk are kept. Enable/disable,
+/// use counts and response times are not tracked by Hermes skills yet, so the
+/// screen does not show them (#858).
 class Skill {
   final String id;
   final String name;
   final String description;
   final String category;
-  final bool enabled;
-  final int usageCount;
-  final double avgResponseTime;
-  final DateTime lastUsed;
   final int fileCount;
-  final DateTime lastModified;
+  final DateTime? lastModified;
 
   const Skill({
     required this.id,
     required this.name,
     required this.description,
     required this.category,
-    required this.enabled,
-    this.usageCount = 0,
-    this.avgResponseTime = 0.0,
-    required this.lastUsed,
     this.fileCount = 1,
-    required this.lastModified,
+    this.lastModified,
   });
 }
 
-/// Screen displaying skills management with three tabs
+/// Screen displaying the skills registry and skills per category.
 class SkillsScreen extends StatefulWidget {
   const SkillsScreen({super.key});
 
@@ -53,7 +48,7 @@ class _SkillsScreenState extends State<SkillsScreen>
   String? _errorMessage;
 
   List<Skill> _skills = [];
-  Map<String, int> _skillUsage = {};
+  Map<String, int> _skillsPerCategory = {};
 
   SkillService? get _skillService {
     try {
@@ -66,7 +61,7 @@ class _SkillsScreenState extends State<SkillsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _loadData();
   }
 
@@ -92,21 +87,19 @@ class _SkillsScreenState extends State<SkillsScreen>
                   name: s.name,
                   description: s.description,
                   category: s.category,
-                  enabled: s.enabled,
-                  lastUsed: s.lastModified ?? DateTime.now(),
                   fileCount: s.fileCount,
-                  lastModified: s.lastModified ?? DateTime.now(),
+                  lastModified: s.lastModified,
                 ))
             .toList();
 
-        final usageByCategory = <String, int>{};
+        final perCategory = <String, int>{};
         for (final s in skillInfos) {
-          usageByCategory[s.category] = (usageByCategory[s.category] ?? 0) + 1;
+          perCategory[s.category] = (perCategory[s.category] ?? 0) + 1;
         }
-        _skillUsage = usageByCategory;
+        _skillsPerCategory = perCategory;
       } else {
         _skills = [];
-        _skillUsage = {};
+        _skillsPerCategory = {};
       }
 
       if (mounted) setState(() => _isLoading = false);
@@ -114,8 +107,9 @@ class _SkillsScreenState extends State<SkillsScreen>
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _errorMessage = '$e';
           _skills = [];
-          _skillUsage = {};
+          _skillsPerCategory = {};
         });
       }
     }
@@ -165,34 +159,6 @@ class _SkillsScreenState extends State<SkillsScreen>
     }
   }
 
-  void _toggleSkill(Skill skill) {
-    setState(() {
-      final index = _skills.indexWhere((s) => s.id == skill.id);
-      if (index != -1) {
-        _skills[index] = Skill(
-          id: skill.id,
-          name: skill.name,
-          description: skill.description,
-          category: skill.category,
-          enabled: !skill.enabled,
-          usageCount: skill.usageCount,
-          avgResponseTime: skill.avgResponseTime,
-          lastUsed: skill.lastUsed,
-          fileCount: skill.fileCount,
-          lastModified: skill.lastModified,
-        );
-      }
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(!skill.enabled
-            ? AppLocalizations.of(context).skillsEnabled(skill.name)
-            : AppLocalizations.of(context).skillsDisabled(skill.name)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -212,7 +178,6 @@ class _SkillsScreenState extends State<SkillsScreen>
               onPressed: _showRegisterSkillDialog,
               tooltip: l10n.skillsRegisterTitle,
             ),
-            PopOutButton(sectionName: 'skills', branchIndex: 8),
           ],
           bottom: TabBar(
             controller: _tabController,
@@ -220,10 +185,9 @@ class _SkillsScreenState extends State<SkillsScreen>
               Tab(
                   text: l10n.skillsTabRegistry,
                   icon: const Icon(Icons.extension_outlined)),
-              Tab(text: l10n.skillsTabUsage, icon: const Icon(Icons.bar_chart)),
               Tab(
-                  text: l10n.skillsTabManagement,
-                  icon: const Icon(Icons.settings)),
+                  text: l10n.skillsTabCategories,
+                  icon: const Icon(Icons.category_outlined)),
             ],
           ),
         ),
@@ -235,8 +199,7 @@ class _SkillsScreenState extends State<SkillsScreen>
                     controller: _tabController,
                     children: [
                       _buildRegistryTab(l10n),
-                      _buildUsageTab(l10n),
-                      _buildManagementTab(l10n),
+                      _buildCategoriesTab(l10n),
                     ],
                   ),
       ),
@@ -267,7 +230,7 @@ class _SkillsScreenState extends State<SkillsScreen>
     final theme = Theme.of(context);
 
     return Card(
-      elevation: skill.enabled ? 2 : 1,
+      elevation: 1,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -278,9 +241,7 @@ class _SkillsScreenState extends State<SkillsScreen>
                 Icon(
                   _getCategoryIcon(skill.category),
                   size: 32,
-                  color: skill.enabled
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                  color: theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -294,10 +255,6 @@ class _SkillsScreenState extends State<SkillsScreen>
                               skill.name,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: skill.enabled
-                                    ? null
-                                    : theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.6),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -322,25 +279,22 @@ class _SkillsScreenState extends State<SkillsScreen>
                     ],
                   ),
                 ),
-                Switch(
-                  value: skill.enabled,
-                  onChanged: (_) => _toggleSkill(skill),
-                ),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                _buildStat(Icons.play_arrow, skill.usageCount.toString(),
-                    AppLocalizations.of(context).skillsStatUses),
-                const SizedBox(width: 16),
                 _buildStat(
-                    Icons.schedule,
-                    '${skill.avgResponseTime.toStringAsFixed(1)}s',
-                    AppLocalizations.of(context).skillsStatAvgTime),
-                const SizedBox(width: 16),
-                _buildStat(Icons.access_time, _formatLastUsed(skill.lastUsed),
-                    AppLocalizations.of(context).skillsStatLastUsed),
+                    Icons.description_outlined,
+                    AppLocalizations.of(context)
+                        .skillsFileCount(skill.fileCount)),
+                if (skill.lastModified != null) ...[
+                  const SizedBox(width: 16),
+                  _buildStat(
+                      Icons.access_time,
+                      AppLocalizations.of(context)
+                          .skillsModified(_formatModified(skill.lastModified!))),
+                ],
               ],
             ),
           ],
@@ -349,7 +303,7 @@ class _SkillsScreenState extends State<SkillsScreen>
     );
   }
 
-  Widget _buildStat(IconData icon, String value, String label) {
+  Widget _buildStat(IconData icon, String value) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -365,34 +319,30 @@ class _SkillsScreenState extends State<SkillsScreen>
                 fontWeight: FontWeight.w500,
               ),
         ),
-        const SizedBox(width: 2),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.5),
-              ),
-        ),
       ],
     );
   }
 
-  Widget _buildUsageTab(AppLocalizations l10n) {
+  Widget _buildCategoriesTab(AppLocalizations l10n) {
+    if (_skillsPerCategory.isEmpty) {
+      return EmptyState(
+        icon: Icons.category_outlined,
+        title: l10n.skillsEmptyTitle,
+        message: l10n.skillsEmptyMessage,
+      );
+    }
+    final maxCount = _skillsPerCategory.values.reduce((a, b) => a > b ? a : b);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            l10n.skillsUsageByCategory,
+            l10n.skillsByCategory,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 24),
-          ..._skillUsage.entries.map((entry) {
-            final maxUsage = _skillUsage.values.reduce((a, b) => a > b ? a : b);
-            final percentage = entry.value / maxUsage;
+          ..._skillsPerCategory.entries.map((entry) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Column(
@@ -403,7 +353,7 @@ class _SkillsScreenState extends State<SkillsScreen>
                     children: [
                       Text(entry.key,
                           style: Theme.of(context).textTheme.bodyLarge),
-                      Text(l10n.skillsUsesCount(entry.value),
+                      Text(l10n.skillsCountInCategory(entry.value),
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -415,7 +365,7 @@ class _SkillsScreenState extends State<SkillsScreen>
                   ),
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
-                    value: percentage,
+                    value: entry.value / maxCount,
                     backgroundColor:
                         Theme.of(context).colorScheme.surfaceContainerHighest,
                     valueColor: AlwaysStoppedAnimation<Color>(
@@ -426,102 +376,6 @@ class _SkillsScreenState extends State<SkillsScreen>
               ),
             );
           }),
-          const SizedBox(height: 32),
-          Text(
-            l10n.skillsTopPerforming,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 16),
-          ...(_skills.where((s) => s.enabled).toList()
-                ..sort((a, b) => a.usageCount.compareTo(b.usageCount)))
-              .reversed
-              .take(3)
-              .map((skill) => ListTile(
-                    leading: Icon(_getCategoryIcon(skill.category)),
-                    title: Text(skill.name),
-                    subtitle: Text(
-                        '${l10n.skillsUsesCount(skill.usageCount)} • ${l10n.skillsAvgSeconds('${skill.avgResponseTime}')}'),
-                  )),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildManagementTab(AppLocalizations l10n) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.settings, size: 20),
-                      const SizedBox(width: 8),
-                      Text(l10n.skillsGlobalSettings,
-                          style: Theme.of(context).textTheme.titleMedium),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: Text(l10n.skillsAutoDisable),
-                    subtitle: Text(l10n.skillsAutoDisableSubtitle),
-                    value: true,
-                    onChanged: (value) {},
-                  ),
-                  SwitchListTile(
-                    title: Text(l10n.skillsCache),
-                    subtitle: Text(l10n.skillsCacheSubtitle),
-                    value: true,
-                    onChanged: (value) {},
-                  ),
-                  ListTile(
-                    title: Text(l10n.skillsDefaultTimeout),
-                    subtitle: Text(l10n.skillsDefaultTimeoutValue),
-                    trailing: const Text('30s'),
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.storage, size: 20),
-                      const SizedBox(width: 8),
-                      Text(l10n.skillsResourceLimits,
-                          style: Theme.of(context).textTheme.titleMedium),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    title: Text(l10n.skillsMaxConcurrent),
-                    subtitle: Text(l10n.skillsMaxConcurrentSubtitle),
-                    trailing: const Text('5'),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text(l10n.skillsMemory),
-                    subtitle: Text(l10n.skillsMemorySubtitle),
-                    trailing: const Text('512 MB'),
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -544,7 +398,7 @@ class _SkillsScreenState extends State<SkillsScreen>
     }
   }
 
-  String _formatLastUsed(DateTime dt) {
+  String _formatModified(DateTime dt) {
     final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final diff = now.difference(dt);

@@ -10,7 +10,6 @@ import '../../widgets/common/card_section.dart';
 import '../../widgets/common/error_state.dart';
 import '../../widgets/common/loading_skeleton.dart';
 import '../../widgets/common/refreshable_screen.dart';
-import '../../widgets/navigation/popout_button.dart';
 
 /// Screen displaying discovered agent runtimes, support model providers and
 /// Tailscale tailnet devices.
@@ -29,7 +28,6 @@ class _NodesScreenState extends State<NodesScreen> {
   List<ProviderInfo> _runtimes = <ProviderInfo>[];
   List<ProviderInfo> _supportProviders = <ProviderInfo>[];
   List<TailscaleDevice> _tailnetDevices = <TailscaleDevice>[];
-  String? _selectedRuntimeId;
 
   // Use DI for service access — fall back gracefully when not available.
   ProviderDiscoveryService? get _discovery {
@@ -70,11 +68,6 @@ class _NodesScreenState extends State<NodesScreen> {
         _supportProviders =
             providers.where((p) => p.canServeAsSupportModelProvider).toList();
         _tailnetDevices = tailnet;
-        // Drop selection if the selected runtime disappeared.
-        if (_selectedRuntimeId != null &&
-            !_runtimes.any((p) => p.id == _selectedRuntimeId)) {
-          _selectedRuntimeId = null;
-        }
         _isLoading = false;
       });
     } catch (e) {
@@ -105,7 +98,6 @@ class _NodesScreenState extends State<NodesScreen> {
               onPressed: _onRefresh,
               tooltip: l10n.commonRefresh,
             ),
-            const PopOutButton(sectionName: 'nodes', branchIndex: 9),
           ],
         ),
         body: _isLoading
@@ -129,7 +121,7 @@ class _NodesScreenState extends State<NodesScreen> {
                                     child: Text(l10n.nodesNoAgentRuntimes),
                                   ),
                                 ]
-                              : _buildProviderList(_runtimes, selectable: true),
+                              : _buildProviderList(_runtimes),
                         ),
                         CardSection(
                           title: l10n.nodesSupportProviders,
@@ -140,8 +132,7 @@ class _NodesScreenState extends State<NodesScreen> {
                                     child: Text(l10n.nodesNoSupportProviders),
                                   ),
                                 ]
-                              : _buildProviderList(_supportProviders,
-                                  selectable: false),
+                              : _buildProviderList(_supportProviders),
                         ),
                         CardSection(
                           title: l10n.nodesTailscaleDevices,
@@ -167,45 +158,30 @@ class _NodesScreenState extends State<NodesScreen> {
     return l10n.nodesLoadError(raw);
   }
 
-  /// Status banner showing the currently selected agent runtime (if any).
+  /// Read-only notice: this screen lists discovered runtimes but cannot
+  /// switch the active one yet, so cards are not selectable (#858).
   Widget _buildRuntimeStatus(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
-    ProviderInfo? selected;
-    for (final p in _runtimes) {
-      if (p.id == _selectedRuntimeId) {
-        selected = p;
-        break;
-      }
-    }
-    final String text;
-    if (selected != null) {
-      text = l10n.nodesSelectedRuntime(
-          selected.name, selected.version ?? l10n.nodesVersionUnknown);
-    } else {
-      text = l10n.nodesNoRuntimeSelected;
-    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
       child: Row(
         children: [
           Icon(
-            selected != null ? Icons.check_circle : Icons.info_outline,
+            Icons.info_outline,
             size: 16,
-            color: selected != null
-                ? AppTheme.colorsOf(context).success
-                : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(text, style: theme.textTheme.bodyMedium),
+            child: Text(l10n.nodesRuntimeSwitchNotAvailable,
+                style: theme.textTheme.bodyMedium),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> _buildProviderList(List<ProviderInfo> providers,
-      {required bool selectable}) {
+  List<Widget> _buildProviderList(List<ProviderInfo> providers) {
     return [
       Padding(
         padding: const EdgeInsets.all(16),
@@ -213,22 +189,11 @@ class _NodesScreenState extends State<NodesScreen> {
           spacing: 16,
           runSpacing: 16,
           children: providers
-              .map((p) => _ProviderCard(
-                    provider: p,
-                    selected: p.id == _selectedRuntimeId,
-                    onTap: selectable ? () => _selectRuntime(p) : null,
-                  ))
+              .map((p) => _ProviderCard(provider: p))
               .toList(),
         ),
       ),
     ];
-  }
-
-  void _selectRuntime(ProviderInfo provider) {
-    setState(() {
-      _selectedRuntimeId =
-          _selectedRuntimeId == provider.id ? null : provider.id;
-    });
   }
 
   List<Widget> _buildTailnetList() {
@@ -249,67 +214,52 @@ class _NodesScreenState extends State<NodesScreen> {
 
 class _ProviderCard extends StatelessWidget {
   final ProviderInfo provider;
-  final bool selected;
-  final VoidCallback? onTap;
 
-  const _ProviderCard({
-    required this.provider,
-    required this.selected,
-    this.onTap,
-  });
+  const _ProviderCard({required this.provider});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isOnline = provider.isAvailable;
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: selected
-            ? BorderSide(color: theme.colorScheme.primary, width: 2)
-            : BorderSide.none,
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Container(
-          width: 280,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [
-                Icon(isOnline ? Icons.check_circle : Icons.error,
-                    color: isOnline
-                        ? AppTheme.colorsOf(context).success
-                        : AppTheme.colorsOf(context).danger,
-                    size: 16),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(provider.name,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
-                ),
-              ]),
-              const SizedBox(height: 8),
-              Text(provider.url, style: theme.textTheme.bodySmall),
-              const SizedBox(height: 4),
-              if (provider.version != null)
-                Text('v${provider.version}', style: theme.textTheme.bodySmall),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 4,
-                runSpacing: 4,
-                children: provider.availableModels
-                    .take(3)
-                    .map((m) => Chip(
-                          label: Text(m, style: theme.textTheme.labelSmall),
-                          visualDensity: VisualDensity.compact,
-                        ))
-                    .toList(),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        width: 280,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [
+              Icon(isOnline ? Icons.check_circle : Icons.error,
+                  color: isOnline
+                      ? AppTheme.colorsOf(context).success
+                      : AppTheme.colorsOf(context).danger,
+                  size: 16),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(provider.name,
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
               ),
-            ],
-          ),
+            ]),
+            const SizedBox(height: 8),
+            Text(provider.url, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 4),
+            if (provider.version != null)
+              Text('v${provider.version}', style: theme.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: provider.availableModels
+                  .take(3)
+                  .map((m) => Chip(
+                        label: Text(m, style: theme.textTheme.labelSmall),
+                        visualDensity: VisualDensity.compact,
+                      ))
+                  .toList(),
+            ),
+          ],
         ),
       ),
     );

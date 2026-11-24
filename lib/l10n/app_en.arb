@@ -268,19 +268,7 @@
       }
     }
   },
-  "nodesSelectedRuntime": "Agent runtime: {name} ({version})",
-  "@nodesSelectedRuntime": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "version": {
-        "type": "String"
-      }
-    }
-  },
-  "nodesVersionUnknown": "unknown",
-  "nodesNoRuntimeSelected": "No agent runtime selected",
+  "nodesRuntimeSwitchNotAvailable": "Discovered runtimes are listed for information. Switching the agent runtime from this screen is not available yet.",
   "channelDetailsTitle": "Channel Details",
   "channelNotFound": "Channel not found",
   "channelBadgeNew": "New",
@@ -333,9 +321,6 @@
     }
   },
   "usageTitle": "Usage",
-  "usageToday": "Today",
-  "usageWeek": "Week",
-  "usageMonth": "Month",
   "usageActiveConcurrency": "Active Concurrency",
   "usageOfLimit": "of {limit}",
   "@usageOfLimit": {
@@ -347,24 +332,10 @@
   },
   "usageConcurrencySubtitle": "Concurrent requests in flight",
   "usageConcurrencyUtilization": "Concurrency utilization",
-  "usageRequestRate": "Request Rate",
-  "usageRequestsPerMinuteUnit": "req/min",
-  "usageRequestRateSubtitle": "Requests per minute across models",
-  "usageRpmUtilization": "RPM utilization",
-  "usageTokenRate": "Token Rate",
-  "usageTokensPerMinuteUnit": "tok/min",
-  "usageTokenRateSubtitle": "Tokens per minute across models",
-  "usageTpmUtilization": "TPM utilization",
-  "usageChartTokenUsage": "Token Usage Over Time",
-  "usageChartRequestVolume": "Request Volume",
-  "usageChartResourceTrends": "Resource Trends",
-  "usageChartPlaceholder": "Chart placeholder",
+  "usageDefaultLimitsNote": "Limits are built-in defaults per model, not your provider's actual limits.",
+  "usageNotAvailableYet": "Request rate, token rate and usage history are not available yet.",
   "usageNoActiveModels": "No active models",
   "usagePerModelConcurrency": "Per-model concurrency",
-  "usageNoRateData": "No rate data",
-  "usageTopModelsByRpm": "Top models by RPM",
-  "usageNoTokenData": "No token data",
-  "usageTopModelsByTpm": "Top models by TPM",
   "logsTitle": "Logs",
   "logsExport": "Export Logs",
   "logsServiceUnavailable": "Log service unavailable",
@@ -866,8 +837,7 @@
   "skillsTitle": "Skills",
   "skillsRegisterTitle": "Register Skill",
   "skillsTabRegistry": "Registry",
-  "skillsTabUsage": "Usage",
-  "skillsTabManagement": "Management",
+  "skillsTabCategories": "Categories",
   "skillsEmptyTitle": "No Skills Registered",
   "skillsEmptyMessage": "Skills will appear here when registered",
   "skillsServiceUnavailable": "Skill service is unavailable on this platform",
@@ -887,55 +857,31 @@
       }
     }
   },
-  "skillsEnabled": "{name} enabled",
-  "@skillsEnabled": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "skillsDisabled": "{name} disabled",
-  "@skillsDisabled": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "skillsStatUses": "Uses",
-  "skillsStatAvgTime": "Avg Time",
-  "skillsStatLastUsed": "Last Used",
-  "skillsUsageByCategory": "Skill Usage by Category",
-  "skillsUsesCount": "{count, plural, =1{1 use} other{{count} uses}}",
-  "@skillsUsesCount": {
+  "skillsByCategory": "Skills by category",
+  "skillsCountInCategory": "{count, plural, =1{1 skill} other{{count} skills}}",
+  "@skillsCountInCategory": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "skillsAvgSeconds": "{seconds}s avg",
-  "@skillsAvgSeconds": {
+  "skillsFileCount": "{count, plural, =1{1 file} other{{count} files}}",
+  "@skillsFileCount": {
     "placeholders": {
-      "seconds": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skillsModified": "Modified {when}",
+  "@skillsModified": {
+    "placeholders": {
+      "when": {
         "type": "String"
       }
     }
   },
-  "skillsTopPerforming": "Top Performing Skills",
-  "skillsGlobalSettings": "Global Settings",
-  "skillsAutoDisable": "Auto-disable slow skills",
-  "skillsAutoDisableSubtitle": "Disable skills that take longer than 5 seconds",
-  "skillsCache": "Cache skill results",
-  "skillsCacheSubtitle": "Store responses for identical requests",
-  "skillsDefaultTimeout": "Default timeout",
-  "skillsDefaultTimeoutValue": "30 seconds",
-  "skillsResourceLimits": "Resource Limits",
-  "skillsMaxConcurrent": "Max concurrent skills",
-  "skillsMaxConcurrentSubtitle": "Maximum skills running simultaneously",
-  "skillsMemory": "Memory per skill",
-  "skillsMemorySubtitle": "Maximum RAM allocation per skill",
   "skillsNameDescriptionRequired": "Name and description are required",
   "skillsCreatesUnder": "Creates SKILL.md under {directory}",
   "@skillsCreatesUnder": {

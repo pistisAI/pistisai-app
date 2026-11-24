@@ -860,23 +860,11 @@ abstract class AppLocalizations {
   /// **'Failed to load discovery data: {error}'**
   String nodesLoadError(String error);
 
-  /// No description provided for @nodesSelectedRuntime.
+  /// No description provided for @nodesRuntimeSwitchNotAvailable.
   ///
   /// In en, this message translates to:
-  /// **'Agent runtime: {name} ({version})'**
-  String nodesSelectedRuntime(String name, String version);
-
-  /// No description provided for @nodesVersionUnknown.
-  ///
-  /// In en, this message translates to:
-  /// **'unknown'**
-  String get nodesVersionUnknown;
-
-  /// No description provided for @nodesNoRuntimeSelected.
-  ///
-  /// In en, this message translates to:
-  /// **'No agent runtime selected'**
-  String get nodesNoRuntimeSelected;
+  /// **'Discovered runtimes are listed for information. Switching the agent runtime from this screen is not available yet.'**
+  String get nodesRuntimeSwitchNotAvailable;
 
   /// No description provided for @channelDetailsTitle.
   ///
@@ -1004,24 +992,6 @@ abstract class AppLocalizations {
   /// **'Usage'**
   String get usageTitle;
 
-  /// No description provided for @usageToday.
-  ///
-  /// In en, this message translates to:
-  /// **'Today'**
-  String get usageToday;
-
-  /// No description provided for @usageWeek.
-  ///
-  /// In en, this message translates to:
-  /// **'Week'**
-  String get usageWeek;
-
-  /// No description provided for @usageMonth.
-  ///
-  /// In en, this message translates to:
-  /// **'Month'**
-  String get usageMonth;
-
   /// No description provided for @usageActiveConcurrency.
   ///
   /// In en, this message translates to:
@@ -1046,77 +1016,17 @@ abstract class AppLocalizations {
   /// **'Concurrency utilization'**
   String get usageConcurrencyUtilization;
 
-  /// No description provided for @usageRequestRate.
+  /// No description provided for @usageDefaultLimitsNote.
   ///
   /// In en, this message translates to:
-  /// **'Request Rate'**
-  String get usageRequestRate;
+  /// **'Limits are built-in defaults per model, not your provider\'s actual limits.'**
+  String get usageDefaultLimitsNote;
 
-  /// No description provided for @usageRequestsPerMinuteUnit.
+  /// No description provided for @usageNotAvailableYet.
   ///
   /// In en, this message translates to:
-  /// **'req/min'**
-  String get usageRequestsPerMinuteUnit;
-
-  /// No description provided for @usageRequestRateSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Requests per minute across models'**
-  String get usageRequestRateSubtitle;
-
-  /// No description provided for @usageRpmUtilization.
-  ///
-  /// In en, this message translates to:
-  /// **'RPM utilization'**
-  String get usageRpmUtilization;
-
-  /// No description provided for @usageTokenRate.
-  ///
-  /// In en, this message translates to:
-  /// **'Token Rate'**
-  String get usageTokenRate;
-
-  /// No description provided for @usageTokensPerMinuteUnit.
-  ///
-  /// In en, this message translates to:
-  /// **'tok/min'**
-  String get usageTokensPerMinuteUnit;
-
-  /// No description provided for @usageTokenRateSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tokens per minute across models'**
-  String get usageTokenRateSubtitle;
-
-  /// No description provided for @usageTpmUtilization.
-  ///
-  /// In en, this message translates to:
-  /// **'TPM utilization'**
-  String get usageTpmUtilization;
-
-  /// No description provided for @usageChartTokenUsage.
-  ///
-  /// In en, this message translates to:
-  /// **'Token Usage Over Time'**
-  String get usageChartTokenUsage;
-
-  /// No description provided for @usageChartRequestVolume.
-  ///
-  /// In en, this message translates to:
-  /// **'Request Volume'**
-  String get usageChartRequestVolume;
-
-  /// No description provided for @usageChartResourceTrends.
-  ///
-  /// In en, this message translates to:
-  /// **'Resource Trends'**
-  String get usageChartResourceTrends;
-
-  /// No description provided for @usageChartPlaceholder.
-  ///
-  /// In en, this message translates to:
-  /// **'Chart placeholder'**
-  String get usageChartPlaceholder;
+  /// **'Request rate, token rate and usage history are not available yet.'**
+  String get usageNotAvailableYet;
 
   /// No description provided for @usageNoActiveModels.
   ///
@@ -1129,30 +1039,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Per-model concurrency'**
   String get usagePerModelConcurrency;
-
-  /// No description provided for @usageNoRateData.
-  ///
-  /// In en, this message translates to:
-  /// **'No rate data'**
-  String get usageNoRateData;
-
-  /// No description provided for @usageTopModelsByRpm.
-  ///
-  /// In en, this message translates to:
-  /// **'Top models by RPM'**
-  String get usageTopModelsByRpm;
-
-  /// No description provided for @usageNoTokenData.
-  ///
-  /// In en, this message translates to:
-  /// **'No token data'**
-  String get usageNoTokenData;
-
-  /// No description provided for @usageTopModelsByTpm.
-  ///
-  /// In en, this message translates to:
-  /// **'Top models by TPM'**
-  String get usageTopModelsByTpm;
 
   /// No description provided for @logsTitle.
   ///
@@ -2528,17 +2414,11 @@ abstract class AppLocalizations {
   /// **'Registry'**
   String get skillsTabRegistry;
 
-  /// No description provided for @skillsTabUsage.
+  /// No description provided for @skillsTabCategories.
   ///
   /// In en, this message translates to:
-  /// **'Usage'**
-  String get skillsTabUsage;
-
-  /// No description provided for @skillsTabManagement.
-  ///
-  /// In en, this message translates to:
-  /// **'Management'**
-  String get skillsTabManagement;
+  /// **'Categories'**
+  String get skillsTabCategories;
 
   /// No description provided for @skillsEmptyTitle.
   ///
@@ -2570,131 +2450,29 @@ abstract class AppLocalizations {
   /// **'Failed to register skill: {error}'**
   String skillsRegisterFailed(String error);
 
-  /// No description provided for @skillsEnabled.
+  /// No description provided for @skillsByCategory.
   ///
   /// In en, this message translates to:
-  /// **'{name} enabled'**
-  String skillsEnabled(String name);
+  /// **'Skills by category'**
+  String get skillsByCategory;
 
-  /// No description provided for @skillsDisabled.
+  /// No description provided for @skillsCountInCategory.
   ///
   /// In en, this message translates to:
-  /// **'{name} disabled'**
-  String skillsDisabled(String name);
+  /// **'{count, plural, =1{1 skill} other{{count} skills}}'**
+  String skillsCountInCategory(int count);
 
-  /// No description provided for @skillsStatUses.
+  /// No description provided for @skillsFileCount.
   ///
   /// In en, this message translates to:
-  /// **'Uses'**
-  String get skillsStatUses;
+  /// **'{count, plural, =1{1 file} other{{count} files}}'**
+  String skillsFileCount(int count);
 
-  /// No description provided for @skillsStatAvgTime.
+  /// No description provided for @skillsModified.
   ///
   /// In en, this message translates to:
-  /// **'Avg Time'**
-  String get skillsStatAvgTime;
-
-  /// No description provided for @skillsStatLastUsed.
-  ///
-  /// In en, this message translates to:
-  /// **'Last Used'**
-  String get skillsStatLastUsed;
-
-  /// No description provided for @skillsUsageByCategory.
-  ///
-  /// In en, this message translates to:
-  /// **'Skill Usage by Category'**
-  String get skillsUsageByCategory;
-
-  /// No description provided for @skillsUsesCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 use} other{{count} uses}}'**
-  String skillsUsesCount(int count);
-
-  /// No description provided for @skillsAvgSeconds.
-  ///
-  /// In en, this message translates to:
-  /// **'{seconds}s avg'**
-  String skillsAvgSeconds(String seconds);
-
-  /// No description provided for @skillsTopPerforming.
-  ///
-  /// In en, this message translates to:
-  /// **'Top Performing Skills'**
-  String get skillsTopPerforming;
-
-  /// No description provided for @skillsGlobalSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Global Settings'**
-  String get skillsGlobalSettings;
-
-  /// No description provided for @skillsAutoDisable.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-disable slow skills'**
-  String get skillsAutoDisable;
-
-  /// No description provided for @skillsAutoDisableSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Disable skills that take longer than 5 seconds'**
-  String get skillsAutoDisableSubtitle;
-
-  /// No description provided for @skillsCache.
-  ///
-  /// In en, this message translates to:
-  /// **'Cache skill results'**
-  String get skillsCache;
-
-  /// No description provided for @skillsCacheSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Store responses for identical requests'**
-  String get skillsCacheSubtitle;
-
-  /// No description provided for @skillsDefaultTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'Default timeout'**
-  String get skillsDefaultTimeout;
-
-  /// No description provided for @skillsDefaultTimeoutValue.
-  ///
-  /// In en, this message translates to:
-  /// **'30 seconds'**
-  String get skillsDefaultTimeoutValue;
-
-  /// No description provided for @skillsResourceLimits.
-  ///
-  /// In en, this message translates to:
-  /// **'Resource Limits'**
-  String get skillsResourceLimits;
-
-  /// No description provided for @skillsMaxConcurrent.
-  ///
-  /// In en, this message translates to:
-  /// **'Max concurrent skills'**
-  String get skillsMaxConcurrent;
-
-  /// No description provided for @skillsMaxConcurrentSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Maximum skills running simultaneously'**
-  String get skillsMaxConcurrentSubtitle;
-
-  /// No description provided for @skillsMemory.
-  ///
-  /// In en, this message translates to:
-  /// **'Memory per skill'**
-  String get skillsMemory;
-
-  /// No description provided for @skillsMemorySubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Maximum RAM allocation per skill'**
-  String get skillsMemorySubtitle;
+  /// **'Modified {when}'**
+  String skillsModified(String when);
 
   /// No description provided for @skillsNameDescriptionRequired.
   ///
