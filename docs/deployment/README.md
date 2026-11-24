@@ -6,7 +6,7 @@ This directory documents supported deployment paths for Pistisai.
 
 - [Web Deploy](../operations/cicd/WEB_DEPLOY.md) — production Flutter web image and Docker Compose health
 - [Deployment Overview](DEPLOYMENT_OVERVIEW.md)
-- [Complete Deployment Workflow](COMPLETE_DEPLOYMENT_WORKFLOW.md)
+- [Complete Deployment Workflow](DEPLOYMENT_OVERVIEW.md)
 - [Self Hosting](SELF_HOSTING.md)
 - [Docker Deployment](DOCKER_DEPLOYMENT.md)
 - [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md)

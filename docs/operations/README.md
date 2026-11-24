@@ -7,7 +7,7 @@ Operational documentation covers running, monitoring, recovering, and securing P
 - [Deployment Index](../deployment/README.md)
 - [Self Hosting](../deployment/SELF_HOSTING.md)
 - [Docker Deployment](../deployment/DOCKER_DEPLOYMENT.md)
-- [Complete Deployment Workflow](../deployment/COMPLETE_DEPLOYMENT_WORKFLOW.md)
+- [Complete Deployment Workflow](../deployment/DEPLOYMENT_OVERVIEW.md)
 - [Strict Deployment Policy](../deployment/STRICT_DEPLOYMENT_POLICY.md)
 
 ## CI/CD
