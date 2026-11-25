@@ -11,12 +11,14 @@ import 'package:pistisai/services/app_temp_files.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/hermes/transcript_import_floor.dart';
 import 'package:pistisai/services/local_agent_data_portability_service.dart';
+import 'package:pistisai/utils/owner_only_directory.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   late Directory sandbox;
   late Directory skillDir;
   late Directory tempBase;
+  late Directory supportBase;
   late LocalBrain brain;
   late MarkdownSyncService markdown;
 
@@ -27,6 +29,9 @@ void main() {
     tempBase = Directory('${sandbox.path}/tmp');
     await tempBase.create();
     AppTempFiles.baseDirectoryOverride = () async => tempBase;
+    supportBase = Directory('${sandbox.path}/support');
+    await supportBase.create();
+    AppTempFiles.fallbackBaseDirectoryOverride = () async => supportBase;
 
     brain = LocalBrain.withExecutor(NativeDatabase.memory());
     await brain.customSelect('SELECT 1').get();
@@ -38,6 +43,7 @@ void main() {
 
   tearDown(() async {
     AppTempFiles.baseDirectoryOverride = null;
+    AppTempFiles.fallbackBaseDirectoryOverride = null;
     await brain.close();
     if (await sandbox.exists()) await sandbox.delete(recursive: true);
   });
@@ -102,7 +108,7 @@ void main() {
 
       final result = await wipeService().deleteAllLocalAgentData();
 
-      expect((await AppTempFiles.directory()).existsSync(), isFalse);
+      expect(capture.parent.existsSync(), isFalse);
       expect(foreign.existsSync(), isTrue);
       expect(result.verifiedEmpty, isTrue);
     });
@@ -132,6 +138,56 @@ void main() {
 
       expect(verification.isEmpty, isFalse);
     });
+  });
+
+  group('owner-only capture folder', () {
+    final posix = !Platform.isWindows;
+    String tempFolder() =>
+        '${tempBase.path}${Platform.pathSeparator}${AppTempFiles.folderName}';
+
+    test('capture folder is created with mode 0700', () async {
+      await AppTempFiles.newPath('capture', 'png');
+      expect(permissionBits(tempFolder()), 0x1C0);
+    }, skip: !posix);
+
+    test('an existing folder with wider permissions is tightened to 0700',
+        () async {
+      await Directory(tempFolder()).create();
+      await Process.run('chmod', ['755', tempFolder()]);
+      expect(permissionBits(tempFolder()), 0x1ED);
+
+      await AppTempFiles.newPath('capture', 'png');
+
+      expect(permissionBits(tempFolder()), 0x1C0);
+    }, skip: !posix);
+
+    test('a symlinked temp folder is refused and the fallback is used',
+        () async {
+      final elsewhere = Directory('${sandbox.path}/attacker');
+      await elsewhere.create();
+      await Link(tempFolder()).create(elsewhere.path);
+
+      final path = await AppTempFiles.newPath('capture', 'png');
+      await File(path).writeAsBytes([1]);
+
+      expect(path, startsWith(supportBase.path));
+      expect(elsewhere.listSync(), isEmpty);
+      expect(permissionBits(File(path).parent.path), 0x1C0);
+
+      await AppTempFiles.deleteAll();
+      expect(File(path).existsSync(), isFalse);
+      expect(elsewhere.existsSync(), isTrue,
+          reason: 'the wipe must not follow the symlink');
+    }, skip: !posix);
+
+    test('ensureOwnerOnlyDirectorySync refuses a symlink', () async {
+      final target = Directory('${sandbox.path}/target');
+      await target.create();
+      final link = '${sandbox.path}/link';
+      await Link(link).create(target.path);
+
+      expect(ensureOwnerOnlyDirectorySync(link), isFalse);
+    }, skip: !posix);
   });
 
   group('runtime transcript after a wipe', () {

@@ -113,7 +113,9 @@ your explicit, device-scoped permission. Media and screen data captured by these
 features are processed locally or by the runtime you select; Pistisai does not
 collect or retain this content on our servers. Screenshots, camera frames and
 spoken-reply audio are written as plain temporary files into an app-owned folder
-inside your operating system's temp directory. Some are deleted right after use
+inside your operating system's temp directory; on macOS and Linux that folder is
+readable only by your user account (mode 0700), and the app falls back to its own
+support folder if the temp one cannot be used safely. Some are deleted right after use
 (for example presence checks and screenshot analysis); the rest stay until the
 operating system clears its temp directory or you delete your local data, which
 removes the whole folder.

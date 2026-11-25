@@ -11,7 +11,7 @@ Local wipe completes in seconds on a typical install (well under the “few hour
 | Local brain (SQLite) | App support dir `local_brain.sqlite` | Yes (all tables as JSON) | Yes (all rows) |
 | Encrypted conversation file | App docs/support `Pistisai/conversations.json.enc` (desktop) | Yes (embedded under `conversationsFile`) | Yes |
 | Avatar Markdown files | `personality.md`, `memory.md`, `context.md` in the agent skill folder (e.g. `~/.openclaw/skills/pistisai`); plain text | No | Yes (only these three files) |
-| Temporary captures | App-owned `<temp>/pistisai-captures` folder (screenshots, camera frames, TTS audio); plain files | No | Yes (whole folder) |
+| Temporary captures | App-owned `<temp>/pistisai-captures` folder, owner-only (0700) on macOS/Linux, falling back to the app support folder if the temp one is a symlink or owned by someone else (screenshots, camera frames, TTS audio); plain files | No | Yes (whole folder) |
 | Agent runtime transcript | Kept by the runtime (e.g. Hermes) where it runs | No | No; the app stops importing messages from before the wipe, clear it in the runtime |
 | App settings JSON export | Settings → System → Export | Separate settings-only export | Not cleared by this wipe |
 | Auth / secure storage | Platform keychain / secure storage | Not exported (secrets) | Not cleared by this wipe |

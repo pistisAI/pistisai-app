@@ -64,6 +64,7 @@ import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/app_temp_files.dart';
+import 'package:pistisai/utils/owner_only_directory.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
 import 'package:pistisai/services/agent_action_audit_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
@@ -110,9 +111,13 @@ String _getOpenClawSkillsPath() {
 
   // Check common locations for OpenClaw skills directory
   if (home == null) {
-    // Fallback to an app-owned folder inside temp, never temp itself, so
-    // clearing the avatar Markdown cannot touch other programs' files.
-    return '${Directory.systemTemp.path}/pistisai-skill';
+    // Fallback to an owner-only folder inside temp, never temp itself, so
+    // clearing the avatar Markdown cannot touch other programs' files and
+    // other local users cannot read it. A pre-created or symlinked folder is
+    // refused in favour of a fresh private temp folder.
+    final fallback = '${Directory.systemTemp.path}/pistisai-skill';
+    if (ensureOwnerOnlyDirectorySync(fallback)) return fallback;
+    return Directory.systemTemp.createTempSync('pistisai-skill-').path;
   }
 
   final possiblePaths = [
