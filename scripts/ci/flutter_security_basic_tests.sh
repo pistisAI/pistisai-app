@@ -54,6 +54,8 @@ flutter test \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
   test/screens/instances/instances_screen_test.dart \
+  test/screens/admin/ \
+  test/services/admin_center_dns_validation_test.dart \
   test/screens/logs_screen_test.dart \
   test/widgets/overview_screen_test.dart \
   test/widgets/logout_token_clearing_timing_test.dart \

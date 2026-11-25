@@ -6421,6 +6421,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load the agent registry: {error}'**
   String agentsRegistryLoadFailed(String error);
+
+  /// No description provided for @adminDnsDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete DNS record?'**
+  String get adminDnsDeleteConfirmTitle;
+
+  /// Confirmation shown before an admin deletes a live DNS record.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the {recordType} record \"{recordName}\" from the live DNS zone. Email delivery or authentication that relies on it can stop working.'**
+  String adminDnsDeleteConfirmBody(String recordType, String recordName);
+
+  /// No description provided for @adminDnsDeleteConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete record'**
+  String get adminDnsDeleteConfirmAction;
+
+  /// No description provided for @adminDnsValidationPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'All DNS records passed validation'**
+  String get adminDnsValidationPassed;
+
+  /// No description provided for @adminDnsValidationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Some DNS records failed validation:'**
+  String get adminDnsValidationFailed;
+
+  /// One failed DNS record in the validation result list.
+  ///
+  /// In en, this message translates to:
+  /// **'{recordType}: {message}'**
+  String adminDnsValidationErrorLine(String recordType, String message);
+
+  /// No description provided for @adminDnsValidationNoDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'No details were returned for this record.'**
+  String get adminDnsValidationNoDetails;
+
+  /// No description provided for @adminEmailSaveNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving email provider settings is not available yet: the server does not accept this configuration from the app. Nothing on this form is saved.'**
+  String get adminEmailSaveNotAvailable;
+
+  /// No description provided for @adminEmailSaveNotAvailableButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save (not available yet)'**
+  String get adminEmailSaveNotAvailableButton;
 }
 
 class _AppLocalizationsDelegate

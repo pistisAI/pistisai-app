@@ -1074,5 +1074,14 @@
   "sessionsLastActive": "Dernière activité",
   "agentsRegistrySignInRequired": "Connectez-vous pour voir les agents enregistrés.",
   "agentsRegistryForbidden": "Votre compte n'est pas autorisé à voir le registre des agents.",
-  "agentsRegistryLoadFailed": "Impossible de charger le registre des agents : {error}"
+  "agentsRegistryLoadFailed": "Impossible de charger le registre des agents : {error}",
+  "adminDnsDeleteConfirmTitle": "Supprimer l'enregistrement DNS ?",
+  "adminDnsDeleteConfirmBody": "Cette action retire l'enregistrement {recordType} « {recordName} » de la zone DNS en production. La distribution ou l'authentification des courriels qui en dépend peut cesser de fonctionner.",
+  "adminDnsDeleteConfirmAction": "Supprimer l'enregistrement",
+  "adminDnsValidationPassed": "Tous les enregistrements DNS ont passé la validation",
+  "adminDnsValidationFailed": "Certains enregistrements DNS n'ont pas passé la validation :",
+  "adminDnsValidationErrorLine": "{recordType} : {message}",
+  "adminDnsValidationNoDetails": "Aucun détail n'a été fourni pour cet enregistrement.",
+  "adminEmailSaveNotAvailable": "L'enregistrement des paramètres du fournisseur de courriel n'est pas encore disponible : le serveur n'accepte pas cette configuration depuis l'application. Rien dans ce formulaire n'est enregistré.",
+  "adminEmailSaveNotAvailableButton": "Enregistrer (pas encore disponible)"
 }

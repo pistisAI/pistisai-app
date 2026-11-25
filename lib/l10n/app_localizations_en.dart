@@ -3638,4 +3638,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String agentsRegistryLoadFailed(String error) {
     return 'Could not load the agent registry: $error';
   }
+
+  @override
+  String get adminDnsDeleteConfirmTitle => 'Delete DNS record?';
+
+  @override
+  String adminDnsDeleteConfirmBody(String recordType, String recordName) {
+    return 'This removes the $recordType record \"$recordName\" from the live DNS zone. Email delivery or authentication that relies on it can stop working.';
+  }
+
+  @override
+  String get adminDnsDeleteConfirmAction => 'Delete record';
+
+  @override
+  String get adminDnsValidationPassed => 'All DNS records passed validation';
+
+  @override
+  String get adminDnsValidationFailed => 'Some DNS records failed validation:';
+
+  @override
+  String adminDnsValidationErrorLine(String recordType, String message) {
+    return '$recordType: $message';
+  }
+
+  @override
+  String get adminDnsValidationNoDetails =>
+      'No details were returned for this record.';
+
+  @override
+  String get adminEmailSaveNotAvailable =>
+      'Saving email provider settings is not available yet: the server does not accept this configuration from the app. Nothing on this form is saved.';
+
+  @override
+  String get adminEmailSaveNotAvailableButton => 'Save (not available yet)';
 }

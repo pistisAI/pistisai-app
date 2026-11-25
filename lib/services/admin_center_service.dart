@@ -690,19 +690,28 @@ class AdminCenterService extends ChangeNotifier {
 
   /// Validate DNS records via Cloudflare
   /// Endpoint: POST /admin/dns/validate
-  Future<Map<String, dynamic>> validateDnsRecords({String? recordId}) async {
+  ///
+  /// The backend answers HTTP 200 even when records fail validation, with
+  /// `valid: false` and an `errors` list, so callers must check
+  /// [DnsValidationResult.valid] rather than treat a successful request as a
+  /// successful validation.
+  Future<DnsValidationResult> validateDnsRecords({String? recordId}) async {
     try {
       _setLoading(true);
       final queryParams = {
         if (recordId != null) 'recordId': recordId,
       };
 
-      final response = await _dio.post(
+      final response = await _dio.post<dynamic>(
         '/admin/dns/validate',
         queryParameters: queryParams,
       );
       _setError(null);
-      return response.data['data'] ?? {};
+      final body = response.data;
+      final data = body is Map ? body['data'] : null;
+      return DnsValidationResult.fromJson(
+        data is Map ? Map<String, dynamic>.from(data) : const {},
+      );
     } catch (e) {
       debugPrint('[AdminCenterService] Error validating DNS records: $e');
       _setError('Failed to validate DNS records: $e');
@@ -866,5 +875,52 @@ class AdminCenterService extends ChangeNotifier {
     _authService.removeListener(_onAuthStateChanged);
     _dio.close();
     super.dispose();
+  }
+}
+
+/// One record that failed DNS validation, as reported by
+/// `POST /admin/dns/validate`.
+class DnsValidationError {
+  final String? recordId;
+  final String? recordType;
+  final String message;
+
+  const DnsValidationError({
+    this.recordId,
+    this.recordType,
+    required this.message,
+  });
+
+  factory DnsValidationError.fromJson(Map<String, dynamic> json) {
+    final recordId = json['recordId'];
+    final recordType = json['recordType'];
+    final error = json['error'];
+    return DnsValidationError(
+      recordId: recordId?.toString(),
+      recordType: recordType?.toString(),
+      message: error?.toString() ?? '',
+    );
+  }
+}
+
+/// Parsed result of `POST /admin/dns/validate`.
+///
+/// [valid] is true only when the backend explicitly reports `valid: true`;
+/// a missing or malformed field is treated as not validated.
+class DnsValidationResult {
+  final bool valid;
+  final List<DnsValidationError> errors;
+
+  const DnsValidationResult({required this.valid, this.errors = const []});
+
+  factory DnsValidationResult.fromJson(Map<String, dynamic> json) {
+    final rawErrors = json['errors'];
+    final errors = <DnsValidationError>[
+      if (rawErrors is List)
+        for (final e in rawErrors)
+          if (e is Map)
+            DnsValidationError.fromJson(Map<String, dynamic>.from(e)),
+    ];
+    return DnsValidationResult(valid: json['valid'] == true, errors: errors);
   }
 }
