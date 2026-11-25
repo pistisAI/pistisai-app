@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:pistisai/services/app_temp_files.dart';
 
 /// Linux (v4l2) camera capture via ffmpeg.
 ///
@@ -77,8 +78,8 @@ class V4L2CameraService {
 
   /// Capture a single still image to a temp file (local only).
   Future<String?> captureStill() async {
-    final dir = await Directory.systemTemp.createTemp('pistisai_cam_');
-    final out = '${dir.path}/still.jpg';
+    // App-owned temp folder, removed by the local data wipe.
+    final out = await AppTempFiles.newPath('still', 'jpg');
     final ffmpeg = await _ffmpegPath();
     if (ffmpeg == null) return null;
     final result = await Process.run(ffmpeg, [

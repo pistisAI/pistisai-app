@@ -63,6 +63,7 @@ import 'package:pistisai/services/avatar/avatar_appearance.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/avatar_state_service.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
+import 'package:pistisai/services/app_temp_files.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
 import 'package:pistisai/services/agent_action_audit_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
@@ -109,8 +110,9 @@ String _getOpenClawSkillsPath() {
 
   // Check common locations for OpenClaw skills directory
   if (home == null) {
-    // Fallback to temp directory
-    return Directory.systemTemp.path;
+    // Fallback to an app-owned folder inside temp, never temp itself, so
+    // clearing the avatar Markdown cannot touch other programs' files.
+    return '${Directory.systemTemp.path}/pistisai-skill';
   }
 
   final possiblePaths = [
@@ -479,7 +481,16 @@ Future<void> setupCoreServices() async {
       Future<void> Function()? clearConversations;
       Future<List<String>> Function()? listRemainingConversationFiles;
       Future<void> Function()? resetChatState;
+      final clearPlainFiles = <Future<void> Function()>[];
+      final listRemainingPlainFiles = <Future<List<String>> Function()>[];
       if (!kIsWeb) {
+        if (serviceLocator.isRegistered<MarkdownSyncService>()) {
+          final markdownSync = serviceLocator.get<MarkdownSyncService>();
+          clearPlainFiles.add(markdownSync.clearMarkdownFiles);
+          listRemainingPlainFiles.add(markdownSync.listExistingMarkdownFiles);
+        }
+        clearPlainFiles.add(AppTempFiles.deleteAll);
+        listRemainingPlainFiles.add(AppTempFiles.listRemaining);
         final localConversations = LocalConversationStorage();
         exportConversations = () async {
           final conversations = await localConversations.loadConversations();
@@ -496,7 +507,7 @@ Future<void> setupCoreServices() async {
             localConversations.listExistingConversationDataPaths;
         resetChatState = () async {
           if (serviceLocator.isRegistered<StreamingChatService>()) {
-            serviceLocator
+            await serviceLocator
                 .get<StreamingChatService>()
                 .resetAfterLocalDataWipe();
           }
@@ -509,6 +520,8 @@ Future<void> setupCoreServices() async {
           clearConversations: clearConversations,
           listRemainingConversationFiles: listRemainingConversationFiles,
           resetChatState: resetChatState,
+          clearPlainFiles: clearPlainFiles,
+          listRemainingPlainFiles: listRemainingPlainFiles,
           audit: serviceLocator.isRegistered<AgentActionAuditService>()
               ? serviceLocator.get<AgentActionAuditService>()
               : null,

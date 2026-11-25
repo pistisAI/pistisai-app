@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:pistisai/services/app_temp_files.dart';
 
 /// Camera Capture Service
 ///
@@ -114,14 +114,14 @@ class CameraCaptureService {
     try {
       debugPrint('[CameraCapture] Capturing image...');
 
-      final directory = await getTemporaryDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final path = '${directory.path}/camera_$timestamp.png';
+      // App-owned temp folder, removed by the local data wipe.
+      final path = await AppTempFiles.newPath('camera', 'png');
 
       final XFile image = await _controller!.takePicture();
 
-      // Copy the image to our desired path
+      // Copy the image to our desired path, then drop the plugin's copy.
       await File(image.path).copy(path);
+      await AppTempFiles.deleteQuietly(image.path);
 
       debugPrint('[CameraCapture] Image saved to $path');
       return path;

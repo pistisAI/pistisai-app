@@ -2378,7 +2378,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get configDeleteLocalAgentDataConfirm =>
-      'Cela supprime définitivement les données de l\'agent sur cet appareil (base locale et stockage chiffré des conversations). Les données du compte cloud ne sont pas touchées. Cette action est irréversible.';
+      'Cela supprime définitivement les données de l\'agent sur cet appareil : la base locale, le stockage chiffré des conversations, les fichiers Markdown de l\'avatar dans le dossier de compétences de l\'agent et les captures temporaires de l\'application. Votre runtime d\'agent garde sa propre copie de la conversation ; l\'application n\'importera plus les messages antérieurs à l\'effacement, mais ne peut pas les supprimer du runtime. Les données du compte cloud ne sont pas touchées. Cette action est irréversible.';
 
   @override
   String get configDeleteLocalAgentDataAction => 'Supprimer définitivement';
@@ -2742,7 +2742,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get welcomeStepInfo =>
-      'Nous allons configurer votre IA locale en 2 minutes environ. Tout le traitement se fait en privé sur votre ordinateur.';
+      'Nous allons configurer votre IA locale en 2 minutes environ. Le traitement se fait sur la machine qui exécute votre runtime d\'agent : cet ordinateur ou une autre machine de votre choix.';
 
   @override
   String get locationTitle => 'Où Hermes fonctionne-t-il ?';
