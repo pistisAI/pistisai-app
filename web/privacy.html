@@ -127,6 +127,18 @@
       fragments of the data being handled when the error happened. As with any internet connection,
       Sentry&rsquo;s servers see the IP address the report comes from.
     </p>
+    <p>
+      In the web app, while crash reporting is on, the app&rsquo;s own diagnostic log lines are also
+      sent to our API server, each with its time, level, the page address without its query string or
+      fragment, and your browser&rsquo;s user agent. When crash reporting is off, these lines stay in
+      your browser and nothing is sent.
+    </p>
+    <p>
+      When you click <strong>Check Now</strong> in the update section of Settings, the app asks GitHub
+      (<code>api.github.com</code>) for the latest release, and downloading a release from the download
+      page opens a GitHub link; GitHub sees your IP address for those requests. Images in release notes
+      load only when you click them.
+    </p>
 
     <h3>2.4 Spoken replies</h3>
     <p>

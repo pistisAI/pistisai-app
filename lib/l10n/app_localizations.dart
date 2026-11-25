@@ -4256,6 +4256,12 @@ abstract class AppLocalizations {
   /// **'No changelog available'**
   String get configNoChangelog;
 
+  /// No description provided for @configChangelogLoadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Load image'**
+  String get configChangelogLoadImage;
+
   /// No description provided for @filesTitle.
   ///
   /// In en, this message translates to:

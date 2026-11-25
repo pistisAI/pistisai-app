@@ -2428,6 +2428,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get configNoChangelog => 'Aucune liste des nouveautés disponible';
 
   @override
+  String get configChangelogLoadImage => 'Charger l\'image';
+
+  @override
   String get filesTitle => 'Opérations sur les fichiers';
 
   @override

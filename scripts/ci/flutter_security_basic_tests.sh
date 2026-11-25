@@ -48,6 +48,8 @@ flutter test \
   test/services/channel_service_test.dart \
   test/screens/settings/llm_provider_settings_status_test.dart \
   test/screens/config/config_screen_controls_test.dart \
+  test/screens/config/changelog_markdown_test.dart \
+  test/services/log_buffer_service_consent_test.dart \
   test/screens/settings/connection_settings_rerun_wizard_test.dart \
   test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
