@@ -31,6 +31,8 @@ flutter test \
   test/services/provider_discovery_service_test.dart \
   test/services/local_agent_data_portability_service_test.dart \
   test/services/approval_gate_service_test.dart \
+  test/services/router_conscience_approval_integrity_test.dart \
+  test/services/conscience_storage_service_test.dart \
   test/widgets/approval/ \
   test/widgets/common/refreshable_screen_test.dart \
   test/widgets/management_screens_test.dart \

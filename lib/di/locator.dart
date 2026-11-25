@@ -371,18 +371,9 @@ Future<void> setupCoreServices() async {
     if (serviceLocator.isRegistered<ConscienceStorageService>()) {
       final conscienceStorageService =
           serviceLocator.get<ConscienceStorageService>();
-      approvalAuditLogger = (entry) async {
-        await conscienceStorageService.writeDecision(
-          action:
-              '${entry.action.category.name}: ${entry.action.title} — ${entry.action.summary}',
-          riskLevel: 'critical',
-          verdict: entry.verdict == ApprovalVerdict.approved
-              ? 'APPROVED'
-              : 'DENIED',
-          reviewer: 'user',
-          reasoning: entry.note ?? 'Human approval gate',
-        );
-      };
+      // In-process path: HTTP callers cannot write reviewer 'user'.
+      approvalAuditLogger =
+          conscienceApprovalAuditLogger(conscienceStorageService);
     }
     serviceLocator.registerSingleton<ApprovalGateService>(
       ApprovalGateService(auditLogger: approvalAuditLogger),
