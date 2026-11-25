@@ -153,33 +153,16 @@ Content-Type: application/json
 
 ## Testing
 
-**Test File:** `test/api-backend/admin-users-search.test.js`
-
-**Test Results:** ✅ 37 tests passed
-
-**Test Coverage:**
-
-- Pagination and limiting
-- Search functionality
-- Filtering by tier and status
-- Sorting functionality
-- Combined filters
-- User profile retrieval
-- Subscription tier updates
-- User suspension/reactivation
-- Property-based tests for consistency
-
-## Running Tests
-
-```bash
-cd services/api-backend
-npm test -- test/api-backend/admin-users-search.test.js
-```
+No automated test exercises these routes yet. The former
+`test/api-backend/admin-users-search.test.js` only asserted values it defined
+itself and never imported `routes/admin/users.js`, so it was removed.
+Admin access to these routes goes through `adminAuth` in
+`services/api-backend/middleware/admin-auth.js`, which is covered by
+`test/api-backend/security/authentication-authorization.test.js`.
 
 ## Implementation Files
 
 - **Routes:** `services/api-backend/routes/admin/users.js`
-- **Tests:** `test/api-backend/admin-users-search.test.js`
 - **Documentation:** `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (the original implementation write-up was archived)
 
 ## Authentication
