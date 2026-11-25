@@ -144,6 +144,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get visionInitComplete => 'Initialisation terminée';
 
   @override
+  String get visionInitIncomplete =>
+      'Certains services n\'ont pas démarré. Voir les résultats ci-dessous.';
+
+  @override
   String visionInitFailed(String error) {
     return 'Échec de l\'initialisation : $error';
   }
@@ -297,25 +301,8 @@ class AppLocalizationsFr extends AppLocalizations {
       'Configurer le comportement et l\'apparence du service de la zone de notification';
 
   @override
-  String get daemonSaved => 'Paramètres du service enregistrés avec succès';
-
-  @override
-  String daemonSaveFailed(String error) {
-    return 'Impossible d\'enregistrer les paramètres : $error';
-  }
-
-  @override
-  String get daemonRestarting =>
-      'Redémarrage du service de la zone de notification…';
-
-  @override
-  String get daemonRestarted =>
-      'Service de la zone de notification redémarré avec succès';
-
-  @override
-  String daemonRestartFailed(String error) {
-    return 'Impossible de redémarrer le service : $error';
-  }
+  String get daemonNotAvailableYet =>
+      'Pas encore disponible : les réglages de la zone de notification et de connexion ci-dessous ne sont ni enregistrés ni appliqués. Les valeurs affichées sont celles par défaut.';
 
   @override
   String get daemonRealtimeStatus => 'État de la connexion en temps réel';
@@ -398,15 +385,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get daemonHealthCheckIntervalSubtitle =>
       'Intervalle entre les vérifications de l\'état du service (secondes)';
-
-  @override
-  String get daemonActions => 'Actions';
-
-  @override
-  String get daemonSaveSettings => 'Enregistrer les paramètres';
-
-  @override
-  String get daemonRestart => 'Redémarrer le service';
 
   @override
   String get commonRefresh => 'Actualiser';
@@ -1535,6 +1513,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Retour à la passerelle par défaut';
 
   @override
+  String instancesHermesApplyFailed(String error) {
+    return 'Réglages Hermes enregistrés, mais la connexion n\'a pas pu être changée : $error';
+  }
+
+  @override
+  String instancesHermesSaveFailed(String error) {
+    return 'Impossible d\'enregistrer les réglages Hermes : $error';
+  }
+
+  @override
   String get instancesHermesTitle => '🦞 Agent Hermes';
 
   @override
@@ -1815,6 +1803,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get avatarAppearanceHelp =>
       'Personnalisez le style visuel et l\'animation de votre avatar.';
+
+  @override
+  String get avatarAppearanceNotAvailable =>
+      'Pas encore disponible : le thème de couleur et le style d\'animation ne sont pas appliqués à l\'avatar.';
 
   @override
   String get avatarColorTheme => 'Thème de couleur';
@@ -2494,6 +2486,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get filesPasted => 'Collé';
+
+  @override
+  String get filesPasteIntoItself =>
+      'Un dossier ne peut pas être collé dans lui-même.';
+
+  @override
+  String get filesAlreadyInFolder => 'L\'élément est déjà dans ce dossier.';
+
+  @override
+  String filesPastedAs(String name) {
+    return 'Collé sous le nom $name';
+  }
 
   @override
   String get filesMoved => 'Déplacé';
