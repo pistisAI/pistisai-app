@@ -327,7 +327,8 @@ def _atomic_write_json(path: str, data: object, sort_keys: bool = False) -> None
         try:
             os.remove(tmp)
         except OSError:
-            pass
+            # The temp file may already be gone; the original error matters.
+            _log.debug("pistisai: could not remove temp file %s", tmp)
         raise
 
 
