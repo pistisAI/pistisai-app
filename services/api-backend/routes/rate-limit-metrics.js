@@ -8,7 +8,8 @@ import { register } from 'prom-client';
 import { TunnelLogger } from '../utils/logger.js';
 import { rateLimitMetricsService } from '../services/rate-limit-metrics-service.js';
 import { authenticateJWT } from '../middleware/auth.js';
-import { requireAdmin } from '../middleware/rbac.js';
+// Admin role comes from the server-side admin_roles table, not JWT claims.
+import { adminAuth } from '../middleware/admin-auth.js';
 
 const router = express.Router();
 const logger = new TunnelLogger('rate-limit-metrics-routes');
@@ -51,7 +52,7 @@ router.get('/rate-limit-metrics/summary', authenticateJWT, async (req, res) => {
 router.get(
   '/rate-limit-metrics/top-violators',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 10, 100);
@@ -82,7 +83,7 @@ router.get(
 router.get(
   '/rate-limit-metrics/top-ips',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 10, 100);
@@ -113,7 +114,7 @@ router.get(
 router.get(
   '/rate-limit-metrics/dashboard-data',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const summary = rateLimitMetricsService.getMetricsSummary();

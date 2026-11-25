@@ -1,12 +1,14 @@
 import express from 'express';
 import { z } from 'zod';
-import { authenticateJWT } from '../middleware/auth.js';
+import { adminAuth } from '../middleware/admin-auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import db from '../database/db-pool.js';
 import { TunnelLogger } from '../utils/logger.js';
 
 const router = express.Router();
-router.use(authenticateJWT);
+// The model catalogue is admin data: every route needs a server-side admin
+// role (admin_roles table). The app does not read these routes.
+router.use(adminAuth());
 const logger = new TunnelLogger('models-routes');
 
 const createModelSchema = {
