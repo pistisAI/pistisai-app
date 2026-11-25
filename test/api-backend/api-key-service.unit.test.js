@@ -111,6 +111,11 @@ describe("api-key-service", () => {
     });
 
     it("should validate a generated key", async () => {
+      // validateApiKey also checks the owner account is active.
+      await query(
+        "INSERT INTO users (id, is_suspended, deleted_at) VALUES ($1, $2, $3)",
+        ["user-val-1", false, null],
+      );
       const generated = await generateApiKey("user-val-1", "valid-key");
       const validated = await validateApiKey(generated.apiKey);
       expect(validated).toBeDefined();

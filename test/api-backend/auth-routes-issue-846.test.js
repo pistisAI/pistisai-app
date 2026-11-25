@@ -58,7 +58,10 @@ jest.unstable_mockModule('../../services/api-backend/middleware/auth.js', () => 
     next();
   },
   extractUserId,
-  getAuthService: () => ({ revokeSession: mockRevokeSession }),
+  getAuthService: () => ({
+    revokeSession: mockRevokeSession,
+    revokeSessionByToken: jest.fn(async () => true),
+  }),
 }));
 
 jest.unstable_mockModule(
