@@ -21,7 +21,6 @@ concurrency:
 
 permissions:
   contents: read
-  checks: write
 
 jobs:
   changes:
@@ -56,37 +55,73 @@ jobs:
               - 'linux/**'
               - 'windows/**'
               - 'macos/**'
+              - 'ios/**'
               - 'android/**'
               - 'assets/**'
               - 'analysis_options.yaml'
-              - '.github/workflows/test.yml'
+              - 'tool/**'
+              - 'scripts/ci/**'
+              - '.github/workflows/**'
             backend:
-              - 'services/api-backend/**'
+              - 'services/**'
+              - 'backend/**'
               - 'test/api-backend/**'
-              - 'scripts/tests/test_no_hardcoded_dev_bypass_token.sh'
-              - '.github/workflows/test.yml'
+              - 'scripts/ci/**'
+              - 'scripts/tests/**'
+              - 'jest.config.js'
+              - 'jest.extended.config.js'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.nvmrc'
+              - 'Dockerfile*'
+              - 'config/docker/**'
+              - '.github/workflows/**'
 
-      - name: "Fail open if the path filter failed"
+      - name: "Run suites the diff actually needs"
         id: gate
         if: always() && (steps.filter.outcome == 'success' || steps.filter.outcome == 'failure')
         env:
           FILTER_OUTCOME: ${{ steps.filter.outcome }}
           FLUTTER: ${{ steps.filter.outputs.flutter }}
           BACKEND: ${{ steps.filter.outputs.backend }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          if [ "$FILTER_OUTCOME" = "success" ]; then
-            echo "flutter=$FLUTTER" >> "$GITHUB_OUTPUT"
-            echo "backend=$BACKEND" >> "$GITHUB_OUTPUT"
-          else
+          set -euo pipefail
+          # A broken filter must not skip the suites. Run both.
+          if [ "$FILTER_OUTCOME" != "success" ]; then
+            echo "Path filter failed; running Flutter and backend suites."
             echo "flutter=true" >> "$GITHUB_OUTPUT"
             echo "backend=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          if [ "$FLUTTER" = "true" ] || [ "$BACKEND" = "true" ]; then
+            echo "flutter=${FLUTTER}" >> "$GITHUB_OUTPUT"
+            echo "backend=${BACKEND}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # paths-ignore already drops docs-only events. Reaching here means
+          # this workflow ran for files the filters do not name. Running
+          # nothing would let ci_gate pass on a green skip.
+          if [ "$EVENT_NAME" = "pull_request" ] && [ -n "$BASE_SHA" ]; then
+            RANGE="${BASE_SHA}...HEAD"
+          elif [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            RANGE="${BEFORE}...HEAD"
+          else
+            RANGE="HEAD^...HEAD"
+          fi
+          echo "No path filter matched. Changed files in ${RANGE}:"
+          git diff --name-only "$RANGE"
+          echo "Uncovered paths; running Flutter and backend suites."
+          echo "flutter=true" >> "$GITHUB_OUTPUT"
+          echo "backend=true" >> "$GITHUB_OUTPUT"
 
   flutter_analyze:
     name: "🔍 Flutter Analyze"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    needs: changes
+    needs: [changes, actionlint]
     if: needs.changes.outputs.flutter == 'true'
 
     steps:
@@ -108,7 +143,7 @@ jobs:
     name: "🧪 Flutter — smoke"
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    needs: changes
+    needs: [changes, actionlint]
     if: needs.changes.outputs.flutter == 'true'
 
     steps:
@@ -286,7 +321,7 @@ jobs:
     name: "Backend — lint & security"
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    needs: changes
+    needs: [changes, actionlint]
     if: needs.changes.outputs.backend == 'true'
     defaults:
       run:
@@ -297,7 +332,7 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7
         with:
-          node-version: "26"
+          node-version-file: .nvmrc
 
       - name: "📦 Cache api-backend node_modules"
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6
@@ -318,14 +353,41 @@ jobs:
       - name: "🔒 npm run test:ci:security"
         run: npm run test:ci:security
 
-  # Branch protection requires this exact check name. GitHub reports job names,
-  # not the workflow name, so without this job a green PR stays blocked.
+  actionlint:
+    name: "🔎 actionlint"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+
+      - name: Install actionlint
+        run: |
+          set -euo pipefail
+          version=1.7.7
+          archive="actionlint_${version}_linux_amd64.tar.gz"
+          checksum="023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757"
+          curl -fsSL -o "/tmp/${archive}" \
+            "https://github.com/rhysd/actionlint/releases/download/v${version}/${archive}"
+          echo "${checksum}  /tmp/${archive}" | sha256sum -c -
+          tar -xzf "/tmp/${archive}" -C /tmp actionlint
+          sudo install -m 0755 /tmp/actionlint /usr/local/bin/actionlint
+
+      - name: Lint workflows
+        # Pin shellcheck off. actionlint runs it automatically when the
+        # runner image provides the binary, and that turns pre-existing
+        # info-level findings into a red gate. Workflow semantics are the check.
+        run: actionlint -color -shellcheck=
+
+  # GitHub reports this job name, not the workflow name. A ruleset that
+  # requires checks must use this exact name. Skipped suites are allowed
+  # only when the path filter says they do not apply.
   ci_gate:
     name: "🧪 CI — Test & Build Every Branch"
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs:
       - changes
+      - actionlint
       - flutter_analyze
       - flutter_smoke_test
       - build_web
@@ -337,6 +399,7 @@ jobs:
       - name: "Require every needed job to succeed or skip"
         env:
           CHANGES: ${{ needs.changes.result }}
+          ACTIONLINT: ${{ needs.actionlint.result }}
           ANALYZE: ${{ needs.flutter_analyze.result }}
           SMOKE: ${{ needs.flutter_smoke_test.result }}
           WEB: ${{ needs.build_web.result }}
@@ -345,7 +408,7 @@ jobs:
           BACKEND: ${{ needs.backend.result }}
         run: |
           fail=0
-          for result in "$CHANGES" "$ANALYZE" "$SMOKE" "$WEB" "$WHITELABEL" "$LINUX" "$BACKEND"; do
+          for result in "$CHANGES" "$ACTIONLINT" "$ANALYZE" "$SMOKE" "$WEB" "$WHITELABEL" "$LINUX" "$BACKEND"; do
             case "$result" in
               success|skipped) ;;
               *)
@@ -355,7 +418,7 @@ jobs:
             esac
           done
           if [ "$fail" -ne 0 ]; then
-            echo "CHANGES=$CHANGES ANALYZE=$ANALYZE SMOKE=$SMOKE WEB=$WEB WHITELABEL=$WHITELABEL LINUX=$LINUX BACKEND=$BACKEND"
+            echo "CHANGES=$CHANGES ACTIONLINT=$ACTIONLINT ANALYZE=$ANALYZE SMOKE=$SMOKE WEB=$WEB WHITELABEL=$WHITELABEL LINUX=$LINUX BACKEND=$BACKEND"
             exit 1
           fi
           echo "All needed jobs succeeded or were skipped."

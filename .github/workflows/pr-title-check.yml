@@ -1,7 +1,8 @@
 name: "🏷️ PR Title Check"
 
 # Every PR title must be Conventional Commits. The title sets the auto version
-# bump size (see scripts/version_bump_kind.py): feat=minor, type!:=major, else=patch.
+# bump size (see scripts/version_bump_kind.py): type! or BREAKING CHANGE = major,
+# everything else including feat = patch. Minor is only a manual workflow_dispatch.
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
