@@ -161,17 +161,17 @@ spec:
           valueFrom:
             secretKeyRef:
               name: Pistisai-secrets
-              key: auth0-domain
+              key: cf-access-domain
         - name: CF_ACCESS_AUD
           valueFrom:
             secretKeyRef:
               name: Pistisai-secrets
-              key: auth0-audience
+              key: cf-access-audience
         - name: CF_ACCESS_ISSUER
           valueFrom:
             secretKeyRef:
               name: Pistisai-secrets
-              key: auth0-issuer
+              key: cf-access-issuer
         - name: PING_INTERVAL
           value: "30000"
         - name: PONG_TIMEOUT
@@ -340,9 +340,9 @@ metadata:
   namespace: Pistisai
 type: Opaque
 stringData:
-  auth0-domain: "pistisai.cloudflareaccess.com"
-  auth0-audience: "https://api.Pistisai.com"
-  auth0-issuer: "https://pistisai.cloudflareaccess.com/"
+  cf-access-domain: "pistisai.cloudflareaccess.com"
+  cf-access-audience: "https://api.Pistisai.com"
+  cf-access-issuer: "https://pistisai.cloudflareaccess.com/"
 ```
 
 ## Deployment Steps

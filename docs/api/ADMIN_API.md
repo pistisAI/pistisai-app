@@ -75,7 +75,7 @@ Permissions:
 
 ### Authentication Flow
 
-1. User logs in to main application via Auth0
+1. User logs in to main application via Cloudflare Access
 2. JWT token issued with user claims
 3. Admin role verified from `admin_roles` table
 4. Token passed to Admin Center via session inheritance
@@ -119,7 +119,7 @@ Retrieve a paginated list of users with search and filtering capabilities.
 |-----------|------|---------|-------------|
 | page | integer | 1 | Page number (min: 1) |
 | limit | integer | 50 | Items per page (min: 1, max: 100) |
-| search | string | - | Search by email, username, user ID, or Auth0 ID |
+| search | string | - | Search by email, username, user ID, or Access subject |
 | tier | string | - | Filter by subscription tier (free, premium, enterprise) |
 | status | string | - | Filter by account status (active, suspended, deleted) |
 | startDate | string | - | Filter by registration date (ISO 8601 format) |
