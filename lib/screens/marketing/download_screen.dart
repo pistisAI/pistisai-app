@@ -409,7 +409,7 @@ sudo apt-get install -f''',
       context,
       title: '📦 AppImage (Universal Linux)',
       description:
-          'Pistisai runs on this computer when its hardware is sufficient; otherwise on a local machine we provide. Portable — no installation required — just download, make executable, and run.',
+          '${BrandCopy.localHardwarePromise} Portable — no installation required — just download, make executable, and run.',
       child: _buildInstallationSection(
         context,
         'Download and run',

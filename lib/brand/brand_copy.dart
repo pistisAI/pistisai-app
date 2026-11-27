@@ -25,6 +25,9 @@ class BrandCopy {
       'Show ${brand.productName} icon in system tray';
   static String get desktopRequiredBody =>
       'Please use the ${brand.productName} desktop application for the best experience.';
+  static String get localHardwarePromise =>
+      '${brand.productName} runs on this computer when its hardware is sufficient; '
+      'otherwise on a local machine we provide.';
   static String get docsLinkDescription =>
       'Learn how to use ${brand.productName}';
   static String get voiceCompanionBody =>
