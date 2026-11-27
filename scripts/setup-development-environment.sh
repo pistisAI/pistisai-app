@@ -267,7 +267,8 @@ npm install
 cd "$REPO_ROOT/services/api-backend" && npm install
 cd "$REPO_ROOT/services/streaming-proxy" && npm install
 cd "$REPO_ROOT/services/sdk" && npm install
-cd "$REPO_ROOT/backend/auth" && npm install
+# backend/auth is quarantined and is not installed or started.
+# Active auth is Cloudflare Access in services/api-backend.
 cd "$REPO_ROOT"
 flutter pub get || true
 check_command "Repository dependencies installed"

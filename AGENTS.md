@@ -32,7 +32,7 @@ These come from the product's promises to users (README, privacy policy) and the
 - `services/api-backend/` — Express 5 ESM, `PORT || 8080`; tests live at repo-root `test/api-backend/`, not in-service
 - `services/streaming-proxy/` — Express 5 ESM, `PORT || 3001` (`proxy-server.js`); `dev` is `node --inspect`, not nodemon
 - `services/tailscale-relay/` — Express 4 ESM, `PORT || 3002`; has only `start`/`dev` scripts (no lint/test)
-- `backend/auth/` — Express 5 **CommonJS** (`"type": "commonjs"`), `PORT || 3000`, entry `handlers.js`; no `dev` script; Jest 29
+- `backend/auth/` — quarantined legacy Auth0 package (CommonJS). `node handlers.js` exits non-zero and does not listen. Active auth is Cloudflare Access in `services/api-backend`. Do not start it.
 - `services/sdk/` — TypeScript SDK (ESM, Node `>=18`), `main: dist/index.js` — run `npm run build` (`tsc`) before use
 - `services/openclaw-skills/` — avatar personality skill, tests use **Vitest** (`vitest run`), not Jest
 - `lib/shared/` — separate shared package (Dart `>=3.9.0 <4.0.0`, version `1.0.6+33`) needing its own `flutter pub get`
@@ -81,7 +81,7 @@ The `build_number` in `assets/version.json` should match the `+<build_number>` s
 ## Conventions
 
 - Dart: `snake_case.dart`, `PascalCase` classes, single quotes; `implicit-casts:false`, `implicit-dynamic:false` enforced via `analysis_options.yaml`
-- JS/TS: `kebab-case` files, `PascalCase` classes; `backend/auth/` is CommonJS, everything else under `services/` is ESM — do not mix `require`/`import` styles across that boundary
+- JS/TS: `kebab-case` files, `PascalCase` classes; quarantined `backend/auth/` stays CommonJS, everything else under `services/` is ESM — do not mix `require`/`import` styles across that boundary
 - Commits: conventional `feat:`/`fix:`/`docs:`/`chore:`/`test:`/`refactor:` with agent prefix `ai(<agent>): <subject>`; every change goes through a pull request (`CONTRIBUTING.md`)
 - Platform splits via conditional imports (`dart.library.io` / `dart.library.html`); never import `dart:io` directly in shared code
 - Register services via `setupCoreServices()` / `setupAuthenticatedServices()` in `lib/di/locator.dart`; consume via `serviceLocator.get<T>()` — don't instantiate registered services directly
@@ -96,9 +96,9 @@ Restart OpenCode after editing `opencode.json` so it refetches server tools.
 ## Pitfalls
 
 - `npm run db:migrate` does NOT exist in api-backend; use `db:validate`, `db:stats`, `db:test`
-- Auth backend: no `npm run dev` — run `node handlers.js`
-- Tailscale relay is Express 4; api-backend, streaming-proxy, auth are Express 5 — check middleware API against the right major
-- Jest `testPathIgnorePatterns` intentionally skips tunnel-*, `*-properties`, `*-integration`, `test/archive/`, and live-Auth0 tests; check `jest.config.js` before assuming a test runs or "passes" by being skipped
+- `backend/auth` is quarantined: `node handlers.js` exits non-zero and does not listen. Active auth is Cloudflare Access in `services/api-backend`
+- Tailscale relay is Express 4; api-backend and streaming-proxy are Express 5 — check middleware API against the right major
+- Jest `testPathIgnorePatterns` intentionally skips tunnel-*, `*-properties`, `*-integration`, and `test/archive/`; check `jest.config.js` before assuming a test runs or "passes" by being skipped
 - api-backend Jest needs `node --experimental-vm-modules ... --forceExit`; sdk uses plain `jest`
 - Don't edit `lib/**/*.g.dart` / `lib/**/*.freezed.dart` — regenerate via build_runner
 - Preserve branding exactly: `Pistisai`, `OpenClaw`

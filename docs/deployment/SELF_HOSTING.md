@@ -91,8 +91,9 @@ docker compose up -d api-backend tailscale-relay
 # Optional legacy/fallback streaming proxy (separate service folder):
 # cd services/streaming-proxy && npm install && npm run dev
 
-# Optional auth backend (CommonJS; no npm run dev):
-# cd backend/auth && npm install && node handlers.js
+# backend/auth is quarantined and must not be started.
+# `node handlers.js` exits non-zero and does not listen.
+# API auth is Cloudflare Access in services/api-backend.
 ```
 
 #### Step 4: Build and Configure Frontend

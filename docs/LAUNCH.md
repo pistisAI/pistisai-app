@@ -81,7 +81,7 @@ cd services/api-backend && npm install && npm run dev
 cd services/streaming-proxy && npm install && npm run dev
 ```
 
-`backend/auth/` has no `dev` script. Start it with `node handlers.js`.
+`backend/auth/` is quarantined. `node handlers.js` exits non-zero and does not listen. Active auth is Cloudflare Access in `services/api-backend`.
 
 Developer onboarding: [development/DEVELOPER_ONBOARDING.md](development/DEVELOPER_ONBOARDING.md).
 Command reference: [AGENTS.md](../AGENTS.md).

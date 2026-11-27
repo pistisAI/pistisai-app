@@ -104,13 +104,12 @@ jobs:
           services/streaming-proxy/node_modules/jest/bin/jest.js
           --config jest.extended.config.js
 
-      - name: "📦 npm ci (backend/auth)"
+      # Legacy Auth0 JWT service is quarantined. This step only asserts
+      # handlers.js refuses to start. Cloudflare Access coverage stays in
+      # the backend-extended job (services/api-backend test:ci:extended).
+      - name: "🧪 backend/auth quarantine (refuses to start)"
         working-directory: backend/auth
-        run: npm ci --no-audit --no-fund
-
-      - name: "🧪 backend/auth"
-        working-directory: backend/auth
-        run: npm test
+        run: node --test handlers.test.js
 
       - name: "📦 npm ci (sdk)"
         working-directory: services/sdk

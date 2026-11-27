@@ -1,141 +1,25 @@
-// backend/auth/handlers.js
-// Production-ready Express middleware for Auth0 JWT validation
-// npm init -y; npm i express express-jwt jwks-rsa cors express-rate-limit
-// node handlers.js
+'use strict';
 
-const express = require("express");
-const cors = require("cors");
-const { expressjwt } = require("express-jwt");
-const jwksRsa = require("jwks-rsa");
-const rateLimit = require("express-rate-limit");
+/**
+ * QUARANTINED — legacy Auth0 JWT handler.
+ *
+ * This file is not an authentication service and does not bind a port.
+ * Active auth is Cloudflare Access in services/api-backend
+ * (middleware/auth.js and auth/auth-service.js).
+ *
+ * Running this file exits non-zero. Requiring it throws.
+ * Retained so an old `node handlers.js` start fails closed instead of
+ * serving Auth0 JWTs.
+ */
 
-const app = express();
-app.use(express.json());
-// Brand-driven: whitelabel builds set AUTH_ALLOWED_ORIGINS (comma-separated)
-// and AUTH_ROLE_CLAIM_NAMESPACE. Defaults keep the upstream pistisai values.
-const allowedOrigins = (
-  process.env.AUTH_ALLOWED_ORIGINS ||
-  "https://app.pistisai.app,https://pistisai.app"
-)
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean)
-  .concat([
-    "http://localhost:3000",
-  "http://localhost:8080",
-  "http://127.0.0.1:3000",
-  "http://127.0.0.1:8080",
-  ]);
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) {
-        return callback(null, true);
-      }
-      if (allowedOrigins.indexOf(origin) === -1) {
-        return callback(null, false);
-      }
-      return callback(null, true);
-    },
-  }),
-);
-
-const AUTH0_DOMAIN = (process.env.AUTH0_DOMAIN || "").trim();
-const AUDIENCE = (process.env.AUTH0_AUDIENCE || "").trim();
-if (!AUTH0_DOMAIN) {
-  throw new Error(
-    "AUTH0_DOMAIN environment variable is required (no fallback domain)",
-  );
-}
-if (!AUDIENCE) {
-  throw new Error(
-    "AUTH0_AUDIENCE environment variable is required (no fallback audience)",
-  );
-}
-
-const checkJwtMiddleware = expressjwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${AUTH0_DOMAIN}/.well-known/jwks.json`,
-  }),
-  audience: AUDIENCE,
-  issuer: `https://${AUTH0_DOMAIN}/`,
-  algorithms: ["RS256"],
-});
-
-const checkJwt = (req, res, next) => {
-  const authHeader = req.headers.authorization || req.headers.Authorization;
-  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
-
-  // Dev bypass: only when NODE_ENV is exactly 'development' and
-  // DEV_BYPASS_TOKEN is set. An unset or other NODE_ENV fails closed (#895).
-  // No hardcoded token literal — must come from the environment.
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  const devBypassToken = process.env.DEV_BYPASS_TOKEN;
-  if (
-    isDevelopment &&
-    typeof devBypassToken === 'string' &&
-    devBypassToken.length > 0 &&
-    token === devBypassToken
-  ) {
-    const ns = process.env.AUTH_ROLE_CLAIM_NAMESPACE || "https://pistisai.app";
-    req.auth = {
-      sub: 'dev-user',
-      email: 'dev@example.com',
-      name: 'Dev User',
-      nickname: 'dev-user',
-      [`${ns}/roles`]: ['admin'],
-      // Kept as the upstream literal: rbac.js and tier-check.js read this exact key.
-      'https://Pistisai.com/app_metadata': { role: 'admin' },
-      scope: 'openid profile email admin',
-    };
-    return next();
-  }
-
-  return checkJwtMiddleware(req, res, next);
-};
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-app.use("/api/", limiter);
-
-app.get("/api/protected", checkJwt, (req, res) => {
-  res.json({
-    message: "Protected endpoint",
-    user_id: req.auth.sub,
-    email: req.auth.email,
-  });
-});
-
-app.get("/health", (req, res) => res.json({ status: "ok" }));
-
-// Internal error details are shown only when NODE_ENV is exactly
-// 'development'; an unset NODE_ENV hides them (#895).
-const errorHandler = (err, req, res, _next) => {
-  if (err.name === "UnauthorizedError") {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-  const status = err.status || 500;
-  const message =
-    status === 500 && process.env.NODE_ENV !== "development"
-      ? "Internal server error"
-      : err.message;
-  res.status(status).json({ error: message });
-};
-app.use(errorHandler);
-
-module.exports = { app, errorHandler };
+const QUARANTINE_NOTICE =
+  'backend/auth is quarantined and is not an active auth service. ' +
+  'Cloudflare Access in services/api-backend is the active auth path. ' +
+  'This legacy Auth0 handler does not start and does not validate tokens.';
 
 if (require.main === module) {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    if ((process.env.NODE_ENV || "development") !== "production") {
-      console.log(`Auth backend listening on port ${port}`);
-    }
-  });
+  console.error(QUARANTINE_NOTICE);
+  process.exit(1);
 }
+
+throw new Error(QUARANTINE_NOTICE);
