@@ -3700,4 +3700,40 @@ class AppLocalizationsFr extends AppLocalizations {
   String agentsRegistryLoadFailed(String error) {
     return 'Impossible de charger le registre des agents : $error';
   }
+
+  @override
+  String get adminDnsDeleteConfirmTitle => 'Supprimer l\'enregistrement DNS ?';
+
+  @override
+  String adminDnsDeleteConfirmBody(String recordType, String recordName) {
+    return 'Cette action retire l\'enregistrement $recordType « $recordName » de la zone DNS en production. La distribution ou l\'authentification des courriels qui en dépend peut cesser de fonctionner.';
+  }
+
+  @override
+  String get adminDnsDeleteConfirmAction => 'Supprimer l\'enregistrement';
+
+  @override
+  String get adminDnsValidationPassed =>
+      'Tous les enregistrements DNS ont passé la validation';
+
+  @override
+  String get adminDnsValidationFailed =>
+      'Certains enregistrements DNS n\'ont pas passé la validation :';
+
+  @override
+  String adminDnsValidationErrorLine(String recordType, String message) {
+    return '$recordType : $message';
+  }
+
+  @override
+  String get adminDnsValidationNoDetails =>
+      'Aucun détail n\'a été fourni pour cet enregistrement.';
+
+  @override
+  String get adminEmailSaveNotAvailable =>
+      'L\'enregistrement des paramètres du fournisseur de courriel n\'est pas encore disponible : le serveur n\'accepte pas cette configuration depuis l\'application. Rien dans ce formulaire n\'est enregistré.';
+
+  @override
+  String get adminEmailSaveNotAvailableButton =>
+      'Enregistrer (pas encore disponible)';
 }

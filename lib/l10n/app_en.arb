@@ -2319,5 +2319,36 @@
         "type": "String"
       }
     }
-  }
+  },
+  "adminDnsDeleteConfirmTitle": "Delete DNS record?",
+  "adminDnsDeleteConfirmBody": "This removes the {recordType} record \"{recordName}\" from the live DNS zone. Email delivery or authentication that relies on it can stop working.",
+  "@adminDnsDeleteConfirmBody": {
+    "placeholders": {
+      "recordType": {
+        "type": "String"
+      },
+      "recordName": {
+        "type": "String"
+      }
+    },
+    "description": "Confirmation shown before an admin deletes a live DNS record."
+  },
+  "adminDnsDeleteConfirmAction": "Delete record",
+  "adminDnsValidationPassed": "All DNS records passed validation",
+  "adminDnsValidationFailed": "Some DNS records failed validation:",
+  "adminDnsValidationErrorLine": "{recordType}: {message}",
+  "@adminDnsValidationErrorLine": {
+    "placeholders": {
+      "recordType": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    },
+    "description": "One failed DNS record in the validation result list."
+  },
+  "adminDnsValidationNoDetails": "No details were returned for this record.",
+  "adminEmailSaveNotAvailable": "Saving email provider settings is not available yet: the server does not accept this configuration from the app. Nothing on this form is saved.",
+  "adminEmailSaveNotAvailableButton": "Save (not available yet)"
 }

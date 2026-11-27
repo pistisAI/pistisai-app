@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../brand/brand.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
 import '../../config/theme.dart';
@@ -145,6 +146,7 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
   /// Validate DNS records
   Future<void> _validateDnsRecords() async {
     final adminService = di.serviceLocator.get<AdminCenterService>();
+    final l10n = AppLocalizations.of(context);
 
     setState(() {
       _isValidating = true;
@@ -153,14 +155,38 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
     });
 
     try {
-      await adminService.validateDnsRecords();
+      final result = await adminService.validateDnsRecords();
+      if (!mounted) return;
+
+      // Reload first so the refreshed statuses are shown; reloading clears
+      // _error, so the validation outcome is set afterwards.
+      await _loadDnsRecords();
+      if (!mounted) return;
 
       setState(() {
         _isValidating = false;
-        _successMessage = 'DNS records validated successfully';
+        if (result.valid) {
+          _successMessage = l10n.adminDnsValidationPassed;
+        } else {
+          // The backend answers 200 with valid:false when records fail;
+          // only claim success when it says the records are valid.
+          final lines = result.errors.isEmpty
+              ? [l10n.adminDnsValidationNoDetails]
+              : result.errors.map(
+                  (e) => l10n.adminDnsValidationErrorLine(
+                    e.recordType ?? '?',
+                    e.message.isEmpty
+                        ? l10n.adminDnsValidationNoDetails
+                        : e.message,
+                  ),
+                );
+          _error = [
+            l10n.adminDnsValidationFailed,
+            ...lines.map((line) => '• $line'),
+            if (_error != null) _error!,
+          ].join('\n');
+        }
       });
-
-      await _loadDnsRecords();
     } catch (e) {
       setState(() {
         _error = 'Failed to validate DNS records: $e';
@@ -169,8 +195,36 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
     }
   }
 
-  /// Delete DNS record
-  Future<void> _deleteDnsRecord(String recordId) async {
+  /// Ask the admin to confirm before a live DNS record is deleted.
+  Future<bool> _confirmDelete(DnsRecord record) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.adminDnsDeleteConfirmTitle),
+        content: Text(
+          l10n.adminDnsDeleteConfirmBody(record.type, record.name),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppTheme.colorsOf(dialogContext).danger,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.adminDnsDeleteConfirmAction),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
+  }
+
+  /// Delete DNS record (after explicit confirmation)
+  Future<void> _deleteDnsRecord(DnsRecord record) async {
     final adminService = di.serviceLocator.get<AdminCenterService>();
 
     // Check permission
@@ -181,8 +235,11 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
       return;
     }
 
+    if (!await _confirmDelete(record)) return;
+    if (!mounted) return;
+
     try {
-      await adminService.deleteDnsRecord(recordId);
+      await adminService.deleteDnsRecord(record.id);
 
       setState(() {
         _successMessage = 'DNS record deleted successfully';
@@ -591,7 +648,7 @@ class _DnsConfigTabState extends State<DnsConfigTab> {
                                                   .danger,
                                             ),
                                             onPressed: () =>
-                                                _deleteDnsRecord(record.id),
+                                                _deleteDnsRecord(record),
                                             tooltip: 'Delete Record',
                                           ),
                                         ),

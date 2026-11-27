@@ -61,6 +61,8 @@ flutter test \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
   test/screens/instances/instances_screen_test.dart \
+  test/screens/admin/ \
+  test/services/admin_center_dns_validation_test.dart \
   test/screens/settings/daemon_settings_honest_test.dart \
   test/screens/settings/vision_settings_honest_test.dart \
   test/screens/avatar/avatar_settings_honest_test.dart \

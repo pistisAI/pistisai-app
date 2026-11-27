@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../di/locator.dart' as di;
+import '../../l10n/app_localizations.dart';
 import '../../services/admin_center_service.dart';
 import '../../models/admin_role_model.dart';
 import '../../config/theme.dart';
@@ -7,7 +8,11 @@ import '../../config/theme.dart';
 /// Email Provider Configuration Tab for the Admin Center (Self-Hosted Only)
 /// Allows administrators to configure email provider settings for self-hosted instances
 class EmailProviderConfigTab extends StatefulWidget {
-  const EmailProviderConfigTab({super.key});
+  const EmailProviderConfigTab({super.key, this.selfHostedOverride});
+
+  /// Overrides the compile-time `DEPLOYMENT_TYPE` check. Tests only.
+  @visibleForTesting
+  final bool? selfHostedOverride;
 
   @override
   State<EmailProviderConfigTab> createState() => _EmailProviderConfigTabState();
@@ -24,7 +29,6 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
 
   // State
   bool _isLoading = false;
-  bool _isSaving = false;
   bool _isSendingTest = false;
   String? _error;
   String? _successMessage;
@@ -52,6 +56,8 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
 
   /// Check if this is a self-hosted instance
   bool get _isSelfHosted {
+    final override = widget.selfHostedOverride;
+    if (override != null) return override;
     // Check deployment type from environment
     const deploymentType = String.fromEnvironment(
       'DEPLOYMENT_TYPE',
@@ -103,59 +109,6 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
       setState(() {
         _error = 'Failed to load email configuration: $e';
         _isLoading = false;
-      });
-    }
-  }
-
-  /// Save email provider configuration
-  Future<void> _saveConfiguration() async {
-    if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final adminService = di.serviceLocator.get<AdminCenterService>();
-
-    // Check permission
-    if (!adminService.hasPermission(AdminPermission.editConfiguration)) {
-      setState(() {
-        _error = 'You do not have permission to edit email configuration';
-      });
-      return;
-    }
-
-    setState(() {
-      _isSaving = true;
-      _error = null;
-      _successMessage = null;
-    });
-
-    try {
-      await adminService.saveEmailConfiguration({
-        'provider': _selectedProvider,
-        'smtp_host': _smtpHostController.text,
-        'smtp_port': int.parse(_smtpPortController.text),
-        'smtp_username': _smtpUsernameController.text,
-        'smtp_password': _smtpPasswordController.text,
-        'encryption': _selectedEncryption,
-      });
-
-      setState(() {
-        _isSaving = false;
-        _successMessage = 'Email configuration saved successfully';
-      });
-
-      // Clear success message after 3 seconds
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() {
-            _successMessage = null;
-          });
-        }
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'Failed to save email configuration: $e';
-        _isSaving = false;
       });
     }
   }
@@ -352,23 +305,20 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
                       _buildTestEmailCard(),
                       const SizedBox(height: 24),
 
-                      // Save button
+                      // Save is not wired: the backend has no POST
+                      // /admin/email/config route (#1004), so the control is
+                      // disabled and labelled instead of failing every time.
+                      _buildSaveNotAvailableNotice(),
+                      const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton.icon(
-                          onPressed: _isSaving ? null : _saveConfiguration,
-                          icon: _isSaving
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: AppTheme.colorsOf(context).textColor,
-                                  ),
-                                )
-                              : const Icon(Icons.save),
+                          key: const Key('email_config_save_button'),
+                          onPressed: null,
+                          icon: const Icon(Icons.save),
                           label: Text(
-                            _isSaving ? 'Saving...' : 'Save Configuration',
+                            AppLocalizations.of(context)
+                                .adminEmailSaveNotAvailableButton,
                           ),
                           style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -381,6 +331,31 @@ class _EmailProviderConfigTabState extends State<EmailProviderConfigTab> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// Notice explaining why saving the provider settings is unavailable.
+  Widget _buildSaveNotAvailableNotice() {
+    final colors = AppTheme.colorsOf(context);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.warning.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: colors.warning.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, color: colors.warning),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).adminEmailSaveNotAvailable,
+              style: TextStyle(color: colors.warning),
+            ),
+          ),
+        ],
       ),
     );
   }
