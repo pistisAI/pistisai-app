@@ -849,11 +849,20 @@ class RouterServer {
             body: 'Missing required fields: action, risk_level');
       }
 
+      final reviewer = data['reviewer'];
+      final verdict = data['verdict'];
+      if ((reviewer != null && reviewer is! String) ||
+          (verdict != null && verdict is! String)) {
+        return Response.badRequest(body: 'reviewer and verdict must be text');
+      }
+
+      // writeDecision refuses the user's reserved reviewer name and unknown
+      // verdicts; only in-process code records the user's own decisions.
       final decision = await conscienceStorage!.writeDecision(
         action: data['action'] as String,
         riskLevel: data['risk_level'] as String,
-        verdict: data['verdict'] as String?,
-        reviewer: data['reviewer'] as String?,
+        verdict: verdict as String?,
+        reviewer: reviewer as String?,
         reasoning: data['reasoning'] as String?,
       );
 
@@ -861,6 +870,8 @@ class RouterServer {
         jsonEncode({'status': 'success', 'decision': decision}),
         headers: {'Content-Type': 'application/json'},
       );
+    } on ConscienceIntegrityException catch (e) {
+      return _integrityRefusal(e);
     } catch (e) {
       return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
@@ -912,6 +923,8 @@ class RouterServer {
                 'decision_id, verdict, reviewer, reasoning');
       }
 
+      // submitDecisionVerdict refuses unknown verdicts, the user's reserved
+      // reviewer name, and any decision that is final or was made by the user.
       final decision = await conscienceStorage!.submitDecisionVerdict(
         decisionId: data['decision_id'] as String,
         verdict: data['verdict'] as String,
@@ -923,8 +936,26 @@ class RouterServer {
         jsonEncode({'status': 'success', 'decision': decision}),
         headers: {'Content-Type': 'application/json'},
       );
+    } on ConscienceIntegrityException catch (e) {
+      return _integrityRefusal(e);
     } catch (e) {
       return _safeErrorResponse(e, statusCode: HttpStatus.internalServerError);
     }
+  }
+
+  static Response _integrityRefusal(ConscienceIntegrityException e) {
+    final status = e.violation == ConscienceIntegrityViolation.invalidVerdict
+        ? HttpStatus.badRequest
+        : HttpStatus.forbidden;
+    return Response(
+      status,
+      body: jsonEncode({
+        'error': {
+          'code': 'conscience_${e.violation.name}',
+          'message': e.message
+        }
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
   }
 }

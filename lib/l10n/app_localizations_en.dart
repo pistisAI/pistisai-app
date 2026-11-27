@@ -142,6 +142,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get visionInitComplete => 'Initialization complete';
 
   @override
+  String get visionInitIncomplete =>
+      'Some services did not start. See the results below.';
+
+  @override
   String visionInitFailed(String error) {
     return 'Initialization failed: $error';
   }
@@ -318,23 +322,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Configure the system tray daemon behavior and appearance';
 
   @override
-  String get daemonSaved => 'Daemon settings saved successfully';
-
-  @override
-  String daemonSaveFailed(String error) {
-    return 'Failed to save settings: $error';
-  }
-
-  @override
-  String get daemonRestarting => 'Restarting system tray daemon...';
-
-  @override
-  String get daemonRestarted => 'System tray daemon restarted successfully';
-
-  @override
-  String daemonRestartFailed(String error) {
-    return 'Failed to restart daemon: $error';
-  }
+  String get daemonNotAvailableYet =>
+      'Not available yet: the tray and connection settings below are not saved or applied. The values shown are defaults.';
 
   @override
   String get daemonRealtimeStatus => 'Real-time Connection Status';
@@ -416,15 +405,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get daemonHealthCheckIntervalSubtitle =>
       'Interval for daemon health checks (seconds)';
-
-  @override
-  String get daemonActions => 'Actions';
-
-  @override
-  String get daemonSaveSettings => 'Save Settings';
-
-  @override
-  String get daemonRestart => 'Restart Daemon';
 
   @override
   String get commonRefresh => 'Refresh';
@@ -1548,6 +1528,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get instancesHermesDisabledSnack => 'Switched back to default gateway';
 
   @override
+  String instancesHermesApplyFailed(String error) {
+    return 'Hermes settings saved, but the connection could not be switched: $error';
+  }
+
+  @override
+  String instancesHermesSaveFailed(String error) {
+    return 'Could not save the Hermes settings: $error';
+  }
+
+  @override
   String get instancesHermesTitle => '🦞 Hermes Agent';
 
   @override
@@ -1821,6 +1811,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get avatarAppearanceHelp =>
       'Customize your avatar\'s visual style and animation.';
+
+  @override
+  String get avatarAppearanceNotAvailable =>
+      'Not available yet: the color theme and animation style are not applied to the avatar.';
 
   @override
   String get avatarColorTheme => 'Color Theme';
@@ -2377,7 +2371,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get configDeleteLocalAgentDataConfirm =>
-      'This permanently deletes on-device agent data (local database and encrypted conversation store). Cloud account data is not removed. This cannot be undone.';
+      'This permanently deletes on-device agent data: the local database, the encrypted conversation store, the avatar Markdown files in the agent skill folder and the app\'s temporary captures. Your agent runtime keeps its own copy of the chat; this app will not import messages from before the wipe again, but it cannot delete them from the runtime. Cloud account data is not removed. This cannot be undone.';
 
   @override
   String get configDeleteLocalAgentDataAction => 'Delete permanently';
@@ -2425,6 +2419,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get configNoChangelog => 'No changelog available';
+
+  @override
+  String get configChangelogLoadImage => 'Load image';
 
   @override
   String get filesTitle => 'File Operations';
@@ -2493,6 +2490,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filesPasted => 'Pasted successfully';
+
+  @override
+  String get filesPasteIntoItself => 'A folder cannot be pasted inside itself.';
+
+  @override
+  String get filesAlreadyInFolder => 'The item is already in this folder.';
+
+  @override
+  String filesPastedAs(String name) {
+    return 'Pasted as $name';
+  }
 
   @override
   String get filesMoved => 'Moved successfully';
@@ -2732,7 +2740,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeStepInfo =>
-      'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.';
+      'We\'ll set up your local AI in about 2 minutes. Processing happens on the machine that runs your agent runtime: this computer, or another machine you choose.';
 
   @override
   String get locationTitle => 'Where is Hermes running?';
@@ -3670,4 +3678,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String agentsRegistryLoadFailed(String error) {
     return 'Could not load the agent registry: $error';
   }
+
+  @override
+  String get adminDnsDeleteConfirmTitle => 'Delete DNS record?';
+
+  @override
+  String adminDnsDeleteConfirmBody(String recordType, String recordName) {
+    return 'This removes the $recordType record \"$recordName\" from the live DNS zone. Email delivery or authentication that relies on it can stop working.';
+  }
+
+  @override
+  String get adminDnsDeleteConfirmAction => 'Delete record';
+
+  @override
+  String get adminDnsValidationPassed => 'All DNS records passed validation';
+
+  @override
+  String get adminDnsValidationFailed => 'Some DNS records failed validation:';
+
+  @override
+  String adminDnsValidationErrorLine(String recordType, String message) {
+    return '$recordType: $message';
+  }
+
+  @override
+  String get adminDnsValidationNoDetails =>
+      'No details were returned for this record.';
+
+  @override
+  String get adminEmailSaveNotAvailable =>
+      'Saving email provider settings is not available yet: the server does not accept this configuration from the app. Nothing on this form is saved.';
+
+  @override
+  String get adminEmailSaveNotAvailableButton => 'Save (not available yet)';
 }

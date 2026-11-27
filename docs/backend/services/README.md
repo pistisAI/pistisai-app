@@ -4,6 +4,8 @@ This directory contains the payment gateway integration services for the Admin C
 
 ## Services Overview
 
+> **Verified against code:** all four service files exist at `services/api-backend/services/`: `stripe-client.js`, `payment-service.js`, `subscription-service.js`, `refund-service.js`. The example env file is `.env.example` at the repository root; none exists under `services/api-backend`. Paths in the snippets below are relative to `services/api-backend/`.
+
 ### 1. Stripe Client (`stripe-client.js`)
 
 The Stripe client wrapper provides a configured Stripe instance with error handling and logging.
@@ -173,7 +175,7 @@ const refunds = await refundService.getTransactionRefunds('transaction-uuid');
 
 ## Environment Configuration
 
-Create a `.env` file based on `.env.example`:
+Create a `.env` file based on the repository-root `.env.example` (there is no `.env.example` under `services/api-backend`):
 
 ```bash
 # Test mode keys (for development)
@@ -200,7 +202,7 @@ The services require the following database tables:
 - `refunds` - Stores refund records
 - `admin_audit_logs` - Stores admin action logs
 
-See `database/migrations/001_admin_center_schema.sql` for the complete schema.
+See `services/api-backend/database/migrations/001_admin_center_schema.sql` for the complete schema.
 
 ## Error Handling
 

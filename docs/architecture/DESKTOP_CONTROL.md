@@ -4,14 +4,14 @@ Desktop Control lets Pistisai inspect and operate the local desktop through expl
 
 ## Current Status
 
-Core desktop control services are implemented. The system includes GUI automation, shell/system control, clipboard history, window management, and a file operations screen. Macro recording and a standalone action-history service are not currently present.
+Core desktop control services are implemented: GUI automation, clipboard, window management, and a file operations screen. There is **no** `system_control_service.dart` / `SystemControlService` in the codebase — shell/system-control duties are not provided by a dedicated service. Macro recording and a standalone action-history service are also not currently present.
 
 ## Current Components
 
 | Component | Status | File |
 | --- | --- | --- |
 | GUI automation | Implemented | `lib/services/gui_automation_service.dart` |
-| System control | Implemented | `lib/services/system_control_service.dart` |
+| System control | Not present | No `system_control_service.dart` / `SystemControlService` in the codebase |
 | Clipboard service | Implemented | `lib/services/desktop_control/clipboard_service.dart` |
 | Desktop window manager | Implemented | `lib/services/desktop_control/window_manager_service.dart` |
 | App window manager wrapper | Implemented | `lib/services/window_manager_service.dart` |
@@ -26,9 +26,9 @@ Core desktop control services are implemented. The system includes GUI automatio
 
 Handles screenshot-based GUI automation workflows. It coordinates capture, analysis, and user-approved actions such as clicking, typing, and key presses.
 
-### `SystemControlService`
+### System control
 
-Handles local command execution, system stats, notifications, process/file operations, and native screenshot calls where supported.
+There is no `SystemControlService` in the codebase. Screenshot capture lives in `GuiAutomationService.takeScreenshot()` (`lib/services/gui_automation_service.dart:48-60`); shell/process control and system stats are not provided by a dedicated registered service. Do not add imports of a system-control service.
 
 ### `ClipboardService`
 
@@ -83,4 +83,4 @@ Typical GUI automation flow:
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Vision System](VISION_SYSTEM.md)
-- [Product Specification(SPEC.md was deleted; see decision D-005)
+- Product Specification: SPEC.md was deleted (see decision D-005).

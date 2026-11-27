@@ -13,7 +13,9 @@
     "test:full": "npx cross-env NODE_ENV=test BYPASS_AUTH=*** node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "test:ci:flutter": "bash scripts/ci/flutter_security_basic_tests.sh",
     "docs:links": "node scripts/validate-doc-links.js",
-    "docs:links:all": "node scripts/validate-doc-links.js --all"
+    "docs:links:all": "node scripts/validate-doc-links.js --all",
+    "docs:paths": "node scripts/validate-doc-paths.js",
+    "docs:paths:all": "node scripts/validate-doc-paths.js --all"
   },
   "keywords": [],
   "author": "",

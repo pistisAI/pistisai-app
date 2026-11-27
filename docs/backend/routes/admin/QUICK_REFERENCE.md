@@ -6,8 +6,10 @@ Quick reference guide for Pistisai Admin Center API endpoints.
 
 ```
 Production: https://api.example.com/api/admin
-Development: http://localhost:3001/api/admin
+Development: http://localhost:8080/api/admin
 ```
+
+> **Verified against code:** the backend default port is `8080` (`services/api-backend/server.js:183`), so the local base URL uses 8080, not 3001. `registerRoutes` adds the `/api` prefix and mounts the admin routes (`services/api-backend/server.js:265-266`, `:305`).
 
 ## Authentication
 
@@ -272,21 +274,21 @@ export JWT_TOKEN="your_jwt_token_here"
 ### Test User List
 
 ```bash
-curl -X GET "http://localhost:3001/api/admin/users?page=1&limit=10" \
+curl -X GET "http://localhost:8080/api/admin/users?page=1&limit=10" \
   -H "Authorization: Bearer $JWT_TOKEN"
 ```
 
 ### Test Transaction List
 
 ```bash
-curl -X GET "http://localhost:3001/api/admin/payments/transactions?page=1&limit=10" \
+curl -X GET "http://localhost:8080/api/admin/payments/transactions?page=1&limit=10" \
   -H "Authorization: Bearer $JWT_TOKEN"
 ```
 
 ### Test Refund Processing
 
 ```bash
-curl -X POST "http://localhost:3001/api/admin/payments/refunds" \
+curl -X POST "http://localhost:8080/api/admin/payments/refunds" \
   -H "Authorization: Bearer $JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -301,11 +303,11 @@ curl -X POST "http://localhost:3001/api/admin/payments/refunds" \
 
 ## Database Setup
 
+> **Verified against code:** A standalone run-migration script does not exist in this repo. Migrations are applied at backend startup by `DatabaseMigratorPG` (`services/api-backend/database/migrate-pg.js:14`, instantiated at `services/api-backend/server.js:563` with `migrate()` called at `:578`) from the SQL files in `services/api-backend/database/migrations/`.
+
 ### Apply Migration
 
-```bash
-node services/api-backend/database/migrations/run-migration.js up 001
-```
+Migrations (for example `services/api-backend/database/migrations/001_admin_center_schema.sql`) run automatically when the backend starts; there is no `run-migration.js up` CLI.
 
 ### Apply Seed Data (Development)
 
@@ -313,11 +315,11 @@ node services/api-backend/database/migrations/run-migration.js up 001
 node services/api-backend/database/seeds/run-seed.js apply 001
 ```
 
+This matches the usage documented at `services/api-backend/database/seeds/run-seed.js:6-8`.
+
 ### Check Migration Status
 
-```bash
-node services/api-backend/database/migrations/run-migration.js status
-```
+Applied migrations are recorded in the `schema_migrations` table (`services/api-backend/database/migrate-pg.js:59-80`, `:397-402`). There is no `run-migration.js status` command; `services/api-backend/package.json:16-17` defines `db:validate` and `db:stats` helpers.
 
 ---
 
@@ -393,14 +395,14 @@ LIMIT 10;
 
 ## Documentation Links
 
-- **Full API Reference**: `docs/API/ADMIN_API.md`
-- **Payment API Reference**: `services/api-backend/routes/admin/PAYMENTS_API.md`
-- **Implementation Summary**: `services/api-backend/routes/admin/IMPLEMENTATION_SUMMARY.md`
-- **Route README**: `services/api-backend/routes/admin/README.md`
-- **Database Quickstart**: `services/api-backend/database/QUICKSTART.md`
-- **Admin Center Design**: `.kiro/specs/admin-center/design.md`
-- **Admin Center Requirements**: `.kiro/specs/admin-center/requirements.md`
-- **Admin Center Tasks**: `.kiro/specs/admin-center/tasks.md`
+> **Verified against code:** the paths below are files that actually exist in this repo. The former `services/api-backend/.../*.md` links and `.kiro/specs/admin-center/*` links do not exist here.
+
+- **Full API Reference**: `docs/api/ADMIN_API.md`
+- **Payment API Reference**: `docs/backend/routes/admin/PAYMENTS_API.md`
+- **Implementation Summary**: `docs/archive/historical-reports/backend/routes/admin/IMPLEMENTATION_SUMMARY.md`
+- **Route Registration**: `services/api-backend/routes/admin.js` (no `README.md` exists under `services/api-backend/routes/admin/`)
+- **Database Quickstart**: `docs/backend/database/QUICKSTART.md`
+- **Admin Center design/requirements/tasks specs**: not present in this repo (`.kiro/` does not exist); historical/aspirational references only.
 
 ---
 

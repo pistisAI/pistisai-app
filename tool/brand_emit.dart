@@ -16,6 +16,10 @@ void writeBrand(String root, BrandConfig brand) {
     '$root/android/app/src/main/res/values/brand_strings.xml',
     renderAndroidStrings(brand),
   );
+  _patch(
+    '$root/android/app/src/main/AndroidManifest.xml',
+    (source) => applyAndroidManifest(source, brand),
+  );
   _patch('$root/web/index.html', (source) => applyWebIndex(source, brand));
   _patch('$root/web/manifest.json', (source) => applyManifest(source, brand));
   _patch(
@@ -281,7 +285,21 @@ String applyInstaller(String source, BrandConfig brand) {
     RegExp(r'#define MyAppURL ".*"'),
     '#define MyAppURL "${brand.websiteUrl}"',
   );
+  out = out.replaceFirst(
+    RegExp(r'#define MyAppProtocol ".*"'),
+    '#define MyAppProtocol "${brand.urlScheme}"',
+  );
   return out;
+}
+
+/// Point the OAuth callback intent filter at the brand's [BrandConfig.urlScheme].
+/// Android matches schemes case-sensitively against lowercased URIs, so the
+/// scheme in `brand.yaml` must be lowercase.
+String applyAndroidManifest(String source, BrandConfig brand) {
+  return source.replaceAll(
+    RegExp(r'android:scheme="[^"]*"'),
+    'android:scheme="${brand.urlScheme}"',
+  );
 }
 
 String applyMetainfo(String source, BrandConfig brand) {

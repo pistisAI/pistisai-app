@@ -2,9 +2,11 @@
 
 This document outlines the rules and standard operating procedures for utilizing the available Model Context Protocol (MCP) tools to enhance task execution, planning, and interaction with external services.
 
+> **Verified against code (2026-11-24):** `.kiro/steering/` and `.kilocode/` do not exist in this repo. The standing rules live in `AGENTS.md` and the committed MCP configs in `opencode.json`, `.crush-mcp-config.json` and `.cursor/mcp.json`. This document is retained as a historical workflow reference; apply its documentation-first habit using `docs/` and `AGENTS.md` instead.
+
 ## I. General Principles
 
-1. **Universal Documentation-First Methodology**: **ALL** tasks (simple or complex) MUST begin with a review of relevant project documentation and `.kiro/steering/` files. This ensures all actions as Kilocode align with the specific git workflows, CI/CD guidelines, and architectural structures defined in the project.
+1. **Universal Documentation-First Methodology**: **ALL** tasks (simple or complex) MUST begin with a review of relevant project documentation (`docs/`) and the standing rules in `AGENTS.md`. This ensures actions align with the specific git workflows, CI/CD guidelines, and architectural structures defined in the project.
 2. **Mandatory Primary Framework**: The `sequentialthinking` MCP is the **MANDATORY** primary framework for every complex task. It must be used to ensure systematic reasoning, iterative analysis, and self-correction.
 3. **Minimize External Steering**: By autonomously applying the documentation-first methodology and the sequential thinking framework, Kilocode minimizes the need for external steering while maintaining technical excellence.
 4. **Atomic Operations**: Each tool call is an atomic step. Execute one tool at a time and wait for a successful response.
@@ -27,7 +29,7 @@ For any request that requires multiple steps, changes to several files, or a seq
 ### Task Management Workflow
 
 1. **Documentation-First Phase (UNIVERSAL)**:
-    * **Action**: Review relevant documentation in `docs/` and `.kiro/steering/` **BEFORE** any tool execution.
+    * **Action**: Review relevant documentation in `docs/` and `AGENTS.md` **BEFORE** any tool execution.
     * **Preemptive Updates**: Appropriate documentation updates **MUST precede code changes**. This ensures the design and requirements are clarified first.
     * **Tool**: `read_file`, `list_files`, `codebase_search`, `write_to_file`, `apply_diff`.
     * **Action**: Explicitly reference the documentation reviewed and updated in the initial analysis to maintain a cohesive source of truth.
@@ -163,14 +165,14 @@ In addition to MCP servers, I will leverage powerful command-line interface (CLI
   * Leverage `flutter pub get` caching by copying pubspec files first in Dockerfiles.
   * Always specify `--release` flag for production builds.
 
-* **Authentication**:
-  * Use Auth0 for web applications (no GCIP/Google Sign-In).
+* **Authentication** (historical section — current web sign-in is Cloudflare Access via `lib/auth/providers/cloudflare_access_auth_provider.dart`; there is no Auth0 bridge script under `web/`):
+  * ~~Use Auth0 for web applications (no GCIP/Google Sign-In).~~ Use Cloudflare Access for web sign-in; local desktop skips sign-in.
   * Use `dart:js_interop` for JavaScript interop (replaces deprecated `js` package).
-  * Implement platform-specific auth services (Auth0WebService for web, others for mobile/desktop).
+  * Implement platform-specific auth services (current provider: `CloudflareAccessAuthProvider` for web; other platforms skip sign-in).
 
 * **Web-Specific**:
   * Use `package:web/web.dart` for web platform detection and DOM manipulation.
-  * Bridge JavaScript SDKs (like Auth0) through custom bridge files (`auth0-bridge.js`).
+  * Current web sign-in uses Cloudflare Access (`CloudflareAccessAuthProvider`); the former `auth0-bridge.js` bridge does not exist in this repo.
   * Handle redirect callbacks properly for OAuth flows.
 
 ### E. Version Management
@@ -231,7 +233,7 @@ In addition to MCP servers, I will leverage powerful command-line interface (CLI
       ```
 
 * **API Development**:
-  * Use Express.js middleware for authentication (e.g., `express-oauth2-jwt-bearer` for Auth0).
+  * Use the repo's Cloudflare Access JWT middleware (`services/api-backend/middleware/auth.js`); the older `express-oauth2-jwt-bearer`/Auth0 example is historical.
   * Implement proper CORS configuration for web clients.
   * Use environment variables for configuration (domain, audience, client IDs).
   * Validate JWT tokens before processing requests.

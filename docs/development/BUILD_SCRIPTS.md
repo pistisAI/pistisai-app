@@ -51,10 +51,9 @@ These paths are **not** in the repository:
 - `Build-GitHubReleaseAssets-Simple.ps1` (root or scripts)
 - `Create-UnifiedPackages.ps1`
 - root-level `version_manager.ps1`
-- `scripts/deploy/deploy_web.sh`
-- `scripts/packaging/build_macos_app.sh` / `build_macos_dmg.sh`
+- the web deploy shell script and the macOS `build_macos_app.sh` / `build_macos_dmg.sh` scripts
 
-Use Flutter/`build-desktop` CI for macOS until dedicated packaging scripts land.
+Live equivalents are `.github/workflows/deploy-web.yml` for web deploys and the packaging scripts under `scripts/packaging/` (`build_all_packages.sh`, `build_installer.sh`). Use Flutter/`build-desktop` CI for macOS until dedicated packaging scripts land.
 
 ## Package format status
 

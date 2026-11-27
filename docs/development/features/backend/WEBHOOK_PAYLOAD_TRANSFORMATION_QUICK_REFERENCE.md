@@ -6,6 +6,8 @@ Webhook payload transformation allows users to transform webhook payloads before
 
 **Validates: Requirements 10.6**
 
+> **Verified against code (2026-11-24):** the router paths were doubled. `services/api-backend/routes/webhook-payload-transformations.js` registers internal paths such as `'/api/tunnels/:tunnelId/webhooks/:webhookId/transformations'` (:87, :143, :189, :244, :284, :321), while `services/api-backend/server.js:360-363` mounts that router at `/webhook-payload-transformations` (and `/api/webhook-payload-transformations`, via `registerRoutes` at :265-267). The live path is therefore `/api/webhook-payload-transformations/api/tunnels/:tunnelId/webhooks/:webhookId/transformations` — corrected below. Service file `services/api-backend/services/webhook-payload-transformer.js` and migration `services/api-backend/database/migrations/webhook-payload-transformations.sql` are present.
+
 ## Key Components
 
 ### 1. WebhookPayloadTransformer Service
@@ -114,37 +116,37 @@ Apply custom JavaScript function to payload.
 ### Create/Update Transformation
 
 ```
-POST /api/tunnels/:tunnelId/webhooks/:webhookId/transformations
+POST /api/webhook-payload-transformations/api/tunnels/:tunnelId/webhooks/:webhookId/transformations
 ```
 
 ### Get Transformation
 
 ```
-GET /api/tunnels/:tunnelId/webhooks/:webhookId/transformations
+GET /api/webhook-payload-transformations/api/tunnels/:tunnelId/webhooks/:webhookId/transformations
 ```
 
 ### Update Transformation
 
 ```
-PUT /api/tunnels/:tunnelId/webhooks/:webhookId/transformations
+PUT /api/webhook-payload-transformations/api/tunnels/:tunnelId/webhooks/:webhookId/transformations
 ```
 
 ### Delete Transformation
 
 ```
-DELETE /api/tunnels/:tunnelId/webhooks/:webhookId/transformations
+DELETE /api/webhook-payload-transformations/api/tunnels/:tunnelId/webhooks/:webhookId/transformations
 ```
 
 ### Validate Transformation
 
 ```
-POST /api/tunnels/:tunnelId/webhooks/:webhookId/transformations/validate
+POST /api/webhook-payload-transformations/api/tunnels/:tunnelId/webhooks/:webhookId/transformations/validate
 ```
 
 ### Test Transformation
 
 ```
-POST /api/tunnels/:tunnelId/webhooks/:webhookId/transformations/test
+POST /api/webhook-payload-transformations/api/tunnels/:tunnelId/webhooks/:webhookId/transformations/test
 ```
 
 ## Usage Examples
@@ -152,7 +154,7 @@ POST /api/tunnels/:tunnelId/webhooks/:webhookId/transformations/test
 ### Map Transformation
 
 ```bash
-POST /api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
+POST /api/webhook-payload-transformations/api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
 {
   "type": "map",
   "mappings": {
@@ -165,7 +167,7 @@ POST /api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
 ### Filter Transformation
 
 ```bash
-POST /api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
+POST /api/webhook-payload-transformations/api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
 {
   "type": "filter",
   "filters": [
@@ -177,7 +179,7 @@ POST /api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
 ### Enrich Transformation
 
 ```bash
-POST /api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
+POST /api/webhook-payload-transformations/api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
 {
   "type": "enrich",
   "enrichments": {
@@ -190,7 +192,7 @@ POST /api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations
 ### Test Transformation
 
 ```bash
-POST /api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations/test
+POST /api/webhook-payload-transformations/api/tunnels/{tunnelId}/webhooks/{webhookId}/transformations/test
 {
   "payload": {
     "type": "tunnel.status_changed",

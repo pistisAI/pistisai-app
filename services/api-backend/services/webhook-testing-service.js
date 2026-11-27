@@ -36,6 +36,9 @@ export class WebhookTestingService {
   constructor() {
     this.pool = null;
     this.testEventCache = new Map();
+    // testId -> owner (the caller's user id). Kept apart from the cached
+    // event so the owner is not echoed back in responses.
+    this.testEventOwners = new Map();
   }
 
   /**
@@ -196,9 +199,15 @@ export class WebhookTestingService {
    * @param {string} webhookUrl - URL to send test webhook to
    * @param {object} payload - Webhook payload to send
    * @param {string} secret - Optional webhook secret for signature
+   * @param {string} [ownerId] - User id that owns the cached test event
    * @returns {object} Delivery result with status and response
    */
-  async simulateWebhookDelivery(webhookUrl, payload, secret = null) {
+  async simulateWebhookDelivery(
+    webhookUrl,
+    payload,
+    secret = null,
+    ownerId = undefined,
+  ) {
     const testId = crypto.randomUUID();
     const timestamp = Date.now();
 
@@ -265,7 +274,7 @@ export class WebhookTestingService {
       }
 
       // Cache test event
-      this.cacheTestEvent(testId, result);
+      this.cacheTestEvent(testId, result, ownerId);
 
       logger.info('[WebhookTesting] Webhook delivery simulated', {
         testId,
@@ -284,7 +293,7 @@ export class WebhookTestingService {
         payload,
       };
 
-      this.cacheTestEvent(testId, result);
+      this.cacheTestEvent(testId, result, ownerId);
 
       logger.error('[WebhookTesting] Webhook delivery simulation failed', {
         testId,
@@ -351,27 +360,49 @@ export class WebhookTestingService {
    * @private
    * @param {string} testId - Test event ID
    * @param {object} result - Test result
+   * @param {string} [ownerId] - User id that owns the event
    */
-  cacheTestEvent(testId, result) {
+  cacheTestEvent(testId, result, ownerId = undefined) {
     this.testEventCache.set(testId, {
       ...result,
       cachedAt: new Date().toISOString(),
     });
+    if (ownerId !== undefined) {
+      this.testEventOwners.set(testId, ownerId);
+    }
 
     // Keep cache size manageable (max 1000 entries)
     if (this.testEventCache.size > 1000) {
       const firstKey = this.testEventCache.keys().next().value;
       this.testEventCache.delete(firstKey);
+      this.testEventOwners.delete(firstKey);
     }
+  }
+
+  /**
+   * True when the event may be shown to ownerId. An undefined ownerId means
+   * an internal caller that sees every event; routes always pass one.
+   *
+   * @private
+   */
+  isVisibleTo(testId, ownerId) {
+    if (ownerId === undefined) {
+      return true;
+    }
+    return this.testEventOwners.get(testId) === ownerId;
   }
 
   /**
    * Get test event by ID
    *
    * @param {string} testId - Test event ID
+   * @param {string} [ownerId] - Only return the event if this user owns it
    * @returns {object|null} Test event or null if not found
    */
-  getTestEvent(testId) {
+  getTestEvent(testId, ownerId = undefined) {
+    if (!this.isVisibleTo(testId, ownerId)) {
+      return null;
+    }
     return this.testEventCache.get(testId) || null;
   }
 
@@ -379,19 +410,46 @@ export class WebhookTestingService {
    * Get all cached test events
    *
    * @param {number} limit - Maximum number of events to return
+   * @param {string} [ownerId] - Only return events this user owns
    * @returns {array} Array of test events
    */
-  getAllTestEvents(limit = 100) {
-    const events = Array.from(this.testEventCache.values());
+  getAllTestEvents(limit = 100, ownerId = undefined) {
+    const events = [];
+    for (const [testId, event] of this.testEventCache) {
+      if (this.isVisibleTo(testId, ownerId)) {
+        events.push(event);
+      }
+    }
     return events.slice(-limit);
   }
 
   /**
    * Clear test event cache
+   *
+   * @param {string} [ownerId] - Only clear events this user owns
+   * @returns {number} Number of events removed
    */
-  clearTestEventCache() {
-    this.testEventCache.clear();
-    logger.info('[WebhookTesting] Test event cache cleared');
+  clearTestEventCache(ownerId = undefined) {
+    if (ownerId === undefined) {
+      const count = this.testEventCache.size;
+      this.testEventCache.clear();
+      this.testEventOwners.clear();
+      logger.info('[WebhookTesting] Test event cache cleared');
+      return count;
+    }
+
+    let count = 0;
+    for (const testId of Array.from(this.testEventCache.keys())) {
+      if (this.testEventOwners.get(testId) === ownerId) {
+        this.testEventCache.delete(testId);
+        this.testEventOwners.delete(testId);
+        count += 1;
+      }
+    }
+    logger.info('[WebhookTesting] Test events cleared for one user', {
+      count,
+    });
+    return count;
   }
 
   /**

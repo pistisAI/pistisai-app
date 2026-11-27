@@ -6,7 +6,9 @@ This document defines the resource management strategy for the Pistisai API Back
 
 ### 1. Network Connections
 
-**Managed by**: `undici` (high-performance HTTP client)
+**Managed by**: the Postgres `pg` pool in `services/api-backend/database/db-pool.js` (see `getPool`, `getPoolMetrics`, `healthCheck` at `db-pool.js:688,714`)
+
+> **Verified against code (2026-11-24):** `undici` is not a declared dependency in `services/api-backend/package.json` or the root `package.json`. The `undici` `Pool` example below is an **aspirational pattern**, not a live API in this repo.
 
 **Capabilities**:
 
@@ -34,14 +36,14 @@ const { body } = await pool.request({
 });
 ```
 
-**Environment Variables**:
+**Environment Variables** (planned — neither variable is read anywhere in this repo):
 
 - `UNDICI_POOL_SIZE`: Maximum connections in pool (default: 100)
 - `UNDICI_KEEP_ALIVE_TIMEOUT`: Keep-alive timeout in ms (default: 60000)
 
 ### 2. System Metrics
 
-**Managed by**: `systeminformation` (comprehensive system monitoring)
+**Managed by**: `systeminformation`-based metrics are **planned** — `systeminformation` is not a declared dependency. Current pool health metrics come from `services/api-backend/database/db-pool.js` (`getPoolMetrics`, `db-pool.js:688`).
 
 **Capabilities**:
 
@@ -164,7 +166,7 @@ if (!result.success) {
 
 ### Database Pool Monitoring (Existing)
 
-The existing `pool-monitor.js` uses `systeminformation` indirectly through Node.js built-ins. Consider enhancing it:
+The existing `services/api-backend/database/pool-monitor.js` is live: it imports `getPool`, `getPoolMetrics` and `healthCheck` from `db-pool.js` and `sendAlert` from `../services/alerting-service.js`, with a 30 s health-check interval, a 0.9 exhaustion threshold and 60 s metrics logging (`pool-monitor.js:11-27`). It does **not** import `systeminformation`; the enhancement sketch below is proposed code, not current behavior.
 
 ```javascript
 import si from 'systeminformation';

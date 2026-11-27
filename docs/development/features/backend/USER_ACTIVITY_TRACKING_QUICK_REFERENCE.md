@@ -1,25 +1,27 @@
 # User Activity Tracking - Quick Reference
 
-## Files Created
+## Files Created (verified against code)
+
+> **Verified against code (2026-11-24):** the service and route are at `services/api-backend/services/user-activity-service.js` and `services/api-backend/routes/user-activity.js` (not root-level `services/`/`routes/`). The router registers `/activity` (:53), `/metrics` (:153), `/activity/summary` (:236) but is mounted by `services/api-backend/server.js:359` at `/user-activity` (and `/api/user-activity`) — **not** `/api/users` — so the live endpoints are `/api/user-activity/activity`, `/api/user-activity/metrics`, `/api/user-activity/activity/summary` (corrected below). A dedicated activity-logging middleware **does not exist**. The migration is `services/api-backend/database/migrations/003-user-activity-tracking.sql`, applied at startup (`server.js:563-578`); **there is no `npm run migrate` script** in `services/api-backend/package.json`.
 
 1. **Database Migration**
-   - `database/migrations/003-user-activity-tracking.sql` - Creates tables and indexes
+   - `services/api-backend/database/migrations/003-user-activity-tracking.sql` - Creates tables and indexes
 
 2. **Service**
-   - `services/user-activity-service.js` - Core activity tracking logic
+   - `services/api-backend/services/user-activity-service.js` - Core activity tracking logic
 
 3. **Middleware**
-   - `middleware/activity-logging.js` - Automatic activity logging
+   - An activity-logging middleware — **MISSING** (planned)
 
 4. **Routes**
-   - `routes/user-activity.js` - User-facing activity endpoints
+   - `services/api-backend/routes/user-activity.js` - User-facing activity endpoints
 
 5. **Tests**
    - `test/api-backend/user-activity-unit.test.js` - Unit tests (passing)
    - `test/api-backend/user-activity.test.js` - Integration tests (requires DB)
 
 6. **Documentation**
-   - `USER_ACTIVITY_TRACKING_IMPLEMENTATION.md` - Full implementation guide
+   - `docs/archive/historical-reports/development/features/backend/USER_ACTIVITY_TRACKING_IMPLEMENTATION.md` - Full implementation guide (archived; the old root-level path no longer exists)
    - `USER_ACTIVITY_TRACKING_QUICK_REFERENCE.md` - This file
 
 ## Key Functions
@@ -53,9 +55,9 @@ getAllUserActivityLogsCount(options)
 ### API Endpoints
 
 ```
-GET  /api/users/activity          - Get user's activity logs
-GET  /api/users/metrics           - Get user's usage metrics
-GET  /api/users/activity/summary  - Get user's activity summary
+GET  /api/user-activity/activity          - Get user's activity logs
+GET  /api/user-activity/metrics           - Get user's usage metrics
+GET  /api/user-activity/activity/summary  - Get user's activity summary
 ```
 
 ## Activity Actions
@@ -81,14 +83,13 @@ ADMIN_USER_VIEW, ADMIN_USER_UPDATE, ADMIN_USER_DELETE, ADMIN_TIER_CHANGE
 
 1. **Apply Database Migration**
 
-   ```bash
-   npm run migrate
-   ```
+   The migration `services/api-backend/database/migrations/003-user-activity-tracking.sql` is applied automatically at backend startup (`services/api-backend/server.js:563-578` → `dbMigrator.migrate()`; runner `services/api-backend/database/migrate-pg.js`). **There is no `npm run migrate` script** in `services/api-backend/package.json` — use the startup path or `db:validate` / `db:stats` / `db:test`.
 
-2. **Add Middleware to Server**
+2. **Add Middleware to Server** (planned — the middleware file does not exist)
 
    ```javascript
-   import { activityLoggingMiddleware } from './middleware/activity-logging.js';
+   // PLANNED: services/api-backend/middleware/activity-logging.js is MISSING.
+   import { activityLoggingMiddleware } from '../../services/api-backend/middleware/activity-logging.js';
    app.use(authenticateJWT);
    app.use(activityLoggingMiddleware);
    ```
@@ -96,7 +97,9 @@ ADMIN_USER_VIEW, ADMIN_USER_UPDATE, ADMIN_USER_DELETE, ADMIN_TIER_CHANGE
 3. **Add Routes to Server**
 
    ```javascript
-   import userActivityRoutes from './routes/user-activity.js';
+   import userActivityRoutes from '../../services/api-backend/routes/user-activity.js';
+   // Actual mount is /user-activity (server.js:359), which also registers /api/user-activity;
+   // the /api/users mount below is planned, not current.
    app.use('/api/users', userActivityRoutes);
    ```
 

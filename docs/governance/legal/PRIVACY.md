@@ -14,7 +14,8 @@ by default. Cloud features take effect when you sign in or turn them on.
 are stored in a database on your own machine. We do not sell your data,
 we do not use it for advertising, and we do not mine it to train models. When you
 choose to sign in or turn on cloud sync, a limited set of information is processed
-as described below.
+as described below. The web app is the exception for chat history: while you are
+signed in to it, your conversations are stored on our server (section 2.2).
 
 ## 1. Who we are
 
@@ -36,6 +37,9 @@ Cloudflare then tells our service who signed in. We receive and store:
 - your email address;
 - an account identifier issued by Cloudflare Access.
 
+When you use the web app while signed in, or turn on cloud services on desktop or
+mobile, we also store your conversations (section 2.2).
+
 We do not receive your password, and we do not request access to your Gmail,
 Google Drive, contacts, repositories, or other Google or GitHub services.
 
@@ -55,14 +59,33 @@ The app never writes these keys to a plain file. If the keystore is unavailable,
 chat history is not saved until it is available again. A history file the app can
 no longer decrypt (for example after the keystore was reset) is kept aside under a
 new name instead of being overwritten, and is removed when you delete your local
-data. On web, data is kept in the browser's origin-scoped storage. Turn on your
-operating system's disk encryption (BitLocker, FileVault or LUKS) as well. This
-content stays on your device unless you explicitly enable cloud sync or connect a
-remote runtime, in which case it is transmitted only to the destination you have
-chosen. The avatar personality you set (agent name, tone settings and stage) is
+data. On web, settings are kept in the browser's origin-scoped storage; chat
+history is not (see below). Turn on your operating system's disk encryption
+(BitLocker, FileVault or LUKS) as well. Apart from web chat history, this
+content stays on your device unless you explicitly enable cloud services or
+connect a remote runtime, in which case it is transmitted only to the destination
+you have chosen. The avatar personality you set (agent name, tone settings and stage) is
 sent to the agent runtime you connected, on your machine by default, which
 includes it in the instructions for each reply; it therefore reaches the same
 model provider your runtime uses for the conversation itself.
+
+**Chat history on our server.** On desktop and mobile, the app sends your
+conversations to our server only when you are signed in **and** cloud services are
+turned on. Cloud services are off by default, and the app does not yet have a
+setting to turn them on, so today desktop and mobile chat history is not sent to
+our server. The web app has no chat store in the browser: while you are signed in
+to the web app, your conversations, including the text of every message, are
+stored on our server so that you can see them again. Conversations stored on our
+server are kept until they are deleted. The app does not yet offer a control to
+delete them; to have them removed, contact us at the address in section 12.
+
+On desktop, the avatar personality, avatar memory entries and a short context
+summary are also written as plain, unencrypted Markdown files (`personality.md`,
+`memory.md`, `context.md`) into the `pistisai` folder of your agent runtime's
+skill directory (for example `~/.openclaw/skills/pistisai`), so the runtime can
+read them. They are protected only by your operating system's file permissions
+and disk encryption. Deleting your local data removes these three files; other
+files in that folder are not touched.
 
 ### 2.3 Device and diagnostic information
 
@@ -75,6 +98,16 @@ your country. Reports are configured not to include your account details or a
 history of your activity; an error message can still contain fragments of the data
 being handled when the error happened. As with any internet connection, Sentry's
 servers see the IP address the report comes from.
+
+In the web app, while crash reporting is on, the app's own diagnostic log lines are
+also sent to our API server, each with its time, level, the page address without
+its query string or fragment, and your browser's user agent. When crash reporting is
+off, these lines stay in your browser and nothing is sent.
+
+When you click **Check Now** in the update section of Settings, the app asks GitHub
+(`api.github.com`) for the latest release, and downloading a release from the
+download page opens a GitHub link; GitHub sees your IP address for those requests.
+Images in release notes load only when you click them.
 
 ### 2.4 Spoken replies
 
@@ -103,13 +136,21 @@ you point them elsewhere. Client-facing data flow:
 Optional vision (camera/OCR), voice, and desktop-control features operate under
 your explicit, device-scoped permission. Media and screen data captured by these
 features are processed locally or by the runtime you select; Pistisai does not
-collect or retain this content on our servers.
+collect or retain this content on our servers. Screenshots, camera frames and
+spoken-reply audio are written as plain temporary files into an app-owned folder
+inside your operating system's temp directory; on macOS and Linux that folder is
+readable only by your user account (mode 0700), and the app falls back to its own
+support folder if the temp one cannot be used safely. Some are deleted right after use
+(for example presence checks and screenshot analysis); the rest stay until the
+operating system clears its temp directory or you delete your local data, which
+removes the whole folder.
 
 ## 3. How we use information
 
 - to authenticate you and secure your account;
 - to provide, maintain, and improve the app's functionality;
 - to synchronize your data across your devices when you enable cloud sync;
+- to keep your web chat history while you are signed in to the web app;
 - to diagnose problems and improve reliability and security.
 
 We do not sell your personal information and we do not use it for advertising.
@@ -133,8 +174,9 @@ including the Limited Use requirements. Specifically:
 
 ## 5. How we store and protect your information
 
-- **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption.
+- **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption. The Android app opts out of Android system backup, so its data is not copied to cloud backups or to another device during transfer.
 - **Authentication:** sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.
+- **Chat history on our server:** conversations from the web app while you are signed in, and from desktop and mobile only with cloud services on, are stored in our database, including message text. They are not end-to-end encrypted.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
 - **Local hub access:** the desktop hub listens only on this computer by default.
@@ -164,7 +206,12 @@ Content stored locally remains on your device until you delete it or uninstall t
 app. You can export or permanently delete on-device agent data from
 **Settings → Storage → Local agent data** (local wipe completes in seconds; see
 `docs/user-guide/LOCAL_DATA_EXPORT_DELETION.md` for what is removed and how to
-verify). For account data held by our authentication provider, you may request
+verify). The local wipe removes the local database, the encrypted chat history,
+the avatar Markdown files described in §2.2 and the app's temporary captures. It
+does not delete the chat transcript your agent runtime (for example Hermes)
+keeps on the machine where it runs; after a wipe the app no longer imports
+messages from before the wipe, but you must clear that transcript in the runtime
+itself. For account data held by our authentication provider, you may request
 deletion of your account and associated authentication records by contacting us
 at the address below; we will delete such data unless we are required to retain
 it by law (provider processing target: within a few hours of a verified request).

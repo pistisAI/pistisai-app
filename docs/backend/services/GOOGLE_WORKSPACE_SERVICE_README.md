@@ -44,13 +44,15 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ## Usage
 
+> **Verified against code:** there is no dedicated database connection module; the PostgreSQL pool is created by `getPool()` in `services/api-backend/database/db-pool.js:676` (also listed in the default export at `:821`). The methods shown below match `services/api-backend/services/google-workspace-service.js` (e.g. `initialize()` :31, `sendEmail()` :299, `getQuotaUsage()` :399). `googleapis` is a declared dependency at `services/api-backend/package.json:36`.
+
 ### Initialize the Service
 
 ```javascript
 import GoogleWorkspaceService from './services/google-workspace-service.js';
-import db from './database/connection.js';
+import { getPool } from './database/db-pool.js';
 
-const googleWorkspaceService = new GoogleWorkspaceService(db);
+const googleWorkspaceService = new GoogleWorkspaceService(getPool());
 googleWorkspaceService.initialize();
 ```
 
@@ -377,7 +379,7 @@ GET    /admin/email/status          - Get email service status
 GET    /admin/email/quota           - Get Google Workspace quota usage
 ```
 
-See `routes/admin/email.js` for implementation details.
+See `services/api-backend/routes/admin/email.js` for implementation details.
 
 ## Troubleshooting
 

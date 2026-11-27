@@ -14,7 +14,7 @@ The service layer exists for region capture, camera capture, OCR, and vision orc
 | Region capture | Implemented | `lib/services/vision/region_capture_service.dart` |
 | Camera capture | Implemented | `lib/services/vision/camera_capture_service.dart` |
 | OCR engine | Implemented | `lib/services/vision/ocr_engine_service.dart` |
-| Screenshot support | Implemented through desktop control | `lib/services/system_control_service.dart` |
+| Screenshot support | Implemented through GUI automation | `lib/services/gui_automation_service.dart` (`takeScreenshot()`, lines 48-60); no `system_control_service.dart` exists |
 | Screenshot analysis | Implemented through GUI automation | `lib/services/gui_automation_service.dart` |
 | Continuous screen monitor | Planned | Not present |
 | Dedicated privacy indicator widgets | Planned | Not present |
@@ -84,4 +84,4 @@ Typical camera flow:
 
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Desktop Control](DESKTOP_CONTROL.md)
-- [Product Specification(SPEC.md was deleted; see decision D-005)
+- Product Specification: SPEC.md was deleted (see decision D-005).

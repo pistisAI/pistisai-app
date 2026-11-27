@@ -2,6 +2,8 @@
 
 ## Task 12 Implementation Summary
 
+> **Verified against code (2026-11-24):** the endpoints are live — `services/api-backend/routes/admin/users.js` is imported at `services/api-backend/server.js` and mounted at `/admin/users` (and `/api/admin/users`) at `server.js:310`. The original implementation write-up no longer exists at its old location; it is archived at `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (see "Implementation Files" below).
+
 **Status:** ✅ COMPLETED
 
 **Requirement:** 3.6 - THE API SHALL implement user search and listing for admins
@@ -151,34 +153,17 @@ Content-Type: application/json
 
 ## Testing
 
-**Test File:** `test/api-backend/admin-users-search.test.js`
-
-**Test Results:** ✅ 37 tests passed
-
-**Test Coverage:**
-
-- Pagination and limiting
-- Search functionality
-- Filtering by tier and status
-- Sorting functionality
-- Combined filters
-- User profile retrieval
-- Subscription tier updates
-- User suspension/reactivation
-- Property-based tests for consistency
-
-## Running Tests
-
-```bash
-cd services/api-backend
-npm test -- test/api-backend/admin-users-search.test.js
-```
+No automated test exercises these routes yet. The former
+`test/api-backend/admin-users-search.test.js` only asserted values it defined
+itself and never imported `routes/admin/users.js`, so it was removed.
+Admin access to these routes goes through `adminAuth` in
+`services/api-backend/middleware/admin-auth.js`, which is covered by
+`test/api-backend/security/authentication-authorization.test.js`.
 
 ## Implementation Files
 
 - **Routes:** `services/api-backend/routes/admin/users.js`
-- **Tests:** `test/api-backend/admin-users-search.test.js`
-- **Documentation:** `services/api-backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md`
+- **Documentation:** `docs/archive/historical-reports/development/features/backend/ADMIN_USER_SEARCH_IMPLEMENTATION.md` (the original implementation write-up was archived)
 
 ## Authentication
 

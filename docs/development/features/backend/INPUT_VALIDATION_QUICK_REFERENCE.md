@@ -10,7 +10,9 @@ Comprehensive input validation and injection prevention for the Pistisai API Bac
 - **User Profile Service**: `services/api-backend/services/user-profile-service.js`
 - **User Profile Routes**: `services/api-backend/routes/user-profile.js`
 - **Tests**: `test/api-backend/input-validation.test.js`
-- **Documentation**: `services/api-backend/INPUT_VALIDATION_IMPLEMENTATION.md`
+- **Documentation**: `docs/archive/historical-reports/development/features/backend/INPUT_VALIDATION_IMPLEMENTATION.md` (the original implementation write-up was archived)
+
+> **Verified against code (2026-11-24):** `services/api-backend/utils/input-validation.js`, `services/api-backend/services/user-profile-service.js` and `services/api-backend/routes/user-profile.js` are all present, so the code paths above are correct. The only stale reference was the documentation path, which pointed at a non-existent implementation report in the backend service root; the file was archived under `docs/archive/historical-reports/`.
 
 ## Quick Start
 

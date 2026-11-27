@@ -2,7 +2,7 @@
 
 ## Overview
 
-Pistisai v3.10.3+ implements a unified Flutter-based web architecture that consolidates both marketing content and application functionality into a single codebase. This eliminates the need for separate static site containers while maintaining clear separation between marketing and application routes.
+Pistisai implements a unified Flutter-based web architecture that consolidates marketing content and application functionality into a single codebase. This removes the need for a separate marketing static-site container while keeping documentation on its own static site. (The earlier "v3.10.3+" version marker was stale; the current app version is `1.5.58+180` per `pubspec.yaml:6`.)
 
 ## Architecture Changes
 
@@ -113,28 +113,11 @@ redirect: (context, state) {
 },
 ```
 
-### Web Authentication Bridge
+### Web Authentication
 
-For web platform authentication, the application uses a JavaScript bridge (`web/auth0-bridge.js`) that provides seamless integration between Flutter web and Auth0:
+There is **no Auth0/JS bridge** in this repository. `web/` ships only the Flutter bootstrap and static assets: `web/index.html` loads `flutter_bootstrap.js` and contains no Auth0 or bridge script. Authentication is handled in Dart by `AuthService` (`lib/services/auth_service.dart`) through a provider-agnostic `AuthProvider`; the provider selected in `lib/di/locator.dart:392-423` is `CloudflareAccessAuthProvider` (`lib/auth/providers/cloudflare_access_auth_provider.dart:19`), not Auth0. The JS bridge snippet that appeared in older revisions of this document was aspirational and has been removed.
 
-```javascript
-// Auth0 Bridge provides standardized interface
-window.Auth0Bridge = {
-  login: function() { return window.auth0BridgeLogin(); },
-  logout: function() { return window.auth0BridgeLogout(); },
-  getUser: function() { return window.auth0BridgeGetUser(); },
-  getToken: function() { return window.auth0BridgeGetToken(); },
-  isAuthenticated: function() { return window.auth0BridgeIsAuthenticated(); },
-  handleRedirect: function() { return window.auth0BridgeHandleRedirect(); },
-};
-```
-
-**Key Features:**
-
-- Function wrapper pattern for improved Flutter web interop
-- Auth0 SPA SDK v2 compatibility
-- Automatic session detection and token refresh
-- OAuth callback handling with URL cleanup
+App routes still require authentication; the public marketing routes (`/`, `/download`) are served from `lib/screens/marketing/` and wired in `lib/config/router.dart:420`.
 
 ## Implementation Details
 
@@ -187,60 +170,25 @@ server {
 - Shared tooling and testing infrastructure
 - Simplified debugging and monitoring
 
-## Migration Path
+## Migration Status (verified against code)
 
-### Phase 1: Implementation ✅
+The implementation phase is complete in the repository:
 
-- [x] Create Flutter marketing screens
-- [x] Update router with platform detection
-- [x] Configure nginx domain routing
-- [x] Update Docker configuration
-- [x] Implement route-based code splitting
+- `lib/screens/marketing/` contains `homepage_screen.dart`, `download_screen.dart`, `documentation_screen.dart` and `marketing_lazy.dart`.
+- `lib/config/router.dart:420` mounts `marketing_lazy.marketingRoutes` with platform detection.
+- Route-based deferred loading is wired through `marketing_lazy` (`deferred as marketing_lazy`).
+- `nginx.conf` at the repo root is the config the production container ships (see "Nginx Configuration" above); `web/nginx.conf` and `web/nginx-main.conf` are also present.
+- `web/index.html` loads `flutter_bootstrap.js` and static assets; VitePress docs remain on the docs host.
 
-### Phase 2: Testing
+The items below are **operational checks**: they depend on deployed DNS/Traefik configuration and cannot be confirmed from this repository. They are intentionally left as unchecked TODOs rather than asserted as done (deploys run only through GitHub Actions).
 
-- [ ] Verify homepage functionality on main domain
-- [ ] Test download page responsiveness
-- [ ] Validate app subdomain chat access
-- [ ] Confirm authentication flows
+- [ ] Domain access: `example.com` → Flutter homepage; `/download` → Flutter download page; `app.example.com` → `/chat`; `docs.example.com` → VitePress docs.
+- [ ] Web: marketing routes public, app routes authenticated.
+- [ ] Desktop: marketing routes excluded; direct chat access.
+- [ ] Responsive layout, navigation and link functionality on the live sites.
+- [ ] Traffic/performance monitoring after deploy.
 
-### Phase 3: Deployment
-
-- [ ] Deploy updated nginx configuration
-- [ ] Update DNS routing if needed
-- [ ] Monitor traffic and performance
-- [ ] Validate all domain endpoints
-
-### Phase 4: Cleanup
-
-- [ ] Remove static homepage files
-- [ ] Deprecate static-site container (docs only)
-- [ ] Update deployment scripts
-- [ ] Archive legacy static content
-
-## Verification Checklist
-
-### Domain Access
-
-- [ ] `example.com` → Flutter homepage
-- [ ] `example.com/download` → Flutter download page
-- [ ] `app.example.com` → Redirects to `/chat`
-- [ ] `app.example.com/chat` → Flutter chat interface
-- [ ] `docs.example.com` → VitePress documentation
-
-### Platform Behavior
-
-- [ ] Web: Marketing routes accessible without auth
-- [ ] Web: App routes require authentication
-- [ ] Desktop: Marketing routes excluded from build
-- [ ] Desktop: Direct access to chat interface
-
-### Responsive Design
-
-- [ ] Homepage mobile responsiveness
-- [ ] Download page code block formatting
-- [ ] Navigation consistency
-- [ ] Button and link functionality
+No repository change is implied by these boxes; they are a runbook for whoever owns deployment.
 
 ## Future Considerations
 

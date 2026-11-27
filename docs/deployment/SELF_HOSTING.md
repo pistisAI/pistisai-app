@@ -11,8 +11,8 @@ Current orientation is agent-runtime-first and Tailscale-first. The setup wizard
 ## Prerequisites
 
 - Docker and Docker Compose
-- Node.js >=22 <27 (for backend development; CI pins Node 26 via `.nvmrc`)
-- Flutter SDK >=3.5.0 <4.0.0 (for frontend development; shared package needs Dart >=3.9.0)
+- Node.js >=26 <28 (service engines, e.g. `services/api-backend/package.json`; CI pins Node 26 via `.nvmrc`)
+- Flutter 3.47.9 (CI pin in `pubspec.yaml` `environment.flutter`; Dart SDK constraint `>=3.5.0 <4.0.0`)
 - PostgreSQL >=14
 - Redis >=7
 - Git

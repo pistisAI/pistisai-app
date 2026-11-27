@@ -1,13 +1,17 @@
 # Pistisai Authentication Comprehensive Guide
 
-**Last Updated**: December 15, 2025  
-**Status**: ✅ ALL AUTHENTICATION SYSTEMS OPERATIONAL
+**Last Updated**: December 15, 2025 (historical incident report)
+**Status**: ⚠️ HISTORICAL — the retired Auth0 bridge script fix described below is no longer in the code
+
+> **Verified against code (2026-11-24):** the Auth0 bridge script formerly under `web/` does **not** exist in this repository. The only auth provider in `lib/auth/providers/` is `cloudflare_access_auth_provider.dart`; sign-in uses Cloudflare Access, with brand-baked team domain/AUD and `CF_ACCESS_*` dart defines (see `AUTHENTICATION_QUICK_REFERENCE.md`). The Auth0-audience incident below is retained only as a historical troubleshooting record — do not follow it as current configuration.
+
+> **Historical scope**: the Auth0 bridge and service-worker initializer described below were removed from `web/`; the file names in that section refer to a historical fix and are not present in the tree. Current authentication is handled in Dart (see `docs/architecture/UNIFIED_FLUTTER_WEB.md`).
 
 > **Current orientation**: This authentication guide includes older `/ollama/bridge/status` verification examples. Treat those as legacy/support-provider endpoint checks. They do not imply Ollama is the primary app runtime; the main channel must use the selected agent runtime.
 
 ---
 
-## Quick Start
+## Quick Start (historical Auth0 incident — see current orientation above)
 
 **New to authentication issues?** Start here:
 
@@ -18,7 +22,7 @@
 
 ---
 
-## What Was Wrong
+## What Was Wrong (historical Auth0 incident)
 
 After successful Auth0 login, all API calls failed with 401 errors because:
 
@@ -26,11 +30,11 @@ After successful Auth0 login, all API calls failed with 401 errors because:
 - **Backend** expected tokens with audience: `https://api.example.com` (Application API)
 - **Result**: Audience mismatch → Backend rejected tokens → 401 Unauthorized
 
-## What Was Fixed
+## What Was Fixed (historical; the retired Auth0 bridge script is not in the repo)
 
 ### Single Critical Change
 
-**File**: `web/auth0-bridge.js`
+**File (historical; not present in repo)**: an Auth0 bridge script under `web/` (removed)
 
 ```javascript
 // BEFORE (WRONG)
@@ -51,7 +55,7 @@ const AUTH0_AUDIENCE = 'https://api.example.com';
 
 ## Current Architecture
 
-### Token Flow
+### Token Flow (historical Auth0 flow; current sign-in is Cloudflare Access)
 
 ```
 User Login
@@ -72,20 +76,19 @@ Backend Validates Token
 ✅ API Response (200/201)
 ```
 
-### Components
+### Components (current)
 
-#### Frontend (web/auth0-bridge.js)
+> **Verified against code:** `lib/auth/providers/` contains only `cloudflare_access_auth_provider.dart` (there is no Auth0 bridge script under `web/`). `services/api-backend/middleware/auth.js:14,52-54` reads `CF_ACCESS_TEAM_DOMAIN` and validates the Cloudflare Access JWT issuer. The Auth0 Domain / Client ID / audience / JWKS values in the historical sections were removed with the retired Auth0 bridge and no longer apply.
 
-- **Auth0 Domain**: `example.us.auth0.com`
-- **Client ID**: `YOUR_CLIENT_ID`
-- **Audience**: `https://api.example.com` ✅
-- **Scope**: `openid profile email offline_access`
+#### Frontend (current: `lib/auth/providers/cloudflare_access_auth_provider.dart`)
 
-#### Backend (services/api-backend/middleware/auth.js)
+- Cloudflare Access team domain and application AUD are baked at build time; override with `--dart-define=CF_ACCESS_TEAM_DOMAIN` / `--dart-define=CF_ACCESS_AUD` (see `AUTHENTICATION_QUICK_REFERENCE.md`)
+- Local desktop use skips sign-in and does not call Access
 
-- **Expected Audience**: `https://api.example.com`
-- **JWKS URI**: `https://example.us.auth0.com/.well-known/jwks.json`
-- **Validation**: RS256 signature + audience verification
+#### Backend (`services/api-backend/middleware/auth.js`)
+
+- **Issuer**: `https://${CF_ACCESS_TEAM_DOMAIN}` (or `cloudflare-access` when unset), `auth.js:52-54`
+- **Validation**: Cloudflare Access JWT verification (no Auth0 audience check)
 
 ---
 
@@ -117,7 +120,7 @@ CF_ACCESS_JWKS_URI=https://pistisai.cloudflareaccess.com/cdn-cgi/access/certs
 1. ✅ Clear browser cache
 2. ✅ Navigate to app
 3. ✅ Click login button
-4. ✅ Complete Auth0 authentication  
+4. ✅ Complete Cloudflare Access sign-in  
 5. ✅ Verify app loads without timeout warnings
 6. ✅ Check API calls return 200/201 (not 401)
 7. ✅ Verify user data loads correctly
@@ -146,12 +149,11 @@ Look for: `Token verification successful (Audience verified)`
    - Close all browser tabs and reopen
 
 2. **Verify backend configuration**
-   - Check `AUTH0_AUDIENCE` environment variable
+   - Check `CF_ACCESS_TEAM_DOMAIN` (used by `services/api-backend/middleware/auth.js:14`); there is no `AUTH0_AUDIENCE` variable
    - Restart backend service if needed
 
-3. **Check Auth0 configuration**
-   - Verify application identifier is `https://api.example.com`
-   - Check Auth0 dashboard settings
+3. **Check Cloudflare Access configuration**
+   - Verify the team domain and application AUD baked into the build (`CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD`)
 
 ### Token Validation Fails?
 
@@ -179,10 +181,8 @@ Look for: `Token verification successful (Audience verified)`
 # Build web app
 flutter build web --release
 
-# Deploy to hosting
-# (Deploy updated web/auth0-bridge.js)
-
-# Users clear browser cache and re-login
+# Flutter web build only; Cloudflare Access is configured at the edge
+# (there is no web/auth0-bridge.js in this repo)
 # Done!
 ```
 
@@ -190,7 +190,7 @@ flutter build web --release
 
 If issues occur:
 
-1. Revert `web/auth0-bridge.js` to previous version
+1. Revert the Cloudflare Access configuration change (the historical Auth0 bridge script under `web/` was removed, so there is nothing to restore there)
 2. Clear CDN cache
 3. Notify users to clear browser cache
 4. Investigate and fix root cause
@@ -201,8 +201,8 @@ If issues occur:
 
 | File | Change | Status |
 |------|--------|--------|
-| `web/auth0-bridge.js` | Updated audience | ✅ FIXED |
-| `web/service-worker-init.js` | Deleted | ✅ SIMPLIFIED |
+| Auth0 bridge (historical; under `web/`) | Historical audience fix — file no longer exists | ⚠️ HISTORICAL |
+| Service-worker initializer (historical; under `web/`) | Deleted | ✅ SIMPLIFIED |
 | `web/index.html` | Removed SW patch | ✅ CLEANED |
 
 ---
@@ -211,7 +211,7 @@ If issues occur:
 
 ### Technical Details
 
-- `docs/DEVELOPMENT/AUTH0_AUDIENCE_FIX.md` - Technical deep dive
+- `docs/development/AUTHENTICATION_QUICK_REFERENCE.md` - Current Cloudflare Access reference (the historical `docs/DEVELOPMENT/AUTH0_AUDIENCE_FIX.md` no longer exists)
 - `services/api-backend/middleware/auth.js` - Backend authentication code
 
 ### External Resources
@@ -235,7 +235,7 @@ If issues occur:
 
 1. Check monitoring dashboards
 2. Review error logs and authentication success rates
-3. Verify Auth0 service status
+3. Verify Cloudflare Access status
 4. Escalate with logs and reproduction steps
 
 ---
@@ -246,8 +246,8 @@ If issues occur:
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| Frontend Auth0 Bridge | ✅ OPERATIONAL | Correct audience configured |
-| Backend Token Validation | ✅ OPERATIONAL | Audience verification working |
+| Frontend auth | ✅ OPERATIONAL | Cloudflare Access via `cloudflare_access_auth_provider.dart`; no retired Auth0 bridge script |
+| Backend Token Validation | ✅ OPERATIONAL | Cloudflare Access JWT issuer verification (`middleware/auth.js:52-54`) |
 | API Endpoints | ✅ PROTECTED | All endpoints properly secured |
 | Service Workers | ✅ SIMPLIFIED | Flutter manages automatically |
 | Error Handling | ✅ COMPREHENSIVE | Detailed error messages |

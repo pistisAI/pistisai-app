@@ -79,7 +79,9 @@ Invalid use:
 - granting desktop control to a raw model provider
 - treating model availability as agent runtime readiness
 
-## Minimum Agent Runtime Capabilities
+## Minimum Agent Runtime Capabilities (Target Contract — Not Fully As-Built)
+
+The table below is the **target** agent-runtime contract, not a list of wired methods. A search across `lib/` and `services/` finds no `CapabilityBroker` class and none of `sessions.list`, `sessions.create`, `sessions.resume`, `sessions.end`, `chat.stream`, `tools.list`, `desktop.requestAction` or `vision.requestContext` as dispatched RPC names. The runtime lifecycle methods present today are `agent.list`, `agent.start`, `agent.stop` and `agent.status` (`lib/services/agent_lifecycle_service.dart:222,276,348,422`). Read the "Required" column as a design requirement, not as-built behaviour.
 
 | Capability | Required | Purpose |
 | --- | --- | --- |
@@ -117,6 +119,8 @@ Audit log and result back to runtime
 ```
 
 The runtime can ask. The local app decides. The connector can route or sync. It cannot approve or execute device actions.
+
+**As-built status:** This flow is the target design. No `CapabilityBroker` class exists in `lib/` or `services/`; desktop permissions are enforced inside the individual device services rather than through a single broker.
 
 ## Setup Wizard Requirements
 

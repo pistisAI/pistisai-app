@@ -2,17 +2,19 @@
 
 ## Files Created/Modified
 
+> **Verified against code (2026-11-24):** the service and route exist at `services/api-backend/services/auth-audit-service.js` and `services/api-backend/routes/auth-audit.js` (mounted at `/auth-audit` by `services/api-backend/server.js:329`) — **not** root-level `services/` or `routes/`. A dedicated audit middleware **does not exist** (no such file under `services/api-backend/middleware/`); audit logging is wired in `services/api-backend/routes/auth.js` / auth flows instead. Import paths below are corrected to `services/api-backend/...`.
+
 ### New Files
 
-- `services/auth-audit-service.js` - Core audit logging service
-- `middleware/auth-audit-middleware.js` - Audit logging middleware
-- `routes/auth-audit.js` - Audit log retrieval endpoints
+- `services/api-backend/services/auth-audit-service.js` - Core audit logging service
+- An audit middleware — **MISSING** (planned)
+- `services/api-backend/routes/auth-audit.js` - Audit log retrieval endpoints
 - `test/api-backend/auth-audit.test.js` - Comprehensive tests
 
 ### Modified Files
 
-- `middleware/auth.js` - Added audit logging for failed authentication
-- `routes/auth.js` - Added audit logging to auth endpoints
+- `services/api-backend/middleware/auth.js` - Added audit logging for failed authentication
+- `services/api-backend/routes/auth.js` - Added audit logging to auth endpoints
 
 ## Key Functions
 
@@ -25,7 +27,7 @@ import {
   logLogout,
   logTokenRefresh,
   logTokenRevoke 
-} from './services/auth-audit-service.js';
+} from '../../services/api-backend/services/auth-audit-service.js';
 
 // Log successful login
 await logLoginSuccess({
@@ -50,7 +52,7 @@ import {
   getAuthAuditLogs,
   getFailedLoginAttempts,
   getAuthAuditLogsForAdmin 
-} from './services/auth-audit-service.js';
+} from '../../services/api-backend/services/auth-audit-service.js';
 
 // Get user's logs
 const logs = await getAuthAuditLogs(userId, {

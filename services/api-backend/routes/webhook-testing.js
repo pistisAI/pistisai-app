@@ -28,6 +28,19 @@ import { validateSchema } from '../middleware/schema-validation.js';
 
 const router = express.Router();
 
+/**
+ * Test events are kept per user: each route reads and clears only the
+ * events of the authenticated caller.
+ */
+function requireOwnerId(req, res, next) {
+  const ownerId = req.user?.sub;
+  if (typeof ownerId !== 'string' || ownerId.length === 0) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  req.testEventOwnerId = ownerId;
+  next();
+}
+
 const testPayloadSchema = {
   body: z.object({
     eventType: z.string().min(1).max(200),
@@ -184,7 +197,7 @@ router.post('/test/payload', authenticateJWT, validateSchema(testPayloadSchema),
  *   ...
  * }
  */
-router.post('/test/send', authenticateJWT, validateSchema(testSendSchema), async (req, res) => {
+router.post('/test/send', authenticateJWT, requireOwnerId, validateSchema(testSendSchema), async (req, res) => {
   try {
     const { webhookUrl, eventType, customData, secret } = req.body;
 
@@ -198,6 +211,7 @@ router.post('/test/send', authenticateJWT, validateSchema(testSendSchema), async
       webhookUrl,
       payload,
       secret,
+      req.testEventOwnerId,
     );
 
     logger.info('[WebhookTesting] Test webhook sent', {
@@ -231,10 +245,13 @@ router.post('/test/send', authenticateJWT, validateSchema(testSendSchema), async
  *   "events": [ ... ]
  * }
  */
-router.get('/test/events', authenticateJWT, validateSchema(testEventsQuerySchema), (req, res) => {
+router.get('/test/events', authenticateJWT, requireOwnerId, validateSchema(testEventsQuerySchema), (req, res) => {
   try {
     const limit = Math.min(req.validatedQuery.limit, 1000);
-    const events = webhookTestingService.getAllTestEvents(limit);
+    const events = webhookTestingService.getAllTestEvents(
+      limit,
+      req.testEventOwnerId,
+    );
 
     logger.info('[WebhookTesting] Test events retrieved', {
       userId: req.user.sub,
@@ -261,10 +278,13 @@ router.get('/test/events', authenticateJWT, validateSchema(testEventsQuerySchema
  *   "event": { ... }
  * }
  */
-router.get('/test/events/:testId', authenticateJWT, validateSchema(testIdParamSchema), (req, res) => {
+router.get('/test/events/:testId', authenticateJWT, requireOwnerId, validateSchema(testIdParamSchema), (req, res) => {
   try {
     const { testId } = req.params;
-    const event = webhookTestingService.getTestEvent(testId);
+    const event = webhookTestingService.getTestEvent(
+      testId,
+      req.testEventOwnerId,
+    );
 
     if (!event) {
       return res.status(404).json({
@@ -445,22 +465,26 @@ router.get('/test/supported-types', authenticateJWT, (req, res) => {
 /**
  * DELETE /api/webhooks/test/events
  *
- * Clear test event cache
+ * Clear the caller's own test events
  *
  * Response:
  * {
- *   "message": "Test event cache cleared"
+ *   "message": "Test events cleared",
+ *   "cleared": 3
  * }
  */
-router.delete('/test/events', authenticateJWT, (req, res) => {
+router.delete('/test/events', authenticateJWT, requireOwnerId, (req, res) => {
   try {
-    webhookTestingService.clearTestEventCache();
+    const cleared = webhookTestingService.clearTestEventCache(
+      req.testEventOwnerId,
+    );
 
-    logger.info('[WebhookTesting] Test event cache cleared', {
+    logger.info('[WebhookTesting] Test events cleared', {
       userId: req.user.sub,
+      cleared,
     });
 
-    res.json({ message: 'Test event cache cleared' });
+    res.json({ message: 'Test events cleared', cleared });
   } catch (error) {
     logger.error('[WebhookTesting] Failed to clear test event cache', {
       userId: req.user.sub,

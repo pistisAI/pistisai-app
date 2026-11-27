@@ -55,12 +55,16 @@ This document outlines the size optimization strategies implemented for Pistisai
 
 #### Package Builder Scripts
 
+> **Verified against code (2026-11-24):** `Build-GitHubReleaseAssets-Simple.ps1` and `Create-UnifiedPackages.ps1` do not exist. The real scripts are `scripts/powershell/Build-GitHubReleaseAssets.ps1` and the shell scripts in `scripts/packaging/`.
+
 - **Files**:
-  - `scripts/powershell/Build-GitHubReleaseAssets-Simple.ps1`
-  - `scripts/powershell/Create-UnifiedPackages.ps1`
+  - `scripts/powershell/Build-GitHubReleaseAssets.ps1` (exists)
+  - `scripts/packaging/build_all_packages.sh` (exists; replaces the retired `Create-UnifiedPackages.ps1`)
 - **Change**: Applied same optimization flags
 
-#### Ansible Configuration
+#### Ansible Configuration (planned — no `ansible/` directory in this repo)
+
+> **Verified against code (2026-11-24):** there is no `ansible/` directory; the paths below describe an intended build configuration, not files present today.
 
 - **File**: `ansible/group_vars/all.yml`
 - **Change**: Updated build_args for Windows and Linux platforms
@@ -76,7 +80,7 @@ This document outlines the size optimization strategies implemented for Pistisai
   - **Marketing Screens**: `lib/screens/marketing/marketing_lazy.dart` (Loaded only on web root domain)
   - **Admin Screens**: `lib/screens/admin/admin_lazy.dart` (Loaded only for admin users)
   - **Settings Screens**: `lib/screens/settings/settings_lazy.dart` (Loaded only when accessing settings)
-  - **Test Screens**: `lib/screens/ollama_test_lazy.dart` (Loaded only for debugging)
+  - **Test Screens**: no dedicated lazy test screen is present (a planned `lib/screens/` module was never implemented)
 - **Impact**:
   - Reduces initial bundle size for the main application flow.
   - Improves Time to Interactive (TTI) for web users.

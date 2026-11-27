@@ -5,14 +5,14 @@
 1. **Service**: `services/api-backend/services/webhook-event-filter.js`
    - Core filtering logic and validation
 
-2. **Routes**: `services/api-backend/routes/webhook-event-filters.js`
-   - REST API endpoints for filter management
+2. **Routes**: filter endpoints — **MISSING** (no such file; no `/filters` routes are registered anywhere under `services/api-backend/routes/`). The REST endpoints below are **planned, not current behavior**; only the service exists today.
 
 3. **Database**: `services/api-backend/database/migrations/webhook-event-filters.sql`
    - Database schema for storing filters
 
-4. **Tests**: `test/api-backend/webhook-event-filters.test.js`
-   - 37 comprehensive unit tests (all passing)
+4. **Tests**: `test/api-backend/webhook-event-filters.test.js` — **MISSING** (no such test file present).
+
+> **Verified against code (2026-11-24):** `services/api-backend/services/webhook-event-filter.js` exists with `validateFilterConfig` (:51), `createFilter` (:199), `getFilter` (:260), `updateFilter` (:290), `deleteFilter` (:350), `matchesFilter` (:385). However **filter routes do not exist** and no route in `services/api-backend/routes/` registers a `/filters` path — the `webhooks.js` router is mounted at `/api/webhooks` (`services/api-backend/server.js:241`), but has no filter endpoints. The API endpoints below are therefore **planned, not live**.
 
 ## Key Classes and Methods
 

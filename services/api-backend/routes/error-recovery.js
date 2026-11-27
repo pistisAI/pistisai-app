@@ -12,7 +12,8 @@ import { z } from 'zod';
 import winston from 'winston';
 import { errorRecoveryService } from '../services/error-recovery-service.js';
 import { authenticateJWT } from '../middleware/auth.js';
-import { requireAdmin as createRequireAdminMiddleware } from '../middleware/rbac.js';
+// Admin role comes from the server-side admin_roles table, not JWT claims.
+import { adminAuth } from '../middleware/admin-auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 
 const router = express.Router();
@@ -54,7 +55,7 @@ const logger = winston.createLogger({
 router.get(
   '/status',
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   (req, res) => {
     try {
       const statuses = errorRecoveryService.getAllRecoveryStatuses();
@@ -85,7 +86,7 @@ router.get(
   '/status/:serviceName',
   validateSchema({ params: serviceNameParamSchema }),
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   (req, res) => {
     try {
       const { serviceName } = req.params;
@@ -119,7 +120,7 @@ router.post(
   '/recover/:serviceName',
   validateSchema(recoverServiceSchema),
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   async (req, res) => {
     try {
       const { serviceName } = req.params;
@@ -183,7 +184,7 @@ router.post(
 router.get(
   '/history',
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   (req, res) => {
     try {
       const { serviceName, status, limit } = req.query;
@@ -227,7 +228,7 @@ router.get(
 router.get(
   '/metrics',
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   (req, res) => {
     try {
       const metrics = errorRecoveryService.getMetrics();
@@ -257,7 +258,7 @@ router.get(
 router.get(
   '/report',
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   (req, res) => {
     try {
       const report = errorRecoveryService.getReport();
@@ -287,7 +288,7 @@ router.get(
 router.delete(
   '/history',
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   (req, res) => {
     try {
       errorRecoveryService.clearHistory();
@@ -317,7 +318,7 @@ router.delete(
 router.post(
   '/reset-metrics',
   authenticateJWT,
-  createRequireAdminMiddleware(),
+  adminAuth(),
   (req, res) => {
     try {
       errorRecoveryService.resetMetrics();

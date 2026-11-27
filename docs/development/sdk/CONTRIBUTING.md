@@ -10,7 +10,7 @@ Please be respectful and constructive in all interactions.
 
 ### Prerequisites
 
-- Node.js 18.0.0 or higher
+- Node.js `>=26 <28` (declared in `services/sdk/package.json:54-56`; CI pins `26` via `.nvmrc`)
 - npm, yarn, or pnpm
 
 ### Setup Development Environment

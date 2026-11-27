@@ -6,33 +6,28 @@ The Pistisai API Backend provides comprehensive REST API endpoints for managing 
 
 ## Accessing API Documentation
 
-### Swagger UI
+### Source documents (available)
 
-The interactive Swagger UI is available at:
+The authoritative API docs in this repo are the Markdown files under [`docs/api/`](../README.md) and [`docs/development/API_DOCUMENTATION.md`](../../development/API_DOCUMENTATION.md), plus the code itself in `services/api-backend/routes/`.
 
-- **Production**: https://api.example.com/api/docs
-- **Development**: http://localhost:8080/api/docs
+### Swagger UI (not available)
 
-The Swagger UI provides:
+> **Verified:** `services/api-backend/server.js` has no `/api/docs` or Swagger route, and neither `services/api-backend/package.json` nor the root `package.json` declares a Swagger/OpenAPI dependency. The URLs below do not resolve; use the source documents above instead.
 
-- Interactive endpoint exploration
-- Request/response examples
-- Parameter documentation
-- Error code reference
-- Try-it-out functionality
+Previously documented (but unmounted) URLs:
 
-### OpenAPI Specification
+- ~~`https://api.example.com/api/docs`~~
+- ~~`http://localhost:8080/api/docs`~~
 
-The raw OpenAPI 3.0 specification is available at:
-
-- **Production**: https://api.example.com/api/docs/swagger.json
-- **Development**: http://localhost:8080/api/docs/swagger.json
+The raw `swagger.json` URLs were likewise unmounted. There is no generated OpenAPI specification in the repository at present.
 
 ## API Endpoints
 
+> The "documented under the … tag" references below come from the planned Swagger documentation. There is no running Swagger UI, so `services/api-backend/routes/` is the source of truth for live paths.
+
 ### Authentication Endpoints
 
-All authentication endpoints are documented at `/api/docs` under the "Authentication" tag.
+Authentication endpoints are listed below (the planned Swagger tag is "Authentication").
 
 #### Token Management
 
@@ -59,9 +54,11 @@ User management endpoints are documented under the "Users" tag.
 - `GET /users/:id/activity` - Get user activity logs
 - `GET /users/:id/usage` - Get user usage metrics
 
-### Tunnel Endpoints
+### Tunnel Endpoints (legacy-gated)
 
-Tunnel management endpoints are documented under the "Tunnels" tag.
+> **Verified:** the `/tunnels` route group is registered only when `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES=true` or `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES=true` (`services/api-backend/server.js:186-188, 323-325`). With default settings these endpoints are not mounted and return 404.
+
+Tunnel management endpoints are documented under the "Tunnels" tag. Available methods in `services/api-backend/routes/tunnels.js` include `POST /tunnels`, `GET /tunnels`, `GET /tunnels/:id`, `PUT /tunnels/:id`, `DELETE /tunnels/:id`, `GET /tunnels/:id/metrics`, `GET /tunnels/:id/activity`, `GET /tunnels/:id/config` and the start/stop endpoints.
 
 #### Tunnel Lifecycle
 
@@ -232,34 +229,36 @@ curl -X GET https://api.example.com/users/tier \
   -H "Authorization: Bearer <JWT_TOKEN>"
 ```
 
-**Response:**
+**Response** (verified against `services/api-backend/routes/users.js:42-123` — note the `success`/`data` wrapper):
 
 ```json
 {
-  "currentTier": "premium",
-  "features": [
-    {
-      "name": "containerOrchestration",
-      "enabled": true,
-      "description": "Container orchestration and management"
+  "success": true,
+  "data": {
+    "currentTier": "premium",
+    "features": [
+      { "name": "containerOrchestration", "enabled": true, "description": "Container orchestration and management", "value": true }
+    ],
+    "limits": { "maxConnections": 10, "maxModels": 50 },
+    "capabilities": {
+      "containerOrchestration": true,
+      "teamFeatures": true,
+      "apiAccess": true,
+      "prioritySupport": true,
+      "advancedNetworking": true,
+      "multipleInstances": true
     },
-    {
-      "name": "teamFeatures",
-      "enabled": true,
-      "description": "Team collaboration features"
+    "upgrade": {
+      "availableTier": "enterprise",
+      "message": "...",
+      "benefits": {}
     },
-    {
-      "name": "apiAccess",
-      "enabled": true,
-      "description": "API access for integrations"
-    }
-  ],
-  "limits": {
-    "maxConnections": 1000,
-    "maxModels": 10
+    "timestamp": "2024-01-15T10:30:00Z"
   }
 }
 ```
+
+The `features` array above is abridged; the handler emits one entry per tier feature. Note that `GET /user/tier` is a **different** endpoint (`services/api-backend/server.js:389-395`, handler `routes/user-tier.js:10-17`) that returns `{ tier, features (object), upgradeUrl, timestamp }` without the `success`/`data` wrapper.
 
 ## Error Handling
 
@@ -386,10 +385,11 @@ Official SDKs are available for:
 
 ## API Versioning
 
-The API uses URL-based versioning:
+> **Verified:** `services/api-backend/middleware/api-versioning.js` is in the pipeline (`services/api-backend/middleware/pipeline.js:102-106`) and tags requests with `req.apiVersion` from a `/vN/` path prefix, defaulting to `v2`. No `/v1/` or `/v2/` route mounts exist. See [API_VERSIONING_GUIDE.md](API_VERSIONING_GUIDE.md).
 
-- Current version: `/api/v2/`
-- Legacy version: `/api/v1/` (deprecated)
+- Current (default tag): `v2` on unversioned paths
+- Legacy tag: `v1` (deprecated; no mounted handlers)
+- Version metadata endpoint: `GET /api/versions` (also `/versions` on the api subdomain)
 
 ## Best Practices
 

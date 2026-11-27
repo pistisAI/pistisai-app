@@ -1,450 +1,107 @@
 # Pistisai Docker Compose Deployment Guide
 
-**⚠️ DEVELOPMENT/TESTING ONLY**: This Docker Compose deployment is suitable for development, testing, and small-scale deployments. For production use, **Kubernetes deployment is strongly recommended**.
+> **Current orientation**: Pistisai is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers, not primary app runtimes. Older WebSocket tunnel flows remain fallback references.
 
-> **Current orientation**: Pistisai is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers, not primary app runtimes. Docker Compose deployment documents may still describe older WebSocket tunnel flows; use those as fallback/migration references unless the deployment explicitly depends on them.
+See [Deployment Overview](DEPLOYMENT_OVERVIEW.md) for all deployment options and [Web Deploy](../operations/cicd/WEB_DEPLOY.md) for the production image.
 
-See [Deployment Overview](DEPLOYMENT_OVERVIEW.md) for all deployment options.
+> **File names**: there is no `docker-compose.production.yml` and no `docker-compose.dev.yml` in this repository. The real Compose files are `docker-compose.yml` (full local stack), `docker-compose.prod.yml` (backend + monitoring) and `config/docker/docker-compose.web.yml` (production web image on the host). There is also no `deploy.sh` or script that uploads a build to a VPS.
 
-## Overview
+## Production path (GitHub Actions → GHCR → host)
 
-This guide will help you deploy the older Docker Compose stack including:
+Production images are built and published by GitHub Actions, not by a manual upload step:
 
-- **Web Application** (Flutter + Nginx)
-- **API Backend** (Node.js; older stacks include WebSocket tunnel support)
-- **PostgreSQL Database** (Self-contained)
-- **Nginx Reverse Proxy** (SSL termination)
-- **Certbot** (Automatic SSL certificate management with Let's Encrypt)
+1. Push to `main` (or dispatch `.github/workflows/deploy-web.yml`). The workflow builds `Dockerfile.web`, pushes `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`, verifies the push digest, then purges the Cloudflare zone with `CLOUDFLARE_CACHE_PURGE_TOKEN` / `CF_ZONE_ID`.
+2. `.github/workflows/deploy-backend.yml` runs via `workflow_run`, building `ghcr.io/<repo>/api-backend`, `/streaming-proxy` and `/postgres` from the Dockerfiles in `config/docker/`.
+3. On the host, pull the published image and start it:
 
-## Prerequisites
+   ```bash
+   docker login ghcr.io   # token needs read:packages
+   docker compose -f config/docker/docker-compose.web.yml pull
+   docker compose -f config/docker/docker-compose.web.yml up -d
+   docker compose -f config/docker/docker-compose.web.yml ps
+   ```
 
-### Server Requirements
+   The host pull is currently manual — the workflow's `purge_cache` job documents this gap. If the host deploys after the purge, re-run the workflow or purge the cache again.
 
-- **Operating System**: Linux (Ubuntu 22.04+ or Debian 11+ recommended)
-- **RAM**: Minimum 2GB, recommended 4GB+
-- **Storage**: Minimum 20GB free space
-- **Network**: Public IP address with open ports 80 and 443
+Do not substitute a hand-written VPS deployment procedure for this chain; see [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md).
 
-### Software Requirements
-
-- Docker (version 20.10+)
-- Docker Compose (version 2.0+)
-- Domain name with DNS pointing to your server
-
-### Domain Configuration
-
-Before deployment, configure your DNS with A records for:
-
-- `yourdomain.com` → Your server IP
-- `app.yourdomain.com` → Your server IP
-- `api.yourdomain.com` → Your server IP
-
-## Quick Start
-
-### 1. Clone the Repository
+## Local Compose stack
 
 ```bash
-git clone https://github.com/pistisAI/pistisai-app.git
+git clone https://github.com/pistisai/pistisai-app.git
 cd pistisai-app
-```
-
-### 2. Deploy with Docker Compose
-
-There is no root `deploy.sh` in this repository. Use Compose against the real
-service definitions (see `docker-compose.yml`):
-
-```bash
 cp .env.example .env
-# Edit .env with domain, secrets, and database settings
-docker compose up -d database redis api-backend webapp tailscale-relay
+# Edit .env with domain, database and secret values
+docker compose up -d database redis api-backend
+docker compose ps
+docker compose logs -f api-backend
 ```
 
-For a fuller walkthrough, see [SELF_HOSTING.md](SELF_HOSTING.md) and
-[DEPLOYMENT_OVERVIEW.md](DEPLOYMENT_OVERVIEW.md).
+Services in `docker-compose.yml`: `database` (PostgreSQL, with healthcheck), `redis`, `cloudflared`, `tailscale-relay`, `webapp`, `api-backend` (healthcheck `curl --fail http://localhost:8080/health`), `postfix-mail` and `certbot`.
 
-### 3. Access Your Application
+`docker-compose.prod.yml` is a backend/monitoring-oriented file: `api-backend`, `streaming-proxy`, `redis`, `traefik`, `prometheus`, `grafana`. It does not define an `nginx` or `certbot` service.
 
-After deployment:
-
-- **Web App**: https://yourdomain.com
-- **App Interface**: https://app.yourdomain.com
-- **API**: https://api.yourdomain.com
-
-## Manual Deployment
-
-If you prefer manual deployment or need to customize:
-
-### 1. Create Environment File
+## Verify a deployment
 
 ```bash
-cp .env.example .env
+# Host web container (config/docker/docker-compose.web.yml)
+docker compose -f config/docker/docker-compose.web.yml ps
+curl -f http://localhost/health
+
+# Root compose services
+docker compose ps
+curl --fail http://localhost:8080/health
 ```
 
-Edit `.env` and configure:
+The `config/docker/docker-compose.web.yml` healthcheck is `curl -f http://localhost/health`. The nginx config uses `no-cache` for `index.html`, `flutter_bootstrap.js` and other HTML; see [Web Deploy](../operations/cicd/WEB_DEPLOY.md) before changing cache rules.
 
-```env
-# Domain Configuration
-DOMAIN=yourdomain.com
-SSL_EMAIL=admin@yourdomain.com
+## Authentication
 
-# Database Configuration
-POSTGRES_DB=Pistisai
-POSTGRES_USER=appuser
-POSTGRES_PASSWORD=your_secure_password_here
+Sign-in uses Cloudflare Access for the free tunnel path (`CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`), with a JWT returned on the callback and validated by `services/api-backend/middleware/auth.js` and `services/streaming-proxy/src/middleware/cloudflare-access-validator.ts`. Local-only use needs no sign-in. See [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md), not the old Google OAuth guide.
 
-# Auth0 Configuration
-JWT_ISSUER_DOMAIN=your-tenant.us.auth0.com
-JWT_AUDIENCE=https://app.yourdomain.com
+## Management commands
 
-# JWT Configuration (generate with: openssl rand -base64 32)
-JWT_SECRET=your_jwt_secret_here
-```
-
-### 2. Generate Secure Passwords
+Replace `-f docker-compose.production.yml` in older notes with the actual file you are running:
 
 ```bash
-# Database password
-openssl rand -base64 32 | tr -d "=+/" | cut -c1-32
+# Logs
+docker compose logs -f api-backend
+docker compose logs -f webapp
 
-# JWT secret
-openssl rand -base64 32
+# Restart
+docker compose restart api-backend
+
+# Stop
+docker compose down
+
+# Update local stack
+git pull --ff-only
+docker compose pull
+docker compose up -d
 ```
 
-### 3. Create Required Directories
+## Database backup
 
 ```bash
-mkdir -p certbot/conf certbot/www certbot/logs
+docker compose exec -T database pg_dump -U appuser Pistisai > backup_$(date +%Y%m%d).sql
+docker compose exec -T database psql -U appuser -d Pistisai < backup_file.sql
 ```
 
-### 4. Start Services Without SSL (First Time)
-
-```bash
-# First, start nginx and certbot to obtain certificates
-docker compose -f docker-compose.production.yml up -d nginx
-
-# Request SSL certificate
-docker compose -f docker-compose.production.yml run --rm certbot certonly \
-  --webroot -w /var/www/certbot \
-  --email your@email.com \
-  --agree-tos \
-  --no-eff-email \
-  -d yourdomain.com \
-  -d app.yourdomain.com \
-  -d api.yourdomain.com
-```
-
-### 5. Start All Services
-
-```bash
-docker compose -f docker-compose.production.yml up -d
-```
-
-### 6. Verify Deployment
-
-```bash
-# Check service status
-docker compose -f docker-compose.production.yml ps
-
-# Check logs
-docker compose -f docker-compose.production.yml logs -f
-
-# Test endpoints
-curl https://yourdomain.com
-curl https://api.yourdomain.com/health
-```
-
-## Architecture
-
-```
-Internet
-   ↓
-Nginx (Port 80/443)
-   ├─→ SSL Termination
-   ├─→ Static Web Content
-   │   └─→ Web Service (Flutter App) :8080
-   │
-   ├─→ API Requests (/api/*)
-   │   └─→ API Backend Service :8080
-   │       └─→ PostgreSQL :5432
-   │
-   └─→ Legacy WebSocket Tunnel (/ws/tunnel)
-       └─→ API Backend Service :8080
-           └─→ Windows Desktop App
-               └─→ Selected agent runtime or support model provider
-```
-
-## Service Details
-
-### Web Application
-
-- **Container**: `Pistisai-web`
-- **Technology**: Flutter (built to static files) + Nginx
-- **Port**: 8080 (internal)
-- **Health Check**: HTTP GET /health
-
-### API Backend
-
-- **Container**: `Pistisai-api-backend`
-- **Technology**: Node.js Express
-- **Port**: 8080 (internal; matches `PORT || 8080` and compose `8080:8080`)
-- **Features**:
-  - REST API endpoints
-  - Legacy WebSocket tunnel server at `/ws/tunnel`
-  - Auth0 JWT validation
-  - PostgreSQL database connection
-  - Tier-based user management
-- **Health Check**: HTTP GET /health
-
-### PostgreSQL Database
-
-- **Container**: `Pistisai-postgres`
-- **Version**: PostgreSQL 16 Alpine
-- **Port**: 5432 (internal only)
-- **Data**: Persisted in Docker volume `Pistisai_postgres_data`
-- **Schema**: Auto-initialized from `services/api-backend/database/schema.pg.sql`
-
-### Nginx Reverse Proxy
-
-- **Container**: `Pistisai-nginx`
-- **Ports**: 80 (HTTP), 443 (HTTPS)
-- **Features**:
-  - SSL/TLS termination
-  - HTTP to HTTPS redirect
-  - WebSocket proxying
-  - Rate limiting
-  - Security headers
-  - Gzip compression
-
-### Certbot
-
-- **Container**: `Pistisai-certbot`
-- **Function**: Automatic SSL certificate renewal
-- **Schedule**: Checks for renewal every 12 hours
-
-## Desktop App Connection
-
-### Prerequisites
-
-1. Windows desktop app installed
-2. Selected agent runtime running locally or on a reachable Tailscale device
-3. Optional support model provider only if memory/background features need it
-
-### Connection Steps
-
-1. Start Hermes, OpenClaw, or another compatible agent gateway.
-2. Launch the Pistisai desktop app
-3. Sign in with your Auth0 credentials
-4. Use the setup wizard to select and validate the agent runtime.
-5. Use Tailscale for remote devices where possible.
-
-The `/ws/tunnel` path is retained for legacy/fallback testing only. New deployments should prefer the Tailscale secure device mesh and per-user cloud connector design.
-
-### Troubleshooting Desktop Connection
-
-- Check desktop app logs in system tray
-- Verify Auth0 authentication is successful
-- Ensure firewall allows outbound WebSocket connections
-- Check API backend logs: `docker compose -f docker-compose.production.yml logs api-backend`
-
-## Management Commands
-
-### View Logs
-
-```bash
-# All services
-docker compose -f docker-compose.production.yml logs -f
-
-# Specific service
-docker compose -f docker-compose.production.yml logs -f api-backend
-docker compose -f docker-compose.production.yml logs -f web
-docker compose -f docker-compose.production.yml logs -f nginx
-```
-
-### Restart Services
-
-```bash
-# All services
-docker compose -f docker-compose.production.yml restart
-
-# Specific service
-docker compose -f docker-compose.production.yml restart api-backend
-```
-
-### Stop Services
-
-```bash
-docker compose -f docker-compose.production.yml down
-```
-
-### Update Application
-
-```bash
-# Pull latest code
-git pull
-
-# Rebuild and restart
-docker compose -f docker-compose.production.yml build
-docker compose -f docker-compose.production.yml up -d
-```
-
-### Database Backup
-
-```bash
-# Backup PostgreSQL database
-docker compose -f docker-compose.production.yml exec postgres \
-  pg_dump -U appuser Pistisai > backup_$(date +%Y%m%d).sql
-
-# Restore from backup
-docker compose -f docker-compose.production.yml exec -T postgres \
-  psql -U appuser Pistisai < backup_20240101.sql
-```
-
-### SSL Certificate Renewal
-
-Certificates auto-renew, but to force renewal:
-
-```bash
-docker compose -f docker-compose.production.yml run --rm certbot renew
-docker compose -f docker-compose.production.yml restart nginx
-```
-
-## Monitoring
-
-### Health Checks
-
-```bash
-# Web application
-curl https://yourdomain.com/health
-
-# API backend
-curl https://api.yourdomain.com/health
-
-# Check legacy WebSocket tunnel (requires auth token)
-curl -i -N \
-  -H "Connection: Upgrade" \
-  -H "Upgrade: websocket" \
-  -H "Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==" \
-  -H "Sec-WebSocket-Version: 13" \
-  https://api.yourdomain.com/ws/tunnel?token=YOUR_JWT_TOKEN
-```
-
-### Service Status
-
-```bash
-docker compose -f docker-compose.production.yml ps
-```
-
-### Resource Usage
-
-```bash
-docker stats
-```
+Adjust the user/database to match your `.env` settings. For production, back up on the host and store the dump outside the Compose project.
 
 ## Troubleshooting
 
-### SSL Certificate Issues
+- **Image not updated after a workflow run**: the host pulls separately; run `docker compose -f config/docker/docker-compose.web.yml pull && docker compose -f config/docker/docker-compose.web.yml up -d`.
+- **Cache purge failed**: check `CLOUDFLARE_CACHE_PURGE_TOKEN` and `CF_ZONE_ID` are set (see [Secrets Management](SECRETS_MANAGEMENT.md)).
+- **Healthcheck fails**: use `127.0.0.1` rather than `localhost` when checking inside the web image; see [Web Deploy](../operations/cicd/WEB_DEPLOY.md).
+- **Sign-in fails**: confirm the Cloudflare Access configuration; Google OAuth client IDs are not read by the app.
+- **Node services fail**: use Node 26 (`.nvmrc`; service engines `>=26 <28`).
 
-```bash
-# Check certificate status
-docker compose -f docker-compose.production.yml exec certbot certbot certificates
+## Kubernetes alternative
 
-# Test certificate renewal (dry run)
-docker compose -f docker-compose.production.yml run --rm certbot renew --dry-run
-```
-
-### Database Connection Issues
-
-```bash
-# Access PostgreSQL shell
-docker compose -f docker-compose.production.yml exec postgres \
-  psql -U appuser -d Pistisai
-
-# Check database tables
-\dt
-
-# Exit PostgreSQL
-\q
-```
-
-### API Backend Issues
-
-```bash
-# Check API logs
-docker compose -f docker-compose.production.yml logs api-backend
-
-# Restart API backend
-docker compose -f docker-compose.production.yml restart api-backend
-
-# Access API container shell
-docker compose -f docker-compose.production.yml exec api-backend sh
-```
-
-### Nginx Issues
-
-```bash
-# Test nginx configuration
-docker compose -f docker-compose.production.yml exec nginx nginx -t
-
-# Reload nginx configuration
-docker compose -f docker-compose.production.yml exec nginx nginx -s reload
-
-# Check nginx access logs
-docker compose -f docker-compose.production.yml logs nginx
-```
-
-## Security Considerations
-
-1. **Change Default Passwords**: Always use strong, unique passwords for database and JWT secrets
-2. **Firewall Configuration**: Only expose ports 80 and 443
-3. **Regular Updates**: Keep Docker images and application code updated
-4. **SSL/TLS**: Let's Encrypt certificates auto-renew every 90 days
-5. **Database Backups**: Schedule regular database backups
-6. **Monitoring**: Set up monitoring and alerting for production deployments
-
-## Performance Optimization
-
-### Resource Limits
-
-Edit `docker-compose.production.yml` to adjust resource limits:
-
-```yaml
-services:
-  api-backend:
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 4G
-        reservations:
-          cpus: '1.0'
-          memory: 2G
-```
-
-### Database Tuning
-
-For high-load scenarios, customize PostgreSQL configuration:
-
-```bash
-# Create custom postgresql.conf
-# Mount it in docker-compose.production.yml
-```
-
-## Alternative: Kubernetes Deployment
-
-For production deployments, **Kubernetes is recommended** over Docker Compose:
-
-- ✅ Better scalability and high availability
-- ✅ Auto-scaling capabilities
-- ✅ More robust networking and service discovery
-- ✅ Platform-agnostic (works with any Kubernetes cluster)
-- ✅ Supports both managed and self-hosted clusters
-
-Kubernetes manifests live in `k8s/`. For private deployments, start with [Self-Hosting Guide](SELF_HOSTING.md).
+For multi-user production, the repo also ships standard manifests in `config/kubernetes/base/` and `services/api-backend/k8s/`. There is no root `k8s/` directory. See [Deployment Overview](DEPLOYMENT_OVERVIEW.md) and [Self-Hosting Guide](SELF_HOSTING.md).
 
 ## Support
 
-For issues or questions:
-
 - GitHub Issues: https://github.com/pistisAI/pistisai-app/issues
-- Documentation: https://docs.example.com
-- Email: ops@example.com
+- [Documentation index](../README.md)

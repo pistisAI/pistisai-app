@@ -2,7 +2,9 @@
 
 ## Rate Limit Policies by Tier
 
-| Tier | Requests/Min | Requests/Hour | Burst Size | Concurrent |
+> **Verified against code:** `services/api-backend/middleware/pipeline.js:113-114` sets the live default to `max: 100` per `windowMs: 15 * 60 * 1000` (100 requests / 15 min per IP); the bridge limiter uses `bridgeMax || 500` (`pipeline.js:121-122`). No Free/Premium/Enterprise request-rate table exists in code — `services/api-backend/middleware/tier-check.js:24-58` defines tier *features* (connections/models/tunnels), not request limits. The table below is **planned product policy, not current behavior**.
+
+| Tier (planned — not implemented) | Requests/Min | Requests/Hour | Burst Size | Concurrent |
 |------|-------------|---------------|-----------|-----------|
 | Free | 100 | 5,000 | 10 | 5 |
 | Premium | 500 | 30,000 | 50 | 25 |
@@ -106,10 +108,10 @@ curl -X POST \
 
 ## Rate Limit Types
 
-1. **Per-User** - Based on user tier
-2. **Per-IP** - 1,000 req/min, 50,000 req/hour
-3. **Burst** - Concurrent request limits
-4. **Concurrent** - Max simultaneous connections
+1. **Per-User** - Based on user tier (planned; live limiter is per-IP — `services/api-backend/middleware/pipeline.js:112-115`)
+2. **Per-IP** - planned 1,000 req/min, 50,000 req/hour; live default is **100 req / 15 min** (`pipeline.js:113-114`)
+3. **Burst** - Concurrent request limits (planned)
+4. **Concurrent** - Max simultaneous connections (tier feature flags in `services/api-backend/middleware/tier-check.js:24-58`, not request-rate limits)
 
 ## Troubleshooting
 

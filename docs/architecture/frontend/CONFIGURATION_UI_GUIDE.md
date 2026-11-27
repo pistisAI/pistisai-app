@@ -1,6 +1,6 @@
 # Configuration and UI Components Guide
 
-> **Implementation note:** `lib/components/enhanced_provider_status_widget.dart` and `lib/components/enhanced_error_handler.dart` do not exist. Provider status is rendered by `lib/screens/settings/llm_provider_settings_screen.dart` from `ConnectionManagerService.isConnected`. The component names below are illustrative only.
+> **Implementation note:** EnhancedProviderStatusWidget and an enhanced error handler do not exist. Provider status is rendered by `lib/screens/settings/llm_provider_settings_screen.dart` from `ConnectionManagerService.isConnected`. The component names below are illustrative only.
 
 This guide provides comprehensive documentation for the enhanced configuration management and UI components in Pistisai.
 
@@ -86,7 +86,7 @@ await configManager.setPreferredProvider('ollama_11434');
 
 ## Enhanced UI Components
 
-### 1. Enhanced Provider Status Widget (`lib/components/enhanced_provider_status_widget.dart`)
+### 1. Enhanced Provider Status Widget (planned; not in the repository)
 
 **Purpose**: Comprehensive provider status display with health monitoring and performance metrics.
 
@@ -140,7 +140,7 @@ EnhancedProviderSelectorWidget(
 )
 ```
 
-### 3. Enhanced Error Handler (`lib/components/enhanced_error_handler.dart`)
+### 3. Enhanced Error Handler (planned; not in the repository)
 
 **Purpose**: Comprehensive error display with troubleshooting guidance and diagnostic tools.
 

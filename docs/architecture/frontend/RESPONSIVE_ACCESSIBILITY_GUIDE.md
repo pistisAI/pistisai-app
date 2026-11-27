@@ -1,6 +1,6 @@
 # Responsive Layout and Accessibility Guide
 
-> **Implementation note:** `lib/utils/accessibility_helpers.dart` is not present. Breakpoints are implemented in `lib/widgets/responsive_layout.dart`; the helper import below is illustrative only.
+> **Implementation note:** Accessibility helper utilities are not present. Breakpoints are implemented in `lib/utils/responsive_layout.dart`; the helper import below is illustrative only.
 
 This guide documents the responsive layout and accessibility features implemented for the Platform Settings Screen.
 

@@ -6,9 +6,9 @@ Review of database access patterns under `services/api-backend/` for loops that 
 
 | Location | Pattern | Fix |
 | --- | --- | --- |
-| `services/tunnel-service.js` `listTunnels` | Per-tunnel `SELECT` on `tunnel_endpoints` | One `WHERE tunnel_id = ANY($1)` + in-memory group |
-| `services/proxy-webhook-service.js` `triggerWebhookEvent` | Per-webhook `INSERT` into `proxy_webhook_events` | Single multi-row `INSERT` |
-| `services/tunnel-webhook-service.js` `triggerWebhookEvent` | Per-webhook `INSERT` into `tunnel_webhook_events` | Single multi-row `INSERT` |
+| `services/api-backend/services/tunnel-service.js` `listTunnels` | Per-tunnel `SELECT` on `tunnel_endpoints` | One `WHERE tunnel_id = ANY($1)` + in-memory group |
+| `services/api-backend/services/proxy-webhook-service.js` `triggerWebhookEvent` | Per-webhook `INSERT` into `proxy_webhook_events` | Single multi-row `INSERT` |
+| `services/api-backend/services/tunnel-webhook-service.js` `triggerWebhookEvent` | Per-webhook `INSERT` into `tunnel_webhook_events` | Single multi-row `INSERT` |
 | `routes/conversations.js` create/update | Per-message `INSERT` into `messages` | `insertMessagesBatched` in `database/sql-batch.js` |
 
 Regression coverage: `test/api-backend/n-plus-one-batching.unit.test.js` (asserts query count stays O(1) in collection size).
@@ -17,10 +17,10 @@ Regression coverage: `test/api-backend/n-plus-one-batching.unit.test.js` (assert
 
 | Location | Why left | Notes |
 | --- | --- | --- |
-| `services/tunnel-service.js` `createTunnel` / `updateTunnel` | Lower frequency; needs `RETURNING` mapping | Multi-row `INSERT` is safe when endpoints share one tunnel |
-| `services/tunnel-health-service.js` `performHealthCheck` | HTTP probe must stay per endpoint | DB `UPDATE`s can be batched with `unnest` after probes |
-| `services/bulk-operations-service.js` | Per-user `BEGIN`/`COMMIT` for partial success | Batching would change failure semantics |
-| `scripts/test-database.js` / migrate scripts | Offline tooling | Not a runtime path |
+| `services/api-backend/services/tunnel-service.js` `createTunnel` / `updateTunnel` | Lower frequency; needs `RETURNING` mapping | Multi-row `INSERT` is safe when endpoints share one tunnel |
+| `services/api-backend/services/tunnel-health-service.js` `performHealthCheck` | HTTP probe must stay per endpoint | DB `UPDATE`s can be batched with `unnest` after probes |
+| `services/api-backend/services/bulk-operations-service.js` | Per-user `BEGIN`/`COMMIT` for partial success | Batching would change failure semantics |
+| `services/api-backend/scripts/test-database.js` / migrate scripts | Offline tooling | Not a runtime path |
 
 ## Already batched (good examples)
 

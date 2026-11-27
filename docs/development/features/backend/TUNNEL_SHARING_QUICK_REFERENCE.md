@@ -9,6 +9,8 @@ Tunnel sharing allows users to grant other users access to their tunnels with gr
 - **Access logs** for audit trails
 - **Permission management** with ability to update or revoke access
 
+> **Verified against code:** the path `/api/tunnels/:id/shares` was wrong. `services/api-backend/routes/tunnel-sharing.js` registers `/:id/shares` (:79 POST, :184 GET), `/:id/shares/:sharedWithUserId` (:255 DELETE), `/:id/share-tokens` (:418/:518), `/:id/access-logs` (:675) and `/:id/shares/:shareId/permission` (:764). The router is mounted at `/tunnel-sharing` (and `/api/tunnel-sharing`) by `services/api-backend/server.js:355`, **gated by `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES`** (`server.js:186-188`). Correct prefix `/api/tunnel-sharing/:id/…` applied below; service file is `services/api-backend/services/tunnel-sharing-service.js`.
+
 ## Database Schema
 
 ### tunnel_shares
@@ -53,7 +55,7 @@ Audit trail for all tunnel access operations:
 ### Share Tunnel with User
 
 ```
-POST /api/tunnels/:id/shares
+POST /api/tunnel-sharing/:id/shares
 Authorization: Bearer <token>
 
 Request:
@@ -79,7 +81,7 @@ Response:
 ### Get Tunnel Shares
 
 ```
-GET /api/tunnels/:id/shares
+GET /api/tunnel-sharing/:id/shares
 Authorization: Bearer <token>
 
 Response:
@@ -102,7 +104,7 @@ Response:
 ### Revoke Tunnel Access
 
 ```
-DELETE /api/tunnels/:id/shares/:sharedWithUserId
+DELETE /api/tunnel-sharing/:id/shares/:sharedWithUserId
 Authorization: Bearer <token>
 
 Response:
@@ -141,7 +143,7 @@ Response:
 ### Create Share Token
 
 ```
-POST /api/tunnels/:id/share-tokens
+POST /api/tunnel-sharing/:id/share-tokens
 Authorization: Bearer <token>
 
 Request:
@@ -168,7 +170,7 @@ Response:
 ### Get Share Tokens
 
 ```
-GET /api/tunnels/:id/share-tokens
+GET /api/tunnel-sharing/:id/share-tokens
 Authorization: Bearer <token>
 
 Response:
@@ -192,7 +194,7 @@ Response:
 ### Revoke Share Token
 
 ```
-DELETE /api/tunnels/:id/share-tokens/:tokenId
+DELETE /api/tunnel-sharing/:id/share-tokens/:tokenId
 Authorization: Bearer <token>
 
 Response:
@@ -205,7 +207,7 @@ Response:
 ### Get Access Logs
 
 ```
-GET /api/tunnels/:id/access-logs?limit=50&offset=0
+GET /api/tunnel-sharing/:id/access-logs?limit=50&offset=0
 Authorization: Bearer <token>
 
 Response:
@@ -233,7 +235,7 @@ Response:
 ### Update Share Permission
 
 ```
-PUT /api/tunnels/:id/shares/:shareId/permission
+PUT /api/tunnel-sharing/:id/shares/:shareId/permission
 Authorization: Bearer <token>
 
 Request:

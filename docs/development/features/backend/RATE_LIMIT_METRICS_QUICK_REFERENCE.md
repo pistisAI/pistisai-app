@@ -4,6 +4,8 @@
 
 Task 37 implements rate limit metrics collection and dashboard endpoints for monitoring rate limiting behavior.
 
+> **Verified against code:** the implementation lives under `services/api-backend/`, not `services/` + repo-root `routes/`. The service is `services/api-backend/services/rate-limit-metrics-service.js:27-103` (exactly 10 Prometheus metrics: 5 `Counter`, 4 `Gauge`, 1 `Histogram` — see the `new Counter/Gauge/Histogram` declarations there); the router is `services/api-backend/routes/rate-limit-metrics.js`, imported at `services/api-backend/server.js:144` and mounted by `registerRoutes('/metrics', rateLimitMetricsRoutes)` at `server.js:439` (`registerRoutes` at `server.js:265-267` mounts each path at both `/api<path>` and `<path>`).
+
 ## Validates
 
 - **Requirement 6.10**: THE API SHALL provide rate limit metrics and dashboards
@@ -12,14 +14,14 @@ Task 37 implements rate limit metrics collection and dashboard endpoints for mon
 
 ### 1. Metrics Service
 
-- **File**: `services/rate-limit-metrics-service.js`
+- **File**: `services/api-backend/services/rate-limit-metrics-service.js`
 - **Singleton**: `rateLimitMetricsService`
 - **Metrics**: 10 Prometheus metrics
 - **Tracking**: Top violators, top IPs, usage percentages
 
 ### 2. Metrics Routes
 
-- **File**: `routes/rate-limit-metrics.js`
+- **File**: `services/api-backend/routes/rate-limit-metrics.js`
 - **Endpoints**: 4 endpoints (1 public, 3 admin)
 - **Authentication**: JWT required for dashboard endpoints
 - **Authorization**: Admin role required for detailed endpoints
@@ -213,15 +215,15 @@ npm test -- ../test/api-backend/rate-limit-metrics.test.js
 
 Test coverage: 87.67% statements, 100% functions
 
-## Files Modified
+## Files Modified (verified against code)
 
-1. `services/rate-limit-metrics-service.js` - NEW
-2. `routes/rate-limit-metrics.js` - NEW
-3. `middleware/rate-limiter.js` - UPDATED (metrics recording)
-4. `middleware/rate-limit-exemptions.js` - UPDATED (metrics recording)
-5. `server.js` - UPDATED (route registration)
-6. `package.json` - UPDATED (prom-client dependency)
-7. `test/api-backend/rate-limit-metrics.test.js` - NEW
+1. `services/api-backend/services/rate-limit-metrics-service.js` — NEW (present; 10 metrics at :27-103)
+2. `services/api-backend/routes/rate-limit-metrics.js` — NEW (present)
+3. A standalone rate-limiter module — **MISSING**: no such file under `services/api-backend/middleware/` (only `admin-rate-limiter.js`, `webhook-rate-limiter.js`). The live limiter is `services/api-backend/middleware/pipeline.js:112-122`.
+4. A rate-limit exemptions module — **MISSING**: no matching file under `services/api-backend/middleware/`.
+5. `services/api-backend/server.js` — UPDATED (import :144, mount :439).
+6. `services/api-backend/package.json` — UPDATED (`prom-client` 15.1.3 at :43).
+7. `test/api-backend/rate-limit-metrics.test.js` — NEW (present).
 
 ## Performance
 

@@ -37,10 +37,12 @@ Creates comprehensive test data for the admin center:
 
 ### Prerequisites
 
-1. Ensure the database migrations have been applied first:
+> **Verified against code:** `services/api-backend/database/seeds/run-seed.js` exists, so the seed commands below are valid. There is no `migrations/run-migration.js` and no `migrations/README.md` in `services/api-backend/database/`; the migration runner is `database/migrate-pg.js`, applied at backend startup (`services/api-backend/server.js:563-578` → `migrate-pg.js:328-355`) with no `up`/`down`/`status` CLI. Rollback SQL is in `database/rollbacks/`. Use the `psql` commands below instead of the stale runner commands.
+
+1. Ensure the database migrations have been applied first (automatically at backend startup, or directly):
 
    ```bash
-   node services/api-backend/database/migrations/run-migration.js up 001
+   psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/migrations/001_admin_center_schema.sql
    ```
 
 2. Set environment variables for database connection:
@@ -151,8 +153,8 @@ psql -h localhost -U postgres -d Pistisai -c "SELECT u.email, ar.role, ar.is_act
 ### Initial Setup
 
 ```bash
-# 1. Apply migrations
-node services/api-backend/database/migrations/run-migration.js up 001
+# 1. Apply migrations (no run-migration.js CLI; applied at startup or via psql)
+psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/migrations/001_admin_center_schema.sql
 
 # 2. Apply seed data
 node services/api-backend/database/seeds/run-seed.js apply 001
@@ -167,11 +169,11 @@ node services/api-backend/database/seeds/run-seed.js apply 001 | grep "Database 
 # 1. Clean seed data
 node services/api-backend/database/seeds/run-seed.js clean
 
-# 2. Rollback migrations
-node services/api-backend/database/migrations/run-migration.js down 001
+# 2. Rollback migrations (rollback files live in database/rollbacks/)
+psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/rollbacks/001_admin_center_schema_rollback.sql
 
 # 3. Reapply migrations
-node services/api-backend/database/migrations/run-migration.js up 001
+psql -h localhost -U postgres -d Pistisai -f services/api-backend/database/migrations/001_admin_center_schema.sql
 
 # 4. Reapply seed data
 node services/api-backend/database/seeds/run-seed.js apply 001
@@ -223,10 +225,10 @@ node services/api-backend/database/seeds/run-seed.js apply 001
 
 ### Seed fails with "foreign key violation"
 
-Ensure migrations are applied first:
+Ensure migrations are applied first (no `status` CLI; query the tracking table):
 
 ```bash
-node services/api-backend/database/migrations/run-migration.js status
+psql -h localhost -U postgres -d Pistisai -c "SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;"
 ```
 
 ### Seed fails with "duplicate key value"
@@ -256,4 +258,4 @@ For issues or questions about seed data, refer to:
 
 - Admin Center Design Document: `.kiro/specs/admin-center/design.md`
 - Admin Center Requirements: `.kiro/specs/admin-center/requirements.md`
-- Migration Documentation: `services/api-backend/database/migrations/README.md`
+- Migration reference: `services/api-backend/database/migrate-pg.js` (the runner) and the `README.md` / `MIGRATION_003_README.md` in this directory; there is no migrations README in `services/api-backend/database/migrations/`

@@ -11,9 +11,9 @@ Implements comprehensive tunnel status tracking, health checking, and metrics co
 
 ## Key Components
 
-### TunnelHealthService (`services/tunnel-health-service.js`)
+### TunnelHealthService (`services/api-backend/services/tunnel-health-service.js`)
 
-Core service for health checking and metrics management.
+Core service for health checking and metrics management. (The file is under `services/api-backend/services/` — confirmed present.)
 
 **Key Methods:**
 
@@ -28,18 +28,18 @@ Core service for health checking and metrics management.
 - `getEndpointHealthStatus(tunnelId, userId)` - Get endpoint health details
 - `updateEndpointHealthStatus(endpointId, healthStatus)` - Update health status
 
-### API Routes (`routes/tunnel-health.js`)
+### API Routes (`services/api-backend/routes/tunnel-health.js`)
 
-REST endpoints for tunnel health and status operations.
+> **Verified against code:** the router is `services/api-backend/routes/tunnel-health.js` (not root-level `routes/`); it registers `/:id/status` (:69), `/:id/health` (:141), `/:id/health-check` (:213), `/:id/metrics` (:294), `/:id/metrics/record` (:376), `/:id/metrics/flush` (:481). It is mounted at `/tunnel-health` (and `/api/tunnel-health`) by `services/api-backend/server.js:354`, **gated by `PISTISAI_ENABLE_LEGACY_TUNNEL_ROUTES`** (`server.js:186-188`). Endpoint paths below are corrected to `/api/tunnel-health/…`.
 
 **Endpoints:**
 
-- `GET /api/tunnels/:id/status` - Get tunnel status summary
-- `GET /api/tunnels/:id/health` - Get endpoint health status
-- `POST /api/tunnels/:id/health-check` - Trigger manual health check
-- `GET /api/tunnels/:id/metrics` - Get tunnel metrics
-- `POST /api/tunnels/:id/metrics/record` - Record request metrics
-- `POST /api/tunnels/:id/metrics/flush` - Flush metrics to database
+- `GET /api/tunnel-health/:id/status` - Get tunnel status summary
+- `GET /api/tunnel-health/:id/health` - Get endpoint health status
+- `POST /api/tunnel-health/:id/health-check` - Trigger manual health check
+- `GET /api/tunnel-health/:id/metrics` - Get tunnel metrics
+- `POST /api/tunnel-health/:id/metrics/record` - Record request metrics
+- `POST /api/tunnel-health/:id/metrics/flush` - Flush metrics to database
 
 ## Database Schema
 

@@ -10,6 +10,16 @@ import jwksClient from 'jwks-rsa';
 import { TunnelLogger } from '../utils/logger.js';
 import { DatabaseMigratorPG } from '../database/migrate-pg.js';
 
+// Signing keys rotate rarely; keep them long enough that normal traffic
+// never waits on a refetch.
+const JWKS_CACHE_MAX_AGE_MS = 10 * 60 * 60 * 1000; // 10 hours
+// Negative cache for kids the JWKS endpoint did not contain.
+const UNKNOWN_KID_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const UNKNOWN_KID_CACHE_MAX = 1000;
+// A kid is a short opaque identifier (Cloudflare Access uses hex). Anything
+// else is rejected before it can trigger a JWKS fetch.
+const KID_PATTERN = /^[A-Za-z0-9._~+/=-]{1,128}$/;
+
 function accessTeamDomain() {
   return (process.env.CF_ACCESS_TEAM_DOMAIN || '')
     .replace(/^https?:\/\//, '')
@@ -62,14 +72,46 @@ export class AuthService {
 
     this.initialized = false;
 
+    // Known signing keys are served from the cache, which sits in front of
+    // the rate limiter, so only cache misses count against the fetch budget.
     this.jwksClient = this.config.JWKS_URI
       ? jwksClient({
           jwksUri: this.config.JWKS_URI,
           cache: true,
+          cacheMaxEntries: 5,
+          cacheMaxAge: JWKS_CACHE_MAX_AGE_MS,
           rateLimit: true,
-          jwksRequestsPerMinute: 5,
+          jwksRequestsPerMinute: 10,
         })
       : null;
+
+    // kids the JWKS endpoint did not contain, so repeated tokens carrying an
+    // unknown kid do not trigger a fetch each time.
+    this.unknownKids = new Map();
+  }
+
+  /**
+   * True when kid was recently looked up and not found in the JWKS.
+   */
+  isKnownUnknownKid(kid) {
+    const expiresAt = this.unknownKids.get(kid);
+    if (expiresAt === undefined) {
+      return false;
+    }
+    if (expiresAt <= Date.now()) {
+      this.unknownKids.delete(kid);
+      return false;
+    }
+    return true;
+  }
+
+  rememberUnknownKid(kid) {
+    this.unknownKids.delete(kid);
+    while (this.unknownKids.size >= UNKNOWN_KID_CACHE_MAX) {
+      // Map keeps insertion order: drop the oldest entry.
+      this.unknownKids.delete(this.unknownKids.keys().next().value);
+    }
+    this.unknownKids.set(kid, Date.now() + UNKNOWN_KID_TTL_MS);
   }
 
   /**
@@ -195,8 +237,20 @@ export class AuthService {
       callback(new Error('Cloudflare Access is not configured'));
       return;
     }
-    this.jwksClient.getSigningKey(header.kid, (err, key) => {
+    const kid = header?.kid;
+    if (typeof kid !== 'string' || !KID_PATTERN.test(kid)) {
+      callback(new Error('Token key id (kid) is missing or malformed'));
+      return;
+    }
+    if (this.isKnownUnknownKid(kid)) {
+      callback(new Error('Unknown token signing key'));
+      return;
+    }
+    this.jwksClient.getSigningKey(kid, (err, key) => {
       if (err) {
+        if (err.name === 'SigningKeyNotFoundError') {
+          this.rememberUnknownKid(kid);
+        }
         callback(err);
         return;
       }
@@ -617,6 +671,20 @@ export class AuthService {
     return (result?.changes ?? 0) > 0;
   }
 
+  /**
+   * Deactivate the session that belongs to this exact token (logout).
+   * Returns true when an active session was deactivated.
+   */
+  async revokeSessionByToken(accessSub, token, userInfo = {}) {
+    const userId = await this.resolveUserId(accessSub, userInfo);
+    const result = await this.runQuery(
+      'UPDATE user_sessions SET is_active = false WHERE user_id = $1 AND jwt_token_hash = $2 AND is_active = true',
+      [userId, this.hashToken(token)],
+      'run',
+    );
+    return (result?.changes ?? 0) > 0;
+  }
+
   async createOrUpdateSession(tokenPayload, token, req) {
     this.logger.info('Creating/updating session', { tokenType: typeof token });
     const supabaseId = tokenPayload.sub;
@@ -673,14 +741,20 @@ export class AuthService {
    */
   async cleanupUserSessions(userId) {
     try {
-      // Keep only the most recent sessions up to MAX_SESSIONS_PER_USER
+      // Keep only the most recent active sessions up to
+      // MAX_SESSIONS_PER_USER. Revoked rows (is_active = false) are
+      // tombstones: deleting one before it expires would let the same token
+      // create a fresh active session again, so they are never trimmed here
+      // and only go once expires_at has passed (below).
       await this.runQuery(
-        `DELETE FROM user_sessions 
-         WHERE user_id = $1 
+        `DELETE FROM user_sessions
+         WHERE user_id = $1
+         AND is_active = true
          AND id NOT IN (
-           SELECT id FROM user_sessions 
-           WHERE user_id = $1 
-           ORDER BY last_activity DESC 
+           SELECT id FROM user_sessions
+           WHERE user_id = $1
+           AND is_active = true
+           ORDER BY last_activity DESC
            LIMIT $2
          )`,
         [userId, this.config.MAX_SESSIONS_PER_USER],

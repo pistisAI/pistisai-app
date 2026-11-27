@@ -21,9 +21,8 @@ This guide is the entry point for working on the Pistisai stack. Product descrip
 
 ## Required Tools
 
-- Flutter matching `environment.flutter` in `pubspec.yaml` (currently `3.47.7`) with Dart `>=3.5.0 <4.0.0`.
-- Node.js `>=22 <27` for `services/api-backend/` and `services/streaming-proxy/` (CI pins Node `26` via `.nvmrc`).
-- Node.js `>=18` is sufficient for `services/sdk/`.
+- Flutter matching `environment.flutter` in `pubspec.yaml:10` (currently `3.47.9`) with Dart `>=3.5.0 <4.0.0`.
+- Node.js `>=26 <28` for `services/api-backend/`, `services/streaming-proxy/` and `services/sdk/` (engines in `services/api-backend/package.json:67-69`, `services/sdk/package.json:54-56`; CI pins Node `26` via `.nvmrc`).
 - Docker or a compatible container runtime for backend/deployment work.
 - PostgreSQL for backend database work.
 

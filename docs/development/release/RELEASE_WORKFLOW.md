@@ -4,6 +4,8 @@
 
 This document provides the complete, tested workflow for creating Pistisai releases. Follow these steps exactly to ensure successful releases with all assets properly uploaded.
 
+> **Verified against code / policy (2026-11-24):** image builds and publishes run **only** through GitHub Actions (`.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`). `deploy-web.yml:106-131` runs a full-zone Cloudflare cache purge after the image push; `deploy-backend.yml:27-160` only builds and publishes images (no purge job). The host-side `docker compose up -d` is still a manual step (see the "Known gap" comment at `deploy-web.yml:103-105`). There is no manual VPS/SSH deploy step. The old VPS sections below are retained as historical reference and are labelled as such.
+
 ## Prerequisites
 
 ### Required Tools
@@ -12,7 +14,7 @@ This document provides the complete, tested workflow for creating Pistisai relea
 - [x] **Flutter SDK** (latest stable version)
 - [x] **Git** with repository access
 - [x] **GitHub CLI** (`gh`) installed and authenticated
-- [x] **WSL Ubuntu** (for VPS deployment)
+- [x] **GitHub Actions** deploy workflows available (no manual VPS/SSH access is used)
 
 ### Authentication Setup
 
@@ -54,7 +56,7 @@ git status
 3. **Test Build Locally**:
 
    ```powershell
-   .\scripts\powershell\Build-GitHubReleaseAssets-Simple.ps1 -Clean
+   .\scripts\powershell\Build-GitHubReleaseAssets.ps1 -Clean
    ```
 
 ### Step 2: Version Management
@@ -65,8 +67,8 @@ git status
    # For new major/minor release
    .\scripts\powershell\version_manager.ps1 set X.Y.Z
    
-   # Example for v3.8.0
-   .\scripts\powershell\version_manager.ps1 set 3.8.0
+   # Example for v1.5.60
+   .\scripts\powershell\version_manager.ps1 set 1.5.60
    ```
 
 2. **Verify Version Update**:
@@ -81,7 +83,7 @@ git status
 1. **Clean Build with Asset Creation**:
 
    ```powershell
-   .\scripts\powershell\Build-GitHubReleaseAssets-Simple.ps1 -Clean
+   .\scripts\powershell\Build-GitHubReleaseAssets.ps1 -Clean
    ```
 
 2. **Verify Build Output**:
@@ -97,10 +99,10 @@ git status
 
    ```bash
    # Create draft release
-   gh release create v3.8.0 --draft --title "Pistisai v3.8.0 - [Feature Name]" --notes-file release-notes.md
+   gh release create v1.5.60 --draft --title "Pistisai v1.5.60 - [Feature Name]" --notes-file release-notes.md
    
    # Or create release directly
-   gh release create v3.8.0 --title "Pistisai v3.8.0 - [Feature Name]" --notes "Release notes here"
+   gh release create v1.5.60 --title "Pistisai v1.5.60 - [Feature Name]" --notes "Release notes here"
    ```
 
 2. **Get Release ID** (if using API):
@@ -115,7 +117,7 @@ git status
 
 ```powershell
 # Build and upload in one step
-.\scripts\powershell\Build-GitHubReleaseAssets-Simple.ps1 -Clean -UploadToGitHub -ReleaseId <release-id>
+.\scripts\powershell\Build-GitHubReleaseAssets.ps1 -Clean -UploadToGitHub -ReleaseId <release-id>
 ```
 
 **Option B: Separate Upload**
@@ -129,8 +131,8 @@ git status
 
 ```bash
 # Upload specific files
-gh release upload v3.8.0 dist/windows/Pistisai-3.8.0-portable.zip
-gh release upload v3.8.0 dist/windows/Pistisai-3.8.0-portable.zip.sha256
+gh release upload v1.5.60 dist/windows/Pistisai-1.5.60-portable.zip
+gh release upload v1.5.60 dist/windows/Pistisai-1.5.60-portable.zip.sha256
 ```
 
 ### Step 6: Commit and Push Changes
@@ -139,32 +141,31 @@ gh release upload v3.8.0 dist/windows/Pistisai-3.8.0-portable.zip.sha256
 
    ```bash
    git add .
-   git commit -m "Release v3.8.0: [Brief description of main features]
+   git commit -m "Release v1.5.60: [Brief description of main features]
    
    - [Feature 1 description]
    - [Feature 2 description]
-   - Update version to 3.8.0+[timestamp]"
+   - Update version to 1.5.60+182"
    ```
 
 2. **Push to Repository**:
 
    ```bash
-   git push origin master
+   git push origin main
    ```
 
-### Step 7: Deploy to VPS
+### Step 7: Deploy via GitHub Actions (not manual VPS)
 
-1. **Deploy via SSH from Windows PowerShell**:
+> **Verified against code / policy:** image builds and publishes run only through `.github/workflows/deploy-web.yml` and `.github/workflows/deploy-backend.yml`, triggered from `main`. No SSH/VPS step exists or is permitted; the manual VPS instructions that followed this heading were removed.
 
-   ```powershell
-   ssh ops@example.com "cd /opt/Pistisai && git pull origin master && flutter build web --release && docker-compose -f docker-compose.multi.yml down && docker-compose -f docker-compose.multi.yml up -d"
-   ```
+1. **Push the release commit to `main`** (Step 6) — the image-build workflows run automatically; `deploy-web.yml` purges the full Cloudflare zone after publishing, and the host must still pull the new image (`docker compose up -d`).
 
-2. **Verify Deployment**:
+2. **Verify the deployment** from the Actions run and the public version endpoint:
 
-   ```powershell
+   ```bash
+   gh run list --workflow=deploy-web.yml --limit 3
    curl -s https://app.example.com/version.json
-   # Should show new version number
+   # Should show the new version number
    ```
 
 ### Step 8: Post-Release Verification
@@ -175,7 +176,8 @@ gh release upload v3.8.0 dist/windows/Pistisai-3.8.0-portable.zip.sha256
    - [ ] Release notes complete
    - [ ] Version tags correct
 
-2. **Verify VPS Deployment**:
+2. **Verify GitHub Actions Deployment**:
+   - [ ] `deploy-web.yml` / `deploy-backend.yml` image builds succeeded (`deploy-web.yml` also completed its full-zone Cloudflare cache purge)
    - [ ] Application accessible at example.com
    - [ ] Version number updated
    - [ ] New features functional
@@ -211,15 +213,16 @@ gh auth refresh
 # Clean everything and retry
 flutter clean
 flutter pub get
-.\scripts\powershell\Build-GitHubReleaseAssets-Simple.ps1 -Clean
+.\scripts\powershell\Build-GitHubReleaseAssets.ps1 -Clean
 ```
 
-#### VPS Deployment Fails
+#### GitHub Actions Deployment Fails
 
 ```bash
-# Check VPS status and retry
-wsl -d Ubuntu-24.04 -- ssh ops@example.com "docker ps"
-# Retry deployment commands individually
+# Inspect the failing run and its logs (deploys are Actions-only)
+gh run list --workflow=deploy-web.yml --limit 5
+gh run view <run-id> --log-failed
+# Fix the cause on main and let the workflow re-run; never deploy manually over SSH
 ```
 
 ### Rollback Procedures
@@ -228,17 +231,18 @@ wsl -d Ubuntu-24.04 -- ssh ops@example.com "docker ps"
 
 ```bash
 # Delete release if needed
-gh release delete v3.8.0 --yes
+gh release delete v1.5.60 --yes
 
 # Or mark as pre-release
-gh release edit v3.8.0 --prerelease
+gh release edit v1.5.60 --prerelease
 ```
 
-#### Rollback VPS Deployment
+#### Rollback Deployment
 
 ```bash
-# Revert to previous version
-wsl -d Ubuntu-24.04 -- ssh ops@example.com "cd /opt/Pistisai && git reset --hard HEAD~1 && flutter build web --release && docker-compose -f docker-compose.multi.yml restart"
+# Revert the release commit on main via a normal PR (never force-push main)
+# The deploy workflows then run against the reverted main automatically.
+gh run list --workflow=deploy-web.yml --limit 5
 ```
 
 ## Quality Checklist
@@ -257,7 +261,7 @@ wsl -d Ubuntu-24.04 -- ssh ops@example.com "cd /opt/Pistisai && git reset --hard
 - [ ] Assets uploaded successfully
 - [ ] Release notes comprehensive
 - [ ] Version committed and pushed
-- [ ] VPS deployment successful
+- [ ] GitHub Actions deployment successful
 
 ### Post-Release Checklist
 

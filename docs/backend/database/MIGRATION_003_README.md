@@ -197,25 +197,32 @@ This migration addresses the following requirements:
 
 ## Usage
 
+> **Verified against code:** there is **no `run-migration.js`** in `services/api-backend/database/` (the runner-related entries there are `migrate-pg.js`, `migrate-auth-pg.js`, `migrations/`, `rollbacks/` and `seeds/`). The 003 forward SQL exists at `services/api-backend/database/migrations/003_email_relay_dns_setup.sql`, and its rollback is at `services/api-backend/database/rollbacks/003_email_relay_dns_setup_rollback.sql` — **not** under `migrations/`. The actual runner is `services/api-backend/database/migrate-pg.js` (`DatabaseMigratorPG`); the backend applies migrations at startup via `services/api-backend/server.js:563-578` → `migrate()` (`migrate-pg.js:328-355`), which applies all unapplied `migrations/*.sql`. `migrate-pg.js` has no `up`/`down`/`status` CLI, so any `run-migration.js` command would fail. Use the startup path or the direct `psql` commands shown below.
+
 ### Apply Migration
+
+Applied automatically at backend startup (`server.js:563-578`). To apply the 003 SQL directly instead:
 
 ```bash
 cd services/api-backend
-node database/migrations/run-migration.js up 003
+psql -h localhost -U postgres -d Pistisai -f database/migrations/003_email_relay_dns_setup.sql
 ```
 
 ### Rollback Migration
 
+The rollback file lives in `database/rollbacks/`, not `database/migrations/`:
+
 ```bash
 cd services/api-backend
-node database/migrations/run-migration.js down 003
+psql -h localhost -U postgres -d Pistisai -f database/rollbacks/003_email_relay_dns_setup_rollback.sql
 ```
 
 ### Check Migration Status
 
-```bash
-cd services/api-backend
-node database/migrations/run-migration.js status
+There is no `status` CLI. `DatabaseMigratorPG.getAppliedMigrations()` (`database/migrate-pg.js:169-174`) queries the tracking table internally; query it directly:
+
+```sql
+SELECT version, name, applied_at FROM schema_migrations WHERE success = TRUE ORDER BY applied_at;
 ```
 
 ## Data Encryption
@@ -276,16 +283,17 @@ The migration may have been partially applied. Check the database state:
 SELECT * FROM schema_migrations WHERE version = '003';
 ```
 
-If the migration is marked as applied but tables don't exist, manually clean up:
+If the migration is marked as applied but tables don't exist, manually clean up with the rollback in `database/rollbacks/` (see "Verified against code" above):
 
 ```bash
-node database/migrations/run-migration.js down 003
+cd services/api-backend
+psql -h localhost -U postgres -d Pistisai -f database/rollbacks/003_email_relay_dns_setup_rollback.sql
 ```
 
 Then reapply:
 
 ```bash
-node database/migrations/run-migration.js up 003
+psql -h localhost -U postgres -d Pistisai -f database/migrations/003_email_relay_dns_setup.sql
 ```
 
 ### Cannot connect to database
@@ -308,10 +316,11 @@ If trigger functions fail to create, ensure the `audit_logs` table exists:
 SELECT * FROM information_schema.tables WHERE table_name = 'audit_logs';
 ```
 
-If it doesn't exist, run the main schema migration first:
+If it doesn't exist, run the main schema migration first (no `run-migration.js` CLI — see "Verified against code" above):
 
 ```bash
-node database/migrations/run-migration.js up 001
+cd services/api-backend
+psql -h localhost -U postgres -d Pistisai -f database/migrations/001_admin_center_schema.sql
 ```
 
 ## References

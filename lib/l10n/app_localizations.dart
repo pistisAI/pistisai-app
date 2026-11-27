@@ -350,6 +350,12 @@ abstract class AppLocalizations {
   /// **'Initialization complete'**
   String get visionInitComplete;
 
+  /// No description provided for @visionInitIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Some services did not start. See the results below.'**
+  String get visionInitIncomplete;
+
   /// No description provided for @visionInitFailed.
   ///
   /// In en, this message translates to:
@@ -650,35 +656,11 @@ abstract class AppLocalizations {
   /// **'Configure the system tray daemon behavior and appearance'**
   String get daemonDescription;
 
-  /// No description provided for @daemonSaved.
+  /// No description provided for @daemonNotAvailableYet.
   ///
   /// In en, this message translates to:
-  /// **'Daemon settings saved successfully'**
-  String get daemonSaved;
-
-  /// No description provided for @daemonSaveFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to save settings: {error}'**
-  String daemonSaveFailed(String error);
-
-  /// No description provided for @daemonRestarting.
-  ///
-  /// In en, this message translates to:
-  /// **'Restarting system tray daemon...'**
-  String get daemonRestarting;
-
-  /// No description provided for @daemonRestarted.
-  ///
-  /// In en, this message translates to:
-  /// **'System tray daemon restarted successfully'**
-  String get daemonRestarted;
-
-  /// No description provided for @daemonRestartFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to restart daemon: {error}'**
-  String daemonRestartFailed(String error);
+  /// **'Not available yet: the tray and connection settings below are not saved or applied. The values shown are defaults.'**
+  String get daemonNotAvailableYet;
 
   /// No description provided for @daemonRealtimeStatus.
   ///
@@ -811,24 +793,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Interval for daemon health checks (seconds)'**
   String get daemonHealthCheckIntervalSubtitle;
-
-  /// No description provided for @daemonActions.
-  ///
-  /// In en, this message translates to:
-  /// **'Actions'**
-  String get daemonActions;
-
-  /// No description provided for @daemonSaveSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Save Settings'**
-  String get daemonSaveSettings;
-
-  /// No description provided for @daemonRestart.
-  ///
-  /// In en, this message translates to:
-  /// **'Restart Daemon'**
-  String get daemonRestart;
 
   /// No description provided for @commonRefresh.
   ///
@@ -2756,6 +2720,18 @@ abstract class AppLocalizations {
   /// **'Switched back to default gateway'**
   String get instancesHermesDisabledSnack;
 
+  /// No description provided for @instancesHermesApplyFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes settings saved, but the connection could not be switched: {error}'**
+  String instancesHermesApplyFailed(String error);
+
+  /// No description provided for @instancesHermesSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the Hermes settings: {error}'**
+  String instancesHermesSaveFailed(String error);
+
   /// No description provided for @instancesHermesTitle.
   ///
   /// In en, this message translates to:
@@ -3247,6 +3223,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Customize your avatar\'s visual style and animation.'**
   String get avatarAppearanceHelp;
+
+  /// No description provided for @avatarAppearanceNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available yet: the color theme and animation style are not applied to the avatar.'**
+  String get avatarAppearanceNotAvailable;
 
   /// No description provided for @avatarColorTheme.
   ///
@@ -4241,7 +4223,7 @@ abstract class AppLocalizations {
   /// No description provided for @configDeleteLocalAgentDataConfirm.
   ///
   /// In en, this message translates to:
-  /// **'This permanently deletes on-device agent data (local database and encrypted conversation store). Cloud account data is not removed. This cannot be undone.'**
+  /// **'This permanently deletes on-device agent data: the local database, the encrypted conversation store, the avatar Markdown files in the agent skill folder and the app\'s temporary captures. Your agent runtime keeps its own copy of the chat; this app will not import messages from before the wipe again, but it cannot delete them from the runtime. Cloud account data is not removed. This cannot be undone.'**
   String get configDeleteLocalAgentDataConfirm;
 
   /// No description provided for @configDeleteLocalAgentDataAction.
@@ -4309,6 +4291,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No changelog available'**
   String get configNoChangelog;
+
+  /// No description provided for @configChangelogLoadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Load image'**
+  String get configChangelogLoadImage;
 
   /// No description provided for @filesTitle.
   ///
@@ -4405,6 +4393,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pasted successfully'**
   String get filesPasted;
+
+  /// No description provided for @filesPasteIntoItself.
+  ///
+  /// In en, this message translates to:
+  /// **'A folder cannot be pasted inside itself.'**
+  String get filesPasteIntoItself;
+
+  /// No description provided for @filesAlreadyInFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'The item is already in this folder.'**
+  String get filesAlreadyInFolder;
+
+  /// No description provided for @filesPastedAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Pasted as {name}'**
+  String filesPastedAs(String name);
 
   /// No description provided for @filesMoved.
   ///
@@ -4817,7 +4823,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeStepInfo.
   ///
   /// In en, this message translates to:
-  /// **'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.'**
+  /// **'We\'ll set up your local AI in about 2 minutes. Processing happens on the machine that runs your agent runtime: this computer, or another machine you choose.'**
   String get welcomeStepInfo;
 
   /// No description provided for @locationTitle.
@@ -6475,6 +6481,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load the agent registry: {error}'**
   String agentsRegistryLoadFailed(String error);
+
+  /// No description provided for @adminDnsDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete DNS record?'**
+  String get adminDnsDeleteConfirmTitle;
+
+  /// Confirmation shown before an admin deletes a live DNS record.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the {recordType} record \"{recordName}\" from the live DNS zone. Email delivery or authentication that relies on it can stop working.'**
+  String adminDnsDeleteConfirmBody(String recordType, String recordName);
+
+  /// No description provided for @adminDnsDeleteConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete record'**
+  String get adminDnsDeleteConfirmAction;
+
+  /// No description provided for @adminDnsValidationPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'All DNS records passed validation'**
+  String get adminDnsValidationPassed;
+
+  /// No description provided for @adminDnsValidationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Some DNS records failed validation:'**
+  String get adminDnsValidationFailed;
+
+  /// One failed DNS record in the validation result list.
+  ///
+  /// In en, this message translates to:
+  /// **'{recordType}: {message}'**
+  String adminDnsValidationErrorLine(String recordType, String message);
+
+  /// No description provided for @adminDnsValidationNoDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'No details were returned for this record.'**
+  String get adminDnsValidationNoDetails;
+
+  /// No description provided for @adminEmailSaveNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving email provider settings is not available yet: the server does not accept this configuration from the app. Nothing on this form is saved.'**
+  String get adminEmailSaveNotAvailable;
+
+  /// No description provided for @adminEmailSaveNotAvailableButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save (not available yet)'**
+  String get adminEmailSaveNotAvailableButton;
 }
 
 class _AppLocalizationsDelegate

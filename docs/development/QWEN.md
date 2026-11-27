@@ -8,9 +8,9 @@ The project uses an agent-runtime-first architecture. Ollama, LM Studio, and sim
 
 ### Key Technologies
 
-- **Flutter 3.8+** - Cross-platform UI framework
-- **Dart** - Primary programming language
-- **Node.js** - Development and testing environment
+- **Flutter 3.47.9** - Cross-platform UI framework (pinned by `environment.flutter` in `pubspec.yaml:10`)
+- **Dart** - Primary programming language (`>=3.5.0 <4.0.0`)
+- **Node.js 26** - Development and testing environment (`.nvmrc`; service engines `>=26 <28`)
 - **Hermes/OpenClaw** - Agent runtime integration
 - **Ollama/LM Studio** - Optional support model providers
 - **WebSocket** - Real-time communication
@@ -41,8 +41,8 @@ The project uses an agent-runtime-first architecture. Ollama, LM Studio, and sim
 
 ### Prerequisites
 
-- Flutter SDK (3.8 or higher)
-- Node.js (for development and testing)
+- Flutter SDK 3.47.9 (pinned in `pubspec.yaml:10`)
+- Node.js 26 (`.nvmrc`; service engines `>=26 <28`)
 - Git (for version control)
 - Agent runtime such as Hermes, OpenClaw, or a compatible gateway
 - Ollama or LM Studio (optional, for support model features)
@@ -99,9 +99,9 @@ npm test
 
 Pistisai uses a sophisticated version management system with automated updates across all relevant files:
 
-- **Version Format**: `MAJOR.MINOR.PATCH+BUILD_NUMBER` (e.g., `4.1.1+202508071645`)
-- **Build Numbers**: Timestamp format `YYYYMMDDHHMM`
-- **Version Script**: `scripts/version_manager.sh` handles version increments and updates
+- **Version Format**: `MAJOR.MINOR.PATCH+BUILD_NUMBER`, where BUILD_NUMBER is an integer (e.g., `1.5.60+182`, per `assets/version.json`)
+- **Build Numbers**: Integer, incremented per release (not a `YYYYMMDDHHMM` timestamp — see `assets/version.json` `build_number`)
+- **Version Script**: `scripts/version_manager.sh` and CI (`auto-version-bump.yml` / `version_bump_kind.py`) handle version increments; both `assets/version.json` and `pubspec.yaml` must stay in sync
 
 Semantic Versioning Strategy:
 
@@ -171,17 +171,16 @@ ollama pull codellama:7b
 ollama pull mistral:7b
 ```
 
-## Current Version Information
+## Current Version Information (per `assets/version.json`)
 
-- **Main Version**: 4.1.1
-- **Build Number**: 202508071645
-- **Build Date**: 2025-08-07T20:45:24Z
-- **Git Commit**: af642615e
+- **Main Version**: 1.5.60
+- **Build Number**: 182
+- **Build Date**: 2026-11-24T19:38:16Z
+- **Git Commit**: 6b2a59d
 
 Version information is maintained in multiple files:
 
 - `pubspec.yaml` - Main Flutter project version
-- `lib/shared/lib/version.dart` - Shared version constants
 - `assets/version.json` - Runtime version information
 - `README.md` - Version badge
 - `package.json` - Node.js package version

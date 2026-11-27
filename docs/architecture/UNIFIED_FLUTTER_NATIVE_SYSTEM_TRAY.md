@@ -2,7 +2,7 @@
 
 ## 📋 Overview
 
-Pistisai v3.10.3+ implements a Unified Flutter-Native Architecture with integrated system tray functionality that provides seamless cross-platform system tray integration with real-time connection status monitoring and native platform behavior.
+Pistisai implements a Unified Flutter-Native Architecture with integrated system tray functionality that provides cross-platform system tray integration with connection status monitoring. (The earlier "v3.10.3+" version marker was stale; the current app version is `1.5.58+180` per `pubspec.yaml:6`.)
 
 **Key Features:**
 
@@ -25,7 +25,7 @@ Pistisai v3.10.3+ implements a Unified Flutter-Native Architecture with integrat
 - System tray initialization and management
 - Icon state management based on connection status
 - Context menu creation and event handling
-- Integration with tunnel manager service
+- Integration with the app's `ConnectionManagerService` (no `TunnelManagerService` exists)
 - Platform-specific behavior adaptation
 
 **Key Methods**:
@@ -33,7 +33,7 @@ Pistisai v3.10.3+ implements a Unified Flutter-Native Architecture with integrat
 ```dart
 class NativeTrayService with TrayListener {
   Future<bool> initialize({
-    required TunnelManagerService tunnelManager,
+    ConnectionManagerService? connectionManager,
     void Function()? onShowWindow,
     void Function()? onHideWindow,
     void Function()? onSettings,
@@ -48,16 +48,18 @@ class NativeTrayService with TrayListener {
 
 ### **2. Connection Status Integration**
 
-**Status Types**:
+**Status Types** (actual enum in `lib/services/native_tray_service.dart:9-14`):
 
-- `TrayConnectionStatus.connected` - Green indicator, Ollama accessible
-- `TrayConnectionStatus.disconnected` - Red indicator, no connection
+- `TrayConnectionStatus.allConnected` - Green indicator, all configured connections healthy
+- `TrayConnectionStatus.partiallyConnected` - Partial connection state
 - `TrayConnectionStatus.connecting` - Yellow indicator, establishing connection
-- `TrayConnectionStatus.error` - Red indicator with error state
+- `TrayConnectionStatus.disconnected` - Red indicator, no connection
+
+The service no longer tracks Ollama: its own source states "Ollama integration removed. Uses ConnectionManagerService only" (`native_tray_service.dart:19`). There is no `error` status in the current enum.
 
 **Real-Time Updates**:
 
-- Direct integration with `TunnelManagerService`
+- Direct integration with `ConnectionManagerService`
 - Automatic status propagation to system tray
 - Visual feedback without user intervention
 - Health monitoring with automatic reconnection
@@ -119,25 +121,22 @@ Menu(
 ### **Initialization Process**
 
 ```dart
-// In main.dart
-Future<void> _initializeSystemTray() async {
-  final tunnelManager = TunnelManagerService();
-  await tunnelManager.initialize();
-
-  final nativeTray = NativeTrayService();
-  final success = await nativeTray.initialize(
-    tunnelManager: tunnelManager,
-    onShowWindow: () => WindowManagerService().showWindow(),
-    onHideWindow: () => WindowManagerService().hideToTray(),
-    onSettings: () => navigateToSettings(),
-    onQuit: () => exitApplication(),
-  );
-}
+// In the app's tray initializer (native platforms only)
+final nativeTray = NativeTrayService();
+final success = await nativeTray.initialize(
+  connectionManager: connectionManager, // resolved from the service locator
+  onShowWindow: () => windowManager.showWindow(),
+  onHideWindow: () => windowManager.hideToTray(),
+  onSettings: () => navigateToSettings(),
+  onQuit: () => exitApplication(),
+);
 ```
+
+`NativeTrayService` is a singleton (`NativeTrayService()`) that adds itself as a listener on the injected `ConnectionManagerService` (`lib/services/native_tray_service.dart:43-47,83-92`).
 
 ### **Status Update Flow**
 
-1. `TunnelManagerService` detects connection change
+1. `ConnectionManagerService` detects connection change
 2. Service broadcasts status update
 3. `NativeTrayService` receives update via listener
 4. Tray icon and tooltip updated automatically
@@ -175,15 +174,15 @@ Future<void> _initializeSystemTray() async {
 ### **Local Development**
 
 ```bash
-# Run with system tray enabled (default)
+# Run with system tray enabled on a desktop platform
 flutter run -d linux
 
-# Run with system tray disabled for testing
-DISABLE_SYSTEM_TRAY=true flutter run -d linux
-
-# Test system tray functionality
-flutter test test/services/native_tray_service_test.dart
+# Native tray is disabled automatically on web (kIsWeb guard in
+# lib/services/native_tray_service.dart:57-61); there is no
+# DISABLE_SYSTEM_TRAY environment flag in the codebase.
 ```
+
+There is currently **no native tray service test** in the repository. The "Testing Scenarios" list below describes target coverage, not tests that exist today; tray coverage is therefore still planned work.
 
 ### **Debug Information**
 

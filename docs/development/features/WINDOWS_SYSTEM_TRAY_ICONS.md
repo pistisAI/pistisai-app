@@ -1,8 +1,10 @@
-# Windows System Tray Icons - ICO Format Support
+# Windows System Tray Icons — ICO Format Support (PLANNED — not implemented)
+
+> **Verified against code (2026-11-24):** this document describes a **planned** feature. `lib/services/native_tray_service.dart:136-146` (`_getTrayIconPath`) returns only **`.png`** paths for every status — `tray_icon_connected.png`, `tray_icon_connecting.png`, `tray_icon_disconnected.png` — with **no `Platform.isWindows` / `.ico` branch**. `git ls-files assets/images/tray*` lists exactly those three `.png` files; there are **no `.ico` assets** (no `tray_icon.ico`, `tray_icon_partial.ico`, etc.). `scripts/convert_icons_to_ico.py` exists, but nothing consumes its output. No native tray service test exists. Everything below describes planned work, not current behavior.
 
 ## 📋 Overview
 
-Pistisai now provides native Windows system tray icon support using ICO format files with embedded multiple sizes for optimal display across different DPI settings and Windows themes.
+Pistisai currently uses PNG tray icons on all platforms. ICO format support with embedded multiple sizes is **planned**, not shipped.
 
 ## 🎯 Features
 
@@ -13,18 +15,18 @@ Pistisai now provides native Windows system tray icon support using ICO format f
 - **32x32**: Large icon mode
 - **48x48**: Extra large displays
 
-### **Platform-Specific Icon Selection**
+### **Platform-Specific Icon Selection (planned)**
 
-- **Windows**: Uses `.ico` files for optimal system tray compatibility
-- **Linux/macOS**: Uses `.png` files for cross-platform consistency
-- **Automatic Detection**: Platform detection via `Platform.isWindows`
+- **Windows**: planned — use `.ico` files (NOT implemented; code uses `.png` for Windows too)
+- **Linux/macOS**: current — `.png` files for all platforms
+- **Automatic Detection**: planned — no `Platform.isWindows` branch exists in `_getTrayIconPath`
 
-### **Connection Status Icons**
+### **Connection Status Icons (actual: .png only)**
 
-- **Connected**: `tray_icon_connected.ico` - Green indicator for active connections
-- **Disconnected**: `tray_icon_disconnected.ico` - Red indicator for no connections
-- **Connecting**: `tray_icon_connecting.ico` - Yellow indicator for connection in progress
-- **Partial**: `tray_icon_partial.ico` - Orange indicator for partial connectivity
+- **Connected**: `tray_icon_connected.png` — green indicator (`.ico` planned)
+- **Disconnected**: `tray_icon_disconnected.png` — red indicator (`.ico` planned)
+- **Connecting**: `tray_icon_connecting.png` — yellow indicator (`.ico` planned)
+- **Partial**: no icon file exists (`.ico` and `.png` both planned)
 
 ## 🏗️ Implementation Details
 

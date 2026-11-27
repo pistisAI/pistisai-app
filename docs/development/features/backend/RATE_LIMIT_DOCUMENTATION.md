@@ -8,7 +8,9 @@ The Pistisai API implements comprehensive rate limiting to protect the service f
 
 ## Rate Limit Policies by User Tier
 
-### Account tier
+> **Verified against code:** the only live request-rate limiter is the `express-rate-limit` instance in `services/api-backend/middleware/pipeline.js:112-115` — `windowMs: rateLimitOptions.windowMs || 15 * 60 * 1000`, `max: rateLimitOptions.max || 100` (**100 requests per 15-minute window per IP**); the bridge limiter uses `bridgeMax || 500` (`pipeline.js:121-122`). There is **no per-tier request-rate table** in the code: `services/api-backend/middleware/tier-check.js:24-58` defines `TIER_FEATURES` (connections, models, tunnels) only, not request rates. The Free/Premium/Enterprise tables below are **planned product policy, not current behavior**.
+
+### Free tier (planned — not implemented)
 
 - **Requests per minute**: 100
 - **Requests per hour**: 5,000
@@ -16,7 +18,7 @@ The Pistisai API implements comprehensive rate limiting to protect the service f
 - **Concurrent connections**: 5
 - **Exemptions**: None
 
-### Account tier
+### Premium tier (planned — not implemented)
 
 - **Requests per minute**: 500
 - **Requests per hour**: 30,000
@@ -24,7 +26,7 @@ The Pistisai API implements comprehensive rate limiting to protect the service f
 - **Concurrent connections**: 25
 - **Exemptions**: Health check endpoints
 
-### Account tier
+### Enterprise tier (planned — not implemented)
 
 - **Requests per minute**: 2,000
 - **Requests per hour**: 120,000
@@ -58,8 +60,10 @@ Applied to all requests (authenticated or not) to prevent DDoS attacks.
 
 **Default limits:**
 
-- 1,000 requests per minute per IP
-- 50,000 requests per hour per IP
+> **Verified against code:** the only IP-based limiter is `express-rate-limit` in `services/api-backend/middleware/pipeline.js:112-115` — 100 requests per 15-minute window (bridge: 500, `pipeline.js:121-122`). The 1,000/min and 50,000/hour values below are **planned, not current behavior**.
+
+- 1,000 requests per minute per IP (planned)
+- 50,000 requests per hour per IP (planned)
 
 **Bypass:**
 
@@ -256,7 +260,9 @@ API key authenticated requests have higher limits:
 
 If you're consistently hitting rate limits, consider upgrading:
 
-### Free → Premium
+> **Verified against code:** no `POST /v2/users/me/tier/upgrade` route is registered anywhere in `services/api-backend/routes/`; `services/api-backend/server.js:389-391` registers only `/user/tier` (tier info), and `routes/user-tier.js:15` / `routes/users.js:298` only return an upgrade **URL**. The upgrade endpoint below is **planned, not current behavior**.
+
+### Free (planned) → Premium (planned)
 
 - 5x increase in requests per minute (100 → 500)
 - 6x increase in requests per hour (5,000 → 30,000)

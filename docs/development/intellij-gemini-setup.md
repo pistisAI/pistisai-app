@@ -7,9 +7,9 @@ This file contains the settings adapted for setup in IntelliJ IDEA Community.
 ### Project Structure & Module Organization
 
 - `lib/` contains the Flutter app (screens, services, widgets); `web/` holds Flutter web config; `assets/` stores static media and version metadata.
-- `services/api-backend/` is the Node/Express API; `services/streaming-proxy/` handles the proxy runtime; `services/sdk/` ships client helpers; `services/postgres/` covers database support.
+- `services/api-backend/` is the Node/Express API; `services/streaming-proxy/` handles the proxy runtime; `services/sdk/` ships client helpers (there is no `services/postgres/` in this repo; Postgres is an external service configured via `.env`).
 - `scripts/` and `build-tools/` manage packaging and installers; `infra/`, `k8s/`, and `config/` house deployment manifests and shared configuration.
-- Tests: `test/` (unit/widget/integration plus Playwright helpers), backend Jest specs in `test/api-backend` and `services/api-backend/test`, and sample Playwright E2E in `e2e/`.
+- Tests (**verified against code**): `test/` (unit/widget/integration plus Playwright helpers); backend Jest specs live at repo-root `test/api-backend/` — there is no `services/api-backend/test/` (see `AGENTS.md` layout); sample Playwright E2E in `e2e/`.
 
 ### Build, Test, and Development Commands
 

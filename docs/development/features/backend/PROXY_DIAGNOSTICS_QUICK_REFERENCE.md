@@ -8,7 +8,9 @@ The Proxy Diagnostics service provides comprehensive diagnostics, log collection
 
 ## Service: ProxyDiagnosticsService
 
-Located in: `services/proxy-diagnostics-service.js`
+> **Verified against code:** a dedicated proxy diagnostics service and a `ProxyDiagnosticsService` class **do not exist**. The diagnostics logic is implemented inline in `services/api-backend/routes/proxy-diagnostics.js` (474 lines; `router.get` at :45/:99/:165/:230/:296/:351, `router.post` at :411). The router is imported at `services/api-backend/server.js` and mounted at `/proxy-diagnostics` (and `/api/proxy-diagnostics`) at `server.js:342`, **only under `PISTISAI_ENABLE_LEGACY_PROXY_ROUTES` / `PISTISAI_ENABLE_LEGACY_DIRECT_PROXY_ROUTES`** (`server.js:184-185`, block :338-349). Effective paths are `/api/proxy-diagnostics/diagnostics/:proxyId`, **not** `/proxy/diagnostics/:proxyId`.
+
+Located in (corrected): `services/api-backend/routes/proxy-diagnostics.js` — service file MISSING; methods below are planned/service-shaped, the live implementation is the router.
 
 ### Key Methods
 
@@ -304,6 +306,6 @@ Test coverage includes:
 
 ## Files
 
-- Service: `services/proxy-diagnostics-service.js`
+- Service: no dedicated module (logic is inline in the route)
 - Routes: `routes/proxy-diagnostics.js`
-- Tests: `test/api-backend/proxy-diagnostics.test.js`
+- Tests: no proxy-diagnostics test file

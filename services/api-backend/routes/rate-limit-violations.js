@@ -11,7 +11,8 @@
 import express from 'express';
 import { RateLimitViolationsService } from '../services/rate-limit-violations-service.js';
 import { authenticateJWT } from '../middleware/auth.js';
-import { requireAdmin } from '../middleware/rbac.js';
+// Admin role comes from the server-side admin_roles table, not JWT claims.
+import { adminAuth } from '../middleware/admin-auth.js';
 import { TunnelLogger } from '../utils/logger.js';
 
 const router = express.Router();
@@ -26,7 +27,7 @@ const violationsService = new RateLimitViolationsService();
 router.get(
   '/violations/user/:userId',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const { userId } = req.params;
@@ -77,7 +78,7 @@ router.get(
 router.get(
   '/violations/ip/:ipAddress',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const { ipAddress } = req.params;
@@ -128,7 +129,7 @@ router.get(
 router.get(
   '/violations/stats/user/:userId',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const { userId } = req.params;
@@ -172,7 +173,7 @@ router.get(
 router.get(
   '/violations/stats/ip/:ipAddress',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const { ipAddress } = req.params;
@@ -216,7 +217,7 @@ router.get(
 router.get(
   '/violations/top-violators',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const { limit = 10, startTime, endTime } = req.query;
@@ -259,7 +260,7 @@ router.get(
 router.get(
   '/violations/top-ips',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const { limit = 10, startTime, endTime } = req.query;
@@ -302,7 +303,7 @@ router.get(
 router.get(
   '/violations/endpoint/:endpoint',
   authenticateJWT,
-  requireAdmin,
+  adminAuth(),
   async (req, res) => {
     try {
       const { endpoint } = req.params;

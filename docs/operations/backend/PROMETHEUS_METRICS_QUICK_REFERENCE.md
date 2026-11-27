@@ -131,7 +131,7 @@ npm test -- ../test/api-backend/prometheus-metrics.test.js
 
 ## Files
 
-- `services/metrics-service.js` - Metrics collection service
+- `services/api-backend/services/metrics-service.js` - Metrics collection service
 - `middleware/metrics-collection.js` - Metrics collection middleware
 - `routes/prometheus-metrics.js` - Prometheus metrics routes
 - `test/api-backend/prometheus-metrics.test.js` - Test suite

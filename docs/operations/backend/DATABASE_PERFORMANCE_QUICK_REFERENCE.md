@@ -181,7 +181,7 @@ Total: 51 tests passed
 - `services/api-backend/routes/database-performance.js`
 - `test/api-backend/database-performance-tracking.test.js`
 - `test/api-backend/database-performance-integration.test.js`
-- `services/api-backend/DATABASE_PERFORMANCE_METRICS_IMPLEMENTATION.md`
+- Original implementation report (archived under `docs/archive/historical-reports/`)
 
 ### Modified
 

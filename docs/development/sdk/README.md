@@ -2,6 +2,8 @@
 
 Official JavaScript/TypeScript SDK for the Pistisai API.
 
+> **Verified against code (2026-11-24):** `services/sdk/package.json:54-56` declares `"node": ">=26.0.0 <28.0.0"` (CI pins `26` via `.nvmrc`). The tunnel-management API documented here is a legacy/support surface; current product direction is agent-runtime-first with the Tailscale secure device mesh. Treat the tunnel examples as maintenance reference only.
+
 ## Installation
 
 ### npm
@@ -108,6 +110,8 @@ const updated = await client.upgradeUserTier(userId, 'premium');
 ```
 
 ### Tunnel Management
+
+> **Legacy/support surface:** these tunnel endpoints are not the current primary connectivity path (see the note at the top of this document). They are documented for existing installations only.
 
 #### Create Tunnel
 
