@@ -78,6 +78,7 @@ to the web app, your conversations, including the text of every message, are
 stored on our server so that you can see them again. Conversations stored on our
 server are kept until they are deleted. The app does not yet offer a control to
 delete them; to have them removed, contact us at the address in section 12.
+
 On desktop, the avatar personality, avatar memory entries and a short context
 summary are also written as plain, unencrypted Markdown files (`personality.md`,
 `memory.md`, `context.md`) into the `pistisai` folder of your agent runtime's
