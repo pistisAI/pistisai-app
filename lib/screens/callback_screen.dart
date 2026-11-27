@@ -373,6 +373,12 @@ class _CallbackScreenState extends State<CallbackScreen> {
               // Clear the callback forwarded flag now that processing is complete
               _clearCallbackForwardedFlag();
 
+              // Strip cf_jwt/token/etc. from the browser URL *before* navigating.
+              // The web redirect treats live callback params in Uri.base as a new
+              // callback, so leaving them here bounces a successful sign-in back
+              // to /callback until GoRouter hits its redirect limit (#852).
+              _clearCallbackParametersFromUrl();
+
               // Use pushReplacement to clear the callback URL from history
               AppConfig.verboseLog(
                 '[CallbackScreen] ===== CALLBACK PROCESSING COMPLETE =====',
