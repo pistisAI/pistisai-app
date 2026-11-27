@@ -13,7 +13,11 @@ import 'package:pistisai/services/vision/ocr_engine_service.dart';
 /// Vision Settings Screen
 /// Provides UI for configuring and testing vision system services
 class VisionSettingsScreen extends StatefulWidget {
-  const VisionSettingsScreen({super.key});
+  const VisionSettingsScreen({super.key, this.startLinuxCamera = true});
+
+  /// Whether "Initialize All" also starts the Linux v4l2 camera preview.
+  /// Tests turn it off so no capture process is spawned.
+  final bool startLinuxCamera;
 
   @override
   State<VisionSettingsScreen> createState() => _VisionSettingsScreenState();
@@ -61,50 +65,48 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
     });
 
     try {
-      // Initialize Main Vision Service
-      try {
-        await _mainVisionService.initialize();
-        _testResults.add(l10n.visionResultInitialized(l10n.visionMainService));
-      } catch (e) {
-        _testResults.add(l10n.visionResultError(l10n.visionMainService, '$e'));
-      }
-
-      // Initialize Region Capture Service
-      try {
-        await _regionCaptureService.initialize();
-        _testResults
-            .add(l10n.visionResultInitialized(l10n.visionRegionCaptureService));
-      } catch (e) {
-        _testResults
-            .add(l10n.visionResultError(l10n.visionRegionCaptureService, '$e'));
-      }
-
-      // Initialize Camera Capture Service
-      try {
-        await _cameraCaptureService.initialize();
-        _testResults
-            .add(l10n.visionResultInitialized(l10n.visionCameraCaptureService));
-      } catch (e) {
-        _testResults
-            .add(l10n.visionResultError(l10n.visionCameraCaptureService, '$e'));
-      }
-
-      // Initialize OCR Engine Service
-      try {
-        await _ocrEngineService.initialize();
-        _testResults.add(l10n.visionResultInitialized(l10n.visionOcrService));
-      } catch (e) {
-        _testResults.add(l10n.visionResultError(l10n.visionOcrService, '$e'));
-      }
+      // Each service reports whether it really started; a ✅ line is only
+      // added on success, otherwise a ❌ line with the service's reason.
+      final results = <bool>[
+        await _initService(
+          l10n,
+          l10n.visionMainService,
+          () async {
+            await _mainVisionService.initialize();
+            return _mainVisionService.isInitialized;
+          },
+          () => null,
+        ),
+        await _initService(
+          l10n,
+          l10n.visionRegionCaptureService,
+          _regionCaptureService.initialize,
+          () => _regionCaptureService.lastError,
+        ),
+        await _initService(
+          l10n,
+          l10n.visionCameraCaptureService,
+          _cameraCaptureService.initialize,
+          () => _cameraCaptureService.lastError,
+        ),
+        await _initService(
+          l10n,
+          l10n.visionOcrService,
+          _ocrEngineService.initialize,
+          () => _ocrEngineService.lastError,
+        ),
+      ];
 
       // On desktop Linux, start the v4l2 capture path (camera plugin has
       // no Linux backend; camera_desktop can't convert YUYV frames).
-      if (Platform.isLinux) {
+      if (widget.startLinuxCamera && Platform.isLinux) {
         await _startLinuxCamera(l10n);
       }
 
       setState(() {
-        _statusMessage = l10n.visionInitComplete;
+        _statusMessage = results.every((ok) => ok)
+            ? l10n.visionInitComplete
+            : l10n.visionInitIncomplete;
       });
     } catch (e) {
       setState(() {
@@ -116,6 +118,26 @@ class _VisionSettingsScreenState extends State<VisionSettingsScreen> {
         _isInitializing = false;
       });
     }
+  }
+
+  /// Runs one service's initialization and records the real outcome.
+  Future<bool> _initService(
+    AppLocalizations l10n,
+    String name,
+    Future<bool> Function() initialize,
+    String? Function() lastError,
+  ) async {
+    try {
+      if (await initialize()) {
+        _testResults.add(l10n.visionResultInitialized(name));
+        return true;
+      }
+      _testResults.add(
+          l10n.visionResultError(name, lastError() ?? l10n.visionNotInitialized));
+    } catch (e) {
+      _testResults.add(l10n.visionResultError(name, '$e'));
+    }
+    return false;
   }
 
   Widget _buildServiceStatusCard({

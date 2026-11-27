@@ -1,12 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/services/vision/ocr_engine_service.dart';
 
+/// Behaves as on Android/iOS, where the tesseract_ocr plugin fallback exists.
+class _PluginPlatformOcr extends OcrEngineService {
+  @override
+  bool get pluginFallbackSupported => true;
+}
+
 void main() {
   group('OcrEngineService', () {
     late OcrEngineService service;
 
     setUp(() {
-      service = OcrEngineService();
+      service = _PluginPlatformOcr();
     });
 
     tearDown(() async {
@@ -19,8 +25,20 @@ void main() {
         expect(service.lastError, isNull);
       });
 
-      test('should initialize successfully', () async {
-        await service.initialize();
+      test('reports failure when neither native Tesseract nor the plugin exists',
+          () async {
+        // The test host has no native OCR channel, and the tesseract_ocr
+        // plugin only ships for Android and iOS.
+        final desktop = OcrEngineService();
+        expect(desktop.pluginFallbackSupported, isFalse);
+        final ok = await desktop.initialize();
+        expect(ok, isFalse);
+        expect(desktop.isInitialized, isFalse);
+        expect(desktop.lastError, contains('OCR is not available'));
+      });
+
+      test('initializes through the plugin where the plugin exists', () async {
+        expect(await service.initialize(), isTrue);
         expect(service.isInitialized, isTrue);
         expect(service.lastError, isNull);
       });

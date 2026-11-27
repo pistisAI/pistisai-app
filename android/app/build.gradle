@@ -13,7 +13,7 @@ if (brandPropertiesFile.exists()) {
 }
 def brandAppId = brandProperties.getProperty('app_id', 'app.pistisai.app')
 def brandAuth0Domain = brandProperties.getProperty('auth0_domain', 'pistisai.app')
-def brandAuth0Scheme = brandProperties.getProperty('auth0_scheme', 'Pistisai')
+def brandAuth0Scheme = brandProperties.getProperty('auth0_scheme', 'pistisai')
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')

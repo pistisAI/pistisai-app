@@ -24,6 +24,22 @@ export function needsRawBody(req) {
 }
 
 /**
+ * Paths (without the `/api` prefix) whose router parses its own body with a
+ * tighter limit, so the global 10 MB parser must skip them.
+ */
+const SELF_PARSED_BODY_PATHS = ['/client-logs'];
+
+/**
+ * @param {import('express').Request} req
+ * @returns {boolean}
+ */
+export function hasOwnBodyParser(req) {
+  return SELF_PARSED_BODY_PATHS.includes(
+    normalizePath(req.originalUrl || req.url),
+  );
+}
+
+/**
  * `verify` callback for `express.json()`: stores the raw bytes on
  * `req.rawBody` for the webhook paths above.
  * @param {import('express').Request} req

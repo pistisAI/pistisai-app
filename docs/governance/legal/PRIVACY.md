@@ -64,6 +64,14 @@ sent to the agent runtime you connected, on your machine by default, which
 includes it in the instructions for each reply; it therefore reaches the same
 model provider your runtime uses for the conversation itself.
 
+On desktop, the avatar personality, avatar memory entries and a short context
+summary are also written as plain, unencrypted Markdown files (`personality.md`,
+`memory.md`, `context.md`) into the `pistisai` folder of your agent runtime's
+skill directory (for example `~/.openclaw/skills/pistisai`), so the runtime can
+read them. They are protected only by your operating system's file permissions
+and disk encryption. Deleting your local data removes these three files; other
+files in that folder are not touched.
+
 ### 2.3 Device and diagnostic information
 
 To keep the app reliable we may process limited technical information such as
@@ -75,6 +83,16 @@ your country. Reports are configured not to include your account details or a
 history of your activity; an error message can still contain fragments of the data
 being handled when the error happened. As with any internet connection, Sentry's
 servers see the IP address the report comes from.
+
+In the web app, while crash reporting is on, the app's own diagnostic log lines are
+also sent to our API server, each with its time, level, the page address without
+its query string or fragment, and your browser's user agent. When crash reporting is
+off, these lines stay in your browser and nothing is sent.
+
+When you click **Check Now** in the update section of Settings, the app asks GitHub
+(`api.github.com`) for the latest release, and downloading a release from the
+download page opens a GitHub link; GitHub sees your IP address for those requests.
+Images in release notes load only when you click them.
 
 ### 2.4 Spoken replies
 
@@ -103,7 +121,14 @@ you point them elsewhere. Client-facing data flow:
 Optional vision (camera/OCR), voice, and desktop-control features operate under
 your explicit, device-scoped permission. Media and screen data captured by these
 features are processed locally or by the runtime you select; Pistisai does not
-collect or retain this content on our servers.
+collect or retain this content on our servers. Screenshots, camera frames and
+spoken-reply audio are written as plain temporary files into an app-owned folder
+inside your operating system's temp directory; on macOS and Linux that folder is
+readable only by your user account (mode 0700), and the app falls back to its own
+support folder if the temp one cannot be used safely. Some are deleted right after use
+(for example presence checks and screenshot analysis); the rest stay until the
+operating system clears its temp directory or you delete your local data, which
+removes the whole folder.
 
 ## 3. How we use information
 
@@ -133,7 +158,7 @@ including the Limited Use requirements. Specifically:
 
 ## 5. How we store and protect your information
 
-- **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption.
+- **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption. The Android app opts out of Android system backup, so its data is not copied to cloud backups or to another device during transfer.
 - **Authentication:** sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
@@ -160,7 +185,12 @@ Content stored locally remains on your device until you delete it or uninstall t
 app. You can export or permanently delete on-device agent data from
 **Settings → Storage → Local agent data** (local wipe completes in seconds; see
 `docs/user-guide/LOCAL_DATA_EXPORT_DELETION.md` for what is removed and how to
-verify). For account data held by our authentication provider, you may request
+verify). The local wipe removes the local database, the encrypted chat history,
+the avatar Markdown files described in §2.2 and the app's temporary captures. It
+does not delete the chat transcript your agent runtime (for example Hermes)
+keeps on the machine where it runs; after a wipe the app no longer imports
+messages from before the wipe, but you must clear that transcript in the runtime
+itself. For account data held by our authentication provider, you may request
 deletion of your account and associated authentication records by contacting us
 at the address below; we will delete such data unless we are required to retain
 it by law (provider processing target: within a few hours of a verified request).

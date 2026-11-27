@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
+import 'package:pistisai/services/app_temp_files.dart';
 
 /// GUI Automation Service
 /// Screenshots → Vision Model → Actions
@@ -51,9 +51,8 @@ class GuiAutomationService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final directory = await getTemporaryDirectory();
-      final path =
-          '${directory.path}/gui_automation_${DateTime.now().millisecondsSinceEpoch}.png';
+      // App-owned temp folder, removed by the local data wipe.
+      final path = await AppTempFiles.newPath('gui_automation', 'png');
 
       debugPrint('[GuiAutomation] Taking screenshot to $path');
 
