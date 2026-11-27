@@ -47,9 +47,7 @@ export default {
     'proxy-health-properties\\.test\\.js$',
     'cloudwatch-metrics-collection\\.test\\.js$',
     'environment-configuration\\.test\\.js$',
-    'sandbox-routes\\.test\\.js$',
     'cloudflare-dns-resolution\\.test\\.js$',
-    'api-keys\\.test\\.js$',
     'error-recovery-integration\\.test\\.js$',
   ],
 

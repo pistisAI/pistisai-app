@@ -4,11 +4,66 @@
  * Tests for sandbox environment API endpoints
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
+import {
+  jest,
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+} from "@jest/globals";
 import express from "express";
 import request from "supertest";
-import sandboxRoutes from "../../services/api-backend/routes/sandbox.js";
 import { sandboxService } from "../../services/api-backend/services/sandbox-service.js";
+
+/**
+ * The sandbox router calls authenticateJWT itself. A middleware mounted in
+ * front of the router cannot satisfy that check: missing credentials are
+ * rejected with 401 AUTH_HEADER_MISSING before any handler runs. This double
+ * keeps that rejection. JWT signature, issuer and audience checks live in
+ * authentication-authorization.test.js. Sandbox mode itself comes from
+ * SANDBOX_MODE, which the router copies onto req.isSandbox after auth.
+ */
+jest.unstable_mockModule(
+  "../../services/api-backend/middleware/auth.js",
+  () => ({
+    authenticateJWT: (req, res, next) => {
+      const header = req.headers.authorization || req.headers.Authorization;
+      const token =
+        typeof header === "string" && header.startsWith("Bearer ")
+          ? header.slice("Bearer ".length)
+          : "";
+      if (!token) {
+        return res.status(401).json({
+          error: "Authorization header missing or invalid",
+          code: "AUTH_HEADER_MISSING",
+        });
+      }
+      const payload = { sub: "sandbox-route-user" };
+      req.auth = { token, payload };
+      req.user = payload;
+      return next();
+    },
+  }),
+);
+
+const sandboxRoutes = (
+  await import("../../services/api-backend/routes/sandbox.js")
+).default;
+
+const SANDBOX_BEARER = "sandbox-route-caller";
+
+function authed(target) {
+  const client = request(target);
+  const call = (method) => (url) =>
+    client[method](url).set("Authorization", `Bearer ${SANDBOX_BEARER}`);
+  return {
+    get: call("get"),
+    post: call("post"),
+    patch: call("patch"),
+    delete: call("delete"),
+  };
+}
 
 describe("Sandbox Routes", () => {
   let app;
@@ -22,14 +77,6 @@ describe("Sandbox Routes", () => {
 
     app = express();
     app.use(express.json());
-
-    // Mock sandbox detection middleware
-    app.use((req, res, next) => {
-      req.isSandbox = process.env.SANDBOX_MODE === "true";
-      req.sandboxService = sandboxService;
-      next();
-    });
-
     app.use("/sandbox", sandboxRoutes);
 
     // Clear sandbox data before each test
@@ -51,17 +98,17 @@ describe("Sandbox Routes", () => {
 
   describe("GET /sandbox/config", () => {
     it("should return sandbox configuration", async () => {
-      const response = await request(app).get("/sandbox/config");
+      const response = await authed(app).get("/sandbox/config");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
       expect(response.body).toHaveProperty("config");
-      expect(response.body.config).toHaveProperty("enabled");
+      expect(response.body.config).toHaveProperty("enabled", true);
       expect(response.body.config).toHaveProperty("mode", "testing");
     });
 
     it("should include rate limits in config", async () => {
-      const response = await request(app).get("/sandbox/config");
+      const response = await authed(app).get("/sandbox/config");
 
       expect(response.body.config.rateLimits).toHaveProperty(
         "requestsPerMinute",
@@ -71,7 +118,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should include quotas in config", async () => {
-      const response = await request(app).get("/sandbox/config");
+      const response = await authed(app).get("/sandbox/config");
 
       expect(response.body.config.quotas).toHaveProperty("maxTunnels", 100);
       expect(response.body.config.quotas).toHaveProperty("maxWebhooks", 100);
@@ -80,7 +127,7 @@ describe("Sandbox Routes", () => {
 
   describe("GET /sandbox/credentials", () => {
     it("should return test credentials", async () => {
-      const response = await request(app).get("/sandbox/credentials");
+      const response = await authed(app).get("/sandbox/credentials");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -88,14 +135,14 @@ describe("Sandbox Routes", () => {
     });
 
     it("should include test users", async () => {
-      const response = await request(app).get("/sandbox/credentials");
+      const response = await authed(app).get("/sandbox/credentials");
 
       expect(response.body.credentials).toHaveProperty("users");
       expect(response.body.credentials.users.length).toBeGreaterThan(0);
     });
 
     it("should include API keys", async () => {
-      const response = await request(app).get("/sandbox/credentials");
+      const response = await authed(app).get("/sandbox/credentials");
 
       expect(response.body.credentials).toHaveProperty("apiKeys");
       expect(response.body.credentials.apiKeys.length).toBeGreaterThan(0);
@@ -104,7 +151,7 @@ describe("Sandbox Routes", () => {
 
   describe("POST /sandbox/users", () => {
     it("should create mock user", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/users")
         .set("Content-Type", "application/json")
         .send({
@@ -122,7 +169,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should create user with default values", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/users")
         .set("Content-Type", "application/json")
         .send({});
@@ -134,7 +181,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should store created user", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/users")
         .set("Content-Type", "application/json")
         .send({
@@ -155,7 +202,7 @@ describe("Sandbox Routes", () => {
         email: "test@example.com",
       });
 
-      const response = await request(app).get(`/sandbox/users/${created.id}`);
+      const response = await authed(app).get(`/sandbox/users/${created.id}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -164,7 +211,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should return 404 for non-existent user", async () => {
-      const response = await request(app).get("/sandbox/users/non-existent");
+      const response = await authed(app).get("/sandbox/users/non-existent");
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("error");
@@ -173,7 +220,7 @@ describe("Sandbox Routes", () => {
 
   describe("POST /sandbox/tunnels", () => {
     it("should create mock tunnel", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/tunnels")
         .set("Content-Type", "application/json")
         .send({
@@ -189,7 +236,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should create tunnel with default values", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/tunnels")
         .set("Content-Type", "application/json")
         .send({});
@@ -201,7 +248,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should store created tunnel", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/tunnels")
         .set("Content-Type", "application/json")
         .send({
@@ -220,7 +267,7 @@ describe("Sandbox Routes", () => {
     it("should retrieve mock tunnel", async () => {
       const created = sandboxService.createMockTunnel({ name: "Test Tunnel" });
 
-      const response = await request(app).get(`/sandbox/tunnels/${created.id}`);
+      const response = await authed(app).get(`/sandbox/tunnels/${created.id}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -229,7 +276,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should return 404 for non-existent tunnel", async () => {
-      const response = await request(app).get("/sandbox/tunnels/non-existent");
+      const response = await authed(app).get("/sandbox/tunnels/non-existent");
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("error");
@@ -240,7 +287,7 @@ describe("Sandbox Routes", () => {
     it("should update tunnel status", async () => {
       const tunnel = sandboxService.createMockTunnel({});
 
-      const response = await request(app)
+      const response = await authed(app)
         .patch(`/sandbox/tunnels/${tunnel.id}/status`)
         .set("Content-Type", "application/json")
         .send({ status: "disconnected" });
@@ -253,7 +300,7 @@ describe("Sandbox Routes", () => {
     it("should require status parameter", async () => {
       const tunnel = sandboxService.createMockTunnel({});
 
-      const response = await request(app)
+      const response = await authed(app)
         .patch(`/sandbox/tunnels/${tunnel.id}/status`)
         .set("Content-Type", "application/json")
         .send({});
@@ -267,7 +314,7 @@ describe("Sandbox Routes", () => {
     it("should record tunnel metrics", async () => {
       const tunnel = sandboxService.createMockTunnel({});
 
-      const response = await request(app)
+      const response = await authed(app)
         .post(`/sandbox/tunnels/${tunnel.id}/metrics`)
         .set("Content-Type", "application/json")
         .send({
@@ -286,7 +333,7 @@ describe("Sandbox Routes", () => {
 
   describe("POST /sandbox/webhooks", () => {
     it("should create mock webhook", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/webhooks")
         .set("Content-Type", "application/json")
         .send({
@@ -302,7 +349,7 @@ describe("Sandbox Routes", () => {
     });
 
     it("should create webhook with default values", async () => {
-      const response = await request(app)
+      const response = await authed(app)
         .post("/sandbox/webhooks")
         .set("Content-Type", "application/json")
         .send({});
@@ -323,7 +370,7 @@ describe("Sandbox Routes", () => {
         responseTime: 30,
       });
 
-      const response = await request(app).get("/sandbox/requests");
+      const response = await authed(app).get("/sandbox/requests");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -348,7 +395,7 @@ describe("Sandbox Routes", () => {
         responseTime: 30,
       });
 
-      const response = await request(app).get(
+      const response = await authed(app).get(
         "/sandbox/requests?userId=user-1",
       );
 
@@ -373,7 +420,7 @@ describe("Sandbox Routes", () => {
         responseTime: 30,
       });
 
-      const response = await request(app).get("/sandbox/requests?method=POST");
+      const response = await authed(app).get("/sandbox/requests?method=POST");
 
       expect(response.body.count).toBe(1);
       expect(response.body.requests[0].method).toBe("POST");
@@ -390,7 +437,7 @@ describe("Sandbox Routes", () => {
         });
       }
 
-      const response = await request(app).get("/sandbox/requests?limit=5");
+      const response = await authed(app).get("/sandbox/requests?limit=5");
 
       expect(response.body.count).toBe(5);
     });
@@ -401,7 +448,7 @@ describe("Sandbox Routes", () => {
       sandboxService.createMockUser({});
       sandboxService.createMockTunnel({});
 
-      const response = await request(app).get("/sandbox/stats");
+      const response = await authed(app).get("/sandbox/stats");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -416,7 +463,7 @@ describe("Sandbox Routes", () => {
       sandboxService.createMockUser({});
       sandboxService.createMockTunnel({});
 
-      const response = await request(app).delete("/sandbox/clear");
+      const response = await authed(app).delete("/sandbox/clear");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
@@ -428,25 +475,56 @@ describe("Sandbox Routes", () => {
     });
   });
 
+  describe("authentication", () => {
+    it("rejects a request with no Authorization header", async () => {
+      const response = await request(app).get("/sandbox/config");
+
+      expect(response.status).toBe(401);
+      expect(response.body.code).toBe("AUTH_HEADER_MISSING");
+      expect(response.body.config).toBeUndefined();
+    });
+
+    it("rejects a non-Bearer Authorization header", async () => {
+      const response = await request(app)
+        .get("/sandbox/credentials")
+        .set("Authorization", "Basic sandbox");
+
+      expect(response.status).toBe(401);
+      expect(response.body.code).toBe("AUTH_HEADER_MISSING");
+      expect(response.body.credentials).toBeUndefined();
+    });
+
+    it("rejects an unauthenticated request when sandbox mode is off", async () => {
+      delete process.env.SANDBOX_MODE;
+
+      const response = await request(app).get("/sandbox/config");
+
+      expect(response.status).toBe(401);
+      expect(response.body.code).toBe("AUTH_HEADER_MISSING");
+      expect(response.body.config).toBeUndefined();
+    });
+  });
+
   describe("Sandbox Disabled", () => {
-    it("should return 403 when sandbox is disabled", async () => {
-      // Create app without sandbox detection middleware
-      const appNoSandbox = express();
-      appNoSandbox.use(express.json());
+    it("returns 403 for an authenticated caller when sandbox mode is off", async () => {
+      delete process.env.SANDBOX_MODE;
 
-      appNoSandbox.use((req, res, next) => {
-        req.isSandbox = false;
-        req.sandboxService = sandboxService;
-        next();
-      });
-
-      appNoSandbox.use("/sandbox", sandboxRoutes);
-
-      const response = await request(appNoSandbox).get("/sandbox/config");
+      const response = await authed(app).get("/sandbox/config");
 
       expect(response.status).toBe(403);
       expect(response.body).toHaveProperty("error");
       expect(response.body.error.code).toBe("SANDBOX_DISABLED");
+      expect(response.body.config).toBeUndefined();
+    });
+
+    it("does not return test credentials when sandbox mode is off", async () => {
+      delete process.env.SANDBOX_MODE;
+
+      const response = await authed(app).get("/sandbox/credentials");
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe("SANDBOX_DISABLED");
+      expect(response.body.credentials).toBeUndefined();
     });
   });
 });
