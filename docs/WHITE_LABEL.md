@@ -65,7 +65,7 @@ The script writes the brand into the Flutter app and into the window title, Andr
 
 The upstream brand (`pistisai`) and the `example` placeholder bake freely. **Every other brand is a paid whitelabel and requires a licence.** `tool/brand.sh` refuses to bake a non-upstream brand without one.
 
-Downstream forks ship their own brands. Acme, Northwind, and IAClé are examples; this repository does not contain their configuration.
+A downstream deployment can rename this product for Québec, with its own brand files, READMEs and deploy targets. Those configurations are maintained outside this public repository. Acme and Northwind are fictional examples.
 
 ```bash
 python3 tool/issue_licence.py \
