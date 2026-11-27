@@ -4,7 +4,7 @@
 
 > *Πίστις (Pistis) — the ancient spirit of trust, honesty, and good faith. After fleeing Pandora's box, she returned to Olympus. Pistisai builds a Stoa worthy of her return.*
 
-Your AI runs on your hardware. The app gives it voice, vision, desktop control, and a secure channel across all your devices — no data leaves your network unless you decide otherwise.
+Your AI runs on your hardware. The app gives it voice, vision, desktop control, and a secure channel across all your devices — no data leaves your network unless you decide otherwise. (The hosted web app keeps your chat history on our server while you are signed in; see the [privacy policy](docs/governance/legal/PRIVACY.md).)
 
 ---
 

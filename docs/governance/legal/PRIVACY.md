@@ -14,7 +14,8 @@ by default. Cloud features take effect when you sign in or turn them on.
 are stored in a database on your own machine. We do not sell your data,
 we do not use it for advertising, and we do not mine it to train models. When you
 choose to sign in or turn on cloud sync, a limited set of information is processed
-as described below.
+as described below. The web app is the exception for chat history: while you are
+signed in to it, your conversations are stored on our server (section 2.2).
 
 ## 1. Who we are
 
@@ -36,6 +37,9 @@ Cloudflare then tells our service who signed in. We receive and store:
 - your email address;
 - an account identifier issued by Cloudflare Access.
 
+When you use the web app while signed in, or turn on cloud services on desktop or
+mobile, we also store your conversations (section 2.2).
+
 We do not receive your password, and we do not request access to your Gmail,
 Google Drive, contacts, repositories, or other Google or GitHub services.
 
@@ -55,14 +59,25 @@ The app never writes these keys to a plain file. If the keystore is unavailable,
 chat history is not saved until it is available again. A history file the app can
 no longer decrypt (for example after the keystore was reset) is kept aside under a
 new name instead of being overwritten, and is removed when you delete your local
-data. On web, data is kept in the browser's origin-scoped storage. Turn on your
-operating system's disk encryption (BitLocker, FileVault or LUKS) as well. This
-content stays on your device unless you explicitly enable cloud sync or connect a
-remote runtime, in which case it is transmitted only to the destination you have
-chosen. The avatar personality you set (agent name, tone settings and stage) is
+data. On web, settings are kept in the browser's origin-scoped storage; chat
+history is not (see below). Turn on your operating system's disk encryption
+(BitLocker, FileVault or LUKS) as well. Apart from web chat history, this
+content stays on your device unless you explicitly enable cloud services or
+connect a remote runtime, in which case it is transmitted only to the destination
+you have chosen. The avatar personality you set (agent name, tone settings and stage) is
 sent to the agent runtime you connected, on your machine by default, which
 includes it in the instructions for each reply; it therefore reaches the same
 model provider your runtime uses for the conversation itself.
+
+**Chat history on our server.** On desktop and mobile, the app sends your
+conversations to our server only when you are signed in **and** cloud services are
+turned on. Cloud services are off by default, and the app does not yet have a
+setting to turn them on, so today desktop and mobile chat history is not sent to
+our server. The web app has no chat store in the browser: while you are signed in
+to the web app, your conversations, including the text of every message, are
+stored on our server so that you can see them again. Conversations stored on our
+server are kept until they are deleted. The app does not yet offer a control to
+delete them; to have them removed, contact us at the address in section 12.
 
 On desktop, the avatar personality, avatar memory entries and a short context
 summary are also written as plain, unencrypted Markdown files (`personality.md`,
@@ -135,6 +150,7 @@ removes the whole folder.
 - to authenticate you and secure your account;
 - to provide, maintain, and improve the app's functionality;
 - to synchronize your data across your devices when you enable cloud sync;
+- to keep your web chat history while you are signed in to the web app;
 - to diagnose problems and improve reliability and security.
 
 We do not sell your personal information and we do not use it for advertising.
@@ -160,6 +176,7 @@ including the Limited Use requirements. Specifically:
 
 - **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption. The Android app opts out of Android system backup, so its data is not copied to cloud backups or to another device during transfer.
 - **Authentication:** sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.
+- **Chat history on our server:** conversations from the web app while you are signed in, and from desktop and mobile only with cloud services on, are stored in our database, including message text. They are not end-to-end encrypted.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
 

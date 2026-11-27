@@ -14,6 +14,7 @@ import 'streaming_content_update.dart';
 
 import 'connection_manager_service.dart';
 import 'conversation_storage_service.dart';
+import 'settings_preference_service.dart';
 import 'auth_service.dart';
 import '../brand/brand_copy.dart';
 import 'agent_display_name.dart';
@@ -52,9 +53,23 @@ class StreamingChatService extends ChangeNotifier {
   StreamingChatService(
     this._connectionManager,
     AuthService authService,
-  ) : _storageService = ConversationStorageService(authService: authService) {
+  ) : _storageService = ConversationStorageService(
+          authService: authService,
+          cloudAllowed: _cloudServicesEnabled,
+        ) {
     _initializeService();
     _bindAgentNameListener();
+  }
+
+  /// Reads the cloud-services switch at each call (off by default, and off
+  /// when settings are not registered), so chat history is uploaded only
+  /// while the user has it on.
+  static Future<bool> _cloudServicesEnabled() async {
+    if (!di.serviceLocator.isRegistered<SettingsPreferenceService>()) {
+      return false;
+    }
+    return di.serviceLocator<SettingsPreferenceService>()
+        .isCloudServicesEnabled();
   }
 
   /// The one conversation for this harness. Every connected device uses the
