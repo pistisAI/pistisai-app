@@ -75,5 +75,6 @@ flutter test \
   test/integration/navigation_test.dart \
   test/integration/settings_integration_test.dart \
   test/integration/evolution_flow_test.dart \
+  test/auth/ \
   --reporter expanded \
   --timeout 30s

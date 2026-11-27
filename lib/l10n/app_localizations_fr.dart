@@ -3693,6 +3693,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Connectez-vous pour voir les agents enregistrés.';
 
   @override
+  String get authCallbackRejected =>
+      'La connexion n\'a pas abouti : le lien de connexion est invalide, expiré ou n\'a pas été lancé depuis l\'application. Relancez la connexion depuis l\'application.';
+
+  @override
+  String get authCallbackDifferentAccount =>
+      'Ce lien de connexion correspond à un autre compte. Votre session actuelle a été conservée. Déconnectez-vous, puis relancez la connexion depuis l\'application pour changer de compte.';
+
+  @override
   String get agentsRegistryForbidden =>
       'Votre compte n\'est pas autorisé à voir le registre des agents.';
 

@@ -1074,6 +1074,8 @@
   "sessionsPreview": "Dernier message",
   "sessionsLastActive": "Dernière activité",
   "agentsRegistrySignInRequired": "Connectez-vous pour voir les agents enregistrés.",
+  "authCallbackRejected": "La connexion n'a pas abouti : le lien de connexion est invalide, expiré ou n'a pas été lancé depuis l'application. Relancez la connexion depuis l'application.",
+  "authCallbackDifferentAccount": "Ce lien de connexion correspond à un autre compte. Votre session actuelle a été conservée. Déconnectez-vous, puis relancez la connexion depuis l'application pour changer de compte.",
   "agentsRegistryForbidden": "Votre compte n'est pas autorisé à voir le registre des agents.",
   "agentsRegistryLoadFailed": "Impossible de charger le registre des agents : {error}",
   "adminDnsDeleteConfirmTitle": "Supprimer l'enregistrement DNS ?",
