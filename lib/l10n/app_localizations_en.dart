@@ -2345,7 +2345,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get configDeleteLocalAgentDataConfirm =>
-      'This permanently deletes on-device agent data (local database and encrypted conversation store). Cloud account data is not removed. This cannot be undone.';
+      'This permanently deletes on-device agent data: the local database, the encrypted conversation store, the avatar Markdown files in the agent skill folder and the app\'s temporary captures. Your agent runtime keeps its own copy of the chat; this app will not import messages from before the wipe again, but it cannot delete them from the runtime. Cloud account data is not removed. This cannot be undone.';
 
   @override
   String get configDeleteLocalAgentDataAction => 'Delete permanently';
@@ -2700,7 +2700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeStepInfo =>
-      'We\'ll set up your local AI in about 2 minutes. All processing happens privately on your computer.';
+      'We\'ll set up your local AI in about 2 minutes. Processing happens on the machine that runs your agent runtime: this computer, or another machine you choose.';
 
   @override
   String get locationTitle => 'Where is Hermes running?';

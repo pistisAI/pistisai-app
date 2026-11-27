@@ -44,6 +44,7 @@ class LocalAgentDataVerification {
     required this.allTableCounts,
     required this.isEmpty,
     this.remainingConversationFiles = const <String>[],
+    this.remainingPlainFiles = const <String>[],
   });
 
   final DateTime checkedAt;
@@ -52,19 +53,26 @@ class LocalAgentDataVerification {
   final bool isEmpty;
   final List<String> remainingConversationFiles;
 
+  /// Plain files the app wrote outside the encrypted stores (avatar Markdown
+  /// in the agent skill folder, temp captures) that still exist.
+  final List<String> remainingPlainFiles;
+
   Map<String, dynamic> toJson() => {
         'checkedAt': checkedAt.toIso8601String(),
         'remainingUserContentCounts': remainingUserContentCounts,
         'allTableCounts': allTableCounts,
         'remainingConversationFiles': remainingConversationFiles,
+        'remainingPlainFiles': remainingPlainFiles,
         'isEmpty': isEmpty,
       };
 }
 
 /// Export and permanently delete all local agent data stored by Pistisai.
 ///
-/// Scope is the on-device [LocalBrain] SQLite database (and optionally the
-/// encrypted conversation file store). Cloud account deletion is separate.
+/// Scope is the on-device [LocalBrain] SQLite database, optionally the
+/// encrypted conversation file store, and optionally the plain files the app
+/// writes outside those stores (avatar Markdown, temp captures). Cloud account
+/// deletion and the agent runtime's own transcript are separate.
 class LocalAgentDataPortabilityService {
   LocalAgentDataPortabilityService({
     required LocalBrain brain,
@@ -72,12 +80,16 @@ class LocalAgentDataPortabilityService {
     Future<void> Function()? clearConversations,
     Future<List<String>> Function()? listRemainingConversationFiles,
     Future<void> Function()? resetChatState,
+    List<Future<void> Function()> clearPlainFiles = const [],
+    List<Future<List<String>> Function()> listRemainingPlainFiles = const [],
     AgentActionAuditService? audit,
   })  : _brain = brain,
         _exportConversations = exportConversations,
         _clearConversations = clearConversations,
         _listRemainingConversationFiles = listRemainingConversationFiles,
         _resetChatState = resetChatState,
+        _clearPlainFiles = clearPlainFiles,
+        _listRemainingPlainFiles = listRemainingPlainFiles,
         _audit = audit;
 
   static const String exportVersion = '1.0';
@@ -87,6 +99,9 @@ class LocalAgentDataPortabilityService {
   /// Audit action written after a verified wipe (not treated as leftover content).
   static const String wipeAuditAction = 'local_data_wipe';
 
+  /// Placeholder reported when a plain-file location could not be checked.
+  static const String unverifiedPlainFileLocation = '(location not checked)';
+
   static String get filePrefix =>
       '${Brand.current.artifactPrefix}-local-agent-data';
 
@@ -95,6 +110,8 @@ class LocalAgentDataPortabilityService {
   final Future<void> Function()? _clearConversations;
   final Future<List<String>> Function()? _listRemainingConversationFiles;
   final Future<void> Function()? _resetChatState;
+  final List<Future<void> Function()> _clearPlainFiles;
+  final List<Future<List<String>> Function()> _listRemainingPlainFiles;
   final AgentActionAuditService? _audit;
 
   /// Export all local agent data as indented JSON.
@@ -142,12 +159,20 @@ class LocalAgentDataPortabilityService {
       conversationsCleared = true;
     }
 
+    for (final clear in _clearPlainFiles) {
+      try {
+        await clear();
+      } catch (_) {
+        // A file that could not be removed is reported by verification.
+      }
+    }
+
     final verification = await verifyDeletion();
 
     if (verification.isEmpty && _audit != null) {
       await _audit.record(
         action: wipeAuditAction,
-        dataTouched: 'local_brain+conversation_files',
+        dataTouched: 'local_brain+conversation_files+plain_files',
         authorizationStatus: AgentAuditAuthorization.authorized,
         outcome: AgentAuditOutcome.success,
         authorizedBy: 'user',
@@ -179,7 +204,7 @@ class LocalAgentDataPortabilityService {
   ///
   /// [isEmpty] is true when every user-content table has zero rows (aside from
   /// the post-wipe [wipeAuditAction] journal entry) and no conversation data
-  /// files remain.
+  /// files or plain app files remain.
   Future<LocalAgentDataVerification> verifyDeletion() async {
     final allCounts = await _brain.countAllTableRows();
     final userCounts = <String, int>{
@@ -196,14 +221,26 @@ class LocalAgentDataPortabilityService {
         ? await _listRemainingConversationFiles()
         : const <String>[];
 
+    final remainingPlain = <String>[];
+    for (final list in _listRemainingPlainFiles) {
+      try {
+        remainingPlain.addAll(await list());
+      } catch (_) {
+        // A location that cannot be checked is not reported as empty.
+        remainingPlain.add(unverifiedPlainFileLocation);
+      }
+    }
+
     final empty = userCounts.values.every((count) => count == 0) &&
-        remainingFiles.isEmpty;
+        remainingFiles.isEmpty &&
+        remainingPlain.isEmpty;
 
     return LocalAgentDataVerification(
       checkedAt: DateTime.now(),
       remainingUserContentCounts: userCounts,
       allTableCounts: allCounts,
       remainingConversationFiles: remainingFiles,
+      remainingPlainFiles: remainingPlain,
       isEmpty: empty,
     );
   }

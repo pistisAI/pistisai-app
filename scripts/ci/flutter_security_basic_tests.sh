@@ -30,6 +30,8 @@ flutter test \
   test/services/providers/hermes_adapter_test.dart \
   test/services/provider_discovery_service_test.dart \
   test/services/local_agent_data_portability_service_test.dart \
+  test/services/local_data_wipe_files_test.dart \
+  test/services/avatar/markdown_sync_service_test.dart \
   test/services/approval_gate_service_test.dart \
   test/services/router_conscience_approval_integrity_test.dart \
   test/services/conscience_storage_service_test.dart \

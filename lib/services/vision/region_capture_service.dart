@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:pistisai/services/app_temp_files.dart';
 
 /// Result of a region capture operation
 class CaptureResult {
@@ -105,9 +105,9 @@ class RegionCaptureService {
     _lastError = null;
 
     try {
-      final directory = await getTemporaryDirectory();
+      // App-owned temp folder, removed by the local data wipe.
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final path = '${directory.path}/capture_$timestamp.png';
+      final path = await AppTempFiles.newPath('capture', 'png');
 
       debugPrint(
           '[RegionCapture] Capturing region: x=$x, y=$y, w=$width, h=$height');

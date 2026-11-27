@@ -64,6 +64,14 @@ sent to the agent runtime you connected, on your machine by default, which
 includes it in the instructions for each reply; it therefore reaches the same
 model provider your runtime uses for the conversation itself.
 
+On desktop, the avatar personality, avatar memory entries and a short context
+summary are also written as plain, unencrypted Markdown files (`personality.md`,
+`memory.md`, `context.md`) into the `pistisai` folder of your agent runtime's
+skill directory (for example `~/.openclaw/skills/pistisai`), so the runtime can
+read them. They are protected only by your operating system's file permissions
+and disk encryption. Deleting your local data removes these three files; other
+files in that folder are not touched.
+
 ### 2.3 Device and diagnostic information
 
 To keep the app reliable we may process limited technical information such as
@@ -103,7 +111,14 @@ you point them elsewhere. Client-facing data flow:
 Optional vision (camera/OCR), voice, and desktop-control features operate under
 your explicit, device-scoped permission. Media and screen data captured by these
 features are processed locally or by the runtime you select; Pistisai does not
-collect or retain this content on our servers.
+collect or retain this content on our servers. Screenshots, camera frames and
+spoken-reply audio are written as plain temporary files into an app-owned folder
+inside your operating system's temp directory; on macOS and Linux that folder is
+readable only by your user account (mode 0700), and the app falls back to its own
+support folder if the temp one cannot be used safely. Some are deleted right after use
+(for example presence checks and screenshot analysis); the rest stay until the
+operating system clears its temp directory or you delete your local data, which
+removes the whole folder.
 
 ## 3. How we use information
 
@@ -160,7 +175,12 @@ Content stored locally remains on your device until you delete it or uninstall t
 app. You can export or permanently delete on-device agent data from
 **Settings → Storage → Local agent data** (local wipe completes in seconds; see
 `docs/user-guide/LOCAL_DATA_EXPORT_DELETION.md` for what is removed and how to
-verify). For account data held by our authentication provider, you may request
+verify). The local wipe removes the local database, the encrypted chat history,
+the avatar Markdown files described in §2.2 and the app's temporary captures. It
+does not delete the chat transcript your agent runtime (for example Hermes)
+keeps on the machine where it runs; after a wipe the app no longer imports
+messages from before the wipe, but you must clear that transcript in the runtime
+itself. For account data held by our authentication provider, you may request
 deletion of your account and associated authentication records by contacting us
 at the address below; we will delete such data unless we are required to retain
 it by law (provider processing target: within a few hours of a verified request).

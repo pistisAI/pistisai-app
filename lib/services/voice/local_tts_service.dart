@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:pistisai/services/app_temp_files.dart';
 
 /// Local TTS service using Piper TTS HTTP endpoint.
 class LocalTtsService {
@@ -31,7 +32,8 @@ class LocalTtsService {
     await checkAvailability();
     if (!_available) return null;
 
-    outputPath ??= '${Directory.systemTemp.path}/tts_${DateTime.now().millisecondsSinceEpoch}.wav';
+    // App-owned temp folder, removed by the local data wipe.
+    outputPath ??= await AppTempFiles.newPath('tts', 'wav');
 
     try {
       final uri = Uri.parse(
@@ -48,7 +50,7 @@ class LocalTtsService {
       final file = File(outputPath);
       await file.writeAsBytes(response.bodyBytes);
 
-      _cleanupOldFiles();
+      await _cleanupOldFiles();
 
       final size = await file.length();
       if (size == 0) {
@@ -89,13 +91,13 @@ class LocalTtsService {
     }
   }
 
-  void _cleanupOldFiles() {
-    final dir = Directory.systemTemp;
+  Future<void> _cleanupOldFiles() async {
     try {
+      final dir = await AppTempFiles.directory();
       final files = dir
           .listSync()
           .whereType<File>()
-          .where((f) => f.path.startsWith('${dir.path}/tts_'))
+          .where((f) => f.uri.pathSegments.last.startsWith('tts_'))
           .toList()
         ..sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
 
