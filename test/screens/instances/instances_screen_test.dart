@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/l10n/app_localizations.dart';
@@ -42,6 +43,16 @@ class _FakeConnectionManager extends ConnectionManagerService {
 
   @override
   String? get lastError => error;
+}
+
+/// A connection manager that cannot switch to the Hermes runtime.
+class _FailingApplyConnectionManager extends _FakeConnectionManager {
+  _FailingApplyConnectionManager() : super(backend: null);
+
+  @override
+  void configureHermesRuntime({required String url, String? apiKey}) {
+    throw StateError('runtime switch refused');
+  }
 }
 
 class _FakeProviderDiscoveryService implements ProviderDiscoveryService {
@@ -180,6 +191,43 @@ void main() {
       expect(find.text('Connection refused'), findsOneWidget);
       expect(find.textContaining('Could not scan model providers'),
           findsOneWidget);
+    });
+  });
+
+  group('Hermes settings Apply', () {
+    testWidgets('shows the error when the connection cannot be switched',
+        (tester) async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'settings_hermes_enabled': true,
+        'settings_hermes_url': 'http://127.0.0.1:8642',
+      });
+      FlutterSecureStorage.setMockInitialValues(<String, String>{});
+      register<ConnectionManagerService>(_FailingApplyConnectionManager());
+      register<ProviderDiscoveryService>(_FakeProviderDiscoveryService());
+      tester.view.physicalSize = const Size(1400, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await pumpScreen(tester);
+      await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 50)));
+      await tester.pump();
+
+      final apply = find.text('Apply');
+      await tester.ensureVisible(apply);
+      await tester.tap(apply);
+      for (var i = 0; i < 3; i++) {
+        await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 50)));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      expect(find.textContaining('Hermes Agent enabled'), findsNothing);
+      expect(find.textContaining('runtime switch refused'), findsOneWidget);
+      expect(
+        find.textContaining('the connection could not be switched'),
+        findsOneWidget,
+      );
     });
   });
 }

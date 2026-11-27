@@ -51,18 +51,21 @@ class RegionCaptureService {
   bool get isCapturing => _isCapturing;
   String? get lastError => _lastError;
 
-  /// Initialize the region capture service
-  Future<void> initialize() async {
+  /// Initialize the region capture service.
+  ///
+  /// Returns true only when the native capture channel answered; otherwise
+  /// returns false and leaves the reason in [lastError].
+  Future<bool> initialize() async {
     if (_isInitialized) {
       debugPrint('[RegionCapture] Already initialized');
-      return;
+      return true;
     }
 
     // Web platform doesn't support screen capture
     if (kIsWeb) {
       _lastError = 'Region capture not supported on web platform';
       debugPrint('[RegionCapture] $_lastError');
-      return;
+      return false;
     }
 
     try {
@@ -70,9 +73,11 @@ class RegionCaptureService {
       _isInitialized = true;
       _lastError = null;
       debugPrint('[RegionCapture] Initialized successfully');
+      return true;
     } catch (e) {
       _lastError = 'Failed to initialize: $e';
       debugPrint('[RegionCapture] $_lastError');
+      return false;
     }
   }
 

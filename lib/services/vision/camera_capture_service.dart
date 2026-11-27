@@ -35,12 +35,15 @@ class CameraCaptureService {
   /// Initialize the camera capture service
   ///
   /// Gets available cameras and initializes the first camera with
-  /// high resolution preset. Returns silently if already initialized.
-  /// On desktop platforms, initializes the native platform channel first.
-  Future<void> initialize() async {
+  /// high resolution preset. On desktop platforms, initializes the native
+  /// platform channel first.
+  ///
+  /// Returns true only when a camera was opened (or already was); otherwise
+  /// returns false and leaves the reason in [lastError].
+  Future<bool> initialize() async {
     if (_isInitialized) {
       debugPrint('[CameraCapture] Already initialized, skipping');
-      return;
+      return true;
     }
 
     debugPrint('[CameraCapture] Initializing...');
@@ -49,7 +52,7 @@ class CameraCaptureService {
     if (kIsWeb) {
       _lastError = 'Camera capture not supported on web platform';
       debugPrint('[CameraCapture] $_lastError');
-      return;
+      return false;
     }
 
     try {
@@ -66,7 +69,7 @@ class CameraCaptureService {
       if (_cameras.isEmpty) {
         _lastError = 'No cameras available on this device';
         debugPrint('[CameraCapture] $_lastError');
-        return;
+        return false;
       }
 
       debugPrint('[CameraCapture] Found ${_cameras.length} camera(s)');
@@ -82,10 +85,12 @@ class CameraCaptureService {
       _lastError = null;
 
       debugPrint('[CameraCapture] Initialized successfully');
+      return true;
     } catch (e) {
       _lastError = 'Failed to initialize camera: $e';
       debugPrint('[CameraCapture] $_lastError');
       _isInitialized = false;
+      return false;
     }
   }
 

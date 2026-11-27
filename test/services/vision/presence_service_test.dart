@@ -17,8 +17,9 @@ class FakeCameraCaptureService extends CameraCaptureService {
   String? get lastError => _initialized ? null : 'fake not initialized';
 
   @override
-  Future<void> initialize() async {
+  Future<bool> initialize() async {
     _initialized = true;
+    return true;
   }
 
   @override

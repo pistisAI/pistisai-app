@@ -166,6 +166,8 @@ class _AvatarCustomizationScreenState extends State<AvatarCustomizationScreen> {
       await _prefs.remove('avatar_size');
       await _prefs.remove('avatar_glow_enabled');
       await _prefs.remove('avatar_color_override');
+      // Without this the chat avatar kept the old look until a restart.
+      await reloadAvatarAppearance();
 
       await _loadSettings();
 

@@ -58,6 +58,11 @@ flutter test \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
   test/screens/instances/instances_screen_test.dart \
+  test/screens/settings/daemon_settings_honest_test.dart \
+  test/screens/settings/vision_settings_honest_test.dart \
+  test/screens/avatar/avatar_settings_honest_test.dart \
+  test/screens/desktop/file_paste_test.dart \
+  test/services/vision/ocr_engine_service_test.dart \
   test/screens/logs_screen_test.dart \
   test/widgets/overview_screen_test.dart \
   test/widgets/logout_token_clearing_timing_test.dart \
