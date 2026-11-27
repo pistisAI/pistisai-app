@@ -216,7 +216,6 @@ If issues occur:
 
 ### External Resources
 
-- [Auth0 Documentation](https://auth0.com/docs)
 - [JWT.io](https://jwt.io) - JWT debugging
 - [JWKS Specification](https://tools.ietf.org/html/rfc7517)
 
