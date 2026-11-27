@@ -35,6 +35,10 @@ export default {
     // events, rate-limit admin routes and the public database health check.
     '**/test/api-backend/admin-owner-checks.test.js',
     '**/test/api-backend/db-health-route.test.js',
+    // Session, signing-key and key-comparison hardening.
+    '**/test/api-backend/session-token-hardening-auth-service.test.js',
+    '**/test/api-backend/session-token-hardening-routes.test.js',
+    '**/test/api-backend/session-token-hardening-keys.test.js',
     // Server-side personal data: log redaction, client-log bounds, account
     // hard delete coverage, masked emails in logs.
     '**/test/api-backend/request-log-redaction.test.js',

@@ -120,9 +120,22 @@ export async function generateApiKey(userId, name, options = {}) {
 }
 
 /**
+ * Thrown by validateApiKey when the key is valid but its owner's account is
+ * suspended. Callers answer 403 ACCOUNT_SUSPENDED, as the JWT path does.
+ */
+export class ApiKeyAccountSuspendedError extends Error {
+  constructor() {
+    super('Account is suspended');
+    this.name = 'ApiKeyAccountSuspendedError';
+    this.code = 'ACCOUNT_SUSPENDED';
+  }
+}
+
+/**
  * Validate an API key
  * @param {string} apiKey - API key to validate
  * @returns {Promise<Object|null>} Key metadata if valid, null otherwise
+ * @throws {ApiKeyAccountSuspendedError} when the key's owner is suspended
  */
 export async function validateApiKey(apiKey) {
   try {
@@ -172,6 +185,26 @@ export async function validateApiKey(apiKey) {
       ]);
 
       return null;
+    }
+
+    // The key carries its owner's account state: a suspended, deleted or
+    // missing account cannot authenticate with a key either.
+    const ownerResult = await query(
+      'SELECT is_suspended, deleted_at FROM users WHERE id = $1',
+      [keyRecord.user_id],
+    );
+    const owner = ownerResult.rows[0];
+    if (!owner || owner.deleted_at) {
+      logger.warn('[APIKey] API key owner account is missing or deleted', {
+        keyId: keyRecord.id,
+      });
+      return null;
+    }
+    if (owner.is_suspended) {
+      logger.warn('[APIKey] API key owner account is suspended', {
+        keyId: keyRecord.id,
+      });
+      throw new ApiKeyAccountSuspendedError();
     }
 
     // Update last_used_at

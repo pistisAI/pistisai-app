@@ -58,6 +58,9 @@ jest.unstable_mockModule('../../services/api-backend/auth/auth-service.js', () =
     revokeSession(...args) {
       return mockRevokeSession(...args);
     }
+    revokeSessionByToken() {
+      return true;
+    }
   },
 }));
 

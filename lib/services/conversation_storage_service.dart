@@ -19,15 +19,46 @@ class SecurityException implements Exception {
 
 /// Conversation storage service that prioritizes local storage on Desktop
 /// and falls back to Cloud API when available.
+///
+/// On desktop and mobile, conversations go to or come from the API only when
+/// the user is signed in AND [cloudAllowed] returns true (the cloud-services
+/// switch, off by default). The switch is read at each call, so turning it
+/// off stops the next upload. With no [cloudAllowed] wired, nothing is sent.
+///
+/// On web there is no local conversation store, so a signed-in user's
+/// history lives on the server (see the privacy policy).
 class ConversationStorageService {
   final AuthService? _authService;
-  final LocalConversationStorage _localStorage = LocalConversationStorage();
+  final Future<bool> Function()? _cloudAllowed;
+  final LocalConversationStorage _localStorage;
   bool _isInitialized = false;
-  final Dio _dio = Dio();
+  final Dio _dio;
 
-  ConversationStorageService({AuthService? authService})
-      : _authService = authService {
-    _setupDio();
+  ConversationStorageService({
+    AuthService? authService,
+    Future<bool> Function()? cloudAllowed,
+    Dio? dio,
+    LocalConversationStorage? localStorage,
+  })  : _authService = authService,
+        _cloudAllowed = cloudAllowed,
+        _dio = dio ?? Dio(),
+        _localStorage = localStorage ?? LocalConversationStorage() {
+    if (dio == null) _setupDio();
+  }
+
+  /// Whether this call may talk to the conversations API: signed in, and on
+  /// desktop/mobile the user turned cloud services on.
+  Future<bool> _mayUseServer() async {
+    if (_authService?.isAuthenticated.value != true) return false;
+    if (kIsWeb) return true;
+    final allowed = _cloudAllowed;
+    if (allowed == null) return false;
+    try {
+      return await allowed();
+    } catch (e) {
+      debugPrint('[ConversationStorage] Cloud consent check failed: $e');
+      return false;
+    }
   }
 
   void _setupDio() {
@@ -60,8 +91,8 @@ class ConversationStorageService {
       await _localStorage.saveConversations(conversations);
     }
 
-    // 2. Sync to cloud if authenticated
-    if (_authService?.isAuthenticated.value == true) {
+    // 2. Sync to cloud only if signed in and cloud services are on
+    if (await _mayUseServer()) {
       for (final conversation in conversations) {
         try {
           await saveConversation(conversation);
@@ -92,7 +123,7 @@ class ConversationStorageService {
 
   /// Load conversations from Cloud API
   Future<List<Conversation>> _loadFromApi() async {
-    if (_authService?.isAuthenticated.value != true) return [];
+    if (!await _mayUseServer()) return [];
 
     try {
       final headers = await _getAuthHeaders();
@@ -133,7 +164,7 @@ class ConversationStorageService {
     // Local storage stores full conversations, so we don't need a separate fetch for messages
     // but we'll maintain the API structure for cloud syncing
     try {
-      if (_authService?.isAuthenticated.value == true) {
+      if (await _mayUseServer()) {
         final headers = await _getAuthHeaders();
         final response = await _dio.get('/api/conversations/$conversationId',
             options: Options(headers: headers));
@@ -152,7 +183,7 @@ class ConversationStorageService {
 
   /// Save a single conversation via API
   Future<void> saveConversation(Conversation conversation) async {
-    if (_authService?.isAuthenticated.value != true) return;
+    if (!await _mayUseServer()) return;
 
     try {
       final headers = await _getAuthHeaders();
@@ -180,7 +211,7 @@ class ConversationStorageService {
     }
 
     // Delete from cloud
-    if (_authService?.isAuthenticated.value == true) {
+    if (await _mayUseServer()) {
       try {
         final headers = await _getAuthHeaders();
         await _dio.delete('/api/conversations/$conversationId',
@@ -197,7 +228,7 @@ class ConversationStorageService {
       await _localStorage.clearAll();
     }
 
-    if (_authService?.isAuthenticated.value == true) {
+    if (await _mayUseServer()) {
       try {
         final conversations = await _loadFromApi();
         for (final conv in conversations) {

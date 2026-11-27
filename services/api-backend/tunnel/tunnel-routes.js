@@ -61,16 +61,36 @@ export function createTunnelRoutes(
     }
 
     try {
-      const payload = await authService.validateToken(token);
-      req.userId = payload.sub;
-      req.user = payload; // Also set req.user for addTierInfo middleware
+      // validateToken reports failure as { valid: false }, it does not throw.
+      const result = await authService.validateToken(token, req);
+      if (result?.valid !== true || !result.payload?.sub) {
+        tunnelLogger.logSecurity('auth_token_invalid', null, {
+          error: result?.error,
+        });
+        if (result?.code === 'ACCOUNT_SUSPENDED') {
+          return res.status(403).json({
+            error: 'Account is suspended',
+            code: 'ACCOUNT_SUSPENDED',
+          });
+        }
+        return res
+          .status(401)
+          .json(
+            ErrorResponseBuilder.authenticationError(
+              'Invalid or expired token.',
+              ERROR_CODES.AUTH_TOKEN_INVALID,
+            ),
+          );
+      }
+      req.userId = result.payload.sub;
+      req.user = result.payload; // Also set req.user for addTierInfo middleware
       next();
     } catch (error) {
       tunnelLogger.logSecurity('auth_token_invalid', null, {
         error: error.message,
       });
       res
-        .status(403)
+        .status(401)
         .json(
           ErrorResponseBuilder.authenticationError(
             'Invalid or expired token.',

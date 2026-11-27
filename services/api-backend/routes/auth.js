@@ -98,6 +98,17 @@ router.post('/logout', authenticateJWT, extractUserId, async function (req, res)
 
     logger.info('[Auth] User logout initiated', { userId });
 
+    // End the server-side session for this token so it cannot be used again.
+    // Throws on a database error, which is reported as a failed logout below.
+    const token = req.auth?.token;
+    const sessionRevoked = token
+      ? await getAuthService().revokeSessionByToken(
+          userId,
+          token,
+          req.auth?.payload ?? {},
+        )
+      : false;
+
     // Clear refresh token cookie
     res.clearCookie('refreshToken', {
       httpOnly: true,
@@ -105,7 +116,7 @@ router.post('/logout', authenticateJWT, extractUserId, async function (req, res)
       sameSite: 'strict',
     });
 
-    logger.info('[Auth] User logged out successfully', { userId });
+    logger.info('[Auth] User logged out', { userId, sessionRevoked });
 
     // Log logout
     logLogout({
@@ -115,6 +126,7 @@ router.post('/logout', authenticateJWT, extractUserId, async function (req, res)
       details: {
         endpoint: req.path,
         method: req.method,
+        sessionRevoked,
       },
     }).catch((auditError) => {
       logger.error('[Auth] Failed to log logout', {
@@ -124,7 +136,10 @@ router.post('/logout', authenticateJWT, extractUserId, async function (req, res)
 
     res.json({
       success: true,
-      message: 'Logged out successfully',
+      sessionRevoked,
+      message: sessionRevoked
+        ? 'Logged out; the session for this token has ended'
+        : 'Logged out; no active server session was found for this token',
       userId,
     });
   } catch (error) {
@@ -136,7 +151,6 @@ router.post('/logout', authenticateJWT, extractUserId, async function (req, res)
     res.status(500).json({
       error: 'Logout failed',
       code: 'LOGOUT_ERROR',
-      message: error.message,
     });
   }
 });
