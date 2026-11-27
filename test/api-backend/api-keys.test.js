@@ -5,14 +5,62 @@
  * Requirements: 2.8
  */
 
-import {} from "@jest/globals";
+import { jest } from "@jest/globals";
 
 import request from "supertest";
 import express from "express";
 import crypto from "crypto";
 import { query } from "../../services/api-backend/database/db-pool.js";
-import apiKeysRouter from "../../services/api-backend/routes/api-keys.js";
 import { authenticateApiKey } from "../../services/api-backend/middleware/api-key-auth.js";
+
+/**
+ * The API key router calls authenticateJWT and extractUserId itself. Setting
+ * req.user in front of the router never ran: authenticateJWT returned 401
+ * AUTH_HEADER_MISSING first. This double keeps that missing-credential
+ * rejection. The bearer token is the caller id, which extractUserId copies
+ * onto req.userId so each key stays scoped to that caller. JWT signature,
+ * issuer and audience checks live in authentication-authorization.test.js.
+ */
+jest.unstable_mockModule(
+  "../../services/api-backend/middleware/auth.js",
+  () => ({
+    authenticateJWT: (req, res, next) => {
+      const header = req.headers.authorization || req.headers.Authorization;
+      const token =
+        typeof header === "string" && header.startsWith("Bearer ")
+          ? header.slice("Bearer ".length)
+          : "";
+      if (!token) {
+        return res.status(401).json({
+          error: "Authorization header missing or invalid",
+          code: "AUTH_HEADER_MISSING",
+        });
+      }
+      const payload = { sub: token };
+      req.auth = { token, payload };
+      req.user = payload;
+      return next();
+    },
+    extractUserId: (req, res, next) => {
+      if (!req.auth?.payload?.sub) {
+        return res.status(401).json({
+          error: "User ID not available",
+          code: "USER_ID_MISSING",
+        });
+      }
+      req.userId = req.auth.payload.sub;
+      return next();
+    },
+  }),
+);
+
+const { default: apiKeysRouter } = await import(
+  "../../services/api-backend/routes/api-keys.js"
+);
+
+function asCaller(req, userId) {
+  return req.set("Authorization", `Bearer ${userId}`);
+}
 import {
   generateApiKey,
   validateApiKey,
@@ -377,10 +425,9 @@ describe("API Key Service", () => {
 describe("API Key Routes", () => {
   let app;
   let testUserUUID;
-  let mockUserId = "placeholder";
 
   beforeAll(async () => {
-    // Create test user first so mock auth can reference the real UUID
+    // Create test user first so route calls can authenticate as that id.
     const userResult = await query(
       `INSERT INTO users (jwt_id, email, name)
        VALUES ($1, $2, $3)
@@ -388,19 +435,9 @@ describe("API Key Routes", () => {
       ["test-jwt-routes", "test-routes@example.com", "Test Routes User"],
     );
     testUserUUID = userResult.rows[0].id;
-    mockUserId = testUserUUID;
 
-    // Create Express app with routes
     app = express();
     app.use(express.json());
-
-    // Mock authenticateJWT middleware — uses real UUID from DB
-    app.use((req, res, next) => {
-      req.user = { sub: mockUserId };
-      req.userId = mockUserId;
-      next();
-    });
-
     app.use("/api-keys", apiKeysRouter);
   });
 
@@ -413,16 +450,37 @@ describe("API Key Routes", () => {
     await query("DELETE FROM users WHERE id = $1", [testUserUUID]);
   });
 
+  describe("authentication", () => {
+    it("rejects a request with no Authorization header", async () => {
+      const response = await request(app).get("/api-keys");
+
+      expect(response.status).toBe(401);
+      expect(response.body.code).toBe("AUTH_HEADER_MISSING");
+      expect(Array.isArray(response.body)).toBe(false);
+    });
+
+    it("rejects a non-Bearer Authorization header", async () => {
+      const response = await request(app)
+        .get("/api-keys")
+        .set("Authorization", "Basic dGVzdA==");
+
+      expect(response.status).toBe(401);
+      expect(response.body.code).toBe("AUTH_HEADER_MISSING");
+      expect(Array.isArray(response.body)).toBe(false);
+    });
+  });
+
   describe("POST /api-keys", () => {
     it("should create a new API key", async () => {
-      const response = await request(app)
-        .post("/api-keys")
-        .send({
-          name: "Test API Key",
-          description: "Test description",
-          scopes: ["read", "write"],
-          rateLimit: 500,
-        });
+      const response = await asCaller(
+        request(app).post("/api-keys"),
+        testUserUUID,
+      ).send({
+        name: "Test API Key",
+        description: "Test description",
+        scopes: ["read", "write"],
+        rateLimit: 500,
+      });
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("id");
@@ -432,7 +490,10 @@ describe("API Key Routes", () => {
     });
 
     it("should reject request without name", async () => {
-      const response = await request(app).post("/api-keys").send({
+      const response = await asCaller(
+        request(app).post("/api-keys"),
+        testUserUUID,
+      ).send({
         description: "No name",
       });
 
@@ -441,7 +502,10 @@ describe("API Key Routes", () => {
     });
 
     it("should reject invalid scopes", async () => {
-      const response = await request(app).post("/api-keys").send({
+      const response = await asCaller(
+        request(app).post("/api-keys"),
+        testUserUUID,
+      ).send({
         name: "Test",
         scopes: "not-an-array",
       });
@@ -451,7 +515,10 @@ describe("API Key Routes", () => {
     });
 
     it("should reject invalid rate limit", async () => {
-      const response = await request(app).post("/api-keys").send({
+      const response = await asCaller(
+        request(app).post("/api-keys"),
+        testUserUUID,
+      ).send({
         name: "Test",
         rateLimit: -100,
       });
@@ -468,7 +535,7 @@ describe("API Key Routes", () => {
     });
 
     it("should list all API keys", async () => {
-      const response = await request(app).get("/api-keys");
+      const response = await asCaller(request(app).get("/api-keys"), testUserUUID);
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
@@ -476,7 +543,7 @@ describe("API Key Routes", () => {
     });
 
     it("should not include actual API keys", async () => {
-      const response = await request(app).get("/api-keys");
+      const response = await asCaller(request(app).get("/api-keys"), testUserUUID);
 
       response.body.forEach((key) => {
         expect(key).not.toHaveProperty("apiKey");
@@ -494,7 +561,10 @@ describe("API Key Routes", () => {
     });
 
     it("should get API key details", async () => {
-      const response = await request(app).get(`/api-keys/${testKeyId}`);
+      const response = await asCaller(
+        request(app).get(`/api-keys/${testKeyId}`),
+        testUserUUID,
+      );
 
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(testKeyId);
@@ -503,9 +573,25 @@ describe("API Key Routes", () => {
 
     it("should return 404 for non-existent key", async () => {
       const fakeId = crypto.randomUUID();
-      const response = await request(app).get(`/api-keys/${fakeId}`);
+      const response = await asCaller(
+        request(app).get(`/api-keys/${fakeId}`),
+        testUserUUID,
+      );
 
       expect(response.status).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+    });
+
+    it("does not return a key owned by someone else", async () => {
+      const response = await asCaller(
+        request(app).get(`/api-keys/${testKeyId}`),
+        crypto.randomUUID(),
+      );
+
+      expect(response.status).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+      expect(response.body.apiKey).toBeUndefined();
+      expect(response.body.keyPrefix).toBeUndefined();
     });
   });
 
@@ -518,7 +604,10 @@ describe("API Key Routes", () => {
     });
 
     it("should update API key", async () => {
-      const response = await request(app).patch(`/api-keys/${testKeyId}`).send({
+      const response = await asCaller(
+        request(app).patch(`/api-keys/${testKeyId}`),
+        testUserUUID,
+      ).send({
         name: "Updated Name",
         description: "Updated description",
       });
@@ -529,7 +618,10 @@ describe("API Key Routes", () => {
     });
 
     it("should reject invalid fields", async () => {
-      const response = await request(app).patch(`/api-keys/${testKeyId}`).send({
+      const response = await asCaller(
+        request(app).patch(`/api-keys/${testKeyId}`),
+        testUserUUID,
+      ).send({
         key_hash: "fake",
       });
 
@@ -549,7 +641,10 @@ describe("API Key Routes", () => {
     });
 
     it("should rotate API key", async () => {
-      const response = await request(app).post(`/api-keys/${testKeyId}/rotate`);
+      const response = await asCaller(
+        request(app).post(`/api-keys/${testKeyId}/rotate`),
+        testUserUUID,
+      );
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("apiKey");
@@ -566,7 +661,10 @@ describe("API Key Routes", () => {
     });
 
     it("should revoke API key", async () => {
-      const response = await request(app).post(`/api-keys/${testKeyId}/revoke`);
+      const response = await asCaller(
+        request(app).post(`/api-keys/${testKeyId}/revoke`),
+        testUserUUID,
+      );
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe("API key revoked successfully");
@@ -582,8 +680,9 @@ describe("API Key Routes", () => {
     });
 
     it("should get audit logs", async () => {
-      const response = await request(app).get(
-        `/api-keys/${testKeyId}/audit-logs`,
+      const response = await asCaller(
+        request(app).get(`/api-keys/${testKeyId}/audit-logs`),
+        testUserUUID,
       );
 
       expect(response.status).toBe(200);
