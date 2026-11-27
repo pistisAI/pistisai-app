@@ -156,7 +156,7 @@ void main() {
             'Authorization': 'Bearer router-secret',
             'Content-Type': 'application/json',
           },
-          body: '{not-json path=/home/user/secret.gguf',
+          body: '{not-json path=/synthetic/fixture-dir/secret.gguf',
         );
 
         expect(response.statusCode, HttpStatus.badRequest);
