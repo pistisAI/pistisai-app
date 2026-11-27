@@ -37,4 +37,4 @@ If the open thread cannot be found, say so. Do not invent the prior state.
 
 ## Known gap
 
-There is no dedicated handoff file. `memories/5 JURNAL/` is an empty directory, not a log. Do not treat it as one.
+There is no dedicated handoff file. An empty memories directory is not a log. Do not treat one as a handoff.

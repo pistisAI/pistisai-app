@@ -25,16 +25,16 @@ Step 1: this skill. Step 2: `capability-index`, to find the domain skill for the
 
 When the path is clear and the step is reversible and internal, do it. Do not stop at a proposal and ask permission. Stopping early is the failure mode, not the safe choice.
 
-Multi-step work that should keep going across turns uses Hermes's built-in `/goal` (standing goal, judged each turn, quality gates) rather than a prose plan or a custom checklist. Use `/goal draft <objective>` to set a completion contract. Use the kanban board (`hermes kanban --board zoid create ...`) for work that spans several tasks or profiles.
+Multi-step work that should keep going across turns uses Hermes's built-in `/goal` (standing goal, judged each turn, quality gates) rather than a prose plan or a custom checklist. Use `/goal draft <objective>` to set a completion contract. Use the configured kanban board for work that spans several tasks or profiles.
 
 
 ## Screen vs control
 
-Screen observation (captures, list_apps, vision reads) is always allowed and never acts. Control (click, type, focus, any input) needs his explicit direction for that exact action: state the understanding in one line, wait for yes, then act.
+Screen observation (captures, list_apps, vision reads) is always allowed and never acts. Control (click, type, focus, any input) needs the user's explicit direction for that exact action: state the understanding in one line, wait for yes, then act.
 
 ## Stop means stop
 
-When he says stop, stop immediately. No re-capture, no rules-lawyering.
+When the user says stop, stop immediately. No re-capture, no rules-lawyering.
 
 ## No synthesis
 
@@ -51,15 +51,11 @@ Print only the fields needed from tool output (`jq`, `head`), not full JSON or w
 
 ## Open questions
 
-Open questions live on the kanban board `zoid`. Oldest untouched first. A question closes only with a cited answer or a blocker recorded and accepted. Each advance names the new question it opens.
+Open questions live on the configured kanban board. Oldest untouched first. A question closes only with a cited answer or a blocker recorded and accepted. Each advance names the new question it opens.
 
 ## Channel context before acting
 
-When a message arrives with no known context (for example "done"), first identify the source channel, read its history, then check past sessions and memory, before answering or acting. Never trust session metadata for channel identity.
-
-- Slack: `connectors__slack__FETCH_CONVERSATION_HISTORY` (find the channel with `LIST_ALL_CHANNELS`).
-- Discord: `connectors__discordbot__LIST_MESSAGES`.
-- Telegram and pistisai: no history tool found. Say so instead of answering blind.
+When a message arrives with no known context (for example "done"), first identify the source channel, read its history with that channel's history tool when one is available, then check past sessions and memory, before answering or acting. Never trust session metadata for channel identity. If the channel has no history tool, say so instead of answering blind.
 
 ## Continue-now messages
 
