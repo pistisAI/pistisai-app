@@ -18,6 +18,10 @@ on:
 
 env:
   PLATFORMS: ${{ inputs.platforms || 'linux,windows,macos' }}
+  # workflow_run: the Web Deploy commit. Tag push: that tag. Dispatch on
+  # main: that main SHA. Anything else stays on main and the analyze job
+  # refuses a non-main dispatch before it builds.
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha || (github.ref_type == 'tag' && github.sha) || (github.ref_name == 'main' && github.sha) || 'main' }}
 
 concurrency:
   group: desktop-build-${{ github.ref }}
@@ -39,9 +43,16 @@ jobs:
       version: ${{ steps.read.outputs.version }}
       platforms: ${{ steps.platforms.outputs.platforms }}
     steps:
+      - name: Refuse a non-main dispatch
+        if: github.event_name == 'workflow_dispatch' && github.ref_name != 'main'
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          echo "::error::Desktop release accepts workflow_dispatch only on main. Selected ref: ${REF_NAME}."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
@@ -84,7 +95,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -170,7 +181,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -254,7 +265,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -315,7 +326,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
 
       - name: Download all artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8
@@ -420,7 +431,7 @@ jobs:
         with:
           artifacts: "release-assets/*"
           tag: ${{ steps.release_tag.outputs.tag }}
-          commit: ${{ github.event.workflow_run.head_sha || github.sha }}
+          commit: ${{ env.SOURCE_SHA }}
           name: "Pistisai v${{ env.VERSION }}"
           draft: true
           artifactErrorsFailBuild: true

@@ -54,9 +54,11 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          # On push, read the commit that was pushed. Checking out moving
-          # main can classify a later merge and bump the wrong kind.
-          ref: ${{ github.event_name == 'push' && github.sha || github.ref }}
+          # Push: pin the commit that was pushed so a later merge cannot
+          # change the bump kind. Release and workflow_dispatch stay on main.
+          # github.ref on a release event is the tag; a bump branch cut from
+          # that tag can conflict with or overwrite the version on main.
+          ref: ${{ github.event_name == 'push' && github.sha || 'main' }}
           fetch-depth: 1
 
       - name: Determine bump type

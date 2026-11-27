@@ -30,10 +30,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+      - name: Refuse a non-main ref
+        if: github.ref_name != 'main'
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          echo "::error::Web deploy publishes :latest and purges the production zone. Refusing ref ${REF_NAME}."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          # The commit that triggered this run. `ref: main` can move while
-          # the job is queued and publish a different tree.
+          # Pin the main commit that triggered this run. A moving main tip
+          # can publish a different tree while the job is queued.
           ref: ${{ github.sha }}
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
@@ -55,6 +62,13 @@ jobs:
       image_tag: ${{ steps.version.outputs.tag }}
       image_digest: ${{ steps.build.outputs.digest }}
     steps:
+      - name: Refuse a non-main ref
+        if: github.ref_name != 'main'
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          echo "::error::Web deploy publishes :latest and purges the production zone. Refusing ref ${REF_NAME}."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           ref: ${{ github.sha }}
