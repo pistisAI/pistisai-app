@@ -8,9 +8,9 @@ import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 
 void main() {
   const sessionKey = 'agent:main:pistisai:dm:pistisai';
-  // When the session resolver finds no pistisai session (empty list), the
-  // poll falls back to the short UI id — never a POST-generated /api/sessions.
-  const encodedPoll = 'http://127.0.0.1:8642/api/sessions/pistisai/messages';
+  // A resolved pistisai session is polled at its generated runtime id.
+  const resolvedPoll =
+      'http://127.0.0.1:8642/api/sessions/generated-session/messages';
 
   group('session key mapping', () {
     test('UI id pistisai maps to the gateway DM key', () {
@@ -37,7 +37,9 @@ void main() {
 
     test('poll URL encodes the session key', () {
       final uri = hermesSessionMessagesUri('http://127.0.0.1:8642', sessionKey);
-      expect(uri.toString(), 'http://127.0.0.1:8642/api/sessions/'
+      expect(
+          uri.toString(),
+          'http://127.0.0.1:8642/api/sessions/'
           'agent%3Amain%3Apistisai%3Adm%3Apistisai/messages?order=oldest&limit=500');
       expect(uri.path, isNot(contains('/pistisai/messages')));
     });
@@ -126,13 +128,26 @@ void main() {
   });
 
   group('HermesStreamingService transcript poll', () {
-    test('polls the encoded gateway key and does not POST a session', () async {
+    test('polls the resolved runtime session and never POSTs a session',
+        () async {
       final requests = <http.Request>[];
       final service = HermesStreamingService(
         client: MockClient((request) async {
           requests.add(request);
           if (request.url.path == '/api/sessions') {
-            return http.Response('{"data":[]}', 200);
+            return http.Response(
+              jsonEncode(<String, Object>{
+                'data': <Object>[
+                  <String, Object>{
+                    'id': 'generated-session',
+                    'source': 'pistisai',
+                    'chat': 'pistisai',
+                    'last_active': 10,
+                  },
+                ],
+              }),
+              200,
+            );
           }
           return http.Response(
             jsonEncode(<String, Object>{
@@ -165,18 +180,47 @@ void main() {
         requests.any((request) => request.method == 'GET'),
         isTrue,
       );
-      // The session list (empty) then the transcript poll for the DM key.
+      // The session list, then the transcript poll for the resolved session.
       final pollRequest = requests.lastWhere((request) =>
           request.method == 'GET' &&
           request.url.path.startsWith('/api/sessions/'));
-      expect(pollRequest.url.toString(), '$encodedPoll?order=oldest&limit=500');
+      expect(
+          pollRequest.url.toString(), '$resolvedPoll?order=oldest&limit=500');
       expect(poll, isNotNull);
       expect(poll!.single.content, 'yo back');
       expect(service.runtimeSessionIdFor('pistisai'), isNull);
       service.dispose();
     });
 
-    test('resolves the pistisai chat session, not a newer session of another chat',
+    test('no runtime session yet skips the 404 transcript poll', () async {
+      final requests = <http.Request>[];
+      final service = HermesStreamingService(
+        client: MockClient((request) async {
+          requests.add(request);
+          if (request.url.path == '/api/sessions') {
+            return http.Response('{"data":[]}', 200);
+          }
+          return http.Response('{"error":"missing"}', 404);
+        }),
+      );
+
+      final poll = await service.fetchSessionMessages('pistisai');
+
+      expect(poll, isEmpty);
+      expect(
+        requests.where(
+          (request) => request.url.path.startsWith('/api/sessions/'),
+        ),
+        isEmpty,
+        reason: 'a short channel id is not a runtime session (#1065)',
+      );
+      expect(requests.any((request) => request.method == 'POST'), isFalse);
+      expect(service.runtimeSessionIdFor('pistisai'), isNull);
+      service.dispose();
+    });
+
+    test(
+        'resolves the pistisai chat session, not a newer session of another chat',
         () async {
       final requests = <http.Request>[];
       final service = HermesStreamingService(
@@ -252,7 +296,8 @@ void main() {
       service.dispose();
     });
 
-    test('an unbound short id polls that id directly (never creates a session)', () async {
+    test('an unbound short id polls that id directly (never creates a session)',
+        () async {
       final requests = <http.Request>[];
       final service = HermesStreamingService(
         client: MockClient((request) async {
@@ -267,7 +312,8 @@ void main() {
       final poll = await service.fetchSessionMessages('main-channel');
 
       expect(
-        requests.lastWhere((request) =>
+        requests
+            .lastWhere((request) =>
                 request.method == 'GET' &&
                 request.url.path.startsWith('/api/sessions/'))
             .url
@@ -316,11 +362,24 @@ void main() {
       service.dispose();
     });
 
-    test('non-200 (server error) surfaces as an unreadable transcript', () async {
+    test('non-200 (server error) surfaces as an unreadable transcript',
+        () async {
       final service = HermesStreamingService(
         client: MockClient((request) async {
           if (request.url.path == '/api/sessions') {
-            return http.Response('{"data":[]}', 200);
+            return http.Response(
+              jsonEncode(<String, Object>{
+                'data': <Object>[
+                  <String, Object>{
+                    'id': 'generated-session',
+                    'source': 'pistisai',
+                    'chat': 'pistisai',
+                    'last_active': 10,
+                  },
+                ],
+              }),
+              200,
+            );
           }
           return http.Response('{"error":"boom"}', 500);
         }),
@@ -398,8 +457,10 @@ void main() {
       final platformBody = jsonDecode(platform.body) as Map<String, dynamic>;
       expect(platformBody['conversation_id'], 'pistisai');
       expect(platformBody['message'], 'yo');
-      expect(requests.any((request) => request.method == 'POST' &&
-          request.url.path == '/api/sessions'), isFalse);
+      expect(
+          requests.any((request) =>
+              request.method == 'POST' && request.url.path == '/api/sessions'),
+          isFalse);
       expect(messages, isNotEmpty);
     });
   });

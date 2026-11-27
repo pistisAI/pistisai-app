@@ -501,9 +501,16 @@ class HermesStreamingService extends StreamingService {
       // addressable on /api/sessions/{id}; Hermes stores it under a generated
       // session id (e.g. `20261104_190859_119a1e2b`, source=pistisai). Resolve
       // it each poll so resets/new sessions are followed.
-      String targetId = runtimeId;
+      String? targetId;
       if (sessionId == Conversation.pistisaiChannelId) {
-        targetId = await _resolvePistisaiSessionId() ?? runtimeId;
+        // The chat ID is an app-owned channel, not a runtime session. Before
+        // the first turn there is nothing to read: skip the short-ID poll
+        // entirely instead of generating a guaranteed 404 (#1065).
+        targetId = await _resolvePistisaiSessionId() ??
+            _runtimeSessionsByConversation[sessionId];
+        if (targetId == null) return const [];
+      } else {
+        targetId = runtimeId;
       }
       http.Response response = await getMessages(targetId);
       if (response.statusCode == 404 && targetId != sessionId) {
