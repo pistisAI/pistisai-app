@@ -11,6 +11,18 @@
 import logger from '../logger.js';
 import { validateApiKey } from '../services/api-key-service.js';
 
+/** Same status and code as the JWT path uses for suspended accounts. */
+function suspendedResponse(req, res) {
+  logger.warn('[APIKeyAuth] API key of a suspended account rejected', {
+    ip: req.ip,
+    path: req.path,
+  });
+  return res.status(403).json({
+    error: 'Account is suspended',
+    code: 'ACCOUNT_SUSPENDED',
+  });
+}
+
 /**
  * API Key Authentication Middleware
  * Validates API key from Authorization header or X-API-Key header
@@ -76,6 +88,9 @@ export async function authenticateApiKey(req, res, next) {
 
     next();
   } catch (error) {
+    if (error?.code === 'ACCOUNT_SUSPENDED') {
+      return suspendedResponse(req, res);
+    }
     logger.error('[APIKeyAuth] API key authentication failed', {
       error: error.message,
       ip: req.ip,
@@ -126,6 +141,10 @@ export async function optionalApiKeyAuth(req, res, next) {
 
     next();
   } catch (error) {
+    // A valid key of a suspended account is refused outright, not ignored.
+    if (error?.code === 'ACCOUNT_SUSPENDED') {
+      return suspendedResponse(req, res);
+    }
     logger.error('[APIKeyAuth] Optional API key authentication failed', {
       error: error.message,
     });

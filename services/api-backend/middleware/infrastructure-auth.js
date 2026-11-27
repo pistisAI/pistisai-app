@@ -11,7 +11,22 @@
  * @version 1.0.0
  */
 
+import crypto from 'crypto';
 import logger from '../logger.js';
+
+/**
+ * Constant-time key comparison. Both sides are hashed first so the buffers
+ * always have the same length and the comparison leaks neither content nor
+ * length through timing.
+ */
+function keysMatch(provided, expected) {
+  if (typeof provided !== 'string' || typeof expected !== 'string') {
+    return false;
+  }
+  const a = crypto.createHash('sha256').update(provided).digest();
+  const b = crypto.createHash('sha256').update(expected).digest();
+  return crypto.timingSafeEqual(a, b);
+}
 
 /**
  * Middleware to authenticate infrastructure management requests
@@ -54,7 +69,7 @@ export function authenticateInfrastructure(req, res, next) {
   }
 
   // Validate API key value
-  if (apiKey !== expectedKey) {
+  if (!keysMatch(apiKey, expectedKey)) {
     logger.warn('[InfraAuth] Invalid infrastructure API key', {
       ip: req.ip,
       path: req.path,
@@ -99,7 +114,7 @@ export function optionalInfrastructureAuth(req, res, next) {
   // If API key provided, validate it
   const expectedKey = process.env.INFRASTRUCTURE_API_KEY;
 
-  if (apiKey === expectedKey) {
+  if (keysMatch(apiKey, expectedKey)) {
     req.infraAuthenticated = true;
     logger.debug('[InfraAuth] Optional infrastructure auth successful', {
       ip: req.ip,

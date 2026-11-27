@@ -31,6 +31,10 @@ export default {
     // #895: raw-body webhook HMAC and development-only dev bypass.
     '**/test/api-backend/agent-events-raw-hmac-895.test.js',
     '**/test/api-backend/dev-bypass-node-env-895.test.js',
+    // Session, signing-key and key-comparison hardening.
+    '**/test/api-backend/session-token-hardening-auth-service.test.js',
+    '**/test/api-backend/session-token-hardening-routes.test.js',
+    '**/test/api-backend/session-token-hardening-keys.test.js',
     // Server-side personal data: log redaction, client-log bounds, account
     // hard delete coverage, masked emails in logs.
     '**/test/api-backend/request-log-redaction.test.js',
