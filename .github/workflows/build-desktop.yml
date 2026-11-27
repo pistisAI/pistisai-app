@@ -230,7 +230,7 @@ jobs:
               ISCC=$(find /c/ProgramData/chocolatey -name "ISCC.exe" 2>/dev/null | head -1)
             fi
             if [ -f "$ISCC" ]; then
-              "$ISCC" windows/installer/Pistisai.iss
+              "$ISCC" //DMyAppVersion="${VERSION}" windows/installer/Pistisai.iss
               echo "✅ Installer built"
             else
               echo "ISCC not found" >&2
@@ -319,7 +319,8 @@ jobs:
       always() &&
       needs.build_linux.result == 'success' &&
       needs.build_windows.result == 'success' &&
-      (needs.build_macos.result == 'success' || needs.build_macos.result == 'skipped')
+      (needs.build_macos.result == 'success' || needs.build_macos.result == 'skipped' ||
+       needs.build_macos.result == 'failure' || needs.build_macos.result == 'cancelled')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -327,6 +328,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
 
       - name: Download all artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8
