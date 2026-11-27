@@ -9,6 +9,7 @@ import '../models/streaming_message.dart';
 import 'streaming_service.dart';
 import 'hermes/hermes_session_transcript.dart';
 import 'hermes/hermes_streaming_service.dart';
+import 'hermes/transcript_import_floor.dart';
 import 'streaming_content_update.dart';
 
 import 'connection_manager_service.dart';
@@ -217,6 +218,22 @@ class StreamingChatService extends ChangeNotifier {
     });
   }
 
+  /// Time of the last local data wipe. Runtime messages at or before it are
+  /// not imported again, because the wipe cannot delete the runtime's copy.
+  DateTime? _transcriptImportFloor;
+  bool _transcriptImportFloorLoaded = false;
+
+  Future<DateTime?> _loadTranscriptImportFloor() async {
+    if (!_transcriptImportFloorLoaded) {
+      final stored = await TranscriptImportFloorStore.read();
+      if (!_transcriptImportFloorLoaded) {
+        _transcriptImportFloor = stored;
+        _transcriptImportFloorLoaded = true;
+      }
+    }
+    return _transcriptImportFloor;
+  }
+
   /// Replace the on-screen thread with the harness transcript so every
   /// device shows the same conversation.
   Future<void> _syncSharedChannel() async {
@@ -235,7 +252,11 @@ class StreamingChatService extends ChangeNotifier {
 
     _syncingSharedChannel = true;
     try {
-      final harness = await service.fetchSessionMessages(_mainChannel!.id);
+      final fetched = await service.fetchSessionMessages(_mainChannel!.id);
+      final floor = await _loadTranscriptImportFloor();
+      final harness = fetched == null
+          ? null
+          : transcriptAfterImportFloor(fetched, floor);
       if (harness == null ||
           _mainChannel == null ||
           _isStreaming ||
@@ -975,10 +996,16 @@ class StreamingChatService extends ChangeNotifier {
 
   /// Drop in-memory chat after a verified local-data wipe.
   ///
-  /// Does not write to disk — conversation files were already cleared. A fresh
+  /// Does not write conversation files — they were already cleared. A fresh
   /// welcome channel is held in memory only so the next message cannot rewrite
-  /// wiped history from a stale [_mainChannel].
-  void resetAfterLocalDataWipe() {
+  /// wiped history from a stale [_mainChannel]. The wipe time is recorded so
+  /// the shared-channel sync does not import the runtime's older transcript
+  /// back into this device.
+  Future<void> resetAfterLocalDataWipe() async {
+    final wipedAt = DateTime.now();
+    _transcriptImportFloor = wipedAt;
+    _transcriptImportFloorLoaded = true;
+
     _cancelCurrentStream();
     _streamingContentSubject.add('');
     _streamingReasoningSubject.add('');
@@ -1005,6 +1032,7 @@ class StreamingChatService extends ChangeNotifier {
       Message.system(content: BrandCopy.chatWelcome),
     );
     notifyListeners();
+    await TranscriptImportFloorStore.write(wipedAt);
   }
 
   Future<void> _recordToolAudit({

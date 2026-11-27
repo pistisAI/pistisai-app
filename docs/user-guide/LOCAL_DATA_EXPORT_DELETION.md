@@ -10,6 +10,9 @@ Local wipe completes in seconds on a typical install (well under the “few hour
 | --- | --- | --- | --- |
 | Local brain (SQLite) | App support dir `local_brain.sqlite` | Yes (all tables as JSON) | Yes (all rows) |
 | Encrypted conversation file | App docs/support `Pistisai/conversations.json.enc` (desktop) | Yes (embedded under `conversationsFile`) | Yes |
+| Avatar Markdown files | `personality.md`, `memory.md`, `context.md` in the agent skill folder (e.g. `~/.openclaw/skills/pistisai`); plain text | No | Yes (only these three files) |
+| Temporary captures | App-owned `<temp>/pistisai-captures` folder, owner-only (0700) on macOS/Linux, falling back to the app support folder if the temp one is a symlink or owned by someone else (screenshots, camera frames, TTS audio); plain files | No | Yes (whole folder) |
+| Agent runtime transcript | Kept by the runtime (e.g. Hermes) where it runs | No | No; the app stops importing messages from before the wipe, clear it in the runtime |
 | App settings JSON export | Settings → System → Export | Separate settings-only export | Not cleared by this wipe |
 | Auth / secure storage | Platform keychain / secure storage | Not exported (secrets) | Not cleared by this wipe |
 | Cloudflare Access identity | Hosted identity provider | N/A (no app-held secret) | Managed by the identity provider, not this app |
@@ -61,9 +64,11 @@ The app:
 
 1. Deletes every row in `local_brain.sqlite`
 2. Clears the encrypted conversation file store (desktop)
-3. Reseeds infrastructure defaults
-4. Verifies user-content tables are empty
-5. Shows success with measured duration in milliseconds
+3. Deletes the avatar Markdown files and the temporary captures folder (desktop)
+4. Reseeds infrastructure defaults
+5. Verifies user-content tables are empty and no conversation, Markdown or capture files remain
+6. Records the wipe time so the chat no longer imports runtime messages from before it
+7. Shows success with measured duration in milliseconds
 
 ## How to verify deletion
 
@@ -80,7 +85,7 @@ A successful delete snackbar reports that data was deleted and verified empty, w
 
 ### Programmatic check
 
-`LocalAgentDataPortabilityService.verifyDeletion()` returns `isEmpty: true` when every user-content table has zero rows. System seed tables (`model_capacity`, `agent_identities`) may still have rows after a successful wipe.
+`LocalAgentDataPortabilityService.verifyDeletion()` returns `isEmpty: true` when every user-content table has zero rows and no conversation files, avatar Markdown files or temporary captures remain (`remainingPlainFiles` lists any that do). System seed tables (`model_capacity`, `agent_identities`) may still have rows after a successful wipe.
 
 ## Timing
 

@@ -55,10 +55,19 @@ jobs:
           echo "✅ Analysis passed"
       - name: Resolve platforms
         id: platforms
+        # Passed through env, never interpolated into the script, so a crafted
+        # dispatch input cannot inject shell.
+        env:
+          INPUT_PLATFORMS: ${{ inputs.platforms || env.PLATFORMS }}
         run: |
-          PLATFORMS="${{ inputs.platforms || env.PLATFORMS }}"
+          set -euo pipefail
+          PLATFORMS="${INPUT_PLATFORMS:-}"
           [ -z "$PLATFORMS" ] && PLATFORMS="linux,windows,macos"
-          echo "platforms=$PLATFORMS" >> $GITHUB_OUTPUT
+          if ! [[ "$PLATFORMS" =~ ^[a-z,]+$ ]]; then
+            echo "::error::platforms must match ^[a-z,]+$ (e.g. linux,windows,macos)"
+            exit 1
+          fi
+          echo "platforms=$PLATFORMS" >> "$GITHUB_OUTPUT"
       - name: Read version from version.json
         id: read
         run: |

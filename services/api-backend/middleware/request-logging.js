@@ -11,8 +11,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../logger.js';
 
+// Matches token, access_token, refresh_token, jwt, cf_jwt, apiKey, api_key,
+// and other credential-looking query keys.
 const SENSITIVE_QUERY_KEY =
-  /token|secret|password|passwd|api[_-]?key|authorization|signature/i;
+  /token|secret|password|passwd|api[_-]?key|authorization|signature|jwt/i;
 const STATIC_SESSION_SUBPATHS = new Set([
   'current',
   'tokens',
@@ -30,15 +32,54 @@ export function redactPathForLog(path) {
   if (typeof path !== 'string') {
     return path;
   }
-  const validate = path.match(/^(\/auth\/sessions\/validate\/)[^/]+/i);
+  // The session routes are mounted under several prefixes (`/auth/sessions`
+  // and `/api/auth/sessions`, see registerRoutes in server.js), so match the
+  // `/auth/sessions/` segment wherever it sits in the path.
+  const validate = path.match(/^(.*?\/auth\/sessions\/validate\/)[^/?#]+/i);
   if (validate) {
-    return `${validate[1]}[REDACTED]`;
+    return `${validate[1]}[REDACTED]${redactUrlQuery(path.slice(validate[0].length))}`;
   }
-  const legacy = path.match(/^(\/auth\/sessions\/)([^/]+)$/i);
+  const legacy = path.match(
+    /^(.*?\/auth\/sessions\/)([^/?#]+)(?=\/?(?:$|[?#]))/i,
+  );
   if (legacy && !STATIC_SESSION_SUBPATHS.has(legacy[2].toLowerCase())) {
-    return `${legacy[1]}[REDACTED]`;
+    return `${legacy[1]}[REDACTED]${redactUrlQuery(path.slice(legacy[0].length))}`;
   }
-  return path;
+  return redactUrlQuery(path);
+}
+
+/**
+ * Redact credential-looking query parameter values inside a URL or path
+ * string (for example `?token=...`, `?cf_jwt=...`, `?apiKey=...`).
+ */
+export function redactUrlQuery(url) {
+  if (typeof url !== 'string') {
+    return url;
+  }
+  const queryStart = url.indexOf('?');
+  if (queryStart === -1) {
+    return url;
+  }
+  const hashStart = url.indexOf('#', queryStart);
+  const end = hashStart === -1 ? url.length : hashStart;
+  const query = url
+    .slice(queryStart + 1, end)
+    .split('&')
+    .map((pair) => {
+      const eq = pair.indexOf('=');
+      const rawKey = eq === -1 ? pair : pair.slice(0, eq);
+      let key = rawKey;
+      try {
+        key = decodeURIComponent(rawKey.replace(/\+/g, ' '));
+      } catch {
+        // keep the raw key
+      }
+      return eq !== -1 && SENSITIVE_QUERY_KEY.test(key)
+        ? `${rawKey}=[REDACTED]`
+        : pair;
+    })
+    .join('&');
+  return `${url.slice(0, queryStart)}?${query}${url.slice(end)}`;
 }
 
 /** Redact query-string values whose key names a credential. */

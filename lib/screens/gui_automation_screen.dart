@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../config/theme.dart';
+import '../services/app_temp_files.dart';
 import '../services/gui_automation_service.dart';
 
 class GuiAutomationScreen extends StatefulWidget {
@@ -158,6 +159,8 @@ class _GuiAutomationScreenState extends State<GuiAutomationScreen> {
     final screenshotPath = await _service.takeScreenshot();
     if (screenshotPath != null) {
       final result = await _service.analyzeScreenshot(screenshotPath);
+      // The screenshot was only needed for this analysis.
+      await AppTempFiles.deleteQuietly(screenshotPath);
       setState(() => _result = result);
     }
     setState(() => _isProcessing = false);

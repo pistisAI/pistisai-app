@@ -12,7 +12,7 @@
 #define MyAppPublisher "Pistisai"
 #define MyAppURL "https://pistisai.app"
 #define MyAppExeName "Pistisai.exe"
-#define MyAppProtocol "app.pistisai"
+#define MyAppProtocol "pistisai"
 #define MyAppAssocName MyAppName + " Protocol"
 
 [Setup]

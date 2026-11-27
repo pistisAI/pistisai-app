@@ -35,6 +35,12 @@ export default {
     '**/test/api-backend/session-token-hardening-auth-service.test.js',
     '**/test/api-backend/session-token-hardening-routes.test.js',
     '**/test/api-backend/session-token-hardening-keys.test.js',
+    // Server-side personal data: log redaction, client-log bounds, account
+    // hard delete coverage, masked emails in logs.
+    '**/test/api-backend/request-log-redaction.test.js',
+    '**/test/api-backend/client-logs-bounds.test.js',
+    '**/test/api-backend/user-data-purge.test.js',
+    '**/test/api-backend/mask-email-logs.test.js',
   ],
   testPathIgnorePatterns: [
     ...base.testPathIgnorePatterns,

@@ -517,11 +517,27 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
 
   Future<void> _saveAndApply() async {
     final l10n = AppLocalizations.of(context);
-    await _settings.setHermesEnabled(_hermesEnabled);
-    await _settings.setHermesUrl(_url);
-    await _settings.setHermesApiKey(_apiKey);
+    final messenger = ScaffoldMessenger.of(context);
+    final danger = AppTheme.colorsOf(context).danger;
 
-    // Update connection manager
+    void showError(String message) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: danger),
+      );
+    }
+
+    try {
+      await _settings.setHermesEnabled(_hermesEnabled);
+      await _settings.setHermesUrl(_url);
+      await _settings.setHermesApiKey(_apiKey);
+    } catch (e) {
+      showError(l10n.instancesHermesSaveFailed('$e'));
+      return;
+    }
+
+    // Switch the live connection. If that fails, say so: the settings are
+    // saved, but chat is not using Hermes yet.
     try {
       final connectionManager = di.serviceLocator<ConnectionManagerService>();
       if (_hermesEnabled) {
@@ -533,12 +549,13 @@ class _HermesSettingsCardState extends State<_HermesSettingsCard> {
       } else {
         connectionManager.setPreferredConnectionType(ConnectionType.local);
       }
-    } catch (_) {
-      // Connection manager may not be available in all contexts
+    } catch (e) {
+      showError(l10n.instancesHermesApplyFailed('$e'));
+      return;
     }
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(_hermesEnabled
               ? l10n.instancesHermesEnabledSnack

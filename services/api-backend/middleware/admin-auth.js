@@ -6,6 +6,7 @@
  */
 
 import logger from '../logger.js';
+import { maskEmail } from '../utils/mask-email.js';
 import { getPool, closePool } from '../database/db-pool.js';
 import { AuthService } from '../auth/auth-service.js';
 
@@ -158,7 +159,7 @@ export function adminAuth(requiredPermissions = []) {
       if (!user.roles || user.roles.length === 0 || user.roles[0] === null) {
         logger.warn('⚠️ [AdminAuth] Admin access denied - no admin role', {
           userId: user.id,
-          email: user.email,
+          email: maskEmail(user.email),
           ipAddress: req.ip,
           userAgent: req.get('User-Agent'),
         });
@@ -175,7 +176,7 @@ export function adminAuth(requiredPermissions = []) {
         if (!hasPermission) {
           logger.warn('⚠️ [AdminAuth] Insufficient permissions', {
             userId: user.id,
-            email: user.email,
+            email: maskEmail(user.email),
             roles: user.roles,
             required: requiredPermissions,
             ipAddress: req.ip,
@@ -194,7 +195,7 @@ export function adminAuth(requiredPermissions = []) {
 
       logger.info('✅ [AdminAuth] Admin access granted', {
         userId: user.id,
-        email: user.email,
+        email: maskEmail(user.email),
         roles: user.roles,
         permissions: requiredPermissions,
       });

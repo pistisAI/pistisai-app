@@ -17,6 +17,7 @@ import express from 'express';
 import { adminAuth, requireSuperAdmin } from '../../middleware/admin-auth.js';
 import { logAdminAction } from '../../utils/audit-logger.js';
 import logger from '../../logger.js';
+import { maskEmail } from '../../utils/mask-email.js';
 import { getPool } from '../../database/db-pool.js';
 import {
   adminReadOnlyLimiter,
@@ -69,7 +70,7 @@ router.get(
       const pool = getPool();
 
       logger.info('📋 [AdminManagement] Listing all administrators', {
-        requestedBy: req.adminUser.email,
+        requestedBy: maskEmail(req.adminUser.email),
       });
 
       // Query all administrators with their roles and activity summary
@@ -115,7 +116,7 @@ router.get(
 
       logger.info('✅ [AdminManagement] Administrators listed successfully', {
         count: admins.length,
-        requestedBy: req.adminUser.email,
+        requestedBy: maskEmail(req.adminUser.email),
       });
 
       res.json({
@@ -126,7 +127,7 @@ router.get(
       logger.error('🔴 [AdminManagement] Failed to list administrators', {
         error: error.message,
         stack: error.stack,
-        requestedBy: req.adminUser?.email,
+        requestedBy: maskEmail(req.adminUser?.email),
       });
 
       res.status(500).json({
@@ -194,9 +195,9 @@ router.post(
       }
 
       logger.info('👤 [AdminManagement] Assigning admin role', {
-        email,
+        email: maskEmail(email),
         role,
-        grantedBy: req.adminUser.email,
+        grantedBy: maskEmail(req.adminUser.email),
       });
 
       // Search for user by email
@@ -207,8 +208,8 @@ router.post(
 
       if (userResult.rows.length === 0) {
         logger.warn('⚠️ [AdminManagement] User not found', {
-          email,
-          requestedBy: req.adminUser.email,
+          email: maskEmail(email),
+          requestedBy: maskEmail(req.adminUser.email),
         });
         return res.status(404).json({
           error: 'User not found',
@@ -228,7 +229,7 @@ router.post(
       if (existingRoleResult.rows.length > 0) {
         logger.warn('⚠️ [AdminManagement] User already has this role', {
           userId: user.id,
-          email: user.email,
+          email: maskEmail(user.email),
           role,
         });
         return res.status(409).json({
@@ -267,9 +268,9 @@ router.post(
 
       logger.info('✅ [AdminManagement] Admin role assigned successfully', {
         userId: user.id,
-        email: user.email,
+        email: maskEmail(user.email),
         role,
-        grantedBy: req.adminUser.email,
+        grantedBy: maskEmail(req.adminUser.email),
       });
 
       res.status(201).json({
@@ -289,9 +290,9 @@ router.post(
       logger.error('🔴 [AdminManagement] Failed to assign admin role', {
         error: error.message,
         stack: error.stack,
-        email: req.body?.email,
+        email: maskEmail(req.body?.email),
         role: req.body?.role,
-        requestedBy: req.adminUser?.email,
+        requestedBy: maskEmail(req.adminUser?.email),
       });
 
       res.status(500).json({
@@ -349,7 +350,7 @@ router.delete(
       logger.info('🚫 [AdminManagement] Revoking admin role', {
         userId,
         role,
-        revokedBy: req.adminUser.email,
+        revokedBy: maskEmail(req.adminUser.email),
       });
 
       // Get user information
@@ -361,7 +362,7 @@ router.delete(
       if (userResult.rows.length === 0) {
         logger.warn('⚠️ [AdminManagement] User not found', {
           userId,
-          requestedBy: req.adminUser.email,
+          requestedBy: maskEmail(req.adminUser.email),
         });
         return res.status(404).json({
           error: 'User not found',
@@ -376,7 +377,7 @@ router.delete(
       if (userId === req.adminUser.id && role === 'super_admin') {
         logger.warn('⚠️ [AdminManagement] Cannot revoke own Super Admin role', {
           userId,
-          email: user.email,
+          email: maskEmail(user.email),
         });
         return res.status(403).json({
           error: 'Cannot revoke own Super Admin role',
@@ -396,7 +397,7 @@ router.delete(
           '⚠️ [AdminManagement] User does not have this active role',
           {
             userId,
-            email: user.email,
+            email: maskEmail(user.email),
             role,
           },
         );
@@ -438,9 +439,9 @@ router.delete(
 
       logger.info('✅ [AdminManagement] Admin role revoked successfully', {
         userId,
-        email: user.email,
+        email: maskEmail(user.email),
         role,
-        revokedBy: req.adminUser.email,
+        revokedBy: maskEmail(req.adminUser.email),
       });
 
       res.json({
@@ -462,7 +463,7 @@ router.delete(
         stack: error.stack,
         userId: req.params?.userId,
         role: req.params?.role,
-        requestedBy: req.adminUser?.email,
+        requestedBy: maskEmail(req.adminUser?.email),
       });
 
       res.status(500).json({

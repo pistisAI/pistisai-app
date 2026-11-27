@@ -1095,7 +1095,7 @@ class _ConfigScreenState extends State<ConfigScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (info.changelog != null && info.changelog!.isNotEmpty)
-                  MarkdownBody(data: info.changelog!)
+                  ChangelogMarkdown(data: info.changelog!)
                 else
                   Text(l10n.configNoChangelog),
               ],
@@ -1109,6 +1109,58 @@ class _ConfigScreenState extends State<ConfigScreen>
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Release notes rendered as Markdown. Images are not fetched until the user
+/// taps them, so opening the notes contacts no image host.
+class ChangelogMarkdown extends StatelessWidget {
+  const ChangelogMarkdown({super.key, required this.data});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return MarkdownBody(
+      data: data,
+      imageBuilder: (uri, title, alt) =>
+          _ClickToLoadImage(url: uri.toString(), alt: alt),
+    );
+  }
+}
+
+class _ClickToLoadImage extends StatefulWidget {
+  const _ClickToLoadImage({required this.url, required this.alt});
+
+  final String url;
+  final String? alt;
+
+  @override
+  State<_ClickToLoadImage> createState() => _ClickToLoadImageState();
+}
+
+class _ClickToLoadImageState extends State<_ClickToLoadImage> {
+  bool _loadRequested = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final uri = Uri.tryParse(widget.url);
+    final isHttp =
+        uri != null && (uri.scheme == 'https' || uri.scheme == 'http');
+    if (_loadRequested && isHttp) {
+      return Image.network(
+        widget.url,
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image_outlined),
+      );
+    }
+    final label = AppLocalizations.of(context).configChangelogLoadImage;
+    final alt = widget.alt;
+    return TextButton.icon(
+      onPressed: isHttp ? () => setState(() => _loadRequested = true) : null,
+      icon: const Icon(Icons.image_outlined),
+      label: Text(alt != null && alt.isNotEmpty ? '$label: $alt' : label),
     );
   }
 }
