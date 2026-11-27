@@ -52,14 +52,20 @@ async function tableExists(client, table) {
 /**
  * Collect every identifier this user can appear under in TEXT user_id
  * columns: users.id, users.jwt_id, users.supabase_id and any extra auth
- * subjects mapped in user_auth_subjects.
+ * subjects mapped in user_auth_subjects. Also returns the account email so
+ * security_events rows that stored the address can be cleared. The email is
+ * not added to `identifiers` (those values are matched against user_id).
+ *
+ * @returns {Promise<{identifiers: string[], emails: string[]}>}
  */
 export async function collectUserIdentifiers(client, userId) {
   const ids = new Set([String(userId)]);
+  const emails = [];
   const { rows } = await client.query(
     `SELECT u.id::text AS id,
             to_jsonb(u)->>'jwt_id' AS jwt_id,
-            to_jsonb(u)->>'supabase_id' AS supabase_id
+            to_jsonb(u)->>'supabase_id' AS supabase_id,
+            u.email AS email
        FROM users u
       WHERE u.id::text = $1`,
     [String(userId)],
@@ -69,6 +75,9 @@ export async function collectUserIdentifiers(client, userId) {
       if (value) {
         ids.add(String(value));
       }
+    }
+    if (row.email) {
+      emails.push(String(row.email));
     }
   }
   if (await tableExists(client, 'user_auth_subjects')) {
@@ -82,7 +91,7 @@ export async function collectUserIdentifiers(client, userId) {
       }
     }
   }
-  return [...ids];
+  return { identifiers: [...ids], emails };
 }
 
 /**
@@ -93,7 +102,7 @@ export async function collectUserIdentifiers(client, userId) {
  * @returns {Promise<{identifiers: string[], deleted: Object<string, number>, pseudonymized: Object<string, number>, skipped: string[]}>}
  */
 export async function purgeUserData(client, userId) {
-  const identifiers = await collectUserIdentifiers(client, userId);
+  const { identifiers, emails } = await collectUserIdentifiers(client, userId);
   const summary = { identifiers, deleted: {}, pseudonymized: {}, skipped: [] };
 
   // Messages first: they hang off conversations.
@@ -138,6 +147,37 @@ export async function purgeUserData(client, userId) {
       [identifiers],
     );
     summary.pseudonymized[table] = res?.rowCount ?? 0;
+  }
+
+  // security_events has no user_id column. Rows whose details name this
+  // user's id or email are kept for the event type and time, with the
+  // personal fields cleared. IP and user agent live in details and in
+  // ip_address; both go. Rows that cannot be tied to a user (no id, no
+  // email field) are left in place; a scheduled purge is not added here.
+  if (await tableExists(client, 'security_events')) {
+    const res = await client.query(
+      `UPDATE security_events
+          SET ip_address = NULL,
+              details = '{}'::jsonb
+        WHERE EXISTS (
+               SELECT 1
+                 FROM unnest($1::text[]) AS ident(value)
+                WHERE details->>'userId' = ident.value
+                   OR details->>'user_id' = ident.value
+                   OR details->>'accessSub' = ident.value
+                   OR details->>'subject' = ident.value
+                   OR details->>'sub' = ident.value
+             )
+           OR EXISTS (
+               SELECT 1
+                 FROM unnest($2::text[]) AS addr(value)
+                WHERE lower(details->>'email') = lower(addr.value)
+             )`,
+      [identifiers, emails],
+    );
+    summary.pseudonymized.security_events = res?.rowCount ?? 0;
+  } else {
+    summary.skipped.push('security_events');
   }
 
   // refunds.admin_user_id references users(id) without ON DELETE, which would
