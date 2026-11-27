@@ -46,7 +46,7 @@ class PersonalityContextTest(unittest.TestCase):
             "evolution_stage": "knowledge_seeker",
         })
         ctx = self.mod._on_pre_llm_call(platform="api_server")["context"]
-        self.assertIn("Your name: Nova", ctx)
+        self.assertIn('Your name: "Nova"', ctx)
         self.assertIn("casual and relaxed", ctx)
         self.assertIn("playful with occasional wit", ctx)
         self.assertIn("direct and pragmatic", ctx)
