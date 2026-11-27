@@ -13,6 +13,7 @@
     "test:security": "npm run test:ci:security",
     "test:security:verbose": "node --experimental-vm-modules node_modules/jest/bin/jest.js ../../test/api-backend/security/ --verbose --forceExit",
     "test:ci:security": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.ci-security.config.js --forceExit",
+    "test:ci:extended": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.extended.config.js --forceExit",
     "db:validate": "node database/migrate-pg.js validate",
     "db:stats": "node database/migrate-pg.js stats",
     "db:test": "node scripts/test-database.js",
