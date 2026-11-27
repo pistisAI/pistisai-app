@@ -1,11 +1,14 @@
 name: "🔢 Auto Version Bump"
 
 # RELEASE-TIME version bump: runs on every push to main (and on release or
-# workflow_dispatch). It opens a version-bump PR, waits for CI, then merges it.
+# workflow_dispatch). It opens a version-bump PR, waits for CI to finish, then merges it.
 # It never pushes to main directly; the ruleset still requires PR + checks.
-# The watcher merges when GitHub reports CLEAN. It does not rely on repo
-# auto-merge: GitHub rejects --auto while mergeStateStatus is UNKNOWN or CLEAN,
-# which stranded PR #918 when the watcher step never started.
+# The watcher merges only after every check on the PR head has completed and
+# none failed, and GitHub reports CLEAN. CLEAN alone is not enough: main has no
+# required status checks, so a PR is CLEAN before CI reports (PR #1002 merged
+# 7 s after it opened, while its checks ran for 9 more minutes). It does not
+# rely on repo auto-merge: GitHub rejects --auto while mergeStateStatus is
+# UNKNOWN or CLEAN, which stranded PR #918 when the watcher step never started.
 #
 # Every merged PR bumps. The bump SIZE comes from the merged PR's Conventional
 # Commit title (see scripts/version_bump_kind.py):
@@ -163,22 +166,10 @@ jobs:
           PR_URL=$(gh pr create --base main --head "$BRANCH" \
             --title "chore(release): bump version to ${VERSION}+${BUILD}" \
             --body "Automated version bump for ${VERSION}+${BUILD}. Auto-merges once required checks pass.")
-          # Register the PR with the watcher before any merge attempt. A failed
-          # merge must never leave the PR orphaned (that is what stranded #918).
+          # Register the PR with the watcher; the watcher alone merges. No
+          # merge here: right after creation no check has finished, and
+          # merging on CLEAN alone merged with pending CI (#1002).
           echo "BUMP_PR_URL=$PR_URL" >> "$GITHUB_ENV"
-          # mergeStateStatus is UNKNOWN for a few seconds after creation.
-          # GitHub rejects --auto while UNKNOWN *and* while already CLEAN, so
-          # poll until known and merge directly when clean. The watcher merges
-          # later when checks finish; no dependence on repo auto-merge settings.
-          STATE=UNKNOWN
-          for i in $(seq 1 30); do
-            STATE=$(gh pr view "$PR_URL" --json mergeStateStatus -q .mergeStateStatus)
-            if [ "$STATE" != "UNKNOWN" ]; then break; fi
-            sleep 2
-          done
-          if [ "$STATE" = "CLEAN" ]; then
-            gh pr merge "$PR_URL" --squash || true
-          fi
 
       - name: Watch bump PR; close and report if it fails
         if: steps.bump_type.outputs.type != 'skip' && env.BUMP_PR_URL != ''
@@ -186,13 +177,51 @@ jobs:
           GH_TOKEN: ${{ steps.app_token.outputs.token }}
         run: |
           set -uo pipefail
+          # Checks gate for the PR head commit. Prints one word:
+          #   passed  - something reported, all completed, none failed
+          #   pending - something is queued or running
+          #   failed  - a check run, workflow run or commit status failed
+          #   none    - nothing has reported yet
+          #   error   - the API could not be read (never merges)
+          # Workflow runs are read as well as check runs: a job that waits on
+          # another has no check run yet, but its workflow run is in progress.
+          checks_gate() {
+            local sha="$1" cr wr st all
+            cr=$(gh api --paginate "repos/$GITHUB_REPOSITORY/commits/$sha/check-runs?per_page=100" \
+              --jq '.check_runs[] | "\(.status) \(.conclusion // "none")"') || { echo error; return; }
+            wr=$(gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$sha&per_page=100" \
+              --jq '.workflow_runs[] | "\(.status) \(.conclusion // "none")"') || { echo error; return; }
+            st=$(gh api "repos/$GITHUB_REPOSITORY/commits/$sha/status" \
+              --jq 'if .total_count == 0 then "none" else .state end') || { echo error; return; }
+            all=$(printf '%s\n%s\n' "$cr" "$wr" | sed '/^$/d')
+            if echo "$all" | grep -qE ' (failure|cancelled|timed_out|action_required|startup_failure|stale)$' \
+              || [ "$st" = "failure" ] || [ "$st" = "error" ]; then
+              echo failed; return
+            fi
+            if [ -z "$all" ] && [ "$st" = "none" ]; then echo none; return; fi
+            if echo "$all" | grep -qvE '^completed ' || [ "$st" = "pending" ]; then
+              echo pending; return
+            fi
+            echo passed
+          }
+          # Bump PRs change pubspec.yaml, so CI (test.yml, dart-analyze.yml,
+          # pr-title-check.yml) always runs on them. If nothing has reported
+          # after this grace period, CI did not start: leave the PR open for a
+          # person rather than merge unchecked.
+          NO_CHECKS_GRACE_POLLS=10   # 10 x 30 s = 5 min
+          PASSED_STREAK=0
+          GATE=none
           # Wait up to ~25 min for the bump PR to merge. Bumps are queued by the
           # concurrency group, so each one has its own check window.
           for i in $(seq 1 50); do
             STATE=$(gh pr view "$BUMP_PR_URL" --json state -q .state)
             [ "$STATE" = "MERGED" ] && { echo "Bump merged: $BUMP_PR_URL"; exit 0; }
             [ "$STATE" = "CLOSED" ] && { echo "::error::Bump PR closed without merge: $BUMP_PR_URL"; exit 1; }
+            HEAD_SHA=$(gh pr view "$BUMP_PR_URL" --json headRefOid -q .headRefOid)
+            GATE=$(checks_gate "$HEAD_SHA")
+            echo "Poll $i: head=$HEAD_SHA checks=$GATE"
             FAILED=$(gh pr view "$BUMP_PR_URL" --json statusCheckRollup -q '[.statusCheckRollup[]?|select(.conclusion=="FAILURE")]|length')
+            [ "$GATE" = "failed" ] && FAILED=$(( ${FAILED:-0} + 1 ))
             MERGE=$(gh pr view "$BUMP_PR_URL" --json mergeStateStatus -q .mergeStateStatus)
             # A bump goes stale when main moves: conflicts (DIRTY) never merge, so close them too.
             if [ "${FAILED:-0}" -gt 0 ] || [ "$MERGE" = "DIRTY" ]; then
@@ -201,15 +230,25 @@ jobs:
               gh pr close "$BUMP_PR_URL" --delete-branch --comment "Auto-closed: $REASON. The next merge will recompute the version from main."
               exit 1
             fi
-            # This is the release gate: merge as soon as GitHub reports the PR
+            if [ "$GATE" = "none" ] && [ "$i" -ge "$NO_CHECKS_GRACE_POLLS" ]; then
+              echo "::error::No checks reported on $BUMP_PR_URL after 5 min; leaving it open, not merging"
+              exit 1
+            fi
+            # Require two passing polls in a row, so a workflow that starts a
+            # few seconds late is not missed.
+            if [ "$GATE" = "passed" ]; then PASSED_STREAK=$((PASSED_STREAK + 1)); else PASSED_STREAK=0; fi
+            # This is the release gate: merge only when every check on the head
+            # commit has finished without failure and GitHub reports the PR
             # clean, without depending on the repo's auto-merge setting.
-            if [ "$MERGE" = "CLEAN" ]; then
-              echo "Bump PR is clean; merging $BUMP_PR_URL"
-              gh pr merge "$BUMP_PR_URL" --squash || true
+            # --match-head-commit refuses the merge if the head moved since.
+            if [ "$PASSED_STREAK" -ge 2 ] && [ "$MERGE" = "CLEAN" ]; then
+              echo "Checks passed and PR is clean; merging $BUMP_PR_URL at $HEAD_SHA"
+              gh pr merge "$BUMP_PR_URL" --squash --match-head-commit "$HEAD_SHA" || true
               STATE_NOW=$(gh pr view "$BUMP_PR_URL" --json state -q .state)
               [ "$STATE_NOW" = "MERGED" ] && { echo "Bump merged: $BUMP_PR_URL"; exit 0; }
             fi
             sleep 30
           done
-          echo "::warning::Bump PR still open after 25 min: $BUMP_PR_URL"
+          # Timeout: the PR stays open and is not merged.
+          echo "::warning::Bump PR still open after 25 min (checks=$GATE): $BUMP_PR_URL"
           exit 1

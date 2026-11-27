@@ -158,3 +158,38 @@ jobs:
 
       - name: Backend images built
         run: echo "✅ Backend images built"
+  # AGENTS.md: every deploy runs a full-zone Cloudflare cache purge, and the
+  # deploy fails if the purge fails. Same secrets and fail-closed logic as
+  # purge_cache in deploy-web.yml. Runs only when images were pushed (ref main);
+  # builds on other refs load images locally and push nothing.
+  # Known gap (as in deploy-web.yml): the host still pulls the images by hand,
+  # so this purge can run before the host serves them; re-run if it deploys late.
+  purge_cache:
+    needs: [build_images]
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
+      CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+    steps:
+      # Every deploy purges the whole zone, and the deploy fails if it cannot.
+      - name: Purge Cloudflare cache (full zone)
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_TOKEN:-}" ] || [ -z "${CF_ZONE_ID:-}" ]; then
+            echo "❌ CLOUDFLARE_CACHE_PURGE_TOKEN and CF_ZONE_ID must both be set"
+            exit 1
+          fi
+          RESP=$(curl -sS --max-time 30 -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          if [ "$(echo "$RESP" | jq -r '.success // false')" != "true" ]; then
+            echo "❌ Cloudflare purge failed: $(echo "$RESP" | jq -c '.errors // "no error detail"')"
+            exit 1
+          fi
+          echo "✅ Cloudflare cache purged (full zone)"
