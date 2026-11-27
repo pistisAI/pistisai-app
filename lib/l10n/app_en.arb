@@ -1468,6 +1468,7 @@
     }
   },
   "configNoChangelog": "No changelog available",
+  "configChangelogLoadImage": "Load image",
   "filesTitle": "File Operations",
   "filesLoadFailed": "Failed to load directory: {error}",
   "@filesLoadFailed": {

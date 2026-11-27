@@ -2389,6 +2389,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get configNoChangelog => 'No changelog available';
 
   @override
+  String get configChangelogLoadImage => 'Load image';
+
+  @override
   String get filesTitle => 'File Operations';
 
   @override

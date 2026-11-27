@@ -711,6 +711,7 @@
   "configUpdatePatch": "Version corrective — corrections de bogues et de sécurité",
   "configWhatsNew": "Nouveautés de la version {version}",
   "configNoChangelog": "Aucune liste des nouveautés disponible",
+  "configChangelogLoadImage": "Charger l'image",
   "filesTitle": "Opérations sur les fichiers",
   "filesLoadFailed": "Impossible de charger le dossier : {error}",
   "filesNewDirectory": "Nouveau dossier",
