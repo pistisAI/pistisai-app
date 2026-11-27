@@ -300,7 +300,7 @@ groups:
           summary: "High admin authentication failure rate"
           description: "Authentication failure rate is {{ $value | humanizePercentage }}% (threshold: 20%)"
           impact: "Admins may be unable to access Admin Center"
-          action: "Check Auth0 service status. Review authentication logs. Verify JWT configuration."
+          action: "Check Cloudflare Access status. Review authentication logs. Verify JWT configuration."
           runbook_url: "https://docs.example.com/operations/admin-center-troubleshooting#auth-failures"
       
       # Possible brute force attack
