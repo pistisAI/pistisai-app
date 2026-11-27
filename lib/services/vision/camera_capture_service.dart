@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:pistisai/services/app_temp_files.dart';
 
 /// Camera Capture Service
 ///
@@ -35,12 +35,15 @@ class CameraCaptureService {
   /// Initialize the camera capture service
   ///
   /// Gets available cameras and initializes the first camera with
-  /// high resolution preset. Returns silently if already initialized.
-  /// On desktop platforms, initializes the native platform channel first.
-  Future<void> initialize() async {
+  /// high resolution preset. On desktop platforms, initializes the native
+  /// platform channel first.
+  ///
+  /// Returns true only when a camera was opened (or already was); otherwise
+  /// returns false and leaves the reason in [lastError].
+  Future<bool> initialize() async {
     if (_isInitialized) {
       debugPrint('[CameraCapture] Already initialized, skipping');
-      return;
+      return true;
     }
 
     debugPrint('[CameraCapture] Initializing...');
@@ -49,7 +52,7 @@ class CameraCaptureService {
     if (kIsWeb) {
       _lastError = 'Camera capture not supported on web platform';
       debugPrint('[CameraCapture] $_lastError');
-      return;
+      return false;
     }
 
     try {
@@ -66,7 +69,7 @@ class CameraCaptureService {
       if (_cameras.isEmpty) {
         _lastError = 'No cameras available on this device';
         debugPrint('[CameraCapture] $_lastError');
-        return;
+        return false;
       }
 
       debugPrint('[CameraCapture] Found ${_cameras.length} camera(s)');
@@ -82,10 +85,12 @@ class CameraCaptureService {
       _lastError = null;
 
       debugPrint('[CameraCapture] Initialized successfully');
+      return true;
     } catch (e) {
       _lastError = 'Failed to initialize camera: $e';
       debugPrint('[CameraCapture] $_lastError');
       _isInitialized = false;
+      return false;
     }
   }
 
@@ -114,14 +119,14 @@ class CameraCaptureService {
     try {
       debugPrint('[CameraCapture] Capturing image...');
 
-      final directory = await getTemporaryDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final path = '${directory.path}/camera_$timestamp.png';
+      // App-owned temp folder, removed by the local data wipe.
+      final path = await AppTempFiles.newPath('camera', 'png');
 
       final XFile image = await _controller!.takePicture();
 
-      // Copy the image to our desired path
+      // Copy the image to our desired path, then drop the plugin's copy.
       await File(image.path).copy(path);
+      await AppTempFiles.deleteQuietly(image.path);
 
       debugPrint('[CameraCapture] Image saved to $path');
       return path;

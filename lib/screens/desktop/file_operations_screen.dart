@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as p;
 import 'package:pistisai/widgets/navigation/breadcrumb_bar.dart';
 
 /// Screen for file operations (browse, copy, move, delete files)
@@ -290,59 +291,57 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
     if (_clipboardItem == null) return;
     final l10n = _l10n;
 
+    if (_clipboardAction != 'copy' && _clipboardAction != 'move') return;
+    final move = _clipboardAction == 'move';
+    final source = _clipboardItem!;
+
+    final String? destinationPath;
     try {
-      final destinationPath =
-          '${_currentDirectory.path}/${_getItemName(_clipboardItem!)}';
-
-      if (_clipboardAction == 'copy') {
-        if (_clipboardItem is File) {
-          await (_clipboardItem as File).copy(destinationPath);
-        } else if (_clipboardItem is Directory) {
-          await _copyDirectory(
-            _clipboardItem as Directory,
-            Directory(destinationPath),
-          );
-        }
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.filesPasted),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      } else if (_clipboardAction == 'move') {
-        await _clipboardItem!.rename(destinationPath);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.filesMoved),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      }
-
-      await _refresh();
+      destinationPath =
+          await pasteFileSystemEntity(source, _currentDirectory, move: move);
+    } on PasteIntoItselfException {
+      _showErrorDialog(l10n.filesPasteIntoItself);
+      return;
     } catch (e) {
       _showErrorDialog(l10n.filesPasteFailed('$e'));
-    }
-  }
-
-  /// Copy directory recursively
-  Future<void> _copyDirectory(Directory source, Directory destination) async {
-    if (!await destination.exists()) {
-      await destination.create();
+      return;
     }
 
-    await for (final entity in source.list()) {
-      final newPath = '${destination.path}/${_getItemName(entity)}';
-      if (entity is File) {
-        await entity.copy(newPath);
-      } else if (entity is Directory) {
-        await _copyDirectory(entity, Directory(newPath));
+    if (destinationPath == null) {
+      // Moving an item into the folder it is already in: nothing to do.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.filesAlreadyInFolder),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
+      return;
     }
+
+    if (move) {
+      // The old path no longer exists; a second paste would fail.
+      setState(() {
+        _clipboardItem = null;
+        _clipboardAction = '';
+      });
+    }
+
+    final pastedName = p.basename(destinationPath);
+    final renamed = pastedName != p.basename(source.path);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(renamed
+              ? l10n.filesPastedAs(pastedName)
+              : (move ? l10n.filesMoved : l10n.filesPasted)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+
+    await _refresh();
   }
 
   /// Rename item
@@ -806,6 +805,87 @@ class _FileOperationsScreenState extends State<FileOperationsScreen> {
         return Icons.code;
       default:
         return Icons.insert_drive_file;
+    }
+  }
+}
+
+/// Thrown when a folder would be pasted into itself or one of its subfolders.
+class PasteIntoItselfException implements Exception {
+  const PasteIntoItselfException();
+}
+
+/// A path in [directory] for an item called [name] that does not exist yet:
+/// `name` itself when free, else `name (1).ext`, `name (2).ext`, ...
+@visibleForTesting
+String uniqueDestinationPath(String directory, String name) {
+  bool taken(String path) =>
+      FileSystemEntity.typeSync(path, followLinks: false) !=
+      FileSystemEntityType.notFound;
+
+  final first = p.join(directory, name);
+  if (!taken(first)) return first;
+
+  // Keep the extension of files ("report.txt" -> "report (1).txt"); names
+  // that start with a dot (".env") have no extension to keep.
+  final ext = name.startsWith('.') ? '' : p.extension(name);
+  final stem = name.substring(0, name.length - ext.length);
+  for (var i = 1;; i++) {
+    final candidate = p.join(directory, '$stem ($i)$ext');
+    if (!taken(candidate)) return candidate;
+  }
+}
+
+/// Copies or moves [source] into [targetDirectory] without overwriting
+/// anything there: when the name is taken, the pasted item gets a free
+/// name from [uniqueDestinationPath].
+///
+/// Returns the path the item now has, or null when [move] is true and the
+/// item is already in [targetDirectory] (nothing was done). Throws
+/// [PasteIntoItselfException] for a folder pasted into itself, and any
+/// file-system error from the copy or move, so callers report success only
+/// after this returns.
+@visibleForTesting
+Future<String?> pasteFileSystemEntity(
+  FileSystemEntity source,
+  Directory targetDirectory, {
+  required bool move,
+}) async {
+  final sourcePath = p.normalize(p.absolute(source.path));
+  final targetPath = p.normalize(p.absolute(targetDirectory.path));
+
+  if (source is Directory &&
+      (p.equals(sourcePath, targetPath) ||
+          p.isWithin(sourcePath, targetPath))) {
+    throw const PasteIntoItselfException();
+  }
+  if (move && p.equals(p.dirname(sourcePath), targetPath)) {
+    return null;
+  }
+
+  final destination =
+      uniqueDestinationPath(targetPath, p.basename(sourcePath));
+  if (move) {
+    await source.rename(destination);
+  } else if (source is File) {
+    await source.copy(destination);
+  } else if (source is Directory) {
+    await _copyDirectoryRecursive(source, Directory(destination));
+  } else {
+    throw FileSystemException(
+        'Only files and folders can be pasted', source.path);
+  }
+  return destination;
+}
+
+Future<void> _copyDirectoryRecursive(
+    Directory source, Directory destination) async {
+  await destination.create();
+  await for (final entity in source.list()) {
+    final newPath = p.join(destination.path, p.basename(entity.path));
+    if (entity is File) {
+      await entity.copy(newPath);
+    } else if (entity is Directory) {
+      await _copyDirectoryRecursive(entity, Directory(newPath));
     }
   }
 }

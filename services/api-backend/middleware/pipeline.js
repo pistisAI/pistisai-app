@@ -29,7 +29,7 @@ import {
   backwardCompatibilityMiddleware,
 } from './api-versioning.js';
 import logger from '../logger.js';
-import { captureRawBody } from './raw-body.js';
+import { captureRawBody, hasOwnBodyParser } from './raw-body.js';
 
 /**
  * Middleware Pipeline Order (CRITICAL - DO NOT CHANGE WITHOUT UNDERSTANDING IMPLICATIONS)
@@ -152,8 +152,22 @@ export function setupMiddlewarePipeline(app, options = {}) {
 
   // 11. Body Parsing - Parse request body. Webhook routes that check an
   // HMAC over the exact bytes sent also get the raw body (#895).
-  app.use(express.json({ limit: '10mb', verify: captureRawBody }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  // Routes in SELF_PARSED_BODY_PATHS parse their own body with a smaller
+  // limit (e.g. the unauthenticated client-log intake), so skip them here.
+  const globalJsonParser = express.json({
+    limit: '10mb',
+    verify: captureRawBody,
+  });
+  const globalUrlencodedParser = express.urlencoded({
+    extended: true,
+    limit: '10mb',
+  });
+  app.use((req, res, next) =>
+    hasOwnBodyParser(req) ? next() : globalJsonParser(req, res, next),
+  );
+  app.use((req, res, next) =>
+    hasOwnBodyParser(req) ? next() : globalUrlencodedParser(req, res, next),
+  );
 
   // 12. Request Timeout - Set timeout for long-running requests
   app.use(requestTimeoutMiddleware);

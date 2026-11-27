@@ -274,8 +274,16 @@ void main() {
         reasoning,
       )).thenAnswer((_) async {});
 
-      when(mockDb.getDecisionById(decisionId))
-          .thenAnswer((_) async => updatedDecision);
+      final pendingDecision = ConscienceDecision(
+        id: decisionId,
+        timestamp: DateTime(2024, 1, 1),
+        action: 'Update config',
+        riskLevel: 'medium',
+        status: 'pending',
+      );
+      var reads = 0;
+      when(mockDb.getDecisionById(decisionId)).thenAnswer(
+          (_) async => reads++ == 0 ? pendingDecision : updatedDecision);
 
       final result = await service.submitDecisionVerdict(
         decisionId: decisionId,
@@ -296,7 +304,7 @@ void main() {
         reviewer,
         reasoning,
       )).called(1);
-      verify(mockDb.getDecisionById(decisionId)).called(1);
+      verify(mockDb.getDecisionById(decisionId)).called(2);
     });
 
     test('submitDecisionVerdict throws when decision not found', () async {

@@ -35,6 +35,12 @@ export default {
     // events, rate-limit admin routes and the public database health check.
     '**/test/api-backend/admin-owner-checks.test.js',
     '**/test/api-backend/db-health-route.test.js',
+    // Server-side personal data: log redaction, client-log bounds, account
+    // hard delete coverage, masked emails in logs.
+    '**/test/api-backend/request-log-redaction.test.js',
+    '**/test/api-backend/client-logs-bounds.test.js',
+    '**/test/api-backend/user-data-purge.test.js',
+    '**/test/api-backend/mask-email-logs.test.js',
   ],
   testPathIgnorePatterns: [
     ...base.testPathIgnorePatterns,

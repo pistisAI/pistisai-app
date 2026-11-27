@@ -267,17 +267,36 @@ ${e.context != null ? '- **Context**: ${e.context}' : ''}
     return await personalityFile.exists();
   }
 
-  /// Clears all markdown files
+  /// The only files this service writes into the skill folder.
+  ///
+  /// Deletion is limited to these names so other files in the agent's skill
+  /// folder (or a shared fallback folder) are never touched.
+  static const List<String> managedFileNames = <String>[
+    'personality.md',
+    'memory.md',
+    'context.md',
+  ];
+
+  List<File> get _managedFiles => [
+        for (final name in managedFileNames) File('$_markdownPath/$name'),
+      ];
+
+  /// Clears the Markdown files written by this service.
   Future<void> clearMarkdownFiles() async {
-    final directory = Directory(_markdownPath);
-    if (await directory.exists()) {
-      final files = directory.listSync();
-      for (final file in files) {
-        if (file.path.endsWith('.md')) {
-          await file.delete();
-        }
+    for (final file in _managedFiles) {
+      if (await file.exists()) {
+        await file.delete();
       }
-      debugPrint('[MarkdownSync] Markdown files cleared');
     }
+    debugPrint('[MarkdownSync] Markdown files cleared');
+  }
+
+  /// Paths of Markdown files written by this service that still exist.
+  Future<List<String>> listExistingMarkdownFiles() async {
+    final remaining = <String>[];
+    for (final file in _managedFiles) {
+      if (await file.exists()) remaining.add(file.path);
+    }
+    return remaining;
   }
 }

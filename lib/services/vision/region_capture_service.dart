@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:pistisai/services/app_temp_files.dart';
 
 /// Result of a region capture operation
 class CaptureResult {
@@ -51,18 +51,21 @@ class RegionCaptureService {
   bool get isCapturing => _isCapturing;
   String? get lastError => _lastError;
 
-  /// Initialize the region capture service
-  Future<void> initialize() async {
+  /// Initialize the region capture service.
+  ///
+  /// Returns true only when the native capture channel answered; otherwise
+  /// returns false and leaves the reason in [lastError].
+  Future<bool> initialize() async {
     if (_isInitialized) {
       debugPrint('[RegionCapture] Already initialized');
-      return;
+      return true;
     }
 
     // Web platform doesn't support screen capture
     if (kIsWeb) {
       _lastError = 'Region capture not supported on web platform';
       debugPrint('[RegionCapture] $_lastError');
-      return;
+      return false;
     }
 
     try {
@@ -70,9 +73,11 @@ class RegionCaptureService {
       _isInitialized = true;
       _lastError = null;
       debugPrint('[RegionCapture] Initialized successfully');
+      return true;
     } catch (e) {
       _lastError = 'Failed to initialize: $e';
       debugPrint('[RegionCapture] $_lastError');
+      return false;
     }
   }
 
@@ -105,9 +110,9 @@ class RegionCaptureService {
     _lastError = null;
 
     try {
-      final directory = await getTemporaryDirectory();
+      // App-owned temp folder, removed by the local data wipe.
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final path = '${directory.path}/capture_$timestamp.png';
+      final path = await AppTempFiles.newPath('capture', 'png');
 
       debugPrint(
           '[RegionCapture] Capturing region: x=$x, y=$y, w=$width, h=$height');

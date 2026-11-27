@@ -75,6 +75,7 @@
   "visionInitializeAll": "Initialize All Services",
   "visionInitializing": "Initializing services...",
   "visionInitComplete": "Initialization complete",
+  "visionInitIncomplete": "Some services did not start. See the results below.",
   "visionInitFailed": "Initialization failed: {error}",
   "@visionInitFailed": {
     "placeholders": {
@@ -184,25 +185,7 @@
   "daemonSettingsTitle": "System Tray Daemon Settings",
   "daemonHeading": "System Tray Configuration",
   "daemonDescription": "Configure the system tray daemon behavior and appearance",
-  "daemonSaved": "Daemon settings saved successfully",
-  "daemonSaveFailed": "Failed to save settings: {error}",
-  "@daemonSaveFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "daemonRestarting": "Restarting system tray daemon...",
-  "daemonRestarted": "System tray daemon restarted successfully",
-  "daemonRestartFailed": "Failed to restart daemon: {error}",
-  "@daemonRestartFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "daemonNotAvailableYet": "Not available yet: the tray and connection settings below are not saved or applied. The values shown are defaults.",
   "daemonRealtimeStatus": "Real-time Connection Status",
   "daemonConnectionType": "Connection Type",
   "daemonVersion": "Version",
@@ -239,9 +222,6 @@
   "daemonConnectionTimeoutSubtitle": "Timeout for daemon connections (seconds)",
   "daemonHealthCheckInterval": "Health Check Interval",
   "daemonHealthCheckIntervalSubtitle": "Interval for daemon health checks (seconds)",
-  "daemonActions": "Actions",
-  "daemonSaveSettings": "Save Settings",
-  "daemonRestart": "Restart Daemon",
   "commonRefresh": "Refresh",
   "commonClose": "Close",
   "commonClear": "Clear",
@@ -965,6 +945,22 @@
   },
   "instancesHermesEnabledSnack": "Hermes Agent enabled — chat will use Hermes",
   "instancesHermesDisabledSnack": "Switched back to default gateway",
+  "instancesHermesApplyFailed": "Hermes settings saved, but the connection could not be switched: {error}",
+  "@instancesHermesApplyFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "instancesHermesSaveFailed": "Could not save the Hermes settings: {error}",
+  "@instancesHermesSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "instancesHermesTitle": "🦞 Hermes Agent",
   "instancesHermesActive": "Active — routing chat through Hermes API server",
   "instancesHermesInactive": "Disabled — using the default Hermes gateway",
@@ -1103,6 +1099,7 @@
   "avatarEmpathyDescription": "Emotional understanding and support",
   "avatarAppearance": "Appearance",
   "avatarAppearanceHelp": "Customize your avatar's visual style and animation.",
+  "avatarAppearanceNotAvailable": "Not available yet: the color theme and animation style are not applied to the avatar.",
   "avatarColorTheme": "Color Theme",
   "avatarColorPersonality": "Personality-Derived",
   "avatarColorOceanBlue": "Ocean Blue",
@@ -1424,7 +1421,7 @@
   "configExportLocalAgentData": "Export all local data",
   "configDeleteLocalAgentData": "Delete all local data",
   "configDeleteLocalAgentDataTitle": "Delete all local agent data?",
-  "configDeleteLocalAgentDataConfirm": "This permanently deletes on-device agent data (local database and encrypted conversation store). Cloud account data is not removed. This cannot be undone.",
+  "configDeleteLocalAgentDataConfirm": "This permanently deletes on-device agent data: the local database, the encrypted conversation store, the avatar Markdown files in the agent skill folder and the app's temporary captures. Your agent runtime keeps its own copy of the chat; this app will not import messages from before the wipe again, but it cannot delete them from the runtime. Cloud account data is not removed. This cannot be undone.",
   "configDeleteLocalAgentDataAction": "Delete permanently",
   "configLocalAgentDataExported": "Local agent data exported to {filename}",
   "@configLocalAgentDataExported": {
@@ -1471,6 +1468,7 @@
     }
   },
   "configNoChangelog": "No changelog available",
+  "configChangelogLoadImage": "Load image",
   "filesTitle": "File Operations",
   "filesLoadFailed": "Failed to load directory: {error}",
   "@filesLoadFailed": {
@@ -1536,6 +1534,16 @@
     }
   },
   "filesPasted": "Pasted successfully",
+  "filesPasteIntoItself": "A folder cannot be pasted inside itself.",
+  "filesAlreadyInFolder": "The item is already in this folder.",
+  "filesPastedAs": "Pasted as {name}",
+  "@filesPastedAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "filesMoved": "Moved successfully",
   "filesPasteFailed": "Failed to paste: {error}",
   "@filesPasteFailed": {
@@ -1684,7 +1692,7 @@
   "welcomeFeatureAvatarDescription": "Personalized AI companion",
   "welcomeFeatureDesktopDescription": "GUI automation",
   "welcomeFeatureVisionDescription": "Screen understanding",
-  "welcomeStepInfo": "We'll set up your local AI in about 2 minutes. All processing happens privately on your computer.",
+  "welcomeStepInfo": "We'll set up your local AI in about 2 minutes. Processing happens on the machine that runs your agent runtime: this computer, or another machine you choose.",
   "locationTitle": "Where is Hermes running?",
   "locationSubtitle": "Hermes can run on this computer or on another machine you reach over Tailscale — including a VPS.",
   "locationThisDevice": "This device",

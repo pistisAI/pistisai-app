@@ -144,6 +144,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get visionInitComplete => 'Initialisation terminée';
 
   @override
+  String get visionInitIncomplete =>
+      'Certains services n\'ont pas démarré. Voir les résultats ci-dessous.';
+
+  @override
   String visionInitFailed(String error) {
     return 'Échec de l\'initialisation : $error';
   }
@@ -297,25 +301,8 @@ class AppLocalizationsFr extends AppLocalizations {
       'Configurer le comportement et l\'apparence du service de la zone de notification';
 
   @override
-  String get daemonSaved => 'Paramètres du service enregistrés avec succès';
-
-  @override
-  String daemonSaveFailed(String error) {
-    return 'Impossible d\'enregistrer les paramètres : $error';
-  }
-
-  @override
-  String get daemonRestarting =>
-      'Redémarrage du service de la zone de notification…';
-
-  @override
-  String get daemonRestarted =>
-      'Service de la zone de notification redémarré avec succès';
-
-  @override
-  String daemonRestartFailed(String error) {
-    return 'Impossible de redémarrer le service : $error';
-  }
+  String get daemonNotAvailableYet =>
+      'Pas encore disponible : les réglages de la zone de notification et de connexion ci-dessous ne sont ni enregistrés ni appliqués. Les valeurs affichées sont celles par défaut.';
 
   @override
   String get daemonRealtimeStatus => 'État de la connexion en temps réel';
@@ -398,15 +385,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get daemonHealthCheckIntervalSubtitle =>
       'Intervalle entre les vérifications de l\'état du service (secondes)';
-
-  @override
-  String get daemonActions => 'Actions';
-
-  @override
-  String get daemonSaveSettings => 'Enregistrer les paramètres';
-
-  @override
-  String get daemonRestart => 'Redémarrer le service';
 
   @override
   String get commonRefresh => 'Actualiser';
@@ -1535,6 +1513,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Retour à la passerelle par défaut';
 
   @override
+  String instancesHermesApplyFailed(String error) {
+    return 'Réglages Hermes enregistrés, mais la connexion n\'a pas pu être changée : $error';
+  }
+
+  @override
+  String instancesHermesSaveFailed(String error) {
+    return 'Impossible d\'enregistrer les réglages Hermes : $error';
+  }
+
+  @override
   String get instancesHermesTitle => '🦞 Agent Hermes';
 
   @override
@@ -1815,6 +1803,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get avatarAppearanceHelp =>
       'Personnalisez le style visuel et l\'animation de votre avatar.';
+
+  @override
+  String get avatarAppearanceNotAvailable =>
+      'Pas encore disponible : le thème de couleur et le style d\'animation ne sont pas appliqués à l\'avatar.';
 
   @override
   String get avatarColorTheme => 'Thème de couleur';
@@ -2378,7 +2370,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get configDeleteLocalAgentDataConfirm =>
-      'Cela supprime définitivement les données de l\'agent sur cet appareil (base locale et stockage chiffré des conversations). Les données du compte cloud ne sont pas touchées. Cette action est irréversible.';
+      'Cela supprime définitivement les données de l\'agent sur cet appareil : la base locale, le stockage chiffré des conversations, les fichiers Markdown de l\'avatar dans le dossier de compétences de l\'agent et les captures temporaires de l\'application. Votre runtime d\'agent garde sa propre copie de la conversation ; l\'application n\'importera plus les messages antérieurs à l\'effacement, mais ne peut pas les supprimer du runtime. Les données du compte cloud ne sont pas touchées. Cette action est irréversible.';
 
   @override
   String get configDeleteLocalAgentDataAction => 'Supprimer définitivement';
@@ -2426,6 +2418,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get configNoChangelog => 'Aucune liste des nouveautés disponible';
+
+  @override
+  String get configChangelogLoadImage => 'Charger l\'image';
 
   @override
   String get filesTitle => 'Opérations sur les fichiers';
@@ -2494,6 +2489,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get filesPasted => 'Collé';
+
+  @override
+  String get filesPasteIntoItself =>
+      'Un dossier ne peut pas être collé dans lui-même.';
+
+  @override
+  String get filesAlreadyInFolder => 'L\'élément est déjà dans ce dossier.';
+
+  @override
+  String filesPastedAs(String name) {
+    return 'Collé sous le nom $name';
+  }
 
   @override
   String get filesMoved => 'Déplacé';
@@ -2742,7 +2749,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get welcomeStepInfo =>
-      'Nous allons configurer votre IA locale en 2 minutes environ. Tout le traitement se fait en privé sur votre ordinateur.';
+      'Nous allons configurer votre IA locale en 2 minutes environ. Le traitement se fait sur la machine qui exécute votre runtime d\'agent : cet ordinateur ou une autre machine de votre choix.';
 
   @override
   String get locationTitle => 'Où Hermes fonctionne-t-il ?';

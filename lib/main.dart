@@ -248,6 +248,9 @@ void _initializeClientLogBuffer() {
     return;
   }
 
+  // Logs are uploaded only while the user allows crash reports; consent is
+  // checked again before each upload.
+  LogBufferService.instance.uploadAllowed = _crashReportingAllowed;
   final originalDebugPrint = debugPrint;
   debugPrint = (String? message, {int? wrapWidth}) {
     if (message != null) {
