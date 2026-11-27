@@ -7,7 +7,6 @@ import '../models/message.dart';
 import '../models/streaming_message.dart';
 
 import 'streaming_service.dart';
-import 'hermes/hermes_session_transcript.dart';
 import 'hermes/hermes_streaming_service.dart';
 import 'hermes/transcript_import_floor.dart';
 import 'streaming_content_update.dart';
@@ -42,6 +41,125 @@ String userFacingChatError(Object error, {required bool isConnected}) {
 String userFacingEmptyReply() =>
     'The agent finished without a reply. Check the runtime and try again.';
 
+/// Metadata key on a local message that records the runtime's id for the
+/// same turn, so later syncs recognise it without comparing text again.
+const String runtimeMessageIdKey = 'runtime_message_id';
+
+/// Harness name used for the Hermes session mapping on a conversation.
+const String hermesHarness = 'hermes';
+
+/// Adds runtime transcript rows that the local thread does not have yet.
+///
+/// The local thread is the source of truth (#1065): its rows are never
+/// removed or reordered, and rows written on this device keep their text.
+/// A runtime row is already present when:
+/// - a local row has its id, or records it under [runtimeMessageIdKey];
+/// - or a local row written on this device has the same role and text
+///   within [matchWindow] (the runtime stored the same turn under its own
+///   id). That local row is then linked to the runtime id.
+///
+/// Rows that came from the runtime are refreshed when the runtime's copy
+/// grew (a reply still being written when it was first imported). A linked
+/// local reply is extended the same way. The local welcome row is dropped
+/// when the thread has no turns yet and the runtime brings some.
+///
+/// Returns the new list and whether anything changed.
+({List<Message> messages, bool changed}) appendRuntimeTranscript({
+  required List<Message> local,
+  required List<Message> runtime,
+  Duration matchWindow = const Duration(minutes: 15),
+}) {
+  if (runtime.isEmpty) return (messages: local, changed: false);
+  final result = List<Message>.from(local);
+  final runtimeIds = {for (final message in runtime) message.id};
+  final indexByRuntimeId = <String, int>{};
+  for (int i = 0; i < result.length; i++) {
+    final linked = result[i].metadata?[runtimeMessageIdKey];
+    if (linked is String) indexByRuntimeId[linked] = i;
+    if (runtimeIds.contains(result[i].id)) {
+      indexByRuntimeId[result[i].id] = i;
+    }
+  }
+
+  bool changed = false;
+  final appended = <Message>[];
+  for (final row in runtime) {
+    final index = indexByRuntimeId[row.id] ??
+        _localTwinIndex(result, row, runtimeIds, matchWindow);
+    if (index == null) {
+      appended.add(row.copyWith(
+        metadata: {...?row.metadata, runtimeMessageIdKey: row.id},
+      ));
+      continue;
+    }
+    final current = result[index];
+    var next = current;
+    if (current.metadata?[runtimeMessageIdKey] != row.id) {
+      next = next.copyWith(
+        metadata: {...?current.metadata, runtimeMessageIdKey: row.id},
+      );
+    }
+    final fromRuntime = current.id == row.id;
+    final grew = row.content != current.content &&
+        row.content.startsWith(current.content);
+    if (current.role == row.role &&
+        (fromRuntime || current.isAssistant) &&
+        grew) {
+      next = next.copyWith(content: row.content);
+    }
+    if (!identical(next, current)) {
+      result[index] = next;
+      indexByRuntimeId[row.id] = index;
+      changed = true;
+    }
+  }
+
+  if (appended.isEmpty) return (messages: result, changed: changed);
+  final hasTurns = result.any((m) => m.isUser || m.isAssistant);
+  return (
+    messages: [
+      ...hasTurns ? result : result.where((m) => !m.isSystem),
+      ...appended,
+    ],
+    changed: true,
+  );
+}
+
+/// Index of a local row written on this device that matches [row]: same
+/// role, same text (a reply may since have grown on the runtime), close in
+/// time, and not linked to a runtime row yet. The closest one wins.
+int? _localTwinIndex(
+  List<Message> local,
+  Message row,
+  Set<String> runtimeIds,
+  Duration window,
+) {
+  if (row.isSystem) return null;
+  final text = row.content.trim();
+  int? best;
+  Duration? bestGap;
+  for (int i = 0; i < local.length; i++) {
+    final candidate = local[i];
+    if (candidate.role != row.role ||
+        candidate.status != MessageStatus.sent ||
+        runtimeIds.contains(candidate.id) ||
+        candidate.metadata?[runtimeMessageIdKey] != null) {
+      continue;
+    }
+    final mine = candidate.content.trim();
+    final sameText = mine == text ||
+        (row.isAssistant && mine.isNotEmpty && text.startsWith(mine));
+    if (!sameText) continue;
+    final gap = candidate.timestamp.difference(row.timestamp).abs();
+    if (gap > window) continue;
+    if (bestGap == null || gap < bestGap) {
+      best = i;
+      bestGap = gap;
+    }
+  }
+  return best;
+}
+
 /// Enhanced chat service with real-time streaming support
 ///
 /// Provides progressive message streaming, real-time UI updates,
@@ -72,8 +190,8 @@ class StreamingChatService extends ChangeNotifier {
         .isCloudServicesEnabled();
   }
 
-  /// The one conversation for this harness. Every connected device uses the
-  /// same `pistisai` session id and loads the transcript from the harness.
+  /// The one conversation, kept in the local store (the source of truth).
+  /// The runtime transcript only adds rows this device does not have yet.
   Conversation? _mainChannel;
   Timer? _sharedChannelTimer;
   bool _syncingSharedChannel = false;
@@ -249,8 +367,10 @@ class StreamingChatService extends ChangeNotifier {
     return _transcriptImportFloor;
   }
 
-  /// Replace the on-screen thread with the harness transcript so every
-  /// device shows the same conversation.
+  /// Add runtime transcript rows (other devices, proactive messages) that
+  /// the local thread does not have yet. Local history is never replaced or
+  /// removed (#1065). Also keeps the conversation's Hermes session mapping
+  /// in step with the streaming service.
   Future<void> _syncSharedChannel() async {
     // A send is in flight until its stream completes/errors. sendMessage()
     // clears _isStreaming in its finally block right after subscribing, so
@@ -267,11 +387,20 @@ class StreamingChatService extends ChangeNotifier {
 
     _syncingSharedChannel = true;
     try {
-      final fetched = await service.fetchSessionMessages(_mainChannel!.id);
+      final channelId = _mainChannel!.id;
+      service.restoreRuntimeSession(
+        channelId,
+        _mainChannel!.runtimeSessionId(hermesHarness),
+      );
+      final fetched = await service.fetchSessionMessages(channelId);
+      final mappingChanged = _storeRuntimeSessionMapping(service);
       final floor = await _loadTranscriptImportFloor();
       final harness = fetched == null
           ? null
           : transcriptAfterImportFloor(fetched, floor);
+      if (mappingChanged && (harness == null || harness.isEmpty)) {
+        await _saveConversationsAsync();
+      }
       if (harness == null ||
           _mainChannel == null ||
           _isStreaming ||
@@ -284,13 +413,16 @@ class StreamingChatService extends ChangeNotifier {
         return;
       }
       _setChannelSyncError(null);
-      final merged = mergeHarnessTranscript(
+      final merged = appendRuntimeTranscript(
         local: _mainChannel!.messages,
-        harness: harness,
+        runtime: harness,
       );
-      if (_sameMessages(merged, _mainChannel!.messages)) return;
+      if (!merged.changed) {
+        if (mappingChanged) await _saveConversationsAsync();
+        return;
+      }
       _mainChannel = _mainChannel!.copyWith(
-        messages: merged,
+        messages: merged.messages,
         updatedAt: DateTime.now(),
       );
       _applyAgentNameToMainChannel(persist: false);
@@ -301,20 +433,21 @@ class StreamingChatService extends ChangeNotifier {
     }
   }
 
+  /// Copies the service's Hermes session id for the main channel into the
+  /// conversation metadata. Returns true when it changed.
+  bool _storeRuntimeSessionMapping(HermesStreamingService service) {
+    final channel = _mainChannel;
+    if (channel == null) return false;
+    final mapped = service.runtimeSessionIdFor(channel.id);
+    if (mapped == channel.runtimeSessionId(hermesHarness)) return false;
+    _mainChannel = channel.withRuntimeSession(hermesHarness, mapped);
+    return true;
+  }
+
   void _setChannelSyncError(String? error) {
     if (_channelSyncError == error) return;
     _channelSyncError = error;
     notifyListeners();
-  }
-
-  bool _sameMessages(List<Message> left, List<Message> right) {
-    if (left.length != right.length) return false;
-    for (int i = 0; i < left.length; i++) {
-      if (left[i].id != right[i].id || left[i].content != right[i].content) {
-        return false;
-      }
-    }
-    return true;
   }
 
   /// Create a welcome conversation when no conversations exist
@@ -1032,6 +1165,14 @@ class StreamingChatService extends ChangeNotifier {
     _isStreaming = false;
     _isLoading = false;
     _channelSyncError = null;
+
+    // The wiped conversation's runtime session mapping goes with it. The
+    // runtime still holds its copy of the chat, so the import floor above
+    // keeps those older rows from coming back when it is resolved again.
+    final service = _getStreamingService();
+    if (service is HermesStreamingService) {
+      service.clearRuntimeSession(Conversation.pistisaiChannelId);
+    }
 
     final availableModels = _connectionManager.availableModels;
     final modelToUse = _selectedModel ??

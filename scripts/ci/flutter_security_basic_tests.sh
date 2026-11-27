@@ -19,6 +19,7 @@ flutter test \
   test/services/conversation_storage_cloud_consent_test.dart \
   test/services/settings_hermes_api_key_storage_test.dart \
   test/services/streaming_chat_error_test.dart \
+  test/services/chat_local_first_sync_test.dart \
   test/services/session_token_secure_storage_test.dart \
   test/services/hermes_gateway_only_transport_test.dart \
   test/services/onboarding/setup_wizard_service_test.dart \
