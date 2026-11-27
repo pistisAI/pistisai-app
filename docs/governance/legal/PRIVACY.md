@@ -133,7 +133,7 @@ including the Limited Use requirements. Specifically:
 
 ## 5. How we store and protect your information
 
-- **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption.
+- **On-device:** app content is stored locally on your machine. Desktop and mobile encrypt `local_brain.sqlite` with AES-256 (SQLCipher-compatible) and chat history (`conversations.json.enc`) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system's disk encryption. The Android app opts out of Android system backup, so its data is not copied to cloud backups or to another device during transfer.
 - **Authentication:** sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
