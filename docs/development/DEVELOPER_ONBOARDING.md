@@ -14,7 +14,7 @@ This guide is the entry point for working on the Pistisai stack. Product descrip
 | `services/streaming-proxy/` | Streaming proxy service |
 | `services/sdk/` | TypeScript SDK |
 | `services/tailscale-relay/` | Tailscale relay |
-| `backend/auth/` | Lightweight CommonJS Auth0 backend |
+| `backend/auth/` | Quarantined legacy Auth0 package. Do not start it. Active auth is Cloudflare Access in `services/api-backend` |
 | `test/` | Flutter tests and root API backend Jest tests |
 | `docs/` | Documentation |
 | `scripts/` | Build, deployment, maintenance, and release helpers |
@@ -80,7 +80,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 - Do not edit generated `*.g.dart` or `*.freezed.dart` files.
 - Backend services under `services/` are ESM unless their package says otherwise.
-- `backend/auth/` is CommonJS and has no `npm run dev`; run it with `node handlers.js`.
+- `backend/auth/` is quarantined. `node handlers.js` exits non-zero and does not listen. Active auth is Cloudflare Access in `services/api-backend`.
 
 ## Common Commands
 

@@ -52,7 +52,7 @@ The **primary Pistisai desktop install** (normally the first app installed) is t
 | API backend | Express 5 ESM in `services/api-backend/`, Node `>=26.0.0 <28.0.0` (`services/api-backend/package.json:67-69`), default port `8080` |
 | Streaming proxy | Express 5 ESM in `services/streaming-proxy/`, Node `>=26.0.0 <28.0.0` (`services/streaming-proxy/package.json:51-53`), default port `3001` |
 | Tailscale relay | ESM service in `services/tailscale-relay/`, default port `3002` |
-| Auth backend | CommonJS Express 5 app in `backend/auth/`, default port `3000` |
+| Auth | Cloudflare Access in `services/api-backend`. `backend/auth/` is a quarantined legacy Auth0 package and does not listen |
 
 ## Flutter Structure
 
@@ -228,10 +228,10 @@ dart run build_runner build --delete-conflicting-outputs
 
 | Service | Directory | Notes |
 | --- | --- | --- |
-| API backend | `services/api-backend/` | Express 5, Auth0 JWT, PostgreSQL, admin routes, tunnel/proxy APIs |
+| API backend | `services/api-backend/` | Express 5, Cloudflare Access JWT, PostgreSQL, admin routes, tunnel/proxy APIs |
 | Streaming proxy | `services/streaming-proxy/` | WebSocket/HTTP proxy container with TypeScript modules under `src/`; legacy/fallback for tunnel-heavy paths |
 | Tailscale relay | `services/tailscale-relay/` | Relay service using Express 4 |
-| Auth backend | `backend/auth/` | Lightweight CommonJS Auth0 JWT validation |
+| Auth backend | `backend/auth/` | Quarantined. `handlers.js` fails closed and does not validate Auth0 tokens |
 | SDK | `services/sdk/` | TypeScript SDK published from `dist/` |
 | OpenClaw skills | `services/openclaw-skills/pistisai/` | Avatar personality/evolution skill package |
 

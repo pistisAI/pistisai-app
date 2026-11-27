@@ -53,8 +53,8 @@ Do **not** hand-edit generated `*.g.dart` / `*.freezed.dart` files.
 
 Node services use ESM. Engines:
 
-- All services (`services/api-backend`, `services/streaming-proxy`, `services/sdk`, `services/tailscale-relay`, `backend/auth`): Node `>=26.0.0 <28.0.0` (CI pins Node `26` via `.nvmrc`)
-- `backend/auth`: CommonJS, no `npm run dev` (run with `node handlers.js`)
+- Node services (`services/api-backend`, `services/streaming-proxy`, `services/sdk`, `services/tailscale-relay`): Node `>=26.0.0 <28.0.0` (CI pins Node `26` via `.nvmrc`)
+- `backend/auth` is quarantined: `node handlers.js` exits non-zero and does not listen. Active auth is Cloudflare Access in `services/api-backend`
 
 ```bash
 # Root tooling
