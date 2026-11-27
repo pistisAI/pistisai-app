@@ -7,6 +7,7 @@ This directory contains current architecture references for Pistisai.
 - [System Architecture](SYSTEM_ARCHITECTURE.md)
 - [Desktop-as-Hub Topology](SYSTEM_ARCHITECTURE.md#desktop-as-hub-topology) — primary desktop is the device/client hub for web, mobile, and secondary desktops; Hermes stays the messaging-platform hub (issue #492)
 - [Agent Runtime Contract](AGENT_RUNTIME_CONTRACT.md)
+- [OpenClaw Footprint Audit](OPENCLAW_FOOTPRINT_AUDIT.md) — what OpenClaw code remains and how to keep Hermes the primary harness (issue #1042)
 - [Secure Device Mesh](SECURE_DEVICE_MESH.md)
 - [Service Lifecycle](service_lifecycle.md)
 - [Avatar System](AVATAR_SYSTEM.md)
