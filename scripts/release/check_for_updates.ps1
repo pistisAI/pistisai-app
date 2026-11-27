@@ -25,6 +25,12 @@ function Resolve-PistisaiGitHubRepository {
     if (-not $Name) { $Name = $env:PISTISAI_GITHUB_REPO }
 
     $slug = '^[A-Za-z0-9_.-]+$'
+    # Drop a value that is not a slug before the brand file is read.
+    # A rejected owner must not stay "set" and leave only the brand's
+    # repository name, which would pair pistisAI with that other repo.
+    if ($Owner -and $Owner -notmatch $slug) { $Owner = $null }
+    if ($Name -and $Name -notmatch $slug) { $Name = $null }
+
     if ((-not $Owner) -or (-not $Name)) {
         $brandId = if ($env:BRAND) { $env:BRAND } else { 'pistisai' }
         if ($brandId -match '^[A-Za-z0-9_-]+$') {
@@ -39,8 +45,8 @@ function Resolve-PistisaiGitHubRepository {
         }
     }
 
-    if (-not $Owner -or $Owner -notmatch $slug) { $Owner = 'pistisAI' }
-    if (-not $Name -or $Name -notmatch $slug) { $Name = 'pistisai-app' }
+    if (-not $Owner) { $Owner = 'pistisAI' }
+    if (-not $Name) { $Name = 'pistisai-app' }
 
     return [pscustomobject]@{
         Owner = $Owner

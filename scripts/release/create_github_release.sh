@@ -29,6 +29,16 @@ resolve_github_repo() {
         brand_id="pistisai"
     fi
 
+    # Drop a value that is not a slug before the brand file is read.
+    # A rejected owner must not stay "set" and leave only the brand's
+    # repository name, which would pair pistisAI with that other repo.
+    if [[ -n "$owner" && ! "$owner" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+        owner=""
+    fi
+    if [[ -n "$name" && ! "$name" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+        name=""
+    fi
+
     brand_file="$PROJECT_ROOT/brand/${brand_id}/brand.yaml"
     if [[ ( -z "$owner" || -z "$name" ) && -f "$brand_file" ]]; then
         label=$(grep -E '^repository_label:' "$brand_file" | head -n 1 | sed -E 's/^repository_label:[[:space:]]*//; s/[[:space:]]*(#.*)?$//; s/^["'\'']//; s/["'\'']$//' || true)
@@ -42,10 +52,10 @@ resolve_github_repo() {
         fi
     fi
 
-    if [[ -z "$owner" || ! "$owner" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+    if [[ -z "$owner" ]]; then
         owner="pistisAI"
     fi
-    if [[ -z "$name" || ! "$name" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+    if [[ -z "$name" ]]; then
         name="pistisai-app"
     fi
 

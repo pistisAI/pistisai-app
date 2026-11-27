@@ -94,7 +94,7 @@ After merging upstream `main`, run `tool/brand.sh <id>` again before building. D
 | `PISTISAI_GITHUB_REPO` | `pistisai-app` | GitHub repository name |
 | `BRAND` | `pistisai` | Brand id whose `brand.yaml` is read when the owner or repo variable is unset |
 
-The owner and repo variables win when they are set. Otherwise the scripts read `repository_label` (`owner/repo`) from `brand/<id>/brand.yaml` when that file is present, then fall back to `pistisAI/pistisai-app`. Keep `repository_label` aligned with `repository_url`. The update script also runs from an install directory, where the brand file is absent, so a rebrand sets the two variables in that environment. Pass `--print-target` or `-PrintRepository` to print the resolved `owner/repo` before publishing.
+The owner and repo variables win when they are set to a GitHub slug (`A-Z`, `a-z`, `0-9`, `.`, `_`, `-`). Any other value is ignored, so it does not block `repository_label`. Otherwise the scripts read `repository_label` (`owner/repo`) from `brand/<id>/brand.yaml` when that file is present, then fall back to `pistisAI/pistisai-app`. Keep `repository_label` aligned with `repository_url`. The update script also runs from an install directory, where the brand file is absent, so a rebrand sets the two variables in that environment. Pass `--print-target` or `-PrintRepository` to print the resolved `owner/repo` before publishing.
 
 Logo and icon files for a brand stay under `brand/<id>/assets/`.
 
