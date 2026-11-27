@@ -1,137 +1,200 @@
-import {
-  describe,
-  it,
-  beforeAll,
-  afterAll,
-  expect,
-  jest,
-} from "@jest/globals";
+/**
+ * Developer bypass token through the real middleware/auth.js and the real
+ * AuthService. Only Postgres is replaced (an in-memory fake), so the bypass
+ * decision, the token checks and the HTTP status codes are production code.
+ *
+ * The middleware keeps one AuthService per module instance, so each mode
+ * reloads the module graph with the environment it needs.
+ */
 
-const DEV_TOKEN = "ci-dev-bypass-token-for-tests";
-
-// Mock express-oauth2-jwt-bearer and jwks-rsa to prevent ES module loading issues in Jest
-jest.mock("express-oauth2-jwt-bearer", () => {
-  return {
-    auth: jest.fn().mockImplementation(() => {
-      return (req, res, next) => next(new Error("Mocked Auth0 failure"));
-    }),
-  };
-});
-jest.mock("jwks-rsa", () => {
-  const mockClient = jest.fn(() => ({
-    getSigningKey: jest.fn(),
-  }));
-  mockClient.expressJwtSecret = jest.fn();
-  return mockClient;
-});
-
+import { describe, it, beforeAll, afterAll, expect, jest } from "@jest/globals";
 import express from "express";
 import request from "supertest";
 
-let checkJwt;
-let optionalAuth;
+const DEV_TOKEN = "ci-dev-bypass-token-for-tests";
+const ENV_KEYS = [
+  "NODE_ENV",
+  "DEV_BYPASS_TOKEN",
+  "CF_ACCESS_TEAM_DOMAIN",
+  "CF_ACCESS_AUD",
+];
 
-// AuthService mock that mirrors env-gated isDevBypassToken behavior
-jest.mock("../../../services/api-backend/auth/auth-service.js", () => {
-  return {
-    AuthService: jest.fn().mockImplementation(() => {
-      const configured = process.env.DEV_BYPASS_TOKEN;
-      const devBypassToken =
-        process.env.NODE_ENV === "development" &&
-        typeof configured === "string" &&
-        configured.length > 0
-          ? configured
-          : null;
-      return {
-        initialize: jest.fn().mockResolvedValue(true),
-        syncSession: jest.fn().mockResolvedValue({ success: true }),
-        validateToken: jest.fn().mockResolvedValue({ valid: true }),
-        devBypassToken,
-        isDevBypassToken(token) {
-          return Boolean(devBypassToken) && token === devBypassToken;
-        },
-      };
+const queries = [];
+
+function registerDatabaseFake() {
+  jest.unstable_mockModule(
+    "../../../services/api-backend/database/migrate-pg.js",
+    () => ({
+      DatabaseMigratorPG: class {
+        constructor() {
+          this.pool = {
+            query: async (sql, params) => {
+              queries.push({ sql, params });
+              return { rows: [], rowCount: 0 };
+            },
+          };
+        }
+        async initialize() {}
+      },
     }),
-  };
+  );
+}
+
+async function loadApp(env) {
+  for (const [key, value] of Object.entries(env)) {
+    if (value === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = value;
+    }
+  }
+  jest.resetModules();
+  registerDatabaseFake();
+  const { checkJwt, optionalAuth } =
+    await import("../../../services/api-backend/middleware/auth.js");
+
+  const app = express();
+  app.use(express.json());
+  app.get("/api/test-protected", checkJwt, (req, res) => {
+    res.json({ message: "success", auth: req.auth });
+  });
+  app.get("/api/test-optional", optionalAuth, (req, res) => {
+    res.json({ message: "success", auth: req.auth });
+  });
+  return app;
+}
+
+const saved = {};
+
+beforeAll(() => {
+  for (const key of ENV_KEYS) {
+    saved[key] = process.env[key];
+  }
 });
 
-describe("Developer Mock Bypass Authentication", () => {
+afterAll(() => {
+  for (const key of ENV_KEYS) {
+    if (saved[key] === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = saved[key];
+    }
+  }
+});
+
+describe("Developer bypass in development with DEV_BYPASS_TOKEN set", () => {
   let app;
-  let originalNodeEnv;
-  let originalDevBypass;
 
   beforeAll(async () => {
-    originalNodeEnv = process.env.NODE_ENV;
-    originalDevBypass = process.env.DEV_BYPASS_TOKEN;
-    process.env.NODE_ENV = "development";
-    process.env.DEV_BYPASS_TOKEN = DEV_TOKEN;
-
-    const authModule =
-      await import("../../../services/api-backend/middleware/auth.js");
-    checkJwt = authModule.checkJwt;
-    optionalAuth = authModule.optionalAuth;
-
-    app = express();
-    app.use(express.json());
-
-    app.get("/api/test-protected", checkJwt, (req, res) => {
-      res.json({
-        message: "success",
-        user: req.user,
-        userId: req.userId,
-        auth: req.auth,
-      });
-    });
-
-    app.get("/api/test-optional", optionalAuth, (req, res) => {
-      res.json({
-        message: "success",
-        user: req.user,
-        userId: req.userId,
-        auth: req.auth,
-      });
+    app = await loadApp({
+      NODE_ENV: "development",
+      DEV_BYPASS_TOKEN: DEV_TOKEN,
+      CF_ACCESS_TEAM_DOMAIN: undefined,
+      CF_ACCESS_AUD: undefined,
     });
   });
 
-  afterAll(() => {
-    process.env.NODE_ENV = originalNodeEnv;
-    if (originalDevBypass === undefined) {
-      delete process.env.DEV_BYPASS_TOKEN;
-    } else {
-      process.env.DEV_BYPASS_TOKEN = originalDevBypass;
-    }
-  });
-
-  it("should successfully bypass verification for configured DEV_BYPASS_TOKEN", async () => {
+  it("accepts the configured token on a protected route", async () => {
     const response = await request(app)
       .get("/api/test-protected")
-      .set("Authorization", `Bearer ${DEV_TOKEN}`)
-      .expect(200);
+      .set("Authorization", `Bearer ${DEV_TOKEN}`);
 
-    expect(response.body.message).toBe("success");
-    expect(response.body.auth).toBeDefined();
+    expect(response.status).toBe(200);
     expect(response.body.auth.token).toBe(DEV_TOKEN);
     expect(response.body.auth.payload.email).toBe("dev@example.com");
     expect(response.body.auth.payload.name).toBe("Dev User");
     expect(response.body.auth.payload.nickname).toBe("dev-user");
   });
 
-  it("should successfully populate auth credentials under optionalAuth for DEV_BYPASS_TOKEN", async () => {
+  it("populates auth under optionalAuth for the configured token", async () => {
     const response = await request(app)
       .get("/api/test-optional")
-      .set("Authorization", `Bearer ${DEV_TOKEN}`)
-      .expect(200);
+      .set("Authorization", `Bearer ${DEV_TOKEN}`);
 
-    expect(response.body.message).toBe("success");
-    expect(response.body.auth).toBeDefined();
+    expect(response.status).toBe(200);
     expect(response.body.auth.payload.email).toBe("dev@example.com");
   });
 
-  it("should reject unrecognized tokens (delegating to express-jwt/express-oauth2-jwt-bearer)", async () => {
+  it("rejects any other token with 401", async () => {
     const response = await request(app)
       .get("/api/test-protected")
       .set("Authorization", "Bearer invalid_or_unsupported_token");
 
-    expect(response.status).not.toBe(200);
+    expect(response.status).toBe(401);
+    expect(response.body.code).toBe("TOKEN_INVALID");
+    expect(response.body.auth).toBeUndefined();
+  });
+
+  it("rejects a token that only starts with the configured token with 401", async () => {
+    const response = await request(app)
+      .get("/api/test-protected")
+      .set("Authorization", `Bearer ${DEV_TOKEN}x`);
+
+    expect(response.status).toBe(401);
+  });
+
+  it("leaves optionalAuth anonymous for any other token", async () => {
+    const response = await request(app)
+      .get("/api/test-optional")
+      .set("Authorization", "Bearer invalid_or_unsupported_token");
+
+    expect(response.status).toBe(200);
+    expect(response.body.auth).toBeNull();
+  });
+});
+
+describe.each([
+  ["production", "production"],
+  ["test", "test"],
+  ["unset", undefined],
+])("Developer bypass when NODE_ENV is %s", (_label, nodeEnv) => {
+  let app;
+
+  beforeAll(async () => {
+    app = await loadApp({
+      NODE_ENV: nodeEnv,
+      DEV_BYPASS_TOKEN: DEV_TOKEN,
+      CF_ACCESS_TEAM_DOMAIN: undefined,
+      CF_ACCESS_AUD: undefined,
+    });
+  });
+
+  it("rejects the configured token with 401", async () => {
+    const response = await request(app)
+      .get("/api/test-protected")
+      .set("Authorization", `Bearer ${DEV_TOKEN}`);
+
+    expect(response.status).toBe(401);
+    expect(response.body.code).toBe("TOKEN_INVALID");
+  });
+
+  it("does not attach the dev identity under optionalAuth", async () => {
+    const response = await request(app)
+      .get("/api/test-optional")
+      .set("Authorization", `Bearer ${DEV_TOKEN}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.auth).toBeNull();
+  });
+});
+
+describe("Developer bypass in development without DEV_BYPASS_TOKEN", () => {
+  let app;
+
+  beforeAll(async () => {
+    app = await loadApp({
+      NODE_ENV: "development",
+      DEV_BYPASS_TOKEN: undefined,
+      CF_ACCESS_TEAM_DOMAIN: undefined,
+      CF_ACCESS_AUD: undefined,
+    });
+  });
+
+  it("has no built-in fallback token", async () => {
+    const response = await request(app)
+      .get("/api/test-protected")
+      .set("Authorization", `Bearer ${DEV_TOKEN}`);
+
+    expect(response.status).toBe(401);
   });
 });
