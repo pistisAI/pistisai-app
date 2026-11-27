@@ -46,7 +46,7 @@ Everything described as "Direct Proxy", "Container Proxy" or "Tunnel" below appl
 
 ## Authentication & Tier Detection
 
-All API endpoints require authentication via Auth0 JWT tokens. User tier information is extracted from the token's metadata:
+All API endpoints require authentication via Cloudflare Access JWT tokens. User tier information is extracted from the token's metadata:
 
 Verified against `services/api-backend/middleware/tier-check.js:90-127` — both the plain (`user_metadata`, `app_metadata`) and namespaced (`https://Pistisai.com/user_metadata`, `https://Pistisai.com/app_metadata`) claim shapes are read. The actual lookup order is:
 
@@ -134,10 +134,10 @@ Historical direct proxy to a local Ollama support-provider path for account tier
 
 ```bash
 # Get available models
-GET /api/direct-proxy/auth0|user123/ollama/api/tags
+GET /api/direct-proxy/user123/ollama/api/tags
 
 # Generate completion
-POST /api/direct-proxy/auth0|user123/ollama/api/generate
+POST /api/direct-proxy/user123/ollama/api/generate
 Content-Type: application/json
 
 {
@@ -200,11 +200,11 @@ Start the historical container-based proxy for premium/enterprise users.
   "success": true,
   "message": "Streaming proxy started successfully",
   "proxy": {
-    "proxyId": "proxy-auth0|user123-1642234567890",
+    "proxyId": "proxy-user123-1642234567890",
     "status": "running",
     "createdAt": "2024-01-15T10:30:00.000Z",
     "directTunnel": false,
-    "endpoint": "https://api.example.com/proxy/auth0|user123",
+    "endpoint": "https://api.example.com/proxy/user123",
     "userTier": "premium"
   }
 }
@@ -374,7 +374,7 @@ const response = await fetch(`/api/tunnel/${userId}/ollama/api/generate`, {
 
 1. **"Direct proxy access denied"**
    - Verify user is on account tier
-   - Check Auth0 metadata configuration
+   - Check Cloudflare Access claims configuration
    - Ensure proper authentication
 
 2. **"Desktop client not connected"**
