@@ -77,7 +77,7 @@ jobs:
         run: npm run test:ci:extended
 
   other-suites:
-    name: "🧪 Proxy, auth, SDK, policy & plugin tests"
+    name: "🧪 Proxy, auth, SDK, policy, plugin & skill tests"
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
@@ -122,3 +122,13 @@ jobs:
 
       - name: "🧪 Hermes plugins (python unittest)"
         run: python3 -m unittest discover -s test/hermes-plugins -p 'test_*.py' -v
+
+      # Lockfile is committed so npm ci matches the other Node jobs. The
+      # personality skill tests are Vitest, not Jest.
+      - name: "📦 npm ci (openclaw skill)"
+        working-directory: services/openclaw-skills/pistisai
+        run: npm ci --no-audit --no-fund
+
+      - name: "🧪 openclaw personality skill"
+        working-directory: services/openclaw-skills/pistisai
+        run: npm test
