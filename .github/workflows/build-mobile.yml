@@ -17,6 +17,11 @@ concurrency:
   group: mobile-build-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  # workflow_run's github.sha is the default-branch tip, not the Web Deploy
+  # commit. head_sha is that commit; other events leave it empty.
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
 permissions:
   contents: read
   packages: read
@@ -26,7 +31,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     if: >-
-      github.event_name == 'pull_request' ||
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'
     outputs:
@@ -34,6 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
@@ -61,6 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -96,7 +102,16 @@ jobs:
             ls -R "${ANDROID_HOME:-/nonexistent}" | head -50 >&2
             exit 1
           fi
-          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          # pipefail would treat `yes` closing the pipe as a failure even when
+          # sdkmanager accepted the licenses. Judge sdkmanager's own status.
+          set +o pipefail
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1
+          license_status=$?
+          set -o pipefail
+          if [ "$license_status" -ne 0 ]; then
+            echo "::error::sdkmanager --licenses failed with status ${license_status}"
+            exit 1
+          fi
           # API 37 is published only as platforms;android-37.0. AGP 8.11.1+
           # resolves that id from compileSdk 37 + compileSdkMinor 0.
           # sdkmanager sometimes unpacks that package into platforms/android-37.
@@ -144,7 +159,7 @@ jobs:
               fi
               echo "sdkmanager install failed for $pkg (attempt $attempt/$max_attempts):" >&2
               tail -40 /tmp/sdk-extra.log >&2
-              rm -rf "${ANDROID_HOME}/.temp" "$cleanup_dir" 2>/dev/null || true
+              rm -rf "${ANDROID_HOME}/.temp" "$cleanup_dir"
               attempt=$((attempt + 1))
               sleep $((attempt * 15))
             done
@@ -176,10 +191,6 @@ jobs:
           storeFile=../release-keystore.jks
           EOF
             echo "signed=true" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "Pull request has no Android signing secrets."
-            echo "Building a release APK with the debug key."
-            echo "signed=false" >> "$GITHUB_OUTPUT"
           else
             echo "Android signing secrets are missing."
             echo "Signed builds are required on main and tags."
@@ -191,9 +202,24 @@ jobs:
 
       - name: Flutter Build APK
         run: |
+          set -euo pipefail
           flutter pub get
           bash tool/brand.sh pistisai
-          flutter build apk --release --split-per-abi --dart-define=BRAND=pistisai --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+          # Maven Central answers 429 under parallel release jobs. Retry the
+          # build; the last failure still fails this step.
+          attempt=1
+          max_attempts=3
+          until flutter build apk --release --split-per-abi --dart-define=BRAND=pistisai --dart-define=SENTRY_DSN="${SENTRY_DSN:-}"; do
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "::error::flutter build apk failed after ${max_attempts} attempts"
+              exit 1
+            fi
+            echo "::warning::flutter build apk failed (attempt ${attempt}/${max_attempts}); retrying"
+            attempt=$((attempt + 1))
+            sleep $((attempt * 20))
+          done
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
       - name: Upload APKs
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7
@@ -211,6 +237,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -255,7 +282,6 @@ jobs:
     needs: [analyze, build_android, build_ios]
     if: >-
       always() &&
-      github.event_name != 'pull_request' &&
       needs.analyze.result == 'success' &&
       (needs.build_android.result == 'success' || needs.build_android.result == 'skipped') &&
       (needs.build_ios.result == 'success' || needs.build_ios.result == 'skipped')
@@ -264,6 +290,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ env.SOURCE_SHA }}
 
       - name: Download all artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8
@@ -287,28 +315,53 @@ jobs:
             (cd ios-build && zip -r ../release-assets/Pistisai-iOS.app.zip Runner.app)
           fi
           ls -lh release-assets/
+          apk=(release-assets/*.apk)
+          if [ "${#apk[@]}" -eq 0 ] || [ ! -f "${apk[0]}" ]; then
+            echo "::error::No APK in release-assets"
+            exit 1
+          fi
+
+      - name: Write release notes
+        env:
+          VERSION: ${{ needs.analyze.outputs.version }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Pistisai Mobile v${VERSION}"
+            echo
+            echo "### Android"
+            echo "- APK(s) attached"
+            if compgen -G "release-assets/*.zip" > /dev/null; then
+              echo
+              echo "### iOS"
+              echo "- Runner.app zip attached (no codesign — dev build)"
+            fi
+          } > release-notes.md
 
       - name: Create Release
         uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd  # v1
         with:
           artifacts: "release-assets/*"
           tag: "mobile-v${{ needs.analyze.outputs.version }}+${{ github.run_number }}"
-          commit: ${{ github.sha }}
+          commit: ${{ env.SOURCE_SHA }}
           name: "Pistisai Mobile v${{ needs.analyze.outputs.version }}"
           # Immutable releases: upload to a draft, publish in the next step.
           draft: true
           artifactErrorsFailBuild: true
           allowUpdates: true
           makeLatest: false
-          body: |
-            ## Pistisai Mobile v${{ needs.analyze.outputs.version }}
-
-            ### Android
-            - APK(s) attached
-
-            ### iOS
-            - Runner.app zip attached (no codesign — dev build)
+          bodyFile: release-notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Require APK on the draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: mobile-v${{ needs.analyze.outputs.version }}+${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          names="$(gh release view "$RELEASE_TAG" --repo "${{ github.repository }}" --json assets --jq '.assets[].name')"
+          echo "$names"
+          printf '%s\n' "$names" | grep -E '\.apk$'
 
       - name: Publish release
         env:
