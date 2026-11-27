@@ -3,6 +3,7 @@ import { z } from 'zod';
 const router = express.Router();
 import db from '../database/db-pool.js';
 import { authenticateJWT } from '../middleware/auth.js';
+import { adminAuth } from '../middleware/admin-auth.js';
 import { validateSchema } from '../middleware/schema-validation.js';
 import logger from '../logger.js';
 
@@ -307,12 +308,15 @@ router.post('/invalidate', validateSchema(bodyTokenSchema), authenticateJWT, (re
 
 /**
  * POST /auth/sessions/cleanup
- * Clean up expired sessions
+ * Delete expired sessions. Admin only: the delete covers every user.
+ *
+ * Revoked sessions (is_active = false) are kept until they expire, because
+ * token validation looks them up to keep the revoked token rejected (#892).
  */
-router.post('/cleanup', authenticateJWT, async (req, res) => {
+router.post('/cleanup', adminAuth(['terminate_sessions']), async (req, res) => {
   try {
     const result = await db.query(
-      'DELETE FROM user_sessions WHERE expires_at < NOW() OR is_active = false',
+      'DELETE FROM user_sessions WHERE expires_at < NOW()',
     );
 
     res.json({ deleted: result.rowCount });

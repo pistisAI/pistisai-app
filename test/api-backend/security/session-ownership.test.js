@@ -28,7 +28,11 @@ const victimSession = {
 
 jest.unstable_mockModule(
   '../../../services/api-backend/database/db-pool.js',
-  () => ({ default: mockDb, getPool: jest.fn(() => mockDb) }),
+  () => ({
+    default: mockDb,
+    getPool: jest.fn(() => mockDb),
+    closePool: jest.fn(async () => {}),
+  }),
 );
 
 jest.unstable_mockModule(

@@ -32,8 +32,6 @@ async function testAuthFlow() {
     if (response.ok) {
       console.log(' Database health check passed');
       console.log(`   Status: ${health.status}`);
-      console.log(`   Database Type: ${health.database_type}`);
-      console.log(`   All Tables Valid: ${health.all_tables_valid}`);
     } else {
       console.log(' Database health check failed');
       console.log(`   Status: ${response.status}`);

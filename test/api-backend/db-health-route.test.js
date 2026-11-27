@@ -33,7 +33,7 @@ describe('db-health route', () => {
     await dbHealthHandler({}, res);
     expect(res.statusCode).toBe(503);
     expect(res.body.status).toBe('error');
-    expect(res.body.message).toMatch(/not initialized/);
+    expect(Object.keys(res.body).sort()).toEqual(['status', 'timestamp']);
   });
 
   it('returns healthy when schema validation passes', async () => {
@@ -47,8 +47,7 @@ describe('db-health route', () => {
     await dbHealthHandler({}, res);
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('healthy');
-    expect(res.body.all_tables_valid).toBe(true);
-    expect(res.body.database_type).toBeTruthy();
+    expect(Object.keys(res.body).sort()).toEqual(['status', 'timestamp']);
   });
 
   it('returns degraded when schema validation fails checks', async () => {
@@ -61,7 +60,7 @@ describe('db-health route', () => {
     const res = mockRes();
     await dbHealthHandler({}, res);
     expect(res.body.status).toBe('degraded');
-    expect(res.body.all_tables_valid).toBe(false);
+    expect(res.body.schema_validation).toBeUndefined();
   });
 
   it('returns 503 when validation throws', async () => {
@@ -74,6 +73,6 @@ describe('db-health route', () => {
     await dbHealthHandler({}, res);
     expect(res.statusCode).toBe(503);
     expect(res.body.status).toBe('error');
-    expect(res.body.error).toBe('connection refused');
+    expect(JSON.stringify(res.body)).not.toContain('connection refused');
   });
 });

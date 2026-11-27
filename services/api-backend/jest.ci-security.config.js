@@ -31,6 +31,10 @@ export default {
     // #895: raw-body webhook HMAC and development-only dev bypass.
     '**/test/api-backend/agent-events-raw-hmac-895.test.js',
     '**/test/api-backend/dev-bypass-node-env-895.test.js',
+    // Admin/owner checks on session cleanup, model catalogue, webhook test
+    // events, rate-limit admin routes and the public database health check.
+    '**/test/api-backend/admin-owner-checks.test.js',
+    '**/test/api-backend/db-health-route.test.js',
     // Session, signing-key and key-comparison hardening.
     '**/test/api-backend/session-token-hardening-auth-service.test.js',
     '**/test/api-backend/session-token-hardening-routes.test.js',
