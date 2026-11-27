@@ -107,7 +107,7 @@ jobs:
 
       - name: Build api-backend
         if: steps.changes.outputs.api_backend == 'true'
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8  # v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc  # v7.4.0
         with:
           context: .
           file: config/docker/Dockerfile.api-backend
@@ -124,7 +124,7 @@ jobs:
 
       - name: Build streaming-proxy
         if: steps.changes.outputs.streaming_proxy == 'true'
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8  # v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc  # v7.4.0
         with:
           context: .
           file: config/docker/Dockerfile.streaming-proxy
@@ -141,7 +141,7 @@ jobs:
 
       - name: Build postgres
         if: steps.changes.outputs.postgres == 'true'
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8  # v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc  # v7.4.0
         with:
           context: .
           file: config/docker/Dockerfile.postgres
