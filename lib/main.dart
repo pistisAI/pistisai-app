@@ -20,6 +20,7 @@ import 'package:pistisai/config/theme.dart';
 
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/services/app_initialization_service.dart';
+import 'package:pistisai/auth/providers/cloudflare_access_auth_provider.dart';
 import 'package:pistisai/services/auth_service.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
@@ -127,7 +128,8 @@ void main([List<String> args = const []]) async {
   if (callbackUrl != null) {
     debugPrint('[Main] Command-line arguments received: $args');
     await _handleCommandLineArgs(args);
-    return; // Exit after handling callback
+    // Continue into normal startup: `_handleCommandLineArgs` persisted the
+    // Access JWT, and `AuthProvider.initialize()` reads it back on boot.
   }
 
   // Flutter requires WidgetsFlutterBinding to be initialized first
@@ -564,7 +566,13 @@ class _PistisaiAppState extends State<PistisaiApp> {
   }
 }
 
-Future<void> _handleCommandLineArgs(List<String> args) async {
+/// Handles a desktop deep-link callback passed as a command-line argument.
+///
+/// The callback arrives on a cold start (another running instance cannot take
+/// the single-instance lock). Persist the Access JWT here and let startup
+/// continue, so `AuthProvider.initialize()` restores the session instead of
+/// the app exiting with no login (#852). Returns true when a token was stored.
+Future<bool> _handleCommandLineArgs(List<String> args) async {
   debugPrint('[Main] Handling command-line arguments: $args');
   String? callbackUrl;
   for (final arg in args) {
@@ -574,11 +582,16 @@ Future<void> _handleCommandLineArgs(List<String> args) async {
     }
   }
 
-  if (callbackUrl != null) {
-    // Do not write the callback URL (auth code included) to a temp file.
-    debugPrint('[Main] Found OAuth callback URL');
+  if (callbackUrl == null) {
+    return false;
   }
-  debugPrint('[Main] Command-line handler exiting');
+
+  // Never write the raw callback URL (it contains the JWT) to a temp file.
+  debugPrint('[Main] Found OAuth callback URL');
+  final stored =
+      await CloudflareAccessAuthProvider.persistTokenFromCallback(callbackUrl);
+  debugPrint('[Main] Callback token persisted: $stored');
+  return stored;
 }
 
 class _AppRouterHost extends StatefulWidget {

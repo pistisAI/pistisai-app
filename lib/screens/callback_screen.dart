@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../utils/web_interop_stub.dart'
     if (dart.library.html) '../utils/web_interop.dart';
+import '../di/locator.dart' as di;
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
 import '../services/platform_adapter.dart';
@@ -143,12 +144,14 @@ class _CallbackScreenState extends State<CallbackScreen> {
         final currentUrl = window.location.href;
         final uri = Uri.parse(currentUrl);
 
-        // Remove callback parameters (code, state, error, error_description)
+        // Remove callback parameters (code, state, error, cf_jwt, token)
         final cleanParams = Map<String, String>.from(uri.queryParameters)
           ..remove('code')
           ..remove('state')
           ..remove('error')
-          ..remove('error_description');
+          ..remove('error_description')
+          ..remove('cf_jwt')
+          ..remove('token');
 
         // Build clean URL
         final cleanUri = uri.replace(
@@ -316,7 +319,17 @@ class _CallbackScreenState extends State<CallbackScreen> {
 
       // Trigger the auth provider to handle the redirect callback
       // The provider internally uses onLoad() to parse the URL and exchange tokens
-      final success = await authService.handleCallback();
+      // Pass the full callback URL: go_router may not surface `cf_jwt`/
+      // `token` as route params, and without a URL the provider just checks
+      // for an already-stored token, which a new user does not have (#852).
+      final params = widget.queryParams.isNotEmpty
+          ? widget.queryParams
+          : Uri.base.queryParameters;
+      final callbackUrl = params.isEmpty
+          ? Uri.base.toString()
+          : Uri.base.replace(queryParameters: params).toString();
+      final success =
+          await authService.handleCallback(callbackUrl: callbackUrl);
       AppConfig.verboseLog(
           '[CallbackScreen] handleCallback returned: $success');
 
@@ -359,6 +372,12 @@ class _CallbackScreenState extends State<CallbackScreen> {
 
               // Clear the callback forwarded flag now that processing is complete
               _clearCallbackForwardedFlag();
+
+              // Strip cf_jwt/token/etc. from the browser URL *before* navigating.
+              // The web redirect treats live callback params in Uri.base as a new
+              // callback, so leaving them here bounces a successful sign-in back
+              // to /callback until GoRouter hits its redirect limit (#852).
+              _clearCallbackParametersFromUrl();
 
               // Use pushReplacement to clear the callback URL from history
               AppConfig.verboseLog(
@@ -471,7 +490,10 @@ class _CallbackScreenState extends State<CallbackScreen> {
     // Get theme and platform services
     // Watch ThemeProvider to rebuild when theme changes
     context.watch<ThemeProvider>();
-    final platformAdapter = context.read<PlatformAdapter>();
+    // Read from the service locator, not the widget tree: main.dart only
+    // adds this provider when DI has registered it, and pumping this screen
+    // in isolation otherwise throws ProviderNotFoundException (#852).
+    final platformAdapter = di.serviceLocator.get<PlatformAdapter>();
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;

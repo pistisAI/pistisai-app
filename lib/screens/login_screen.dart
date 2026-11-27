@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../brand/brand_copy.dart';
 import '../components/app_logo.dart';
 import '../config/theme.dart';
+import '../config/router_redirect.dart';
 import '../services/auth_service.dart';
 import '../services/theme_provider.dart';
 import '../services/platform_adapter.dart';
@@ -143,6 +144,14 @@ class _LoginScreenState extends State<LoginScreen> {
     context.watch<ThemeProvider>();
     final platformService = context.watch<PlatformDetectionService>();
     final platformAdapter = PlatformAdapter(platformService);
+
+    // "Continue without signing in" has no working destination on web: the
+    // redirect rules send every app route back to /login (#852). The helper
+    // returns null there so the dead control can be hidden.
+    final localModeTarget = localModeDestination(
+      isWeb: kIsWeb,
+      isMobile: platformService.isMobile,
+    );
 
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
@@ -317,10 +326,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           SizedBox(height: 16.0),
 
-                          TextButton(
-                            onPressed: () => context.go('/'),
-                            child: Text(BrandCopy.continueLocalMode),
-                          ),
+                          // Web has no local-only session path, so the button
+                          // is hidden there; a phone in cloud mode lands on
+                          // /connect instead of looping back to login (#852).
+                          if (localModeTarget != null)
+                            TextButton(
+                              onPressed: () => context.go(localModeTarget),
+                              child: Text(BrandCopy.continueLocalMode),
+                            ),
 
                           if (!kReleaseMode) const SizedBox(height: 8.0),
 
