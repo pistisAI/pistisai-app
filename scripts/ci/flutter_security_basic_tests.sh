@@ -60,6 +60,7 @@ flutter test \
   test/services/openclaw_manager/ \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
+  test/services/agent_session/ \
   test/screens/instances/instances_screen_test.dart \
   test/screens/admin/ \
   test/services/admin_center_dns_validation_test.dart \
