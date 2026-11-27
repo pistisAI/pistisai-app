@@ -20,7 +20,9 @@ import 'package:pistisai/config/theme.dart';
 
 import 'package:pistisai/di/locator.dart' as di;
 import 'package:pistisai/services/app_initialization_service.dart';
+import 'package:pistisai/auth/auth_provider.dart';
 import 'package:pistisai/auth/providers/cloudflare_access_auth_provider.dart';
+import 'package:pistisai/services/window_manager_service.dart';
 import 'package:pistisai/services/auth_service.dart';
 import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
@@ -97,10 +99,21 @@ void main([List<String> args = const []]) async {
 
   // Ensure only one instance runs at a time (desktop hub only).
   // Android/iOS must not bind the desktop lock port or they will exit.
+  // A sign-in callback (`pistisai://callback?...`) usually starts a second
+  // instance, because sign-in begins in the running app: forward the URL to
+  // that instance over the lock's loopback socket before exiting (#852).
   if (PlatformHelper.isDesktop) {
-    final isFirst = await SingleInstance.acquireLock();
+    final isFirst = await SingleInstance.acquireLock(
+      onForwardedUrl: (url) => unawaited(_handleForwardedCallback(url)),
+      accept: Brand.current.isCallbackUrl,
+    );
     if (!isFirst) {
-      debugPrint('[Main] Another instance is already running. Exiting.');
+      final forwarded = await forwardCallbackToRunningInstance(
+        args,
+        SingleInstance.forwardToRunningInstance,
+      );
+      debugPrint(
+          '[Main] Another instance is already running (callback forwarded: $forwarded). Exiting.');
       exit(0);
     }
   }
@@ -126,7 +139,7 @@ void main([List<String> args = const []]) async {
   }
   final callbackUrl = resolveCallbackUrl(args);
   if (callbackUrl != null) {
-    debugPrint('[Main] Command-line arguments received: $args');
+    // Never print the arguments: the callback URL carries a bearer JWT.
     await _handleCommandLineArgs(args);
     // Continue into normal startup: `_handleCommandLineArgs` persisted the
     // Access JWT, and `AuthProvider.initialize()` reads it back on boot.
@@ -566,21 +579,70 @@ class _PistisaiAppState extends State<PistisaiApp> {
   }
 }
 
-/// Handles a desktop deep-link callback passed as a command-line argument.
-///
-/// The callback arrives on a cold start (another running instance cannot take
-/// the single-instance lock). Persist the Access JWT here and let startup
-/// continue, so `AuthProvider.initialize()` restores the session instead of
-/// the app exiting with no login (#852). Returns true when a token was stored.
-Future<bool> _handleCommandLineArgs(List<String> args) async {
-  debugPrint('[Main] Handling command-line arguments: $args');
-  String? callbackUrl;
-  for (final arg in args) {
-    if (Brand.current.isCallbackUrl(arg)) {
-      callbackUrl = arg;
-      break;
+/// In a second instance, send the callback URL among [args] (if any) to the
+/// running instance with [send]. Returns true when a URL was sent; false when
+/// there is none or sending failed. The URL is never logged.
+Future<bool> forwardCallbackToRunningInstance(
+  List<String> args,
+  Future<bool> Function(String url) send,
+) async {
+  final url = resolveCallbackUrl(args);
+  if (url == null) {
+    return false;
+  }
+  return send(url);
+}
+
+/// Handles a callback URL forwarded by a second instance: completes sign-in
+/// through the auth provider, brings the window to the front and shows an
+/// error when the callback is rejected.
+Future<void> _handleForwardedCallback(String url) async {
+  // The forward normally arrives long after startup; wait briefly if not.
+  for (var i = 0;
+      i < 60 && !di.serviceLocator.isRegistered<AuthService>();
+      i++) {
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+  }
+  if (!di.serviceLocator.isRegistered<AuthService>()) {
+    debugPrint('[Main] Forwarded callback ignored: auth not ready');
+    return;
+  }
+  final ok = await di.serviceLocator
+      .get<AuthService>()
+      .handleCallback(callbackUrl: url);
+  debugPrint('[Main] Forwarded callback handled: $ok');
+  unawaited(WindowManagerService().showWindow());
+  if (ok) {
+    return;
+  }
+  AccessCallbackOutcome? outcome;
+  if (di.serviceLocator.isRegistered<AuthProvider>()) {
+    final provider = di.serviceLocator.get<AuthProvider>();
+    if (provider is CloudflareAccessAuthProvider) {
+      outcome = provider.lastCallbackOutcome;
     }
   }
+  final context = navigatorKey.currentContext;
+  if (context == null || !context.mounted) {
+    return;
+  }
+  final l10n = AppLocalizations.of(context);
+  final message = outcome == AccessCallbackOutcome.differentAccount
+      ? l10n.authCallbackDifferentAccount
+      : l10n.authCallbackRejected;
+  ScaffoldMessenger.maybeOf(context)
+      ?.showSnackBar(SnackBar(content: Text(message)));
+}
+
+/// Handles a desktop deep-link callback passed as a command-line argument.
+///
+/// The callback arrives on a cold start (no running instance held the
+/// single-instance lock). Persist the Access JWT here, after the checks in
+/// [CloudflareAccessAuthProvider.processCallback], and let startup continue,
+/// so `AuthProvider.initialize()` restores the session (#852). Returns true
+/// when a token was stored. The arguments are never logged.
+Future<bool> _handleCommandLineArgs(List<String> args) async {
+  final callbackUrl = resolveCallbackUrl(args);
 
   if (callbackUrl == null) {
     return false;

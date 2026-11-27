@@ -2310,6 +2310,14 @@
   "sessionsPreview": "Last message",
   "sessionsLastActive": "Last active",
   "agentsRegistrySignInRequired": "Sign in to see registered agents.",
+  "authCallbackRejected": "Sign-in was not completed: the sign-in link is invalid, expired, or was not started from this app. Start sign-in again from the app.",
+  "@authCallbackRejected": {
+    "description": "Shown when the app refuses a sign-in callback link."
+  },
+  "authCallbackDifferentAccount": "This sign-in link is for a different account. Your current session was kept. Sign out, then start sign-in again from the app to switch accounts.",
+  "@authCallbackDifferentAccount": {
+    "description": "Shown when a sign-in link would replace the signed-in account without the user starting a sign-in."
+  },
   "agentsRegistryForbidden": "Your account is not allowed to view the agent registry.",
   "agentsRegistryLoadFailed": "Could not load the agent registry: {error}",
   "@agentsRegistryLoadFailed": {

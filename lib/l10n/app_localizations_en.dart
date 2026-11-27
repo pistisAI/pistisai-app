@@ -3639,6 +3639,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign in to see registered agents.';
 
   @override
+  String get authCallbackRejected =>
+      'Sign-in was not completed: the sign-in link is invalid, expired, or was not started from this app. Start sign-in again from the app.';
+
+  @override
+  String get authCallbackDifferentAccount =>
+      'This sign-in link is for a different account. Your current session was kept. Sign out, then start sign-in again from the app to switch accounts.';
+
+  @override
   String get agentsRegistryForbidden =>
       'Your account is not allowed to view the agent registry.';
 

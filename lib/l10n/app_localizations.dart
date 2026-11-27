@@ -6416,6 +6416,18 @@ abstract class AppLocalizations {
   /// **'Sign in to see registered agents.'**
   String get agentsRegistrySignInRequired;
 
+  /// Shown when the app refuses a sign-in callback link.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in was not completed: the sign-in link is invalid, expired, or was not started from this app. Start sign-in again from the app.'**
+  String get authCallbackRejected;
+
+  /// Shown when a sign-in link would replace the signed-in account without the user starting a sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in link is for a different account. Your current session was kept. Sign out, then start sign-in again from the app to switch accounts.'**
+  String get authCallbackDifferentAccount;
+
   /// No description provided for @agentsRegistryForbidden.
   ///
   /// In en, this message translates to:
