@@ -54,7 +54,9 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: main
+          # On push, read the commit that was pushed. Checking out moving
+          # main can classify a later merge and bump the wrong kind.
+          ref: ${{ github.event_name == 'push' && github.sha || github.ref }}
           fetch-depth: 1
 
       - name: Determine bump type
@@ -210,6 +212,7 @@ jobs:
           # person rather than merge unchecked.
           NO_CHECKS_GRACE_POLLS=10   # 10 x 30 s = 5 min
           PASSED_STREAK=0
+          MERGE_FAILS=0
           GATE=none
           # Wait up to ~25 min for the bump PR to merge. Bumps are queued by the
           # concurrency group, so each one has its own check window.
@@ -243,7 +246,16 @@ jobs:
             # --match-head-commit refuses the merge if the head moved since.
             if [ "$PASSED_STREAK" -ge 2 ] && [ "$MERGE" = "CLEAN" ]; then
               echo "Checks passed and PR is clean; merging $BUMP_PR_URL at $HEAD_SHA"
-              gh pr merge "$BUMP_PR_URL" --squash --match-head-commit "$HEAD_SHA" || true
+              if gh pr merge "$BUMP_PR_URL" --squash --match-head-commit "$HEAD_SHA"; then
+                echo "Merge command accepted"
+              else
+                MERGE_FAILS=$((MERGE_FAILS + 1))
+                echo "::warning::gh pr merge failed (${MERGE_FAILS}/3) for $BUMP_PR_URL at $HEAD_SHA"
+                if [ "$MERGE_FAILS" -ge 3 ]; then
+                  echo "::error::gh pr merge failed 3 times; leaving $BUMP_PR_URL open"
+                  exit 1
+                fi
+              fi
               STATE_NOW=$(gh pr view "$BUMP_PR_URL" --json state -q .state)
               [ "$STATE_NOW" = "MERGED" ] && { echo "Bump merged: $BUMP_PR_URL"; exit 0; }
             fi
