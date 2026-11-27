@@ -2,16 +2,61 @@
 # Uploads built assets to an existing GitHub release
 
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
-[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName = 'Upload')]
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $true, ParameterSetName = 'Upload')]
     [string]$ReleaseId,
 
-    [Parameter(Mandatory = $false)]
+    [Parameter(Mandatory = $false, ParameterSetName = 'Upload')]
     [string]$AssetPath,
 
-    [switch]$Help
+    [Parameter(ParameterSetName = 'Upload')]
+    [switch]$Help,
+
+    [string]$RepoOwner,
+
+    [string]$RepoName,
+
+    [Parameter(Mandatory = $true, ParameterSetName = 'Print')]
+    [switch]$PrintRepository
 )
+
+# Upstream repository. A rebrand overrides -RepoOwner/-RepoName or
+# PISTISAI_GITHUB_OWNER / PISTISAI_GITHUB_REPO, or sets BRAND so
+# repository_label in brand/<id>/brand.yaml supplies owner/repo.
+# See docs/WHITE_LABEL.md.
+function Resolve-PistisaiGitHubRepository {
+    param(
+        [string]$Owner,
+        [string]$Name
+    )
+
+    if (-not $Owner) { $Owner = $env:PISTISAI_GITHUB_OWNER }
+    if (-not $Name) { $Name = $env:PISTISAI_GITHUB_REPO }
+
+    $slug = '^[A-Za-z0-9_.-]+$'
+    if ((-not $Owner) -or (-not $Name)) {
+        $brandId = if ($env:BRAND) { $env:BRAND } else { 'pistisai' }
+        if ($brandId -match '^[A-Za-z0-9_-]+$') {
+            $brandFile = Join-Path $PSScriptRoot "..\..\brand\$brandId\brand.yaml"
+            if (Test-Path -LiteralPath $brandFile) {
+                $match = Select-String -LiteralPath $brandFile -Pattern '^repository_label:\s*[''"]?([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)' | Select-Object -First 1
+                if ($match) {
+                    if (-not $Owner) { $Owner = $match.Matches[0].Groups[1].Value }
+                    if (-not $Name) { $Name = $match.Matches[0].Groups[2].Value }
+                }
+            }
+        }
+    }
+
+    if (-not $Owner -or $Owner -notmatch $slug) { $Owner = 'pistisAI' }
+    if (-not $Name -or $Name -notmatch $slug) { $Name = 'pistisai-app' }
+
+    return [pscustomobject]@{
+        Owner = $Owner
+        Name  = $Name
+    }
+}
 
 # Import build environment utilities
 $utilsPath = Join-Path $PSScriptRoot "BuildEnvironmentUtilities.ps1"
@@ -47,9 +92,15 @@ function Show-Help {
     Write-Host "Usage: .\Upload-GitHubReleaseAssets.ps1 -ReleaseId <id> [-AssetPath <path>]" -ForegroundColor White
     Write-Host ""
     Write-Host "Parameters:" -ForegroundColor Yellow
-    Write-Host "  -ReleaseId <id>     GitHub release ID (required)"
+    Write-Host "  -ReleaseId <id>     GitHub release ID (required to upload)"
     Write-Host "  -AssetPath <path>   Specific asset file to upload (optional)"
-    Write-Host "  -Help              Show this help message"
+    Write-Host "  -RepoOwner <owner>  GitHub owner (optional; overrides the environment)"
+    Write-Host "  -RepoName <repo>    GitHub repository (optional; overrides the environment)"
+    Write-Host "  -PrintRepository    Print owner/repo and exit"
+    Write-Host "  -Help               Show this help message"
+    Write-Host ""
+    Write-Host "Environment: PISTISAI_GITHUB_OWNER, PISTISAI_GITHUB_REPO, BRAND" -ForegroundColor Yellow
+    Write-Host "Default repository: pistisAI/pistisai-app" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "Examples:" -ForegroundColor Green
     Write-Host "  .\Upload-GitHubReleaseAssets.ps1 -ReleaseId 228513276"
@@ -81,9 +132,9 @@ function Send-AssetToGitHub {
             }
 
             # GitHub CLI approach (requires gh CLI to be installed and authenticated)
-            Write-LogInfo "Executing: gh release upload v$Version `"$FilePath`" --repo iacle-solutions/iacle-app --clobber"
+            Write-LogInfo "Executing: gh release upload v$Version `"$FilePath`" --repo $script:GithubRepository --clobber"
 
-            $result = & gh release upload "v$Version" $FilePath --repo iacle-solutions/iacle-app --clobber 2>&1
+            $result = & gh release upload "v$Version" $FilePath --repo $script:GithubRepository --clobber 2>&1
 
             if ($LASTEXITCODE -eq 0) {
                 Write-LogSuccess "Successfully uploaded $fileName (attempt $attempt)"
@@ -121,7 +172,7 @@ function Test-AssetUpload {
 
     try {
         Write-LogInfo "Verifying upload of $FileName..."
-        $assets = gh api "repos/iacle-solutions/iacle-app/releases/$ReleaseId/assets" | ConvertFrom-Json
+        $assets = gh api "repos/$script:GithubRepository/releases/$ReleaseId/assets" | ConvertFrom-Json
 
         $asset = $assets | Where-Object { $_.name -eq $FileName }
 
@@ -140,7 +191,13 @@ function Test-AssetUpload {
 }
 
 function Main {
+    if ($PrintRepository) {
+        Write-Output $script:GithubRepository
+        return
+    }
+
     Write-LogInfo "Pistisai GitHub Release Asset Upload v$Version"
+    Write-LogInfo "Target repository: $script:GithubRepository"
     Write-LogInfo "================================================"
 
     if ($Help) {
@@ -214,5 +271,10 @@ function Main {
     }
 }
 
-# Execute main function
-Main
+$resolvedRepository = Resolve-PistisaiGitHubRepository -Owner $RepoOwner -Name $RepoName
+$script:GithubRepository = "$($resolvedRepository.Owner)/$($resolvedRepository.Name)"
+
+# Execute main function when run, not when dot-sourced.
+if ($MyInvocation.InvocationName -ne '.') {
+    Main
+}
