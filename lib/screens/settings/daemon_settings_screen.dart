@@ -5,7 +5,6 @@ import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../components/modern_card.dart';
-import '../../components/gradient_button.dart';
 import '../../services/unified_connection_service.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../services/platform_adapter.dart';
@@ -19,13 +18,15 @@ class DaemonSettingsScreen extends StatefulWidget {
 }
 
 class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
-  bool _enableSystemTray = true;
-  bool _startMinimized = false;
-  bool _enableNotifications = true;
-  bool _autoStartDaemon = true;
-  String _selectedTheme = 'system';
-  int _connectionTimeout = 5;
-  int _healthCheckInterval = 30;
+  // Defaults shown in disabled controls: no service stores or applies these
+  // tray and connection settings yet.
+  final bool _enableSystemTray = true;
+  final bool _startMinimized = false;
+  final bool _enableNotifications = true;
+  final bool _autoStartDaemon = true;
+  final String _selectedTheme = 'system';
+  final int _connectionTimeout = 5;
+  final int _healthCheckInterval = 30;
 
   // Real-time status tracking
   Map<String, dynamic>? _connectionStatus;
@@ -36,22 +37,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
   void initState() {
     super.initState();
     debugPrint(' [DaemonSettingsScreen] Initializing screen');
-    _loadSettings();
     _loadConnectionStatus();
-  }
-
-  void _loadSettings() {
-    // Load current daemon settings
-    // This would typically load from a configuration file or service
-    setState(() {
-      _enableSystemTray = true;
-      _startMinimized = false;
-      _enableNotifications = true;
-      _autoStartDaemon = true;
-      _selectedTheme = 'system';
-      _connectionTimeout = 5;
-      _healthCheckInterval = 30;
-    });
   }
 
   Future<void> _loadConnectionStatus() async {
@@ -84,65 +70,6 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
       setState(() {
         _isLoadingStatus = false;
       });
-    }
-  }
-
-  Future<void> _saveSettings() async {
-    final l10n = AppLocalizations.of(context);
-    try {
-      // Save settings to configuration
-      // This would typically save to a configuration file or service
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.daemonSaved),
-          backgroundColor: AppTheme.colorsOf(context).success,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.daemonSaveFailed('$e')),
-          backgroundColor: AppTheme.colorsOf(context).danger,
-        ),
-      );
-    }
-  }
-
-  Future<void> _restartDaemon() async {
-    // Read the strings before the await so no BuildContext crosses it.
-    final l10n = AppLocalizations.of(context);
-    try {
-      // Restart the system tray daemon
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.daemonRestarting),
-            backgroundColor: AppTheme.colorsOf(context).warning,
-          ),
-        );
-      }
-
-      // Add actual daemon restart logic here
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.daemonRestarted),
-            backgroundColor: AppTheme.colorsOf(context).success,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.daemonRestartFailed('$e')),
-            backgroundColor: AppTheme.colorsOf(context).danger,
-          ),
-        );
-      }
     }
   }
 
@@ -200,6 +127,12 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
                   _buildConnectionStatus(),
                   SizedBox(height: AppTheme.spacingL),
 
+                  // Nothing below is saved or applied yet (AGENTS.md:
+                  // "Controls tell the truth"), so the controls are shown
+                  // disabled under a "not available yet" note.
+                  _buildNotAvailableNote(),
+                  SizedBox(height: AppTheme.spacingM),
+
                   // General Settings
                   _buildGeneralSettings(),
                   SizedBox(height: AppTheme.spacingL),
@@ -210,10 +143,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
 
                   // Connection Settings
                   _buildConnectionSettings(),
-                  SizedBox(height: AppTheme.spacingL),
 
-                  // Actions
-                  _buildActions(),
                 ],
               ),
             ),
@@ -301,6 +231,26 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
     );
   }
 
+  Widget _buildNotAvailableNote() {
+    final l10n = AppLocalizations.of(context);
+    return ModernCard(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, color: AppTheme.colorsOf(context).warning),
+          SizedBox(width: AppTheme.spacingS),
+          Expanded(
+            child: Text(
+              l10n.daemonNotAvailableYet,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.colorsOf(context).textColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGeneralSettings() {
     final l10n = AppLocalizations.of(context);
     return ModernCard(
@@ -313,25 +263,25 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             l10n.daemonEnableTray,
             BrandCopy.traySettingsHint,
             _enableSystemTray,
-            (value) => setState(() => _enableSystemTray = value),
+            null,
           ),
           _buildSwitchTile(
             l10n.daemonStartMinimized,
             l10n.daemonStartMinimizedSubtitle,
             _startMinimized,
-            (value) => setState(() => _startMinimized = value),
+            null,
           ),
           _buildSwitchTile(
             l10n.daemonEnableNotifications,
             l10n.daemonEnableNotificationsSubtitle,
             _enableNotifications,
-            (value) => setState(() => _enableNotifications = value),
+            null,
           ),
           _buildSwitchTile(
             l10n.daemonAutoStart,
             l10n.daemonAutoStartSubtitle,
             _autoStartDaemon,
-            (value) => setState(() => _autoStartDaemon = value),
+            null,
           ),
         ],
       ),
@@ -351,7 +301,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             l10n.daemonTrayIconThemeSubtitle,
             _selectedTheme,
             ['system', 'light', 'dark', 'monochrome'],
-            (value) => setState(() => _selectedTheme = value ?? 'system'),
+            null,
           ),
         ],
       ),
@@ -373,7 +323,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             _connectionTimeout.toDouble(),
             1.0,
             30.0,
-            (value) => setState(() => _connectionTimeout = value.round()),
+            null,
           ),
           _buildSliderTile(
             l10n.daemonHealthCheckInterval,
@@ -381,43 +331,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
             _healthCheckInterval.toDouble(),
             10.0,
             300.0,
-            (value) => setState(() => _healthCheckInterval = value.round()),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActions() {
-    final l10n = AppLocalizations.of(context);
-    return ModernCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader(l10n.daemonActions, Icons.build),
-          SizedBox(height: AppTheme.spacingM),
-          Row(
-            children: [
-              Expanded(
-                child: GradientButton(
-                  text: l10n.daemonSaveSettings,
-                  onPressed: _saveSettings,
-                ),
-              ),
-              SizedBox(width: AppTheme.spacingM),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _restartDaemon,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l10n.daemonRestart),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.colorsOf(context).secondary,
-                    foregroundColor: AppTheme.colorsOf(context).textColor,
-                    padding: EdgeInsets.all(AppTheme.spacingM),
-                  ),
-                ),
-              ),
-            ],
+            null,
           ),
         ],
       ),
@@ -462,7 +376,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
     String title,
     String subtitle,
     bool value,
-    ValueChanged<bool> onChanged,
+    ValueChanged<bool>? onChanged,
   ) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: AppTheme.spacingS),
@@ -500,7 +414,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
     String subtitle,
     String value,
     List<String> options,
-    ValueChanged<String?> onChanged,
+    ValueChanged<String?>? onChanged,
   ) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: AppTheme.spacingS),
@@ -555,7 +469,7 @@ class _DaemonSettingsScreenState extends State<DaemonSettingsScreen> {
     double value,
     double min,
     double max,
-    ValueChanged<double> onChanged,
+    ValueChanged<double>? onChanged,
   ) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: AppTheme.spacingS),

@@ -8,9 +8,17 @@ import '../utils/web_interop_stub.dart'
 import '../config/app_config.dart';
 import 'package:pistisai/brand/brand.dart';
 
-/// Simple client-side log buffer that mirrors debug output into localStorage
-/// and periodically uploads entries to the backend, where they are persisted
-/// as plain text files on the container for easy retrieval.
+/// Whether the user allows client logs to leave the device.
+typedef LogUploadConsent = Future<bool> Function();
+
+Future<bool> _noUploadConsent() async => false;
+
+/// Simple client-side log buffer that mirrors debug output into localStorage.
+///
+/// Entries are uploaded to the backend only when [uploadAllowed] says the
+/// user has turned crash reporting on (web only). Consent is checked again
+/// before every upload, so turning the setting off stops uploads at once.
+/// The default is to upload nothing.
 class LogBufferService {
   static const String storageKey = 'app_client_log_buffer';
   static final LogBufferService instance = LogBufferService._internal();
@@ -21,6 +29,9 @@ class LogBufferService {
   Timer? _flushTimer;
   bool _isFlushing = false;
 
+  /// Consent check run before each upload. Defaults to "no consent".
+  LogUploadConsent uploadAllowed = _noUploadConsent;
+
   LogBufferService._internal()
       : maxEntries = 500,
         _dio = Dio(
@@ -30,6 +41,35 @@ class LogBufferService {
             receiveTimeout: const Duration(seconds: 10),
           ),
         );
+
+  @visibleForTesting
+  LogBufferService.forTesting({
+    required Dio dio,
+    required this.uploadAllowed,
+    this.maxEntries = 500,
+  }) : _dio = dio;
+
+  @visibleForTesting
+  List<Map<String, dynamic>> get pendingEntriesForTesting =>
+      List<Map<String, dynamic>>.unmodifiable(_pendingEntries);
+
+  /// Removes the query string and fragment from [url] so tokens carried in
+  /// the address never leave the device. Returns origin and path only.
+  static String sanitizeUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      return '';
+    }
+    if (!uri.hasScheme || uri.host.isEmpty) {
+      return uri.path;
+    }
+    return Uri(
+      scheme: uri.scheme,
+      host: uri.host,
+      port: uri.hasPort ? uri.port : null,
+      path: uri.path,
+    ).toString();
+  }
 
   void add(String message, {String level = 'INFO'}) {
     if (!kIsWeb) {
@@ -104,24 +144,39 @@ class LogBufferService {
         return;
       }
 
-      final userAgent = window.navigator.userAgent;
-      final payload = <String, dynamic>{
-        'timestamp': entry['timestamp'],
-        'level': level,
-        'message': rawMessage,
-        'url': url,
-        'userAgent': userAgent,
-      };
-
-      _pendingEntries.add(payload);
-      if (_pendingEntries.length > maxEntries) {
-        _pendingEntries.removeRange(0, _pendingEntries.length - maxEntries);
-      }
-
-      _scheduleFlush();
+      queueForUpload(
+        timestamp: entry['timestamp'] as String,
+        level: level,
+        message: rawMessage,
+        url: url,
+        userAgent: window.navigator.userAgent,
+      );
     } catch (_) {
       // Ignore failures when gathering metadata.
     }
+  }
+
+  /// Queues one entry for upload. The URL is reduced to origin and path.
+  @visibleForTesting
+  void queueForUpload({
+    required String timestamp,
+    required String level,
+    required String message,
+    required String url,
+    required String userAgent,
+  }) {
+    _pendingEntries.add(<String, dynamic>{
+      'timestamp': timestamp,
+      'level': level,
+      'message': message,
+      'url': sanitizeUrl(url),
+      'userAgent': userAgent,
+    });
+    if (_pendingEntries.length > maxEntries) {
+      _pendingEntries.removeRange(0, _pendingEntries.length - maxEntries);
+    }
+
+    _scheduleFlush();
   }
 
   void _scheduleFlush({Duration delay = const Duration(seconds: 3)}) {
@@ -132,14 +187,32 @@ class LogBufferService {
     _flushTimer = Timer(delay, _flushPendingEntries);
   }
 
+  @visibleForTesting
+  Future<void> flushForTesting() {
+    _flushTimer?.cancel();
+    return _flushPendingEntries();
+  }
+
   Future<void> _flushPendingEntries() async {
-    if (!kIsWeb || _isFlushing || _pendingEntries.isEmpty) {
+    if (_isFlushing || _pendingEntries.isEmpty) {
       return;
     }
 
     _isFlushing = true;
     List<Map<String, dynamic>> batch = <Map<String, dynamic>>[];
     try {
+      bool allowed;
+      try {
+        allowed = await uploadAllowed();
+      } catch (_) {
+        allowed = false;
+      }
+      if (!allowed) {
+        // No consent: drop queued entries; they stay only in the local buffer.
+        _pendingEntries.clear();
+        return;
+      }
+
       // Send at most 100 entries per batch to keep payloads small.
       final batchSize =
           _pendingEntries.length > 100 ? 100 : _pendingEntries.length;

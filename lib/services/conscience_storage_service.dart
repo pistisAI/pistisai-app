@@ -4,8 +4,67 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import 'agent_action_audit_service.dart';
+import 'approval_gate_service.dart';
+
+/// Audit logger for [ApprovalGateService] that stores the user's own
+/// decisions through the in-process [ConscienceStorageService.recordHumanApproval].
+ApprovalAuditLogger conscienceApprovalAuditLogger(
+    ConscienceStorageService storage) {
+  return (entry) async {
+    await storage.recordHumanApproval(
+      action:
+          '${entry.action.category.name}: ${entry.action.title} — ${entry.action.summary}',
+      riskLevel: 'critical',
+      approved: entry.verdict == ApprovalVerdict.approved,
+      reasoning: entry.note ?? 'Human approval gate',
+    );
+  };
+}
+
+/// Why a conscience decision write was refused.
+enum ConscienceIntegrityViolation {
+  /// The verdict is not one of [ConscienceStorageService.allowedVerdicts].
+  invalidVerdict,
+
+  /// The reviewer name is reserved for the human user (ApprovalGateService).
+  reservedReviewer,
+
+  /// The decision already has a final verdict or was decided by the user.
+  decisionLocked,
+}
+
+/// Thrown when a write would forge or change a human approval record.
+class ConscienceIntegrityException implements Exception {
+  ConscienceIntegrityException(this.violation, this.message);
+
+  final ConscienceIntegrityViolation violation;
+  final String message;
+
+  @override
+  String toString() => 'ConscienceIntegrityException($violation): $message';
+}
 
 class ConscienceStorageService {
+  /// Verdicts a reviewer may record.
+  static const allowedVerdicts = {'APPROVED', 'DENIED', 'HOLD', 'QUESTION'};
+
+  /// Verdicts after which a decision can no longer be changed.
+  static const finalVerdicts = {'APPROVED', 'DENIED'};
+
+  /// Reviewer names that only in-process human approval code may write
+  /// (see [recordHumanApproval]). AGENTS.md: a person approves critical actions.
+  static const reservedReviewers = {'user'};
+
+  static bool isReservedReviewer(String? reviewer) =>
+      reviewer != null &&
+      reservedReviewers.contains(reviewer.trim().toLowerCase());
+
+  /// Returns the upper-case verdict, or null when [verdict] is not allowed.
+  static String? normalizeVerdict(String verdict) {
+    final normalized = verdict.trim().toUpperCase();
+    return allowedVerdicts.contains(normalized) ? normalized : null;
+  }
+
   final LocalBrain _database;
   final AgentActionAuditService? _audit;
   final Uuid _uuid = const Uuid();
@@ -94,7 +153,60 @@ class ConscienceStorageService {
     return thoughts.map(_thoughtToMap).toList();
   }
 
+  /// Records a decision proposed or reviewed by an agent.
+  ///
+  /// Refuses reviewer names reserved for the human user and unknown verdicts:
+  /// this path is reachable from HTTP callers on the router.
   Future<Map<String, dynamic>> writeDecision({
+    required String action,
+    required String riskLevel,
+    String? verdict,
+    String? reviewer,
+    String? reasoning,
+  }) async {
+    if (isReservedReviewer(reviewer)) {
+      throw ConscienceIntegrityException(
+        ConscienceIntegrityViolation.reservedReviewer,
+        'Reviewer name is reserved for the user',
+      );
+    }
+    String? normalizedVerdict;
+    if (verdict != null) {
+      normalizedVerdict = normalizeVerdict(verdict);
+      if (normalizedVerdict == null) {
+        throw ConscienceIntegrityException(
+          ConscienceIntegrityViolation.invalidVerdict,
+          'Verdict must be one of ${allowedVerdicts.join(', ')}',
+        );
+      }
+    }
+    return _insertDecision(
+      action: action,
+      riskLevel: riskLevel,
+      verdict: normalizedVerdict,
+      reviewer: reviewer,
+      reasoning: reasoning,
+    );
+  }
+
+  /// Records the human user's own approve/deny decision from the in-app
+  /// approval gate. In-process only: no HTTP handler calls this.
+  Future<Map<String, dynamic>> recordHumanApproval({
+    required String action,
+    required String riskLevel,
+    required bool approved,
+    String? reasoning,
+  }) {
+    return _insertDecision(
+      action: action,
+      riskLevel: riskLevel,
+      verdict: approved ? 'APPROVED' : 'DENIED',
+      reviewer: 'user',
+      reasoning: reasoning,
+    );
+  }
+
+  Future<Map<String, dynamic>> _insertDecision({
     required String action,
     required String riskLevel,
     String? verdict,
@@ -151,10 +263,48 @@ class ConscienceStorageService {
     required String reviewer,
     required String reasoning,
   }) async {
-    await _database.updateDecisionVerdict(
-        decisionId, verdict, reviewer, reasoning);
+    final normalizedVerdict = normalizeVerdict(verdict);
+    if (normalizedVerdict == null) {
+      throw ConscienceIntegrityException(
+        ConscienceIntegrityViolation.invalidVerdict,
+        'Verdict must be one of ${allowedVerdicts.join(', ')}',
+      );
+    }
+    if (isReservedReviewer(reviewer)) {
+      throw ConscienceIntegrityException(
+        ConscienceIntegrityViolation.reservedReviewer,
+        'Reviewer name is reserved for the user',
+      );
+    }
 
-    final decision = await _database.getDecisionById(decisionId);
+    // Read before writing: a decision the user made, or one that already has
+    // a final verdict, must not be changed afterwards.
+    final existing = await _database.getDecisionById(decisionId);
+    if (existing != null) {
+      final existingVerdict = existing.verdict?.trim().toUpperCase();
+      if (isReservedReviewer(existing.reviewer) ||
+          (existingVerdict != null &&
+              finalVerdicts.contains(existingVerdict))) {
+        await _audit?.record(
+          action: 'conscience.submit_verdict',
+          dataTouched: 'conscience_decisions:$decisionId',
+          authorizationStatus: AgentAuditAuthorization.denied,
+          outcome: AgentAuditOutcome.failure,
+          agentId: reviewer,
+          authorizedBy: reviewer,
+          details: {'reason': 'decision_locked'},
+        );
+        throw ConscienceIntegrityException(
+          ConscienceIntegrityViolation.decisionLocked,
+          'Decision already has a final verdict',
+        );
+      }
+      await _database.updateDecisionVerdict(
+          decisionId, normalizedVerdict, reviewer, reasoning);
+    }
+
+    final decision =
+        existing == null ? null : await _database.getDecisionById(decisionId);
     if (decision == null) {
       await _audit?.record(
         action: 'conscience.submit_verdict',
@@ -171,12 +321,12 @@ class ConscienceStorageService {
     await _audit?.record(
       action: 'conscience.submit_verdict',
       dataTouched: 'conscience_decisions:$decisionId',
-      authorizationStatus: _authFromVerdict(verdict),
+      authorizationStatus: _authFromVerdict(normalizedVerdict),
       outcome: AgentAuditOutcome.success,
       agentId: reviewer,
       authorizedBy: reviewer,
       details: {
-        'verdict': verdict,
+        'verdict': normalizedVerdict,
         'proposed_action': decision.action,
         'risk_level': decision.riskLevel,
       },

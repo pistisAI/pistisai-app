@@ -370,31 +370,42 @@ void main() {
     });
 
     group('Error Handling', () {
-      test('should handle SharedPreferences errors gracefully', () async {
-        // This test verifies that the service handles potential errors
-        // The actual error handling depends on SharedPreferences implementation
-        try {
-          await settingsService.getTheme();
-          expect(true, true); // Should not throw
-        } catch (e) {
-          fail('Should not throw: $e');
-        }
+      test('should fall back to defaults when nothing is stored', () async {
+        SharedPreferences.setMockInitialValues({});
+        expect(await settingsService.getTheme(), 'system');
+        expect(await settingsService.getLanguage(), 'en');
       });
 
-      test('should maintain consistency after failed operations', () async {
-        // Set initial value
+      test('should read a theme stored under the ThemeProvider key', () async {
+        SharedPreferences.setMockInitialValues({'theme_mode': 'dark'});
+        expect(await settingsService.getTheme(), 'dark');
+      });
+
+      test('should reject an invalid theme and keep the previous value',
+          () async {
         await settingsService.setTheme('dark');
         expect(await settingsService.getTheme(), 'dark');
 
-        // Try invalid operation
-        try {
-          await settingsService.setTheme('invalid');
-        } catch (e) {
-          // Expected to fail
-        }
+        await expectLater(
+          settingsService.setTheme('invalid'),
+          throwsA(isA<ArgumentError>()),
+        );
 
-        // Verify previous value is still intact
         expect(await settingsService.getTheme(), 'dark');
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString('theme_mode'), 'dark');
+      });
+
+      test('should reject an invalid language and keep the previous value',
+          () async {
+        await settingsService.setLanguage('fr');
+
+        await expectLater(
+          settingsService.setLanguage('xx'),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        expect(await settingsService.getLanguage(), 'fr');
       });
     });
   });

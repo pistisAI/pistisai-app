@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../brand/brand.dart';
+import '../../services/avatar/avatar_appearance.dart';
 import '../../services/avatar/avatar_state_service.dart';
 import '../../services/settings_preference_service.dart';
 import '../../models/avatar/personality_models.dart';
@@ -228,12 +229,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
       await _settingsService.setAvatarEnthusiasm(_enthusiasm);
       await _settingsService.setAvatarEmpathy(_empathy);
 
-      // Persist appearance settings
-      await _settingsService.setAvatarColorTheme(_colorTheme);
-      await _settingsService.setAvatarAnimationStyle(_animationStyle);
+      // Persist appearance settings. Colour theme and animation style are
+      // not applied anywhere yet, so they are shown disabled and not saved.
       await _settingsService.setAvatarType(_avatarType);
       await _settingsService.setAvatarSize(_avatarSize);
       await _settingsService.setAvatarGlowEnabled(_glowEnabled);
+      // The chat avatar listens to this; without it size and glow only
+      // reached the preview until the app restarted.
+      await reloadAvatarAppearance();
 
       setState(() {
         _isLoading = false;
@@ -852,6 +855,14 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                     color: colorScheme.onSurfaceVariant,
                   ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              _l10n.avatarAppearanceNotAvailable,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                  ),
+            ),
             const SizedBox(height: 16),
 
             // Color theme selector
@@ -896,11 +907,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                   child: Text(_l10n.avatarColorMonochrome),
                 ),
               ],
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _colorTheme = value);
-                }
-              },
+              // Not applied to the avatar yet, so not selectable.
+              onChanged: null,
             ),
 
             const SizedBox(height: 16),
@@ -943,11 +951,8 @@ class _AvatarSettingsScreenState extends State<AvatarSettingsScreen> {
                   child: Text(_l10n.avatarAnimationNone),
                 ),
               ],
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _animationStyle = value);
-                }
-              },
+              // Not applied to the avatar yet, so not selectable.
+              onChanged: null,
             ),
 
             const SizedBox(height: 16),

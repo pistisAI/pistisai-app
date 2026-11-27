@@ -25,13 +25,15 @@ class OcrEngineService {
 
   /// Initialize the OCR engine
   ///
-  /// Sets up Tesseract OCR for text extraction.
-  /// On desktop platforms, initializes the native platform channel first.
-  /// This method is idempotent - calling it multiple times has no effect.
-  Future<void> initialize() async {
+  /// Uses the native Tesseract integration when the platform channel reports
+  /// it ready. Otherwise falls back to the tesseract_ocr plugin, which only
+  /// ships for Android and iOS. Returns true when one of the two is usable;
+  /// otherwise returns false and leaves the reason in [lastError].
+  /// Calling it again after a success has no effect.
+  Future<bool> initialize() async {
     if (_isInitialized) {
       debugPrint('[OCR] Already initialized, skipping');
-      return;
+      return true;
     }
 
     debugPrint('[OCR] Initializing Tesseract OCR...');
@@ -40,9 +42,10 @@ class OcrEngineService {
     if (kIsWeb) {
       _lastError = 'OCR not supported on web platform';
       debugPrint('[OCR] $_lastError');
-      return;
+      return false;
     }
 
+    String nativeReason;
     try {
       // Try native platform channel first (desktop)
       final nativeResult = await _channel.invokeMethod('ocrInitialize');
@@ -50,24 +53,33 @@ class OcrEngineService {
         debugPrint('[OCR] Native Tesseract integration initialized');
         _isInitialized = true;
         _lastError = null;
-        return;
+        return true;
       }
-      debugPrint('[OCR] Native Tesseract not available, using plugin fallback');
+      nativeReason = 'native Tesseract is not ready';
     } catch (e) {
-      debugPrint('[OCR] Native channel not available: $e');
+      nativeReason = 'native Tesseract is not available ($e)';
     }
 
-    try {
-      // Tesseract OCR is initialized on first use
+    // Plugin fallback: the tesseract_ocr plugin runs Tesseract on first use,
+    // but it only exists on Android and iOS.
+    if (pluginFallbackSupported) {
       _isInitialized = true;
       _lastError = null;
-      debugPrint('[OCR] Initialized successfully (plugin mode)');
-    } catch (e) {
-      _lastError = 'Failed to initialize OCR: $e';
-      debugPrint('[OCR] $_lastError');
-      _isInitialized = false;
+      debugPrint('[OCR] Initialized (plugin mode)');
+      return true;
     }
+
+    _isInitialized = false;
+    _lastError = 'OCR is not available on this device: $nativeReason, '
+        'and the Tesseract plugin only runs on Android and iOS';
+    debugPrint('[OCR] $_lastError');
+    return false;
   }
+
+  /// Whether the tesseract_ocr plugin fallback exists on this platform.
+  @visibleForTesting
+  bool get pluginFallbackSupported =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   /// Extract text from an image file
   ///

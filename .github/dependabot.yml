@@ -1,0 +1,8 @@
+# Keeps the pinned GitHub Actions (commit SHAs with version comments) current.
+# Only github-actions on purpose; npm and pub updates are handled by hand (#684).
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

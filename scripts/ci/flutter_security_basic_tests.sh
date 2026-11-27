@@ -31,7 +31,11 @@ flutter test \
   test/services/providers/hermes_adapter_test.dart \
   test/services/provider_discovery_service_test.dart \
   test/services/local_agent_data_portability_service_test.dart \
+  test/services/local_data_wipe_files_test.dart \
+  test/services/avatar/markdown_sync_service_test.dart \
   test/services/approval_gate_service_test.dart \
+  test/services/router_conscience_approval_integrity_test.dart \
+  test/services/conscience_storage_service_test.dart \
   test/widgets/approval/ \
   test/widgets/common/refreshable_screen_test.dart \
   test/widgets/management_screens_test.dart \
@@ -49,12 +53,19 @@ flutter test \
   test/services/channel_service_test.dart \
   test/screens/settings/llm_provider_settings_status_test.dart \
   test/screens/config/config_screen_controls_test.dart \
+  test/screens/config/changelog_markdown_test.dart \
+  test/services/log_buffer_service_consent_test.dart \
   test/screens/settings/connection_settings_rerun_wizard_test.dart \
   test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
   test/screens/instances/instances_screen_test.dart \
+  test/screens/settings/daemon_settings_honest_test.dart \
+  test/screens/settings/vision_settings_honest_test.dart \
+  test/screens/avatar/avatar_settings_honest_test.dart \
+  test/screens/desktop/file_paste_test.dart \
+  test/services/vision/ocr_engine_service_test.dart \
   test/screens/logs_screen_test.dart \
   test/widgets/overview_screen_test.dart \
   test/widgets/logout_token_clearing_timing_test.dart \

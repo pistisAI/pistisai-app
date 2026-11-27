@@ -11,6 +11,7 @@
  */
 
 import logger from '../logger.js';
+import { maskEmail } from '../utils/mask-email.js';
 import { v4 as uuidv4 } from 'uuid';
 import nodemailer from 'nodemailer';
 
@@ -102,7 +103,9 @@ class EmailQueueService {
 
       // Validate email address
       if (!this._isValidEmail(recipientEmail)) {
-        throw new Error(`Invalid recipient email: ${recipientEmail}`);
+        throw new Error(
+          `Invalid recipient email: ${maskEmail(recipientEmail)}`,
+        );
       }
 
       // If using template, render it
@@ -161,7 +164,7 @@ class EmailQueueService {
       logger.info('Email queued successfully', {
         emailId,
         userId,
-        recipientEmail,
+        recipientEmail: maskEmail(recipientEmail),
         subject,
       });
 
@@ -169,7 +172,7 @@ class EmailQueueService {
     } catch (error) {
       logger.error('Failed to queue email', {
         userId,
-        recipientEmail,
+        recipientEmail: maskEmail(recipientEmail),
         error: error.message,
       });
       throw error;
@@ -267,12 +270,12 @@ class EmailQueueService {
 
       logger.info('Email sent successfully', {
         emailId: email.id,
-        recipientEmail: email.recipient_email,
+        recipientEmail: maskEmail(email.recipient_email),
       });
     } catch (error) {
       logger.error('Failed to send email', {
         emailId: email.id,
-        recipientEmail: email.recipient_email,
+        recipientEmail: maskEmail(email.recipient_email),
         error: error.message,
       });
       throw error;
@@ -394,7 +397,7 @@ class EmailQueueService {
 
         logger.warn('Email moved to dead letter queue', {
           emailId: email.id,
-          recipientEmail: email.recipient_email,
+          recipientEmail: maskEmail(email.recipient_email),
           retryCount,
           maxRetries,
         });
@@ -411,7 +414,7 @@ class EmailQueueService {
 
         logger.info('Email scheduled for retry', {
           emailId: email.id,
-          recipientEmail: email.recipient_email,
+          recipientEmail: maskEmail(email.recipient_email),
           retryCount,
           nextRetryAt,
           delayMs,

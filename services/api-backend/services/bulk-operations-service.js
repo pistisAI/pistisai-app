@@ -17,6 +17,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getPool } from '../database/db-pool.js';
 import { logAdminAction } from '../utils/audit-logger.js';
+import { purgeUserData } from './user-data-purge.js';
 import logger from '../logger.js';
 
 class BulkOperationsService {
@@ -525,13 +526,10 @@ class BulkOperationsService {
             `;
           await client.query(deleteQuery, [userId]);
         } else {
-          // Hard delete - cascade delete related data
-          await client.query('DELETE FROM user_sessions WHERE user_id = $1', [
-            userId,
-          ]);
-          await client.query('DELETE FROM subscriptions WHERE user_id = $1', [
-            userId,
-          ]);
+          // Hard delete: remove (or pseudonymize, for security audit
+          // tables) every row tied to the user in tables that do not
+          // cascade from users, then the user row itself. Same transaction.
+          await purgeUserData(client, userId);
           await client.query('DELETE FROM users WHERE id = $1', [userId]);
         }
 
@@ -543,7 +541,9 @@ class BulkOperationsService {
           action: 'bulk_user_delete',
           resourceType: 'user',
           resourceId: userId,
-          affectedUserId: userId,
+          // After a hard delete the users row is gone, so the foreign key
+          // on affected_user_id cannot point at it.
+          affectedUserId: softDelete ? userId : null,
           details: {
             softDelete,
             bulkOperationId: operation.id,
