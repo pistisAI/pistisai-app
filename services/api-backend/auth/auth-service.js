@@ -9,6 +9,8 @@ import crypto from 'crypto';
 import jwksClient from 'jwks-rsa';
 import { TunnelLogger } from '../utils/logger.js';
 import { DatabaseMigratorPG } from '../database/migrate-pg.js';
+import { maskEmail, redactSensitiveText } from '../utils/mask-email.js';
+import { sanitizeSecurityEventDetails } from '../utils/security-event-details.js';
 
 // Signing keys rotate rarely; keep them long enough that normal traffic
 // never waits on a refetch.
@@ -37,9 +39,7 @@ export class AuthService {
       ...config,
       CF_ACCESS_TEAM_DOMAIN: teamDomain,
       CF_ACCESS_AUD: process.env.CF_ACCESS_AUD || '',
-      JWKS_URI: teamDomain
-        ? `https://${teamDomain}/cdn-cgi/access/certs`
-        : '',
+      JWKS_URI: teamDomain ? `https://${teamDomain}/cdn-cgi/access/certs` : '',
       SESSION_TIMEOUT: parseInt(process.env.SESSION_TIMEOUT) || 3600000, // 1 hour
       MAX_SESSIONS_PER_USER: parseInt(process.env.MAX_SESSIONS_PER_USER) || 5,
     };
@@ -146,7 +146,7 @@ export class AuthService {
       this.startSessionCleanup();
     } catch (error) {
       this.logger.error('Failed to initialize authentication service', {
-        error: error.message,
+        error: redactSensitiveText(error.message),
       });
       throw error;
     }
@@ -279,7 +279,7 @@ export class AuthService {
     } catch (error) {
       this.logger.error('Failed to check token status', {
         userId,
-        error: error.message,
+        error: redactSensitiveText(error.message),
       });
       return false;
     }
@@ -297,6 +297,7 @@ export class AuthService {
    * Access JWTs: iss is the team host, aud is the application audience.
    */
   async validateToken(token, req = {}, preValidatedPayload = null) {
+    let resolvedUserId = null;
     try {
       let payload;
 
@@ -335,12 +336,12 @@ export class AuthService {
             token,
             this.getKey.bind(this),
             {
-            algorithms: ['RS256'],
-            issuer: this.config.CF_ACCESS_TEAM_DOMAIN
-              ? `https://${this.config.CF_ACCESS_TEAM_DOMAIN}`
-              : undefined,
-            audience: this.config.CF_ACCESS_AUD || undefined,
-          },
+              algorithms: ['RS256'],
+              issuer: this.config.CF_ACCESS_TEAM_DOMAIN
+                ? `https://${this.config.CF_ACCESS_TEAM_DOMAIN}`
+                : undefined,
+              audience: this.config.CF_ACCESS_AUD || undefined,
+            },
             (err, decodedToken) => {
               if (err) {
                 reject(err);
@@ -357,6 +358,7 @@ export class AuthService {
 
       // Reject suspended accounts before creating/updating a session (#847)
       const userId = await this.resolveUserId(payload.sub, payload);
+      resolvedUserId = userId;
       const userStatus = await this.runQuery(
         'SELECT is_suspended FROM users WHERE id = $1',
         [userId],
@@ -406,15 +408,20 @@ export class AuthService {
         session: session,
       };
     } catch (error) {
-      this.logger.warn(`Token validation failed: ${error.message}`, {
-        error: error.message,
-        ip: req.ip,
-      });
+      this.logger.warn(
+        `Token validation failed: ${redactSensitiveText(error.message)}`,
+        {
+          error: redactSensitiveText(error.message),
+          ip: req.ip,
+        },
+      );
 
       await this.logSecurityEvent('token_validation_failure', {
         error: error.message,
         ip: req.ip,
         userAgent: req.headers?.['user-agent'],
+        // Only set once the account is known, so hard delete can find the row.
+        ...(resolvedUserId ? { userId: resolvedUserId } : {}),
       });
 
       return {
@@ -431,7 +438,9 @@ export class AuthService {
   async validateTokenForWebSocket(token) {
     try {
       if (this.isDevBypassToken(token)) {
-        this.logger.info('Bypassing WebSocket token verification for dev token');
+        this.logger.info(
+          'Bypassing WebSocket token verification for dev token',
+        );
         return {
           iss: this.config.CF_ACCESS_TEAM_DOMAIN
             ? `https://${this.config.CF_ACCESS_TEAM_DOMAIN}`
@@ -486,7 +495,7 @@ export class AuthService {
       return verified;
     } catch (error) {
       this.logger.warn('WebSocket token validation failed', {
-        error: error.message,
+        error: redactSensitiveText(error.message),
       });
 
       throw error;
@@ -582,17 +591,18 @@ export class AuthService {
         if (userInfo.email_verified !== true) {
           this.logger.warn(
             'Refusing email-based account link: email not verified',
-            { accessSub, email: userEmail },
+            { accessSub, email: maskEmail(userEmail) },
           );
-          throw new Error(
-            'Cannot link account: email not verified',
-          );
+          throw new Error('Cannot link account: email not verified');
         }
 
-        this.logger.info('Found existing user by email; linking Access subject', {
-          userId: existingByEmail.id,
-          email: userEmail,
-        });
+        this.logger.info(
+          'Found existing user by email; linking Access subject',
+          {
+            userId: existingByEmail.id,
+            email: maskEmail(userEmail),
+          },
+        );
 
         // Keep the original supabase_id. Only refresh profile fields.
         await this.runQuery(
@@ -619,7 +629,9 @@ export class AuthService {
       }
 
       // 4. Create new user; first subject becomes supabase_id
-      this.logger.info('Creating new user record for Access subject', { accessSub });
+      this.logger.info('Creating new user record for Access subject', {
+        accessSub,
+      });
 
       const newUser = await this.runQuery(
         `INSERT INTO users (supabase_id, email, name, nickname, picture, email_verified, locale, created_at, updated_at)
@@ -646,7 +658,7 @@ export class AuthService {
     } catch (error) {
       this.logger.error('Failed to resolve user ID', {
         accessSub,
-        error: error.message,
+        error: redactSensitiveText(error.message),
       });
       throw error;
     }
@@ -729,7 +741,7 @@ export class AuthService {
       return newSession;
     } catch (error) {
       this.logger.error('Failed to create/update session', {
-        error: error.message,
+        error: redactSensitiveText(error.message),
         supabaseId,
       });
       throw error;
@@ -770,7 +782,7 @@ export class AuthService {
     } catch (error) {
       this.logger.error('Failed to clean up user sessions', {
         userId,
-        error: error.message,
+        error: redactSensitiveText(error.message),
       });
     }
   }
@@ -779,19 +791,22 @@ export class AuthService {
    * Start periodic session cleanup
    */
   startSessionCleanup() {
-    setInterval(async () => {
-      try {
-        await this.runQuery(
-          'DELETE FROM user_sessions WHERE expires_at < NOW()',
-          [],
-          'run',
-        );
-      } catch (error) {
-        this.logger.error('Session cleanup failed', {
-          error: error.message,
-        });
-      }
-    }, 15 * 60 * 1000); // Every 15 minutes
+    setInterval(
+      async () => {
+        try {
+          await this.runQuery(
+            'DELETE FROM user_sessions WHERE expires_at < NOW()',
+            [],
+            'run',
+          );
+        } catch (error) {
+          this.logger.error('Session cleanup failed', {
+            error: redactSensitiveText(error.message),
+          });
+        }
+      },
+      15 * 60 * 1000,
+    ); // Every 15 minutes
   }
 
   /**
@@ -812,17 +827,22 @@ export class AuthService {
    * Log a security event
    */
   async logSecurityEvent(eventType, details) {
+    const safeDetails = sanitizeSecurityEventDetails(details);
+    const ip =
+      typeof details?.ip === 'string' && details.ip.length > 0
+        ? details.ip
+        : null;
     try {
       await this.runQuery(
         `INSERT INTO security_events (event_type, details, ip_address, created_at)
          VALUES ($1, $2::jsonb, $3, NOW())`,
-        [eventType, JSON.stringify(details), details.ip || null],
+        [eventType, JSON.stringify(safeDetails), ip],
         'run',
       );
     } catch (error) {
       this.logger.error('Failed to log security event', {
         eventType,
-        error: error.message,
+        error: redactSensitiveText(error.message),
       });
     }
   }

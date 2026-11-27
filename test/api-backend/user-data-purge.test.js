@@ -63,7 +63,16 @@ function makeClient({ missing = [] } = {}) {
         return { rows: [{ exists: !missing.includes(params[0]) }] };
       }
       if (/FROM users u/.test(sql)) {
-        return { rows: [{ id: USER_ID, jwt_id: null, supabase_id: SUBJECT }] };
+        return {
+          rows: [
+            {
+              id: USER_ID,
+              jwt_id: null,
+              supabase_id: SUBJECT,
+              email: "user@example.com",
+            },
+          ],
+        };
       }
       if (/FROM user_auth_subjects/.test(sql)) {
         return { rows: [{ subject: SUBJECT }, { subject: SECOND_SUBJECT }] };
@@ -141,6 +150,28 @@ describe("purgeUserData", () => {
       );
       expect(call.params[0]).toEqual(summary.identifiers);
     }
+
+    // security_events has no user_id column. Rows are found by identifiers
+    // and email addresses stored in details, then the personal fields are cleared.
+    const securityEvents = client.calls.find((c) =>
+      c.sql.startsWith("UPDATE security_events "),
+    );
+    expect(securityEvents).toBeDefined();
+    expect(securityEvents.sql).toMatch(/ip_address = NULL/);
+    expect(securityEvents.sql).toMatch(/details = '\{\}'::jsonb/);
+    expect(securityEvents.sql).toContain("details->>'userId'");
+    expect(securityEvents.sql).toContain("details->>'user_id'");
+    expect(securityEvents.sql).toContain("details->>'accessSub'");
+    expect(securityEvents.sql).toContain("details->>'subject'");
+    expect(securityEvents.sql).toContain("details->>'sub'");
+    expect(securityEvents.sql).toContain("details->>'email'");
+    expect(securityEvents.sql).toContain("lower(addr.value)");
+    expect(securityEvents.sql).not.toContain("strpos");
+    expect(securityEvents.sql).not.toContain(USER_ID);
+    expect(securityEvents.sql).not.toContain("user@example.com");
+    expect(securityEvents.params[0]).toEqual(summary.identifiers);
+    expect(securityEvents.params[1]).toEqual(["user@example.com"]);
+    expect(summary.pseudonymized.security_events).toBe(1);
   });
 
   it("skips optional tables that do not exist", async () => {
@@ -158,6 +189,15 @@ describe("purgeUserData", () => {
     ).toBe(false);
     expect(
       client.calls.some((c) => c.sql.startsWith("UPDATE auth_audit_logs")),
+    ).toBe(false);
+  });
+
+  it("skips security_events when the table is absent", async () => {
+    const client = makeClient({ missing: ["security_events"] });
+    const summary = await purgeUserData(client, USER_ID);
+    expect(summary.skipped).toContain("security_events");
+    expect(
+      client.calls.some((c) => c.sql.startsWith("UPDATE security_events")),
     ).toBe(false);
   });
 });
