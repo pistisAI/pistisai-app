@@ -57,6 +57,45 @@ class Conversation {
     );
   }
 
+  /// Metadata key holding runtime session mappings:
+  /// `{harness: {'sessionId': id}}`.
+  ///
+  /// A runtime session id (for example the id Hermes generates for this
+  /// chat) is only an adapter mapping. It is never the conversation's
+  /// identity, and the messages stay in the local store (#1065).
+  static const String runtimeSessionsKey = 'runtimeSessions';
+
+  /// The runtime session mapped to this conversation for [harness], if any.
+  String? runtimeSessionId(String harness) {
+    final sessions = metadata[runtimeSessionsKey];
+    if (sessions is! Map) return null;
+    final entry = sessions[harness];
+    if (entry is! Map) return null;
+    final id = entry['sessionId'];
+    return id is String && id.isNotEmpty ? id : null;
+  }
+
+  /// A copy with the [harness] mapping set to [sessionId], or removed when
+  /// [sessionId] is null or empty.
+  Conversation withRuntimeSession(String harness, String? sessionId) {
+    final current = metadata[runtimeSessionsKey];
+    final sessions = <String, dynamic>{
+      if (current is Map) ...Map<String, dynamic>.from(current),
+    };
+    if (sessionId == null || sessionId.isEmpty) {
+      sessions.remove(harness);
+    } else {
+      sessions[harness] = <String, dynamic>{'sessionId': sessionId};
+    }
+    final next = Map<String, dynamic>.from(metadata);
+    if (sessions.isEmpty) {
+      next.remove(runtimeSessionsKey);
+    } else {
+      next[runtimeSessionsKey] = sessions;
+    }
+    return copyWith(metadata: next);
+  }
+
   /// Create conversation from JSON
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(

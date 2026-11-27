@@ -188,7 +188,8 @@ void main() {
           pollRequest.url.toString(), '$resolvedPoll?order=oldest&limit=500');
       expect(poll, isNotNull);
       expect(poll!.single.content, 'yo back');
-      expect(service.runtimeSessionIdFor('pistisai'), isNull);
+      // The resolved id is kept as the adapter mapping (#1065).
+      expect(service.runtimeSessionIdFor('pistisai'), 'generated-session');
       service.dispose();
     });
 
