@@ -84,6 +84,20 @@ Only the *bake* is gated. A binary produced from a licensed build can still be r
 
 After merging upstream `main`, run `tool/brand.sh <id>` again before building. Do not hand-edit the generated files (`lib/brand/active_brand.g.dart`, `linux/runner/brand_config.h`, `windows/runner/brand_config.h`, `macos/Runner/Configs/Brand.xcconfig`, `android/app/src/main/res/values/brand_strings.xml`).
 
+## Release and update overrides
+
+`scripts/release/create_github_release.sh`, `scripts/powershell/Upload-GitHubReleaseAssets.ps1`, and `scripts/release/check_for_updates.ps1` publish a GitHub release or check for one. They are not part of the Flutter bake. A rebrand of this same product points them at its own repository. These variables do not add a second application layer.
+
+| Variable | Default | Role |
+|---|---|---|
+| `PISTISAI_GITHUB_OWNER` | `pistisAI` | GitHub owner for release upload and update checks |
+| `PISTISAI_GITHUB_REPO` | `pistisai-app` | GitHub repository name |
+| `BRAND` | `pistisai` | Brand id whose `brand.yaml` is read when the owner or repo variable is unset |
+
+The owner and repo variables win when they are set to a GitHub slug (`A-Z`, `a-z`, `0-9`, `.`, `_`, `-`). Any other value is ignored, so it does not block `repository_label`. Otherwise the scripts read `repository_label` (`owner/repo`) from `brand/<id>/brand.yaml` when that file is present, then fall back to `pistisAI/pistisai-app`. Keep `repository_label` aligned with `repository_url`. The update script also runs from an install directory, where the brand file is absent, so a rebrand sets the two variables in that environment. Pass `--print-target` or `-PrintRepository` to print the resolved `owner/repo` before publishing.
+
+Logo and icon files for a brand stay under `brand/<id>/assets/`.
+
 ## Not switched yet
 
 These stay as they are in upstream. The brand file records some of them so a later build can pick them up. The current build does not rename them:
