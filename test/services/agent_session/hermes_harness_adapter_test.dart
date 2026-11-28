@@ -7,10 +7,9 @@ import 'package:pistisai/services/agent_session/harness_event.dart';
 import 'package:pistisai/services/agent_session/hermes_harness_adapter.dart';
 import 'package:pistisai/services/agent_session/runtime_session_map.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
-import 'package:pistisai/services/streaming_chat_service.dart';
 
-/// The Hermes adapter delegates to HermesStreamingService and reports only
-/// what the polling transport does (#1066).
+/// The Hermes adapter sends turns on an API-server-owned session and reads
+/// history through the saved mapping (#1066).
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
