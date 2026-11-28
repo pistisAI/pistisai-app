@@ -20,6 +20,16 @@ ConnectionTestView connectionTestView({
   return verified ? ConnectionTestView.verified : ConnectionTestView.notTested;
 }
 
+/// The URL the connection test probes. Hermes is the primary runtime, so
+/// with no Hermes, custom or selected provider URL the test falls back to the
+/// default Hermes API address, not the OpenClaw Gateway port (#1042).
+String connectionTestUrl(WizardState state) {
+  return state.hermesUrl ??
+      state.customUrl ??
+      state.selectedProvider?.url ??
+      AppConfig.defaultHermesUrl;
+}
+
 /// Connection Test Step
 /// Tests connectivity to the selected provider
 class ConnectionTestStep extends StatefulWidget {
@@ -45,11 +55,7 @@ class _ConnectionTestStepState extends State<ConnectionTestStep> {
   }
 
   Future<void> _runTest(SetupWizardService wizard) async {
-    final url = wizard.state.hermesUrl ??
-        wizard.state.customUrl ??
-        wizard.state.selectedProvider?.url ??
-        AppConfig.gatewayUrl;
-    await wizard.testConnection(url);
+    await wizard.testConnection(connectionTestUrl(wizard.state));
   }
 
   @override

@@ -1,6 +1,8 @@
 # OpenClaw footprint audit
 
-Status: proposal for the repository owner (issue #1042). No code changes are made by this document.
+Status: proposal for the repository owner (issue #1042). No code changes are made by this document. Line numbers below describe the audited tree, not current `main`.
+
+Follow-up status (2026-11-28): 1 done (#1097); 2 done (#1042 follow-up PR: onboarding falls back to the Hermes default); 3 done for startup (#1097: no `~/.openclaw` folder is created); 4 done (#1097 fail-fast, #1106 Start/Stop hidden on Hermes); 5 done except the Drift table comments in `lib/database/drift_local_brain.dart` (left so generated code is not touched); 6, 7 and 8 open (6 changes where screenshots are sent and needs a consent check; 7 and 8 are docs and backend work outside this cleanup).
 
 Audited tree: `origin/main` at `360737d1` (2026-11-27). Line numbers refer to that commit.
 

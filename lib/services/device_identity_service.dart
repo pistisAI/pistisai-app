@@ -5,7 +5,8 @@ import 'package:cryptography/cryptography.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:crypto/crypto.dart';
 
-/// Device identity for OpenClaw Gateway authentication
+/// Device identity used to authenticate this device (read by
+/// CloudConnectorService)
 ///
 /// Uses ED25519 key pairs for signing device authentication payloads.
 /// The device ID is derived from the SHA256 hash of the public key.

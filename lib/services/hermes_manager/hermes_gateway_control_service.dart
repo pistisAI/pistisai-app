@@ -9,7 +9,7 @@ final Logger _log = Logger('HermesGatewayControlService');
 /// Manages the hermes-agent gateway process.
 ///
 /// This service handles starting, stopping, and restarting the hermes-agent
-/// gateway, similar to how OpenClaw gateway is managed.
+/// gateway process.
 ///
 /// NOTE: The gateway is a long-running daemon. We do NOT await its exit code
 /// after start — that would hang forever. Instead we watch for a brief health
