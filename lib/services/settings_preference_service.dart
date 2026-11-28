@@ -8,6 +8,12 @@ import '../database/local_brain_key_store.dart';
 
 enum BackendType { hermes }
 
+/// A transient keychain/key-store read failure. Distinct from "no token
+/// stored" so startup never overwrites an existing hub token (#981).
+class SecureVaultReadFailure implements Exception {
+  const SecureVaultReadFailure();
+}
+
 class SettingsPreferenceService {
   SettingsPreferenceService({LocalBrainKeyVault? secureVault})
       : _secureVault = secureVault ?? FlutterSecureLocalBrainKeyVault();
@@ -614,14 +620,34 @@ class SettingsPreferenceService {
 
   /// Stable bearer token for the router when remote access is enabled.
   /// Stored in the OS keystore, never in plaintext SharedPreferences.
-  Future<String?> getRemoteHubToken() async {
+  Future<String?> getRemoteHubToken({bool throwOnReadError = false}) async {
     try {
       final secure = await _secureVault.read(_remoteHubTokenKey);
       if (secure != null && secure.isNotEmpty) return secure;
     } catch (e) {
       debugPrint('[SettingsPreference] Secure router token read failed: $e');
+      if (throwOnReadError) throw const SecureVaultReadFailure();
     }
     return null;
+  }
+
+  /// Returns the stable hub token, minting it only when the keystore confirms
+  /// there is no token. A transient keychain read failure returns null
+  /// without writing, so paired phones are not silently dropped by a new
+  /// secret (#981).
+  Future<String?> ensureRemoteHubToken({
+    required String Function() generate,
+  }) async {
+    String? existing;
+    try {
+      existing = await getRemoteHubToken(throwOnReadError: true);
+    } on SecureVaultReadFailure {
+      return null;
+    }
+    if (existing != null && existing.isNotEmpty) return existing;
+    final token = generate();
+    await setRemoteHubToken(token);
+    return token;
   }
 
   Future<void> setRemoteHubToken(String value) async {

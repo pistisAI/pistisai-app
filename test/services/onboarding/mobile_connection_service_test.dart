@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/database/local_brain_key_store.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
@@ -119,7 +120,7 @@ void main() {
     test('connectViaTailscaleHub saves Hermes URL when the desktop hub answers',
         () async {
       final hermes = HermesStreamingService();
-      final settings = SettingsPreferenceService();
+      final settings = SettingsPreferenceService(secureVault: _MemoryVault());
       final service = MobileConnectionService(
         settings: settings,
         hermesStreamingService: hermes,
@@ -131,7 +132,10 @@ void main() {
         },
       );
 
-      final result = await service.connectViaTailscaleHub('100.64.1.20');
+      final result = await service.connectViaTailscaleHub(
+        '100.64.1.20',
+        hubToken: 'hub-token',
+      );
 
       expect(result.success, isTrue);
       expect(result.foundPrimaryHub, isTrue);
@@ -209,6 +213,57 @@ void main() {
       expect(result.success, isFalse);
       expect(probed, isFalse);
       expect(result.message, contains('.ts.net'));
+    });
+
+    test('blank hub token does not finish pairing or hide the connection screen',
+        () async {
+      final service = MobileConnectionService(
+        httpGet: (uri) async {
+          if (uri.path == AppConfig.hubPath) {
+            return http.Response('{"role":"primary_hub"}', 200);
+          }
+          return http.Response('nope', 404);
+        },
+      );
+
+      final result = await service.connectViaTailscaleHub(
+        '100.64.1.20',
+        hubToken: '   ',
+      );
+
+      expect(result.success, isFalse);
+      expect(result.message, contains('token'));
+      expect(await service.shouldShowConnectionScreen(), isTrue);
+    });
+
+    test('hub token reaches the live Hermes client without a restart',
+        () async {
+      String? seenAuthorization;
+      final client = MockClient((request) async {
+        seenAuthorization = request.headers['authorization'];
+        return http.Response('{"data":[]}', 200);
+      });
+      final hermes = HermesStreamingService(client: client);
+      final service = MobileConnectionService(
+        settings: SettingsPreferenceService(secureVault: _MemoryVault()),
+        hermesStreamingService: hermes,
+        httpGet: (uri) async {
+          if (uri.path == AppConfig.hubPath) {
+            return http.Response('{"role":"primary_hub"}', 200);
+          }
+          return http.Response('nope', 404);
+        },
+      );
+
+      final result = await service.connectViaTailscaleHub(
+        '100.64.1.20',
+        hubToken: 'hub-token-123',
+      );
+
+      expect(result.success, isTrue);
+      await hermes.getAvailableModels();
+      expect(seenAuthorization, 'Bearer hub-token-123');
+      hermes.dispose();
     });
   });
 }

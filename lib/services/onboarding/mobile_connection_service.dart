@@ -201,13 +201,23 @@ class MobileConnectionService extends ChangeNotifier {
         _errorMessage = result.message;
         return result;
       }
+      final token = hubToken?.trim();
+      if (token == null || token.isEmpty) {
+        final failure = MobileHubProbeResult(
+          success: false,
+          hermesUrl: result.hermesUrl,
+          message: BrandCopy.hubTokenRequired,
+        );
+        _errorMessage = failure.message;
+        return failure;
+      }
       await _settings.setHermesEnabled(true);
       await _settings.setHermesUrl(result.hermesUrl);
       // A remote hub gates private endpoints with its bearer token. Store the
-      // token as the Hermes API key so streaming/chat sends it as Authorization.
-      if (hubToken != null && hubToken.trim().isNotEmpty) {
-        await _settings.setHermesApiKey(hubToken.trim());
-      }
+      // token as the Hermes API key so streaming/chat sends it as Authorization,
+      // and update the live client so pairing works without a restart (#981).
+      await _settings.setHermesApiKey(token);
+      _hermesStreamingService?.updateApiKey(token);
       _hermesStreamingService?.updateBaseUrl(result.hermesUrl);
       await _persist(
         mode: MobileConnectionMode.tailscaleHub,

@@ -83,4 +83,46 @@ void main() {
     );
     expect(missing, isNotNull);
   });
+
+  group('stable remote hub token (#981)', () {
+    test('reuses the stored token without generating a new one', () async {
+      final vault = _MemoryVault();
+      final settings = SettingsPreferenceService(secureVault: vault);
+      await settings.setRemoteHubToken('stable-token');
+
+      final token = await settings.ensureRemoteHubToken(
+        generate: () => throw StateError('must not generate'),
+      );
+
+      expect(token, 'stable-token');
+    });
+
+    test('does not overwrite the keystore after a transient read failure',
+        () async {
+      final vault = _ThrowingReadVault();
+      final settings = SettingsPreferenceService(secureVault: vault);
+
+      final token = await settings.ensureRemoteHubToken(
+        generate: () => 'new-token',
+      );
+
+      expect(token, isNull);
+      expect(vault.writes, isEmpty);
+    });
+  });
+}
+
+class _ThrowingReadVault implements LocalBrainKeyVault {
+  final writes = <String>[];
+
+  @override
+  Future<String?> read(String key) async => throw StateError('keychain busy');
+
+  @override
+  Future<void> write(String key, String value) async {
+    writes.add(key);
+  }
+
+  @override
+  Future<void> delete(String key) async {}
 }

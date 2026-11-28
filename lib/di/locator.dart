@@ -289,12 +289,15 @@ Future<void> setupCoreServices() async {
               await settingsPreferenceService.isRemoteHubAccessEnabled();
       String? remoteHubToken;
       if (remoteHubAccessEnabled) {
-        remoteHubToken = await settingsPreferenceService.getRemoteHubToken();
-        if (remoteHubToken == null || remoteHubToken.isEmpty) {
-          remoteHubToken = RouterServer.generateAuthSecret();
-          await settingsPreferenceService.setRemoteHubToken(remoteHubToken);
-        }
+        remoteHubToken = await settingsPreferenceService.ensureRemoteHubToken(
+          generate: RouterServer.generateAuthSecret,
+        );
       }
+      // Discover the local gateway key before building the router: the hub
+      // proxy must send Hermes its own API_SERVER_KEY, never the caller's
+      // remote-access token (#981).
+      final hermesUrl = await settingsPreferenceService.getHermesUrl();
+      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
       final routerServer = RouterServer(
         rateLimitManager: rateLimitManager,
         providers: cloudProviders,
@@ -314,13 +317,11 @@ Future<void> setupCoreServices() async {
         // RouterServer generates an authSecret when the setting is on (#804).
         allowRemoteAccess: remoteHubAccessEnabled,
         authSecret: remoteHubToken,
+        hermesApiKey: hermesApiKey
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
       // Hermes streaming service for direct Hermes API integration.
-      // Discover the local gateway key so desktop chat/voice are authenticated.
-      final hermesUrl = await settingsPreferenceService.getHermesUrl();
-      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
       final hermesStreamingService = HermesStreamingService(
         baseUrl: (hermesUrl != null && hermesUrl.isNotEmpty)
             ? AppConfig.normalizeHermesUrl(hermesUrl)
