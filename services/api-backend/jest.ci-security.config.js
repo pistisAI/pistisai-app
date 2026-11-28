@@ -51,6 +51,9 @@ export default {
     // #1058: the Access subject column is users.access_subject (migration 029).
     '**/test/api-backend/access-subject-column-1058.test.js',
     '**/test/api-backend/auth-access-identity.test.js',
+    // Sentry beforeSend removes credential headers, cookies and token
+    // query params from server-side error reports.
+    '**/test/api-backend/sentry-scrub.test.js',
   ],
   testPathIgnorePatterns: [
     ...base.testPathIgnorePatterns,

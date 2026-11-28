@@ -200,7 +200,11 @@ is collected while you use the app without signing in.
   messages and performance traces for a sample of requests, and can include your
   account identifier and the address of the request. They are configured not to
   attach user details, cookies, request or response bodies, database query data,
-  or forwarding and client-IP headers; other request headers can be included. An
+  or forwarding and client-IP headers. Before a report is sent, the
+  `Authorization`, `Cookie`, `Set-Cookie`, Cloudflare Access assertion and
+  `X-Api-Key` headers, cookies, and token-like parameters in the request address
+  (such as `token`, `access_token` or `api_key`) are removed from it; other
+  request headers can be included. An
   email address placed in a report's user data is removed, and authorization
   errors and 401, 403 and 404 responses are not reported.
 
@@ -238,6 +242,10 @@ including the Limited Use requirements. Specifically:
 - **Chat history on our server:** conversations from the web app while you are signed in, and from desktop and mobile only with cloud services on, are stored in our database, including message text. They are not end-to-end encrypted.
 - **In transit:** connections to first-party services use encrypted transport
   (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.
+- **Local hub access:** the desktop hub listens only on this computer by default.
+  If you turn on "Remote hub access" in Settings → Connections, it also accepts
+  devices on your local network or tailnet; that access is off until you enable
+  it and requires a bearer token for every private endpoint.
 
 No method of storage or transmission is completely secure, but we apply reasonable
 technical and organizational safeguards appropriate to the data involved.

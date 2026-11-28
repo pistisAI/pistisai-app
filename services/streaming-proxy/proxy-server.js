@@ -3,6 +3,7 @@ import https from 'https';
 import winston from 'winston';
 import * as Sentry from '@sentry/node';
 import { isProxyStatsAuthorized } from './stats-auth.js';
+import { scrubSentryEvent } from './sentry-scrub.js';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -17,7 +18,8 @@ Sentry.init({
       event.tags.userId = process.env.USER_ID || 'unknown';
       event.tags.proxyId = process.env.PROXY_ID || 'unknown';
     }
-    return event;
+    // Remove credential headers, cookies and token query params.
+    return scrubSentryEvent(event);
   },
 });
 

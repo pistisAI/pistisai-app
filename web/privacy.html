@@ -250,8 +250,11 @@
         turn this off. These reports contain server errors, some server log messages and performance
         traces for a sample of requests, and can include your account identifier and the address of the
         request. They are configured not to attach user details, cookies, request or response bodies,
-        database query data, or forwarding and client-IP headers; other request headers can be
-        included. An email address placed in a report&rsquo;s user data is removed, and authorization
+        database query data, or forwarding and client-IP headers. Before a report is sent, the
+        <code>Authorization</code>, <code>Cookie</code>, <code>Set-Cookie</code>, Cloudflare Access
+        assertion and <code>X-Api-Key</code> headers, cookies, and token-like parameters in the request
+        address (such as <code>token</code>, <code>access_token</code> or <code>api_key</code>) are
+        removed from it; other request headers can be included. An email address placed in a report&rsquo;s user data is removed, and authorization
         errors and 401, 403 and 404 responses are not reported.</li>
     </ul>
     <h2>3. How we use information</h2>
@@ -285,6 +288,7 @@
       <li><strong>Authentication:</strong> sign-in is handled by Cloudflare Access; our service stores your email address, account identifier and the profile fields listed in section 2.1, plus the session records in section 2.7. Sign-in tokens copied to a session record are stored as sent, not encrypted in the database.</li>
       <li><strong>Chat history on our server:</strong> conversations from the web app while you are signed in, and from desktop and mobile only with cloud services on, are stored in our database, including message text. They are not end-to-end encrypted.</li>
       <li><strong>In transit:</strong> connections to first-party services use encrypted transport (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.</li>
+      <li><strong>Local hub access:</strong> the desktop hub listens only on this computer by default. If you turn on &ldquo;Remote hub access&rdquo; in Settings &rarr; Connections, it also accepts devices on your local network or tailnet; that access is off until you enable it and requires a bearer token for every private endpoint.</li>
     </ul>
     <p>
       No method of storage or transmission is completely secure, but we apply reasonable technical and

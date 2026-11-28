@@ -27,7 +27,7 @@ import '../../utils/logger.dart';
 /// There is no generic `api_server` / `/v1/runs` chat path.
 class HermesStreamingService extends StreamingService {
   String _baseUrl;
-  final String? _apiKey;
+  String? _apiKey;
 
   /// HTTP client — kept alive for connection pooling.
   http.Client? _client;
@@ -121,6 +121,14 @@ class HermesStreamingService extends StreamingService {
     _baseUrl = trimmed.endsWith('/')
         ? trimmed.substring(0, trimmed.length - 1)
         : trimmed;
+  }
+
+  /// Apply a bearer key after pairing with a remote hub (#981). Without
+  /// this the live client omits Authorization until the app restarts.
+  void updateApiKey(String key) {
+    final trimmed = key.trim();
+    if (trimmed.isEmpty) return;
+    _apiKey = trimmed;
   }
 
   /// Stream of structured agent events for consumers who want full
@@ -751,8 +759,9 @@ class HermesStreamingService extends StreamingService {
       'Content-Type': 'application/json',
       'Accept': 'text/event-stream',
     };
-    if (_apiKey != null && _apiKey.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $_apiKey';
+    final apiKey = _apiKey;
+    if (apiKey != null && apiKey.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $apiKey';
     }
     return headers;
   }

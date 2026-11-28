@@ -67,8 +67,9 @@ Tunnel/sync and cloud-adjacent surfaces that assume a session:
    same phase; prefer constructor injection at registration time over late
    `get` inside hot paths when the dependency is required.
 3. **Local services stay local.** The embedded router binds loopback unless
-   `ROUTER_ALLOW_REMOTE_ACCESS` / `authSecret` rules in product guardrails say
-   otherwise.
+   remote hub access is explicitly enabled in Settings → Connections (or a
+   custom build sets `ROUTER_ALLOW_REMOTE_ACCESS`). Either way every private
+   endpoint requires an `authSecret` before other devices may use it.
 4. **Nothing leaves the device without consent.** New outbound hosts, SDKs, or
    telemetry must be opt-in and listed in privacy docs in the same change.
 5. **Platform splits** use conditional imports (`dart.library.io` /

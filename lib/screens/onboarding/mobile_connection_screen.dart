@@ -19,12 +19,14 @@ class MobileConnectionScreen extends StatefulWidget {
 
 class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
   final TextEditingController _hostController = TextEditingController();
+  final TextEditingController _tokenController = TextEditingController();
   MobileConnectionMode? _selected;
   bool _connecting = false;
 
   @override
   void dispose() {
     _hostController.dispose();
+    _tokenController.dispose();
     super.dispose();
   }
 
@@ -148,6 +150,18 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
             helperMaxLines: 3,
           ),
         ),
+        const SizedBox(height: 12),
+        TextField(
+          key: const Key('mobileHubTokenField'),
+          controller: _tokenController,
+          autocorrect: false,
+          obscureText: true,
+          decoration: InputDecoration(
+            labelText: l10n.mobileHubTokenLabel,
+            helperText: l10n.mobileHubTokenHelper,
+            helperMaxLines: 3,
+          ),
+        ),
         const SizedBox(height: 16),
         FilledButton(
           onPressed: _connecting ? null : () => _connectTailscale(connection),
@@ -183,8 +197,10 @@ class _MobileConnectionScreenState extends State<MobileConnectionScreen> {
   Future<void> _connectTailscale(MobileConnectionService connection) async {
     setState(() => _connecting = true);
     try {
-      final result =
-          await connection.connectViaTailscaleHub(_hostController.text);
+      final result = await connection.connectViaTailscaleHub(
+        _hostController.text,
+        hubToken: _tokenController.text,
+      );
       if (!mounted) {
         return;
       }

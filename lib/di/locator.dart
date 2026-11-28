@@ -280,6 +280,24 @@ Future<void> setupCoreServices() async {
         if (cloudKeys.containsKey('moonshot'))
           'moonshot': MoonshotAdapter(apiKey: cloudKeys['moonshot']!),
       };
+      // Remote hub access is opt-in (#861, #805). The build-time flag stays
+      // for custom builds; normal desktop users get a visible setting. Both
+      // paths are token-protected by RouterServer; a toggle needs a restart
+      // because the router binds at service setup.
+      final remoteHubAccessEnabled =
+          const bool.fromEnvironment('ROUTER_ALLOW_REMOTE_ACCESS') ||
+              await settingsPreferenceService.isRemoteHubAccessEnabled();
+      String? remoteHubToken;
+      if (remoteHubAccessEnabled) {
+        remoteHubToken = await settingsPreferenceService.ensureRemoteHubToken(
+          generate: RouterServer.generateAuthSecret,
+        );
+      }
+      // Discover the local gateway key before building the router: the hub
+      // proxy must send Hermes its own API_SERVER_KEY, never the caller's
+      // remote-access token (#981).
+      final hermesUrl = await settingsPreferenceService.getHermesUrl();
+      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
       final routerServer = RouterServer(
         rateLimitManager: rateLimitManager,
         providers: cloudProviders,
@@ -296,16 +314,19 @@ Future<void> setupCoreServices() async {
         microsoftSpeechAllowed:
             settingsPreferenceService.isMicrosoftSpeechEnabled,
         // Remote access (LAN/Tailscale mobile) is opt-in; default is loopback (#645).
-        // When true, RouterServer generates an authSecret that gates private paths (#804).
-        allowRemoteAccess:
-            const bool.fromEnvironment('ROUTER_ALLOW_REMOTE_ACCESS'),
+        // RouterServer generates an authSecret when the setting is on (#804).
+        // If the keystore could not be read, fail closed: no remote bind and
+        // no in-memory secret that disagrees with Settings (#981).
+        allowRemoteAccess: RouterServer.shouldAllowRemoteAccess(
+          enabled: remoteHubAccessEnabled,
+          token: remoteHubToken,
+        ),
+        authSecret: remoteHubToken,
+        hermesApiKey: hermesApiKey,
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
       // Hermes streaming service for direct Hermes API integration.
-      // Discover the local gateway key so desktop chat/voice are authenticated.
-      final hermesUrl = await settingsPreferenceService.getHermesUrl();
-      final hermesApiKey = await settingsPreferenceService.getHermesApiKey();
       final hermesStreamingService = HermesStreamingService(
         baseUrl: (hermesUrl != null && hermesUrl.isNotEmpty)
             ? AppConfig.normalizeHermesUrl(hermesUrl)
