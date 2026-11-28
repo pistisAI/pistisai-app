@@ -39,7 +39,7 @@ class WizardState {
   final List<TailscaleDevice> tailscaleDevices;
   final String? customUrl;
   final ProviderInfo? selectedProvider;
-  final String? gatewayPassword; // OpenClaw Gateway password/token
+  final String? gatewayPassword; // Gateway password/token (no step sets it yet)
   final String? hermesUrl; // Hermes Agent URL
   final String? hermesApiKey; // Hermes API key (auto-discovered)
   final HermesEndpointKind? detectedHermesKind;

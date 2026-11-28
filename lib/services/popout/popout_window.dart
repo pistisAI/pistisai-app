@@ -1,6 +1,6 @@
 /// Pop-Out Window Model
 ///
-/// Represents a pop-out window state for OpenClaw Gateway sections.
+/// Represents a pop-out window state for agent runtime sections.
 /// Each window can be independently positioned and sized by the user.
 ///
 /// Features:

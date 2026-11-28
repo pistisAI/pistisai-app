@@ -47,7 +47,9 @@ class AgentStatus {
   }
 }
 
-/// Service for polling agent status from OpenClaw via WebSocket
+/// Service for polling agent status from the connected agent runtime.
+/// `ConnectionManagerService.getSessionsList()` is a stub today, so the list
+/// stays empty until a runtime session source is wired.
 class AgentStatusService {
   final Logger _logger = Logger();
   final Duration _pollInterval;
