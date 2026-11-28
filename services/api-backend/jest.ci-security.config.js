@@ -48,6 +48,9 @@ export default {
     // Follow-up for #1022: auth-service email masking and security_events
     // details (no user_id column; cleared on hard delete).
     '**/test/api-backend/security-event-details.test.js',
+    // Sentry beforeSend removes credential headers, cookies and token
+    // query params from server-side error reports.
+    '**/test/api-backend/sentry-scrub.test.js',
   ],
   testPathIgnorePatterns: [
     ...base.testPathIgnorePatterns,

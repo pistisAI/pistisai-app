@@ -1,6 +1,7 @@
 // Import Sentry FIRST to catch all errors from the very beginning
 import * as Sentry from '@sentry/node';
 import dotenv from 'dotenv';
+import { scrubSentryEvent } from './utils/sentry-scrub.js';
 
 // Load environment variables before anything else
 dotenv.config();
@@ -48,7 +49,8 @@ Sentry.init({
       delete event.extra.user.email;
     }
 
-    return event;
+    // Remove credential headers, cookies and token query params.
+    return scrubSentryEvent(event);
   },
 });
 
