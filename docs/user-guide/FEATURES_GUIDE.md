@@ -19,11 +19,11 @@ The current scope is a universal baseline that works for any business. It is not
 | Document intake and retrieval | **Partly available:** on-demand screen capture and OCR (section 4). **Planned:** taking documents into a searchable local store. |
 | Tasks and follow-ups | **Partly available:** scheduled agent jobs (section 5). **Planned:** a task and follow-up list. |
 | Digests | **Planned.** |
-| Approval, audit, export and delete | **Available:** an approval gate that asks a person before critical agent actions run, an agent action audit log, and local data export and deletion ([LOCAL_DATA_EXPORT_DELETION.md](LOCAL_DATA_EXPORT_DELETION.md)). |
-| Local model routing with explicit cloud consent | **Available:** the embedded router on port `1337` routes to local providers; cloud model providers are off by default and need both your consent in Settings and your own key (section 7). |
+| Approval, audit, export and delete | **Partly available:** a person approves sensitive actions taken in the app (exporting settings or audit logs, revoking a device); an audit log records agent tool use reported by the runtime, approval decisions and data deletion; local data export and deletion ([LOCAL_DATA_EXPORT_DELETION.md](LOCAL_DATA_EXPORT_DELETION.md)). **Planned:** approval of actions that the agent itself starts. |
+| Local model routing with explicit cloud consent | **Partly available:** the embedded router on port `1337` passes chat to the local Hermes gateway. Cloud model providers (Zhipu, Gemini, Moonshot) are off by default; they need your consent in Settings and an API key set when the app is built. Local model servers (Ollama, LM Studio) are detected during setup. **Planned:** routing requests to a local model first. |
 | Onboarding and admin | **Available:** the setup wizard and the Admin Center (section 9). |
 
-Sends and critical actions made on your behalf (email, invoices, deletions, payments) always need a person's approval.
+The app does not send email, issue invoices or make payments on your behalf today. When those actions are added, a person will approve each one before it runs.
 
 **Phase 2:** the avatar and voice companion (section 2) are deferred until chat works well. The code described in section 2 is in the app today, but it is not part of the current core scope.
 
