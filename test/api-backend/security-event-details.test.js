@@ -118,14 +118,14 @@ describe("AuthService personal data in logs and security_events", () => {
     const svc = service();
     svc.runQuery = async (sql) => {
       if (
-        sql.includes("supabase_id = $1") &&
+        sql.includes("access_subject = $1") &&
         sql.includes("SELECT id FROM users")
       ) {
         return null;
       }
       if (sql.includes("user_auth_subjects WHERE subject")) return null;
       if (sql.includes("WHERE email = $1")) {
-        return { id: USER_ID, supabase_id: "old-subject" };
+        return { id: USER_ID, access_subject: "old-subject" };
       }
       return { changes: 1 };
     };
@@ -145,14 +145,14 @@ describe("AuthService personal data in logs and security_events", () => {
     const svc = service();
     svc.runQuery = async (sql) => {
       if (
-        sql.includes("supabase_id = $1") &&
+        sql.includes("access_subject = $1") &&
         sql.includes("SELECT id FROM users")
       ) {
         return null;
       }
       if (sql.includes("user_auth_subjects WHERE subject")) return null;
       if (sql.includes("WHERE email = $1")) {
-        return { id: USER_ID, supabase_id: "old-subject" };
+        return { id: USER_ID, access_subject: "old-subject" };
       }
       return { changes: 1 };
     };

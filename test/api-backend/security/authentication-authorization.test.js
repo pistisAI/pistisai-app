@@ -58,7 +58,7 @@ function userIdFor(sub) {
 }
 
 async function fakeQuery(sql, params = []) {
-  if (sql.includes("FROM users WHERE supabase_id")) {
+  if (sql.includes("FROM users WHERE access_subject")) {
     return { rows: [{ id: userIdFor(params[0]) }], rowCount: 1 };
   }
   if (sql.includes("SELECT is_suspended FROM users")) {

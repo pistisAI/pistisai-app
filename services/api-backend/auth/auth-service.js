@@ -547,14 +547,14 @@ export class AuthService {
   /**
    * Resolve internal user ID from a Cloudflare Access subject (`sub`).
    * Same email with a new Access sub (OTP then Google) maps to one user.
-   * Never overwrites users.supabase_id once set — that would orphan rows keyed
+   * Never overwrites users.access_subject once set — that would orphan rows keyed
    * by the previous subject. Additional subjects are stored in user_auth_subjects.
    */
   async resolveUserId(accessSub, userInfo = {}) {
     try {
       // 1. Primary subject column
       const existingUser = await this.runQuery(
-        'SELECT id FROM users WHERE supabase_id = $1',
+        'SELECT id FROM users WHERE access_subject = $1',
         [accessSub],
         'get',
       );
@@ -580,7 +580,7 @@ export class AuthService {
       }
       const userEmail = userInfo.email;
       const existingByEmail = await this.runQuery(
-        'SELECT id, supabase_id FROM users WHERE email = $1',
+        'SELECT id, access_subject FROM users WHERE email = $1',
         [userEmail],
         'get',
       );
@@ -604,7 +604,7 @@ export class AuthService {
           },
         );
 
-        // Keep the original supabase_id. Only refresh profile fields.
+        // Keep the original access_subject. Only refresh profile fields.
         await this.runQuery(
           `UPDATE users SET
              name = COALESCE($1, name),
@@ -628,13 +628,13 @@ export class AuthService {
         return existingByEmail.id;
       }
 
-      // 4. Create new user; first subject becomes supabase_id
+      // 4. Create new user; first subject becomes access_subject
       this.logger.info('Creating new user record for Access subject', {
         accessSub,
       });
 
       const newUser = await this.runQuery(
-        `INSERT INTO users (supabase_id, email, name, nickname, picture, email_verified, locale, created_at, updated_at)
+        `INSERT INTO users (access_subject, email, name, nickname, picture, email_verified, locale, created_at, updated_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING id`,
         [
           accessSub,

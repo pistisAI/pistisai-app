@@ -10,6 +10,7 @@ import { readFileSync, readdirSync } from "fs";
 import {
   USER_DATA_DELETE_TABLES,
   USER_DATA_PSEUDONYMIZE_TABLES,
+  collectUserIdentifiers,
   purgeUserData,
 } from "../../services/api-backend/services/user-data-purge.js";
 import { bulkOperationsService } from "../../services/api-backend/services/bulk-operations-service.js";
@@ -20,6 +21,7 @@ const DB_DIR = path.join(__dirname, "../../services/api-backend/database");
 const USER_ID = "11111111-2222-3333-4444-555555555555";
 const SUBJECT = "auth-subject-abc";
 const SECOND_SUBJECT = "auth-subject-def";
+const PRIMARY_ONLY_SUBJECT = "auth-subject-primary-only";
 
 /** Tables referencing users through a cascading foreign key, or the users table itself. */
 function tablesNeedingExplicitPurge() {
@@ -53,7 +55,16 @@ function tablesNeedingExplicitPurge() {
   return tables;
 }
 
-function makeClient({ missing = [] } = {}) {
+function makeClient({
+  missing = [],
+  userRow = {
+    id: USER_ID,
+    jwt_id: null,
+    access_subject: SUBJECT,
+    legacy_access_subject: null,
+    email: "user@example.com",
+  },
+} = {}) {
   const calls = [];
   const client = {
     calls,
@@ -63,16 +74,7 @@ function makeClient({ missing = [] } = {}) {
         return { rows: [{ exists: !missing.includes(params[0]) }] };
       }
       if (/FROM users u/.test(sql)) {
-        return {
-          rows: [
-            {
-              id: USER_ID,
-              jwt_id: null,
-              supabase_id: SUBJECT,
-              email: "user@example.com",
-            },
-          ],
-        };
+        return { rows: [userRow] };
       }
       if (/FROM user_auth_subjects/.test(sql)) {
         return { rows: [{ subject: SUBJECT }, { subject: SECOND_SUBJECT }] };
@@ -86,6 +88,46 @@ function makeClient({ missing = [] } = {}) {
   };
   return client;
 }
+
+describe("collectUserIdentifiers (#1058 access_subject rename)", () => {
+  it("reads the primary subject from users.access_subject", async () => {
+    const client = makeClient({
+      userRow: {
+        id: USER_ID,
+        jwt_id: null,
+        access_subject: PRIMARY_ONLY_SUBJECT,
+        legacy_access_subject: null,
+        email: "user@example.com",
+      },
+    });
+    const { identifiers } = await collectUserIdentifiers(client, USER_ID);
+
+    expect(identifiers).toContain(PRIMARY_ONLY_SUBJECT);
+    const usersQuery = client.calls.find((c) => /FROM users u/.test(c.sql));
+    expect(usersQuery.sql).toContain(
+      "to_jsonb(u)->>'access_subject' AS access_subject",
+    );
+  });
+
+  it("still reads the pre-029 supabase_id column so a purge stays complete", async () => {
+    const client = makeClient({
+      userRow: {
+        id: USER_ID,
+        jwt_id: null,
+        access_subject: null,
+        legacy_access_subject: PRIMARY_ONLY_SUBJECT,
+        email: "user@example.com",
+      },
+    });
+    const { identifiers } = await collectUserIdentifiers(client, USER_ID);
+
+    expect(identifiers).toContain(PRIMARY_ONLY_SUBJECT);
+    const usersQuery = client.calls.find((c) => /FROM users u/.test(c.sql));
+    expect(usersQuery.sql).toContain(
+      "to_jsonb(u)->>'supabase_id' AS legacy_access_subject",
+    );
+  });
+});
 
 describe("purgeUserData", () => {
   it("covers every table with a user_id column that does not cascade from users", () => {
