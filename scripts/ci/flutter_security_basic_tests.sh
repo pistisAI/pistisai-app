@@ -60,6 +60,8 @@ flutter test \
   test/screens/settings/connection_settings_rerun_wizard_test.dart \
   test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
+  test/services/agent_lifecycle_hermes_test.dart \
+  test/services/avatar/avatar_markdown_path_test.dart \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
   test/services/agent_session/ \
