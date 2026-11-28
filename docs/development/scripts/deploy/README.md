@@ -6,10 +6,10 @@
 
 Image builds and publishes run **only through GitHub Actions**:
 
-- `.github/workflows/deploy-web.yml` — builds/publishes the web image to GHCR; a full-zone Cloudflare cache purge job follows the image push (`deploy-web.yml:106-131`). The host still pulls the image with `docker compose up -d` (see the "Known gap" comment at `deploy-web.yml:103-105`).
-- `.github/workflows/deploy-backend.yml` — builds/publishes the api-backend, streaming-proxy and postgres images to GHCR (`deploy-backend.yml:27-160`); it has no host-deploy or cache-purge job.
+- `.github/workflows/deploy-web.yml` — builds/publishes the web image to GHCR, then `deploy_dokploy` asks Dokploy to pull it, then a full-zone Cloudflare cache purge runs. The desktop app is the hub. Hosted web is a Dokploy Application (`ghcr.io/pistisai/pistisai-app-web`, port 80).
+- `.github/workflows/deploy-backend.yml` — builds/publishes the api-backend, streaming-proxy, and postgres images, then its `deploy_dokploy` job asks Dokploy to pull the Compose file `config/docker/docker-compose.dokploy-backend.yml`.
 
-Kubernetes manifests, when used, live under `config/kubernetes/base/` and `services/*/k8s/`; there is no root `k8s/` to apply with `kubectl apply -f k8s/`.
+`scripts/ci/trigger_dokploy_deploy.sh` and those jobs land with [#1056](https://github.com/pistisAI/pistisai-app/issues/1056). See [Dokploy](../../../deployment/DOKPLOY.md). Kubernetes manifests under `config/kubernetes/base/` and `services/*/k8s/` are legacy and unmaintained. There is no root `k8s/` directory. `scripts/deploy-hermes-pistisai-vps.sh` has been removed. Deploys are not run over SSH.
 
 ## Local / development
 

@@ -4,7 +4,7 @@
 
 This guide covers the complete deployment process for migrating from SQLite to PostgreSQL and deploying to Google Cloud Run.
 
-> **Current deployment path:** production deploys run through `.github/workflows/deploy-backend.yml` (triggered by a completed Web Deploy workflow on `main`, or manual workflow dispatch). The manual Cloud Run / npm-script path below is legacy and is not the supported deployment path.
+> **Current deployment path:** production deploys run through `.github/workflows/deploy-backend.yml` (triggered by a completed Web Deploy workflow on `main`, or manual workflow dispatch). Dokploy pulls the image using `config/docker/docker-compose.dokploy-backend.yml`. See [Dokploy](../../deployment/DOKPLOY.md). The manual Cloud Run / npm-script path below is legacy and is not the supported deployment path. Kubernetes is legacy and unmaintained.
 
 ## Prerequisites
 

@@ -79,6 +79,7 @@ Your AI runs on your hardware. The app gives it voice, vision, desktop control, 
 - Install the **desktop app** on the machine that stays on — it connects to your agent and becomes the **hub** for everything else.
 - Your **web, mobile, and other desktop devices** connect *through* that hub, not straight to your agent. Your data stays in your network.
 - Your agent still talks to messaging apps (Telegram, Slack, Discord) directly — the desktop hub is for your *devices*, not for messaging.
+- Hosted web and API are optional. GitHub Actions publishes the images, and [Dokploy](docs/deployment/DOKPLOY.md) pulls them. Coolify was removed. Kubernetes is not the hosted path.
 
 ---
 

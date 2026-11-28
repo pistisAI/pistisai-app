@@ -4,7 +4,7 @@
 
 This document provides the complete, tested workflow for creating Pistisai releases. Follow these steps exactly to ensure successful releases with all assets properly uploaded.
 
-> **Verified against code / policy (2026-11-24):** image builds and publishes run **only** through GitHub Actions (`.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`). `deploy-web.yml:106-131` runs a full-zone Cloudflare cache purge after the image push; `deploy-backend.yml:27-160` only builds and publishes images (no purge job). The host-side `docker compose up -d` is still a manual step (see the "Known gap" comment at `deploy-web.yml:103-105`). There is no manual VPS/SSH deploy step. The old VPS sections below are retained as historical reference and are labelled as such.
+> **Verified against the hosted path:** the desktop app is the hub. Image builds run only through GitHub Actions (`.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`). Dokploy pulls the published images. Each workflow's `deploy_dokploy` job calls `scripts/ci/trigger_dokploy_deploy.sh` ([#1056](https://github.com/pistisAI/pistisai-app/issues/1056)) after the push and before the full-zone Cloudflare purge. There is no manual SSH deploy. See [Dokploy](../../deployment/DOKPLOY.md).
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ This document provides the complete, tested workflow for creating Pistisai relea
 - [x] **Flutter SDK** (latest stable version)
 - [x] **Git** with repository access
 - [x] **GitHub CLI** (`gh`) installed and authenticated
-- [x] **GitHub Actions** deploy workflows available (no manual VPS/SSH access is used)
+- [x] **GitHub Actions** deploy workflows available (Dokploy pulls the images; no SSH deploy)
 
 ### Authentication Setup
 
@@ -154,11 +154,11 @@ gh release upload v1.5.60 dist/windows/Pistisai-1.5.60-portable.zip.sha256
    git push origin main
    ```
 
-### Step 7: Deploy via GitHub Actions (not manual VPS)
+### Step 7: Deploy via GitHub Actions into Dokploy
 
-> **Verified against code / policy:** image builds and publishes run only through `.github/workflows/deploy-web.yml` and `.github/workflows/deploy-backend.yml`, triggered from `main`. No SSH/VPS step exists or is permitted; the manual VPS instructions that followed this heading were removed.
+Image builds run only through `.github/workflows/deploy-web.yml` and `.github/workflows/deploy-backend.yml`, triggered from `main`. `deploy_dokploy` asks Dokploy to pull. There is no SSH step.
 
-1. **Push the release commit to `main`** (Step 6) — the image-build workflows run automatically; `deploy-web.yml` purges the full Cloudflare zone after publishing, and the host must still pull the new image (`docker compose up -d`).
+1. **Push the release commit to `main`** (Step 6). Web Deploy publishes `ghcr.io/pistisai/pistisai-app-web` and triggers the Dokploy Application. Backend Deploy publishes `ghcr.io/pistisai/pistisai-app/api-backend` and `streaming-proxy` and triggers the Dokploy Compose service (`IMAGE_TAG`, default `latest`). Both workflows then purge the full Cloudflare zone.
 
 2. **Verify the deployment** from the Actions run and the public version endpoint:
 
@@ -177,8 +177,9 @@ gh release upload v1.5.60 dist/windows/Pistisai-1.5.60-portable.zip.sha256
    - [ ] Version tags correct
 
 2. **Verify GitHub Actions Deployment**:
-   - [ ] `deploy-web.yml` / `deploy-backend.yml` image builds succeeded (`deploy-web.yml` also completed its full-zone Cloudflare cache purge)
-   - [ ] Application accessible at example.com
+   - [ ] `deploy-web.yml` / `deploy-backend.yml` image builds succeeded, `deploy_dokploy` ran, and the full-zone Cloudflare cache purge succeeded
+   - [ ] Dokploy reports the web Application and the backend Compose service healthy
+   - [ ] Application accessible at the hostname attached in Dokploy
    - [ ] Version number updated
    - [ ] New features functional
 
@@ -222,7 +223,7 @@ flutter pub get
 # Inspect the failing run and its logs (deploys are Actions-only)
 gh run list --workflow=deploy-web.yml --limit 5
 gh run view <run-id> --log-failed
-# Fix the cause on main and let the workflow re-run; never deploy manually over SSH
+# Fix the cause on main and let the workflow re-run. Dokploy pulls the new image. Never deploy over SSH.
 ```
 
 ### Rollback Procedures
@@ -239,11 +240,12 @@ gh release edit v1.5.60 --prerelease
 
 #### Rollback Deployment
 
-```bash
-# Revert the release commit on main via a normal PR (never force-push main)
-# The deploy workflows then run against the reverted main automatically.
-gh run list --workflow=deploy-web.yml --limit 5
-```
+Roll back by the tag Dokploy is running. Do not force-push `main`.
+
+- Web Application: set the image tag to the previous `assets/version.json` version and redeploy in Dokploy.
+- Backend Compose: set `IMAGE_TAG` to the previous `vX.Y.Z` or `build-X.Y.Z-<shortsha>` tag and redeploy. Both services share `IMAGE_TAG`.
+
+A bad commit still leaves `main` through a normal revert PR. The workflows then publish that tree and Dokploy pulls it. See [Dokploy](../../deployment/DOKPLOY.md).
 
 ## Quality Checklist
 

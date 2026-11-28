@@ -66,11 +66,11 @@ Any of the following conditions will trigger immediate deployment failure:
 
 1. **Pre-deployment checks** - Environment validation
 2. **Application build** - Flutter web compilation in `.github/workflows/deploy-web.yml`
-3. **Image publication** - GitHub Actions pushes the image to GHCR (`ghcr.io/pistisai/pistisai-app-web`); the host then pulls the new image and restarts the container with `docker compose -f config/docker/docker-compose.web.yml up -d`. There is no script that uploads a build to a VPS.
+3. **Image publication** - GitHub Actions pushes the image to GHCR (`ghcr.io/pistisai/pistisai-app-web`). The `deploy_dokploy` job asks Dokploy to pull it into the web Application (container port 80). There is no SSH upload. See [Dokploy](DOKPLOY.md).
 4. **STRICT verification** - Zero-tolerance quality checks
 5. **Success/Failure decision** - Based on strict criteria
 
-Production deploys are GitHub Actions runs on `main` (or `workflow_dispatch`), not an operator-driven VPS upload. See [Web Deploy](../operations/cicd/WEB_DEPLOY.md) and `.github/workflows/deploy-web.yml`.
+Production deploys are GitHub Actions runs on `main` (or `workflow_dispatch`) into Dokploy. See [Web Deploy](../operations/cicd/WEB_DEPLOY.md), [Dokploy](DOKPLOY.md), and `.github/workflows/deploy-web.yml`.
 
 ### Rollback Mechanism
 
@@ -105,8 +105,8 @@ Production deploys are GitHub Actions runs on `main` (or `workflow_dispatch`), n
 
 There is no dedicated verify-deployment script in this repository. The zero-tolerance checks are the healthchecks and verification scripts that exist today:
 
-- **Compose healthcheck**: `config/docker/docker-compose.web.yml` checks `http://localhost/health`; `docker compose ps` reports the result.
-- **Kubernetes tunnel path**: `bash scripts/verify-k8s-tunnel-only.sh` and `bash scripts/integration-test-deployments.sh --e2e-deployment`.
+- **Web image healthcheck**: the production image requests `http://127.0.0.1/` (see [Web Deploy](../operations/cicd/WEB_DEPLOY.md)). `config/docker/docker-compose.web.yml` is not the Dokploy Application.
+- **Kubernetes tunnel scripts** (`scripts/verify-k8s-tunnel-only.sh`, `scripts/integration-test-deployments.sh`) belong to the legacy, unmaintained cluster path. They are not the hosted check.
 - **Mode**: Strict verification with zero tolerance for warnings or errors.
 - **Output**: Clear success/failure indication with detailed reasoning.
 
@@ -115,8 +115,8 @@ There is no dedicated verify-deployment script in this repository. The zero-tole
 There is no dedicated complete-deployment script. Production deploys are driven by GitHub Actions:
 
 - **Entry point**: `.github/workflows/deploy-web.yml` (`workflow_dispatch` or push to `main`), with `.github/workflows/deploy-backend.yml` following via `workflow_run`.
-- **Mode**: Builds/pushes images to GHCR; the host pulls the image and runs `docker compose -f config/docker/docker-compose.web.yml up -d`.
-- **Rollback**: Use Git version control for rollback when needed.
+- **Mode**: Builds/pushes images to GHCR; `deploy_dokploy` asks Dokploy to pull (`DOKPLOY_WEBHOOK_URL` / `DOKPLOY_BACKEND_WEBHOOK_URL`).
+- **Rollback**: set the Dokploy image tag or Compose `IMAGE_TAG` to a previously published tag. See [Dokploy](DOKPLOY.md).
 
 ### Exit Codes
 
@@ -141,34 +141,15 @@ Pistisai uses Git version control as the primary backup and rollback mechanism, 
 
 If a deployment fails or issues are discovered:
 
-1. **Identify Previous Working Version**:
+1. **Identify the previous image tag** from the GitHub Actions run that published it. Web tags are the `version` field in `assets/version.json`. Backend tags are `v<version>` and `build-<version>-<shortsha>`.
 
-   ```bash
-   git log --oneline -10
-   # Find the last known good commit
-   ```
+2. **Roll back in Dokploy.** Web Application: set the image tag and redeploy. Backend Compose: set `IMAGE_TAG` to that tag and redeploy. Do not check out an old commit on the server, and do not force-push `main`.
 
-2. **Rollback to Previous Version**:
-
-   ```bash
-   git checkout <previous-commit-hash>
-   # Or use tag: git checkout v3.10.3
-   ```
-
-3. **Redeploy Previous Version**:
-
-   ```bash
-   gh workflow run deploy-web.yml
-   # on the host, pull the image and restart the container
-   docker compose -f config/docker/docker-compose.web.yml up -d
-   ```
+3. **A bad commit on `main`** is reverted with a normal pull request. Merging it re-runs `deploy-web.yml` and `deploy_dokploy`.
 
 4. **Verify Rollback Success**:
 
-   ```bash
-   docker compose -f config/docker/docker-compose.web.yml ps
-   curl -f http://localhost/health
-   ```
+   Confirm Dokploy reports the Application healthy and the public hostname serves the rolled-back version. See [Dokploy](DOKPLOY.md).
 
 ### Best Practices
 
@@ -183,7 +164,7 @@ If a deployment fails or issues are discovered:
 
 - **Deploy entry point**: GitHub Actions on `main` — `.github/workflows/deploy-web.yml`, then `.github/workflows/deploy-backend.yml` via `workflow_run`
 - **Image registry**: `ghcr.io` (GHCR), authenticated with `GITHUB_TOKEN`
-- **Host runtime**: `docker compose -f config/docker/docker-compose.web.yml up -d`
+- **Hosted runtime**: Dokploy (web Application on port 80; backend Compose `config/docker/docker-compose.dokploy-backend.yml`). `docker-compose.prod.yml` and `config/docker/docker-compose.web.yml` are not the Dokploy files.
 - **Resource Thresholds**: 90% for disk and memory
 - **HTTP Requirements**: 200 responses or expected HTTPS redirects (301/302)
 - **SSL Requirements**: Valid certificates mandatory

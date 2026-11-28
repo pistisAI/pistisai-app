@@ -1,6 +1,8 @@
 # k3s on Proxmox Deployment Workflow
 
-This workflow defines the Kubernetes-first deployment path on Proxmox with Cloudflare Tunnel-only ingress.
+> **Legacy and unmaintained.** Hosted deploys run on Dokploy. See [Dokploy](DOKPLOY.md) and [Deployment Overview](DEPLOYMENT_OVERVIEW.md). This runbook stays in the tree as a record of the old cluster path. Nothing in `.github/workflows/` applies these manifests.
+
+This workflow describes a former Kubernetes path on Proxmox with Cloudflare Tunnel-only ingress.
 
 ## Prerequisites
 

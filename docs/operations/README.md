@@ -5,6 +5,7 @@ Operational documentation covers running, monitoring, recovering, and securing P
 ## Primary Operations
 
 - [Deployment Index](../deployment/README.md)
+- [Dokploy](../deployment/DOKPLOY.md)
 - [Self Hosting](../deployment/SELF_HOSTING.md)
 - [Docker Deployment](../deployment/DOCKER_DEPLOYMENT.md)
 - [Complete Deployment Workflow](../deployment/DEPLOYMENT_OVERVIEW.md)
@@ -32,4 +33,4 @@ Operational documentation covers running, monitoring, recovering, and securing P
 
 ## Current Baseline
 
-Pistisai supports local desktop operation first. Cloud deployment paths currently include Docker Compose for self-hosting and Kubernetes manifests under `k8s/` and `config/kubernetes/`; provider-specific deployment notes should be treated as runbooks, not universal architecture.
+The desktop app is the hub. Hosted web and API run on Dokploy (GitHub Actions publishes the images). Kubernetes and k3s manifests under `config/kubernetes/` and `services/*/k8s/` are legacy and unmaintained. Local Docker Compose (`docker-compose.yml`) is for development. `docker-compose.prod.yml` and `config/docker/docker-compose.web.yml` are not the Dokploy files.

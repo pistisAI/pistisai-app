@@ -1,6 +1,6 @@
 # Web Deploy
 
-Production web hosting is the image built from the repo-root [`Dockerfile.web`](../../../Dockerfile.web) and published by [`.github/workflows/deploy-web.yml`](../../../.github/workflows/deploy-web.yml). The image is run with Docker Compose on the host (`config/docker/docker-compose.web.yml`).
+Production web hosting is the image built from the repo-root [`Dockerfile.web`](../../../Dockerfile.web) and published by [`.github/workflows/deploy-web.yml`](../../../.github/workflows/deploy-web.yml). Dokploy runs it as an Application: `ghcr.io/pistisai/pistisai-app-web:latest`, container port 80. [`config/docker/docker-compose.web.yml`](../../../config/docker/docker-compose.web.yml) is not that service. See [Dokploy](../../deployment/DOKPLOY.md).
 
 A second Dockerfile, [`config/docker/Dockerfile.web`](../../../config/docker/Dockerfile.web), is the compose path. It does not compile Flutter. It serves an already-built `build/web/` tree on port `8080` as a non-root user.
 
@@ -41,19 +41,22 @@ The exact `flutter_bootstrap.js` location exists because the long-cache regex wo
 
 1. **analyze** — Flutter pin from `pubspec.yaml` on `ubuntu-24.04`, `flutter pub get`, `flutter analyze lib/`.
 2. **build_and_push** — Build `Dockerfile.web` and push `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`. `{version}` is the `version` field in `assets/version.json`. The job fails if the build action returns no digest.
-3. **purge_cache** — Full-zone Cloudflare purge after the image is published (deploy fails if purge fails).
+3. **deploy_dokploy** — Calls `scripts/ci/trigger_dokploy_deploy.sh` ([#1056](https://github.com/pistisAI/pistisai-app/issues/1056)) with `DOKPLOY_WEBHOOK_URL` so Dokploy pulls the new image. Optional confirmation uses `DOKPLOY_API_URL`, `DOKPLOY_API_KEY`, and `DOKPLOY_WEB_APPLICATION_ID`. The repository variable `DOKPLOY_REQUIRED=true` fails the job when the webhook secret is missing; otherwise the trigger is skipped. This page documents that job and does not edit the workflow.
+4. **purge_cache** — Full-zone Cloudflare purge after Dokploy has been asked to pull (deploy fails if purge fails).
 
 Desktop, mobile, and backend workflows start from a completed Web Deploy run. See [CI/CD Quick Reference](CI_CD_QUICK_REFERENCE.md).
 
-### Deploy with Docker Compose
+### Dokploy Application
 
-Deployment runs on the host with `docker compose -f config/docker/docker-compose.web.yml up -d`. The host must be able to pull `ghcr.io/pistisai/pistisai-app-web` (log in with `docker login ghcr.io` using a token that has `read:packages`). The compose file restarts the container and its healthcheck reports the result.
+Dokploy runs `ghcr.io/pistisai/pistisai-app-web:latest` as an Application on container port 80. Add a GHCR registry credential with `read:packages` in Dokploy. Attach the public hostname in Dokploy's Domains tab. Dokploy's Traefik routes the request. Do not publish a host port.
+
+`config/docker/docker-compose.web.yml` is a separate Compose file for a prebuilt `build/web` tree. It is not the Dokploy Application. The header of that file says so.
 
 ## Public check and cache purge
 
-The workflow no longer runs a public check: it builds and publishes the image only. Verify the site yourself after the host has pulled the new image.
+The workflow publishes the image and asks Dokploy to pull it. Verify the site after Dokploy reports the Application healthy. See [Dokploy](../../deployment/DOKPLOY.md).
 
-The `purge_cache` job runs after the image is published and purges the whole Cloudflare zone (`purge_everything`). The job, and so the deploy, fails if `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset or Cloudflare does not answer `success`. Because the host pulls the image separately, purge again (or re-run the workflow) if the host deploys after the purge. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
+The `purge_cache` job purges the whole Cloudflare zone (`purge_everything`). The job, and so the deploy, fails if `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset or Cloudflare does not answer `success`. The `deploy_dokploy` job runs before that purge (#1056) so the zone is not flushed while Dokploy is still serving the previous image. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
 
 ## Local checks
 
@@ -79,7 +82,7 @@ The printed query value should be `{version}.{build_number}` from `assets/versio
 
 ### Site does not respond after deploy
 
-The container is not healthy or the port is not published. Check `docker compose -f config/docker/docker-compose.web.yml ps` and `docker logs` for the web container. Check the image healthcheck uses `http://127.0.0.1/`.
+The Dokploy Application is not healthy, or the domain is not attached to port 80. Check the Application logs in Dokploy. The image healthcheck uses `http://127.0.0.1/`.
 
 ### Blank page after the splash
 
@@ -87,7 +90,7 @@ The browser loaded a CanvasKit URL on `gstatic.com`, or it is still executing an
 
 ### GHCR pull fails on the host
 
-The host is not logged in to `ghcr.io`, or the token lacks `read:packages`. Run `docker login ghcr.io` on the host and retry `docker compose pull`.
+The Dokploy registry credential for `ghcr.io` is missing or the token lacks `read:packages`. Update that credential and redeploy the Application.
 
 ### Web image build cannot see the Android project
 

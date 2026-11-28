@@ -49,6 +49,7 @@ For project-wide agent instructions, see [AGENTS.md](../AGENTS.md).
 ## Deployment And Operations
 
 - [Deployment Index](deployment/README.md)
+- [Dokploy](deployment/DOKPLOY.md) — hosted web and API
 - [Self Hosting](deployment/SELF_HOSTING.md)
 - [Docker Deployment](deployment/DOCKER_DEPLOYMENT.md)
 - [Complete Deployment Workflow](deployment/DEPLOYMENT_OVERVIEW.md)

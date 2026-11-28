@@ -1,3 +1,8 @@
+# Not for Dokploy. Hosted deploys use config/docker/docker-compose.dokploy-backend.yml
+# (api-backend and streaming-proxy on GHCR, no Traefik labels, no host ports).
+# See docs/deployment/DOKPLOY.md. This file is a legacy Swarm-style stack with
+# its own Traefik, Redis, and published ports.
+#
 # Pistisai Production Docker Compose Stack
 # Deploy with: docker stack deploy -c docker-compose.prod.yml pistisai
 #
