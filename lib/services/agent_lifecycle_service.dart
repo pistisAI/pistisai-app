@@ -142,13 +142,11 @@ class AgentOperationResult {
   }
 }
 
-/// Service for managing agent lifecycle through OpenClaw Gateway
+/// Agent list/start/stop over the OpenClaw Gateway WebSocket protocol.
 ///
-/// This service communicates with OpenClaw Gateway via WebSocket to:
-/// - List available agents
-/// - Start/stop agents
-/// - Monitor agent status
-/// - Get agent logs and metrics
+/// Hermes has no such channel, so on Hermes the service is inactive: it
+/// does not auto-refresh and every call fails fast with
+/// [notAvailableMessage] instead of waiting for a timeout (#1042).
 class AgentLifecycleService extends ChangeNotifier {
   final ConnectionManagerService _connectionManager;
   final _uuid = const Uuid();
@@ -180,9 +178,18 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Last error message
   String? get lastError => _lastError;
 
-  /// Check if service is ready (connected to Hermes Agent)
+  /// Message returned while no runtime offers agent list/start/stop.
+  static const String notAvailableMessage =
+      'Agent control is not available for this runtime yet';
+
+  /// True only when a gateway RPC channel exists.
+  ///
+  /// The `agent.*` requests use the OpenClaw Gateway WebSocket protocol.
+  /// Hermes connects over HTTP and never opens that channel, so on Hermes
+  /// every request used to be dropped and wait for its timeout. Without a
+  /// channel the service now fails fast and does not auto-refresh (#1042).
   bool get isReady =>
-      _connectionManager.currentBackend == BackendType.hermes &&
+      _connectionManager.wsChannel != null &&
       _connectionManager.isConnected &&
       _connectionManager.isGatewayHealthy();
 
@@ -198,10 +205,10 @@ class AgentLifecycleService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// List all available agents from Hermes Gateway
+  /// List all available agents from the gateway
   Future<List<AgentInfo>> listAgents() async {
     if (!isReady) {
-      _lastError = 'Not connected to Hermes Gateway';
+      _lastError = notAvailableMessage;
       notifyListeners();
       throw Exception(_lastError);
     }
@@ -260,7 +267,7 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Start an agent
   Future<AgentOperationResult> startAgent(String agentId) async {
     if (!isReady) {
-      return AgentOperationResult.failure('Not connected to Hermes Gateway');
+      return AgentOperationResult.failure(notAvailableMessage);
     }
 
     try {
@@ -332,7 +339,7 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Stop an agent
   Future<AgentOperationResult> stopAgent(String agentId) async {
     if (!isReady) {
-      return AgentOperationResult.failure('Not connected to Hermes Gateway');
+      return AgentOperationResult.failure(notAvailableMessage);
     }
 
     try {
@@ -405,7 +412,7 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Get agent status
   Future<AgentInfo?> getAgentStatus(String agentId) async {
     if (!isReady) {
-      _lastError = 'Not connected to Hermes Gateway';
+      _lastError = notAvailableMessage;
       return null;
     }
 

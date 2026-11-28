@@ -8,7 +8,11 @@ services:
     environment:
       - POSTGRES_DB=pistisai
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      # No default: this file also runs self-hosted and server stacks, so a
+      # missing password stops `docker compose` instead of starting Postgres
+      # with a well-known one. Set it in .env (see config/docker-compose.env.example).
+      # It only takes effect when the data volume is first created.
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (see config/docker-compose.env.example)}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -125,12 +129,12 @@ services:
       - DB_PORT=5432
       - DB_NAME=pistisai
       - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (see config/docker-compose.env.example)}
       - PGHOST=database
       - PGPORT=5432
       - PGDATABASE=pistisai
       - PGUSER=postgres
-      - PGPASSWORD=postgres
+      - PGPASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (see config/docker-compose.env.example)}
       - OPENCLAW_WEBHOOK_SECRET=${OPENCLAW_WEBHOOK_SECRET}
     restart: unless-stopped
     depends_on:

@@ -1331,12 +1331,10 @@
   "configSupportProviders": "Support Model Providers",
   "configSupportProvidersSubtitle": "Optional helpers for memory, summaries, OCR cleanup, and background tasks",
   "configSupportProvidersNote": "Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.",
-  "configRequestPolicy": "Runtime Request Policy",
   "configWindow": "Window",
   "configCloseToTray": "Keep running in the tray when closed",
   "configCloseToTraySubtitle": "When off, closing the window quits the app.",
   "configNotAvailableYetNote": "Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.",
-  "configAutoRestart": "Auto-restart Runtime on Failure",
   "configAppearance": "Appearance",
   "configTheme": "Theme",
   "configCacheManagement": "Cache Management",
@@ -2359,6 +2357,56 @@
   "adminDnsValidationNoDetails": "No details were returned for this record.",
   "adminEmailSaveNotAvailable": "Saving email provider settings is not available yet: the server does not accept this configuration from the app. Nothing on this form is saved.",
   "adminEmailSaveNotAvailableButton": "Save (not available yet)",
+  "cloudServicesTitle": "Cloud services",
+  "cloudServicesSubtitleDefault": "Off by default. While off, nothing is sent to the {product} cloud service.",
+  "@cloudServicesSubtitleDefault": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudServicesSubtitleOnRegistered": "On. This device is registered with the {product} cloud service. Brain sync and chat history use it from their next sync.",
+  "@cloudServicesSubtitleOnRegistered": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudServicesSubtitleOnPending": "On. Brain sync and chat history use the {product} cloud service from their next sync. Device registration has not completed; the app tries again the next time it starts.",
+  "@cloudServicesSubtitleOnPending": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudServicesSubtitleOff": "Off. Nothing more is sent to the {product} cloud service. Data already uploaded stays on the server: turning this off does not delete it.",
+  "@cloudServicesSubtitleOff": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudServicesSaveFailed": "Could not save this setting. Nothing was changed.",
+  "cloudServicesDialogTitle": "Turn on cloud services?",
+  "cloudServicesDialogIntro": "While this is on, the app sends the following to the {product} cloud service:",
+  "@cloudServicesDialogIntro": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "cloudServicesDialogDeviceRegistration": "Device registration and a heartbeat every 2 minutes: this device's ID, name, platform and app version.",
+  "cloudServicesDialogBrainSync": "Brain sync every 5 minutes: agent activity events and pending record changes stored on this device are uploaded, and recent events are downloaded.",
+  "cloudServicesDialogChatHistory": "Chat history, while you are signed in: your conversations and their messages are uploaded, and conversations saved on the server are downloaded.",
+  "cloudServicesDialogWebNote": "In the web app, a signed-in user's chat history is stored on the server whether or not this is on.",
+  "cloudServicesDialogOutro": "You can turn this off at any time. Turning it off stops new uploads; it does not delete data already uploaded.",
+  "cloudServicesDialogCancel": "Cancel",
+  "cloudServicesDialogConfirm": "Turn on",
   "localModelCheckChecking": "Checking whether this computer can host a local model...",
   "localModelCheckSufficientTitle": "This computer can host a local model",
   "localModelCheckSufficientBody": "Your agent runtime and its local model can run here.",

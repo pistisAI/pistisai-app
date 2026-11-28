@@ -12,9 +12,13 @@ order of the pull requests that would get there. It sits next to
 [`AGENT_RUNTIME_CONTRACT.md`](AGENT_RUNTIME_CONTRACT.md), which defines the
 runtime terms used here.
 
-Only the contract types in `lib/services/agent_session/` exist so far (added
-with this note). Nothing in the app uses them yet. Everything under "Target
-design" is planned work.
+The contract types in `lib/services/agent_session/` were added with this
+note. Since then each `Conversation` carries a `ConversationChannel` (the
+`pistisai` conversation is the default `direct` channel), Hermes session ids
+are kept in `RuntimeSessionMap` and saved on the conversation, and the chat
+sync reads history through `HermesHarnessAdapter` (all capabilities false;
+turns are still sent by `HermesStreamingService`). Everything else under
+"Target design" is planned work.
 
 ## 1. Current state
 

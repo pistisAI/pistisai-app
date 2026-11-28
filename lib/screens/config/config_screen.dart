@@ -134,10 +134,9 @@ class _ConfigScreenState extends State<ConfigScreen>
   // Language, notifications, proxy, request/runtime timeouts, concurrency,
   // support provider, history limits, cache size, security and developer
   // switches were saved but never applied, so they are not shown until they
-  // are wired ("Controls tell the truth", AGENTS.md).
-
-  /// Read by GatewayControlService.
-  bool _autoRestart = true;
+  // are wired ("Controls tell the truth", AGENTS.md). "Auto-restart Runtime on
+  // Failure" is hidden too: only the OpenClaw CLI control read it, and no
+  // Hermes restart path exists yet (#1042).
 
   /// Stored theme code: 'system', 'light' or 'dark'. Applied through
   /// ThemeProvider, which reads the same preference key.
@@ -240,8 +239,6 @@ class _ConfigScreenState extends State<ConfigScreen>
       };
 
       _closeToTray = await _settingsService.isMinimizeToTrayEnabled();
-      final autoRestart = await _settingsService.getGatewayAutoRestart();
-      if (autoRestart != null) _autoRestart = autoRestart;
 
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
@@ -255,7 +252,6 @@ class _ConfigScreenState extends State<ConfigScreen>
     try {
       await _applyTheme(_selectedTheme);
       await _settingsService.setMinimizeToTrayEnabled(_closeToTray);
-      await _settingsService.setGatewayAutoRestart(_autoRestart);
 
       if (mounted) {
         setState(() => _isSaving = false);
@@ -533,16 +529,6 @@ class _ConfigScreenState extends State<ConfigScreen>
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
               child: Text(l10n.configSupportProvidersNote),
             ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        CardSection(
-          title: l10n.configRequestPolicy,
-          children: [
-            _switch(l10n.configAutoRestart, _autoRestart, (v) async {
-              setState(() => _autoRestart = v);
-              await _settingsService.setGatewayAutoRestart(v);
-            }),
           ],
         ),
       ],

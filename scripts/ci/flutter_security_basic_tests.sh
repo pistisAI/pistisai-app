@@ -48,6 +48,7 @@ flutter test \
   test/screens/nodes_screen_test.dart \
   test/services/subagent_registry_service_test.dart \
   test/services/cloud_zero_egress_test.dart \
+  test/widgets/settings/cloud_services_tile_test.dart \
   test/services/avatar/avatar_progress_test.dart \
   test/services/avatar/avatar_appearance_test.dart \
   test/services/avatar/avatar_personality_publish_test.dart \
@@ -61,6 +62,8 @@ flutter test \
   test/screens/settings/connection_settings_rerun_wizard_test.dart \
   test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
+  test/services/agent_lifecycle_hermes_test.dart \
+  test/services/avatar/avatar_markdown_path_test.dart \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
   test/services/agent_session/ \

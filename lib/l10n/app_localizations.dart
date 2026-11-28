@@ -3896,12 +3896,6 @@ abstract class AppLocalizations {
   /// **'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.'**
   String get configSupportProvidersNote;
 
-  /// No description provided for @configRequestPolicy.
-  ///
-  /// In en, this message translates to:
-  /// **'Runtime Request Policy'**
-  String get configRequestPolicy;
-
   /// No description provided for @configWindow.
   ///
   /// In en, this message translates to:
@@ -3925,12 +3919,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.'**
   String get configNotAvailableYetNote;
-
-  /// No description provided for @configAutoRestart.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-restart Runtime on Failure'**
-  String get configAutoRestart;
 
   /// No description provided for @configAppearance.
   ///
@@ -6493,6 +6481,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save (not available yet)'**
   String get adminEmailSaveNotAvailableButton;
+
+  /// No description provided for @cloudServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud services'**
+  String get cloudServicesTitle;
+
+  /// No description provided for @cloudServicesSubtitleDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. While off, nothing is sent to the {product} cloud service.'**
+  String cloudServicesSubtitleDefault(String product);
+
+  /// No description provided for @cloudServicesSubtitleOnRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'On. This device is registered with the {product} cloud service. Brain sync and chat history use it from their next sync.'**
+  String cloudServicesSubtitleOnRegistered(String product);
+
+  /// No description provided for @cloudServicesSubtitleOnPending.
+  ///
+  /// In en, this message translates to:
+  /// **'On. Brain sync and chat history use the {product} cloud service from their next sync. Device registration has not completed; the app tries again the next time it starts.'**
+  String cloudServicesSubtitleOnPending(String product);
+
+  /// No description provided for @cloudServicesSubtitleOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off. Nothing more is sent to the {product} cloud service. Data already uploaded stays on the server: turning this off does not delete it.'**
+  String cloudServicesSubtitleOff(String product);
+
+  /// No description provided for @cloudServicesSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this setting. Nothing was changed.'**
+  String get cloudServicesSaveFailed;
+
+  /// No description provided for @cloudServicesDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on cloud services?'**
+  String get cloudServicesDialogTitle;
+
+  /// No description provided for @cloudServicesDialogIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'While this is on, the app sends the following to the {product} cloud service:'**
+  String cloudServicesDialogIntro(String product);
+
+  /// No description provided for @cloudServicesDialogDeviceRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Device registration and a heartbeat every 2 minutes: this device\'s ID, name, platform and app version.'**
+  String get cloudServicesDialogDeviceRegistration;
+
+  /// No description provided for @cloudServicesDialogBrainSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Brain sync every 5 minutes: agent activity events and pending record changes stored on this device are uploaded, and recent events are downloaded.'**
+  String get cloudServicesDialogBrainSync;
+
+  /// No description provided for @cloudServicesDialogChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat history, while you are signed in: your conversations and their messages are uploaded, and conversations saved on the server are downloaded.'**
+  String get cloudServicesDialogChatHistory;
+
+  /// No description provided for @cloudServicesDialogWebNote.
+  ///
+  /// In en, this message translates to:
+  /// **'In the web app, a signed-in user\'s chat history is stored on the server whether or not this is on.'**
+  String get cloudServicesDialogWebNote;
+
+  /// No description provided for @cloudServicesDialogOutro.
+  ///
+  /// In en, this message translates to:
+  /// **'You can turn this off at any time. Turning it off stops new uploads; it does not delete data already uploaded.'**
+  String get cloudServicesDialogOutro;
+
+  /// No description provided for @cloudServicesDialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cloudServicesDialogCancel;
+
+  /// No description provided for @cloudServicesDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on'**
+  String get cloudServicesDialogConfirm;
 
   /// No description provided for @localModelCheckChecking.
   ///
