@@ -115,7 +115,7 @@ There is no dedicated verify-deployment script in this repository. The zero-tole
 There is no dedicated complete-deployment script. Production deploys are driven by GitHub Actions:
 
 - **Entry point**: `.github/workflows/deploy-web.yml` (`workflow_dispatch` or push to `main`), with `.github/workflows/deploy-backend.yml` following via `workflow_run`.
-- **Mode**: Builds/pushes images to GHCR; the host pulls the image and runs `docker compose -f config/docker/docker-compose.web.yml up -d`.
+- **Mode**: Builds/pushes images to GHCR, asks Dokploy to deploy them, and purges Cloudflare only after the host serves the new version.
 - **Rollback**: Use Git version control for rollback when needed.
 
 ### Exit Codes

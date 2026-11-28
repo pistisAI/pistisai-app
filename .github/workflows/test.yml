@@ -350,6 +350,14 @@ jobs:
         working-directory: .
         run: bash scripts/tests/test_no_hardcoded_dev_bypass_token.sh
 
+      - name: "Dokploy deploy trigger"
+        working-directory: .
+        run: bash scripts/tests/test_dokploy_deploy_trigger.sh
+
+      - name: "Wait for the served version"
+        working-directory: .
+        run: bash scripts/tests/test_wait_for_served_version.sh
+
       - name: "🔒 npm run test:ci:security"
         run: npm run test:ci:security
 

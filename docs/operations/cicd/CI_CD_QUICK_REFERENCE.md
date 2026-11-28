@@ -14,7 +14,7 @@ Web Deploy must complete successfully before the three downstream workflows proc
 | Workflow | File | What it ships |
 | --- | --- | --- |
 | Auto Version Bump | `.github/workflows/auto-version-bump.yml` | `assets/version.json` and `pubspec.yaml` |
-| Web Deploy | `.github/workflows/deploy-web.yml` | `ghcr.io/pistisai/pistisai-app-web` via Docker Compose |
+| Web Deploy | `.github/workflows/deploy-web.yml` | `ghcr.io/pistisai/pistisai-app-web`, then Dokploy, then a Cloudflare purge after the new version is served |
 | Desktop Build | `.github/workflows/build-desktop.yml` | Linux, Windows, and macOS artifacts |
 | Mobile Build | `.github/workflows/build-mobile.yml` | Android APKs. iOS only when dispatched and the `ios/` project exists |
 | Backend Deploy | `.github/workflows/deploy-backend.yml` | Backend containers |
