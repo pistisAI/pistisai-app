@@ -6493,6 +6493,115 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save (not available yet)'**
   String get adminEmailSaveNotAvailableButton;
+
+  /// No description provided for @localModelCheckChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking whether this computer can host a local model...'**
+  String get localModelCheckChecking;
+
+  /// No description provided for @localModelCheckSufficientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer can host a local model'**
+  String get localModelCheckSufficientTitle;
+
+  /// No description provided for @localModelCheckSufficientBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your agent runtime and its local model can run here.'**
+  String get localModelCheckSufficientBody;
+
+  /// No description provided for @localModelCheckInsufficientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer may not have enough hardware for a local model'**
+  String get localModelCheckInsufficientTitle;
+
+  /// No description provided for @localModelCheckInsufficientBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still use the app here: the model can run on a local machine we provide, or on another computer you choose.'**
+  String get localModelCheckInsufficientBody;
+
+  /// No description provided for @localModelCheckUnknownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware check not available'**
+  String get localModelCheckUnknownTitle;
+
+  /// No description provided for @localModelCheckUnknownBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A local model needs about {recommendedGb} GB of memory. If this computer has less, the model can run on a local machine we provide.'**
+  String localModelCheckUnknownBody(int recommendedGb);
+
+  /// No description provided for @localModelReasonUnsupportedPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware detection is not available on this platform.'**
+  String get localModelReasonUnsupportedPlatform;
+
+  /// No description provided for @localModelReasonProbeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The hardware check did not return a result.'**
+  String get localModelReasonProbeFailed;
+
+  /// No description provided for @localModelReasonUnsupportedArchitecture.
+  ///
+  /// In en, this message translates to:
+  /// **'Processor architecture {architecture} is not supported for local models.'**
+  String localModelReasonUnsupportedArchitecture(String architecture);
+
+  /// No description provided for @localModelReasonBelowMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory. A local model needs at least {minimumGb} GB, and {recommendedGb} GB is recommended.'**
+  String localModelReasonBelowMinimum(
+      String memoryGb, int minimumGb, int recommendedGb);
+
+  /// No description provided for @localModelReasonMiddleZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory. Below {recommendedGb} GB, a local model only fits when a local model provider such as Ollama or LM Studio is already running on this computer.'**
+  String localModelReasonMiddleZone(String memoryGb, int recommendedGb);
+
+  /// No description provided for @localModelReasonMiddleZoneProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory and a running local model provider: {providers}.'**
+  String localModelReasonMiddleZoneProvider(String memoryGb, String providers);
+
+  /// No description provided for @localModelReasonMiddleZoneGpu.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory and a GPU with {gpuMemoryGb} GB of video memory.'**
+  String localModelReasonMiddleZoneGpu(String memoryGb, String gpuMemoryGb);
+
+  /// No description provided for @localModelReasonMeetsRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory ({architecture}).'**
+  String localModelReasonMeetsRecommended(String memoryGb, String architecture);
+
+  /// No description provided for @localModelReasonProviderReachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory could not be read, but a local model provider is already running on this computer: {providers}.'**
+  String localModelReasonProviderReachable(String providers);
+
+  /// No description provided for @localModelArchitectureUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'architecture not detected'**
+  String get localModelArchitectureUnknown;
+
+  /// No description provided for @downloadLocalModelRequirement.
+  ///
+  /// In en, this message translates to:
+  /// **'Running a local model on the same computer needs about {recommendedGb} GB of memory. With less, the app can use a local machine we provide to run the model.'**
+  String downloadLocalModelRequirement(int recommendedGb);
 }
 
 class _AppLocalizationsDelegate

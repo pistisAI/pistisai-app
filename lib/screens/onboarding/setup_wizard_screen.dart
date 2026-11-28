@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/utils/logger.dart';
 import 'package:pistisai/screens/onboarding/steps/welcome_step.dart';
+import 'package:pistisai/services/hardware/hardware_capability_service.dart';
 import 'package:pistisai/screens/onboarding/steps/tailscale_discovery_step.dart';
 import 'package:pistisai/screens/onboarding/steps/hermes_location_step.dart';
 import 'package:pistisai/screens/onboarding/steps/hermes_url_step.dart';
@@ -155,7 +156,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     HermesLocation? hermesLocation,
   ) {
     final steps = <Widget>[
-      const WelcomeStep(),
+      WelcomeStep(capabilityService: HardwareCapabilityService.shared),
       const HermesLocationStep(),
     ];
     if (method == ConnectionMethod.hermes &&

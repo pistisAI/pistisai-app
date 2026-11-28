@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../brand/brand_copy.dart';
 import '../../../config/theme.dart';
+import '../../../services/hardware/hardware_capability_service.dart';
+import '../widgets/local_model_capability_card.dart';
 
 /// Welcome step - First screen of the setup wizard
 class WelcomeStep extends StatelessWidget {
-  const WelcomeStep({super.key});
+  const WelcomeStep({super.key, this.capabilityService});
+
+  /// When set, the step shows whether this computer can host a local model
+  /// (#1077). The setup wizard passes [HardwareCapabilityService.shared].
+  final HardwareCapabilityService? capabilityService;
 
   static bool _isCompact(double maxHeight) => maxHeight < 620;
 
@@ -33,6 +39,10 @@ class WelcomeStep extends StatelessWidget {
               _FeatureCards(compact: compact),
               SizedBox(height: sectionGap),
               const _InfoBox(),
+              if (capabilityService != null) ...[
+                SizedBox(height: compact ? 8 : 12),
+                LocalModelCapabilityCard(service: capabilityService!),
+              ],
             ],
           ),
         );
