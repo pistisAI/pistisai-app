@@ -10,7 +10,8 @@ class WelcomeStep extends StatelessWidget {
   const WelcomeStep({super.key, this.capabilityService});
 
   /// When set, the step shows whether this computer can host a local model
-  /// (#1077). The setup wizard passes [HardwareCapabilityService.shared].
+  /// (#1077). The setup wizard passes the instance registered in the
+  /// service locator.
   final HardwareCapabilityService? capabilityService;
 
   static bool _isCompact(double maxHeight) => maxHeight < 620;
