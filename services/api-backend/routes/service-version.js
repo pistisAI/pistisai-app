@@ -31,6 +31,8 @@ async function loadVersion() {
       name: packageJson.name || 'pistisai-api-backend',
       build_number: process.env.BUILD_NUMBER || 'dev',
       git_commit: process.env.GIT_COMMIT || 'unknown',
+      // Image tag for this container. Deploy waits until the host reports it.
+      release_version: process.env.RELEASE_VERSION || null,
       environment: process.env.NODE_ENV || 'production',
       node_version: process.version,
       timestamp: new Date().toISOString(),
@@ -44,6 +46,7 @@ async function loadVersion() {
       version: process.env.API_VERSION || 'unknown',
       build_number: process.env.BUILD_NUMBER || 'dev',
       git_commit: process.env.GIT_COMMIT || 'unknown',
+      release_version: process.env.RELEASE_VERSION || null,
       environment: process.env.NODE_ENV || 'production',
       node_version: process.version,
       timestamp: new Date().toISOString(),

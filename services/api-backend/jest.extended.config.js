@@ -34,5 +34,6 @@ export default {
     '**/test/api-backend/utils/ssrf-protection.test.js',
     '**/test/api-backend/api-keys.test.js',
     '**/test/api-backend/sandbox-routes.test.js',
+    '**/test/api-backend/service-version.test.js',
   ],
 };

@@ -6,8 +6,8 @@
 
 Image builds and publishes run **only through GitHub Actions**:
 
-- `.github/workflows/deploy-web.yml` — builds/publishes the web image to GHCR; a full-zone Cloudflare cache purge job follows the image push (`deploy-web.yml:106-131`). The host still pulls the image with `docker compose up -d` (see the "Known gap" comment at `deploy-web.yml:103-105`).
-- `.github/workflows/deploy-backend.yml` — builds/publishes the api-backend, streaming-proxy and postgres images to GHCR (`deploy-backend.yml:27-160`); it has no host-deploy or cache-purge job.
+- `.github/workflows/deploy-web.yml` — builds/publishes the web image to GHCR, triggers Dokploy (`deploy_dokploy`), waits until the site serves the new version, then purges the Cloudflare zone (`purge_cache`).
+- `.github/workflows/deploy-backend.yml` — builds/publishes the api-backend, streaming-proxy and postgres images to GHCR, triggers Dokploy when images were pushed, waits until `/service-version` reports `release_version`, then purges the zone.
 
 Kubernetes manifests, when used, live under `config/kubernetes/base/` and `services/*/k8s/`; there is no root `k8s/` to apply with `kubectl apply -f k8s/`.
 

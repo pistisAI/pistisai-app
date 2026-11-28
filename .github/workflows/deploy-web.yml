@@ -61,6 +61,7 @@ jobs:
     outputs:
       image_tag: ${{ steps.version.outputs.tag }}
       image_digest: ${{ steps.build.outputs.digest }}
+      served_version: ${{ steps.version.outputs.served_version }}
     steps:
       - name: Refuse a non-main ref
         if: github.ref_name != 'main'
@@ -88,7 +89,10 @@ jobs:
         run: |
           set -euo pipefail
           VERSION=$(jq -r '.version' assets/version.json)
-          echo "tag=$VERSION" >> $GITHUB_OUTPUT
+          BUILD=$(jq -r '.build_number' assets/version.json)
+          echo "tag=$VERSION" >> "$GITHUB_OUTPUT"
+          # Dockerfile.web writes this into index.html as flutter_bootstrap.js?v=
+          echo "served_version=${VERSION}.${BUILD}" >> "$GITHUB_OUTPUT"
           echo "Building version: $VERSION"
 
       - name: Build and push Docker image
@@ -116,17 +120,59 @@ jobs:
           fi
           echo "✅ Image pushed: $DIGEST"
 
-  # Known gap: the host still pulls the image by hand (`docker compose up -d`),
-  # so this purge can run before the host serves the new image. Moving the pull
-  # into Actions closes it; until then, re-run this workflow if the host deploys late.
-  purge_cache:
+  # Dokploy pulls the published image and starts it. Nothing is purged until
+  # that trigger has been accepted and the public site serves this version.
+  deploy_dokploy:
     needs: [build_and_push]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            scripts/ci
+      - name: Trigger Dokploy deploy
+        env:
+          DOKPLOY_TARGET_LABEL: web
+          DOKPLOY_IMAGE_TAG: latest
+          DOKPLOY_IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          DOKPLOY_REQUIRED: ${{ vars.DOKPLOY_REQUIRED }}
+          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
+          DOKPLOY_API_URL: ${{ secrets.DOKPLOY_API_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_WEB_APPLICATION_ID }}
+        run: bash scripts/ci/trigger_dokploy_deploy.sh
+
+  # The purge runs only after deploy_dokploy. It still fails when the
+  # Cloudflare token or zone id is missing, when the host does not serve this
+  # version before the timeout, or when Cloudflare does not return success.
+  purge_cache:
+    needs: [build_and_push, deploy_dokploy]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     env:
       CF_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
       CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
     steps:
+      - name: Require Cloudflare purge credentials
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_TOKEN:-}" ] || [ -z "${CF_ZONE_ID:-}" ]; then
+            echo "❌ CLOUDFLARE_CACHE_PURGE_TOKEN and CF_ZONE_ID must both be set"
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            scripts/ci
+      - name: Wait until the host serves this version
+        env:
+          SERVED_VERSION_URL: ${{ vars.WEB_SERVED_VERSION_URL }}
+          SERVED_VERSION: "flutter_bootstrap.js?v=${{ needs.build_and_push.outputs.served_version }}"
+          SERVED_VERSION_MODE: text
+        run: bash scripts/ci/wait_for_served_version.sh
       # Every deploy purges the whole zone, and the deploy fails if it cannot.
       - name: Purge Cloudflare cache (full zone)
         run: |

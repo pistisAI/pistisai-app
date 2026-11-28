@@ -4,7 +4,7 @@
 
 This document provides the complete, tested workflow for creating Pistisai releases. Follow these steps exactly to ensure successful releases with all assets properly uploaded.
 
-> **Verified against code / policy (2026-11-24):** image builds and publishes run **only** through GitHub Actions (`.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`). `deploy-web.yml:106-131` runs a full-zone Cloudflare cache purge after the image push; `deploy-backend.yml:27-160` only builds and publishes images (no purge job). The host-side `docker compose up -d` is still a manual step (see the "Known gap" comment at `deploy-web.yml:103-105`). There is no manual VPS/SSH deploy step. The old VPS sections below are retained as historical reference and are labelled as such.
+> **Verified against code / policy (2026-11-28):** image builds and publishes run **only** through GitHub Actions (`.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`). Each workflow asks Dokploy to deploy the new image (`deploy_dokploy`), waits until the host serves that version, then runs a full-zone Cloudflare cache purge (`purge_cache`). There is no manual VPS/SSH deploy step. The old VPS sections below are retained as historical reference and are labelled as such.
 
 ## Prerequisites
 

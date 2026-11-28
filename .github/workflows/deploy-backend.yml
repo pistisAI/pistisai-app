@@ -35,6 +35,7 @@ jobs:
       actions: write
     outputs:
       pushed: ${{ steps.changes.outputs.pushed }}
+      release_version: ${{ steps.version.outputs.release_version }}
     if: >-
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'
@@ -65,6 +66,7 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "repo_lower=$REPO_LOWER" >> "$GITHUB_OUTPUT"
           echo "short_sha=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+          echo "release_version=build-${VERSION}-${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
           echo "Deploying backend version: $VERSION"
 
       - name: Detect images to build
@@ -134,6 +136,8 @@ jobs:
             ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:latest
             ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:v${{ steps.version.outputs.version }}
             ghcr.io/${{ steps.version.outputs.repo_lower }}/api-backend:build-${{ steps.version.outputs.version }}-${{ steps.version.outputs.short_sha }}
+          build-args: |
+            RELEASE_VERSION=${{ steps.version.outputs.release_version }}
           cache-from: type=gha,scope=api-backend
           cache-to: type=gha,mode=min,scope=api-backend
 
@@ -173,23 +177,67 @@ jobs:
 
       - name: Backend images built
         run: echo "✅ Backend images built"
-  # AGENTS.md: every deploy runs a full-zone Cloudflare cache purge, and the
-  # deploy fails if the purge fails. Same secrets and fail-closed logic as
-  # purge_cache in deploy-web.yml. Runs only when this job pushed images.
-  # A dispatch that builds nothing does not purge.
-  # Known gap (as in deploy-web.yml): the host still pulls the images by hand,
-  # so this purge can run before the host serves them; re-run if it deploys late.
-  purge_cache:
+  # Dokploy deploys the images this job pushed. A dispatch that builds
+  # nothing does not deploy and does not purge.
+  deploy_dokploy:
     needs: [build_images]
     if: needs.build_images.outputs.pushed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          sparse-checkout: |
+            scripts/ci
+      - name: Trigger Dokploy deploy
+        env:
+          DOKPLOY_TARGET_LABEL: backend
+          DOKPLOY_IMAGE_TAG: latest
+          DOKPLOY_REQUIRED: ${{ vars.DOKPLOY_REQUIRED }}
+          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_BACKEND_WEBHOOK_URL }}
+          DOKPLOY_API_URL: ${{ secrets.DOKPLOY_API_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_COMPOSE_ID: ${{ secrets.DOKPLOY_BACKEND_COMPOSE_ID }}
+        run: bash scripts/ci/trigger_dokploy_deploy.sh
+
+  # AGENTS.md: every deploy runs a full-zone Cloudflare cache purge, and the
+  # deploy fails if the purge fails. Same secrets and fail-closed logic as
+  # purge_cache in deploy-web.yml. Runs only after Dokploy was triggered and
+  # the API reports this image's release_version. A missing token or zone id
+  # still fails the job. A dispatch that builds nothing does not purge.
+  purge_cache:
+    needs: [build_images, deploy_dokploy]
+    if: needs.build_images.outputs.pushed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
     env:
       CF_TOKEN: ${{ secrets.CLOUDFLARE_CACHE_PURGE_TOKEN }}
       CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
     steps:
+      - name: Require Cloudflare purge credentials
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_TOKEN:-}" ] || [ -z "${CF_ZONE_ID:-}" ]; then
+            echo "❌ CLOUDFLARE_CACHE_PURGE_TOKEN and CF_ZONE_ID must both be set"
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          sparse-checkout: |
+            scripts/ci
+      - name: Wait until the host serves this version
+        env:
+          SERVED_VERSION_URL: ${{ vars.BACKEND_SERVED_VERSION_URL }}
+          SERVED_VERSION: ${{ needs.build_images.outputs.release_version }}
+          SERVED_VERSION_MODE: json
+          SERVED_VERSION_JSON_FIELD: release_version
+        run: bash scripts/ci/wait_for_served_version.sh
       # Every deploy purges the whole zone, and the deploy fails if it cannot.
       - name: Purge Cloudflare cache (full zone)
         run: |

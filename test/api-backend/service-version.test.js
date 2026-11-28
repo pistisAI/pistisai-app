@@ -44,6 +44,7 @@ describe("service-version route", () => {
     delete process.env.BUILD_NUMBER;
     delete process.env.GIT_COMMIT;
     delete process.env.NODE_ENV;
+    delete process.env.RELEASE_VERSION;
   });
 
   it("should return version info from package.json", async () => {
@@ -153,6 +154,30 @@ describe("service-version route", () => {
     expect(mockReadFile).toHaveBeenCalledTimes(1);
   });
 
+  it("should report RELEASE_VERSION baked into the image", async () => {
+    process.env.RELEASE_VERSION = "build-1.5.84-abc1234";
+    mockReadFile.mockResolvedValue(
+      JSON.stringify({ version: "10.1.187", name: "pistisai-api-backend" }),
+    );
+
+    const handler = await reloadHandler();
+    await handler(req, res);
+
+    const body = res.json.mock.calls[0][0];
+    expect(body.version).toBe("10.1.187");
+    expect(body.release_version).toBe("build-1.5.84-abc1234");
+  });
+
+  it("should leave release_version null when the image did not set it", async () => {
+    delete process.env.RELEASE_VERSION;
+    mockReadFile.mockResolvedValue(JSON.stringify({ version: "1.0.0" }));
+
+    const handler = await reloadHandler();
+    await handler(req, res);
+
+    expect(res.json.mock.calls[0][0].release_version).toBeNull();
+  });
+
   it("should return error message with fallback on file read failure", async () => {
     mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
@@ -161,6 +186,7 @@ describe("service-version route", () => {
 
     const body = res.json.mock.calls[0][0];
     expect(body.error).toBe("Could not read version from package.json");
+    expect(body.release_version).toBeNull();
     expect(body.build_number).toBe("dev");
     expect(body.environment).toBeDefined();
     expect(body.node_version).toBe(process.version);

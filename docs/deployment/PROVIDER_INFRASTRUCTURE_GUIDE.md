@@ -69,7 +69,7 @@ Azure AKS and AWS EKS remain possible *targets* for an operator applying the sta
 ### For operators
 
 1. Use the GHCR workflows and [Web Deploy](../operations/cicd/WEB_DEPLOY.md) for production images.
-2. Keep host configuration (the `docker compose up -d` pull) in your own runbook; it is not automated by Actions.
+2. Dokploy deploys the image Actions publishes. The purge waits until that host serves the new version.
 3. Use standard manifests for self-hosted clusters; treat provider-specific setup as local configuration.
 
 ### For developers
@@ -81,7 +81,7 @@ Azure AKS and AWS EKS remain possible *targets* for an operator applying the sta
 ## Support and Troubleshooting
 
 - **Deploy workflow failures**: inspect `.github/workflows/deploy-web.yml` run logs, including the GHCR push digest check and the Cloudflare purge step.
-- **Site not updated after a run**: the host pulls the image separately; re-run the workflow / purge again if the host deployed late (see [Web Deploy](../operations/cicd/WEB_DEPLOY.md)).
+- **Site not updated after a run**: the purge runs only after Dokploy deploys and the version check succeeds (see [Web Deploy](../operations/cicd/WEB_DEPLOY.md)).
 - **Kubernetes issues**: check `config/kubernetes/base/` and `services/api-backend/k8s/`; use standard `kubectl` diagnostics.
 - **Auth failures**: see [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md).
 

@@ -13,8 +13,14 @@ Verified against `secrets.*` references in `.github/workflows/`:
 | Secret Name | Description | Used In |
 | --- | --- | --- |
 | `GITHUB_TOKEN` | Built-in Actions token used to log in to GHCR (`ghcr.io`) and push images | `deploy-web.yml`, `deploy-backend.yml` |
-| `CLOUDFLARE_CACHE_PURGE_TOKEN` | Cloudflare API token with zone cache-purge permission | `deploy-web.yml` `purge_cache` job |
-| `CF_ZONE_ID` | Cloudflare zone ID for the full-zone purge request | `deploy-web.yml` `purge_cache` job |
+| `CLOUDFLARE_CACHE_PURGE_TOKEN` | Cloudflare API token with zone cache-purge permission | `deploy-web.yml` and `deploy-backend.yml` `purge_cache` |
+| `CF_ZONE_ID` | Cloudflare zone ID for the full-zone purge request | `deploy-web.yml` and `deploy-backend.yml` `purge_cache` |
+| `DOKPLOY_WEBHOOK_URL` | Dokploy webhook for the web application. A registry-push JSON body is posted; the tag is `latest` | `deploy-web.yml` `deploy_dokploy` |
+| `DOKPLOY_API_URL` | Dokploy origin, for example `https://dokploy.example.com` | `deploy-web.yml` and `deploy-backend.yml` `deploy_dokploy` |
+| `DOKPLOY_API_KEY` | Dokploy API key sent as `x-api-key` | `deploy-web.yml` and `deploy-backend.yml` `deploy_dokploy` |
+| `DOKPLOY_WEB_APPLICATION_ID` | Dokploy application id for the web image | `deploy-web.yml` `deploy_dokploy` |
+| `DOKPLOY_BACKEND_WEBHOOK_URL` | Dokploy webhook for the backend stack | `deploy-backend.yml` `deploy_dokploy` |
+| `DOKPLOY_BACKEND_COMPOSE_ID` | Dokploy compose id for the backend stack | `deploy-backend.yml` `deploy_dokploy` |
 | `BUMP_APP_ID` | GitHub App client ID used to mint a token for the release bump PR | `auto-version-bump.yml` |
 | `BUMP_APP_KEY` | GitHub App private key for the same bump PR | `auto-version-bump.yml` |
 | `SENTRY_DSN` | Sentry DSN referenced by CI workflows | `.github/workflows/` |
@@ -27,7 +33,8 @@ There are no `GCP_PROJECT_ID`, `GCP_SA_KEY`, `JWT_SECRET` or `JWT_AUDIENCE` repo
 
 - `GITHUB_TOKEN` is provided automatically; no manual setup is needed.
 - `BUMP_APP_ID` / `BUMP_APP_KEY` come from a GitHub App with permission to open and merge the automated version-bump PR.
-- `CLOUDFLARE_CACHE_PURGE_TOKEN` / `CF_ZONE_ID`: create a Cloudflare API token scoped to **Zone → Cache Purge → Purge** for your zone, and copy the zone ID from the Cloudflare dashboard. The deploy fails if either is unset (see `deploy-web.yml`).
+- `CLOUDFLARE_CACHE_PURGE_TOKEN` / `CF_ZONE_ID`: create a Cloudflare API token scoped to **Zone → Cache Purge → Purge** for your zone, and copy the zone ID from the Cloudflare dashboard. The deploy fails if either is unset (see `deploy-web.yml` and `deploy-backend.yml`).
+- Dokploy: create an API key in the Dokploy profile, and copy the webhook URL or the application/compose id from the service. Leave them unset to skip the trigger. Set the Actions variable `DOKPLOY_REQUIRED` to `true` to fail the job instead. `WEB_SERVED_VERSION_URL` and `BACKEND_SERVED_VERSION_URL` override the version check URLs.
 
 ### Local Development
 

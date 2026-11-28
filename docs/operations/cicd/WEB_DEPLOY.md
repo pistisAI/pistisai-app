@@ -41,7 +41,8 @@ The exact `flutter_bootstrap.js` location exists because the long-cache regex wo
 
 1. **analyze** — Flutter pin from `pubspec.yaml` on `ubuntu-24.04`, `flutter pub get`, `flutter analyze lib/`.
 2. **build_and_push** — Build `Dockerfile.web` and push `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`. `{version}` is the `version` field in `assets/version.json`. The job fails if the build action returns no digest.
-3. **purge_cache** — Full-zone Cloudflare purge after the image is published (deploy fails if purge fails).
+3. **deploy_dokploy** — Ask Dokploy to pull and start that image. A webhook (`DOKPLOY_WEBHOOK_URL`) wins over the API (`DOKPLOY_API_URL`, `DOKPLOY_API_KEY`, `DOKPLOY_WEB_APPLICATION_ID`). The webhook body is a registry push whose tag is `latest`. If nothing is configured the step warns and continues, unless the `DOKPLOY_REQUIRED` repository variable is `true`.
+4. **purge_cache** — Wait until the public site serves `flutter_bootstrap.js?v={version}.{build_number}` from this build, then purge the whole Cloudflare zone. The job, and so the deploy, fails if `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset, the new version is not served within 10 minutes, or Cloudflare does not answer `success`. `WEB_SERVED_VERSION_URL` overrides the default `https://pistisai.app/`.
 
 Desktop, mobile, and backend workflows start from a completed Web Deploy run. See [CI/CD Quick Reference](CI_CD_QUICK_REFERENCE.md).
 
@@ -51,9 +52,7 @@ Deployment runs on the host with `docker compose -f config/docker/docker-compose
 
 ## Public check and cache purge
 
-The workflow no longer runs a public check: it builds and publishes the image only. Verify the site yourself after the host has pulled the new image.
-
-The `purge_cache` job runs after the image is published and purges the whole Cloudflare zone (`purge_everything`). The job, and so the deploy, fails if `CLOUDFLARE_CACHE_PURGE_TOKEN` or `CF_ZONE_ID` is unset or Cloudflare does not answer `success`. Because the host pulls the image separately, purge again (or re-run the workflow) if the host deploys after the purge. The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
+`deploy_dokploy` asks Dokploy to deploy the image. `purge_cache` then requests `https://pistisai.app/` (or `WEB_SERVED_VERSION_URL`) until the HTML contains `flutter_bootstrap.js?v=` plus `{version}.{build_number}`. A login redirect or any other non-2xx response does not count. Only then does the job purge the whole Cloudflare zone (`purge_everything`). The nginx `no-cache` rules above are what stop browsers from pinning `flutter_bootstrap.js`. The purge is an extra flush, not the cache fix.
 
 ## Local checks
 

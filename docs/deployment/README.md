@@ -5,7 +5,7 @@ This directory documents supported deployment paths for Pistisai.
 ## Start Here
 
 - [Web Deploy](../operations/cicd/WEB_DEPLOY.md) — production Flutter web image and Docker Compose health
-- Production deploy workflows: `.github/workflows/deploy-web.yml` (builds/pushes the web image to GHCR and purges the Cloudflare cache) and `.github/workflows/deploy-backend.yml` (builds/pushes the api-backend, streaming-proxy and postgres images to GHCR)
+- Production deploy workflows: `.github/workflows/deploy-web.yml` (builds/pushes the web image to GHCR, asks Dokploy to deploy it, then purges Cloudflare after the site serves the new version) and `.github/workflows/deploy-backend.yml` (builds/pushes the api-backend, streaming-proxy and postgres images, asks Dokploy to deploy them, then purges after the API reports the new `release_version`)
 - [Deployment Overview](DEPLOYMENT_OVERVIEW.md)
 - [Complete Deployment Workflow](DEPLOYMENT_OVERVIEW.md)
 - [Self Hosting](SELF_HOSTING.md)
