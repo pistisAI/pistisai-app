@@ -100,6 +100,13 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(
+      find.text('Re-run Setup Wizard'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text('Re-run Setup Wizard'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Clear & Re-run'));
@@ -112,5 +119,64 @@ void main() {
     expect(await SettingsPreferenceService().isSetupWizardDeferred(), isFalse);
     expect(await setupStatus.hasCompletedSetup('local_user'), isFalse);
     expect(await wizard.shouldShowWizard(), isTrue);
+  });
+
+  testWidgets('Remote hub access toggle is opt-in and explains the restart',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final auth = _FakeAuthService();
+    final setupStatus = SetupStatusService(
+      authService: auth,
+      storage: InMemorySetupStatusStorage(),
+    );
+    final wizard = SetupWizardService(
+      ProviderDiscoveryService(),
+      setupStatus,
+      ProviderConfigurationManager(),
+      settings: SettingsPreferenceService(),
+    );
+    final router = GoRouter(
+      initialLocation: '/settings/connection',
+      routes: [
+        GoRoute(
+          path: '/settings/connection',
+          builder: (context, state) => const ConnectionSettingsScreen(),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthService>.value(value: auth),
+        ChangeNotifierProvider<SetupStatusService>.value(value: setupStatus),
+        ChangeNotifierProvider<SetupWizardService>.value(value: wizard),
+      ],
+      child: MaterialApp.router(
+        theme: AppTheme.darkTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        routerConfig: router,
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    final toggle = find.byKey(const Key('remoteHubAccessToggle'));
+    expect(toggle, findsOneWidget);
+    expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
+    expect(
+      find.textContaining('Applies after a restart'),
+      findsOneWidget,
+    );
+
+    await tester.tap(
+      find.descendant(of: toggle, matching: find.byType(Switch)),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      await SettingsPreferenceService().isRemoteHubAccessEnabled(),
+      isTrue,
+    );
   });
 }

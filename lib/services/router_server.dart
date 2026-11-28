@@ -64,6 +64,7 @@ class RouterServer {
   /// Co-resident Hermes gateway. Only the primary hub dials this;
   /// remote clients must use this router instead.
   final String hermesBaseUrl;
+  final String? hermesApiKey;
 
   HttpServer? _server;
 
@@ -87,6 +88,7 @@ class RouterServer {
     String? authSecret,
     this.allowRemoteAccess = false,
     String? hermesBaseUrl,
+    this.hermesApiKey,
   })  : authSecret = _resolveAuthSecret(
           allowRemoteAccess: allowRemoteAccess,
           provided: authSecret,
@@ -102,10 +104,48 @@ class RouterServer {
     return _generateAuthSecret();
   }
 
+  /// Remote access is only safe when the stable token is known. A transient
+  /// keystore failure must not let the router mint a different in-memory
+  /// secret while Settings still displays the stored one (#981).
+  static bool shouldAllowRemoteAccess({
+    required bool enabled,
+    required String? token,
+  }) =>
+      enabled && token != null && token.isNotEmpty;
+
+  /// Generate a URL-safe bearer token. Used by the opt-in remote hub setting
+  /// so the token is stable across restarts instead of being regenerated on
+  /// every bind (#861).
+  static String generateAuthSecret() => _generateAuthSecret();
+
   static String _generateAuthSecret() {
     final rnd = Random.secure();
     final bytes = List<int>.generate(32, (_) => rnd.nextInt(256));
     return base64Url.encode(bytes).replaceAll('=', '');
+  }
+
+  /// Headers for the co-resident Hermes proxy (#981).
+  ///
+  /// The caller's hub token authenticates against *this* router and must
+  /// never be forwarded to Hermes, which uses its own API_SERVER_KEY.
+  static Map<String, String> proxyHeaders(
+    Map<String, String> incoming, {
+    String? hermesApiKey,
+  }) {
+    final headers = <String, String>{};
+    incoming.forEach((name, value) {
+      final lower = name.toLowerCase();
+      if (lower == 'host' ||
+          lower == 'content-length' ||
+          lower == 'authorization') {
+        return;
+      }
+      headers[name] = value;
+    });
+    if (hermesApiKey != null && hermesApiKey.isNotEmpty) {
+      headers['authorization'] = 'Bearer $hermesApiKey';
+    }
+    return headers;
   }
 
   /// Logs exception details locally; returns a response with no path/leak text.
@@ -407,12 +447,10 @@ class RouterServer {
       },
     );
 
-    final headers = <String, String>{};
-    request.headers.forEach((name, value) {
-      final lower = name.toLowerCase();
-      if (lower == 'host' || lower == 'content-length') return;
-      headers[name] = value;
-    });
+    final headers = proxyHeaders(
+      request.headers,
+      hermesApiKey: hermesApiKey
+    );
 
     try {
       final streamed = http.StreamedRequest(request.method, target);

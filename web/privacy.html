@@ -285,6 +285,7 @@
       <li><strong>Authentication:</strong> sign-in is handled by Cloudflare Access; our service stores your email address, account identifier and the profile fields listed in section 2.1, plus the session records in section 2.7. Sign-in tokens copied to a session record are stored as sent, not encrypted in the database.</li>
       <li><strong>Chat history on our server:</strong> conversations from the web app while you are signed in, and from desktop and mobile only with cloud services on, are stored in our database, including message text. They are not end-to-end encrypted.</li>
       <li><strong>In transit:</strong> connections to first-party services use encrypted transport (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.</li>
+      <li><strong>Local hub access:</strong> the desktop hub listens only on this computer by default. If you turn on &ldquo;Remote hub access&rdquo; in Settings &rarr; Connections, it also accepts devices on your local network or tailnet; that access is off until you enable it and requires a bearer token for every private endpoint.</li>
     </ul>
     <p>
       No method of storage or transmission is completely secure, but we apply reasonable technical and

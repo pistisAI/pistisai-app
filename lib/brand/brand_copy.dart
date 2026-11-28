@@ -37,8 +37,11 @@ class BrandCopy {
   static String hermesDesktopDashboard(String url) =>
       'Hermes desktop is running at $url, but its agent API is not available there. '
       '${brand.productName} needs /health on port ${AppConfig.defaultHermesPort}.';
+  static String get hubTokenRequired =>
+      'This desktop hub requires its remote access token. Copy the token from '
+      'desktop Settings → Connections and paste it above before connecting.';
   static String hubUnreachable(String host) =>
-      'Could not reach a ${brand.productName} desktop hub at $host. Open Tailscale on this phone, join the same tailnet as your PC, and use that PC\'s Tailscale name or 100.x address.';
+      'Could not reach a ${brand.productName} desktop hub at $host. Check that you joined the same tailnet as the PC, then enable "Remote hub access" in desktop Settings → Connections and restart the desktop app.';
   static String get testEmailSubject => 'Test Email from ${brand.productName}';
   static String get startMenuHint =>
       'Find ${brand.productName} in your Start menu or desktop shortcut.';

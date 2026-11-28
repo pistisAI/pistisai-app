@@ -14,6 +14,51 @@ void main() {
     HttpOverrides.global = null;
   });
 
+  group('Hermes proxy headers (#981)', () {
+    test('replaces the caller hub token with the co-resident Hermes key', () {
+      final headers = RouterServer.proxyHeaders(
+        {
+          'authorization': '***',
+          'content-type': 'application/json',
+          'host': 'pc.tailnet.ts.net',
+          'content-length': '12',
+        },
+        hermesApiKey: 'hermes-key',
+      );
+
+      expect(headers['authorization'], 'Bearer hermes-key');
+      expect(headers['content-type'], 'application/json');
+      expect(headers.containsKey('host'), isFalse);
+      expect(headers.containsKey('content-length'), isFalse);
+    });
+
+    test('never forwards the hub token when no Hermes key is configured', () {
+      final headers = RouterServer.proxyHeaders(
+        const {'authorization': '***'},
+        hermesApiKey: null,
+      );
+
+      expect(headers.containsKey('authorization'), isFalse);
+    });
+
+    test('fails closed when the stored hub token could not be read', () {
+      expect(
+        RouterServer.shouldAllowRemoteAccess(
+          enabled: true,
+          token: null,
+        ),
+        isFalse,
+      );
+      expect(
+        RouterServer.shouldAllowRemoteAccess(
+          enabled: true,
+          token: 'stored-token',
+        ),
+        isTrue,
+      );
+    });
+  });
+
   group('RouterServer local security defaults', () {
     RouterServer? server;
 
