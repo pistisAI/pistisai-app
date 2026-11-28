@@ -2188,9 +2188,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.';
 
   @override
-  String get configRequestPolicy => 'Runtime Request Policy';
-
-  @override
   String get configWindow => 'Window';
 
   @override
@@ -2203,9 +2200,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get configNotAvailableYetNote =>
       'Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.';
-
-  @override
-  String get configAutoRestart => 'Auto-restart Runtime on Failure';
 
   @override
   String get configAppearance => 'Appearance';

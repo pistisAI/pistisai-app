@@ -3896,12 +3896,6 @@ abstract class AppLocalizations {
   /// **'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.'**
   String get configSupportProvidersNote;
 
-  /// No description provided for @configRequestPolicy.
-  ///
-  /// In en, this message translates to:
-  /// **'Runtime Request Policy'**
-  String get configRequestPolicy;
-
   /// No description provided for @configWindow.
   ///
   /// In en, this message translates to:
@@ -3925,12 +3919,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.'**
   String get configNotAvailableYetNote;
-
-  /// No description provided for @configAutoRestart.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-restart Runtime on Failure'**
-  String get configAutoRestart;
 
   /// No description provided for @configAppearance.
   ///

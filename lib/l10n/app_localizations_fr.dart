@@ -2214,9 +2214,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les fournisseurs d\'appoint ne peuvent ni terminer la configuration ni recevoir le contrôle de l\'ordinateur, sauf s\'ils passent par un environnement d\'agent.';
 
   @override
-  String get configRequestPolicy => 'Règles des requêtes';
-
-  @override
   String get configWindow => 'Fenêtre';
 
   @override
@@ -2230,10 +2227,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get configNotAvailableYetNote =>
       'Pas encore disponible : langue, notifications, proxy, délais des requêtes, sécurité, historique et options de développement. L\'application n\'offre pas ces réglages tant qu\'elle ne peut pas les appliquer.';
-
-  @override
-  String get configAutoRestart =>
-      'Redémarrer automatiquement l\'environnement en cas d\'échec';
 
   @override
   String get configAppearance => 'Apparence';

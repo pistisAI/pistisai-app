@@ -18,13 +18,6 @@ void main() {
       );
     });
 
-    test('constructs with connection manager', () {
-      expect(
-        () => GatewayControlService(SettingsPreferenceService(), null),
-        returnsNormally,
-      );
-    });
-
     test('isRunning returns false initially', () {
       final service = GatewayControlService(SettingsPreferenceService());
       expect(service.isRunning, isFalse);
