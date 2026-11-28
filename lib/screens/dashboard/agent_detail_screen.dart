@@ -52,7 +52,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(result.message ?? l10n.commonUnknownError),
+        content: Text(_resultText(l10n, result)),
         backgroundColor: result.success
             ? AppTheme.colorsOf(context).success
             : AppTheme.colorsOf(context).danger,
@@ -71,7 +71,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(result.message ?? l10n.commonUnknownError),
+        content: Text(_resultText(l10n, result)),
         backgroundColor: result.success
             ? AppTheme.colorsOf(context).success
             : AppTheme.colorsOf(context).danger,
@@ -90,7 +90,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(result.message ?? l10n.commonUnknownError),
+        content: Text(_resultText(l10n, result)),
         backgroundColor: result.success
             ? AppTheme.colorsOf(context).success
             : AppTheme.colorsOf(context).danger,
@@ -98,6 +98,17 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
     );
 
     await _loadAgentDetails();
+  }
+
+  /// Localized text for an operation result; typed errors are translated
+  /// here because the service carries no user-facing English (#1042).
+  String _resultText(AppLocalizations l10n, AgentOperationResult result) {
+    switch (result.error) {
+      case AgentOperationError.notAvailable:
+        return l10n.agentControlNotAvailable;
+      case null:
+        return result.message ?? l10n.commonUnknownError;
+    }
   }
 
   @override
@@ -132,6 +143,13 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
                   Text(l10n.agentDetailNotFound),
                   const SizedBox(height: 8),
                   Text(l10n.agentDetailIdValue(widget.agentId)),
+                  if (!service.controlsAvailable) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.agentControlNotAvailable,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: _loadAgentDetails,
@@ -178,7 +196,7 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
               const SizedBox(height: 16),
 
               // Actions Card
-              _buildActionsCard(l10n, agent),
+              _buildActionsCard(l10n, agent, service.controlsAvailable),
 
               const SizedBox(height: 16),
 
@@ -261,7 +279,35 @@ class _AgentDetailScreenState extends State<AgentDetailScreen> {
     );
   }
 
-  Widget _buildActionsCard(AppLocalizations l10n, AgentInfo agent) {
+  Widget _buildActionsCard(
+    AppLocalizations l10n,
+    AgentInfo agent,
+    bool controlsAvailable,
+  ) {
+    // Hide Start/Stop/Restart when the runtime cannot perform them, and say
+    // why, instead of offering buttons that can only fail (#1042).
+    if (!controlsAvailable) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.commonActions,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.agentControlNotAvailable,
+                key: const Key('agent-controls-not-available'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final canStart = agent.state == AgentLifecycleState.idle ||
         agent.state == AgentLifecycleState.error ||
         agent.state == AgentLifecycleState.offline;

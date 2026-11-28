@@ -1628,6 +1628,12 @@ abstract class AppLocalizations {
   /// **'Information'**
   String get agentDetailInformation;
 
+  /// Shown instead of Start/Stop/Restart when the active agent runtime (for example Hermes) cannot start or stop agents
+  ///
+  /// In en, this message translates to:
+  /// **'Agent control is not available for this runtime yet'**
+  String get agentControlNotAvailable;
+
   /// No description provided for @agentDetailId.
   ///
   /// In en, this message translates to:

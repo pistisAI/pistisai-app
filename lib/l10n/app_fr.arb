@@ -276,6 +276,7 @@
   "agentDetailStop": "Arrêter",
   "agentDetailRestart": "Redémarrer",
   "agentDetailInformation": "Informations",
+  "agentControlNotAvailable": "Le contrôle des agents n'est pas encore disponible pour cet environnement d'exécution",
   "agentDetailId": "Identifiant",
   "agentStateIdle": "Inactif",
   "agentStateStarting": "Démarrage…",

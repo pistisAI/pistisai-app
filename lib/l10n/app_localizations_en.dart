@@ -884,6 +884,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agentDetailInformation => 'Information';
 
   @override
+  String get agentControlNotAvailable =>
+      'Agent control is not available for this runtime yet';
+
+  @override
   String get agentDetailId => 'ID';
 
   @override
