@@ -15,12 +15,14 @@ Ollama, LM Studio, and similar local model servers are optional support model pr
 Pistisai is organized around core capabilities:
 
 1. **Secure Agent Channel** - The main window is a direct, low-friction channel to the selected agent runtime.
-2. **Avatar And Voice Companion** - A sidecar companion window for avatar presence and voice interaction.
+2. **Avatar And Voice Companion (Phase 2)** - A sidecar companion window for avatar presence and voice interaction. It is in the app, but deferred until chat works well and not part of the current core scope.
 3. **Desktop Control** - Permissioned hands-on access to the current desktop.
 4. **Vision** - Screen, region, OCR, and camera understanding.
 5. **Agent Runtime Management** - Runtime discovery, health, tools, sessions, and agent lifecycle.
 6. **Local Intelligence Support** - Optional local model providers for app-owned memory and background features.
 7. **Secure Device Mesh** - Tailscale-first connectivity and optional cloud sync across your devices.
+
+The product's current core scope (a universal baseline for any business) and what is available today versus planned are listed in the [Features Guide](FEATURES_GUIDE.md#-product-scope).
 
 Agent management is still available, but it is not the first thing in the interface. The first screen should feel like a secure conversation path to the active agent runtime.
 
