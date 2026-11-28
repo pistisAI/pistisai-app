@@ -892,6 +892,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get agentDetailInformation => 'Informations';
 
   @override
+  String get agentControlNotAvailable =>
+      'Le contrôle des agents n\'est pas encore disponible pour cet environnement d\'exécution';
+
+  @override
   String get agentDetailId => 'Identifiant';
 
   @override

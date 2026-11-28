@@ -66,9 +66,13 @@ void main() {
 
     test('listAgents fails fast instead of waiting for a timeout', () async {
       final watch = Stopwatch()..start();
-      await expectLater(service.listAgents(), throwsException);
+      await expectLater(
+        service.listAgents(),
+        throwsA(isA<AgentControlNotAvailableException>()),
+      );
       expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
-      expect(service.lastError, AgentLifecycleService.notAvailableMessage);
+      expect(service.lastErrorCode, AgentOperationError.notAvailable);
+      expect(service.lastError, isNull);
     });
 
     test('start, stop and status fail fast and report not available',
@@ -79,9 +83,19 @@ void main() {
       final status = await service.getAgentStatus('a1');
       expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
       expect(started.success, isFalse);
-      expect(started.message, AgentLifecycleService.notAvailableMessage);
+      expect(started.error, AgentOperationError.notAvailable);
       expect(stopped.success, isFalse);
+      expect(stopped.error, AgentOperationError.notAvailable);
       expect(status, isNull);
+      expect(service.lastErrorCode, AgentOperationError.notAvailable);
+    });
+
+    test('failures carry a typed error and no user-facing English', () async {
+      final restarted = await service.restartAgent('a1');
+      expect(restarted.success, isFalse);
+      expect(restarted.error, AgentOperationError.notAvailable);
+      expect(restarted.message, isNull);
+      expect(service.controlsAvailable, isFalse);
     });
   });
 }
