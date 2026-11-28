@@ -80,7 +80,12 @@ services:
       - SENTRY_DSN=${SENTRY_DSN}
       - SENTRY_ENVIRONMENT=production
       - OTLP_ENDPOINT=http://jaeger:4318
-      - JWT_SECRET=${JWT_SECRET}
+      # The image runs proxy-server.js (`npm start`), which verifies no JWT and
+      # no Cloudflare Access token itself, so JWT_SECRET, CF_ACCESS_TEAM_DOMAIN
+      # and CF_ACCESS_AUD are not passed here. Enforce Cloudflare Access in
+      # front of this route. The TypeScript server under src/ (not run by this
+      # image) would require CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUD.
+      # Required: without it /stats answers 401 to every caller.
       - PROXY_STATS_TOKEN=${PROXY_STATS_TOKEN}
       - WS_HEARTBEAT_INTERVAL=30000
     networks:
