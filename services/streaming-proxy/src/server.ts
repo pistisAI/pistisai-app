@@ -10,6 +10,7 @@
 
 // Import Sentry FIRST to catch all errors from the very beginning
 import * as Sentry from '@sentry/node';
+import { scrubSentryEvent } from '../sentry-scrub.js';
 
 // Initialize Sentry IMMEDIATELY - before any other code runs
 // Environment variables are provided by Kubernetes secrets
@@ -25,7 +26,8 @@ Sentry.init({
       event.tags.service = 'streaming-proxy';
       event.tags.region = process.env.AZURE_REGION || 'unknown';
     }
-    return event;
+    // Remove credential headers, cookies and token query params.
+    return scrubSentryEvent(event);
   },
 });
 

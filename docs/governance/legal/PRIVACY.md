@@ -200,7 +200,11 @@ is collected while you use the app without signing in.
   messages and performance traces for a sample of requests, and can include your
   account identifier and the address of the request. They are configured not to
   attach user details, cookies, request or response bodies, database query data,
-  or forwarding and client-IP headers; other request headers can be included. An
+  or forwarding and client-IP headers. Before a report is sent, the
+  `Authorization`, `Cookie`, `Set-Cookie`, Cloudflare Access assertion and
+  `X-Api-Key` headers, cookies, and token-like parameters in the request address
+  (such as `token`, `access_token` or `api_key`) are removed from it; other
+  request headers can be included. An
   email address placed in a report's user data is removed, and authorization
   errors and 401, 403 and 404 responses are not reported.
 
