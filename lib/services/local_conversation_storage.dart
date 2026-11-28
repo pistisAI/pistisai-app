@@ -368,7 +368,12 @@ class LocalConversationStorage {
     final files = <File>[];
     final seen = <String>{};
     for (final dir in dirs) {
-      for (final name in [_fileName, _legacyFileName]) {
+      for (final name in [
+        _fileName,
+        _legacyFileName,
+        '$_fileName.retired',
+        '$_legacyFileName.retired',
+      ]) {
         final file = File(p.join(dir.path, name));
         if (seen.add(file.path)) {
           files.add(file);
@@ -389,6 +394,38 @@ class LocalConversationStorage {
       } catch (_) {}
     }
     return files;
+  }
+
+  /// Renames live conversation files so they are no longer the store.
+  ///
+  /// Called once the Drift database has imported them (#1065). Unreadable
+  /// archives are left in place so a later launch can still recover them.
+  /// Missing files are skipped. Returns the paths the files were renamed to.
+  Future<List<String>> retire() async {
+    final renamed = <String>[];
+    for (final file in await _conversationDataFiles()) {
+      if (!await file.exists()) continue;
+      if (p.basename(file.path).contains(unreadableSuffix)) continue;
+      if (file.path.endsWith('.retired')) continue;
+      final target = File('${file.path}.retired');
+      if (await target.exists()) {
+        await target.delete();
+      }
+      await file.rename(target.path);
+      renamed.add(target.path);
+    }
+    return renamed;
+  }
+
+  /// True when a conversation file was set aside because it could not be read.
+  Future<bool> hasUnreadableArchive() async {
+    for (final file in await _conversationDataFiles()) {
+      if (p.basename(file.path).contains(unreadableSuffix) &&
+          await file.exists()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// Paths of conversation data files that still exist on disk.

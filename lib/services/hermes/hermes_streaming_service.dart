@@ -10,6 +10,8 @@ import '../../models/agent_event.dart';
 import '../../models/conversation.dart';
 import '../../models/message.dart';
 import '../../models/streaming_message.dart';
+import '../agent_session/harness_event.dart';
+import '../agent_session/hermes_owned_session.dart';
 import '../streaming_service.dart';
 import 'hermes_session_transcript.dart';
 import '../../utils/logger.dart';
@@ -63,6 +65,10 @@ class HermesStreamingService extends StreamingService {
   final Map<String, String> _runtimeSessionsByConversation = {};
   final Map<String, DateTime> _runtimeSessionBoundAt = {};
   final Duration _mappingRefreshInterval;
+
+  /// Still accepted by callers. Owned sessions are not re-listed when it elapses.
+  @visibleForTesting
+  Duration get mappingRefreshInterval => _mappingRefreshInterval;
 
   /// Chats already logged as "no runtime session yet", so the pre-first-turn
   /// state is logged once instead of on every poll.
@@ -239,256 +245,230 @@ class HermesStreamingService extends StreamingService {
       return;
     }
 
-    yield* _streamViaPistisaiChannel(
+    yield* _streamViaOwnedSession(
       prompt: prompt,
       model: model,
       conversationId: conversationId,
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // First-class pistisai platform channel
-  // ---------------------------------------------------------------------------
+  HermesOwnedSessionApi _ownedApi() {
+    return HermesOwnedSessionApi(
+      baseUrl: _baseUrl,
+      headers: _headers,
+      client: _client ?? http.Client(),
+    );
+  }
 
-  /// Post to `/api/pistisai/messages` then poll the shared session transcript
-  /// for the assistant reply. No generic api_server / `/v1/runs` path.
-  Stream<StreamingMessage> _streamViaPistisaiChannel({
+  /// Creates an API-server-owned Hermes session when this channel has none.
+  ///
+  /// The id is an adapter mapping. It is not the channel's identity.
+  Future<String?> ensureOwnedSession(String channelId, {String? title}) async {
+    final mapped = _runtimeSessionsByConversation[channelId];
+    if (mapped != null && mapped.isNotEmpty) return mapped;
+    try {
+      final created = await _ownedApi().create(
+        title: title ?? channelId,
+        timeout: _transcriptFetchTimeout,
+      );
+      if (created == null) return null;
+      _bindRuntimeSession(channelId, created);
+      return created;
+    } catch (e) {
+      appLogger.error('[Hermes] Could not create an API session', error: e);
+      return null;
+    }
+  }
+
+  /// One synchronous turn on an API-server-owned session (#1066).
+  Future<String?> postOwnedSessionChat({
+    required String sessionId,
+    required String message,
+  }) async {
+    try {
+      return await _ownedApi().chat(sessionId: sessionId, message: message);
+    } catch (e) {
+      appLogger.error('[Hermes] Session chat failed', error: e);
+      return null;
+    }
+  }
+
+  /// Ends the API-server session. A missing session counts as ended.
+  Future<bool> deleteOwnedSession(String sessionId) async {
+    try {
+      return await _ownedApi().delete(sessionId);
+    } catch (e) {
+      appLogger.error('[Hermes] Session delete failed', error: e);
+      return false;
+    }
+  }
+
+  /// Token and tool events for one turn (#1068).
+  Stream<HarnessEvent> streamOwnedSessionChat({
+    required String channelId,
+    required String sessionId,
+    required String message,
+  }) {
+    return _ownedApi().chatStream(
+      channelId: channelId,
+      sessionId: sessionId,
+      message: message,
+    );
+  }
+
+  /// The pre-migration pistisai transcript, ignoring any API-server session
+  /// this app created. Used once to import history (#1067).
+  Future<List<Message>?> fetchLegacyPistisaiTranscript() async {
+    try {
+      final id = await _resolvePistisaiSessionId();
+      if (id == null) return const [];
+      final client = _client ?? http.Client();
+      final response = await client.get(
+        Uri.parse(
+          '$_baseUrl/api/sessions/${Uri.encodeComponent(id)}/messages'
+          '?order=oldest&limit=500',
+        ),
+        headers: {..._headers(), 'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 8));
+      if (response.statusCode == 404) return const [];
+      if (response.statusCode != 200) return null;
+      return messagesFromHermesSessionBody(response.body);
+    } catch (e) {
+      appLogger.error('[Hermes] Legacy transcript import failed', error: e);
+      return null;
+    }
+  }
+
+  /// Post one turn to an API-server-owned session and yield the reply.
+  ///
+  /// When [streamTokens] is false the reply is one chunk from
+  /// `POST /api/sessions/{id}/chat`. When it is true, deltas come from
+  /// `/chat/stream`.
+  Stream<StreamingMessage> _streamViaOwnedSession({
     required String prompt,
     required String model,
     required String conversationId,
+    bool streamTokens = true,
   }) async* {
-    final client = _client ?? http.Client();
     final messageId = DateTime.now().millisecondsSinceEpoch.toString();
-    int sequence = 0;
-    // The UI chat id (`pistisai`) is the platform chat_id; Hermes derives the
-    // session key `agent:main:pistisai:dm:<chat_id>` itself. Never post a
-    // resolved Hermes session id here — that would open a new chat/session.
-    final chatId = conversationId;
-
-    _connection = StreamingConnection.streaming(_baseUrl);
-    notifyListeners();
-
-    // Snapshot assistant message ids already in the transcript so we can
-    // detect the new reply after inbound dispatch.
-    final beforeIds = <String>{};
-    try {
-      final existing = await fetchSessionMessages(conversationId);
-      if (existing != null) {
-        for (final message in existing) {
-          if (message.role == MessageRole.assistant) {
-            beforeIds.add(message.id);
-          }
-        }
-      }
-    } catch (e) {
-      appLogger.warning('[Hermes] pre-send transcript snapshot failed: $e');
+    var sequence = 0;
+    final sessionId = await ensureOwnedSession(conversationId);
+    if (sessionId == null) {
+      final errorMsg = StreamingMessage.error(
+        id: messageId,
+        conversationId: conversationId,
+        error: '${Brand.current.productName} could not open a Hermes session. '
+            'Check the hub connection and try again.',
+        sequence: sequence++,
+      );
+      _messageController.add(errorMsg);
+      yield errorMsg;
+      return;
     }
 
-    if (_personalityPending) {
-      await _flushPersonality();
-    }
-
-    try {
-      final response = await client
-          .post(
-            Uri.parse('$_baseUrl/api/pistisai/messages'),
-            headers: {
-              ..._headers(),
-              'Accept': 'application/json',
-            },
-            body: jsonEncode({
-              'message': prompt,
-              'conversation_id': chatId,
-              'user_id': 'operator',
-              'user_name': 'operator',
-              'message_id': messageId,
-            }),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      if (response.statusCode != 200) {
-        final errorBody = response.body;
-        appLogger.error(
-          '[Hermes] pistisai messages error ${response.statusCode}: $errorBody',
-        );
+    if (!streamTokens) {
+      final text = await postOwnedSessionChat(
+        sessionId: sessionId,
+        message: prompt,
+      );
+      if (text == null) {
         final errorMsg = StreamingMessage.error(
           id: messageId,
           conversationId: conversationId,
-          error:
-              '${Brand.current.productName} channel failed (${response.statusCode}): $errorBody',
+          error: '${Brand.current.productName} could not read the agent '
+              'transcript. Check the hub connection and try again.',
           sequence: sequence++,
         );
         _messageController.add(errorMsg);
         yield errorMsg;
         return;
       }
-
-      appLogger.info(
-        '[Hermes] Posted to pistisai channel chat_id=$chatId '
-        '(session key agent:main:pistisai:dm:$chatId)',
-      );
-    } on TimeoutException {
-      final errorMsg = StreamingMessage.error(
+      if (text.isNotEmpty) {
+        final chunk = StreamingMessage.chunk(
+          id: messageId,
+          conversationId: conversationId,
+          chunk: text,
+          sequence: sequence++,
+          model: model == 'default' ? 'hermes-agent' : model,
+        );
+        _messageController.add(chunk);
+        yield chunk;
+      }
+      final complete = StreamingMessage.complete(
         id: messageId,
         conversationId: conversationId,
-        error: '${Brand.current.productName} channel timed out posting message',
         sequence: sequence++,
+        model: model == 'default' ? 'hermes-agent' : model,
       );
-      _messageController.add(errorMsg);
-      yield errorMsg;
-      return;
-    } catch (e) {
-      final errorMsg = StreamingMessage.error(
-        id: messageId,
-        conversationId: conversationId,
-        error: '${Brand.current.productName} channel post failed: $e',
-        sequence: sequence++,
-      );
-      _messageController.add(errorMsg);
-      yield errorMsg;
+      _messageController.add(complete);
+      yield complete;
       return;
     }
 
-    // Poll the harness transcript for the new assistant reply.
-    const pollInterval = Duration(milliseconds: 750);
-    const maxWait = Duration(minutes: 10);
-    final deadline = DateTime.now().add(maxWait);
-    var lastReadableFetch = DateTime.now();
-    String lastEmitted = '';
-    bool sawReply = false;
-    int pollsWithoutReply = 0;
-
-    while (DateTime.now().isBefore(deadline)) {
-      await Future<void>.delayed(pollInterval);
-      // The runtime may answer this turn in a new session (idle reset), so
-      // check the mapping again every few polls until the reply shows up.
-      pollsWithoutReply++;
-      final harness = await fetchSessionMessages(
-        conversationId,
-        refreshMapping: !sawReply && pollsWithoutReply % 4 == 0,
-      );
-      if (harness == null) {
-        // A null means the transcript could not be read at all. A 404 (no
-        // session yet) is an empty list and is a legitimate "still waiting"
-        // state — only real read failures count toward the fail-fast budget.
-        if (DateTime.now().difference(lastReadableFetch) >=
-            _transcriptFetchTimeout) {
-          appLogger.error(
-            '[Hermes] Transcript unreadable for '
-            '${_transcriptFetchTimeout.inSeconds}s; failing the turn',
-          );
-          final errorMsg = StreamingMessage.error(
-            id: messageId,
-            conversationId: conversationId,
-            error: '${Brand.current.productName} could not read the agent '
-                'transcript. Check the hub connection and try again.',
-            sequence: sequence++,
-          );
-          _messageController.add(errorMsg);
-          yield errorMsg;
-          return;
-        }
-        continue;
-      }
-      lastReadableFetch = DateTime.now();
-
-      Message? newest;
-      for (final message in harness.reversed) {
-        if (message.role != MessageRole.assistant) continue;
-        if (beforeIds.contains(message.id)) continue;
-        newest = message;
-        break;
-      }
-      if (newest == null) continue;
-
-      sawReply = true;
-      final content = newest.content;
-      if (content != lastEmitted) {
-        final extended = content.startsWith(lastEmitted);
-        final replaces = !extended && lastEmitted.isNotEmpty;
-        final delta =
-            extended ? content.substring(lastEmitted.length) : content;
-        lastEmitted = content;
-        if (delta.isNotEmpty) {
+    var sawText = false;
+    await for (final event in streamOwnedSessionChat(
+      channelId: conversationId,
+      sessionId: sessionId,
+      message: prompt,
+    )) {
+      switch (event) {
+        case HarnessDelta(:final text):
+          sawText = true;
           final chunk = StreamingMessage.chunk(
             id: messageId,
             conversationId: conversationId,
-            chunk: replaces ? content : delta,
-            replacesContent: replaces,
+            chunk: text,
             sequence: sequence++,
             model: model == 'default' ? 'hermes-agent' : model,
           );
           _messageController.add(chunk);
           yield chunk;
-        }
-      }
-
-      // Heuristic: once we have assistant text and the last harness row is
-      // that assistant (not a newer user turn), treat the turn as complete.
-      if (content.trim().isNotEmpty && harness.last.id == newest.id) {
-        // Give the agent a short settle window for late tool/final text.
-        await Future<void>.delayed(const Duration(milliseconds: 1200));
-        final settled = await fetchSessionMessages(conversationId);
-        if (settled == null) break;
-        Message? settledNewest;
-        for (final message in settled.reversed) {
-          if (message.role != MessageRole.assistant) continue;
-          if (beforeIds.contains(message.id)) continue;
-          settledNewest = message;
-          break;
-        }
-        if (settledNewest != null &&
-            settledNewest.content == lastEmitted &&
-            settled.last.id == settledNewest.id) {
-          break;
-        }
-        if (settledNewest != null && settledNewest.content != lastEmitted) {
-          final content2 = settledNewest.content;
-          final extended = content2.startsWith(lastEmitted);
-          final replaces = !extended && lastEmitted.isNotEmpty;
-          final delta =
-              extended ? content2.substring(lastEmitted.length) : content2;
-          lastEmitted = content2;
-          if (delta.isNotEmpty) {
-            final chunk = StreamingMessage.chunk(
-              id: messageId,
-              conversationId: conversationId,
-              chunk: replaces ? content2 : delta,
-              replacesContent: replaces,
-              sequence: sequence++,
-              model: model == 'default' ? 'hermes-agent' : model,
-            );
-            _messageController.add(chunk);
-            yield chunk;
-          }
-        }
-        break;
+        case HarnessToolStarted(:final toolName):
+          _agentEventController.add(AgentToolStarted(
+            runId: sessionId,
+            timestamp: DateTime.now().millisecondsSinceEpoch / 1000,
+            tool: toolName,
+          ));
+        case HarnessToolFinished(:final toolName, :final failed):
+          _agentEventController.add(AgentToolCompleted(
+            runId: sessionId,
+            timestamp: DateTime.now().millisecondsSinceEpoch / 1000,
+            tool: toolName,
+            duration: 0,
+            isError: failed,
+          ));
+        case HarnessMessageCompleted():
+          final complete = StreamingMessage.complete(
+            id: messageId,
+            conversationId: conversationId,
+            sequence: sequence++,
+            model: model == 'default' ? 'hermes-agent' : model,
+          );
+          _messageController.add(complete);
+          yield complete;
+          return;
+        case HarnessError(:final message):
+          final errorMsg = StreamingMessage.error(
+            id: messageId,
+            conversationId: conversationId,
+            error: message,
+            sequence: sequence++,
+          );
+          _messageController.add(errorMsg);
+          yield errorMsg;
+          return;
       }
     }
-
-    if (!sawReply) {
+    if (!sawText) {
       final errorMsg = StreamingMessage.error(
         id: messageId,
         conversationId: conversationId,
-        error:
-            '${Brand.current.productName} channel produced no assistant reply',
-        sequence: sequence++,
+        error: '${Brand.current.productName} channel produced no assistant reply',
+        sequence: sequence,
       );
       _messageController.add(errorMsg);
       yield errorMsg;
-      return;
     }
-
-    final complete = StreamingMessage.complete(
-      id: messageId,
-      conversationId: conversationId,
-      sequence: sequence++,
-      model: model == 'default' ? 'hermes-agent' : model,
-    );
-    _messageController.add(complete);
-    yield complete;
-    _connection = StreamingConnection.connected(_baseUrl);
-    notifyListeners();
   }
 
   // ---------------------------------------------------------------------------
@@ -508,7 +488,7 @@ class HermesStreamingService extends StreamingService {
     if (!_connection.isActive) return null;
 
     final buffer = StringBuffer();
-    await for (final message in _streamViaPistisaiChannel(
+    await for (final message in _streamViaOwnedSession(
       prompt: prompt,
       model: model,
       conversationId: conversationId,
@@ -617,36 +597,19 @@ class HermesStreamingService extends StreamingService {
         'HTTP $status');
   }
 
-  /// The Hermes session mapped to the pistisai [chatId]: the saved mapping
-  /// when it is fresh, else a new resolution. Null before the first turn.
+  /// The API-server session already bound to [chatId].
+  ///
+  /// This does not list `source=pistisai` sessions. That listing is only for
+  /// the one-time legacy import. No mapping means there is nothing to read.
   Future<String?> _mappedPistisaiSession(
     String chatId, {
     bool refresh = false,
   }) async {
-    final mapped = _runtimeSessionsByConversation[chatId];
-    final boundAt = _runtimeSessionBoundAt[chatId];
-    final stale = boundAt == null ||
-        DateTime.now().difference(boundAt) >= _mappingRefreshInterval;
-    if (mapped != null && !refresh && !stale) return mapped;
-
-    final resolved = await _resolvePistisaiSessionId();
-    if (resolved != null) {
-      _bindRuntimeSession(chatId, resolved);
-      return resolved;
+    if (refresh) {
+      clearRuntimeSession(chatId);
+      return null;
     }
-    if (mapped != null) {
-      // Resolution failed or listed nothing: keep the known mapping and let
-      // a 404 on the transcript clear it.
-      _runtimeSessionBoundAt[chatId] = DateTime.now();
-      return mapped;
-    }
-    if (_loggedNoSession.add(chatId)) {
-      appLogger.debug(
-        '[Hermes] No runtime session for chat=$chatId yet; '
-        'transcript reads wait for the first turn',
-      );
-    }
-    return null;
+    return _runtimeSessionsByConversation[chatId];
   }
 
   /// Resolve the Hermes session id currently backing the pistisai DM

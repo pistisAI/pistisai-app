@@ -7,7 +7,13 @@ import '../models/message.dart';
 import '../models/streaming_message.dart';
 
 import 'streaming_service.dart';
+import '../database/drift_local_brain.dart'
+    hide AgentEvent, Conversation, Message;
+import 'agent_session/channel_store.dart';
+import 'agent_session/drift_channel_store.dart';
 import 'agent_session/conversation_runtime_session_store.dart';
+import 'agent_session/channel_commands.dart';
+import 'agent_session/legacy_history_import.dart';
 import 'agent_session/harness_adapter.dart';
 import 'agent_session/harness_event.dart';
 import 'agent_session/hermes_harness_adapter.dart';
@@ -192,13 +198,22 @@ class StreamingChatService extends ChangeNotifier {
 
   StreamingChatService(
     this._connectionManager,
-    AuthService authService,
-  ) : _storageService = ConversationStorageService(
+    AuthService authService, {
+    ChannelStore? channelStore,
+  }) : _storageService = ConversationStorageService(
           authService: authService,
           cloudAllowed: _cloudServicesEnabled,
+          channelStore: channelStore ?? _registeredChannelStore(),
         ) {
     _initializeService();
     _bindAgentNameListener();
+  }
+
+  /// The Drift database, when the app has registered one. Tests that do not
+  /// register [LocalBrain] keep the JSON file path.
+  static ChannelStore? _registeredChannelStore() {
+    if (!di.serviceLocator.isRegistered<LocalBrain>()) return null;
+    return DriftChannelStore(di.serviceLocator<LocalBrain>());
   }
 
   /// Reads the cloud-services switch at each call (off by default, and off
@@ -212,8 +227,11 @@ class StreamingChatService extends ChangeNotifier {
         .isCloudServicesEnabled();
   }
 
-  /// The one conversation, kept in the local store (the source of truth).
-  /// The runtime transcript only adds rows this device does not have yet.
+  /// Every channel this device has stored. [_mainChannel] is the one on screen.
+  final List<Conversation> _channels = [];
+
+  /// The one conversation on screen, kept in the local store (the source of
+  /// truth). The runtime transcript only adds rows this device does not have yet.
   Conversation? _mainChannel;
 
   /// Runtime session ids per channel, saved on [_mainChannel]. Loaded with
@@ -250,6 +268,7 @@ class StreamingChatService extends ChangeNotifier {
 
   // Getters
   Conversation? get currentConversation => _mainChannel;
+  List<Conversation> get channels => List.unmodifiable(_channels);
   String? get selectedModel => _selectedModel;
   bool get isLoading => _isLoading;
   bool get isStreaming => _isStreaming;
@@ -336,11 +355,15 @@ class StreamingChatService extends ChangeNotifier {
       final loaded = await _storageService.loadConversations();
 
       if (loaded.isNotEmpty) {
+        _channels
+          ..clear()
+          ..addAll(loaded);
         // Prefer the pistisai platform channel; ignore leftover main-channel
         // api_server test sessions so we never poll that harness id again.
         Conversation? existing;
         for (final conversation in loaded) {
-          if (conversation.id == Conversation.pistisaiChannelId) {
+          if (conversation.id == Conversation.pistisaiChannelId ||
+              conversation.channelId == Conversation.pistisaiChannelId) {
             existing = conversation;
             break;
           }
@@ -371,12 +394,32 @@ class StreamingChatService extends ChangeNotifier {
     _runtimeSessions = await RuntimeSessionMap.load(
       ConversationRuntimeSessionStore(
         read: () => _mainChannel,
-        write: (updated) => _mainChannel = updated,
+        write: (updated) {
+          _mainChannel = updated;
+          _rememberChannel(updated);
+        },
+        readAll: () => _channels,
+        writeChannel: _rememberChannel,
       ),
     );
     _storageReady = true;
     notifyListeners();
+    unawaited(_importLegacyHermesHistoryOnce());
     unawaited(_syncSharedChannel());
+  }
+
+  void _rememberChannel(Conversation updated) {
+    if (_mainChannel?.channelId == updated.channelId) {
+      _mainChannel = updated;
+    }
+    final index = _channels.indexWhere(
+      (conversation) => conversation.channelId == updated.channelId,
+    );
+    if (index == -1) {
+      _channels.add(updated);
+    } else {
+      _channels[index] = updated;
+    }
   }
 
   /// The harness adapter for the current streaming service: Hermes only
@@ -388,11 +431,11 @@ class StreamingChatService extends ChangeNotifier {
     final cached = _hermesAdapterCache;
     if (cached != null && identical(cached.service, service)) return cached;
     return _hermesAdapterCache =
-        HermesHarnessAdapter(service, sessions: sessions);
+        HermesHarnessAdapter(service, sessions: sessions, streamTurns: true);
   }
 
   void _startSharedChannelSync() {
-    _sharedChannelTimer ??= Timer.periodic(const Duration(seconds: 8), (_) {
+    _sharedChannelTimer ??= Timer.periodic(const Duration(seconds: 60), (_) {
       unawaited(_syncSharedChannel());
     });
   }
@@ -513,6 +556,7 @@ class StreamingChatService extends ChangeNotifier {
     );
 
     _mainChannel = _mainChannel!.addMessage(welcomeMessage);
+    _rememberChannel(_mainChannel!);
 
     // Save the welcome conversation
     _saveConversations();
@@ -527,8 +571,9 @@ class StreamingChatService extends ChangeNotifier {
 
   Future<void> _saveConversationsAsync() async {
     if (_mainChannel == null) return;
+    _rememberChannel(_mainChannel!);
     try {
-      await _storageService.saveConversations([_mainChannel!]);
+      await _storageService.saveConversations(List.of(_channels));
     } catch (e) {
       appLogger.error('[StreamingChat] Chat history not saved', error: e);
       if (!_historyNotSaved) {
@@ -551,13 +596,78 @@ class StreamingChatService extends ChangeNotifier {
     );
   }
 
-  /// Stay on the shared harness conversation.
-  ///
-  /// `/new` and `/reset` used to clear this device's copy. That made each
-  /// device look like it had its own chat. The harness session is the
-  /// conversation, so these commands reload it instead of starting another.
+  /// Opens a new topic channel. The previous channel and its messages stay
+  /// in the hub store (#1067).
   void resetContext() {
-    unawaited(_syncSharedChannel());
+    unawaited(startNewChannel());
+  }
+
+  /// Creates a topic channel and shows it.
+  Future<void> startNewChannel() async {
+    if (_mainChannel != null) _rememberChannel(_mainChannel!);
+    final created = newTopicChannel(model: _selectedModel);
+    _channels.add(created);
+    _mainChannel = created;
+    _channelSyncError = null;
+    await _saveConversationsAsync();
+    notifyListeners();
+  }
+
+  /// Ends the harness session for the channel on screen. Local messages stay.
+  Future<void> resetCurrentChannel() async {
+    final channel = _mainChannel;
+    if (channel == null) return;
+    final adapter = _harnessAdapter();
+    if (adapter != null) {
+      try {
+        await adapter.resetChannel(channel.channelId);
+      } on UnsupportedError {
+        await adapter.forgetRuntimeSession(channel.channelId);
+      }
+    }
+    _mainChannel = channel.addMessage(
+      Message.system(content: BrandCopy.channelResetNote),
+    );
+    await _saveConversationsAsync();
+    notifyListeners();
+  }
+
+  /// Copies the legacy Hermes pistisai transcript into the direct channel
+  /// once, skipping rows at or before a local wipe (#1067, Q2).
+  Future<void> _importLegacyHermesHistoryOnce() async {
+    final channel = _mainChannel;
+    final store = _storageService.channelStore;
+    if (channel == null ||
+        store == null ||
+        channel.channelId != Conversation.pistisaiChannelId) {
+      return;
+    }
+    if (await store.isHermesHistoryImported(channel.channelId)) return;
+    final service = _getStreamingService();
+    if (service is! HermesStreamingService) return;
+    final floor = await _loadTranscriptImportFloor();
+    final transcript = await service.fetchLegacyPistisaiTranscript();
+    final selected = legacyHistoryToImport(
+      alreadyImported: false,
+      transcript: transcript,
+      floor: floor,
+    );
+    if (selected == null) return;
+    if (selected.isNotEmpty && _mainChannel != null) {
+      final merged = appendRuntimeTranscript(
+        local: _mainChannel!.messages,
+        runtime: selected,
+      );
+      if (merged.changed) {
+        _mainChannel = _mainChannel!.copyWith(
+          messages: merged.messages,
+          updatedAt: DateTime.now(),
+        );
+        await _saveConversationsAsync();
+        notifyListeners();
+      }
+    }
+    await store.markHermesHistoryImported(channel.channelId);
   }
 
   /// Update conversation title
@@ -586,9 +696,13 @@ class StreamingChatService extends ChangeNotifier {
     final trimmed = content.trim();
     if (trimmed.isEmpty || _mainChannel == null) return;
 
-    // Handle /new and /reset commands — same as Telegram DM
-    if (trimmed == '/new' || trimmed == '/reset') {
-      resetContext();
+    // Handle /new and /reset as channel operations (#1067).
+    if (channelCommandFor(trimmed) == ChannelCommand.newChannel) {
+      await startNewChannel();
+      return;
+    }
+    if (channelCommandFor(trimmed) == ChannelCommand.resetChannel) {
+      await resetCurrentChannel();
       return;
     }
 
@@ -642,8 +756,23 @@ class StreamingChatService extends ChangeNotifier {
       _completedToolCalls.clear();
       _isAgentRunning = false;
 
-      // If the streaming service is Hermes, also listen to agent events
-      _subscribeToAgentEvents(streamingService);
+      // If the streaming service is Hermes, the adapter owns the turn.
+      final adapter = _harnessAdapter();
+      if (adapter != null) {
+        _setStreaming(true);
+        _streamingContentSubject.add('');
+        _streamingReasoningSubject.add('');
+        _activeToolCalls.clear();
+        _completedToolCalls.clear();
+        _isAgentRunning = false;
+        _subscribeToAgentEvents(streamingService);
+        await _sendViaAdapter(
+          adapter: adapter,
+          content: content.trim(),
+          model: streamingModel,
+        );
+        return;
+      }
 
       final conversationId = _mainChannel!.id;
       final messageStream = streamingService.streamResponse(
@@ -685,6 +814,66 @@ class StreamingChatService extends ChangeNotifier {
     } finally {
       _setLoading(false);
       _setStreaming(false);
+    }
+  }
+
+  /// Sends one turn through the harness adapter and applies the events to
+  /// the on-screen message. Subscribes before [HarnessAdapter.sendTurn] so a
+  /// broadcast event is not missed.
+  Future<void> _sendViaAdapter({
+    required HermesHarnessAdapter adapter,
+    required String content,
+    required String model,
+  }) async {
+    final channelId = _mainChannel?.channelId;
+    if (channelId == null) return;
+    final done = Completer<void>();
+    var sequence = 0;
+    final subscription = adapter.events(channelId).listen((event) {
+      switch (event) {
+        case HarnessDelta(:final text):
+          _handleStreamingMessage(StreamingMessage.chunk(
+            id: _currentStreamingMessageId,
+            conversationId: channelId,
+            chunk: text,
+            sequence: sequence++,
+            model: model,
+          ));
+        case HarnessMessageCompleted(:final message):
+          if (_streamingContentSubject.value.isEmpty &&
+              message.content.isNotEmpty) {
+            _streamingContentSubject.add(message.content);
+          }
+          _handleStreamingComplete();
+          if (!done.isCompleted) done.complete();
+        case HarnessError(:final message):
+          _handleStreamingError(message);
+          if (!done.isCompleted) done.complete();
+        case HarnessToolStarted(:final toolName):
+          _handleAgentEvent(AgentToolStarted(
+            runId: channelId,
+            timestamp: DateTime.now().millisecondsSinceEpoch / 1000,
+            tool: toolName,
+          ));
+        case HarnessToolFinished(:final toolName, :final failed):
+          _handleAgentEvent(AgentToolCompleted(
+            runId: channelId,
+            timestamp: DateTime.now().millisecondsSinceEpoch / 1000,
+            tool: toolName,
+            duration: 0,
+            isError: failed,
+          ));
+      }
+    });
+    try {
+      await adapter.sendTurn(channelId, content);
+      if (!done.isCompleted) {
+        await done.future.timeout(const Duration(minutes: 10));
+      }
+    } on TimeoutException catch (error) {
+      if (!done.isCompleted) _handleStreamingError(error);
+    } finally {
+      await subscription.cancel();
     }
   }
 
@@ -1167,16 +1356,22 @@ class StreamingChatService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Clear all conversations (same as reset)
+  /// Clear every channel from memory and from the store.
   void clearAllConversations() {
     _cancelCurrentStream();
-    resetContext();
-    _storageService.clearAllConversations().catchError((e) {
-      appLogger.error(
-        '[StreamingChat] Error clearing conversations from storage',
-        error: e,
-      );
-    });
+    _channels.clear();
+    _mainChannel = null;
+    unawaited(() async {
+      try {
+        await _storageService.clearAllConversations();
+      } catch (e) {
+        appLogger.error(
+          '[StreamingChat] Error clearing conversations from storage',
+          error: e,
+        );
+      }
+      _createWelcomeConversation();
+    }());
     notifyListeners();
   }
 
@@ -1233,6 +1428,9 @@ class StreamingChatService extends ChangeNotifier {
     ).addMessage(
       Message.system(content: BrandCopy.chatWelcome),
     );
+    _channels
+      ..clear()
+      ..add(_mainChannel!);
     notifyListeners();
     await TranscriptImportFloorStore.write(wipedAt);
   }

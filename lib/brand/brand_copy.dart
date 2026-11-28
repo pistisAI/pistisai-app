@@ -16,6 +16,9 @@ class BrandCopy {
   static String trayTooltip(String status) => '${brand.productName} - $status';
   static String get loginSubtitle =>
       "I'm ${brand.productName}, your AI assistant.";
+  static String get channelResetNote =>
+      'The agent context for this chat was reset. Messages already in this chat stay here.';
+  static String get newChannelTitle => 'New conversation';
   static String get chatWelcome =>
       "Welcome to ${brand.productName}! I'm ready to help you with any questions or tasks. What would you like to talk about?";
   static String get settingsAboutSubtitle =>

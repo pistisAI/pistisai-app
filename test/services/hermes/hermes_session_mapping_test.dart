@@ -85,18 +85,20 @@ void main() {
     }
   });
 
-  test('the resolved mapping is reused across polls', () async {
+  test('a restored mapping is reused and is not replaced by a session list',
+      () async {
     final hermes = fakeHermes(
       sessions: () => ['gen-1'],
       transcripts: {'gen-1': transcript('gen-1', 'hi')},
     );
     final service = HermesStreamingService(client: hermes.client);
     try {
+      service.restoreRuntimeSession(channel, 'gen-1');
       for (var i = 0; i < 3; i++) {
         final messages = await service.fetchSessionMessages(channel);
         expect(messages!.single.content, 'hi');
       }
-      expect(resolves(hermes.paths), 1);
+      expect(resolves(hermes.paths), 0);
       expect(transcriptReads(hermes.paths), 3);
       expect(service.runtimeSessionIdFor(channel), 'gen-1');
     } finally {
@@ -120,7 +122,8 @@ void main() {
     }
   });
 
-  test('a 404 on the mapped session re-resolves it once', () async {
+  test('a 404 on the mapped session clears it and does not adopt another',
+      () async {
     final hermes = fakeHermes(
       sessions: () => ['gen-2'],
       transcripts: {'gen-2': transcript('gen-2', 'new session')},
@@ -128,9 +131,9 @@ void main() {
     final service = HermesStreamingService(client: hermes.client);
     try {
       service.restoreRuntimeSession(channel, 'gen-old');
-      final messages = await service.fetchSessionMessages(channel);
-      expect(messages!.single.content, 'new session');
-      expect(service.runtimeSessionIdFor(channel), 'gen-2');
+      expect(await service.fetchSessionMessages(channel), isEmpty);
+      expect(service.runtimeSessionIdFor(channel), isNull);
+      expect(resolves(hermes.paths), 0);
       expect(
         hermes.paths,
         isNot(contains('/api/sessions/$channel/messages')),
@@ -155,43 +158,35 @@ void main() {
     }
   });
 
-  test('clearing the mapping (local wipe) resolves it again', () async {
+  test('clearing the mapping does not list Hermes sessions again', () async {
     final hermes = fakeHermes(
       sessions: () => ['gen-1'],
       transcripts: {'gen-1': transcript('gen-1', 'hi')},
     );
     final service = HermesStreamingService(client: hermes.client);
     try {
+      service.restoreRuntimeSession(channel, 'gen-1');
       await service.fetchSessionMessages(channel);
       service.clearRuntimeSession(channel);
       expect(service.runtimeSessionIdFor(channel), isNull);
-      await service.fetchSessionMessages(channel);
-      expect(resolves(hermes.paths), 2);
+      expect(await service.fetchSessionMessages(channel), isEmpty);
+      expect(resolves(hermes.paths), 0);
     } finally {
       service.dispose();
     }
   });
 
-  test('a stale mapping is checked again after the refresh interval', () async {
-    var current = 'gen-1';
+  test('the legacy import reads the old pistisai transcript once', () async {
     final hermes = fakeHermes(
-      sessions: () => [current],
-      transcripts: {
-        'gen-1': transcript('gen-1', 'old'),
-        'gen-2': transcript('gen-2', 'rotated'),
-      },
+      sessions: () => ['gen-1'],
+      transcripts: {'gen-1': transcript('gen-1', 'old history')},
     );
-    final service = HermesStreamingService(
-      client: hermes.client,
-      mappingRefreshInterval: Duration.zero,
-    );
+    final service = HermesStreamingService(client: hermes.client);
     try {
-      expect(
-          (await service.fetchSessionMessages(channel))!.single.content, 'old');
-      current = 'gen-2';
-      expect((await service.fetchSessionMessages(channel))!.single.content,
-          'rotated');
-      expect(service.runtimeSessionIdFor(channel), 'gen-2');
+      final messages = await service.fetchLegacyPistisaiTranscript();
+      expect(messages!.single.content, 'old history');
+      expect(resolves(hermes.paths), 1);
+      expect(service.runtimeSessionIdFor(channel), isNull);
     } finally {
       service.dispose();
     }

@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 
 import '../models/conversation.dart';
 import '../config/app_config.dart';
+import 'agent_session/channel_store.dart';
 import 'auth_service.dart';
 import 'local_conversation_storage.dart';
 
@@ -31,6 +32,7 @@ class ConversationStorageService {
   final AuthService? _authService;
   final Future<bool> Function()? _cloudAllowed;
   final LocalConversationStorage _localStorage;
+  final ChannelStore? _channelStore;
   bool _isInitialized = false;
   final Dio _dio;
 
@@ -39,12 +41,16 @@ class ConversationStorageService {
     Future<bool> Function()? cloudAllowed,
     Dio? dio,
     LocalConversationStorage? localStorage,
+    ChannelStore? channelStore,
   })  : _authService = authService,
         _cloudAllowed = cloudAllowed,
         _dio = dio ?? Dio(),
-        _localStorage = localStorage ?? LocalConversationStorage() {
+        _localStorage = localStorage ?? LocalConversationStorage(),
+        _channelStore = channelStore {
     if (dio == null) _setupDio();
   }
+
+  ChannelStore? get channelStore => _channelStore;
 
   /// Whether this call may talk to the conversations API: signed in, and on
   /// desktop/mobile the user turned cloud services on.
@@ -84,10 +90,17 @@ class ConversationStorageService {
     }
   }
 
-  /// Save a list of conversations to both Local and Cloud
+  /// Save a list of conversations to both Local and Cloud.
+  ///
+  /// When a [ChannelStore] is wired, it is the only local store. The encrypted
+  /// JSON file is imported once and then retired (#1065).
   Future<void> saveConversations(List<Conversation> conversations) async {
-    // 1. Always save locally first (ensures persistence after restart)
-    if (!kIsWeb) {
+    final store = _channelStore;
+    if (store != null) {
+      await _importJsonOnce(store);
+      await store.replaceAll(conversations);
+    } else if (!kIsWeb) {
+      // 1. Always save locally first (ensures persistence after restart)
       await _localStorage.saveConversations(conversations);
     }
 
@@ -107,8 +120,16 @@ class ConversationStorageService {
 
   /// Load all conversations
   Future<List<Conversation>> loadConversations() async {
-    // 1. On Desktop, try local storage first
-    if (!kIsWeb) {
+    final store = _channelStore;
+    if (store != null) {
+      final localConversations = await _importJsonOnce(store);
+      debugPrint(
+          '[ConversationStorage] Loaded ${localConversations.length} conversations from the local database');
+      if (localConversations.isNotEmpty || !kIsWeb) {
+        return localConversations;
+      }
+    } else if (!kIsWeb) {
+      // 1. On Desktop, try local storage first
       final localConversations = await _localStorage.loadConversations();
       if (localConversations.isNotEmpty) {
         debugPrint(
@@ -161,6 +182,17 @@ class ConversationStorageService {
   /// Fetch full conversation with messages
   Future<Conversation?> loadConversationWithMessages(
       String conversationId) async {
+    final store = _channelStore;
+    if (store != null) {
+      final local = await _importJsonOnce(store);
+      for (final conversation in local) {
+        if (conversation.id == conversationId ||
+            conversation.channelId == conversationId) {
+          return conversation;
+        }
+      }
+    }
+
     // Local storage stores full conversations, so we don't need a separate fetch for messages
     // but we'll maintain the API structure for cloud syncing
     try {
@@ -203,8 +235,11 @@ class ConversationStorageService {
 
   /// Delete a conversation
   Future<void> deleteConversation(String conversationId) async {
-    // Delete locally
-    if (!kIsWeb) {
+    final store = _channelStore;
+    if (store != null) {
+      await _importJsonOnce(store);
+      await store.delete(conversationId);
+    } else if (!kIsWeb) {
       final conversations = await _localStorage.loadConversations();
       conversations.removeWhere((c) => c.id == conversationId);
       await _localStorage.saveConversations(conversations);
@@ -224,7 +259,18 @@ class ConversationStorageService {
 
   /// Clear all conversations
   Future<void> clearAllConversations() async {
-    if (!kIsWeb) {
+    final store = _channelStore;
+    if (store != null) {
+      await store.markJsonImported();
+      await store.clear();
+      if (!kIsWeb) {
+        try {
+          await _localStorage.retire();
+        } catch (e) {
+          debugPrint('[ConversationStorage] Could not retire JSON file: $e');
+        }
+      }
+    } else if (!kIsWeb) {
       await _localStorage.clearAll();
     }
 
@@ -238,6 +284,48 @@ class ConversationStorageService {
         debugPrint('[ConversationStorage] Cloud clear error: $e');
       }
     }
+  }
+
+  /// Copies `conversations.json.enc` into [store] a single time, then renames
+  /// the file so it is no longer read or written (#1065).
+  ///
+  /// An unreadable archive is left alone and the import is not marked done,
+  /// so a later launch can retry once the file can be decrypted.
+  Future<List<Conversation>> _importJsonOnce(ChannelStore store) async {
+    if (await store.isJsonImported()) {
+      if (!kIsWeb) {
+        try {
+          await _localStorage.retire();
+        } catch (e) {
+          debugPrint('[ConversationStorage] Could not retire JSON file: $e');
+        }
+      }
+      return store.loadAll();
+    }
+
+    if (!kIsWeb && await _localStorage.hasUnreadableArchive()) {
+      debugPrint(
+        '[ConversationStorage] JSON import waiting; an unreadable archive is still present',
+      );
+      return store.loadAll();
+    }
+
+    if (!kIsWeb) {
+      final fromFile = await _localStorage.loadConversations();
+      final existing = await store.loadAll();
+      if (fromFile.isNotEmpty && existing.isEmpty) {
+        await store.replaceAll(fromFile);
+      }
+    }
+    await store.markJsonImported();
+    if (!kIsWeb) {
+      try {
+        await _localStorage.retire();
+      } catch (e) {
+        debugPrint('[ConversationStorage] Could not retire JSON file: $e');
+      }
+    }
+    return store.loadAll();
   }
 
   /// Search conversations by keyword

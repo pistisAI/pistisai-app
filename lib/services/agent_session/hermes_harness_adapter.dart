@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../models/message.dart';
 import '../hermes/hermes_streaming_service.dart';
 import 'harness_adapter.dart';
@@ -7,50 +9,105 @@ import 'runtime_session_map.dart';
 /// Harness id of Hermes in [RuntimeSessionMap] and on conversations.
 const String hermesHarnessId = 'hermes';
 
-/// [HarnessAdapter] for Hermes (#1066).
+/// [HarnessAdapter] for Hermes (#1066, #1068).
 ///
-/// It delegates to the existing [HermesStreamingService] calls and adds no
-/// new request. The Hermes session id for a channel is kept in
-/// [RuntimeSessionMap]; this adapter hands it to the service before a read
-/// and records what the service resolved after it.
+/// Turns go to an API-server-owned Hermes session (`POST /api/sessions`,
+/// then `/chat` or `/chat/stream`). The session id is a mapping in
+/// [RuntimeSessionMap], never the channel's identity.
 ///
-/// Today's Hermes transport is polling, so every capability is false.
-/// Turns are still sent with [HermesStreamingService.streamResponse] by the
-/// chat service: moving the send behind [sendTurn] waits on the choice of
-/// message-send endpoint (see docs/architecture/DESKTOP_SESSION_ARCHITECTURE.md).
+/// [streamTurns] is false until the live path reads `/chat/stream`. Only
+/// then are [HarnessCapabilities.streaming] and [HarnessCapabilities.agentEvents]
+/// true. Proactive messages are still reconciled on a timer, so
+/// [HarnessCapabilities.proactive] stays false.
 class HermesHarnessAdapter implements HarnessAdapter {
-  HermesHarnessAdapter(this.service, {required RuntimeSessionMap sessions})
-      : _sessions = sessions;
+  HermesHarnessAdapter(
+    this.service, {
+    required RuntimeSessionMap sessions,
+    this.streamTurns = false,
+  }) : _sessions = sessions;
 
   /// The streaming service this adapter delegates to.
   final HermesStreamingService service;
   final RuntimeSessionMap _sessions;
 
+  /// When true, [sendTurn] reads `/api/sessions/{id}/chat/stream`.
+  final bool streamTurns;
+
+  final StreamController<HarnessEvent> _events =
+      StreamController<HarnessEvent>.broadcast();
+
   @override
   String get harnessId => hermesHarnessId;
 
   @override
-  HarnessCapabilities get capabilities => const HarnessCapabilities();
+  HarnessCapabilities get capabilities => HarnessCapabilities(
+        streaming: streamTurns,
+        agentEvents: streamTurns,
+      );
 
   /// The Hermes session id mapped to [channelId], or null before Hermes has
   /// one.
   String? runtimeSessionFor(String channelId) =>
       _sessions.runtimeSessionFor(channelId, harnessId);
 
-  /// Not available yet: turns are sent through
-  /// [HermesStreamingService.streamResponse] until the send endpoint is
-  /// decided. Throws [UnsupportedError] rather than pretending to send.
+  /// Sends [message] on the channel's API-server session. The reply is
+  /// emitted on [events] as [HarnessMessageCompleted], or as deltas when
+  /// [streamTurns] is set.
   @override
-  Future<void> sendTurn(String channelId, String message) {
-    throw UnsupportedError(
-      'Hermes turns are not sent through the harness adapter yet',
-    );
+  Future<void> sendTurn(String channelId, String message) async {
+    service.restoreRuntimeSession(channelId, runtimeSessionFor(channelId));
+    final sessionId = await service.ensureOwnedSession(channelId);
+    await _recordRuntimeSession(channelId);
+    if (sessionId == null) {
+      _emit(HarnessError(
+        channelId: channelId,
+        message: 'Could not open a Hermes session for this chat.',
+        retryable: true,
+      ));
+      return;
+    }
+    if (!streamTurns) {
+      final text = await service.postOwnedSessionChat(
+        sessionId: sessionId,
+        message: message,
+      );
+      if (text == null) {
+        _emit(HarnessError(
+          channelId: channelId,
+          message: 'Hermes did not accept that turn.',
+          retryable: true,
+        ));
+        return;
+      }
+      _emit(HarnessMessageCompleted(
+        channelId: channelId,
+        message: HarnessMessage(
+          id: 'hermes-$sessionId-${DateTime.now().microsecondsSinceEpoch}',
+          role: HarnessRole.assistant,
+          content: text,
+          createdAt: DateTime.now().toUtc(),
+        ),
+      ));
+      return;
+    }
+    await for (final event in service.streamOwnedSessionChat(
+      channelId: channelId,
+      sessionId: sessionId,
+      message: message,
+    )) {
+      _emit(event);
+    }
   }
 
-  /// Always empty: with no streaming, agent events or push, replies are
-  /// read with [fetchHistory].
+  /// Events for [channelId].
   @override
-  Stream<HarnessEvent> events(String channelId) => const Stream.empty();
+  Stream<HarnessEvent> events(String channelId) {
+    return _events.stream.where((event) => event.channelId == channelId);
+  }
+
+  void _emit(HarnessEvent event) {
+    if (!_events.isClosed) _events.add(event);
+  }
 
   /// Reads the Hermes transcript of [channelId] with
   /// [HermesStreamingService.fetchSessionMessages]. Empty when Hermes has no
@@ -82,13 +139,23 @@ class HermesHarnessAdapter implements HarnessAdapter {
     ];
   }
 
-  /// Not available yet: Hermes has no call this app uses to end a session.
-  /// Use [forgetRuntimeSession] to drop the local mapping only.
+  /// Deletes the API-server session for [channelId] and forgets the mapping.
+  /// The channel and its local history are not touched.
   @override
-  Future<void> resetChannel(String channelId) {
-    throw UnsupportedError(
-      'Ending a Hermes session from the app is not available yet',
-    );
+  Future<void> resetChannel(String channelId) async {
+    final sessionId = runtimeSessionFor(channelId);
+    service.restoreRuntimeSession(channelId, sessionId);
+    final resolved = sessionId ?? service.runtimeSessionIdFor(channelId);
+    if (resolved != null) {
+      final deleted = await service.deleteOwnedSession(resolved);
+      if (!deleted) {
+        throw HarnessUnavailableException(
+          harnessId,
+          'could not end the Hermes session',
+        );
+      }
+    }
+    await forgetRuntimeSession(channelId);
   }
 
   /// Forgets the Hermes session mapped to [channelId], here and in the

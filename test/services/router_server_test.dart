@@ -231,6 +231,7 @@ void main() {
           '/v1/chat/completions',
           '/v1/audio/speech',
           '/api/conscience/thoughts',
+          '/api/channels',
           '/avatar/traits',
         ]) {
           expect(
