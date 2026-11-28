@@ -2,7 +2,7 @@
 
 > **Status**: Legacy/fallback service deployment guide. Current product direction prefers the Tailscale secure device mesh with per-user cloud connectors and selected agent runtimes. Use this guide only for maintaining or testing the existing streaming-proxy service.
 
-> **Implementation note:** No dedicated AKS deploy workflow exists and there is no `Dockerfile.prod`. Live deployment is `.github/workflows/deploy-backend.yml`; the Dockerfile is `services/streaming-proxy/Dockerfile`. Port 3001 is correct.
+> **Implementation note:** No dedicated AKS deploy workflow exists and there is no `Dockerfile.prod`. The image is built from `config/docker/Dockerfile.streaming-proxy` by `.github/workflows/deploy-backend.yml` and run by Dokploy from `config/docker/docker-compose.dokploy-backend.yml` (container port 3001, no host port). The Kubernetes diagram below is legacy and unmaintained. See [Dokploy](../../deployment/DOKPLOY.md).
 
 ## Overview
 

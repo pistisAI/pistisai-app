@@ -1,219 +1,66 @@
 # Pistisai Deployment Overview
 
-This document provides a comprehensive overview of deployment options and strategies for Pistisai.
+The desktop app is the hub. Install it on the machine that stays on. It connects to the agent runtime (Hermes is the primary test path; OpenClaw and compatible gateways also work). Web, mobile, and other desktops connect through that hub, on the local network or over Tailscale. The hosted site is the browser client of the same model. It does not replace the desktop hub.
 
-> **Current orientation**: Pistisai is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are support model providers for app-owned memory/background features, not primary app runtimes. Cloud deployment should focus on account sync, presence, web/mobile access, per-user cloud connectors, and optional per-user hosted agent runtime containers. Legacy streaming-proxy/tunnel components remain fallback architecture unless a deployment specifically depends on them.
+Hosted web and API run on Dokploy. GitHub Actions publishes images to GHCR, and Dokploy pulls them. Setup, secrets, rollback, and checks are in [Dokploy](DOKPLOY.md).
 
-## 📋 Table of Contents
+Coolify was removed in [#668](https://github.com/pistisAI/pistisai-app/issues/668). Kubernetes and k3s are legacy and unmaintained (see below). Deploys run only through GitHub Actions. There is no manual SSH deploy script.
 
-- [Deployment Options](#deployment-options)
-- [Multi-Container Architecture](#multi-container-architecture)
-- [Deployment Scripts](#deployment-scripts)
-- [Quality Standards](#quality-standards)
-- [Versioning Strategy](#versioning-strategy)
-- [Related Documentation](#related-documentation)
+## What runs where
 
----
+| Path | Where it runs | How it is updated |
+| --- | --- | --- |
+| Desktop hub | The person's computer, when the hardware can run it | Desktop installers from GitHub Actions (`.github/workflows/build-desktop.yml`) |
+| Mobile client | The phone | Android APKs from `.github/workflows/build-mobile.yml` |
+| Hosted web | Dokploy Application, image `ghcr.io/pistisai/pistisai-app-web:latest`, container port 80 | `deploy-web.yml` pushes the image, then `deploy_dokploy` asks Dokploy to pull ([#1056](https://github.com/pistisAI/pistisai-app/issues/1056)) |
+| Hosted API and streaming proxy | Dokploy Compose service from [`config/docker/docker-compose.dokploy-backend.yml`](../../config/docker/docker-compose.dokploy-backend.yml) | `deploy-backend.yml` pushes the images, then its `deploy_dokploy` job asks Dokploy to pull |
 
-## Deployment Options
+The API connects to PostgreSQL with `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` from the Dokploy environment. The Compose file does not start Postgres or Redis. `api-backend` and `streaming-proxy` do not open a Redis client.
 
-### 🚀 Kubernetes Deployment (Recommended)
+Ollama and LM Studio are support model providers for app-owned features. They are not the hosted runtime.
 
-Deploy the full Pistisai stack to **Kubernetes** using Dockerfiles and Kubernetes manifests. Works with:
+## Hosted path (Dokploy)
 
-- **Managed Kubernetes**: DigitalOcean Kubernetes (DOKS), Google GKE, AWS EKS, Azure AKS
-- **Self-Hosted Kubernetes**: On-premises or your own infrastructure
+1. Create a Dokploy Application for the web image and a Compose service for the backend file. Add a `ghcr.io` credential with `read:packages`.
+2. Put runtime secrets (`DB_*`, Cloudflare Access, `PROXY_STATS_TOKEN`) in the Dokploy environment.
+3. Put `DOKPLOY_WEBHOOK_URL` and `DOKPLOY_BACKEND_WEBHOOK_URL` in GitHub Actions secrets. Optional confirmation secrets: `DOKPLOY_API_URL`, `DOKPLOY_API_KEY`, `DOKPLOY_WEB_APPLICATION_ID`, `DOKPLOY_BACKEND_COMPOSE_ID`. Set the repository variable `DOKPLOY_REQUIRED` to `true` when a missing webhook must fail the job.
+4. Merge to `main`. Web Deploy builds `Dockerfile.web`, pushes `ghcr.io/pistisai/pistisai-app-web`, triggers Dokploy, and purges the Cloudflare zone. Backend Deploy does the same for `ghcr.io/pistisai/pistisai-app/api-backend` and `ghcr.io/pistisai/pistisai-app/streaming-proxy`.
 
-```bash
-# Build and push images to your container registry (production CI uses GHCR:
-# ghcr.io/pistisai/pistisai-app-web and ghcr.io/<repo>/api-backend)
-docker build -f Dockerfile.web -t your-registry.com/pistisai/web:latest .
-docker push your-registry.com/pistisai/web:latest
+The `deploy_dokploy` jobs and `scripts/ci/trigger_dokploy_deploy.sh` land with #1056. This overview names them. It does not change the workflow files.
 
-docker build -f config/docker/Dockerfile.api-backend -t your-registry.com/pistisai/api:latest .
-docker push your-registry.com/pistisai/api:latest
+`docker-compose.prod.yml` is a legacy Swarm-style stack (its own Traefik, Redis, and published ports). `config/docker/docker-compose.web.yml` builds a prebuilt `build/web` tree for a local Compose run. Neither file is what Dokploy runs.
 
-# Deploy to Kubernetes (any cluster) — see config/kubernetes/ and services/*/k8s/
-kubectl apply -f config/kubernetes/base/namespace.yaml
-kubectl apply -f config/kubernetes/base/
-```
+Local development still uses the repo-root `docker-compose.yml` and a local Flutter SDK. See [Docker development environment](README_DOCKER.md).
 
-**Benefits:**
+## Legacy: Kubernetes and k3s
 
-- Scalable and secure environment for multiple users
-- Automated SSL certificate management via cert-manager
-- Auto-scaling and high availability
-- Platform-agnostic (works with any Kubernetes cluster)
-- Self-hosting option for businesses with security/compliance requirements
+Manifests under `config/kubernetes/base/` and `services/*/k8s/` are legacy and unmaintained. So is the Proxmox k3s runbook, [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md), and the archived ArgoCD notes linked from [the deployment index](README.md). Do not treat them as the hosted path or as a recommended cluster. They remain in the tree so an operator can read what used to be applied. Nothing in `.github/workflows/` applies them.
 
-**Requirements:**
+## Compose files
 
-- Kubernetes cluster (managed or self-hosted)
-- Container registry (Docker Hub, DigitalOcean Container Registry, self-hosted, etc.)
-- Domain name with DNS configuration
-- kubectl configured for your cluster
+| File | Role |
+| --- | --- |
+| `config/docker/docker-compose.dokploy-backend.yml` | Hosted backend on Dokploy. GHCR images, `IMAGE_TAG`, no Traefik labels, no host ports. |
+| `config/docker/docker-compose.web.yml` | Not for Dokploy. Local run of a prebuilt web tree. |
+| `docker-compose.prod.yml` | Not for Dokploy. Legacy stack with its own Traefik and Redis. |
+| `docker-compose.yml` | Local backing services for development. |
 
-#### Proxmox + k3s path
+## Versioning
 
-For Proxmox-hosted Kubernetes with Cloudflare Tunnel-only ingress:
+Version is tracked in two files that stay in sync:
 
-- [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
-- Template automation scripts:
-  - `scripts/proxmox/create-k3s-template.sh`
-  - `scripts/proxmox/clone-k3s-node.sh`
-
-### 🏠 Self-Hosting Options
-
-For self-hosted Kubernetes deployments (on-premises or private cloud):
-
-- [Self-Hosting Guide](SELF_HOSTING.md) - General self-hosting information
-- [Provider Infrastructure Guide](PROVIDER_INFRASTRUCTURE_GUIDE.md) - Server and provider infrastructure notes
-
-### ⚠️ Legacy Single Container (Deprecated)
-
-The legacy single-container deployment is deprecated and no longer supported. Please migrate to the multi-container architecture.
-
----
-
-## Multi-Container Architecture
-
-Pistisai features a modern multi-container architecture that provides:
-
-### 🏗️ **Architecture Benefits**
-
-- **Scalability**: Easily handle multiple users and connections
-- **Resilience**: Isolated services prevent cascading failures
-- **Maintainability**: Clear separation of concerns simplifies development and updates
-- **Security**: Enhanced network policies and container isolation
-
-### 🔧 **Key Containers**
-
-- `nginx-proxy`: SSL termination and request routing
-- `flutter-app`: The unified Flutter web application (UI, chat, marketing pages)
-- `api-backend`: Core API, authentication, and streaming proxy management
-- `tailscale-relay` / cloud connector: secure device mesh integration
-- `streaming-proxy` (ephemeral): legacy/fallback proxies for older user-to-local-provider communication
-- `certbot`: Automated SSL certificate management
-
-For detailed information, see [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md).
-
----
-
-## Dockerfile-Based Deployment
-
-Pistisai uses **Dockerfiles** for building container images, which are then deployed to **Kubernetes** (managed or self-hosted).
-
-### 🐳 **Dockerfiles**
-
-#### `config/docker/Dockerfile.web`
-
-Builds the Flutter web application as a static site served by Nginx.
-
-```bash
-docker build -f config/docker/Dockerfile.web -t Pistisai-web:latest .
-```
-
-#### `config/docker/Dockerfile.api-backend`
-
-Builds the Node.js API backend service. There is no `services/api-backend/Dockerfile.prod` in this repository.
-
-```bash
-docker build -f config/docker/Dockerfile.api-backend -t pistisai-api:latest .
-```
-
-### ☸️ **Kubernetes Deployment**
-
-Deploy to any Kubernetes cluster (managed or self-hosted) using the manifests under
-`config/kubernetes/base/` and per-service `k8s/` folders (there is no root `k8s/` or `web/k8s/` directory):
-
-```bash
-# Shared / base manifests
-kubectl apply -f config/kubernetes/base/namespace.yaml
-kubectl apply -f config/kubernetes/base/
-
-# Service-specific examples
-kubectl apply -f services/api-backend/k8s/
-```
-
-**Platform Options:**
-
-- **Managed Kubernetes**: DigitalOcean (DOKS), Google GKE, AWS EKS, Azure AKS
-- **Self-Hosted Kubernetes**: On-premises clusters, bare metal, or private cloud
-
-For detailed deployment instructions, see:
-
-- Kubernetes manifests: `config/kubernetes/base/`, `services/*/k8s/`
-- [Self-Hosting Guide](SELF_HOSTING.md) - For businesses deploying on-premises
-
----
-
-## Quality Standards
-
-### 🎯 Strict Deployment Policy
-
-Pistisai enforces a **zero-tolerance deployment policy** for production:
-
-- ✅ **Success**: Zero warnings AND zero errors required
-- ❌ **Failure**: Any warning condition triggers automatic rollback
-- 🔄 **Rollback**: Immediate restoration of previous version on any issue
-- 🏆 **Quality**: Only perfect deployments reach production
-
-### 📊 **Success Criteria**
-
-- Perfect HTTP 200 responses (no redirects)
-- Valid SSL certificates mandatory
-- Clean container logs (no errors)
-- Optimal system resources (<90% usage)
-- Fully functional application health checks
-
-See [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md) for complete details.
-
----
-
-## Versioning Strategy
-
-Pistisai tracks version in two synced files (see [AGENTS.md](../../AGENTS.md)):
-
-- `assets/version.json` — `version` (semver) + integer `build_number`
+- `assets/version.json` — `version` (semver) plus integer `build_number`
 - `pubspec.yaml` — `version: X.Y.Z+<build_number>`
 
-Example shape: `1.1.46+45` (not a timestamped `YYYYMMDDHHMM` build id).
+Web image tags use the `version` field. Backend image tags use `v` plus that version with the `+build` suffix removed, and `build-<version>-<shortsha>`. Rollback sets the Dokploy web tag or the Compose `IMAGE_TAG` to one of those published tags. See [Dokploy](DOKPLOY.md).
 
-For packaging/version helper scripts, see [BUILD_SCRIPTS.md](../development/BUILD_SCRIPTS.md)
-and [docs/development/versioning/](../development/versioning).
+## Related documentation
 
----
-
-## Related Documentation
-
-### 📚 **Deployment Guides**
-
+- [Dokploy](DOKPLOY.md) — setup, secrets, rollback, verification
+- [Deployment index](README.md)
+- [Web Deploy](../operations/cicd/WEB_DEPLOY.md)
+- [Deploy trigger chain](../operations/cicd/DEPLOY_TRIGGER_CHAIN.md)
+- [Secrets Management](SECRETS_MANAGEMENT.md)
+- [Release workflow](../development/release/RELEASE_WORKFLOW.md)
 - [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md)
-- [Deployment Testing Guide](../archive/historical-reports/deployment/DEPLOYMENT_TESTING_GUIDE.md)
-- [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
-- [ArgoCD Proxmox Management VM Runbook](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
-
-### 🔧 **Operations**
-
-- [Self-Hosting Guide](SELF_HOSTING.md)
-- [Provider Infrastructure Guide](PROVIDER_INFRASTRUCTURE_GUIDE.md)
-
-### ☸️ **Kubernetes Deployment**
-
-- Kubernetes manifests live in `config/kubernetes/base/` and `services/*/k8s/`
-
-### 🏗️ **Architecture**
-
 - [System Architecture](../architecture/SYSTEM_ARCHITECTURE.md)
-- [Secure Device Mesh](../architecture/SECURE_DEVICE_MESH.md)
-- [Tunnel System](../archive/historical-reports/architecture/TUNNEL_SYSTEM.md)
-
-### 👨‍💻 **Development**
-
-- [Developer Onboarding](../development/DEVELOPER_ONBOARDING.md)
-- [API Documentation](../development/API_DOCUMENTATION.md)
-
----
-
-_For questions about deployment, please see our [troubleshooting guide](../user-guide/TROUBLESHOOTING.md) or [open an issue](https://github.com/pistisAI/pistisai-app/issues)._

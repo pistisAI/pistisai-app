@@ -4,7 +4,7 @@ This guide explains how to deploy Pistisai for self-hosted, privacy-first operat
 
 ## Overview
 
-Pistisai is designed to run primarily on local devices with optional cloud/SaaS features. Self-hosting allows you to run backend services on your own infrastructure while maintaining control over your data.
+The desktop app is the hub. This guide is for running backing services yourself. The hosted web and API path is [Dokploy](DOKPLOY.md), not this Compose stack and not Kubernetes.
 
 Current orientation is agent-runtime-first and Tailscale-first. The setup wizard selects an agent runtime such as Hermes, OpenClaw, a compatible custom agent gateway, or an optional hosted agent runtime. Ollama, LM Studio, and similar model servers are optional support model providers for app-owned memory/background features, not primary app runtimes. Remote agent runtimes and cloud connectors should live inside the user's Tailscale tailnet where possible.
 
@@ -13,9 +13,10 @@ Current orientation is agent-runtime-first and Tailscale-first. The setup wizard
 - Docker and Docker Compose
 - Node.js >=26 <28 (service engines, e.g. `services/api-backend/package.json`; CI pins Node 26 via `.nvmrc`)
 - Flutter 3.47.9 (CI pin in `pubspec.yaml` `environment.flutter`; Dart SDK constraint `>=3.5.0 <4.0.0`)
-- PostgreSQL >=14
-- Redis >=7
+- PostgreSQL >=14 (`api-backend` reads `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`)
 - Git
+
+Redis is not required. `api-backend` and `streaming-proxy` do not open a Redis client. The local `docker-compose.yml` still defines a Redis service; [`config/docker/docker-compose.dokploy-backend.yml`](../../config/docker/docker-compose.dokploy-backend.yml) omits it.
 
 ## Architecture Overview
 
@@ -63,9 +64,9 @@ Run both frontend and backend services on your infrastructure.
 ```bash
 cp .env.example .env
 # Edit .env with your configuration:
-# - Database connection strings
-# - Redis configuration
-# - JWT secrets
+# - Database connection strings (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
+# - JWT secrets are not how hosted sign-in works; Cloudflare Access is
+#   (CF_ACCESS_TEAM_DOMAIN, CF_ACCESS_AUD)
 # - API keys for external LLM providers (optional)
 # - Tailscale configuration for secure device mesh
 ```
@@ -73,8 +74,9 @@ cp .env.example .env
 #### Step 2: Start Infrastructure Services
 
 ```bash
-# Start PostgreSQL and Redis (compose service names)
-docker compose up -d database redis
+# Start PostgreSQL. The compose file also defines redis; the API and
+# streaming proxy do not connect to it, so leave it stopped.
+docker compose up -d database
 
 # Validate database connectivity / schema helpers from api-backend
 # (there is no npm run db:migrate — see AGENTS.md)
@@ -136,11 +138,10 @@ POSTGRES_USER=Pistisai
 POSTGRES_PASSWORD=your_secure_password
 POSTGRES_DB=Pistisai
 
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
+# Redis is unused by api-backend and streaming-proxy. Do not set a Redis
+# dependency for the hosted Dokploy compose.
 
-# JWT
+# JWT (not read for hosted Cloudflare Access sign-in)
 JWT_ACCESS_TOKEN_SECRET=your_access_token_secret
 JWT_REFRESH_TOKEN_SECRET=your_refresh_token_secret
 
@@ -189,9 +190,6 @@ Default local ports: API backend `8080`, embedded router `1337`, streaming proxy
 ```bash
 # Backup PostgreSQL database
 pg_dump -h localhost -U Pistisai Pistisai > backup.sql
-
-# Backup Redis (optional, mainly for caching)
-redis-cli BGSAVE
 ```
 
 ### Logs

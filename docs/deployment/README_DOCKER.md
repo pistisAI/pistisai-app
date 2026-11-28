@@ -2,6 +2,8 @@
 
 > **Current orientation**: Docker development can include optional support model providers for testing memory/background features, but the main app channel still requires an agent runtime such as Hermes, OpenClaw, or a compatible agent gateway. Do not treat Ollama/LM Studio containers as primary app runtimes unless wrapped by a compatible agent runtime.
 
+> Hosted web and API run on Dokploy ([DOKPLOY.md](DOKPLOY.md)). This page is the local development stack. `docker-compose.prod.yml` and `config/docker/docker-compose.web.yml` are not the Dokploy files.
+
 > **No `docker-compose.dev.yml` and no Flutter dev container exist in this repository.** Development uses a local Flutter SDK pinned in `pubspec.yaml` (`environment.flutter: 3.47.9`, consumed by CI via `flutter-version-file: pubspec.yaml`) plus the repo-root `docker-compose.yml` for backing services. The old `docker-compose.dev.yml`, `flutter` service, `flutter-health`/`flutter-build`/`flutter-web` wrappers, `Pistisai:dev` image and `/opt/flutter` SDK path have no counterparts in the tree.
 
 ## Quick Start

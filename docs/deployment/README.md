@@ -4,10 +4,12 @@ This directory documents supported deployment paths for Pistisai.
 
 ## Start Here
 
-- [Web Deploy](../operations/cicd/WEB_DEPLOY.md) — production Flutter web image and Docker Compose health
-- Production deploy workflows: `.github/workflows/deploy-web.yml` (builds/pushes the web image to GHCR and purges the Cloudflare cache) and `.github/workflows/deploy-backend.yml` (builds/pushes the api-backend, streaming-proxy and postgres images to GHCR)
-- [Deployment Overview](DEPLOYMENT_OVERVIEW.md)
-- [Complete Deployment Workflow](DEPLOYMENT_OVERVIEW.md)
+The desktop app is the hub. Hosted web and API run on Dokploy.
+
+- [Dokploy](DOKPLOY.md) — hosted web Application and backend Compose service, secrets, rollback
+- [Deployment Overview](DEPLOYMENT_OVERVIEW.md) — desktop hub, Dokploy, and the legacy Kubernetes notes
+- [Web Deploy](../operations/cicd/WEB_DEPLOY.md) — production Flutter web image (`ghcr.io/pistisai/pistisai-app-web`)
+- Production deploy workflows: `.github/workflows/deploy-web.yml` and `.github/workflows/deploy-backend.yml` publish images to GHCR. Each has a `deploy_dokploy` job (`scripts/ci/trigger_dokploy_deploy.sh`, [#1056](https://github.com/pistisAI/pistisai-app/issues/1056)) that asks Dokploy to pull. `config/docker/docker-compose.web.yml` and `docker-compose.prod.yml` are not the Dokploy files.
 - [Self Hosting](SELF_HOSTING.md)
 - [Docker Deployment](DOCKER_DEPLOYMENT.md)
 - [Strict Deployment Policy](STRICT_DEPLOYMENT_POLICY.md)
@@ -19,13 +21,15 @@ This directory documents supported deployment paths for Pistisai.
 - [Windows Installation](installation/WINDOWS.md)
 - [macOS Installation](installation/MACOS.md)
 
-## Kubernetes And GitOps
+## Kubernetes And GitOps (legacy, unmaintained)
 
-- [k3s Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md)
+These runbooks are not the hosted path. Hosted deploys use [Dokploy](DOKPLOY.md).
+
+- [k3s Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md) — legacy, unmaintained
 - [ArgoCD Integration](../archive/historical-reports/deployment/ARGOCD_INTEGRATION.md)
 - [ArgoCD Proxmox Management VM](../archive/historical-reports/deployment/ARGOCD_PROXMOX_MANAGEMENT_VM.md)
 
-Kubernetes manifests live under `config/kubernetes/base/` (shared base) and `services/*/k8s/` (per-service examples). There is no root `k8s/` directory. Not every Kubernetes path has a README, so link to specific runbooks from this directory when documenting deployment procedures.
+Kubernetes manifests live under `config/kubernetes/base/` (shared base) and `services/*/k8s/` (per-service examples). There is no root `k8s/` directory. Nothing in GitHub Actions applies them.
 
 ## Cloud And Provider Runbooks
 

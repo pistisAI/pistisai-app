@@ -2,52 +2,51 @@
 
 ## Overview
 
-This document describes the deployment setup that exists in the repository today. The app is provider-agnostic at the manifest level, but the supported production path is GitHub Actions building images into GHCR and a host running them with Docker Compose. Claims of an active Azure AKS deployment or a Docker Hub registry in older revisions of this guide were not backed by the code and are removed here.
+The desktop app is the hub. The hosted path is GitHub Actions building images into GHCR and Dokploy pulling them. Kubernetes manifests in the tree are legacy and unmaintained. Claims of an active Azure AKS deployment or a Docker Hub registry in older revisions of this guide were not backed by the code and are removed here.
 
-Evidence: `.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`, `docs/operations/cicd/WEB_DEPLOY.md`, `config/kubernetes/`, `config/docker/`.
+Evidence: `.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`, [Dokploy](DOKPLOY.md), `docs/operations/cicd/WEB_DEPLOY.md`, `config/docker/docker-compose.dokploy-backend.yml`.
 
 ## Current Deployment Status
 
-- **Build/publish**: GitHub Actions workflows on `main` (or `workflow_dispatch`). `deploy-web.yml` builds the production `Dockerfile.web` and pushes `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`; `deploy-backend.yml` follows via `workflow_run` and pushes `ghcr.io/<repo>/api-backend`, `/streaming-proxy` and `/postgres`.
-- **Registry**: GHCR (`ghcr.io`), authenticated with `GITHUB_TOKEN`. There is no Docker Hub publishing workflow.
-- **Host runtime**: the host pulls the published image and runs `docker compose -f config/docker/docker-compose.web.yml up -d`. The workflow itself notes that the host pull is still manual.
-- **Cache**: `deploy-web.yml` purges the whole Cloudflare zone with `CLOUDFLARE_CACHE_PURGE_TOKEN` and `CF_ZONE_ID`.
-- **Authentication**: Cloudflare Access for the free tunnel path; customer-owned VPN or Tailscale for business deployments. See [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md).
-- **DNS/SSL**: Cloudflare in front of the tunnel; TLS termination is handled by the host ingress / Cloudflare Tunnel, not by a cloud load balancer.
+- **Build/publish**: GitHub Actions workflows on `main` (or `workflow_dispatch`). `deploy-web.yml` builds the production `Dockerfile.web` and pushes `ghcr.io/pistisai/pistisai-app-web:{version}` and `:latest`; `deploy-backend.yml` follows via `workflow_run` and pushes `ghcr.io/pistisai/pistisai-app/api-backend`, `/streaming-proxy` and `/postgres`.
+- **Registry**: GHCR (`ghcr.io`). Actions pushes with `GITHUB_TOKEN`. Dokploy pulls with a registry credential that has `read:packages`. There is no Docker Hub publishing workflow.
+- **Hosted runtime**: Dokploy. The web service is an Application on `ghcr.io/pistisai/pistisai-app-web:latest`, container port 80. The backend is the Compose file `config/docker/docker-compose.dokploy-backend.yml`. `deploy_dokploy` (`scripts/ci/trigger_dokploy_deploy.sh`, [#1056](https://github.com/pistisAI/pistisai-app/issues/1056)) runs after the image push. `docker-compose.prod.yml` and `config/docker/docker-compose.web.yml` are not the Dokploy files.
+- **Cache**: `deploy-web.yml` and `deploy-backend.yml` purge the whole Cloudflare zone with `CLOUDFLARE_CACHE_PURGE_TOKEN` and `CF_ZONE_ID` after `deploy_dokploy`.
+- **Authentication**: Cloudflare Access for the hosted sign-in path; Tailscale for the device mesh back to the desktop hub. See [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md).
+- **DNS/TLS**: attach the public hostname in Dokploy's Domains tab. Dokploy's Traefik routes to the container port. Do not publish host ports in the Compose file.
 
 ## Provider-Agnostic Architecture
 
-### Kubernetes-native design
+### Kubernetes manifests (legacy, unmaintained)
 
 - Shared Kubernetes manifests live in `config/kubernetes/base/` (namespace, HPAs, PDBs, network policies).
 - Per-service manifests live in `services/api-backend/k8s/` (`deployment.yaml`, `service.yaml`, `ingress.yaml`).
 - There is no root `k8s/` directory and no `web/k8s/` directory; older references to those paths are stale.
-- Manifests use standard Kubernetes APIs, so they can be applied to any compatible cluster by an operator. This is a self-hosting option, not the automated production path.
+- These manifests are legacy and unmaintained. GitHub Actions does not apply them. The hosted path is Dokploy.
 
 ### Container strategy
 
 - Production images are built by the GHCR workflows above from `Dockerfile.web` and the Dockerfiles under `config/docker/`.
-- Compose definitions for self-hosting: `docker-compose.yml`, `docker-compose.prod.yml`, and `config/docker/docker-compose.web.yml`. There is no `docker-compose.production.yml` or `docker-compose.dev.yml`.
+- Dokploy backend Compose: `config/docker/docker-compose.dokploy-backend.yml`. `docker-compose.prod.yml` and `config/docker/docker-compose.web.yml` are not for Dokploy. Local development uses `docker-compose.yml`. There is no `docker-compose.production.yml` or `docker-compose.dev.yml`.
 
 ## Available Deployment Options
 
-### 1. GitHub Actions → GHCR (current production)
+### 1. GitHub Actions → GHCR → Dokploy (hosted path)
 
-- **Workflows**: [Web Deploy](../operations/cicd/WEB_DEPLOY.md), `.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`.
-- **Status**: the automated build/publish path on `main`.
-- **Recommended for**: production web and backend images.
+- **Workflows**: [Web Deploy](../operations/cicd/WEB_DEPLOY.md), `.github/workflows/deploy-web.yml`, `.github/workflows/deploy-backend.yml`, [Dokploy](DOKPLOY.md).
+- **Status**: the hosted path on `main`. The desktop app remains the hub.
+- **Runs**: the web Application and the backend Compose service.
 
-### 2. Self-hosted / Kubernetes
+### 2. Kubernetes (legacy, unmaintained)
 
 - **Manifests**: `config/kubernetes/base/`, `services/api-backend/k8s/`.
-- **Requirements**: a Kubernetes cluster (1.24+) with `kubectl` configured, or a Docker Compose host.
-- **Status**: supported as a manual/operator path. See [Self-Hosting Guide](SELF_HOSTING.md) and [Deployment Overview](DEPLOYMENT_OVERVIEW.md).
+- **Status**: legacy and unmaintained. Not the hosted path. See [Deployment Overview](DEPLOYMENT_OVERVIEW.md).
 
-### 3. Proxmox + k3s
+### 3. Proxmox + k3s (legacy, unmaintained)
 
 - **Runbook**: [k3s on Proxmox Deployment Workflow](K3S_PROXMOX_DEPLOYMENT_WORKFLOW.md).
 - **Scripts**: `scripts/proxmox/create-k3s-template.sh`, `scripts/proxmox/clone-k3s-node.sh` (these exist).
-- **Status**: operator-run alternative; not part of the GHCR deploy chain.
+- **Status**: legacy and unmaintained. Not part of the GHCR deploy chain.
 
 ### 4. Local development
 
@@ -68,23 +67,23 @@ Azure AKS and AWS EKS remain possible *targets* for an operator applying the sta
 
 ### For operators
 
-1. Use the GHCR workflows and [Web Deploy](../operations/cicd/WEB_DEPLOY.md) for production images.
-2. Keep host configuration (the `docker compose up -d` pull) in your own runbook; it is not automated by Actions.
-3. Use standard manifests for self-hosted clusters; treat provider-specific setup as local configuration.
+1. Use the GHCR workflows, [Web Deploy](../operations/cicd/WEB_DEPLOY.md), and [Dokploy](DOKPLOY.md) for hosted images.
+2. Keep Dokploy domains, the GHCR credential, and the Compose environment in Dokploy. Actions triggers the pull through `deploy_dokploy`.
+3. Leave the Kubernetes manifests alone. They are legacy.
 
 ### For developers
 
-1. Avoid vendor lock-in: use standard Kubernetes APIs and avoid provider-specific fields in committed manifests.
-2. Test locally with `docker-compose.yml` before publishing an image.
-3. Keep secrets in GitHub Actions secrets or `.env`, never in manifests (see [Secrets Management](SECRETS_MANAGEMENT.md)).
+1. Keep the Dokploy Compose file free of Traefik labels and host ports. Dokploy adds routing when a domain is saved.
+2. Test locally with `docker-compose.yml` before publishing an image. Validate the Dokploy file with `docker compose -f config/docker/docker-compose.dokploy-backend.yml config`.
+3. Keep secrets in GitHub Actions secrets, the Dokploy environment, or `.env`, never in the Compose file (see [Secrets Management](SECRETS_MANAGEMENT.md)).
 
 ## Support and Troubleshooting
 
 - **Deploy workflow failures**: inspect `.github/workflows/deploy-web.yml` run logs, including the GHCR push digest check and the Cloudflare purge step.
-- **Site not updated after a run**: the host pulls the image separately; re-run the workflow / purge again if the host deployed late (see [Web Deploy](../operations/cicd/WEB_DEPLOY.md)).
-- **Kubernetes issues**: check `config/kubernetes/base/` and `services/api-backend/k8s/`; use standard `kubectl` diagnostics.
+- **Site not updated after a run**: check `deploy_dokploy` and the Dokploy logs (see [Dokploy](DOKPLOY.md) and [Web Deploy](../operations/cicd/WEB_DEPLOY.md)).
+- **Kubernetes**: those manifests are legacy and unmaintained. Hosted routing is Dokploy's Traefik, configured in the Domains tab.
 - **Auth failures**: see [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md).
 
 ## Conclusion
 
-The supported production reality is GitHub Actions → GHCR → host Docker Compose, with Cloudflare Access for sign-in and Kubernetes manifests available for self-hosting. Azure AKS and AWS EKS are only potential targets for operators, not active deployments.
+The hosted path is GitHub Actions → GHCR → Dokploy. The desktop app is the hub. Cloudflare Access covers hosted sign-in. Kubernetes and k3s manifests are legacy and unmaintained. Azure AKS and AWS EKS are not active deployments.

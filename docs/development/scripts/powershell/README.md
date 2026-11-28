@@ -123,14 +123,9 @@ WSL is **NOT used** for:
 .\scripts\packaging\build_windows_portable.ps1
 ```
 
-### VPS Deployment
+### Hosted deploy
 
-**Note**: VPS deployment is handled by bash scripts via WSL, not PowerShell scripts.
-
-```powershell
-# From Windows PowerShell, deploy to VPS via SSH
-ssh ops@example.com "cd /opt/Pistisai && ./scripts/deploy/update_and_deploy.sh --force --verbose"
-```
+Hosted web and API run on Dokploy. GitHub Actions publishes the images and `deploy_dokploy` asks Dokploy to pull them. There is no SSH deploy script. See `docs/deployment/DOKPLOY.md`.
 
 ### Environment Testing
 

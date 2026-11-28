@@ -1,0 +1,83 @@
+# Dokploy backend Compose service.
+#
+# Hosted deploys use this file. Dokploy's Traefik routes by the domains you
+# attach in the Dokploy UI, so this file has no Traefik labels and publishes
+# no host ports. See docs/deployment/DOKPLOY.md.
+#
+# Images are the ones .github/workflows/deploy-backend.yml pushes to GHCR:
+#   ghcr.io/pistisai/pistisai-app/api-backend
+#   ghcr.io/pistisai/pistisai-app/streaming-proxy
+# Set IMAGE_TAG in the Dokploy environment to roll back (default latest).
+# Tags the workflow publishes: latest, v<version>, build-<version>-<shortsha>.
+#
+# Redis is not included. api-backend and streaming-proxy do not open a Redis
+# client (rate limiting and polling stay in process memory).
+# Postgres is not included. api-backend reads DB_HOST, DB_PORT, DB_NAME,
+# DB_USER, and DB_PASSWORD from the Dokploy environment and connects to the
+# database you already run. deploy-backend.yml also publishes a postgres
+# image; this stack does not start it.
+#
+# docker-compose.prod.yml and config/docker/docker-compose.web.yml are not
+# this file. Do not add host ports or Traefik labels here.
+
+services:
+  api-backend:
+    image: ghcr.io/pistisai/pistisai-app/api-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      DB_HOST: ${DB_HOST:-}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-}
+      DB_USER: ${DB_USER:-}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+      DB_SSL: ${DB_SSL:-}
+      DATABASE_URL: ${DATABASE_URL:-}
+      CF_ACCESS_TEAM_DOMAIN: ${CF_ACCESS_TEAM_DOMAIN:-}
+      CF_ACCESS_AUD: ${CF_ACCESS_AUD:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: production
+      OPENCLAW_WEBHOOK_SECRET: ${OPENCLAW_WEBHOOK_SECRET:-}
+    networks:
+      - dokploy-network
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  streaming-proxy:
+    image: ghcr.io/pistisai/pistisai-app/streaming-proxy:${IMAGE_TAG:-latest}
+    pull_policy: always
+    restart: unless-stopped
+    expose:
+      - "3001"
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      # /stats answers 401 to every caller when this is empty.
+      PROXY_STATS_TOKEN: ${PROXY_STATS_TOKEN:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: production
+    networks:
+      - dokploy-network
+    healthcheck:
+      # The streaming-proxy image is node:alpine and does not include curl.
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3001/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  dokploy-network:
+    external: true
