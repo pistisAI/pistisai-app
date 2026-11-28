@@ -315,9 +315,14 @@ Future<void> setupCoreServices() async {
             settingsPreferenceService.isMicrosoftSpeechEnabled,
         // Remote access (LAN/Tailscale mobile) is opt-in; default is loopback (#645).
         // RouterServer generates an authSecret when the setting is on (#804).
-        allowRemoteAccess: remoteHubAccessEnabled,
+        // If the keystore could not be read, fail closed: no remote bind and
+        // no in-memory secret that disagrees with Settings (#981).
+        allowRemoteAccess: RouterServer.shouldAllowRemoteAccess(
+          enabled: remoteHubAccessEnabled,
+          token: remoteHubToken,
+        ),
         authSecret: remoteHubToken,
-        hermesApiKey: hermesApiKey
+        hermesApiKey: hermesApiKey,
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 

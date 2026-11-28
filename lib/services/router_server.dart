@@ -104,6 +104,15 @@ class RouterServer {
     return _generateAuthSecret();
   }
 
+  /// Remote access is only safe when the stable token is known. A transient
+  /// keystore failure must not let the router mint a different in-memory
+  /// secret while Settings still displays the stored one (#981).
+  static bool shouldAllowRemoteAccess({
+    required bool enabled,
+    required String? token,
+  }) =>
+      enabled && token != null && token.isNotEmpty;
+
   /// Generate a URL-safe bearer token. Used by the opt-in remote hub setting
   /// so the token is stable across restarts instead of being regenerated on
   /// every bind (#861).

@@ -40,6 +40,23 @@ void main() {
 
       expect(headers.containsKey('authorization'), isFalse);
     });
+
+    test('fails closed when the stored hub token could not be read', () {
+      expect(
+        RouterServer.shouldAllowRemoteAccess(
+          enabled: true,
+          token: null,
+        ),
+        isFalse,
+      );
+      expect(
+        RouterServer.shouldAllowRemoteAccess(
+          enabled: true,
+          token: 'stored-token',
+        ),
+        isTrue,
+      );
+    });
   });
 
   group('RouterServer local security defaults', () {
