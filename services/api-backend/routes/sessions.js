@@ -50,7 +50,7 @@ async function resolveSessionOwnerId(req) {
   const result = await db.query(
     `SELECT u.id FROM users u
      WHERE u.jwt_id = $1
-        OR u.supabase_id::text = $1
+        OR u.access_subject::text = $1
         OR u.id::text = $1
         OR EXISTS (
              SELECT 1 FROM user_auth_subjects s

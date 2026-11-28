@@ -1,6 +1,6 @@
 /**
  * Access identity linking: same email + new Access sub must map to one user
- * without overwriting users.supabase_id (which would orphan prior data).
+ * without overwriting users.access_subject (which would orphan prior data).
  */
 
 import { jest, describe, it, expect, beforeEach, afterEach } from "@jest/globals";
@@ -19,7 +19,7 @@ describe("AuthService Access identity linking", () => {
       queries.push({ sql, params });
       const normalized = sql.replace(/\s+/g, " ").trim();
 
-      if (normalized.startsWith("SELECT id FROM users WHERE supabase_id")) {
+      if (normalized.startsWith("SELECT id FROM users WHERE access_subject")) {
         return auth.__byPrimarySub?.[params[0]] || null;
       }
       if (
@@ -31,7 +31,7 @@ describe("AuthService Access identity linking", () => {
       }
       if (
         normalized.startsWith(
-          "SELECT id, supabase_id FROM users WHERE email",
+          "SELECT id, access_subject FROM users WHERE email",
         )
       ) {
         return auth.__byEmail?.[params[0]] || null;
@@ -54,13 +54,13 @@ describe("AuthService Access identity linking", () => {
     delete process.env.CF_ACCESS_AUD;
   });
 
-  it("links a new Access sub for the same email without overwriting supabase_id", async () => {
+  it("links a new Access sub for the same email without overwriting access_subject", async () => {
     auth.__byPrimarySub = {};
     auth.__bySubject = {};
     auth.__byEmail = {
       "chris@example.com": {
         id: "user-1",
-        supabase_id: "otp-sub-original",
+        access_subject: "otp-sub-original",
       },
     };
 
@@ -76,7 +76,7 @@ describe("AuthService Access identity linking", () => {
       q.sql.replace(/\s+/g, " ").trim().startsWith("UPDATE users SET"),
     );
     expect(update).toBeDefined();
-    // First bind must NOT be the new Access sub — supabase_id stays put.
+    // First bind must NOT be the new Access sub — access_subject stays put.
     expect(update.params).not.toContain("google-sub-new");
     expect(update.params[update.params.length - 1]).toBe("user-1");
 
@@ -93,7 +93,7 @@ describe("AuthService Access identity linking", () => {
     auth.__byEmail = {
       "chris@example.com": {
         id: "user-1",
-        supabase_id: "otp-sub-original",
+        access_subject: "otp-sub-original",
       },
     };
 
@@ -110,7 +110,7 @@ describe("AuthService Access identity linking", () => {
     ).toBe(false);
   });
 
-  it("resolves via user_auth_subjects when primary supabase_id differs", async () => {
+  it("resolves via user_auth_subjects when primary access_subject differs", async () => {
     auth.__byPrimarySub = {};
     auth.__bySubject = {
       "google-sub-new": { id: "user-1" },

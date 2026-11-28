@@ -65,5 +65,5 @@ Local-only path: skip sign-in → hub uses loopback services only.
 
 ## Notes
 
-- `users.supabase_id` remains a legacy column name for the primary Access subject link; it is not a Supabase integration.
+- `users.access_subject` holds the first Cloudflare Access subject (`sub`) seen for a user; later subjects for the same account are in `user_auth_subjects`. Migration 029 renamed it from the older `users.supabase_id` (#1058); the column is not a Supabase id.
 - Paid plans that use Tailscale/VPN do not require Access on the customer network path.

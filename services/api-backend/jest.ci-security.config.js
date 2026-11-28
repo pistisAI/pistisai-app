@@ -48,6 +48,9 @@ export default {
     // Follow-up for #1022: auth-service email masking and security_events
     // details (no user_id column; cleared on hard delete).
     '**/test/api-backend/security-event-details.test.js',
+    // #1058: the Access subject column is users.access_subject (migration 029).
+    '**/test/api-backend/access-subject-column-1058.test.js',
+    '**/test/api-backend/auth-access-identity.test.js',
     // Sentry beforeSend removes credential headers, cookies and token
     // query params from server-side error reports.
     '**/test/api-backend/sentry-scrub.test.js',

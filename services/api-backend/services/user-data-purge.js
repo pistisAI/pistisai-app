@@ -51,10 +51,13 @@ async function tableExists(client, table) {
 
 /**
  * Collect every identifier this user can appear under in TEXT user_id
- * columns: users.id, users.jwt_id, users.supabase_id and any extra auth
- * subjects mapped in user_auth_subjects. Also returns the account email so
- * security_events rows that stored the address can be cleared. The email is
- * not added to `identifiers` (those values are matched against user_id).
+ * columns: users.id, users.jwt_id, users.access_subject (the primary
+ * Cloudflare Access subject; named supabase_id before migration 029, which
+ * is still read so a purge stays complete on a database not yet migrated)
+ * and any extra auth subjects mapped in user_auth_subjects. Also returns the
+ * account email so security_events rows that stored the address can be
+ * cleared. The email is not added to `identifiers` (those values are matched
+ * against user_id).
  *
  * @returns {Promise<{identifiers: string[], emails: string[]}>}
  */
@@ -64,14 +67,20 @@ export async function collectUserIdentifiers(client, userId) {
   const { rows } = await client.query(
     `SELECT u.id::text AS id,
             to_jsonb(u)->>'jwt_id' AS jwt_id,
-            to_jsonb(u)->>'supabase_id' AS supabase_id,
+            to_jsonb(u)->>'access_subject' AS access_subject,
+            to_jsonb(u)->>'supabase_id' AS legacy_access_subject,
             u.email AS email
        FROM users u
       WHERE u.id::text = $1`,
     [String(userId)],
   );
   for (const row of rows || []) {
-    for (const value of [row.id, row.jwt_id, row.supabase_id]) {
+    for (const value of [
+      row.id,
+      row.jwt_id,
+      row.access_subject,
+      row.legacy_access_subject,
+    ]) {
       if (value) {
         ids.add(String(value));
       }
