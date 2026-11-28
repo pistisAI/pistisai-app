@@ -127,10 +127,23 @@
       conversation itself.
     </p>
     <p>
+      <strong>Cloud services switch.</strong> Device registration, brain sync and chat history sync
+      with our cloud service happen only after you turn on <strong>Settings &rarr; General &rarr;
+      &ldquo;Cloud services&rdquo;</strong> and confirm. The switch is off by default. While it is on,
+      the app sends:
+    </p>
+    <ul>
+      <li>device registration and a heartbeat every 2 minutes: this device&rsquo;s ID, name, platform and app version;</li>
+      <li>brain sync every 5 minutes: agent activity events and pending record changes stored on this device are uploaded, and recent events are downloaded;</li>
+      <li>chat history, while you are signed in: your conversations and their messages are uploaded, and conversations saved on our server are downloaded.</li>
+    </ul>
+    <p>
+      Turning the switch off stops new uploads but does not delete data already on our server.
+    </p>
+    <p>
       <strong>Chat history on our server.</strong> On desktop and mobile, the app sends your
-      conversations to our server only when you are signed in <strong>and</strong> cloud services are
-      turned on. Cloud services are off by default, and the app does not yet have a setting to turn them
-      on, so today desktop and mobile chat history is not sent to our server. The web app has no chat
+      conversations to our server only when you are signed in <strong>and</strong> the Cloud services
+      switch is on. The web app has no chat
       store in the browser: while you are signed in to the web app, your conversations, including the
       text of every message, are stored on our server so that you can see them again. Conversations
       stored on our server are kept until they are deleted. The app does not yet offer a control to
@@ -325,7 +338,7 @@
       <li>cloud model providers (Zhipu, Moonshot, Gemini) are absent unless a build includes their API keys; when present, only prompts you route to that provider are sent;</li>
       <li>if you signed in with Google, revoke that access at any time via your
         <a href="https://myaccount.google.com/permissions" rel="noopener noreferrer" target="_blank">Google Account permissions</a>;</li>
-      <li>choose whether to enable cloud sync or keep Pistisai fully local.</li>
+      <li>choose whether to turn on cloud services (Settings &rarr; General &rarr; &ldquo;Cloud services&rdquo;, off by default) or keep Pistisai fully local.</li>
     </ul>
 
     <h2>9. Children&rsquo;s privacy</h2>

@@ -75,11 +75,24 @@ sent to the agent runtime you connected, on your machine by default, which
 includes it in the instructions for each reply; it therefore reaches the same
 model provider your runtime uses for the conversation itself.
 
+**Cloud services switch.** Device registration, brain sync and chat history
+sync with our cloud service happen only after you turn on **Settings → General →
+"Cloud services"** and confirm. The switch is off by default. While it is on, the
+app sends:
+
+- device registration and a heartbeat every 2 minutes: this device's ID, name,
+  platform and app version;
+- brain sync every 5 minutes: agent activity events and pending record changes
+  stored on this device are uploaded, and recent events are downloaded;
+- chat history, while you are signed in: your conversations and their messages
+  are uploaded, and conversations saved on our server are downloaded.
+
+Turning the switch off stops new uploads but does not delete data already on our
+server.
+
 **Chat history on our server.** On desktop and mobile, the app sends your
-conversations to our server only when you are signed in **and** cloud services are
-turned on. Cloud services are off by default, and the app does not yet have a
-setting to turn them on, so today desktop and mobile chat history is not sent to
-our server. The web app has no chat store in the browser: while you are signed in
+conversations to our server only when you are signed in **and** the Cloud
+services switch is on. The web app has no chat store in the browser: while you are signed in
 to the web app, your conversations, including the text of every message, are
 stored on our server so that you can see them again. Conversations stored on our
 server are kept until they are deleted. The app does not yet offer a control to
@@ -280,7 +293,8 @@ expired sessions and the log size limits in section 2.7.
 - turn spoken replies off if you do not want text sent to Microsoft's speech service;
 - cloud model providers (Zhipu, Moonshot, Gemini) are absent unless a build includes
   their API keys; when present, only prompts you route to that provider are sent;
-- choose whether to enable cloud sync or keep Pistisai fully local.
+- choose whether to turn on cloud services (Settings → General → "Cloud services", off
+  by default) or keep Pistisai fully local.
 
 ## 9. Children's privacy
 
