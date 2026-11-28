@@ -4,23 +4,22 @@
 
 All MCP (Model Context Protocol) tools for Crush CLI have been successfully tested and are available for use.
 
-## Available MCP Servers (10 total)
+## Available MCP Servers (9 total)
 
 ### Core Servers
 
-1. **Sequential Thinking** - Multi-step problem-solving and planning
-2. **Knowledge Graph Memory** - Persistent knowledge store with graph-based memory
-3. **Filesystem** - File operations (read, write, search)
-4. **GitHub** - GitHub API operations (requires `GITHUB_TOKEN`)
-5. **PostgreSQL** - Database operations (requires connection string)
-6. **Puppeteer** - Browser automation
-7. **Context7** - Documentation and knowledge base retrieval
-8. **PDF** - PDF document processing
+1. **Knowledge Graph Memory** - Persistent knowledge store with graph-based memory
+2. **Filesystem** - File operations (read, write, search)
+3. **GitHub** - GitHub API operations (requires `GITHUB_TOKEN`)
+4. **PostgreSQL** - Database operations (requires connection string)
+5. **Puppeteer** - Browser automation
+6. **Context7** - Documentation and knowledge base retrieval
+7. **PDF** - PDF document processing
 
 ### Additional Knowledge Graph Options
 
-9. **Local Knowledge Graph** - Local knowledge graph for persistent memory
-10. **Personal Knowledge Graph** - Personal KG for development decisions
+8. **Local Knowledge Graph** - Local knowledge graph for persistent memory
+9. **Personal Knowledge Graph** - Personal KG for development decisions
 
 ## Quick Setup
 
@@ -49,7 +48,6 @@ export POSTGRES_PASSWORD="changeme"
 
 Each MCP server can be tested individually:
 ```bash
-npx -y @modelcontextprotocol/server-sequential-thinking
 npx -y @modelcontextprotocol/server-memory
 npx -y @modelcontextprotocol/server-filesystem .
 npx -y @modelcontextprotocol/server-github
@@ -60,11 +58,6 @@ npx -y @modelcontextprotocol/server-puppeteer
 ```
 
 ## Key Features
-
-### Sequential Thinking
-- Break down complex problems
-- Multi-step reasoning
-- Implementation planning
 
 ### Knowledge Graph Memory
 - Persistent knowledge storage
@@ -129,6 +122,6 @@ For detailed information, see:
 
 ---
 
-**Status**: ✅ All 10 MCP servers installed and ready to use
+**Status**: ✅ All 9 MCP servers installed and ready to use
 
 **Last Updated**: February 18, 2026

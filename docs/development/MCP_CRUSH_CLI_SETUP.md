@@ -2,7 +2,7 @@
 
 This guide explains how to configure and use MCP (Model Context Protocol) servers with Crush CLI.
 
-> **Verified against code (2026-11-24):** the committed Crush CLI config is `.crush-mcp-config.json`, which registers exactly six servers: `sequentialthinking`, `memory`, `context7`, `pdf`, `puppeteer`, `local-knowledge-graph`. The tables below are a broader catalogue of *possible* servers and do **not** all apply to Crush CLI here. Separately, `opencode.json` configures `sentry`, `context7`, `playwright` and `postgres` for OpenCode, and `.cursor/mcp.json` configures GitHub. GitHub operations in this repo are normally done with the `gh` CLI.
+> **Verified against code (2026-11-24):** the committed Crush CLI config is `.crush-mcp-config.json`, which registers exactly six servers: `sequentialthinking`, `memory`, `context7`, `pdf`, `puppeteer`, `local-knowledge-graph`. The tables below are a broader catalogue of *possible* servers and do **not** all apply to Crush CLI here. Separately, `opencode.json` configures `sentry`, `context7`, `playwright` and `postgres` for OpenCode, and `.cursor/mcp.json` configures GitHub. GitHub operations in this repo are normally done with the `gh` CLI. This guide does not recommend the `sequentialthinking` server: Pistisai drops model reasoning from chat, and contributors are not asked to record chain-of-thought (#1053).
 
 ## Available MCP Servers (catalogue — only the six in `.crush-mcp-config.json` are configured for Crush CLI)
 
@@ -10,7 +10,6 @@ This guide explains how to configure and use MCP (Model Context Protocol) server
 
 | Server | Package | Purpose | Requires |
 |--------|---------|---------|----------|
-| **Sequential Thinking** | `@modelcontextprotocol/server-sequential-thinking` | Multi-step problem-solving and planning | None |
 | **Knowledge Graph Memory** | `@modelcontextprotocol/server-memory` | Persistent knowledge store with graph-based memory | None |
 | **Filesystem** | `@modelcontextprotocol/server-filesystem` | File operations (read, write, search) | Directory path |
 | **GitHub** | `@modelcontextprotocol/server-github` | GitHub API operations (PRs, issues, workflows) | `GITHUB_TOKEN` |
@@ -45,11 +44,6 @@ MCP servers for Crush CLI need to be configured in the appropriate configuration
 ```json
 {
   "mcpServers": {
-    "sequentialthinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "description": "Multi-step problem-solving and planning"
-    },
     "memory": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
@@ -117,13 +111,6 @@ export POSTGRES_PASSWORD="changeme"
 
 ## Usage Examples
 
-### Sequential Thinking
-
-Use for complex multi-step problem solving:
-- Planning architecture changes
-- Breaking down large tasks
-- Reasoning through complex logic
-
 ### Knowledge Graph Memory
 
 Use for persistent knowledge:
@@ -179,9 +166,6 @@ Use for browser automation:
 After configuration, test each MCP server:
 
 ```bash
-# Test sequential thinking
-npx -y @modelcontextprotocol/server-sequential-thinking
-
 # Test memory
 npx -y @modelcontextprotocol/server-memory
 

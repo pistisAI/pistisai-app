@@ -10,8 +10,6 @@ MCP tools provide specialized capabilities for interacting with external service
 
 ## Configured MCP Servers
 
-> **Mandatory Framework**: The **Sequential Thinking** MCP server is the primary framework for all complex development tasks. It must be used in conjunction with a **documentation-first methodology** to ensure systematic analysis.
-
 ### Knowledge & Documentation
 
 #### 1. Context7 (`context7`)
@@ -24,18 +22,7 @@ MCP tools provide specialized capabilities for interacting with external service
   - Auth0 integration examples
   - Best practices for libraries
 
-#### 2. Sequential Thinking (`sequentialthinking`)
-
-- **Purpose**: Primary framework for systematic reasoning, complex problem-solving, and iterative analysis
-- **Package**: `@modelcontextprotocol/server-sequential-thinking`
-- **Mandate**: **REQUIRED** for all multi-step tasks and architectural decisions
-- **Use Cases**:
-  - Planning complex implementations
-  - Breaking down multi-file refactors
-  - Validating architectural decisions
-  - Systematic troubleshooting
-
-#### 3. Memory (`memory`)
+#### 2. Memory (`memory`)
 
 - **Purpose**: Persistent knowledge store for project decisions, architectural notes, and ongoing work across sessions
 - **Package**: `@modelcontextprotocol/server-memory`
@@ -47,7 +34,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 ### Development Tools
 
-#### 4. Filesystem (`filesystem`)
+#### 3. Filesystem (`filesystem`)
 
 - **Purpose**: Structured file system operations for reading, writing, and searching files
 - **Package**: `@modelcontextprotocol/server-filesystem`
@@ -58,7 +45,7 @@ MCP tools provide specialized capabilities for interacting with external service
   - Searching code patterns
   - Directory traversal
 
-#### 5. Shell (`shell`)
+#### 4. Shell (`shell`)
 
 - **Purpose**: Command execution with structured interface and output capture
 - **Package**: `@modelcontextprotocol/server-shell`
@@ -69,7 +56,7 @@ MCP tools provide specialized capabilities for interacting with external service
   - Running scripts
   - System operations
 
-#### 6. Git (`git`)
+#### 5. Git (`git`)
 
 - **Purpose**: Git operations for version control, commits, branches, and history
 - **Package**: `@modelcontextprotocol/server-git`
@@ -80,7 +67,7 @@ MCP tools provide specialized capabilities for interacting with external service
   - Viewing history
   - Status checking
 
-#### 7. GitHub (`github`)
+#### 6. GitHub (`github`)
 
 - **Purpose**: GitHub API operations for PRs, issues, workflows, and releases
 - **Package**: `@modelcontextprotocol/server-github`
@@ -94,7 +81,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 ### Database
 
-#### 8. PostgreSQL (`postgres`)
+#### 7. PostgreSQL (`postgres`)
 
 - **Purpose**: PostgreSQL database operations for migrations, queries, and schema management
 - **Package**: `@modelcontextprotocol/server-postgres`
@@ -113,7 +100,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 ### Network & Web
 
-#### 9. Fetch (`fetch`)
+#### 8. Fetch (`fetch`)
 
 - **Purpose**: HTTP requests for APIs, web content, and external services
 - **Package**: `@modelcontextprotocol/server-fetch`
@@ -123,7 +110,7 @@ MCP tools provide specialized capabilities for interacting with external service
   - Testing endpoints
   - Webhook testing
 
-#### 10. Brave Search (`brave-search`)
+#### 9. Brave Search (`brave-search`)
 
 - **Purpose**: Web search for documentation lookup, troubleshooting, and research
 - **Package**: `@modelcontextprotocol/server-brave-search`
@@ -135,7 +122,7 @@ MCP tools provide specialized capabilities for interacting with external service
   - Researching best practices
   - Finding examples
 
-#### 11. Puppeteer (`puppeteer`)
+#### 10. Puppeteer (`puppeteer`)
 
 - **Purpose**: Browser automation for end-to-end testing and web scraping
 - **Package**: `@modelcontextprotocol/server-puppeteer`
@@ -147,7 +134,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 ### Observability
 
-#### 12. Sentry (`sentry`)
+#### 11. Sentry (`sentry`)
 
 - **Purpose**: Sentry error tracking and issue analysis with OAuth authentication
 - **Wrapper**: `mcp-remote@latest` (enables OAuth flow for remote MCP servers)
@@ -165,7 +152,7 @@ MCP tools provide specialized capabilities for interacting with external service
 
 **File**: `.claude/settings.json`
 
-Contains all 12 MCP servers with descriptions, arguments, and environment variables where applicable.
+Contains all 11 MCP servers with descriptions, arguments, and environment variables where applicable.
 
 ### VS Code Configuration
 
@@ -217,15 +204,6 @@ export BRAVE_API_KEY="BSxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 - Password: `changeme`
 
 ## Usage Examples
-
-### Using Sequential Thinking for Complex Tasks
-
-When working on multi-step implementations:
-
-1. Start with documentation review
-2. Use `sequentialthinking` to plan the approach
-3. Execute systematically using other MCP tools
-4. Store decisions in `memory` for future reference
 
 ### Using Memory for Context Persistence
 
@@ -332,38 +310,34 @@ If GitHub MCP server fails to authenticate:
 
 1. **Documentation-First Methodology**: Always review project documentation (`docs/`) and the standing rules in `AGENTS.md` before tool execution. (Historic references to `.kiro/steering/` and `.kilocode/rules-*/` point to directories that no longer exist in this repo.)
 
-2. **Sequential Thinking Primary**: Use the `sequentialthinking` tool as the foundation for all complex tasks to ensure systematic reasoning.
+2. **Use MCP Tools Over CLI**: Prefer MCP tools when available for better integration and structured output.
 
-3. **Use MCP Tools Over CLI**: Prefer MCP tools when available for better integration and structured output.
+3. **Atomic Operations**: Execute one tool at a time and wait for success before proceeding.
 
-4. **Atomic Operations**: Execute one tool at a time and wait for success before proceeding.
+4. **Schema Adherence**: Strictly follow the input schema for all tool calls.
 
-5. **Schema Adherence**: Strictly follow the input schema for all tool calls.
+5. **Store Decisions**: Use `memory` to store architectural decisions and patterns for future reference.
 
-6. **Store Decisions**: Use `memory` to store architectural decisions and patterns for future reference.
+6. **Context Preservation**: Use `context7` for library documentation rather than guessing or using outdated resources.
 
-7. **Context Preservation**: Use `context7` for library documentation rather than guessing or using outdated resources.
-
-8. **Error Analysis**: Use `sentry` for production error investigation to understand root causes.
+7. **Error Analysis**: Use `sentry` for production error investigation to understand root causes.
 
 ## Integration with Development Workflow
 
 ### During Feature Development
 
-1. **Plan**: Use `sequentialthinking` to break down the task
-2. **Research**: Use `context7` to find relevant documentation
-3. **Implement**: Use `filesystem` to read/write code, `shell` for build/test
-4. **Validate**: Use `postgres` for database tests if applicable
-5. **Commit**: Use `git` and `github` for version control
-6. **Document**: Use `memory` to store decisions and patterns
+1. **Research**: Use `context7` to find relevant documentation
+2. **Implement**: Use `filesystem` to read/write code, `shell` for build/test
+3. **Validate**: Use `postgres` for database tests if applicable
+4. **Commit**: Use `git` and `github` for version control
+5. **Document**: Use `memory` to store decisions and patterns
 
 ### During Troubleshooting
 
 1. **Investigate**: Use `sentry` for production issues, `brave-search` for documentation
-2. **Analyze**: Use `sequentialthinking` for systematic problem-solving
-3. **Test**: Use `shell` for debugging commands, `postgres` for database queries
-4. **Fix**: Use `filesystem` to make changes
-5. **Verify**: Use `puppeteer` for E2E tests if applicable
+2. **Test**: Use `shell` for debugging commands, `postgres` for database queries
+3. **Fix**: Use `filesystem` to make changes
+4. **Verify**: Use `puppeteer` for E2E tests if applicable
 
 ## Additional Resources
 
