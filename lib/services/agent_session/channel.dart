@@ -20,7 +20,8 @@ enum ChannelKind {
 /// Not to be confused with `GatewayChannel` (`lib/models/channel.dart`), which
 /// lists the messaging platforms connected to the Hermes gateway.
 ///
-/// Foundation only: nothing in the app creates or reads these yet.
+/// Each `Conversation` has one (`Conversation.channel`); the single
+/// `pistisai` conversation is the default `direct` channel.
 @immutable
 class ConversationChannel {
   ConversationChannel({

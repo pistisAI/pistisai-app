@@ -33,7 +33,8 @@ Map<String, Map<String, String>> _copy(Map<String, Map<String, String>> m) => {
 /// of the conversation. Clearing a mapping does not touch the channel or its
 /// history.
 ///
-/// Foundation only: nothing in the app uses this yet.
+/// The Hermes adapter keeps its session ids here; the entries are saved on
+/// the conversation (`ConversationRuntimeSessionStore`).
 class RuntimeSessionMap {
   RuntimeSessionMap._(this._store, this._entries);
 

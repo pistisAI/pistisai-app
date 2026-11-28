@@ -38,6 +38,18 @@ class HarnessCapabilities {
   int get hashCode => Object.hash(streaming, agentEvents, proactive);
 }
 
+/// The harness could not be reached or its answer could not be read. Not
+/// thrown for "no session yet", which is an empty result.
+class HarnessUnavailableException implements Exception {
+  const HarnessUnavailableException(this.harnessId, this.message);
+
+  final String harnessId;
+  final String message;
+
+  @override
+  String toString() => 'HarnessUnavailableException($harnessId): $message';
+}
+
 /// Contract between the hub's channel store and one agent harness
 /// (Hermes first, others later) (#1066).
 ///
@@ -45,8 +57,8 @@ class HarnessCapabilities {
 /// runtime session id is the adapter's job (see `RuntimeSessionMap`), so the
 /// rest of the app never sees runtime ids.
 ///
-/// Foundation only: no adapter implements this yet and nothing in the app
-/// calls it.
+/// `HermesHarnessAdapter` implements it, and the chat service reads history
+/// through it. Sending a turn through the adapter is not wired yet.
 abstract interface class HarnessAdapter {
   /// Stable id of this harness, for example `hermes`.
   String get harnessId;
