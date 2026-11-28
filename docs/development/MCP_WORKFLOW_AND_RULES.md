@@ -7,10 +7,9 @@ This document outlines the rules and standard operating procedures for utilizing
 ## I. General Principles
 
 1. **Universal Documentation-First Methodology**: **ALL** tasks (simple or complex) MUST begin with a review of relevant project documentation (`docs/`) and the standing rules in `AGENTS.md`. This ensures actions align with the specific git workflows, CI/CD guidelines, and architectural structures defined in the project.
-2. **Mandatory Primary Framework**: The `sequentialthinking` MCP is the **MANDATORY** primary framework for every complex task. It must be used to ensure systematic reasoning, iterative analysis, and self-correction.
-3. **Minimize External Steering**: By autonomously applying the documentation-first methodology and the sequential thinking framework, Kilocode minimizes the need for external steering while maintaining technical excellence.
-4. **Atomic Operations**: Each tool call is an atomic step. Execute one tool at a time and wait for a successful response.
-5. **Schema Adherence**: Always consult the tool's input schema to ensure correct formatting and parameter usage.
+2. **Minimize External Steering**: By autonomously applying the documentation-first methodology, Kilocode minimizes the need for external steering while maintaining technical excellence.
+3. **Atomic Operations**: Each tool call is an atomic step. Execute one tool at a time and wait for a successful response.
+4. **Schema Adherence**: Always consult the tool's input schema to ensure correct formatting and parameter usage.
 
 ## II. Focus and Task Management
 
@@ -39,17 +38,12 @@ For any request that requires multiple steps, changes to several files, or a seq
     * **Tool**: `plan_mode_respond` or `update_todo_list`.
     * **Action**: Present a detailed plan, including a task checklist.
 
-3. **Reasoning & Analysis Framework (MANDATORY for Complex Tasks)**:
-    * **Condition**: Required for all complex problems, architectural decisions, or systematic debugging.
-    * **Tool**: `sequentialthinking`.
-    * **Action**: Break down the problem, hypothesize solutions, and iteratively verify assumptions. Use this as the primary framework for all technical problem-solving.
-
-4. **Execution Cycle (ACT/CODE MODE)**:
+3. **Execution Cycle (ACT/CODE MODE)**:
     * **Action**: Once the user approves the plan and switches to `ACT MODE`, I will execute the steps outlined in the `task_progress` checklist.
     * **Tool**: Any available tool (standard or MCP)
     * **Action**: I will perform the necessary actions to complete each step, updating the `task_progress` checklist with each tool call.
 
-5. **Completion**:
+4. **Completion**:
     * **Condition**: After all steps in the `task_progress` checklist are completed.
     * **Tool**: `attempt_completion`
     * **Action**: I will present the final result of the task to the user, including the completed `task_progress` checklist.
@@ -58,21 +52,7 @@ For any request that requires multiple steps, changes to several files, or a seq
 
 ## III. MCP Tool-Specific Rules & Use Cases
 
-### A. Sequential Thinking
-
-* **Server**: `github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking`
-  * **Tool**: `sequentialthinking`
-  * **Use Case**: For complex problem-solving, planning, and analysis that requires dynamic and reflective thought processes. This tool allows for breaking down problems, generating hypotheses, verifying them, and adapting the approach as understanding deepens.
-  * **Rules**:
-    * Start with an initial estimate of `total_thoughts` but be ready to adjust.
-    * Feel free to question or revise previous thoughts using `isRevision` and `revisesThought`.
-    * Add more thoughts if needed, even after reaching the estimated `total_thoughts`, by setting `nextThoughtNeeded` to `true`.
-    * Express uncertainty and explore alternative approaches.
-    * Mark thoughts that revise previous thinking or branch into new paths.
-    * Generate a solution hypothesis when appropriate and verify it.
-    * Only set `nextThoughtNeeded` to `false` when a satisfactory answer is reached.
-
-### B. Azure Operations
+### A. Azure Operations
 
 * **Server**: `github.com/Azure/azure-mcp`
   * **Use Case**: For managing and interacting with various Azure services and resources. This includes documentation search, Azure Developer CLI (azd) operations, best practices, Kubernetes (AKS), App Configuration, App Service, Authorization, Cosmos DB, Function Apps, Key Vault, Monitor, SQL, Storage, and more.
@@ -84,7 +64,7 @@ For any request that requires multiple steps, changes to several files, or a seq
     * For generating Azure CLI commands, use `extension_cli_generate`.
     * For installing Azure CLI tools, use `extension_cli_install`.
 
-### C. GitHub Operations
+### B. GitHub Operations
 
 * **Server**: `github.com/github/github-mcp-server`
   * **Use Case**: For seamless integration with GitHub repositories, including managing pull requests, issues, files, branches, releases, and user/team information.

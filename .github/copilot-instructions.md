@@ -54,7 +54,6 @@ Troubleshooting notes
 
 Available MCP tools (workspace-configured, in `.vscode/settings.json`)
 - **context7**: Library documentation and knowledge base retrieval — use to look up package docs, API patterns, best practices.
-- **sequentialthinking**: Multi-step problem-solving tool — use for planning complex implementations, validating solutions.
 - **memory**: Persistent knowledge store — use to track project decisions, architectural notes, and ongoing work across sessions.
 - **Sentry (getsentry/sentry-mcp)**: Issue tracking and AI debugging — configured in user `mcp.json` to use `https://mcp.sentry.dev/mcp` with OAuth.
 
