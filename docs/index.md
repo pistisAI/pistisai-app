@@ -9,11 +9,15 @@ Pistisai is a local-first companion and desktop capability layer for agent runti
 ## What It Does
 
 - **Secure Agent Channel** — Connects to your chosen agent runtime (Hermes, OpenClaw, or a compatible custom gateway). The setup wizard selects the runtime — no universal default.
-- **Avatar & Voice Companion** — Persistent personality, evolution state, long-term memory, visual presence, and voice conversation in a sidecar window.
+- **Avatar & Voice Companion (Phase 2)** — Persistent personality, evolution state, long-term memory, visual presence, and voice conversation in a sidecar window. The code is in the app, but it is deferred until chat works well and is not part of the current core scope.
 - **Desktop Control** — Explicit, device-scoped, permissioned, and auditable desktop inspection and operation.
 - **Vision System** — Screenshots, region capture, camera input, and OCR for visual context.
 - **Secure Device Mesh** — Tailscale-first private connectivity across devices, with optional cloud connector containers joined to your tailnet.
 - **Multi-Runtime** — Agent runtime management for Hermes, OpenClaw, and compatible custom gateways.
+
+## Current Scope
+
+The current scope is a universal baseline for any business, not a single sector: local-first chat with business context, business knowledge over your own documents, email triage (a person sends), bookkeeping basics (a person approves), document intake and retrieval, tasks and follow-ups, digests, approval with audit and export/delete, local model routing with explicit cloud consent, and onboarding and admin. Several of these are planned work, not shipped yet; the [Features Guide](user-guide/FEATURES_GUIDE.md#-product-scope) marks what is available today and what is planned.
 
 ## Architecture At a Glance
 

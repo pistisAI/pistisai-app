@@ -6,6 +6,29 @@ Pistisai is a local-first companion shell and desktop capability layer for user-
 
 ---
 
+## 🎯 Product Scope
+
+The current scope is a universal baseline that works for any business. It is not built around one sector. The table shows what the code does today and what is still planned work.
+
+| Capability | Status today |
+|------------|--------------|
+| Local-first chat with business context | **Available:** chat with the selected agent runtime, with conversations stored on the device (section 1). **Planned:** a business profile that gives the agent standing context about your business. |
+| Business knowledge over your own documents | **Planned.** Indexing and searching your own documents is not wired yet. |
+| Email triage (a person sends) | **Planned.** The Admin Center email settings configure outgoing mail for a self-hosted server; they do not read or triage your mailbox. |
+| Bookkeeping basics (a person approves) | **Planned.** The Admin Center financial reports cover the service's own subscriptions, not your bookkeeping. |
+| Document intake and retrieval | **Partly available:** on-demand screen capture and OCR (section 4). **Planned:** taking documents into a searchable local store. |
+| Tasks and follow-ups | **Partly available:** scheduled agent jobs (section 5). **Planned:** a task and follow-up list. |
+| Digests | **Planned.** |
+| Approval, audit, export and delete | **Partly available:** a person approves sensitive actions taken in the app (exporting settings or audit logs, revoking a device); an audit log records agent tool use reported by the runtime, approval decisions and data deletion; local data export and deletion ([LOCAL_DATA_EXPORT_DELETION.md](LOCAL_DATA_EXPORT_DELETION.md)). **Planned:** approval of actions that the agent itself starts. |
+| Local model routing with explicit cloud consent | **Partly available:** the embedded router on port `1337` passes chat to the local Hermes gateway. Cloud model providers (Zhipu, Gemini, Moonshot) are off by default; they need your consent in Settings and an API key set when the app is built. Local model servers (Ollama, LM Studio) are detected during setup. **Planned:** routing requests to a local model first. |
+| Onboarding and admin | **Available:** the setup wizard and the Admin Center (section 9). |
+
+The app does not send email, issue invoices or make payments on your behalf today. When those actions are added, a person will approve each one before it runs.
+
+**Phase 2:** the avatar and voice companion (section 2) are deferred until chat works well. The code described in section 2 is in the app today, but it is not part of the current core scope.
+
+---
+
 ## 🗺️ Application Map
 
 The Pistisai interface is divided into functional modules designed around a secure conversation model:
