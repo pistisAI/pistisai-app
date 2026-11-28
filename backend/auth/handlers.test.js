@@ -1,217 +1,64 @@
-const request = require('supertest');
+'use strict';
 
-const DEV_TOKEN = 'ci-dev-bypass-token-for-tests';
+const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
+const net = require('node:net');
+const path = require('node:path');
+const { describe, it } = require('node:test');
 
-describe('Auth Backend', () => {
-  let app;
-  let originalNodeEnv;
-  let originalDevBypass;
+const handlersPath = path.join(__dirname, 'handlers.js');
+const PORT = '39991';
 
-  beforeAll(() => {
-    originalNodeEnv = process.env.NODE_ENV;
-    originalDevBypass = process.env.DEV_BYPASS_TOKEN;
-    process.env.NODE_ENV = 'development';
-    process.env.DEV_BYPASS_TOKEN = DEV_TOKEN;
-    process.env.AUTH0_DOMAIN =
-      process.env.AUTH0_DOMAIN || 'test.example.auth0.com';
-    process.env.AUTH0_AUDIENCE =
-      process.env.AUTH0_AUDIENCE || 'https://api.example.com';
-    ({ app } = require('./handlers.js'));
-  });
-
-  afterAll(() => {
-    process.env.NODE_ENV = originalNodeEnv;
-    if (originalDevBypass === undefined) {
-      delete process.env.DEV_BYPASS_TOKEN;
-    } else {
-      process.env.DEV_BYPASS_TOKEN = originalDevBypass;
-    }
-  });
-
-  describe('GET /health', () => {
-    it('returns ok status', async () => {
-      const res = await request(app).get('/health');
-      expect(res.status).toBe(200);
-      expect(res.body.status).toBe('ok');
+function portIsOpen(port) {
+  return new Promise((resolve) => {
+    const socket = net.connect({ port: Number(port), host: '127.0.0.1' });
+    socket.once('connect', () => {
+      socket.end();
+      resolve(true);
     });
+    socket.once('error', () => resolve(false));
+  });
+}
+
+describe('quarantined legacy Auth0 backend', () => {
+  it('refuses to load as a module', () => {
+    assert.throws(() => {
+      require(handlersPath);
+    }, /quarantined/);
   });
 
-  describe('GET /api/protected', () => {
-    it('returns 401 without token', async () => {
-      const res = await request(app).get('/api/protected');
-      expect(res.status).toBe(401);
-      expect(res.body.error).toBe('Invalid token');
+  it('exits non-zero when started and does not listen', async () => {
+    const result = spawnSync(process.execPath, [handlersPath], {
+      encoding: 'utf8',
+      timeout: 5000,
+      env: {
+        ...process.env,
+        PORT,
+        NODE_ENV: 'production',
+        AUTH0_DOMAIN: 'test.example.auth0.com',
+        AUTH0_AUDIENCE: 'https://api.example.com',
+        DEV_BYPASS_TOKEN: 'must-not-authenticate',
+      },
     });
 
-    it('accepts DEV_BYPASS_TOKEN in development', async () => {
-      const res = await request(app)
-        .get('/api/protected')
-        .set('Authorization', `Bearer ${DEV_TOKEN}`);
-      expect(res.status).toBe(200);
-      expect(res.body.message).toBe('Protected endpoint');
-      expect(res.body.user_id).toBe('dev-user');
-      expect(res.body.email).toBe('dev@example.com');
-    });
-
-    it('rejects an unrecognized bearer token even in development', async () => {
-      const res = await request(app)
-        .get('/api/protected')
-        .set('Authorization', 'Bearer not-the-configured-bypass');
-      expect(res.status).toBe(401);
-    });
-  });
-});
-
-describe('Brand-driven auth config (whitelabel)', () => {
-  const DEV = 'brand-test-token';
-  const saved = {};
-  const keys = [
-    'NODE_ENV',
-    'DEV_BYPASS_TOKEN',
-    'AUTH_ALLOWED_ORIGINS',
-    'AUTH_ROLE_CLAIM_NAMESPACE',
-    'AUTH0_DOMAIN',
-    'AUTH0_AUDIENCE',
-  ];
-
-  beforeEach(() => {
-    keys.forEach((k) => { saved[k] = process.env[k]; });
-    process.env.NODE_ENV = 'development';
-    process.env.DEV_BYPASS_TOKEN = DEV;
-    process.env.AUTH_ALLOWED_ORIGINS = 'https://brand.example.com,https://www.brand.example.com';
-    process.env.AUTH_ROLE_CLAIM_NAMESPACE = 'https://brand.example.com';
-    process.env.AUTH0_DOMAIN = 'test.example.auth0.com';
-    process.env.AUTH0_AUDIENCE = 'https://api.example.com';
+    assert.strictEqual(result.status, 1);
+    assert.equal(result.signal, null);
+    assert.match(result.stderr, /quarantined/);
+    assert.match(result.stderr, /Cloudflare Access/);
+    assert.match(result.stderr, /services\/api-backend/);
+    assert.doesNotMatch(result.stderr + result.stdout, /listening/i);
+    assert.equal(await portIsOpen(PORT), false);
   });
 
-  afterEach(() => {
-    keys.forEach((k) => {
-      if (saved[k] === undefined) delete process.env[k];
-      else process.env[k] = saved[k];
-    });
-  });
+  it('still refuses to load when Auth0 env vars are unset', () => {
+    const result = spawnSync(
+      process.execPath,
+      ['-e', `require(${JSON.stringify(handlersPath)})`],
+      { encoding: 'utf8', timeout: 5000, env: { PATH: process.env.PATH } },
+    );
 
-  it('allows the brand origin and rejects pistisai.app', async () => {
-    let app;
-    jest.isolateModules(() => { ({ app } = require('./handlers.js')); });
-    const ok = await request(app).get('/health').set('Origin', 'https://brand.example.com');
-    expect(ok.headers['access-control-allow-origin']).toBe('https://brand.example.com');
-    const other = await request(app).get('/health').set('Origin', 'https://pistisai.app');
-    expect(other.headers['access-control-allow-origin']).toBeUndefined();
-  });
-});
-
-describe('Auth0 config fail-closed', () => {
-  const saved = {};
-  const keys = ['AUTH0_DOMAIN', 'AUTH0_AUDIENCE', 'NODE_ENV', 'DEV_BYPASS_TOKEN'];
-
-  beforeEach(() => {
-    keys.forEach((k) => { saved[k] = process.env[k]; });
-  });
-
-  afterEach(() => {
-    keys.forEach((k) => {
-      if (saved[k] === undefined) delete process.env[k];
-      else process.env[k] = saved[k];
-    });
-  });
-
-  it('throws when AUTH0_DOMAIN is missing instead of using a fake domain', () => {
-    delete process.env.AUTH0_DOMAIN;
-    process.env.AUTH0_AUDIENCE = 'https://api.example.com';
-    expect(() => {
-      jest.isolateModules(() => {
-        require('./handlers.js');
-      });
-    }).toThrow(/AUTH0_DOMAIN/);
-  });
-
-  it('throws when AUTH0_AUDIENCE is missing instead of using a fake audience', () => {
-    process.env.AUTH0_DOMAIN = 'test.example.auth0.com';
-    delete process.env.AUTH0_AUDIENCE;
-    expect(() => {
-      jest.isolateModules(() => {
-        require('./handlers.js');
-      });
-    }).toThrow(/AUTH0_AUDIENCE/);
-  });
-});
-
-describe('Development-only behaviour fails closed (#895)', () => {
-  const DEV = 'fail-closed-test-token';
-  const saved = {};
-  const keys = ['NODE_ENV', 'DEV_BYPASS_TOKEN', 'AUTH0_DOMAIN', 'AUTH0_AUDIENCE'];
-
-  beforeEach(() => {
-    keys.forEach((k) => { saved[k] = process.env[k]; });
-    process.env.DEV_BYPASS_TOKEN = DEV;
-    process.env.AUTH0_DOMAIN = 'test.example.auth0.com';
-    process.env.AUTH0_AUDIENCE = 'https://api.example.com';
-  });
-
-  afterEach(() => {
-    keys.forEach((k) => {
-      if (saved[k] === undefined) delete process.env[k];
-      else process.env[k] = saved[k];
-    });
-  });
-
-  const loadHandlers = () => {
-    let mod;
-    jest.isolateModules(() => { mod = require('./handlers.js'); });
-    return mod;
-  };
-
-  const setNodeEnv = (value) => {
-    if (value === undefined) delete process.env.NODE_ENV;
-    else process.env.NODE_ENV = value;
-  };
-
-  it.each([
-    ['unset', undefined],
-    ['empty', ''],
-    ['test', 'test'],
-    ['staging', 'staging'],
-    ['production', 'production'],
-    ['Development (wrong case)', 'Development'],
-  ])('rejects DEV_BYPASS_TOKEN when NODE_ENV is %s', async (_label, value) => {
-    setNodeEnv(value);
-    const { app } = loadHandlers();
-    const res = await request(app)
-      .get('/api/protected')
-      .set('Authorization', `Bearer ${DEV}`);
-    expect(res.status).toBe(401);
-    expect(res.body.user_id).toBeUndefined();
-  });
-
-  const runErrorHandler = (errorHandler, err) => {
-    const res = {
-      statusCode: undefined,
-      body: undefined,
-      status(code) { this.statusCode = code; return this; },
-      json(payload) { this.body = payload; return this; },
-    };
-    errorHandler(err, {}, res, () => {});
-    return res;
-  };
-
-  it.each([
-    ['unset', undefined],
-    ['test', 'test'],
-    ['production', 'production'],
-  ])('hides internal error details when NODE_ENV is %s', (_label, value) => {
-    setNodeEnv(value);
-    const { errorHandler } = loadHandlers();
-    const res = runErrorHandler(errorHandler, new Error('internal detail'));
-    expect(res.statusCode).toBe(500);
-    expect(res.body.error).toBe('Internal server error');
-  });
-
-  it('shows internal error details only when NODE_ENV is exactly development', () => {
-    setNodeEnv('development');
-    const { errorHandler } = loadHandlers();
-    const res = runErrorHandler(errorHandler, new Error('detailed message'));
-    expect(res.statusCode).toBe(500);
-    expect(res.body.error).toBe('detailed message');
+    assert.notStrictEqual(result.status, 0);
+    assert.match(result.stderr, /quarantined/);
+    assert.match(result.stderr, /services\/api-backend/);
   });
 });

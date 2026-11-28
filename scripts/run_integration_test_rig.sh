@@ -148,7 +148,7 @@ fi
 
 if [[ "$RUN_DESKTOP" == "true" ]]; then
   test_rig_log_info "Running Linux integration tests (host → localhost:1337)..."
-  # Same suite as the CI rig (integration-test-rig.yml).
+  # Local integration suite; no hosted CI workflow runs this.
   if "$FLUTTER_BIN" test test/integration/ --reporter expanded --dart-define=BRAND=pistisai; then
     test_rig_log_ok "Desktop integration tests passed."
   else

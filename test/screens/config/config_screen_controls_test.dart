@@ -106,8 +106,10 @@ void main() {
       await pumpConfig(tester);
       expect(find.text('Preferred Support Provider'), findsNothing);
       expect(find.text('Concurrent Requests'), findsNothing);
-      // Auto-restart is read by GatewayControlService, so it stays.
-      expect(find.byType(SwitchListTile), findsOneWidget);
+      // Auto-restart only drove the OpenClaw CLI, which no longer runs, so
+      // the switch is hidden until a Hermes restart path reads it (#1042).
+      expect(find.text('Auto-restart Runtime on Failure'), findsNothing);
+      expect(find.byType(SwitchListTile), findsNothing);
     });
 
     testWidgets('app tab hides security, language and developer controls',

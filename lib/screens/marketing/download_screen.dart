@@ -7,7 +7,9 @@ import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
 
 import '../../config/app_config.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/github_release_service.dart';
+import '../../services/hardware/local_model_capability.dart';
 
 /// Download screen - web-only marketing page
 /// Comprehensive installation guide for Linux distributions
@@ -340,6 +342,14 @@ class DownloadScreen extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context).downloadLocalModelRequirement(
+                LocalModelThresholds.recommendedTotalMemoryGiB,
+              ),
+              key: const Key('download_local_model_requirement'),
+              style: TextStyle(color: AppTheme.colorsOf(context).textColor),
+            ),
             const SizedBox(height: 16),
             Text(
               'For System Tray Support:',
@@ -409,7 +419,7 @@ sudo apt-get install -f''',
       context,
       title: '📦 AppImage (Universal Linux)',
       description:
-          'Portable application that runs on any Linux distribution. No installation required — just download, make executable, and run.',
+          '${BrandCopy.localHardwarePromise} Portable — no installation required — just download, make executable, and run.',
       child: _buildInstallationSection(
         context,
         'Download and run',

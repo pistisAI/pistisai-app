@@ -25,8 +25,7 @@ export default {
     "/node_modules/",
     "/dist/",
     "/\\.kilo/",
-    // Auth backend tests require live Auth0 JWKS (mock can't replicate express-jwt's full error flow)
-    "test/backend/auth\\.test\\.js$",
+    // test/backend/auth.test.js stays in the suite: it asserts the Auth0 handler is quarantined.
     "tunnel-lifecycle\\.test\\.js$",
     "tunnel-health-tracking\\.test\\.js$",
     "tunnel-properties\\.test\\.js$",

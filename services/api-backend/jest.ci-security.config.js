@@ -45,6 +45,9 @@ export default {
     '**/test/api-backend/client-logs-bounds.test.js',
     '**/test/api-backend/user-data-purge.test.js',
     '**/test/api-backend/mask-email-logs.test.js',
+    // Follow-up for #1022: auth-service email masking and security_events
+    // details (no user_id column; cleared on hard delete).
+    '**/test/api-backend/security-event-details.test.js',
   ],
   testPathIgnorePatterns: [
     ...base.testPathIgnorePatterns,

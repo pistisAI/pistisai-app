@@ -2,7 +2,7 @@
 
 ## Overview
 
-The API backend implements a comprehensive RBAC system that correlates user roles with granular permissions. Access is validated via JWT Bearer tokens, with roles assigned based on Auth0 metadata or user tier.
+The API backend implements a comprehensive RBAC system that correlates user roles with granular permissions. Access is validated via JWT Bearer tokens, with roles assigned based on Cloudflare Access claims or user tier.
 
 ---
 

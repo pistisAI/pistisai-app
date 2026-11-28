@@ -909,6 +909,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agentDetailInformation => 'Information';
 
   @override
+  String get agentControlNotAvailable =>
+      'Agent control is not available for this runtime yet';
+
+  @override
   String get agentDetailId => 'ID';
 
   @override
@@ -2220,9 +2224,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.';
 
   @override
-  String get configRequestPolicy => 'Runtime Request Policy';
-
-  @override
   String get configWindow => 'Window';
 
   @override
@@ -2235,9 +2236,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get configNotAvailableYetNote =>
       'Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.';
-
-  @override
-  String get configAutoRestart => 'Auto-restart Runtime on Failure';
 
   @override
   String get configAppearance => 'Appearance';
@@ -3671,6 +3669,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign in to see registered agents.';
 
   @override
+  String get authCallbackRejected =>
+      'Sign-in was not completed: the sign-in link is invalid, expired, or was not started from this app. Start sign-in again from the app.';
+
+  @override
+  String get authCallbackDifferentAccount =>
+      'This sign-in link is for a different account. Your current session was kept. Sign out, then start sign-in again from the app to switch accounts.';
+
+  @override
   String get agentsRegistryForbidden =>
       'Your account is not allowed to view the agent registry.';
 
@@ -3711,4 +3717,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminEmailSaveNotAvailableButton => 'Save (not available yet)';
+
+  @override
+  String get cloudServicesTitle => 'Cloud services';
+
+  @override
+  String cloudServicesSubtitleDefault(String product) {
+    return 'Off by default. While off, nothing is sent to the $product cloud service.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnRegistered(String product) {
+    return 'On. This device is registered with the $product cloud service. Brain sync and chat history use it from their next sync.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnPending(String product) {
+    return 'On. Brain sync and chat history use the $product cloud service from their next sync. Device registration has not completed; the app tries again the next time it starts.';
+  }
+
+  @override
+  String cloudServicesSubtitleOff(String product) {
+    return 'Off. Nothing more is sent to the $product cloud service. Data already uploaded stays on the server: turning this off does not delete it.';
+  }
+
+  @override
+  String get cloudServicesSaveFailed =>
+      'Could not save this setting. Nothing was changed.';
+
+  @override
+  String get cloudServicesDialogTitle => 'Turn on cloud services?';
+
+  @override
+  String cloudServicesDialogIntro(String product) {
+    return 'While this is on, the app sends the following to the $product cloud service:';
+  }
+
+  @override
+  String get cloudServicesDialogDeviceRegistration =>
+      'Device registration and a heartbeat every 2 minutes: this device\'s ID, name, platform and app version.';
+
+  @override
+  String get cloudServicesDialogBrainSync =>
+      'Brain sync every 5 minutes: agent activity events and pending record changes stored on this device are uploaded, and recent events are downloaded.';
+
+  @override
+  String get cloudServicesDialogChatHistory =>
+      'Chat history, while you are signed in: your conversations and their messages are uploaded, and conversations saved on the server are downloaded.';
+
+  @override
+  String get cloudServicesDialogWebNote =>
+      'In the web app, a signed-in user\'s chat history is stored on the server whether or not this is on.';
+
+  @override
+  String get cloudServicesDialogOutro =>
+      'You can turn this off at any time. Turning it off stops new uploads; it does not delete data already uploaded.';
+
+  @override
+  String get cloudServicesDialogCancel => 'Cancel';
+
+  @override
+  String get cloudServicesDialogConfirm => 'Turn on';
+
+  @override
+  String get localModelCheckChecking =>
+      'Checking whether this computer can host a local model...';
+
+  @override
+  String get localModelCheckSufficientTitle =>
+      'This computer can host a local model';
+
+  @override
+  String get localModelCheckSufficientBody =>
+      'Your agent runtime and its local model can run here.';
+
+  @override
+  String get localModelCheckInsufficientTitle =>
+      'This computer may not have enough hardware for a local model';
+
+  @override
+  String get localModelCheckInsufficientBody =>
+      'You can still use the app here: the model can run on a local machine we provide, or on another computer you choose.';
+
+  @override
+  String get localModelCheckUnknownTitle => 'Hardware check not available';
+
+  @override
+  String localModelCheckUnknownBody(int recommendedGb) {
+    return 'A local model needs about $recommendedGb GB of memory. If this computer has less, the model can run on a local machine we provide.';
+  }
+
+  @override
+  String get localModelReasonUnsupportedPlatform =>
+      'Hardware detection is not available on this platform.';
+
+  @override
+  String get localModelReasonProbeFailed =>
+      'The hardware check did not return a result.';
+
+  @override
+  String localModelReasonUnsupportedArchitecture(String architecture) {
+    return 'Processor architecture $architecture is not supported for local models.';
+  }
+
+  @override
+  String localModelReasonBelowMinimum(
+      String memoryGb, int minimumGb, int recommendedGb) {
+    return 'Detected $memoryGb GB of memory. A local model needs at least $minimumGb GB, and $recommendedGb GB is recommended.';
+  }
+
+  @override
+  String localModelReasonMiddleZone(String memoryGb, int recommendedGb) {
+    return 'Detected $memoryGb GB of memory. Below $recommendedGb GB, a local model only fits when a local model provider such as Ollama or LM Studio is already running on this computer.';
+  }
+
+  @override
+  String localModelReasonMiddleZoneProvider(String memoryGb, String providers) {
+    return 'Detected $memoryGb GB of memory and a running local model provider: $providers.';
+  }
+
+  @override
+  String localModelReasonMiddleZoneGpu(String memoryGb, String gpuMemoryGb) {
+    return 'Detected $memoryGb GB of memory and a GPU with $gpuMemoryGb GB of video memory.';
+  }
+
+  @override
+  String localModelReasonMeetsRecommended(
+      String memoryGb, String architecture) {
+    return 'Detected $memoryGb GB of memory ($architecture).';
+  }
+
+  @override
+  String localModelReasonProviderReachable(String providers) {
+    return 'Memory could not be read, but a local model provider is already running on this computer: $providers.';
+  }
+
+  @override
+  String get localModelArchitectureUnknown => 'architecture not detected';
+
+  @override
+  String downloadLocalModelRequirement(int recommendedGb) {
+    return 'Running a local model on the same computer needs about $recommendedGb GB of memory. With less, the app can use a local machine we provide to run the model.';
+  }
 }

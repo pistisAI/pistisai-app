@@ -18,6 +18,10 @@ on:
 
 env:
   PLATFORMS: ${{ inputs.platforms || 'linux,windows,macos' }}
+  # workflow_run: the Web Deploy commit. Tag push: that tag. Dispatch on
+  # main: that main SHA. Anything else stays on main and the analyze job
+  # refuses a non-main dispatch before it builds.
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha || (github.ref_type == 'tag' && github.sha) || (github.ref_name == 'main' && github.sha) || 'main' }}
 
 concurrency:
   group: desktop-build-${{ github.ref }}
@@ -39,9 +43,16 @@ jobs:
       version: ${{ steps.read.outputs.version }}
       platforms: ${{ steps.platforms.outputs.platforms }}
     steps:
+      - name: Refuse a non-main dispatch
+        if: github.event_name == 'workflow_dispatch' && github.ref_name != 'main'
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          echo "::error::Desktop release accepts workflow_dispatch only on main. Selected ref: ${REF_NAME}."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: main
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  # v2
         with:
@@ -84,7 +95,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: main
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -146,8 +157,10 @@ jobs:
 
       - name: Generate Installer Script
         run: |
-          chmod +x scripts/packaging/build_installer.sh || true
-          ./scripts/packaging/build_installer.sh || echo "Installer script skipped"
+          set -euo pipefail
+          chmod +x scripts/packaging/build_installer.sh
+          ./scripts/packaging/build_installer.sh
+          test -s dist/linux/install.sh
 
       - name: Upload Linux Bundles
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7
@@ -168,7 +181,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: main
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -217,7 +230,7 @@ jobs:
               ISCC=$(find /c/ProgramData/chocolatey -name "ISCC.exe" 2>/dev/null | head -1)
             fi
             if [ -f "$ISCC" ]; then
-              "$ISCC" windows/installer/Pistisai.iss
+              "$ISCC" //DMyAppVersion="${VERSION}" windows/installer/Pistisai.iss
               echo "✅ Installer built"
             else
               echo "ISCC not found" >&2
@@ -252,7 +265,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: main
+          ref: ${{ env.SOURCE_SHA }}
           submodules: recursive
 
       - name: Ensure cnativeapi native sources
@@ -306,14 +319,16 @@ jobs:
       always() &&
       needs.build_linux.result == 'success' &&
       needs.build_windows.result == 'success' &&
-      (needs.build_macos.result == 'success' || needs.build_macos.result == 'skipped')
+      (needs.build_macos.result == 'success' || needs.build_macos.result == 'skipped' ||
+       needs.build_macos.result == 'failure' || needs.build_macos.result == 'cancelled')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: main
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
 
       - name: Download all artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8
@@ -324,16 +339,17 @@ jobs:
 
       - name: Organize artifacts for release
         run: |
+          set -euo pipefail
           mkdir -p release-assets
           if [ -d "linux-bundles" ]; then
-            cp linux-bundles/* release-assets/ 2>/dev/null || true
+            cp -a linux-bundles/. release-assets/
           fi
           if [ -d "macos-bundles" ]; then
-            cp macos-bundles/* release-assets/ 2>/dev/null || true
+            cp -a macos-bundles/. release-assets/
           fi
           if [ -d "windows-bundles" ]; then
             find windows-bundles -type f \( -name "*Setup*.exe" -o -name "*portable*.zip" \) \
-              -exec cp {} release-assets/ \; 2>/dev/null || true
+              -exec cp -t release-assets {} +
           fi
           ls -lh release-assets/
 
@@ -396,14 +412,28 @@ jobs:
           } > release-notes.md
           cat release-notes.md
 
+      - name: Compute release tag
+        id: release_tag
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          if [ "$REF_TYPE" = "tag" ]; then
+            printf 'tag=%s\n' "$REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            printf 'tag=v%s+%s\n' "$VERSION" "$RUN_NUMBER" >> "$GITHUB_OUTPUT"
+          fi
+
       # The repository uses immutable releases: assets cannot be added once a
       # release is published. Create it as a draft, upload, then publish.
       - name: Create draft release with assets
         uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd  # v1
         with:
           artifacts: "release-assets/*"
-          tag: "v${{ env.VERSION }}+${{ github.run_number }}"
-          commit: ${{ github.sha }}
+          tag: ${{ steps.release_tag.outputs.tag }}
+          commit: ${{ env.SOURCE_SHA }}
           name: "Pistisai v${{ env.VERSION }}"
           draft: true
           artifactErrorsFailBuild: true
@@ -415,14 +445,14 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: v${{ env.VERSION }}+${{ github.run_number }}
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
         run: gh release edit "$RELEASE_TAG" --repo "${{ github.repository }}" --draft=false --latest
 
       - name: Verify GitHub release assets published
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          RELEASE_TAG: v${{ env.VERSION }}+${{ github.run_number }}
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
           VERSION: ${{ env.VERSION }}
           RETRY_ATTEMPTS: 12
           RETRY_DELAY_SECONDS: 10

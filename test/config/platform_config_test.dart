@@ -91,11 +91,10 @@ void main() {
       );
     });
 
-    test('Android build default scheme is the brand scheme', () {
-      expect(
-        _read('android/app/build.gradle'),
-        contains("getProperty('auth0_scheme', '$scheme')"),
-      );
+    test('Android build does not read unused Auth0 brand keys', () {
+      final gradle = _read('android/app/build.gradle');
+      expect(gradle, isNot(contains('auth0_scheme')));
+      expect(gradle, isNot(contains('auth0_domain')));
     });
 
     test('Windows installer registers the brand scheme', () {

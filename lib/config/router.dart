@@ -140,12 +140,18 @@ bool _isMarketingPath(String location) {
       location == '/docs';
 }
 
-/// Helper to check for OAuth callback parameters (Access/generic)
-bool _hasCallbackParameters(Uri uri) {
+/// Helper to check for authentication callback parameters.
+///
+/// Cloudflare Access returns the signed JWT as `cf_jwt` (or the generic
+/// `token` alias), while legacy OAuth flows use `code`/`state`/`error`.
+/// All of them must reach `/callback` or sign-in cannot complete (#852).
+bool hasCallbackParameters(Uri uri) {
   return uri.queryParameters.containsKey('code') ||
       uri.queryParameters.containsKey('state') ||
       uri.queryParameters.containsKey('error') ||
-      uri.queryParameters.containsKey('error_description');
+      uri.queryParameters.containsKey('error_description') ||
+      uri.queryParameters.containsKey('cf_jwt') ||
+      uri.queryParameters.containsKey('token');
 }
 
 /// Application router configuration using GoRouter
@@ -162,7 +168,7 @@ class AppRouter {
     String initialLocation = '/';
     if (kIsWeb) {
       final currentUri = Uri.base;
-      if (_hasCallbackParameters(currentUri)) {
+      if (hasCallbackParameters(currentUri)) {
         AppConfig.verboseLog(
             '[Router] Initial URL has callback parameters, forcing /callback');
         initialLocation = '/callback?${currentUri.query}';
@@ -431,8 +437,8 @@ class AppRouter {
 
         final location = state.matchedLocation;
         final isCallback = location == AppRoutePaths.callback;
-        final hasCallbackParams = _hasCallbackParameters(state.uri) ||
-            (kIsWeb && _hasCallbackParameters(Uri.base));
+        final hasCallbackParams = hasCallbackParameters(state.uri) ||
+            (kIsWeb && hasCallbackParameters(Uri.base));
         if (hasCallbackParams && !isCallback && kIsWeb) {
           AppConfig.verboseLog(
               '[Router] Redirecting to /callback to process params');

@@ -33,13 +33,18 @@ jobs:
       contents: read
       packages: write
       actions: write
+    outputs:
+      pushed: ${{ steps.changes.outputs.pushed }}
     if: >-
       github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
-          ref: main
+          # workflow_run's github.sha is the default-branch tip, not the
+          # commit Web Deploy built. head_sha is that commit; other events
+          # leave it empty and fall through to github.sha.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
 
       - name: Set up Docker Buildx
@@ -64,6 +69,8 @@ jobs:
 
       - name: Detect images to build
         id: changes
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           echo "Event: ${{ github.event_name }}"
@@ -88,7 +95,7 @@ jobs:
             build_postgres=true
           else
             echo "Unknown trigger, falling back to diff against HEAD^ HEAD"
-            DIFF_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null || echo "")
+            DIFF_FILES=$(git diff --name-only HEAD^ HEAD)
             if echo "$DIFF_FILES" | grep -qE "services/api-backend/|config/docker/Dockerfile.api-backend"; then
               build_api=true
             fi
@@ -100,10 +107,18 @@ jobs:
             fi
           fi
 
+          pushed=false
+          if [ "$REF_NAME" = "main" ]; then
+            if [ "$build_api" = true ] || [ "$build_proxy" = true ] || [ "$build_postgres" = true ]; then
+              pushed=true
+            fi
+          fi
+
           echo "api_backend=$build_api" >> "$GITHUB_OUTPUT"
           echo "streaming_proxy=$build_proxy" >> "$GITHUB_OUTPUT"
           echo "postgres=$build_postgres" >> "$GITHUB_OUTPUT"
-          echo "api-backend=$build_api streaming-proxy=$build_proxy postgres=$build_postgres"
+          echo "pushed=$pushed" >> "$GITHUB_OUTPUT"
+          echo "api-backend=$build_api streaming-proxy=$build_proxy postgres=$build_postgres pushed=$pushed"
 
       - name: Build api-backend
         if: steps.changes.outputs.api_backend == 'true'
@@ -160,13 +175,13 @@ jobs:
         run: echo "✅ Backend images built"
   # AGENTS.md: every deploy runs a full-zone Cloudflare cache purge, and the
   # deploy fails if the purge fails. Same secrets and fail-closed logic as
-  # purge_cache in deploy-web.yml. Runs only when images were pushed (ref main);
-  # builds on other refs load images locally and push nothing.
+  # purge_cache in deploy-web.yml. Runs only when this job pushed images.
+  # A dispatch that builds nothing does not purge.
   # Known gap (as in deploy-web.yml): the host still pulls the images by hand,
   # so this purge can run before the host serves them; re-run if it deploys late.
   purge_cache:
     needs: [build_images]
-    if: github.ref_name == 'main'
+    if: needs.build_images.outputs.pushed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:

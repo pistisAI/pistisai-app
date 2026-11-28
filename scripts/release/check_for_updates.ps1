@@ -4,13 +4,65 @@
 # Parse command line arguments
 param (
     [switch]$Silent,
-    [switch]$AutoInstall
+    [switch]$AutoInstall,
+    [string]$RepoOwner,
+    [string]$RepoName,
+    [switch]$PrintRepository
 )
 
-# GitHub repository information
-$repoOwner = "iacle-solutions"
-$repoName = "Pistisai"
+# Upstream repository. A rebrand overrides -RepoOwner/-RepoName or
+# PISTISAI_GITHUB_OWNER / PISTISAI_GITHUB_REPO, or sets BRAND so
+# repository_label in brand/<id>/brand.yaml supplies owner/repo.
+# See docs/WHITE_LABEL.md. When this script runs outside the repository,
+# set the environment variables; the brand file is optional.
+function Resolve-PistisaiGitHubRepository {
+    param(
+        [string]$Owner,
+        [string]$Name
+    )
+
+    if (-not $Owner) { $Owner = $env:PISTISAI_GITHUB_OWNER }
+    if (-not $Name) { $Name = $env:PISTISAI_GITHUB_REPO }
+
+    $slug = '^[A-Za-z0-9_.-]+$'
+    # Drop a value that is not a slug before the brand file is read.
+    # A rejected owner must not stay "set" and leave only the brand's
+    # repository name, which would pair pistisAI with that other repo.
+    if ($Owner -and $Owner -notmatch $slug) { $Owner = $null }
+    if ($Name -and $Name -notmatch $slug) { $Name = $null }
+
+    if ((-not $Owner) -or (-not $Name)) {
+        $brandId = if ($env:BRAND) { $env:BRAND } else { 'pistisai' }
+        if ($brandId -match '^[A-Za-z0-9_-]+$') {
+            $brandFile = Join-Path $PSScriptRoot "..\..\brand\$brandId\brand.yaml"
+            if (Test-Path -LiteralPath $brandFile) {
+                $match = Select-String -LiteralPath $brandFile -Pattern '^repository_label:\s*[''"]?([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)' | Select-Object -First 1
+                if ($match) {
+                    if (-not $Owner) { $Owner = $match.Matches[0].Groups[1].Value }
+                    if (-not $Name) { $Name = $match.Matches[0].Groups[2].Value }
+                }
+            }
+        }
+    }
+
+    if (-not $Owner) { $Owner = 'pistisAI' }
+    if (-not $Name) { $Name = 'pistisai-app' }
+
+    return [pscustomobject]@{
+        Owner = $Owner
+        Name  = $Name
+    }
+}
+
+$resolvedRepository = Resolve-PistisaiGitHubRepository -Owner $RepoOwner -Name $RepoName
+$repoOwner = $resolvedRepository.Owner
+$repoName = $resolvedRepository.Name
 $apiUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/latest"
+
+if ($PrintRepository) {
+    Write-Output "$repoOwner/$repoName"
+    return
+}
 
 # Registry settings
 $registryPath = "HKCU:\Software\Pistisai\Updates"
@@ -224,5 +276,7 @@ function Main {
     }
 }
 
-# Run the main function with parameters
-Main -Silent:$Silent -AutoInstall:$AutoInstall
+# Run the main function when executed, not when dot-sourced.
+if ($MyInvocation.InvocationName -ne '.') {
+    Main -Silent:$Silent -AutoInstall:$AutoInstall
+}

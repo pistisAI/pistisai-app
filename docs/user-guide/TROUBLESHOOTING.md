@@ -207,7 +207,7 @@ Cloud features are optional. Local runtime use should remain possible without au
 - Check system time and timezone.
 - Clear browser cookies for the app domain on web.
 - Confirm OS credential storage is available on desktop.
-- Check Auth0 status if account-backed features are down.
+- Check Cloudflare Access status if account-backed features are down.
 
 ---
 

@@ -20,7 +20,7 @@ Services in this directory follow these patterns:
 
 - **Purpose**: Authentication and authorization management
 - **Features**:
-  - Auth0 OAuth2 integration
+  - Cloudflare Access authentication
   - JWT token management with automatic refresh
   - Secure token storage via flutter_secure_storage
   - User session management
@@ -160,7 +160,7 @@ void _setupDio() {
 
 ## Authentication Flow
 
-1. User initiates login → Auth0 OAuth flow
+1. User initiates login → Cloudflare Access login flow
 2. Callback handled by `/callback` route
 3. JWT tokens stored in flutter_secure_storage
 4. AuthService notifies listeners of auth state change

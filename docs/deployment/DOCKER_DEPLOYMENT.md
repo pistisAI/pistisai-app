@@ -57,7 +57,7 @@ The `config/docker/docker-compose.web.yml` healthcheck is `curl -f http://localh
 
 ## Authentication
 
-Sign-in uses Cloudflare Access for the free tunnel path (`CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`), with a JWT returned on the callback and validated by `services/api-backend/middleware/auth.js` and `services/streaming-proxy/src/middleware/cloudflare-access-validator.ts`. Local-only use needs no sign-in. See [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md), not the old Google OAuth guide.
+Sign-in uses Cloudflare Access for the free tunnel path (`CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`), with a JWT returned on the callback and validated by `services/api-backend/middleware/auth.js`. The streaming-proxy image runs `proxy-server.js`, which validates no token itself (`services/streaming-proxy/src/middleware/cloudflare-access-validator.ts` is not run by that image), so Cloudflare Access must sit in front of its route. Local-only use needs no sign-in. See [Authentication Quick Reference](../development/AUTHENTICATION_QUICK_REFERENCE.md), not the old Google OAuth guide.
 
 ## Management commands
 

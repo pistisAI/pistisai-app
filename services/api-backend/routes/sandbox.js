@@ -20,6 +20,17 @@ import { sandboxService } from '../services/sandbox-service.js';
 const router = express.Router();
 router.use(authenticateJWT);
 
+// Handlers gate on req.isSandbox. The server does not set that flag; sandbox
+// mode is SANDBOX_MODE=true or NODE_ENV=sandbox (see SandboxService.isSandbox).
+// Copy the live flag onto the request after auth so an anonymous caller still
+// gets 401 instead of a sandbox-disabled response.
+router.use((req, _res, next) => {
+  if (typeof req.isSandbox !== 'boolean') {
+    req.isSandbox = sandboxService.isSandbox();
+  }
+  next();
+});
+
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(

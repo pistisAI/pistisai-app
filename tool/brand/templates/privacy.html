@@ -48,7 +48,7 @@
     <header>
       <p class="brand">{{product_name}}</p>
       <h1>Privacy Policy</h1>
-      <p class="meta">Last updated: 10 November 2026 &middot; Effective: 10 November 2026</p>
+      <p class="meta">Last updated: 28 November 2026 &middot; Effective: 28 November 2026</p>
     </header>
 
     <p>
@@ -88,8 +88,13 @@
     </p>
     <ul>
       <li>your email address;</li>
-      <li>an account identifier issued by Cloudflare Access.</li>
+      <li>an account identifier issued by Cloudflare Access;</li>
+      <li>when Cloudflare Access provides them for your sign-in method: your name, nickname, profile
+        picture link, language setting (locale) and whether your email address is verified.</li>
     </ul>
+    <p>
+      Signing in also creates session, security and activity records on our server (section 2.7).
+    </p>
     <p>
       When you use the web app while signed in, or turn on cloud services on desktop or mobile, we
       also store your conversations (section 2.2).
@@ -122,10 +127,23 @@
       conversation itself.
     </p>
     <p>
+      <strong>Cloud services switch.</strong> Device registration, brain sync and chat history sync
+      with our cloud service happen only after you turn on <strong>Settings &rarr; General &rarr;
+      &ldquo;Cloud services&rdquo;</strong> and confirm. The switch is off by default. While it is on,
+      the app sends:
+    </p>
+    <ul>
+      <li>device registration and a heartbeat every 2 minutes: this device&rsquo;s ID, name, platform and app version;</li>
+      <li>brain sync every 5 minutes: agent activity events and pending record changes stored on this device are uploaded, and recent events are downloaded;</li>
+      <li>chat history, while you are signed in: your conversations and their messages are uploaded, and conversations saved on our server are downloaded.</li>
+    </ul>
+    <p>
+      Turning the switch off stops new uploads but does not delete data already on our server.
+    </p>
+    <p>
       <strong>Chat history on our server.</strong> On desktop and mobile, the app sends your
-      conversations to our server only when you are signed in <strong>and</strong> cloud services are
-      turned on. Cloud services are off by default, and the app does not yet have a setting to turn them
-      on, so today desktop and mobile chat history is not sent to our server. The web app has no chat
+      conversations to our server only when you are signed in <strong>and</strong> the Cloud services
+      switch is on. The web app has no chat
       store in the browser: while you are signed in to the web app, your conversations, including the
       text of every message, are stored on our server so that you can see them again. Conversations
       stored on our server are kept until they are deleted. The app does not yet offer a control to
@@ -198,6 +216,44 @@
       clears its temp directory or you delete your local data, which removes the whole folder.
     </p>
 
+    <h3>2.7 Records our server keeps when you sign in</h3>
+    <p>
+      This section applies only to the optional sign-in and cloud service. Nothing here is collected
+      while you use the app without signing in.
+    </p>
+    <ul>
+      <li><strong>Sessions.</strong> Each signed-in session is recorded in our database with a random
+        session identifier, a hash of your sign-in token, its expiry time, the time of your last
+        activity, your IP address and the user agent of your browser or app. The app can also copy its
+        sign-in tokens (access, ID and refresh token) into that session record so that it can read them
+        back from the server. These tokens are stored as the app sends them; the database does not
+        encrypt them separately. They are used only to restore your signed-in session. The server
+        deletes sessions after they expire (it checks every 15 minutes) and keeps a limited number of
+        active sessions per account; a session you sign out of is marked inactive and deleted when it
+        expires.</li>
+      <li><strong>Security and activity records.</strong> The sign-in audit log, security events (for
+        example a refused sign-in), account activity records and access to shared tunnels record your
+        IP address and user agent with each event. Security event details store email addresses masked
+        and without tokens.</li>
+      <li><strong>Server logs.</strong> The server&rsquo;s request log records the address of each
+        request (with session tokens and credential-like query values removed), your account
+        identifier, your IP address and your user agent. Log lines about sign-in, administration and
+        email sending mask email addresses. In production these log files are rotated by size (at most
+        five files of 10 MB each). Web-app log lines (section 2.3) go to a separate file capped at
+        10 MB, with one older file kept.</li>
+      <li><strong>No automatic purge period yet.</strong> Apart from expired sessions and the log size
+        limits above, no automatic deletion period is set for these records. They are kept until they
+        are deleted on request or when your account is deleted (section 7).</li>
+      <li><strong>Server error reporting.</strong> Separately from the app&rsquo;s &ldquo;Send crash
+        reports&rdquo; switch, our servers send their own error reports to Sentry when the operator of
+        the server configures a Sentry key (<code>SENTRY_DSN</code>). Your crash-report switch does not
+        turn this off. These reports contain server errors, some server log messages and performance
+        traces for a sample of requests, and can include your account identifier and the address of the
+        request. They are configured not to attach user details, cookies, request or response bodies,
+        database query data, or forwarding and client-IP headers; other request headers can be
+        included. An email address placed in a report&rsquo;s user data is removed, and authorization
+        errors and 401, 403 and 404 responses are not reported.</li>
+    </ul>
     <h2>3. How we use information</h2>
     <ul>
       <li>to authenticate you and secure your account;</li>
@@ -226,7 +282,7 @@
     <h2>5. How we store and protect your information</h2>
     <ul>
       <li><strong>On-device:</strong> app content is stored locally on your machine. Desktop and mobile encrypt <code>local_brain.sqlite</code> with AES-256 (SQLCipher-compatible) and chat history (<code>conversations.json.enc</code>) with AES-256, with keys in the operating system keystore; also protect the volume with your operating system&rsquo;s disk encryption. The Android app opts out of Android system backup, so its data is not copied to cloud backups or to another device during transfer.</li>
-      <li><strong>Authentication:</strong> sign-in is handled by Cloudflare Access; our service stores your email address and account identifier.</li>
+      <li><strong>Authentication:</strong> sign-in is handled by Cloudflare Access; our service stores your email address, account identifier and the profile fields listed in section 2.1, plus the session records in section 2.7. Sign-in tokens copied to a session record are stored as sent, not encrypted in the database.</li>
       <li><strong>Chat history on our server:</strong> conversations from the web app while you are signed in, and from desktop and mobile only with cloud services on, are stored in our database, including message text. They are not end-to-end encrypted.</li>
       <li><strong>In transit:</strong> connections to first-party services use encrypted transport (HTTPS/TLS). Private device-to-device connectivity is available via Tailscale.</li>
       <li><strong>Local hub access:</strong> the desktop hub listens only on this computer by default. If you turn on &ldquo;Remote hub access&rdquo; in Settings &rarr; Connections, it also accepts devices on your local network or tailnet; that access is off until you enable it and requires a bearer token for every private endpoint.</li>
@@ -241,7 +297,7 @@
     <ul>
       <li><strong>Cloudflare</strong> — to authenticate you when you sign in (Cloudflare Access);</li>
       <li><strong>Google or GitHub</strong> — only if you choose to sign in with that account;</li>
-      <li><strong>Error diagnostics (Sentry)</strong> — crash reports, only if you turn crash reporting on;</li>
+      <li><strong>Error diagnostics (Sentry)</strong> — crash reports from the app, only if you turn crash reporting on; error reports from our servers when the server operator configures Sentry (section 2.7);</li>
       <li><strong>Microsoft speech service</strong> — only when you enable Microsoft online speech, the text of replies read aloud with that online voice;</li>
       <li><strong>Optional cloud model providers (Zhipu, Moonshot, Google Gemini)</strong> — only when you enable cloud LLM providers, a build includes their API key, and you use that provider;</li>
       <li><strong>Runtimes and providers you choose</strong> — only the data you direct {{product_name}} to send to them.</li>
@@ -261,6 +317,18 @@
       address below; we will delete such data unless we are required to retain it by law (provider
       processing target: within a few hours of a verified request).
     </p>
+    <p>
+      Account data on our server is deleted by us on request; the app does not yet offer a
+      self-service control. For a deletion request we use the server&rsquo;s full deletion, which in
+      one step removes your account record, your sessions (including any stored sign-in tokens),
+      subscriptions, conversations and their messages, preferences, usage and activity records, and
+      tunnel records and their access logs. Security audit records (the general audit log and the
+      sign-in audit log) are kept for abuse investigation, but the link to you is removed: the user
+      identifier, IP address, user agent and details are cleared. Security events that name your
+      account identifier or email address keep only the event type and time. No automatic retention
+      period is defined yet for server records other than expired sessions and the log size limits in
+      section 2.7.
+    </p>
 
     <h2>8. Your rights and choices</h2>
     <ul>
@@ -271,7 +339,7 @@
       <li>cloud model providers (Zhipu, Moonshot, Gemini) are absent unless a build includes their API keys; when present, only prompts you route to that provider are sent;</li>
       <li>if you signed in with Google, revoke that access at any time via your
         <a href="https://myaccount.google.com/permissions" rel="noopener noreferrer" target="_blank">Google Account permissions</a>;</li>
-      <li>choose whether to enable cloud sync or keep {{product_name}} fully local.</li>
+      <li>choose whether to turn on cloud services (Settings &rarr; General &rarr; &ldquo;Cloud services&rdquo;, off by default) or keep {{product_name}} fully local.</li>
     </ul>
 
     <h2>9. Children&rsquo;s privacy</h2>

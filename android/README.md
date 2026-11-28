@@ -101,7 +101,7 @@ bash scripts/setup-android-test-emulator.sh   # once
 bash scripts/run_pc_integration_test_rig.sh
 ```
 
-USB phone smoke: `scripts/test-android-phone.sh`. Docs: `docs/development/testing/PHYSICAL_INTEGRATION_TEST_RIG.md`. Cloud CI: `integration-test-rig.yml`. Optional self-hosted PC: `integration-test-rig-physical.yml`.
+USB phone smoke: `scripts/test-android-phone.sh`. Docs: `docs/development/testing/PHYSICAL_INTEGRATION_TEST_RIG.md`.
 
 ### Phone-only smoke (no Docker hub)
 

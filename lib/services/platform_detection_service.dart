@@ -320,7 +320,7 @@ class PlatformDetectionService extends ChangeNotifier {
         DownloadOption(
           name: 'AppImage (Universal)',
           description:
-              'Portable application that runs on any Linux distribution. No installation required.',
+              '${BrandCopy.localHardwarePromise} Portable — no installation required.',
           downloadUrl:
               '${Brand.current.releasesUrl}/download/${Brand.current.artifactPrefix}-Linux-${AppConfig.appVersion}-x86_64.AppImage',
           fileSize: '~48 MB',

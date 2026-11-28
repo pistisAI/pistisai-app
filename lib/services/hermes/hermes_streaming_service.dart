@@ -54,16 +54,45 @@ class HermesStreamingService extends StreamingService {
       StreamController<AgentEvent>.broadcast();
 
   /// Hermes session ids keyed by the app conversation id (`pistisai`).
+  ///
+  /// This is an adapter mapping only: the conversation itself lives in the
+  /// app's local store (#1065). The mapping is reused across polls and
+  /// re-resolved when the runtime answers 404, when it is older than
+  /// [_mappingRefreshInterval], or when a turn's reply does not show up in
+  /// the mapped session (the runtime may have started a new session).
   final Map<String, String> _runtimeSessionsByConversation = {};
+  final Map<String, DateTime> _runtimeSessionBoundAt = {};
+  final Duration _mappingRefreshInterval;
+
+  /// Chats already logged as "no runtime session yet", so the pre-first-turn
+  /// state is logged once instead of on every poll.
+  final Set<String> _loggedNoSession = {};
 
   /// Hermes session currently bound to [conversationId], if any.
   String? runtimeSessionIdFor(String conversationId) =>
       _runtimeSessionsByConversation[conversationId];
 
+  /// Restores a mapping saved in the local conversation store, so a restart
+  /// does not have to resolve it again. Ignored when one is already bound.
+  void restoreRuntimeSession(String conversationId, String? sessionId) {
+    if (_runtimeSessionsByConversation.containsKey(conversationId)) return;
+    _bindRuntimeSession(conversationId, sessionId);
+  }
+
+  /// Forgets the mapping for [conversationId] (for example after a local
+  /// data wipe). The next read resolves it again.
+  void clearRuntimeSession(String conversationId) {
+    _runtimeSessionsByConversation.remove(conversationId);
+    _runtimeSessionBoundAt.remove(conversationId);
+    _loggedNoSession.remove(conversationId);
+  }
+
   void _bindRuntimeSession(String conversationId, String? sessionId) {
     final trimmed = sessionId?.trim();
     if (trimmed == null || trimmed.isEmpty) return;
     _runtimeSessionsByConversation[conversationId] = trimmed;
+    _runtimeSessionBoundAt[conversationId] = DateTime.now();
+    _loggedNoSession.remove(conversationId);
   }
 
   String _sessionForConversation(String conversationId) =>
@@ -74,10 +103,12 @@ class HermesStreamingService extends StreamingService {
     String? apiKey,
     http.Client? client,
     Duration transcriptFetchTimeout = const Duration(seconds: 30),
+    Duration mappingRefreshInterval = const Duration(minutes: 1),
   })  : _baseUrl = baseUrl ?? 'http://127.0.0.1:8642',
         _apiKey = apiKey,
         _client = client,
-        _transcriptFetchTimeout = transcriptFetchTimeout;
+        _transcriptFetchTimeout = transcriptFetchTimeout,
+        _mappingRefreshInterval = mappingRefreshInterval;
 
   String get baseUrl => _baseUrl;
 
@@ -317,10 +348,17 @@ class HermesStreamingService extends StreamingService {
     var lastReadableFetch = DateTime.now();
     String lastEmitted = '';
     bool sawReply = false;
+    int pollsWithoutReply = 0;
 
     while (DateTime.now().isBefore(deadline)) {
       await Future<void>.delayed(pollInterval);
-      final harness = await fetchSessionMessages(conversationId);
+      // The runtime may answer this turn in a new session (idle reset), so
+      // check the mapping again every few polls until the reply shows up.
+      pollsWithoutReply++;
+      final harness = await fetchSessionMessages(
+        conversationId,
+        refreshMapping: !sawReply && pollsWithoutReply % 4 == 0,
+      );
       if (harness == null) {
         // A null means the transcript could not be read at all. A 404 (no
         // session yet) is an empty list and is a legitimate "still waiting"
@@ -479,7 +517,15 @@ class HermesStreamingService extends StreamingService {
   /// Every Pistisai device uses the same UI channel id (`pistisai`).
   /// Returns an empty list when the session does not exist yet, and null when
   /// the harness cannot be read.
-  Future<List<Message>?> fetchSessionMessages(String sessionId) async {
+  ///
+  /// For the pistisai channel, the Hermes session id is read from the adapter
+  /// mapping. With no mapping, it is resolved; when nothing is found (no
+  /// first turn yet) no transcript request is made at all. [refreshMapping]
+  /// forces a new resolution even when a mapping exists.
+  Future<List<Message>?> fetchSessionMessages(
+    String sessionId, {
+    bool refreshMapping = false,
+  }) async {
     try {
       final client = _client ?? http.Client();
       final runtimeId = _sessionForConversation(sessionId);
@@ -499,14 +545,36 @@ class HermesStreamingService extends StreamingService {
 
       // The pistisai DM key (`agent:main:pistisai:dm:<chat_id>`) is not
       // addressable on /api/sessions/{id}; Hermes stores it under a generated
-      // session id (e.g. `20261104_190859_119a1e2b`, source=pistisai). Resolve
-      // it each poll so resets/new sessions are followed.
-      String targetId = runtimeId;
-      if (sessionId == Conversation.pistisaiChannelId) {
-        targetId = await _resolvePistisaiSessionId() ?? runtimeId;
+      // session id (e.g. `20261104_190859_119a1e2b`, source=pistisai). That
+      // id is kept as an adapter mapping and reused across polls.
+      final isChannel = sessionId == Conversation.pistisaiChannelId;
+      String targetId;
+      if (isChannel) {
+        // The chat ID is an app-owned channel, not a runtime session. Before
+        // the first turn there is nothing to read: skip the short-ID poll
+        // entirely instead of generating a guaranteed 404 (#1065).
+        final mapped = await _mappedPistisaiSession(
+          sessionId,
+          refresh: refreshMapping,
+        );
+        if (mapped == null) return const [];
+        targetId = mapped;
+      } else {
+        targetId = runtimeId;
       }
       http.Response response = await getMessages(targetId);
-      if (response.statusCode == 404 && targetId != sessionId) {
+      if (response.statusCode == 404 && isChannel) {
+        // The mapped session is gone (reset or removed on the runtime):
+        // resolve once more. Never fall back to the short channel id.
+        clearRuntimeSession(sessionId);
+        final fresh = await _mappedPistisaiSession(sessionId, refresh: true);
+        if (fresh != null && fresh != targetId) {
+          targetId = fresh;
+          response = await getMessages(targetId);
+        } else if (fresh != null) {
+          clearRuntimeSession(sessionId);
+        }
+      } else if (response.statusCode == 404 && targetId != sessionId) {
         response = await getMessages(sessionId);
       }
       if (response.statusCode == 404) {
@@ -519,7 +587,9 @@ class HermesStreamingService extends StreamingService {
       if (response.statusCode != 200) return null;
 
       final decoded = jsonDecode(response.body);
-      if (decoded is Map && decoded['session_id'] is String) {
+      // The channel's mapping comes from resolution only, so a body that
+      // echoes the short channel id can never become the mapping.
+      if (!isChannel && decoded is Map && decoded['session_id'] is String) {
         _bindRuntimeSession(sessionId, decoded['session_id'] as String);
       }
       return messagesFromHermesSessionBody(response.body);
@@ -537,6 +607,38 @@ class HermesStreamingService extends StreamingService {
     _lastPollLog[chatId] = key;
     debugPrint('[Hermes] transcript poll chat=$chatId -> session=$targetId '
         'HTTP $status');
+  }
+
+  /// The Hermes session mapped to the pistisai [chatId]: the saved mapping
+  /// when it is fresh, else a new resolution. Null before the first turn.
+  Future<String?> _mappedPistisaiSession(
+    String chatId, {
+    bool refresh = false,
+  }) async {
+    final mapped = _runtimeSessionsByConversation[chatId];
+    final boundAt = _runtimeSessionBoundAt[chatId];
+    final stale = boundAt == null ||
+        DateTime.now().difference(boundAt) >= _mappingRefreshInterval;
+    if (mapped != null && !refresh && !stale) return mapped;
+
+    final resolved = await _resolvePistisaiSessionId();
+    if (resolved != null) {
+      _bindRuntimeSession(chatId, resolved);
+      return resolved;
+    }
+    if (mapped != null) {
+      // Resolution failed or listed nothing: keep the known mapping and let
+      // a 404 on the transcript clear it.
+      _runtimeSessionBoundAt[chatId] = DateTime.now();
+      return mapped;
+    }
+    if (_loggedNoSession.add(chatId)) {
+      appLogger.debug(
+        '[Hermes] No runtime session for chat=$chatId yet; '
+        'transcript reads wait for the first turn',
+      );
+    }
+    return null;
   }
 
   /// Resolve the Hermes session id currently backing the pistisai DM

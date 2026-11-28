@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Platform, Directory;
+import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -18,6 +18,7 @@ import 'package:pistisai/auth/providers/cloudflare_access_auth_provider.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
 import 'package:pistisai/services/enhanced_user_tier_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
+import 'package:pistisai/services/hardware/hardware_capability_service.dart';
 import 'package:pistisai/services/streaming_chat_service.dart';
 import 'package:pistisai/services/streaming_proxy_service.dart';
 import 'package:pistisai/services/tunnel_service.dart';
@@ -57,14 +58,13 @@ import 'package:pistisai/services/desktop_control/clipboard_service.dart';
 import 'package:pistisai/services/setup_status_service.dart';
 import 'package:pistisai/services/onboarding/setup_wizard_service.dart';
 import 'package:pistisai/services/onboarding/mobile_connection_service.dart';
-import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/avatar/personality_engine.dart';
 import 'package:pistisai/services/avatar/avatar_appearance.dart';
 import 'package:pistisai/services/avatar/evolution_tracker.dart';
 import 'package:pistisai/services/avatar/avatar_state_service.dart';
+import 'package:pistisai/services/avatar/avatar_markdown_path.dart';
 import 'package:pistisai/services/avatar/markdown_sync_service.dart';
 import 'package:pistisai/services/app_temp_files.dart';
-import 'package:pistisai/utils/owner_only_directory.dart';
 import 'package:pistisai/services/avatar/memory_service.dart';
 import 'package:pistisai/services/agent_action_audit_service.dart';
 import 'package:pistisai/services/conscience_storage_service.dart';
@@ -94,8 +94,9 @@ bool _coreServicesRegistered = false;
 bool _authenticatedServicesRegistered = false;
 bool _isRegisteringAuthenticatedServices = false;
 
-/// Determines the OpenClaw skills directory path for the current platform.
-/// Checks common locations and creates the directory if it doesn't exist.
+/// Folder for the avatar Markdown files on the current platform.
+/// Resolving it never creates an OpenClaw folder (#1042); see
+/// [resolveAvatarMarkdownPath].
 String _getOpenClawSkillsPath() {
   if (kIsWeb) {
     // Web has no dart:io environment variables or writable local filesystem.
@@ -108,34 +109,26 @@ String _getOpenClawSkillsPath() {
   } catch (e) {
     AppConfig.verboseLog('[ServiceLocator] Failed to read home directory: $e');
   }
+  return resolveAvatarMarkdownPath(home);
+}
 
-  // Check common locations for OpenClaw skills directory
-  if (home == null) {
-    // Fallback to an owner-only folder inside temp, never temp itself, so
-    // clearing the avatar Markdown cannot touch other programs' files and
-    // other local users cannot read it. A pre-created or symlinked folder is
-    // refused in favour of a fresh private temp folder.
-    final fallback = '${Directory.systemTemp.path}/pistisai-skill';
-    if (ensureOwnerOnlyDirectorySync(fallback)) return fallback;
-    return Directory.systemTemp.createTempSync('pistisai-skill-').path;
-  }
-
-  final possiblePaths = [
-    '$home/.openclaw/skills/pistisai',
-    '$home/.config/openclaw/skills/pistisai',
-    '$home/AppData/Roaming/openclaw/skills/pistisai', // Windows
-  ];
-
-  for (final path in possiblePaths) {
-    if (Directory(path).existsSync()) {
-      return path;
-    }
-  }
-
-  // Create default path if it doesn't exist
-  final defaultPath = '$home/.openclaw/skills/pistisai';
-  Directory(defaultPath).createSync(recursive: true);
-  return defaultPath;
+/// Registers the local-model hardware check (#1077) as one lazy singleton,
+/// so onboarding and later setup logic share its cached answer. It needs no
+/// authentication and makes no cloud call: it reads this computer's hardware
+/// and scans loopback for Ollama / LM Studio through the registered
+/// [ProviderDiscoveryService], when there is one. Safe to call twice.
+void registerHardwareCapabilityService() {
+  if (serviceLocator.isRegistered<HardwareCapabilityService>()) return;
+  serviceLocator.registerLazySingleton<HardwareCapabilityService>(() {
+    final discovery = serviceLocator.isRegistered<ProviderDiscoveryService>()
+        ? serviceLocator.get<ProviderDiscoveryService>()
+        : null;
+    return HardwareCapabilityService(
+      scanLocalProviders: discovery == null
+          ? null
+          : HardwareCapabilityService.scanWithDiscovery(discovery),
+    );
+  });
 }
 
 /// Registers core services that are needed before authentication.
@@ -461,6 +454,9 @@ Future<void> setupCoreServices() async {
       providerDiscoveryService,
     );
 
+    // Local-model hardware check for onboarding - local only, no auth
+    registerHardwareCapabilityService();
+
     // Desktop client detection - can check client type without auth
     final desktopClientDetectionService = DesktopClientDetectionService(
       authService: authService,
@@ -592,11 +588,9 @@ Future<void> setupCoreServices() async {
       UrlSchemeRegistrationService(),
     );
 
-    // Gateway control service - manages OpenClaw Gateway lifecycle (start/stop/restart)
-    final gatewayControlService =
-        GatewayControlService(settingsPreferenceService);
-    serviceLocator
-        .registerSingleton<GatewayControlService>(gatewayControlService);
+    // GatewayControlService (OpenClaw CLI) is not registered: Hermes is the
+    // primary harness and no OpenClaw runtime can be saved, so a Hermes-only
+    // install must not spawn the `openclaw` CLI (#1042).
 
     // Setup status service - tracks first-run and setup completion
     final setupStatusService = SetupStatusService(
@@ -787,6 +781,8 @@ Future<void> _registerWebFallbackCoreServices() async {
     );
   }
 
+  registerHardwareCapabilityService();
+
   try {
     await serviceLocator.get<AuthService>().init();
   } catch (e) {
@@ -964,7 +960,6 @@ Future<void> setupAuthenticatedServices() async {
     );
 
     // Connection Manager - requires authentication for tunnel/cloud connections
-    final gatewayControlService = serviceLocator.get<GatewayControlService>();
     final hermesStreamingService = serviceLocator.get<HermesStreamingService>();
     final connectionManager = ConnectionManagerService(
       hermesStreamingService: hermesStreamingService,
@@ -994,13 +989,6 @@ Future<void> setupAuthenticatedServices() async {
     }
     serviceLocator
         .registerSingleton<ConnectionManagerService>(connectionManager);
-
-    // Wire up GatewayControlService with ConnectionManagerService now that both exist
-    AppConfig.verboseLog(
-        '[ServiceLocator] Wiring GatewayControlService with ConnectionManagerService...');
-    gatewayControlService.setConnectionManager(connectionManager);
-    AppConfig.verboseLog(
-        '[ServiceLocator] ✓ GatewayControlService now listens to connection changes');
 
     // Streaming chat service - requires connection manager
     final streamingChatService = StreamingChatService(

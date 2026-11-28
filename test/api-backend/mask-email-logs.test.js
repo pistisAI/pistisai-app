@@ -57,6 +57,7 @@ describe("no raw email in logger calls", () => {
     "middleware/admin-auth.js",
     "routes/admin/admins.js",
     "services/email-queue-service.js",
+    "auth/auth-service.js",
   ])("%s masks every email it logs", (file) => {
     const source = readFileSync(path.join(API_DIR, file), "utf8");
     const calls = loggerCalls(source);

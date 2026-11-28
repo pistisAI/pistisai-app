@@ -4,6 +4,8 @@ import base from './jest.config.js';
  * Extended backend checks: auth, access, CORS, rate-limit and SSRF suites that
  * pass but are not in the security gate (jest.ci-security.config.js).
  * Run by .github/workflows/extended-tests.yml on every pull request.
+ * api-keys and sandbox-routes exercise authenticated key management and the
+ * sandbox gate (401 without a bearer token, 403 when SANDBOX_MODE is off).
  */
 export default {
   ...base,
@@ -30,5 +32,7 @@ export default {
     '**/test/api-backend/rate-limit-violations.test.js',
     '**/test/api-backend/webhook-rate-limiting-unit.test.js',
     '**/test/api-backend/utils/ssrf-protection.test.js',
+    '**/test/api-backend/api-keys.test.js',
+    '**/test/api-backend/sandbox-routes.test.js',
   ],
 };

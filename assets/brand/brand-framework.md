@@ -56,7 +56,7 @@ l'humanité.
 
 - **Primaire (Stoa):** App icon, splash, site web, branding principal
 - **Secondaire (Rose des Titans):** Favicon, avatar, watermark, petit format
-- Les logos sont dans `brand/iacle/assets/`.
+- Les logos sont dans `brand/<id>/assets/`.
 
 ## Notes Architecturales
 

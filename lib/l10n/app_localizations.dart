@@ -1670,6 +1670,12 @@ abstract class AppLocalizations {
   /// **'Information'**
   String get agentDetailInformation;
 
+  /// Shown instead of Start/Stop/Restart when the active agent runtime (for example Hermes) cannot start or stop agents
+  ///
+  /// In en, this message translates to:
+  /// **'Agent control is not available for this runtime yet'**
+  String get agentControlNotAvailable;
+
   /// No description provided for @agentDetailId.
   ///
   /// In en, this message translates to:
@@ -3950,12 +3956,6 @@ abstract class AppLocalizations {
   /// **'Support providers cannot complete setup or receive desktop-control authority unless wrapped by an agent runtime.'**
   String get configSupportProvidersNote;
 
-  /// No description provided for @configRequestPolicy.
-  ///
-  /// In en, this message translates to:
-  /// **'Runtime Request Policy'**
-  String get configRequestPolicy;
-
   /// No description provided for @configWindow.
   ///
   /// In en, this message translates to:
@@ -3979,12 +3979,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not available yet: language, notifications, proxy, request timeouts, security, history and developer settings. The app does not offer these controls until it can apply them.'**
   String get configNotAvailableYetNote;
-
-  /// No description provided for @configAutoRestart.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-restart Runtime on Failure'**
-  String get configAutoRestart;
 
   /// No description provided for @configAppearance.
   ///
@@ -6470,6 +6464,18 @@ abstract class AppLocalizations {
   /// **'Sign in to see registered agents.'**
   String get agentsRegistrySignInRequired;
 
+  /// Shown when the app refuses a sign-in callback link.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in was not completed: the sign-in link is invalid, expired, or was not started from this app. Start sign-in again from the app.'**
+  String get authCallbackRejected;
+
+  /// Shown when a sign-in link would replace the signed-in account without the user starting a sign-in.
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in link is for a different account. Your current session was kept. Sign out, then start sign-in again from the app to switch accounts.'**
+  String get authCallbackDifferentAccount;
+
   /// No description provided for @agentsRegistryForbidden.
   ///
   /// In en, this message translates to:
@@ -6535,6 +6541,205 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save (not available yet)'**
   String get adminEmailSaveNotAvailableButton;
+
+  /// No description provided for @cloudServicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud services'**
+  String get cloudServicesTitle;
+
+  /// No description provided for @cloudServicesSubtitleDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. While off, nothing is sent to the {product} cloud service.'**
+  String cloudServicesSubtitleDefault(String product);
+
+  /// No description provided for @cloudServicesSubtitleOnRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'On. This device is registered with the {product} cloud service. Brain sync and chat history use it from their next sync.'**
+  String cloudServicesSubtitleOnRegistered(String product);
+
+  /// No description provided for @cloudServicesSubtitleOnPending.
+  ///
+  /// In en, this message translates to:
+  /// **'On. Brain sync and chat history use the {product} cloud service from their next sync. Device registration has not completed; the app tries again the next time it starts.'**
+  String cloudServicesSubtitleOnPending(String product);
+
+  /// No description provided for @cloudServicesSubtitleOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off. Nothing more is sent to the {product} cloud service. Data already uploaded stays on the server: turning this off does not delete it.'**
+  String cloudServicesSubtitleOff(String product);
+
+  /// No description provided for @cloudServicesSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this setting. Nothing was changed.'**
+  String get cloudServicesSaveFailed;
+
+  /// No description provided for @cloudServicesDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on cloud services?'**
+  String get cloudServicesDialogTitle;
+
+  /// No description provided for @cloudServicesDialogIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'While this is on, the app sends the following to the {product} cloud service:'**
+  String cloudServicesDialogIntro(String product);
+
+  /// No description provided for @cloudServicesDialogDeviceRegistration.
+  ///
+  /// In en, this message translates to:
+  /// **'Device registration and a heartbeat every 2 minutes: this device\'s ID, name, platform and app version.'**
+  String get cloudServicesDialogDeviceRegistration;
+
+  /// No description provided for @cloudServicesDialogBrainSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Brain sync every 5 minutes: agent activity events and pending record changes stored on this device are uploaded, and recent events are downloaded.'**
+  String get cloudServicesDialogBrainSync;
+
+  /// No description provided for @cloudServicesDialogChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat history, while you are signed in: your conversations and their messages are uploaded, and conversations saved on the server are downloaded.'**
+  String get cloudServicesDialogChatHistory;
+
+  /// No description provided for @cloudServicesDialogWebNote.
+  ///
+  /// In en, this message translates to:
+  /// **'In the web app, a signed-in user\'s chat history is stored on the server whether or not this is on.'**
+  String get cloudServicesDialogWebNote;
+
+  /// No description provided for @cloudServicesDialogOutro.
+  ///
+  /// In en, this message translates to:
+  /// **'You can turn this off at any time. Turning it off stops new uploads; it does not delete data already uploaded.'**
+  String get cloudServicesDialogOutro;
+
+  /// No description provided for @cloudServicesDialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cloudServicesDialogCancel;
+
+  /// No description provided for @cloudServicesDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on'**
+  String get cloudServicesDialogConfirm;
+
+  /// No description provided for @localModelCheckChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking whether this computer can host a local model...'**
+  String get localModelCheckChecking;
+
+  /// No description provided for @localModelCheckSufficientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer can host a local model'**
+  String get localModelCheckSufficientTitle;
+
+  /// No description provided for @localModelCheckSufficientBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your agent runtime and its local model can run here.'**
+  String get localModelCheckSufficientBody;
+
+  /// No description provided for @localModelCheckInsufficientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer may not have enough hardware for a local model'**
+  String get localModelCheckInsufficientTitle;
+
+  /// No description provided for @localModelCheckInsufficientBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can still use the app here: the model can run on a local machine we provide, or on another computer you choose.'**
+  String get localModelCheckInsufficientBody;
+
+  /// No description provided for @localModelCheckUnknownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware check not available'**
+  String get localModelCheckUnknownTitle;
+
+  /// No description provided for @localModelCheckUnknownBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A local model needs about {recommendedGb} GB of memory. If this computer has less, the model can run on a local machine we provide.'**
+  String localModelCheckUnknownBody(int recommendedGb);
+
+  /// No description provided for @localModelReasonUnsupportedPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware detection is not available on this platform.'**
+  String get localModelReasonUnsupportedPlatform;
+
+  /// No description provided for @localModelReasonProbeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The hardware check did not return a result.'**
+  String get localModelReasonProbeFailed;
+
+  /// No description provided for @localModelReasonUnsupportedArchitecture.
+  ///
+  /// In en, this message translates to:
+  /// **'Processor architecture {architecture} is not supported for local models.'**
+  String localModelReasonUnsupportedArchitecture(String architecture);
+
+  /// No description provided for @localModelReasonBelowMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory. A local model needs at least {minimumGb} GB, and {recommendedGb} GB is recommended.'**
+  String localModelReasonBelowMinimum(
+      String memoryGb, int minimumGb, int recommendedGb);
+
+  /// No description provided for @localModelReasonMiddleZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory. Below {recommendedGb} GB, a local model only fits when a local model provider such as Ollama or LM Studio is already running on this computer.'**
+  String localModelReasonMiddleZone(String memoryGb, int recommendedGb);
+
+  /// No description provided for @localModelReasonMiddleZoneProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory and a running local model provider: {providers}.'**
+  String localModelReasonMiddleZoneProvider(String memoryGb, String providers);
+
+  /// No description provided for @localModelReasonMiddleZoneGpu.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory and a GPU with {gpuMemoryGb} GB of video memory.'**
+  String localModelReasonMiddleZoneGpu(String memoryGb, String gpuMemoryGb);
+
+  /// No description provided for @localModelReasonMeetsRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected {memoryGb} GB of memory ({architecture}).'**
+  String localModelReasonMeetsRecommended(String memoryGb, String architecture);
+
+  /// No description provided for @localModelReasonProviderReachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory could not be read, but a local model provider is already running on this computer: {providers}.'**
+  String localModelReasonProviderReachable(String providers);
+
+  /// No description provided for @localModelArchitectureUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'architecture not detected'**
+  String get localModelArchitectureUnknown;
+
+  /// No description provided for @downloadLocalModelRequirement.
+  ///
+  /// In en, this message translates to:
+  /// **'Running a local model on the same computer needs about {recommendedGb} GB of memory. With less, the app can use a local machine we provide to run the model.'**
+  String downloadLocalModelRequirement(int recommendedGb);
 }
 
 class _AppLocalizationsDelegate

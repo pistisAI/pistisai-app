@@ -162,3 +162,19 @@ bool _mobileNeedsConnection(RouterRedirectInput input) {
       !input.isAuthenticated &&
       input.shouldShowMobileConnection;
 }
+
+/// Destination for the "Continue without signing in" control (issue #852).
+///
+/// Returns `null` on web, where every app route redirects back to login, so
+/// callers must hide the control instead of offering a dead button. Mobile in
+/// cloud mode goes to the connection screen (the only way back to setup);
+/// desktop goes to the app shell.
+String? localModeDestination({
+  required bool isWeb,
+  required bool isMobile,
+}) {
+  if (isWeb) {
+    return null;
+  }
+  return isMobile ? AppRoutePaths.connect : AppRoutePaths.root;
+}

@@ -5,7 +5,6 @@ import 'package:pistisai/screens/channels/channels_screen.dart';
 import 'package:pistisai/screens/instances/instances_screen.dart';
 import 'package:pistisai/screens/sessions/sessions_screen.dart';
 import 'package:pistisai/services/channel_service.dart';
-import 'package:pistisai/services/connection_manager_service.dart';
 import 'package:pistisai/services/openclaw_manager/gateway_control_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
 import 'package:pistisai/services/settings_preference_service.dart';
@@ -126,9 +125,6 @@ class _FakeGatewayControlService extends ChangeNotifier implements GatewayContro
 
   @override
   Future<void> checkStatus() async {}
-
-  @override
-  void setConnectionManager(ConnectionManagerService connectionManager) {}
 }
 
 void main() {

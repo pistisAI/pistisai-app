@@ -15,8 +15,53 @@ NC='\033[0m' # No Color
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-REPO_OWNER="iacle-solutions"
-REPO_NAME="Pistisai"
+
+# Upstream repository. A rebrand overrides PISTISAI_GITHUB_OWNER and
+# PISTISAI_GITHUB_REPO, or sets BRAND so repository_label in
+# brand/<id>/brand.yaml supplies owner/repo. See docs/WHITE_LABEL.md.
+resolve_github_repo() {
+    local owner="${PISTISAI_GITHUB_OWNER:-}"
+    local name="${PISTISAI_GITHUB_REPO:-}"
+    local brand_id="${BRAND:-pistisai}"
+    local brand_file label
+
+    if [[ ! "$brand_id" =~ ^[A-Za-z0-9_-]+$ ]]; then
+        brand_id="pistisai"
+    fi
+
+    # Drop a value that is not a slug before the brand file is read.
+    # A rejected owner must not stay "set" and leave only the brand's
+    # repository name, which would pair pistisAI with that other repo.
+    if [[ -n "$owner" && ! "$owner" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+        owner=""
+    fi
+    if [[ -n "$name" && ! "$name" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+        name=""
+    fi
+
+    brand_file="$PROJECT_ROOT/brand/${brand_id}/brand.yaml"
+    if [[ ( -z "$owner" || -z "$name" ) && -f "$brand_file" ]]; then
+        label=$(grep -E '^repository_label:' "$brand_file" | head -n 1 | sed -E 's/^repository_label:[[:space:]]*//; s/[[:space:]]*(#.*)?$//; s/^["'\'']//; s/["'\'']$//' || true)
+        if [[ "$label" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+            if [[ -z "$owner" ]]; then
+                owner="${label%%/*}"
+            fi
+            if [[ -z "$name" ]]; then
+                name="${label#*/}"
+            fi
+        fi
+    fi
+
+    if [[ -z "$owner" ]]; then
+        owner="pistisAI"
+    fi
+    if [[ -z "$name" ]]; then
+        name="pistisai-app"
+    fi
+
+    REPO_OWNER="$owner"
+    REPO_NAME="$name"
+}
 
 # Functions
 print_status() {
@@ -279,6 +324,7 @@ create_release() {
 # Parse command line arguments
 parse_arguments() {
     FORCE_RECREATE="false"
+    PRINT_TARGET="false"
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -286,13 +332,25 @@ parse_arguments() {
                 FORCE_RECREATE="true"
                 shift
                 ;;
+            --print-target)
+                PRINT_TARGET="true"
+                shift
+                ;;
             --help|-h)
                 echo "Pistisai GitHub Release Creator"
                 echo "Usage: $0 [OPTIONS]"
                 echo ""
                 echo "Options:"
-                echo "  --force     Recreate release if it already exists"
-                echo "  --help, -h  Show this help message"
+                echo "  --force          Recreate release if it already exists"
+                echo "  --print-target   Print owner/repo and exit"
+                echo "  --help, -h       Show this help message"
+                echo ""
+                echo "Environment:"
+                echo "  PISTISAI_GITHUB_OWNER   GitHub owner (overrides brand.yaml)"
+                echo "  PISTISAI_GITHUB_REPO    GitHub repository (overrides brand.yaml)"
+                echo "  BRAND                   Brand id for brand/<id>/brand.yaml (default: pistisai)"
+                echo ""
+                echo "Default repository: pistisAI/pistisai-app"
                 exit 0
                 ;;
             *)
@@ -308,7 +366,14 @@ main() {
     # Parse arguments
     parse_arguments "$@"
 
+    resolve_github_repo
+    if [[ "$PRINT_TARGET" == "true" ]]; then
+        printf '%s/%s\n' "$REPO_OWNER" "$REPO_NAME"
+        exit 0
+    fi
+
     print_status "Pistisai GitHub Release Creator"
+    print_status "Target repository: $REPO_OWNER/$REPO_NAME"
     print_status "======================================"
 
     # Change to project root
@@ -337,5 +402,7 @@ main() {
     print_status "3. Update documentation if needed"
 }
 
-# Execute main function
-main "$@"
+# Execute main function when run, not when sourced.
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi

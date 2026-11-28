@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:pistisai/services/settings_preference_service.dart'
-    hide BackendType;
-import 'package:pistisai/services/connection_manager_service.dart';
+import 'package:pistisai/services/settings_preference_service.dart';
 
 enum GatewayState {
   unknown,
@@ -14,6 +12,19 @@ enum GatewayState {
   error,
 }
 
+/// Runs a command; matches [Process.run] so tests can record calls.
+typedef GatewayProcessRunner = Future<ProcessResult> Function(
+  String executable,
+  List<String> arguments,
+);
+
+/// Controls an OpenClaw Gateway through the `openclaw` CLI.
+///
+/// OpenClaw is an optional harness (#1042): this service never runs on its
+/// own. It does not listen to the Hermes connection and is not registered
+/// by the service locator, so a Hermes-only install never spawns the
+/// `openclaw` CLI. Every command runs only when a caller asks for it
+/// through [start], [stop], [restart], [checkStatus] or [getStatus].
 class GatewayControlService extends ChangeNotifier {
   GatewayState _state = GatewayState.unknown;
   String? _errorMessage;
@@ -24,36 +35,13 @@ class GatewayControlService extends ChangeNotifier {
   int _restartAttempts = 0;
   bool _isDisposed = false;
   static const int _maxRestartAttempts = 5;
-  ConnectionManagerService? _connectionManager;
+  final GatewayProcessRunner _runProcess;
 
-  GatewayControlService(this._settings, [this._connectionManager]) {
+  GatewayControlService(
+    this._settings, {
+    @visibleForTesting GatewayProcessRunner? processRunner,
+  }) : _runProcess = processRunner ?? Process.run {
     _loadAutoRestartSetting();
-
-    // Listen to connection changes if connection manager is provided
-    if (_connectionManager != null) {
-      _connectionManager!.addListener(_onConnectionChanged);
-    }
-  }
-
-  void setConnectionManager(ConnectionManagerService connectionManager) {
-    if (_connectionManager != null) {
-      _connectionManager!.removeListener(_onConnectionChanged);
-    }
-    _connectionManager = connectionManager;
-    _connectionManager!.addListener(_onConnectionChanged);
-  }
-
-  void _onConnectionChanged() {
-    // Auto-check status when WebSocket connects
-    if (_connectionManager!.currentBackend == BackendType.hermes &&
-        _connectionManager!.isConnected &&
-        _connectionManager!.isGatewayHealthy()) {
-      debugPrint(
-          '[GatewayControl] WebSocket connected, checking gateway status...');
-      checkStatus().catchError((e) {
-        debugPrint('[GatewayControl] Failed to auto-check status: $e');
-      });
-    }
   }
 
   GatewayState get state => _state;
@@ -88,7 +76,7 @@ class GatewayControlService extends ChangeNotifier {
 
     try {
       final result =
-          await Process.run('openclaw', ['gateway', 'start', '--json']);
+          await _runProcess('openclaw', ['gateway', 'start', '--json']);
 
       if (result.exitCode == 0) {
         _state = GatewayState.running;
@@ -128,7 +116,7 @@ class GatewayControlService extends ChangeNotifier {
 
     try {
       final result =
-          await Process.run('openclaw', ['gateway', 'stop', '--json']);
+          await _runProcess('openclaw', ['gateway', 'stop', '--json']);
 
       _healthCheckTimer?.cancel();
       _healthCheckTimer = null;
@@ -160,7 +148,7 @@ class GatewayControlService extends ChangeNotifier {
   Future<void> checkStatus() async {
     try {
       final result =
-          await Process.run('openclaw', ['gateway', 'status', '--json']);
+          await _runProcess('openclaw', ['gateway', 'status', '--json']);
 
       if (result.exitCode == 0) {
         final output = result.stdout.toString();
@@ -239,9 +227,6 @@ class GatewayControlService extends ChangeNotifier {
   void dispose() {
     _isDisposed = true;
     _healthCheckTimer?.cancel();
-    if (_connectionManager != null) {
-      _connectionManager!.removeListener(_onConnectionChanged);
-    }
     super.dispose();
   }
 }

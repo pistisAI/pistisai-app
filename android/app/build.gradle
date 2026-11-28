@@ -12,8 +12,6 @@ if (brandPropertiesFile.exists()) {
     }
 }
 def brandAppId = brandProperties.getProperty('app_id', 'app.pistisai.app')
-def brandAuth0Domain = brandProperties.getProperty('auth0_domain', 'pistisai.app')
-def brandAuth0Scheme = brandProperties.getProperty('auth0_scheme', 'pistisai')
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -69,7 +67,7 @@ android {
             versionCode 1
         }
         versionName flutterVersionName
-        manifestPlaceholders = [auth0Domain: brandAuth0Domain, auth0Scheme: brandAuth0Scheme, applicationName: "android.app.Application"]
+        manifestPlaceholders = [applicationName: "android.app.Application"]
     }
 
     signingConfigs {

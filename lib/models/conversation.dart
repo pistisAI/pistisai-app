@@ -1,3 +1,4 @@
+import '../services/agent_session/channel.dart';
 import 'message.dart';
 
 /// Represents a chat conversation containing multiple messages
@@ -10,6 +11,13 @@ class Conversation {
   final String? model; // Default model for this conversation
   final Map<String, dynamic> metadata; // Additional conversation data
 
+  /// Runtime session id each harness uses for this conversation's channel
+  /// (harness id -> runtime session id). Read through `RuntimeSessionMap`;
+  /// never the conversation's identity (#1065, #1067).
+  final Map<String, String> runtimeSessions;
+
+  final ConversationChannel? _channel;
+
   const Conversation({
     required this.id,
     required this.title,
@@ -18,7 +26,28 @@ class Conversation {
     required this.updatedAt,
     this.model,
     this.metadata = const {},
-  });
+    this.runtimeSessions = const {},
+    ConversationChannel? channel,
+  }) : _channel = channel;
+
+  /// The channel this conversation belongs to (#1067).
+  ///
+  /// A conversation saved before channels existed has none stored; it maps
+  /// to a `direct` channel whose id is the conversation id, so the single
+  /// [pistisaiChannelId] conversation becomes the default direct channel.
+  ConversationChannel get channel =>
+      _channel ??
+      ConversationChannel(
+        id: id.trim().isEmpty ? _unassignedChannelId : id,
+        kind: ChannelKind.direct,
+        title: title,
+        createdAt: createdAt,
+      );
+
+  /// Shortcut for `channel.id`.
+  String get channelId => channel.id;
+
+  static const String _unassignedChannelId = 'unassigned';
 
   /// Create a new conversation
   factory Conversation.create({String? title, String? model, String? id}) {
@@ -47,18 +76,88 @@ class Conversation {
   factory Conversation.mainChannel({String? model, String? agentName}) {
     final now = DateTime.now();
     final name = (agentName ?? '').trim();
+    final title = name.isEmpty ? 'Agent' : name;
     return Conversation(
       id: pistisaiChannelId,
-      title: name.isEmpty ? 'Agent' : name,
+      title: title,
       messages: [],
       createdAt: now,
       updatedAt: now,
       model: model ?? 'default',
+      channel: ConversationChannel(
+        id: pistisaiChannelId,
+        kind: ChannelKind.direct,
+        title: title,
+        createdAt: now,
+      ),
     );
+  }
+
+  /// Legacy metadata key from #1086: `{harness: {'sessionId': id}}`.
+  ///
+  /// Mappings now live in [runtimeSessions]. A file without that field is
+  /// still read from this key (kept for one release); the key is dropped on
+  /// load, so the next save writes only the new field.
+  static const String runtimeSessionsKey = 'runtimeSessions';
+
+  /// The runtime session mapped to this conversation for [harness], if any.
+  String? runtimeSessionId(String harness) => runtimeSessions[harness];
+
+  /// A copy with the [harness] mapping set to [sessionId], or removed when
+  /// [sessionId] is null or empty.
+  Conversation withRuntimeSession(String harness, String? sessionId) {
+    final next = Map<String, String>.of(runtimeSessions);
+    if (sessionId == null || sessionId.isEmpty) {
+      next.remove(harness);
+    } else {
+      next[harness] = sessionId;
+    }
+    return withRuntimeSessions(next);
+  }
+
+  /// A copy whose runtime session mappings are exactly [sessions].
+  Conversation withRuntimeSessions(Map<String, String> sessions) =>
+      copyWith(runtimeSessions: Map<String, String>.unmodifiable(sessions));
+
+  static Map<String, String> _runtimeSessionsFromJson(
+    Object? stored,
+    Object? legacy,
+  ) {
+    final sessions = <String, String>{};
+    if (stored is Map) {
+      for (final e in stored.entries) {
+        final value = e.value;
+        if (e.key is String && value is String && value.isNotEmpty) {
+          sessions[e.key as String] = value;
+        }
+      }
+    } else if (legacy is Map) {
+      for (final e in legacy.entries) {
+        final entry = e.value;
+        final id = entry is Map ? entry['sessionId'] : null;
+        if (e.key is String && id is String && id.isNotEmpty) {
+          sessions[e.key as String] = id;
+        }
+      }
+    }
+    return Map<String, String>.unmodifiable(sessions);
+  }
+
+  static ConversationChannel? _channelFromJson(Object? json) {
+    if (json is! Map) return null;
+    try {
+      return ConversationChannel.fromJson(Map<String, Object?>.from(json));
+    } on FormatException {
+      return null;
+    }
   }
 
   /// Create conversation from JSON
   factory Conversation.fromJson(Map<String, dynamic> json) {
+    final metadata = Map<String, dynamic>.of(
+      json['metadata'] as Map<String, dynamic>? ?? const {},
+    );
+    final legacySessions = metadata.remove(runtimeSessionsKey);
     return Conversation(
       id: json['id'] ?? '',
       title: json['title'] ?? 'Untitled Conversation',
@@ -69,7 +168,12 @@ class Conversation {
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
       model: json['model'],
-      metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+      metadata: metadata,
+      runtimeSessions: _runtimeSessionsFromJson(
+        json['runtimeSessions'],
+        legacySessions,
+      ),
+      channel: _channelFromJson(json['channel']),
     );
   }
 
@@ -83,6 +187,8 @@ class Conversation {
       'updatedAt': updatedAt.toIso8601String(),
       'model': model,
       'metadata': metadata,
+      'runtimeSessions': runtimeSessions,
+      'channel': channel.toJson(),
     };
   }
 
@@ -95,6 +201,8 @@ class Conversation {
     DateTime? updatedAt,
     String? model,
     Map<String, dynamic>? metadata,
+    Map<String, String>? runtimeSessions,
+    ConversationChannel? channel,
   }) {
     return Conversation(
       id: id ?? this.id,
@@ -104,6 +212,8 @@ class Conversation {
       updatedAt: updatedAt ?? this.updatedAt,
       model: model ?? this.model,
       metadata: metadata ?? this.metadata,
+      runtimeSessions: runtimeSessions ?? this.runtimeSessions,
+      channel: channel ?? _channel,
     );
   }
 
@@ -132,7 +242,11 @@ class Conversation {
 
   /// Update conversation title
   Conversation updateTitle(String newTitle) {
-    return copyWith(title: newTitle, updatedAt: DateTime.now());
+    return copyWith(
+      title: newTitle,
+      updatedAt: DateTime.now(),
+      channel: _channel?.copyWith(title: newTitle),
+    );
   }
 
   /// Update default model

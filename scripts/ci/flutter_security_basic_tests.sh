@@ -11,6 +11,8 @@ flutter test \
   test/config/ \
   test/services/onboarding/mobile_connection_service_test.dart \
   test/screens/onboarding/mobile_connection_screen_test.dart \
+  test/screens/onboarding/local_model_capability_card_test.dart \
+  test/services/hardware/ \
   test/screens/ui_gaps_860_861_test.dart \
   test/models/ \
   test/utils/ \
@@ -20,6 +22,7 @@ flutter test \
   test/services/settings_hermes_api_key_storage_test.dart \
   test/services/streaming_chat_error_test.dart \
   test/services/remote_hub_access_settings_test.dart \
+  test/services/chat_local_first_sync_test.dart \
   test/services/session_token_secure_storage_test.dart \
   test/services/hermes_gateway_only_transport_test.dart \
   test/services/onboarding/setup_wizard_service_test.dart \
@@ -46,6 +49,7 @@ flutter test \
   test/screens/nodes_screen_test.dart \
   test/services/subagent_registry_service_test.dart \
   test/services/cloud_zero_egress_test.dart \
+  test/widgets/settings/cloud_services_tile_test.dart \
   test/services/avatar/avatar_progress_test.dart \
   test/services/avatar/avatar_appearance_test.dart \
   test/services/avatar/avatar_personality_publish_test.dart \
@@ -59,8 +63,12 @@ flutter test \
   test/screens/settings/connection_settings_rerun_wizard_test.dart \
   test/services/agent_action_audit_service_test.dart \
   test/services/openclaw_manager/ \
+  test/services/agent_lifecycle_hermes_test.dart \
+  test/screens/dashboard/agent_detail_controls_test.dart \
+  test/services/avatar/avatar_markdown_path_test.dart \
   test/services/desktop_control/ \
   test/services/agent_runtime/runtime_status_snapshot_test.dart \
+  test/services/agent_session/ \
   test/screens/instances/instances_screen_test.dart \
   test/screens/admin/ \
   test/services/admin_center_dns_validation_test.dart \
@@ -76,5 +84,6 @@ flutter test \
   test/integration/navigation_test.dart \
   test/integration/settings_integration_test.dart \
   test/integration/evolution_flow_test.dart \
+  test/auth/ \
   --reporter expanded \
   --timeout 30s

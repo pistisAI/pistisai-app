@@ -1,8 +1,9 @@
 # Backend middleware guide
 
 How Express middleware is ordered and shared across Node services. Express majors
-differ: **api-backend**, **streaming-proxy**, and **backend/auth** are Express 5;
-**tailscale-relay** is Express 4. Do not copy middleware verbatim across that
+differ: **api-backend** and **streaming-proxy** are Express 5;
+**tailscale-relay** is Express 4. `backend/auth` is quarantined and is not a
+running Express service. Do not copy middleware verbatim across that
 boundary without checking the Express major.
 
 ## Standard order (api-backend)
@@ -59,7 +60,7 @@ Other services should match this baseline when they terminate HTTP for browsers.
   per route group, not globally in the pipeline
 - **streaming-proxy:** JWT validation middleware under `src/middleware/`
   (Cloudflare Access team JWKS + `CF_ACCESS_AUD`, RS256)
-- **backend/auth:** CommonJS handlers; keep `require` style inside that package
+- **backend/auth:** quarantined. Do not mount it or extend it as an auth service. Active auth is Cloudflare Access in api-backend
 
 ## Per-service notes
 
@@ -80,10 +81,11 @@ Prefer attaching it on write routes that accept `req.body`.
 Auth and audit live under `services/streaming-proxy/src/middleware/`. Prefer the
 typed middleware entry (`index.ts`) over duplicating JWT checks in route files.
 
-### backend/auth (Express 5, CommonJS)
+### backend/auth (quarantined)
 
-Entry is `handlers.js`. No shared pipeline module — keep middleware local and
-document any new global middleware in this guide when added.
+`handlers.js` fails closed: running it exits non-zero and requiring it throws.
+It does not bind a port and does not validate tokens. Do not add middleware here.
+Active auth is Cloudflare Access in `services/api-backend`.
 
 ### tailscale-relay (Express 4, ESM)
 

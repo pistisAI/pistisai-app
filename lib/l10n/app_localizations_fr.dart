@@ -917,6 +917,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get agentDetailInformation => 'Informations';
 
   @override
+  String get agentControlNotAvailable =>
+      'Le contrôle des agents n\'est pas encore disponible pour cet environnement d\'exécution';
+
+  @override
   String get agentDetailId => 'Identifiant';
 
   @override
@@ -2246,9 +2250,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les fournisseurs d\'appoint ne peuvent ni terminer la configuration ni recevoir le contrôle de l\'ordinateur, sauf s\'ils passent par un environnement d\'agent.';
 
   @override
-  String get configRequestPolicy => 'Règles des requêtes';
-
-  @override
   String get configWindow => 'Fenêtre';
 
   @override
@@ -2262,10 +2263,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get configNotAvailableYetNote =>
       'Pas encore disponible : langue, notifications, proxy, délais des requêtes, sécurité, historique et options de développement. L\'application n\'offre pas ces réglages tant qu\'elle ne peut pas les appliquer.';
-
-  @override
-  String get configAutoRestart =>
-      'Redémarrer automatiquement l\'environnement en cas d\'échec';
 
   @override
   String get configAppearance => 'Apparence';
@@ -3725,6 +3722,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Connectez-vous pour voir les agents enregistrés.';
 
   @override
+  String get authCallbackRejected =>
+      'La connexion n\'a pas abouti : le lien de connexion est invalide, expiré ou n\'a pas été lancé depuis l\'application. Relancez la connexion depuis l\'application.';
+
+  @override
+  String get authCallbackDifferentAccount =>
+      'Ce lien de connexion correspond à un autre compte. Votre session actuelle a été conservée. Déconnectez-vous, puis relancez la connexion depuis l\'application pour changer de compte.';
+
+  @override
   String get agentsRegistryForbidden =>
       'Votre compte n\'est pas autorisé à voir le registre des agents.';
 
@@ -3768,4 +3773,147 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get adminEmailSaveNotAvailableButton =>
       'Enregistrer (pas encore disponible)';
+
+  @override
+  String get cloudServicesTitle => 'Services infonuagiques';
+
+  @override
+  String cloudServicesSubtitleDefault(String product) {
+    return 'Désactivé par défaut. Tant que c\'est désactivé, rien n\'est envoyé au service infonuagique $product.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnRegistered(String product) {
+    return 'Activé. Cet appareil est inscrit auprès du service infonuagique $product. La synchronisation du cerveau et l\'historique des conversations l\'utilisent dès leur prochaine synchronisation.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnPending(String product) {
+    return 'Activé. La synchronisation du cerveau et l\'historique des conversations utilisent le service infonuagique $product dès leur prochaine synchronisation. L\'inscription de l\'appareil n\'est pas terminée; l\'application réessaie au prochain démarrage.';
+  }
+
+  @override
+  String cloudServicesSubtitleOff(String product) {
+    return 'Désactivé. Plus rien n\'est envoyé au service infonuagique $product. Les données déjà envoyées restent sur le serveur : désactiver ce réglage ne les supprime pas.';
+  }
+
+  @override
+  String get cloudServicesSaveFailed =>
+      'Impossible d\'enregistrer ce réglage. Rien n\'a été modifié.';
+
+  @override
+  String get cloudServicesDialogTitle => 'Activer les services infonuagiques?';
+
+  @override
+  String cloudServicesDialogIntro(String product) {
+    return 'Tant que c\'est activé, l\'application envoie ce qui suit au service infonuagique $product :';
+  }
+
+  @override
+  String get cloudServicesDialogDeviceRegistration =>
+      'Inscription de l\'appareil et signal de présence toutes les 2 minutes : identifiant, nom, plateforme et version de l\'application de cet appareil.';
+
+  @override
+  String get cloudServicesDialogBrainSync =>
+      'Synchronisation du cerveau toutes les 5 minutes : les événements d\'activité des agents et les modifications d\'enregistrements en attente stockés sur cet appareil sont envoyés, et les événements récents sont téléchargés.';
+
+  @override
+  String get cloudServicesDialogChatHistory =>
+      'Historique des conversations, lorsque vous êtes connecté : vos conversations et leurs messages sont envoyés, et les conversations enregistrées sur le serveur sont téléchargées.';
+
+  @override
+  String get cloudServicesDialogWebNote =>
+      'Dans l\'application Web, l\'historique des conversations d\'un utilisateur connecté est stocké sur le serveur, que ce réglage soit activé ou non.';
+
+  @override
+  String get cloudServicesDialogOutro =>
+      'Vous pouvez désactiver ce réglage en tout temps. Le désactiver arrête les nouveaux envois; cela ne supprime pas les données déjà envoyées.';
+
+  @override
+  String get cloudServicesDialogCancel => 'Annuler';
+
+  @override
+  String get cloudServicesDialogConfirm => 'Activer';
+
+  @override
+  String get localModelCheckChecking =>
+      'Vérification de la capacité de cet ordinateur à héberger un modèle local...';
+
+  @override
+  String get localModelCheckSufficientTitle =>
+      'Cet ordinateur peut héberger un modèle local';
+
+  @override
+  String get localModelCheckSufficientBody =>
+      'Votre runtime d\'agent et son modèle local peuvent fonctionner ici.';
+
+  @override
+  String get localModelCheckInsufficientTitle =>
+      'Cet ordinateur n\'a peut-être pas le matériel nécessaire pour un modèle local';
+
+  @override
+  String get localModelCheckInsufficientBody =>
+      'Vous pouvez quand même utiliser l\'application ici : le modèle peut fonctionner sur une machine locale que nous fournissons, ou sur un autre ordinateur de votre choix.';
+
+  @override
+  String get localModelCheckUnknownTitle =>
+      'Vérification du matériel non disponible';
+
+  @override
+  String localModelCheckUnknownBody(int recommendedGb) {
+    return 'Un modèle local demande environ $recommendedGb Go de mémoire. Si cet ordinateur en a moins, le modèle peut fonctionner sur une machine locale que nous fournissons.';
+  }
+
+  @override
+  String get localModelReasonUnsupportedPlatform =>
+      'La détection du matériel n\'est pas disponible sur cette plateforme.';
+
+  @override
+  String get localModelReasonProbeFailed =>
+      'La vérification du matériel n\'a pas donné de résultat.';
+
+  @override
+  String localModelReasonUnsupportedArchitecture(String architecture) {
+    return 'L\'architecture de processeur $architecture n\'est pas prise en charge pour les modèles locaux.';
+  }
+
+  @override
+  String localModelReasonBelowMinimum(
+      String memoryGb, int minimumGb, int recommendedGb) {
+    return 'Mémoire détectée : $memoryGb Go. Un modèle local demande au moins $minimumGb Go, et $recommendedGb Go sont recommandés.';
+  }
+
+  @override
+  String localModelReasonMiddleZone(String memoryGb, int recommendedGb) {
+    return 'Mémoire détectée : $memoryGb Go. Sous $recommendedGb Go, un modèle local ne tient que si un fournisseur de modèles local comme Ollama ou LM Studio fonctionne déjà sur cet ordinateur.';
+  }
+
+  @override
+  String localModelReasonMiddleZoneProvider(String memoryGb, String providers) {
+    return 'Mémoire détectée : $memoryGb Go, et un fournisseur de modèles local en marche : $providers.';
+  }
+
+  @override
+  String localModelReasonMiddleZoneGpu(String memoryGb, String gpuMemoryGb) {
+    return 'Mémoire détectée : $memoryGb Go, et un GPU avec $gpuMemoryGb Go de mémoire vidéo.';
+  }
+
+  @override
+  String localModelReasonMeetsRecommended(
+      String memoryGb, String architecture) {
+    return 'Mémoire détectée : $memoryGb Go ($architecture).';
+  }
+
+  @override
+  String localModelReasonProviderReachable(String providers) {
+    return 'La mémoire n\'a pas pu être lue, mais un fournisseur de modèles local fonctionne déjà sur cet ordinateur : $providers.';
+  }
+
+  @override
+  String get localModelArchitectureUnknown => 'architecture non détectée';
+
+  @override
+  String downloadLocalModelRequirement(int recommendedGb) {
+    return 'Pour exécuter un modèle local sur le même ordinateur, il faut environ $recommendedGb Go de mémoire. Avec moins, l\'application peut utiliser une machine locale que nous fournissons pour exécuter le modèle.';
+  }
 }

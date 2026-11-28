@@ -48,10 +48,15 @@ export class SandboxService {
   }
 
   /**
-   * Check if sandbox mode is enabled
+   * Check if sandbox mode is enabled.
+   * Read on each call so SANDBOX_MODE / NODE_ENV take effect for the
+   * process that is already running, including tests that set the flag
+   * after this module loads.
    * @returns {boolean} True if sandbox mode is enabled
    */
   isSandbox() {
+    this.isSandboxEnabled =
+      process.env.SANDBOX_MODE === 'true' || process.env.NODE_ENV === 'sandbox';
     return this.isSandboxEnabled;
   }
 
@@ -61,7 +66,7 @@ export class SandboxService {
    */
   getSandboxConfig() {
     return {
-      enabled: this.isSandboxEnabled,
+      enabled: this.isSandbox(),
       mode: 'testing',
       features: {
         mockData: true,
@@ -304,7 +309,7 @@ export class SandboxService {
       tunnels: this.sandboxTunnels.size,
       webhooks: this.sandboxWebhooks.size,
       requestsLogged: this.requestLog.length,
-      enabled: this.isSandboxEnabled,
+      enabled: this.isSandbox(),
     };
   }
 

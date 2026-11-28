@@ -438,7 +438,7 @@ Charlie,35,LA''';
     });
 
     test('should handle file path', () async {
-      const path = '/home/user/documents/file.txt';
+      const path = '/synthetic/fixture-dir/documents/file.txt';
 
       await Clipboard.setData(const ClipboardData(text: path));
       final result = await service.getClipboardContent();

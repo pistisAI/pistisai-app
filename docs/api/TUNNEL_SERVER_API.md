@@ -516,7 +516,7 @@ Server sends error to client:
 | Code | Category | HTTP Status | Description | Recovery |
 |------|----------|-------------|-------------|----------|
 | TUNNEL_001 | network | 503 | Connection refused | Check network, firewall, server availability |
-| TUNNEL_002 | authentication | 401 | Authentication failed | Verify JWT token, check Auth0 configuration |
+| TUNNEL_002 | authentication | 401 | Authentication failed | Verify JWT token, check Cloudflare Access configuration |
 | TUNNEL_003 | authentication | 401 | Token expired | Refresh token or re-authenticate |
 | TUNNEL_004 | server | 503 | Server unavailable | Wait and retry, check server status |
 | TUNNEL_005 | server | 429 | Rate limit exceeded | Reduce request rate, wait for reset |
@@ -571,15 +571,10 @@ Rate limits reset every minute. The `X-RateLimit-Reset` header indicates the Uni
 ### Establishing a Tunnel Connection
 
 ```bash
-# 1. Get JWT token from Auth0
-TOKEN=$(curl -X POST https://auth.example.com/oauth/token \
-  -H "Content-Type: application/json" \
-  -d '{
-    "client_id": "YOUR_CLIENT_ID",
-    "client_secret": "YOUR_CLIENT_SECRET",
-    "audience": "https://api.example.com",
-    "grant_type": "client_credentials"
-  }' | jq -r '.access_token')
+# 1. Use the Cloudflare Access JWT returned on the sign-in callback
+#    (`cf_jwt` / `token`, stored by the app in flutter_secure_storage).
+#    See docs/development/AUTHENTICATION_QUICK_REFERENCE.md.
+TOKEN="YOUR_CLOUDFLARE_ACCESS_JWT"
 
 # 2. Connect to WebSocket
 wscat -c wss://proxy.example.com/ws \

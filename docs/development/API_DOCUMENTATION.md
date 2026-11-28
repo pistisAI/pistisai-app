@@ -437,7 +437,7 @@ Check specific user's tunnel status (requires auth)
 
 ```json
 {
-  "userId": "auth0|user123",
+  "userId": "user123",
   "connected": true,
   "lastPing": "2025-01-15T10:29:30Z",
   "pendingRequests": 2
@@ -460,7 +460,7 @@ Proxy HTTP requests to user's desktop client (requires auth)
 
 ```bash
 # Proxy request to a legacy local provider path
-curl -X POST https://api.example.com/api/tunnel/auth0|user123/api/chat \
+curl -X POST https://api.example.com/api/tunnel/user123/api/chat \
   -H "Authorization: Bearer <jwt_token>" \
   -H "Content-Type: application/json" \
   -d '{"model":"llama2","prompt":"Hello"}'

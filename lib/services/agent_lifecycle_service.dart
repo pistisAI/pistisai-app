@@ -114,17 +114,49 @@ class AgentInfo {
   }
 }
 
+/// Typed reasons an agent operation can fail.
+///
+/// The service reports these instead of user-facing text so the UI can show
+/// a translated message (#1042).
+enum AgentOperationError {
+  /// The active runtime offers no agent list/start/stop channel (Hermes).
+  notAvailable,
+}
+
+/// Thrown by [AgentLifecycleService.listAgents] when the active runtime
+/// offers no agent control channel.
+class AgentControlNotAvailableException implements Exception {
+  const AgentControlNotAvailableException();
+
+  final AgentOperationError error = AgentOperationError.notAvailable;
+
+  @override
+  String toString() => 'AgentControlNotAvailableException';
+}
+
 /// Result of an agent operation
 class AgentOperationResult {
   final bool success;
   final String? message;
   final dynamic data;
 
+  /// Typed failure reason, rendered as localized text by the UI.
+  final AgentOperationError? error;
+
   AgentOperationResult({
     required this.success,
     this.message,
     this.data,
+    this.error,
   });
+
+  /// The runtime has no agent control channel; carries no English text.
+  factory AgentOperationResult.notAvailable() {
+    return AgentOperationResult(
+      success: false,
+      error: AgentOperationError.notAvailable,
+    );
+  }
 
   factory AgentOperationResult.success({String? message, dynamic data}) {
     return AgentOperationResult(
@@ -142,13 +174,12 @@ class AgentOperationResult {
   }
 }
 
-/// Service for managing agent lifecycle through OpenClaw Gateway
+/// Agent list/start/stop over the OpenClaw Gateway WebSocket protocol.
 ///
-/// This service communicates with OpenClaw Gateway via WebSocket to:
-/// - List available agents
-/// - Start/stop agents
-/// - Monitor agent status
-/// - Get agent logs and metrics
+/// Hermes has no such channel, so on Hermes the service is inactive: it
+/// does not auto-refresh and every call fails fast with
+/// [AgentOperationError.notAvailable] instead of waiting for a timeout
+/// (#1042).
 class AgentLifecycleService extends ChangeNotifier {
   final ConnectionManagerService _connectionManager;
   final _uuid = const Uuid();
@@ -180,11 +211,32 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Last error message
   String? get lastError => _lastError;
 
-  /// Check if service is ready (connected to Hermes Agent)
+  /// Typed reason of the last failure, when it has one.
+  AgentOperationError? get lastErrorCode => _lastErrorCode;
+  AgentOperationError? _lastErrorCode;
+
+  /// True only when a gateway RPC channel exists.
+  ///
+  /// The `agent.*` requests use the OpenClaw Gateway WebSocket protocol.
+  /// Hermes connects over HTTP and never opens that channel, so on Hermes
+  /// every request used to be dropped and wait for its timeout. Without a
+  /// channel the service now fails fast and does not auto-refresh (#1042).
   bool get isReady =>
-      _connectionManager.currentBackend == BackendType.hermes &&
+      _connectionManager.wsChannel != null &&
       _connectionManager.isConnected &&
       _connectionManager.isGatewayHealthy();
+
+  /// Whether Start/Stop/Restart controls can do real work right now.
+  ///
+  /// Screens hide those controls when this is false, so a button never
+  /// promises an action the runtime cannot perform (AGENTS.md, "Controls
+  /// tell the truth").
+  bool get controlsAvailable => isReady;
+
+  void _setNotAvailable() {
+    _lastError = null;
+    _lastErrorCode = AgentOperationError.notAvailable;
+  }
 
   void _onConnectionChanged() {
     // Auto-refresh agents when connection becomes ready
@@ -198,12 +250,12 @@ class AgentLifecycleService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// List all available agents from Hermes Gateway
+  /// List all available agents from the gateway
   Future<List<AgentInfo>> listAgents() async {
     if (!isReady) {
-      _lastError = 'Not connected to Hermes Gateway';
+      _setNotAvailable();
       notifyListeners();
-      throw Exception(_lastError);
+      throw const AgentControlNotAvailableException();
     }
 
     _isLoading = true;
@@ -240,12 +292,15 @@ class AgentLifecycleService extends ChangeNotifier {
           }
         }
         _lastError = null;
+        _lastErrorCode = null;
         debugPrint('[AgentLifecycle] ✓ Listed ${_agents.length} agents');
       } else {
+        _lastErrorCode = null;
         _lastError = response['error']?['message'] ?? 'Failed to list agents';
         debugPrint('[AgentLifecycle] ✗ $_lastError');
       }
     } catch (e, stack) {
+      _lastErrorCode = null;
       _lastError = 'Failed to list agents: $e';
       debugPrint('[AgentLifecycle] ✗ Error: $e');
       debugPrint('[AgentLifecycle] Stack: $stack');
@@ -260,7 +315,7 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Start an agent
   Future<AgentOperationResult> startAgent(String agentId) async {
     if (!isReady) {
-      return AgentOperationResult.failure('Not connected to Hermes Gateway');
+      return AgentOperationResult.notAvailable();
     }
 
     try {
@@ -297,6 +352,7 @@ class AgentLifecycleService extends ChangeNotifier {
           );
         }
         _lastError = null;
+        _lastErrorCode = null;
         notifyListeners();
         debugPrint('[AgentLifecycle] ✓ Agent $agentId starting');
         return AgentOperationResult.success(
@@ -305,6 +361,7 @@ class AgentLifecycleService extends ChangeNotifier {
         );
       } else {
         final error = response['error']?['message'] ?? 'Failed to start agent';
+        _lastErrorCode = null;
         _lastError = error;
 
         // Update agent to error state
@@ -322,6 +379,7 @@ class AgentLifecycleService extends ChangeNotifier {
         return AgentOperationResult.failure(error);
       }
     } catch (e) {
+      _lastErrorCode = null;
       _lastError = 'Failed to start agent: $e';
       debugPrint('[AgentLifecycle] ✗ Error starting $agentId: $e');
       notifyListeners();
@@ -332,7 +390,7 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Stop an agent
   Future<AgentOperationResult> stopAgent(String agentId) async {
     if (!isReady) {
-      return AgentOperationResult.failure('Not connected to Hermes Gateway');
+      return AgentOperationResult.notAvailable();
     }
 
     try {
@@ -369,6 +427,7 @@ class AgentLifecycleService extends ChangeNotifier {
           );
         }
         _lastError = null;
+        _lastErrorCode = null;
         notifyListeners();
         debugPrint('[AgentLifecycle] ✓ Agent $agentId stopping');
         return AgentOperationResult.success(
@@ -377,11 +436,13 @@ class AgentLifecycleService extends ChangeNotifier {
         );
       } else {
         final error = response['error']?['message'] ?? 'Failed to stop agent';
+        _lastErrorCode = null;
         _lastError = error;
         debugPrint('[AgentLifecycle] ✗ Failed to stop $agentId: $error');
         return AgentOperationResult.failure(error);
       }
     } catch (e) {
+      _lastErrorCode = null;
       _lastError = 'Failed to stop agent: $e';
       debugPrint('[AgentLifecycle] ✗ Error stopping $agentId: $e');
       notifyListeners();
@@ -405,7 +466,7 @@ class AgentLifecycleService extends ChangeNotifier {
   /// Get agent status
   Future<AgentInfo?> getAgentStatus(String agentId) async {
     if (!isReady) {
-      _lastError = 'Not connected to Hermes Gateway';
+      _setNotAvailable();
       return null;
     }
 
@@ -437,15 +498,18 @@ class AgentLifecycleService extends ChangeNotifier {
         final agent = AgentInfo.fromJson(response['payload']);
         _agents[agentId] = agent;
         _lastError = null;
+        _lastErrorCode = null;
         notifyListeners();
         return agent;
       } else {
+        _lastErrorCode = null;
         _lastError =
             response['error']?['message'] ?? 'Failed to get agent status';
         debugPrint('[AgentLifecycle] ✗ $_lastError');
         return null;
       }
     } catch (e) {
+      _lastErrorCode = null;
       _lastError = 'Failed to get agent status: $e';
       debugPrint('[AgentLifecycle] ✗ Error: $e');
       notifyListeners();
