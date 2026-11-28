@@ -3744,4 +3744,65 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get adminEmailSaveNotAvailableButton =>
       'Enregistrer (pas encore disponible)';
+
+  @override
+  String get cloudServicesTitle => 'Services infonuagiques';
+
+  @override
+  String cloudServicesSubtitleDefault(String product) {
+    return 'Désactivé par défaut. Tant que c\'est désactivé, rien n\'est envoyé au service infonuagique $product.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnRegistered(String product) {
+    return 'Activé. Cet appareil est inscrit auprès du service infonuagique $product. La synchronisation du cerveau et l\'historique des conversations l\'utilisent dès leur prochaine synchronisation.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnPending(String product) {
+    return 'Activé. La synchronisation du cerveau et l\'historique des conversations utilisent le service infonuagique $product dès leur prochaine synchronisation. L\'inscription de l\'appareil n\'est pas terminée; l\'application réessaie au prochain démarrage.';
+  }
+
+  @override
+  String cloudServicesSubtitleOff(String product) {
+    return 'Désactivé. Plus rien n\'est envoyé au service infonuagique $product. Les données déjà envoyées restent sur le serveur : désactiver ce réglage ne les supprime pas.';
+  }
+
+  @override
+  String get cloudServicesSaveFailed =>
+      'Impossible d\'enregistrer ce réglage. Rien n\'a été modifié.';
+
+  @override
+  String get cloudServicesDialogTitle => 'Activer les services infonuagiques?';
+
+  @override
+  String cloudServicesDialogIntro(String product) {
+    return 'Tant que c\'est activé, l\'application envoie ce qui suit au service infonuagique $product :';
+  }
+
+  @override
+  String get cloudServicesDialogDeviceRegistration =>
+      'Inscription de l\'appareil et signal de présence toutes les 2 minutes : identifiant, nom, plateforme et version de l\'application de cet appareil.';
+
+  @override
+  String get cloudServicesDialogBrainSync =>
+      'Synchronisation du cerveau toutes les 5 minutes : les événements d\'activité des agents et les modifications d\'enregistrements en attente stockés sur cet appareil sont envoyés, et les événements récents sont téléchargés.';
+
+  @override
+  String get cloudServicesDialogChatHistory =>
+      'Historique des conversations, lorsque vous êtes connecté : vos conversations et leurs messages sont envoyés, et les conversations enregistrées sur le serveur sont téléchargées.';
+
+  @override
+  String get cloudServicesDialogWebNote =>
+      'Dans l\'application Web, l\'historique des conversations d\'un utilisateur connecté est stocké sur le serveur, que ce réglage soit activé ou non.';
+
+  @override
+  String get cloudServicesDialogOutro =>
+      'Vous pouvez désactiver ce réglage en tout temps. Le désactiver arrête les nouveaux envois; cela ne supprime pas les données déjà envoyées.';
+
+  @override
+  String get cloudServicesDialogCancel => 'Annuler';
+
+  @override
+  String get cloudServicesDialogConfirm => 'Activer';
 }

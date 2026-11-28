@@ -46,6 +46,7 @@ flutter test \
   test/screens/nodes_screen_test.dart \
   test/services/subagent_registry_service_test.dart \
   test/services/cloud_zero_egress_test.dart \
+  test/widgets/settings/cloud_services_tile_test.dart \
   test/services/avatar/avatar_progress_test.dart \
   test/services/avatar/avatar_appearance_test.dart \
   test/services/avatar/avatar_personality_publish_test.dart \

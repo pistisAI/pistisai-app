@@ -3687,4 +3687,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminEmailSaveNotAvailableButton => 'Save (not available yet)';
+
+  @override
+  String get cloudServicesTitle => 'Cloud services';
+
+  @override
+  String cloudServicesSubtitleDefault(String product) {
+    return 'Off by default. While off, nothing is sent to the $product cloud service.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnRegistered(String product) {
+    return 'On. This device is registered with the $product cloud service. Brain sync and chat history use it from their next sync.';
+  }
+
+  @override
+  String cloudServicesSubtitleOnPending(String product) {
+    return 'On. Brain sync and chat history use the $product cloud service from their next sync. Device registration has not completed; the app tries again the next time it starts.';
+  }
+
+  @override
+  String cloudServicesSubtitleOff(String product) {
+    return 'Off. Nothing more is sent to the $product cloud service. Data already uploaded stays on the server: turning this off does not delete it.';
+  }
+
+  @override
+  String get cloudServicesSaveFailed =>
+      'Could not save this setting. Nothing was changed.';
+
+  @override
+  String get cloudServicesDialogTitle => 'Turn on cloud services?';
+
+  @override
+  String cloudServicesDialogIntro(String product) {
+    return 'While this is on, the app sends the following to the $product cloud service:';
+  }
+
+  @override
+  String get cloudServicesDialogDeviceRegistration =>
+      'Device registration and a heartbeat every 2 minutes: this device\'s ID, name, platform and app version.';
+
+  @override
+  String get cloudServicesDialogBrainSync =>
+      'Brain sync every 5 minutes: agent activity events and pending record changes stored on this device are uploaded, and recent events are downloaded.';
+
+  @override
+  String get cloudServicesDialogChatHistory =>
+      'Chat history, while you are signed in: your conversations and their messages are uploaded, and conversations saved on the server are downloaded.';
+
+  @override
+  String get cloudServicesDialogWebNote =>
+      'In the web app, a signed-in user\'s chat history is stored on the server whether or not this is on.';
+
+  @override
+  String get cloudServicesDialogOutro =>
+      'You can turn this off at any time. Turning it off stops new uploads; it does not delete data already uploaded.';
+
+  @override
+  String get cloudServicesDialogCancel => 'Cancel';
+
+  @override
+  String get cloudServicesDialogConfirm => 'Turn on';
 }
