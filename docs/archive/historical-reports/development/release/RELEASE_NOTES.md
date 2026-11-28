@@ -1,3 +1,5 @@
+> **Archived document — historical reference only.** This page is kept for provenance, not as current guidance. Auth0 is no longer an active sign-in provider; PistisAI uses Cloudflare Access. Do not treat instructions here as current sign-in steps. See the live docs under `docs/` for current behavior.
+
 # Pistisai Release Notes
 
 ## 📋 Overview
