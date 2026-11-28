@@ -1086,5 +1086,20 @@
   "adminDnsValidationErrorLine": "{recordType} : {message}",
   "adminDnsValidationNoDetails": "Aucun détail n'a été fourni pour cet enregistrement.",
   "adminEmailSaveNotAvailable": "L'enregistrement des paramètres du fournisseur de courriel n'est pas encore disponible : le serveur n'accepte pas cette configuration depuis l'application. Rien dans ce formulaire n'est enregistré.",
-  "adminEmailSaveNotAvailableButton": "Enregistrer (pas encore disponible)"
+  "adminEmailSaveNotAvailableButton": "Enregistrer (pas encore disponible)",
+  "cloudServicesTitle": "Services infonuagiques",
+  "cloudServicesSubtitleDefault": "Désactivé par défaut. Tant que c'est désactivé, rien n'est envoyé au service infonuagique {product}.",
+  "cloudServicesSubtitleOnRegistered": "Activé. Cet appareil est inscrit auprès du service infonuagique {product}. La synchronisation du cerveau et l'historique des conversations l'utilisent dès leur prochaine synchronisation.",
+  "cloudServicesSubtitleOnPending": "Activé. La synchronisation du cerveau et l'historique des conversations utilisent le service infonuagique {product} dès leur prochaine synchronisation. L'inscription de l'appareil n'est pas terminée; l'application réessaie au prochain démarrage.",
+  "cloudServicesSubtitleOff": "Désactivé. Plus rien n'est envoyé au service infonuagique {product}. Les données déjà envoyées restent sur le serveur : désactiver ce réglage ne les supprime pas.",
+  "cloudServicesSaveFailed": "Impossible d'enregistrer ce réglage. Rien n'a été modifié.",
+  "cloudServicesDialogTitle": "Activer les services infonuagiques?",
+  "cloudServicesDialogIntro": "Tant que c'est activé, l'application envoie ce qui suit au service infonuagique {product} :",
+  "cloudServicesDialogDeviceRegistration": "Inscription de l'appareil et signal de présence toutes les 2 minutes : identifiant, nom, plateforme et version de l'application de cet appareil.",
+  "cloudServicesDialogBrainSync": "Synchronisation du cerveau toutes les 5 minutes : les événements d'activité des agents et les modifications d'enregistrements en attente stockés sur cet appareil sont envoyés, et les événements récents sont téléchargés.",
+  "cloudServicesDialogChatHistory": "Historique des conversations, lorsque vous êtes connecté : vos conversations et leurs messages sont envoyés, et les conversations enregistrées sur le serveur sont téléchargées.",
+  "cloudServicesDialogWebNote": "Dans l'application Web, l'historique des conversations d'un utilisateur connecté est stocké sur le serveur, que ce réglage soit activé ou non.",
+  "cloudServicesDialogOutro": "Vous pouvez désactiver ce réglage en tout temps. Le désactiver arrête les nouveaux envois; cela ne supprime pas les données déjà envoyées.",
+  "cloudServicesDialogCancel": "Annuler",
+  "cloudServicesDialogConfirm": "Activer"
 }

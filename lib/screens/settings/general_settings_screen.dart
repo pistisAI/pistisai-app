@@ -4,6 +4,7 @@ import '../../config/theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/navigation/breadcrumb_bar.dart';
 import '../../widgets/settings/cloud_llm_providers_tile.dart';
+import '../../widgets/settings/cloud_services_tile.dart';
 import '../../widgets/settings/crash_reporting_tile.dart';
 import '../../widgets/settings/microsoft_speech_tile.dart';
 
@@ -55,6 +56,8 @@ class GeneralSettingsScreen extends StatelessWidget {
                 const SizedBox(height: 8),
 
                 // Privacy: crash reports and cloud outbound are opt-in
+                const CloudServicesTile(),
+                const SizedBox(height: 8),
                 const CrashReportingTile(),
                 const SizedBox(height: 8),
                 const CloudLlmProvidersTile(),
