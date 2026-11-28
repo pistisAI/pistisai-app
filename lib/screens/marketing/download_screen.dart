@@ -7,7 +7,9 @@ import '../../brand/brand_copy.dart';
 import '../../config/theme.dart';
 
 import '../../config/app_config.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/github_release_service.dart';
+import '../../services/hardware/local_model_capability.dart';
 
 /// Download screen - web-only marketing page
 /// Comprehensive installation guide for Linux distributions
@@ -339,6 +341,14 @@ class DownloadScreen extends StatelessWidget {
                   style: TextStyle(color: AppTheme.colorsOf(context).textColor),
                 ),
               ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context).downloadLocalModelRequirement(
+                LocalModelThresholds.recommendedTotalMemoryGiB,
+              ),
+              key: const Key('download_local_model_requirement'),
+              style: TextStyle(color: AppTheme.colorsOf(context).textColor),
             ),
             const SizedBox(height: 16),
             Text(

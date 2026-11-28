@@ -2406,5 +2406,104 @@
   "cloudServicesDialogWebNote": "In the web app, a signed-in user's chat history is stored on the server whether or not this is on.",
   "cloudServicesDialogOutro": "You can turn this off at any time. Turning it off stops new uploads; it does not delete data already uploaded.",
   "cloudServicesDialogCancel": "Cancel",
-  "cloudServicesDialogConfirm": "Turn on"
+  "cloudServicesDialogConfirm": "Turn on",
+  "localModelCheckChecking": "Checking whether this computer can host a local model...",
+  "localModelCheckSufficientTitle": "This computer can host a local model",
+  "localModelCheckSufficientBody": "Your agent runtime and its local model can run here.",
+  "localModelCheckInsufficientTitle": "This computer may not have enough hardware for a local model",
+  "localModelCheckInsufficientBody": "You can still use the app here: the model can run on a local machine we provide, or on another computer you choose.",
+  "localModelCheckUnknownTitle": "Hardware check not available",
+  "localModelCheckUnknownBody": "A local model needs about {recommendedGb} GB of memory. If this computer has less, the model can run on a local machine we provide.",
+  "@localModelCheckUnknownBody": {
+    "placeholders": {
+      "recommendedGb": {
+        "type": "int"
+      }
+    }
+  },
+  "localModelReasonUnsupportedPlatform": "Hardware detection is not available on this platform.",
+  "localModelReasonProbeFailed": "The hardware check did not return a result.",
+  "localModelReasonUnsupportedArchitecture": "Processor architecture {architecture} is not supported for local models.",
+  "@localModelReasonUnsupportedArchitecture": {
+    "placeholders": {
+      "architecture": {
+        "type": "String"
+      }
+    }
+  },
+  "localModelReasonBelowMinimum": "Detected {memoryGb} GB of memory. A local model needs at least {minimumGb} GB, and {recommendedGb} GB is recommended.",
+  "@localModelReasonBelowMinimum": {
+    "placeholders": {
+      "memoryGb": {
+        "type": "String"
+      },
+      "minimumGb": {
+        "type": "int"
+      },
+      "recommendedGb": {
+        "type": "int"
+      }
+    }
+  },
+  "localModelReasonMiddleZone": "Detected {memoryGb} GB of memory. Below {recommendedGb} GB, a local model only fits when a local model provider such as Ollama or LM Studio is already running on this computer.",
+  "@localModelReasonMiddleZone": {
+    "placeholders": {
+      "memoryGb": {
+        "type": "String"
+      },
+      "recommendedGb": {
+        "type": "int"
+      }
+    }
+  },
+  "localModelReasonMiddleZoneProvider": "Detected {memoryGb} GB of memory and a running local model provider: {providers}.",
+  "@localModelReasonMiddleZoneProvider": {
+    "placeholders": {
+      "memoryGb": {
+        "type": "String"
+      },
+      "providers": {
+        "type": "String"
+      }
+    }
+  },
+  "localModelReasonMiddleZoneGpu": "Detected {memoryGb} GB of memory and a GPU with {gpuMemoryGb} GB of video memory.",
+  "@localModelReasonMiddleZoneGpu": {
+    "placeholders": {
+      "memoryGb": {
+        "type": "String"
+      },
+      "gpuMemoryGb": {
+        "type": "String"
+      }
+    }
+  },
+  "localModelReasonMeetsRecommended": "Detected {memoryGb} GB of memory ({architecture}).",
+  "@localModelReasonMeetsRecommended": {
+    "placeholders": {
+      "memoryGb": {
+        "type": "String"
+      },
+      "architecture": {
+        "type": "String"
+      }
+    }
+  },
+  "localModelReasonProviderReachable": "Memory could not be read, but a local model provider is already running on this computer: {providers}.",
+  "@localModelReasonProviderReachable": {
+    "placeholders": {
+      "providers": {
+        "type": "String"
+      }
+    }
+  },
+  "localModelArchitectureUnknown": "architecture not detected",
+  "downloadLocalModelRequirement": "Running a local model on the same computer needs about {recommendedGb} GB of memory. With less, the app can use a local machine we provide to run the model.",
+  "@downloadLocalModelRequirement": {
+    "placeholders": {
+      "recommendedGb": {
+        "type": "int"
+      }
+    }
+  }
 }

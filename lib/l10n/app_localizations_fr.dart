@@ -3798,4 +3798,86 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cloudServicesDialogConfirm => 'Activer';
+
+  @override
+  String get localModelCheckChecking =>
+      'Vérification de la capacité de cet ordinateur à héberger un modèle local...';
+
+  @override
+  String get localModelCheckSufficientTitle =>
+      'Cet ordinateur peut héberger un modèle local';
+
+  @override
+  String get localModelCheckSufficientBody =>
+      'Votre runtime d\'agent et son modèle local peuvent fonctionner ici.';
+
+  @override
+  String get localModelCheckInsufficientTitle =>
+      'Cet ordinateur n\'a peut-être pas le matériel nécessaire pour un modèle local';
+
+  @override
+  String get localModelCheckInsufficientBody =>
+      'Vous pouvez quand même utiliser l\'application ici : le modèle peut fonctionner sur une machine locale que nous fournissons, ou sur un autre ordinateur de votre choix.';
+
+  @override
+  String get localModelCheckUnknownTitle =>
+      'Vérification du matériel non disponible';
+
+  @override
+  String localModelCheckUnknownBody(int recommendedGb) {
+    return 'Un modèle local demande environ $recommendedGb Go de mémoire. Si cet ordinateur en a moins, le modèle peut fonctionner sur une machine locale que nous fournissons.';
+  }
+
+  @override
+  String get localModelReasonUnsupportedPlatform =>
+      'La détection du matériel n\'est pas disponible sur cette plateforme.';
+
+  @override
+  String get localModelReasonProbeFailed =>
+      'La vérification du matériel n\'a pas donné de résultat.';
+
+  @override
+  String localModelReasonUnsupportedArchitecture(String architecture) {
+    return 'L\'architecture de processeur $architecture n\'est pas prise en charge pour les modèles locaux.';
+  }
+
+  @override
+  String localModelReasonBelowMinimum(
+      String memoryGb, int minimumGb, int recommendedGb) {
+    return 'Mémoire détectée : $memoryGb Go. Un modèle local demande au moins $minimumGb Go, et $recommendedGb Go sont recommandés.';
+  }
+
+  @override
+  String localModelReasonMiddleZone(String memoryGb, int recommendedGb) {
+    return 'Mémoire détectée : $memoryGb Go. Sous $recommendedGb Go, un modèle local ne tient que si un fournisseur de modèles local comme Ollama ou LM Studio fonctionne déjà sur cet ordinateur.';
+  }
+
+  @override
+  String localModelReasonMiddleZoneProvider(String memoryGb, String providers) {
+    return 'Mémoire détectée : $memoryGb Go, et un fournisseur de modèles local en marche : $providers.';
+  }
+
+  @override
+  String localModelReasonMiddleZoneGpu(String memoryGb, String gpuMemoryGb) {
+    return 'Mémoire détectée : $memoryGb Go, et un GPU avec $gpuMemoryGb Go de mémoire vidéo.';
+  }
+
+  @override
+  String localModelReasonMeetsRecommended(
+      String memoryGb, String architecture) {
+    return 'Mémoire détectée : $memoryGb Go ($architecture).';
+  }
+
+  @override
+  String localModelReasonProviderReachable(String providers) {
+    return 'La mémoire n\'a pas pu être lue, mais un fournisseur de modèles local fonctionne déjà sur cet ordinateur : $providers.';
+  }
+
+  @override
+  String get localModelArchitectureUnknown => 'architecture non détectée';
+
+  @override
+  String downloadLocalModelRequirement(int recommendedGb) {
+    return 'Pour exécuter un modèle local sur le même ordinateur, il faut environ $recommendedGb Go de mémoire. Avec moins, l\'application peut utiliser une machine locale que nous fournissons pour exécuter le modèle.';
+  }
 }

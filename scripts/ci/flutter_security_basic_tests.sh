@@ -11,6 +11,8 @@ flutter test \
   test/config/ \
   test/services/onboarding/mobile_connection_service_test.dart \
   test/screens/onboarding/mobile_connection_screen_test.dart \
+  test/screens/onboarding/local_model_capability_card_test.dart \
+  test/services/hardware/ \
   test/screens/ui_gaps_860_861_test.dart \
   test/models/ \
   test/utils/ \
