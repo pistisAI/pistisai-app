@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import '../../di/locator.dart' show serviceLocator;
 import '../provider_discovery_service.dart';
 import 'hardware_probe.dart';
 import 'hardware_probe_default_stub.dart'
@@ -21,6 +20,10 @@ typedef LocalProviderScan = Future<List<String>> Function();
 /// result is cached, so onboarding and later setup logic share one answer;
 /// call [refresh] to probe again. [check] never throws: any failure answers
 /// `unknown`.
+///
+/// Registered once in `setupCoreServices()` (`lib/di/locator.dart`); read it
+/// with `serviceLocator.get<HardwareCapabilityService>()`. Tests build their
+/// own instance through the constructor.
 class HardwareCapabilityService {
   HardwareCapabilityService({
     PlatformHardwareProbe? probe,
@@ -30,32 +33,6 @@ class HardwareCapabilityService {
     this.providerScanTimeout = const Duration(seconds: 12),
   })  : _probe = probe ?? (useDefaultProbe ? _defaultProbe() : null),
         _scanLocalProviders = scanLocalProviders;
-
-  /// Builds the service with the registered [ProviderDiscoveryService] when
-  /// there is one.
-  ///
-  /// TODO(#1077): register this service in `lib/di/locator.dart` and read it
-  /// with `serviceLocator.get<HardwareCapabilityService>()` instead.
-  factory HardwareCapabilityService.fromServiceLocator() {
-    ProviderDiscoveryService? discovery;
-    try {
-      if (serviceLocator.isRegistered<ProviderDiscoveryService>()) {
-        discovery = serviceLocator.get<ProviderDiscoveryService>();
-      }
-    } catch (_) {
-      discovery = null;
-    }
-    return HardwareCapabilityService(
-      scanLocalProviders:
-          discovery == null ? null : scanWithDiscovery(discovery),
-    );
-  }
-
-  static HardwareCapabilityService? _shared;
-
-  /// One instance per app run, so every caller reuses the cached result.
-  static HardwareCapabilityService get shared =>
-      _shared ??= HardwareCapabilityService.fromServiceLocator();
 
   /// Uses [ProviderDiscoveryService.scanForSupportModelProviders], which only
   /// probes loopback ports of Ollama and LM Studio.

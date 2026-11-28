@@ -18,6 +18,7 @@ import 'package:pistisai/auth/providers/cloudflare_access_auth_provider.dart';
 import 'package:pistisai/services/desktop_client_detection_service.dart';
 import 'package:pistisai/services/enhanced_user_tier_service.dart';
 import 'package:pistisai/services/provider_discovery_service.dart';
+import 'package:pistisai/services/hardware/hardware_capability_service.dart';
 import 'package:pistisai/services/streaming_chat_service.dart';
 import 'package:pistisai/services/streaming_proxy_service.dart';
 import 'package:pistisai/services/tunnel_service.dart';
@@ -109,6 +110,25 @@ String _getOpenClawSkillsPath() {
     AppConfig.verboseLog('[ServiceLocator] Failed to read home directory: $e');
   }
   return resolveAvatarMarkdownPath(home);
+}
+
+/// Registers the local-model hardware check (#1077) as one lazy singleton,
+/// so onboarding and later setup logic share its cached answer. It needs no
+/// authentication and makes no cloud call: it reads this computer's hardware
+/// and scans loopback for Ollama / LM Studio through the registered
+/// [ProviderDiscoveryService], when there is one. Safe to call twice.
+void registerHardwareCapabilityService() {
+  if (serviceLocator.isRegistered<HardwareCapabilityService>()) return;
+  serviceLocator.registerLazySingleton<HardwareCapabilityService>(() {
+    final discovery = serviceLocator.isRegistered<ProviderDiscoveryService>()
+        ? serviceLocator.get<ProviderDiscoveryService>()
+        : null;
+    return HardwareCapabilityService(
+      scanLocalProviders: discovery == null
+          ? null
+          : HardwareCapabilityService.scanWithDiscovery(discovery),
+    );
+  });
 }
 
 /// Registers core services that are needed before authentication.
@@ -418,6 +438,9 @@ Future<void> setupCoreServices() async {
     serviceLocator.registerSingleton<ProviderDiscoveryService>(
       providerDiscoveryService,
     );
+
+    // Local-model hardware check for onboarding - local only, no auth
+    registerHardwareCapabilityService();
 
     // Desktop client detection - can check client type without auth
     final desktopClientDetectionService = DesktopClientDetectionService(
@@ -742,6 +765,8 @@ Future<void> _registerWebFallbackCoreServices() async {
       ),
     );
   }
+
+  registerHardwareCapabilityService();
 
   try {
     await serviceLocator.get<AuthService>().init();
