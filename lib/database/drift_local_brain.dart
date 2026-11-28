@@ -3,6 +3,8 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import 'package:pistisai/services/hermes_manager/main_chat_timeline_record.dart';
 import 'package:pistisai/models/main_chat_timeline_event.dart';
+import 'package:pistisai/database/hub_channel_schema.dart';
+
 import 'connection/connection.dart'
     if (dart.library.io) 'connection/native.dart'
     if (dart.library.js_interop) 'connection/web.dart';
@@ -570,12 +572,20 @@ class LocalBrain extends _$LocalBrain {
   LocalBrain.withExecutor(super.executor);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
+
+  /// Creates the hub channel tables (#1065). Safe to call more than once.
+  Future<void> ensureHubChannelTables() async {
+    for (final statement in hubChannelSchemaStatements) {
+      await customStatement(statement);
+    }
+  }
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (Migrator m) async {
           await m.createAll();
+          await ensureHubChannelTables();
           await _populateInitialRateLimits();
           await _createDefaultAgentIdentities();
         },
@@ -637,6 +647,11 @@ class LocalBrain extends _$LocalBrain {
           if (from < 11) {
             // Client-visible local agent-action audit journal (#643)
             await m.createTable(agentActionAuditEntries);
+          }
+          if (from < 12) {
+            // Hub-owned conversation channels (#1065). The JSON file is
+            // imported once, then retired.
+            await ensureHubChannelTables();
           }
         },
       );

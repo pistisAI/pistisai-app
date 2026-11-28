@@ -134,21 +134,6 @@ void main() {
       final service = HermesStreamingService(
         client: MockClient((request) async {
           requests.add(request);
-          if (request.url.path == '/api/sessions') {
-            return http.Response(
-              jsonEncode(<String, Object>{
-                'data': <Object>[
-                  <String, Object>{
-                    'id': 'generated-session',
-                    'source': 'pistisai',
-                    'chat': 'pistisai',
-                    'last_active': 10,
-                  },
-                ],
-              }),
-              200,
-            );
-          }
           return http.Response(
             jsonEncode(<String, Object>{
               'object': 'list',
@@ -165,6 +150,7 @@ void main() {
           );
         }),
       );
+      service.restoreRuntimeSession('pistisai', 'generated-session');
 
       final poll = await service.fetchSessionMessages('pistisai');
 
@@ -254,7 +240,7 @@ void main() {
         }),
       );
 
-      await service.fetchSessionMessages('pistisai');
+      await service.fetchLegacyPistisaiTranscript();
 
       final list =
           requests.firstWhere((request) => request.url.path == '/api/sessions');
@@ -289,7 +275,7 @@ void main() {
         }),
       );
 
-      await service.fetchSessionMessages('pistisai');
+      await service.fetchLegacyPistisaiTranscript();
 
       final poll = requests.lastWhere(
           (request) => request.url.path.startsWith('/api/sessions/'));
@@ -356,7 +342,7 @@ void main() {
       );
       expect(
         requests.any((request) => request.url.path == '/api/sessions'),
-        isTrue,
+        isFalse,
       );
       expect(poll, isEmpty); // 404 = no session yet, not a failure
       expect(service.runtimeSessionIdFor('pistisai'), isNull);
@@ -367,24 +353,10 @@ void main() {
         () async {
       final service = HermesStreamingService(
         client: MockClient((request) async {
-          if (request.url.path == '/api/sessions') {
-            return http.Response(
-              jsonEncode(<String, Object>{
-                'data': <Object>[
-                  <String, Object>{
-                    'id': 'generated-session',
-                    'source': 'pistisai',
-                    'chat': 'pistisai',
-                    'last_active': 10,
-                  },
-                ],
-              }),
-              200,
-            );
-          }
           return http.Response('{"error":"boom"}', 500);
         }),
       );
+      service.restoreRuntimeSession('pistisai', 'generated-session');
 
       final poll = await service.fetchSessionMessages('pistisai');
 
@@ -392,38 +364,60 @@ void main() {
       service.dispose();
     });
 
-    test('platform POST keeps the chat id and adopts a gateway key', () async {
-      http.Request? posted;
+    test('a turn creates an API-server session and never posts /api/pistisai/messages',
+        () async {
+      http.Request? created;
+      http.Request? chatted;
       final service = HermesStreamingService(
         client: MockClient((request) async {
-          if (request.method == 'POST') {
-            posted = request;
+          if (request.method == 'POST' && request.url.path == '/api/sessions') {
+            created = request;
             return http.Response(
-              jsonEncode(<String, Object>{'session_key': sessionKey}),
-              202,
+              jsonEncode(<String, Object>{
+                'session': <String, Object>{'id': 'api_owned'},
+              }),
+              201,
+            );
+          }
+          if (request.method == 'POST' &&
+              request.url.path == '/api/sessions/api_owned/chat/stream') {
+            chatted = request;
+            return http.Response(
+              'event: assistant.delta\n'
+              'data: {"message_id":"m1","delta":"yo"}\n'
+              '\n'
+              'event: assistant.completed\n'
+              'data: {"message_id":"m1","content":"yo"}\n'
+              '\n',
+              200,
+              headers: {'content-type': 'text/event-stream'},
             );
           }
           return http.Response('{"data":[]}', 200);
         }),
       );
 
-      await service
+      final messages = await service
           .streamResponse(
             prompt: 'yo',
             model: 'hermes-agent',
             conversationId: 'pistisai',
           )
           .toList();
-      expect(posted!.url.path, '/api/pistisai/messages');
-      final body = jsonDecode(posted!.body) as Map<String, dynamic>;
-      expect(body['conversation_id'], 'pistisai');
-      expect(body['message'], 'yo');
-      expect(body['conversation_id'], isNot(sessionKey));
-      expect(body.containsKey('session_key'), isFalse);
+      expect(created, isNotNull);
+      final createdBody = jsonDecode(created!.body) as Map<String, dynamic>;
+      expect(createdBody['source'], 'api_server');
+      expect(createdBody.containsKey('id'), isFalse);
+      expect(chatted, isNotNull);
+      final chatBody = jsonDecode(chatted!.body) as Map<String, dynamic>;
+      expect(chatBody['message'], 'yo');
+      expect(messages.any((message) => message.chunk == 'yo'), isTrue);
+      expect(messages.last.isComplete, isTrue);
       service.dispose();
     });
 
-    test('sending yo posts the chat id, never to /api/sessions', () async {
+    test('a failed session open does not post to /api/pistisai/messages',
+        () async {
       final requests = <http.Request>[];
       final service = HermesStreamingService(
         client: MockClient((request) async {
@@ -434,13 +428,7 @@ void main() {
           if (request.url.path == '/v1/models') {
             return http.Response('{"data":[]}', 200);
           }
-          if (request.url.path == '/api/pistisai/messages') {
-            return http.Response(
-              jsonEncode(<String, Object>{'session_key': sessionKey}),
-              202,
-            );
-          }
-          return http.Response('{"error":"run failed"}', 500);
+          return http.Response('{"error":"no"}', 500);
         }),
       );
 
@@ -452,17 +440,13 @@ void main() {
           )
           .toList();
 
-      final platform = requests.singleWhere(
-        (request) => request.url.path == '/api/pistisai/messages',
-      );
-      final platformBody = jsonDecode(platform.body) as Map<String, dynamic>;
-      expect(platformBody['conversation_id'], 'pistisai');
-      expect(platformBody['message'], 'yo');
       expect(
-          requests.any((request) =>
-              request.method == 'POST' && request.url.path == '/api/sessions'),
-          isFalse);
-      expect(messages, isNotEmpty);
+        requests.any((request) => request.url.path == '/api/pistisai/messages'),
+        isFalse,
+      );
+      expect(messages.last.hasError, isTrue);
+      expect(messages.last.error, contains('could not open a Hermes session'));
+      service.dispose();
     });
   });
 }

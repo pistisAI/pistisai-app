@@ -31,6 +31,7 @@ import 'package:pistisai/services/settings_preference_service.dart';
 import 'package:pistisai/services/settings_import_export_service.dart';
 import 'package:pistisai/services/local_agent_data_portability_service.dart';
 import 'package:pistisai/services/local_conversation_storage.dart';
+import 'package:pistisai/services/agent_session/drift_channel_store.dart';
 import 'package:pistisai/models/conversation.dart' as models;
 import 'package:pistisai/services/provider_configuration_manager.dart';
 import 'package:pistisai/services/admin_center_service.dart';
@@ -323,6 +324,7 @@ Future<void> setupCoreServices() async {
         ),
         authSecret: remoteHubToken,
         hermesApiKey: hermesApiKey,
+        channelStore: DriftChannelStore(localBrain),
       );
       serviceLocator.registerSingleton<RouterServer>(routerServer);
 
@@ -505,8 +507,12 @@ Future<void> setupCoreServices() async {
         clearPlainFiles.add(AppTempFiles.deleteAll);
         listRemainingPlainFiles.add(AppTempFiles.listRemaining);
         final localConversations = LocalConversationStorage();
+        final channelStore = DriftChannelStore(portabilityBrain);
         exportConversations = () async {
-          final conversations = await localConversations.loadConversations();
+          final stored = await channelStore.loadAll();
+          final conversations = stored.isNotEmpty
+              ? stored
+              : await localConversations.loadConversations();
           return <String, dynamic>{
             'export_date': DateTime.now().toIso8601String(),
             'total_conversations': conversations.length,
@@ -515,7 +521,10 @@ Future<void> setupCoreServices() async {
                 .toList(),
           };
         };
-        clearConversations = localConversations.clearAll;
+        clearConversations = () async {
+          await channelStore.clear();
+          await localConversations.clearAll();
+        };
         listRemainingConversationFiles =
             localConversations.listExistingConversationDataPaths;
         resetChatState = () async {

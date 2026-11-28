@@ -1,41 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:pistisai/models/agent_event.dart';
 import 'package:pistisai/services/hermes/hermes_streaming_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Pistisai transcript fail-fast (#860)', () {
-    test('persistent transcript read errors fail fast with a clear message',
-        () async {
-      // Health + model discovery succeed so the stream starts; the inbound
-      // post succeeds; every transcript read then fails (hub went away).
+  group('owned session chat', () {
+    test('a session that cannot be opened fails with a hub message', () async {
       final client = MockClient((request) async {
-        if (request.url.path == '/health') {
-          return http.Response('', 200);
+        if (request.url.path == '/health' || request.url.path == '/v1/models') {
+          return http.Response('{"data":[]}', 200);
         }
-        if (request.url.path == '/v1/models') {
-          return http.Response(
-            '{"data":[]}',
-            200,
-            headers: {'content-type': 'application/json'},
-          );
-        }
-        if (request.method == 'POST') {
-          return http.Response(
-            '{}',
-            200,
-            headers: {'content-type': 'application/json'},
-          );
-        }
-        return http.Response('hub unavailable', 500);
+        return http.Response('{"error":"no"}', 500);
       });
-
-      final service = HermesStreamingService(
-        client: client,
-        transcriptFetchTimeout: const Duration(milliseconds: 150),
-      );
+      final service = HermesStreamingService(client: client);
       try {
         final messages = await service
             .streamResponse(
@@ -45,10 +25,8 @@ void main() {
             )
             .timeout(const Duration(seconds: 8))
             .toList();
-
-        expect(messages, isNotEmpty);
         expect(messages.last.hasError, isTrue);
-        expect(messages.last.error, contains('could not read'));
+        expect(messages.last.error, contains('could not open a Hermes session'));
         expect(messages.last.error, contains('Check the hub connection'));
         expect(messages.last.error, isNot(contains('Exception')));
       } finally {
@@ -56,41 +34,43 @@ void main() {
       }
     });
 
-    test('a transient read failure recovers and still delivers the reply',
+    test('chat/stream deltas are yielded and the 750 ms poll is not used',
         () async {
-      var reads = 0;
-      const reply = '{"data":[{"id":"a1","role":"assistant",'
-          '"content":"Hello from Hermes","timestamp":1764000000}]}';
+      final paths = <String>[];
       final client = MockClient((request) async {
-        if (request.url.path == '/health') return http.Response('', 200);
-        if (request.url.path == '/v1/models') {
+        paths.add('${request.method} ${request.url.path}');
+        if (request.url.path == '/health' || request.url.path == '/v1/models') {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'POST' && request.url.path == '/api/sessions') {
           return http.Response(
-            '{"data":[]}',
-            200,
-            headers: {'content-type': 'application/json'},
+            '{"session":{"id":"api_1"}}',
+            201,
           );
         }
-        if (request.method == 'POST') {
+        if (request.url.path == '/api/sessions/api_1/chat/stream') {
           return http.Response(
-            '{}',
+            'event: assistant.delta\n'
+            'data: {"message_id":"m","delta":"Hello from Hermes"}\n'
+            '\n'
+            'event: tool.started\n'
+            'data: {"message_id":"m","tool_name":"read_file"}\n'
+            '\n'
+            'event: tool.completed\n'
+            'data: {"message_id":"m","tool_name":"read_file"}\n'
+            '\n'
+            'event: assistant.completed\n'
+            'data: {"message_id":"m","content":"Hello from Hermes"}\n'
+            '\n',
             200,
-            headers: {'content-type': 'application/json'},
           );
         }
-        reads += 1;
-        if (reads == 2) return http.Response('temporary', 503);
-        return http.Response(
-          reads == 1 ? '{"data":[]}' : reply,
-          200,
-          headers: {'content-type': 'application/json'},
-        );
+        return http.Response('no', 404);
       });
-
-      final service = HermesStreamingService(
-        client: client,
-        transcriptFetchTimeout: const Duration(seconds: 5),
-      );
+      final service = HermesStreamingService(client: client);
       try {
+        final events = <Object>[];
+        final sub = service.agentEventStream.listen(events.add);
         final messages = await service
             .streamResponse(
               prompt: 'hello',
@@ -99,14 +79,15 @@ void main() {
             )
             .timeout(const Duration(seconds: 8))
             .toList();
-
+        await Future<void>.delayed(Duration.zero);
+        await sub.cancel();
         expect(
-          messages.any((m) => m.error?.contains('could not read') ?? false),
-          isFalse,
+          messages.any((m) => m.chunk.contains('Hello from Hermes')),
+          isTrue,
         );
-        expect(
-            messages.any((m) => m.chunk.contains('Hello from Hermes')), isTrue);
         expect(messages.last.isComplete, isTrue);
+        expect(paths.any((path) => path.contains('/messages')), isFalse);
+        expect(events.whereType<AgentToolStarted>(), isNotEmpty);
       } finally {
         service.dispose();
       }

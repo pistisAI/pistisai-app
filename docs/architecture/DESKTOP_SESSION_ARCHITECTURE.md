@@ -1,6 +1,10 @@
 # Desktop Session Architecture (proposal)
 
-Status: **proposed**, for the repository owner to decide. Tracks
+Status: **in progress**. Owner decisions, recorded 2026-11-28: the Drift
+database is the canonical store (Q1); existing Hermes history is imported
+once, honouring a wipe (Q2); each turn uses an API-server-owned session and
+`POST /api/sessions/{id}/chat/stream` (Q3 a); other devices read channels
+from the desktop hub (Q4). Tracks
 [#1065](https://github.com/pistisAI/pistisai-app/issues/1065),
 [#1066](https://github.com/pistisAI/pistisai-app/issues/1066),
 [#1067](https://github.com/pistisAI/pistisai-app/issues/1067) and
@@ -85,9 +89,11 @@ Line numbers are for `origin/main` when this note was written; they will move.
    whole `Conversation` objects and is rewritten as a unit.
 2. **Drift/SQLite local brain** (`lib/database/drift_local_brain.dart`):
    `Conversations` (L29), `Messages` (L42) and the append-only
-   `MainChatTimelineRecords` (L53), schema version 11 (L573). The
-   `Conversations`/`Messages` DAO (L1023-1038) has no caller outside the
-   file today.
+   `MainChatTimelineRecords` (L53), schema version 12. Hub-owned channels
+   live in `hub_channels` / `hub_channel_messages` (see
+   `lib/database/hub_channel_schema.dart`). The encrypted JSON file is
+   imported once and then retired. The older Drift `Conversations`/`Messages`
+   DAO (around L1023) still has no caller outside the file.
 
 ## 2. Target design
 
@@ -159,8 +165,9 @@ Each step is its own pull request and leaves the app working.
 
 ### Q1. Which store becomes canonical?
 
-Recommendation: **Drift (`LocalBrain`)**, with `conversations.json.enc` read
-once for import and then retired.
+**Decided: Drift (`LocalBrain`).** `conversations.json.enc` is read once and
+then renamed to `conversations.json.enc.retired`. The hub channel tables are
+the store the desktop app reads and writes.
 
 - Drift already has `Conversations`, `Messages` and `MainChatTimelineRecords`
   and a migration path (`schemaVersion`), so channels and messages can be
@@ -179,15 +186,18 @@ once for import and then retired.
 
 ### Q2. One-time import of the existing Hermes transcript?
 
-When the `direct` channel is first created, should the app import the
-current Hermes `pistisai` transcript into it once (respecting the existing
-`TranscriptImportFloorStore` floor, so wiped history is not brought back),
-or start the channel empty and leave older history in Hermes? Importing keeps
-continuity for existing users; starting empty is simpler and keeps a wipe
-final. Recommendation: import once, honouring the floor, then never import
-again for that channel.
+**Decided: import once**, honouring `TranscriptImportFloorStore`, into the
+direct channel. The import reads the legacy `source=pistisai` transcript and
+does not run again for that channel. Later turns use a separate API-server
+session and do not depend on that transcript.
 
 ### Q3. What streaming transport does Hermes offer?
+
+**Decided: option (a).** The desktop channel uses an API-server-owned Hermes
+session. Each turn is `POST /api/sessions/{id}/chat/stream`. Proactive
+messages are reconciled on a 60 second check, not the old 8 second poll.
+`/new` opens another hub channel. `/reset` deletes that Hermes session and
+keeps the channel's local messages.
 
 Checked against the public Hermes agent source,
 [NousResearch/hermes-agent at `77236c4`](https://github.com/NousResearch/hermes-agent/tree/77236c4ad3b31764732b3d91f7fc5aefbabf5093)
@@ -239,17 +249,13 @@ Constraints and gaps:
   above is scoped to one request or one run. A session-wide subscription is
   **unverified**; it may exist on the gateway WebSocket.
 
-Decision needed: (a) move the desktop channel to an API-server-owned Hermes
-session and use `/api/sessions/{id}/chat/stream` per turn, keeping a slower
-reconcile for proactive messages until a push source exists; (b) adopt the
-gateway WebSocket after its protocol and authentication are reviewed; or (c)
-keep the `pistisai` platform route and add streaming there. Option (a) is the
-smallest step that gives real deltas and tool events today.
+Option (a) is what the app does. The notes above are the source that decision
+was checked against.
 
 ### Q4. Where does the channel store live for secondary devices?
 
-The target says devices read channels from the hub. Today they reach Hermes
-through `RouterServer` on port `1337`. Serving channels from the hub means new
-private router endpoints; per AGENTS.md they answer loopback callers only
-unless an `authSecret` is set. Confirm this is the intended path before #1067
-adds them.
+**Decided.** The desktop app is the hub. Other devices read
+`GET /api/channels`, `GET /api/channels/{id}` and
+`GET /api/channels/{id}/messages` on the embedded router (port 1337). Those
+routes are loopback-only unless `authSecret` is set, the same rule as the
+other private router endpoints. They are not proxied to Hermes.

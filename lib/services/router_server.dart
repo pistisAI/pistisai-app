@@ -17,6 +17,8 @@ import 'voice/cloud_tts_service.dart';
 import 'package:pistisai/brand/brand.dart';
 import 'package:pistisai/config/app_config.dart';
 import 'package:pistisai/models/avatar/personality_models.dart';
+import 'package:pistisai/services/agent_session/channel_store.dart';
+import 'package:pistisai/services/agent_session/hub_channel_view.dart';
 import 'package:http/http.dart' as http;
 
 /// Async gate for optional outbound cloud features. Fail closed when null.
@@ -66,6 +68,10 @@ class RouterServer {
   final String hermesBaseUrl;
   final String? hermesApiKey;
 
+  /// Hub channel store other devices read. Null until the desktop app wires
+  /// the local database. Never a Hermes transcript.
+  final ChannelStore? channelStore;
+
   HttpServer? _server;
 
   /// Endpoints that remain accessible without authentication.
@@ -89,6 +95,7 @@ class RouterServer {
     this.allowRemoteAccess = false,
     String? hermesBaseUrl,
     this.hermesApiKey,
+    this.channelStore,
   })  : authSecret = _resolveAuthSecret(
           allowRemoteAccess: allowRemoteAccess,
           provided: authSecret,
@@ -179,6 +186,12 @@ class RouterServer {
 
     // GET /api/pistisai/hub — mobile clients discover the primary desktop hub.
     router.get(AppConfig.hubPath, _handleHub);
+
+    // Hub-owned channels for other devices (#1067). These are not proxied
+    // to Hermes: the desktop app is the hub, and the channel store is local.
+    router.get('/api/channels', _handleListChannels);
+    router.get('/api/channels/<channelId>/messages', _handleChannelMessages);
+    router.get('/api/channels/<channelId>', _handleChannel);
 
     // Hermes chat/session APIs for non-primary clients (proxied to local Hermes).
     router.post('/api/pistisai/messages', _proxyHermes);
@@ -410,6 +423,77 @@ class RouterServer {
         );
       };
     };
+  }
+
+  Response _channelStoreMissing() {
+    return Response(
+      503,
+      body: jsonEncode({'error': 'Channel store is not available'}),
+      headers: {'Content-Type': 'application/json'},
+    );
+  }
+
+  Future<Response> _handleListChannels(Request request) async {
+    final store = channelStore;
+    if (store == null) return _channelStoreMissing();
+    try {
+      final channels = await store.loadAll();
+      return Response.ok(
+        hubChannelListBody(channels),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (e) {
+      return _safeErrorResponse(e, statusCode: 500, asJson: true);
+    }
+  }
+
+  Future<Response> _handleChannel(Request request, String channelId) async {
+    final store = channelStore;
+    if (store == null) return _channelStoreMissing();
+    try {
+      final channels = await store.loadAll();
+      for (final conversation in channels) {
+        if (conversation.channelId == channelId) {
+          return Response.ok(
+            jsonEncode(hubChannelDetail(conversation)),
+            headers: {'Content-Type': 'application/json'},
+          );
+        }
+      }
+      return Response.notFound(
+        jsonEncode({'error': 'Channel not found'}),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (e) {
+      return _safeErrorResponse(e, statusCode: 500, asJson: true);
+    }
+  }
+
+  Future<Response> _handleChannelMessages(
+    Request request,
+    String channelId,
+  ) async {
+    final store = channelStore;
+    if (store == null) return _channelStoreMissing();
+    try {
+      final channels = await store.loadAll();
+      for (final conversation in channels) {
+        if (conversation.channelId == channelId) {
+          return Response.ok(
+            jsonEncode(<String, Object?>{
+              'messages': hubChannelDetail(conversation)['messages'],
+            }),
+            headers: {'Content-Type': 'application/json'},
+          );
+        }
+      }
+      return Response.notFound(
+        jsonEncode({'error': 'Channel not found'}),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (e) {
+      return _safeErrorResponse(e, statusCode: 500, asJson: true);
+    }
   }
 
   Response _handleHub(Request request) {
